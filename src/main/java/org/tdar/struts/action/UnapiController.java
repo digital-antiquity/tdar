@@ -49,7 +49,7 @@ public class UnapiController extends TdarActionSupport {
             }
             )
             public String execute() {
-        if (StringUtils.isNotBlank(format) && id != null) {
+        if (StringUtils.isNotBlank(format) && (id != null)) {
             Resource r = getResourceService().find(id);
             if (r == null) {
                 return TdarActionSupport.NOT_FOUND;

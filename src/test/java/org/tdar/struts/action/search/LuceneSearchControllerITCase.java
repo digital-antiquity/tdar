@@ -125,7 +125,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
-        
+
         setupTestDocuments();
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch(resourceTitle);
@@ -468,7 +468,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         controller.setId(expectedId);
         controller.search();
         assertEquals("expecting only one result", 1, controller.getResults().size());
-        Resource resource = (Resource) controller.getResults().iterator().next();
+        Resource resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());
     }
 

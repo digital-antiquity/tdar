@@ -27,7 +27,7 @@ public enum DataTableColumnRelationshipType implements HasLabel, Localizable {
     public String getLabel() {
         return label;
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);

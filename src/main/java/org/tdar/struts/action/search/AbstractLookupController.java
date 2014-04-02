@@ -151,16 +151,18 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * checking if the specified string is blank.
      */
     public boolean checkMinString(String look) {
-        if (getMinLookupLength() == 0)
+        if (getMinLookupLength() == 0) {
             return true;
-        return (!StringUtils.isEmpty(look) && look.trim().length() >= getMinLookupLength());
+        }
+        return (!StringUtils.isEmpty(look) && (look.trim().length() >= getMinLookupLength()));
     }
 
     // return true if ALL of the specified strings meet the minimum length. Otherwise false;
     public boolean checkMinString(String... candidates) {
         for (String candidate : candidates) {
-            if (!checkMinString(candidate))
+            if (!checkMinString(candidate)) {
                 return false;
+            }
         }
         return true;
     }
@@ -429,7 +431,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         pqp.add(incomingPerson);
         q.append(pqp);
         q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-        if (valid || getMinLookupLength() == 0) {
+        if (valid || (getMinLookupLength() == 0)) {
             if (StringUtils.isNotBlank(registered)) {
                 try {
                     pqp.setRegistered(Boolean.parseBoolean(registered));
@@ -480,8 +482,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 

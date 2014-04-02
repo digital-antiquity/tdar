@@ -48,7 +48,7 @@ public class APIController extends AuthenticationAware.Base {
 
     @Autowired
     private ImportService importService;
-    
+
     private Resource importedRecord;
     private String message;
     private List<String> restrictedFiles = new ArrayList<>();
@@ -72,7 +72,7 @@ public class APIController extends AuthenticationAware.Base {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = getResourceService().find(getId());
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                getObfuscationService().obfuscate(resource,getAuthenticatedUser());
+                getObfuscationService().obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
             String xml = getXmlService().convertToXML(resource);
@@ -108,8 +108,8 @@ public class APIController extends AuthenticationAware.Base {
             Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             Person authenticatedUser = getAuthenticatedUser();
-//            getGenericService().detachFromSession(incoming);
-//            getGenericService().detachFromSession(getAuthenticatedUser());
+            // getGenericService().detachFromSession(incoming);
+            // getGenericService().detachFromSession(getAuthenticatedUser());
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
@@ -123,11 +123,11 @@ public class APIController extends AuthenticationAware.Base {
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                code= StatusCode.CREATED;
+                code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
-            
-            logMessage(" API "+ code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+
+            logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             getServletResponse().setStatus(statuscode);
             getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());

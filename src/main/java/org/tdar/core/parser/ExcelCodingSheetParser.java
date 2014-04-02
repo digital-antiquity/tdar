@@ -49,7 +49,7 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
                 Cell codeCell = row.getCell(CODE_INDEX);
                 Cell termCell = row.getCell(TERM_INDEX);
                 Cell descriptionCell = row.getCell(DESCRIPTION_INDEX);
-                if (codeCell == null || termCell == null) {
+                if ((codeCell == null) || (termCell == null)) {
                     logger.warn("null code/term cell: " + codeCell + termCell + " - skipping");
                     continue;
                 }
@@ -71,7 +71,7 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
             }
         } catch (IllegalStateException e) {
             logger.error("Couldn't parse excel file", e);
-            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields",e);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields", e);
         } catch (IOException e) {
             logger.error("Couldn't construct POI Workbook from input stream", e);
             throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", e);

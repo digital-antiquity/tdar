@@ -172,15 +172,17 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 logAction("DELETING");
                 // FIXME: deleteCustom might as well just return a boolean in this current implementation
                 // should we return the result name specified by deleteCustom() instead?
-                if (deleteCustom() != SUCCESS)
+                if (deleteCustom() != SUCCESS) {
                     return ERROR;
+                }
 
                 delete(persistable);
                 getGenericService().delete(persistable);
             } catch (TdarActionException exception) {
                 throw exception;
             } catch (Exception e) {
-                addActionErrorWithException(getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
+                addActionErrorWithException(
+                        getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
             }
             return SUCCESS;
         }
@@ -260,7 +262,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (getStartTime() == -1L) {
             editTime = -1L;
         }
-        if (isNew && getPersistable() != null) {
+        if (isNew && (getPersistable() != null)) {
             getLogger().debug("Created Id: {}", getPersistable().getId());
         }
         getLogger().debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
@@ -338,7 +340,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         // FIXME:make this a preference...
-        if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
+        if ((getPersistable() instanceof HasStatus) && isEditor() && !isAdministrator()) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 
@@ -498,7 +500,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 break;
         }
         addActionError(getText("abstactPersistableController.no_permissions"));
-        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED),getText("abstactPersistableController.no_permissions"));
+        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), getText("abstactPersistableController.no_permissions"));
 
     }
 
@@ -685,7 +687,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
         for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if (permission.getContext() == null || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
+            if ((permission.getContext() == null) || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
                 permissions.add(permission);
             }
         }

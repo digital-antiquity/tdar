@@ -25,7 +25,7 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 /**
  * @author Adam Brin
  */
-//@Ignore("This test will only work when run from IP addresses registered with ANDS. For more see: https://jira.ands.org.au/browse/SD-4419")
+// @Ignore("This test will only work when run from IP addresses registered with ANDS. For more see: https://jira.ands.org.au/browse/SD-4419")
 public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
     @Autowired

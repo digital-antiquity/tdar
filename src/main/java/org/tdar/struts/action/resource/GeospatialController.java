@@ -43,12 +43,12 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         // to mask weird sounds your engine is making
 
         handleUploadedFiles();
-//        boolean fileChanged = false;
-//        for (FileProxy proxy : getFileProxies()) {
-//            if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
-//                fileChanged = true;
-//            }
-//        }
+        // boolean fileChanged = false;
+        // for (FileProxy proxy : getFileProxies()) {
+        // if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
+        // fileChanged = true;
+        // }
+        // }
 
         resolvePostSaveAction(getPersistable());
         return SUCCESS;
@@ -87,8 +87,9 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     public Geospatial getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

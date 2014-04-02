@@ -21,11 +21,11 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
@@ -75,7 +75,8 @@ public class DashboardController extends AuthenticationAware.Base {
         getLogger().trace("counts for graphs");
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
         setupResourceCollectionTreesForDashboard();
-        setResourcesWithErrors(getInformationResourceFileService().findInformationResourcesWithFileStatus(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
+        setResourcesWithErrors(getInformationResourceFileService().findInformationResourcesWithFileStatus(getAuthenticatedUser(),
+                Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
         getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         for (Account account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
@@ -159,7 +160,8 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {
@@ -212,11 +214,11 @@ public class DashboardController extends AuthenticationAware.Base {
                 Long count = 0L;
                 for (Status status : getResourceCountAndStatusForUser().get(type).keySet()) {
                     if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
-                            && status == Status.DELETED) {
+                            && (status == Status.DELETED)) {
                         continue;
                     }
                     if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
-                            && status == Status.FLAGGED) {
+                            && (status == Status.FLAGGED)) {
                         continue;
                     }
                     count += getResourceCountAndStatusForUser().get(type).get(status);
@@ -232,16 +234,16 @@ public class DashboardController extends AuthenticationAware.Base {
             for (Status status : Status.values()) {
                 Long count = 0L;
                 if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
-                        && status == Status.DELETED) {
+                        && (status == Status.DELETED)) {
                     continue;
                 }
                 if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
-                        && status == Status.FLAGGED) {
+                        && (status == Status.FLAGGED)) {
                     continue;
                 }
                 if ((!TdarConfiguration.getInstance().isPayPerIngestEnabled() ||
                         getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
-                        && status == Status.FLAGGED_ACCOUNT_BALANCE) {
+                        && (status == Status.FLAGGED_ACCOUNT_BALANCE)) {
                     continue;
                 }
 
@@ -273,7 +275,7 @@ public class DashboardController extends AuthenticationAware.Base {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
-    @DoNotObfuscate(reason="not needed / performance test")
+    @DoNotObfuscate(reason = "not needed / performance test")
     public List<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
@@ -285,7 +287,7 @@ public class DashboardController extends AuthenticationAware.Base {
     /**
      * @return the sharedResourceCollections
      */
-    @DoNotObfuscate(reason="not needed / performance test")
+    @DoNotObfuscate(reason = "not needed / performance test")
     public List<ResourceCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }

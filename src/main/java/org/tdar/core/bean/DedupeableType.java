@@ -16,9 +16,9 @@ import org.tdar.utils.MessageHelper;
  * Controls the types of objects that can be deduped.
  * 
  * @author abrin
- *
+ * 
  */
-//domain of entity types that we allow users to 'de-dupe'
+// domain of entity types that we allow users to 'de-dupe'
 // FIXME: consider using an INTERFACE instead of a ENUM and then autowiring a list of the thing that support that interface
 @SuppressWarnings("rawtypes")
 public enum DedupeableType implements HasLabel, Localizable {
@@ -48,7 +48,6 @@ public enum DedupeableType implements HasLabel, Localizable {
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     private DedupeableType(Class<? extends Dedupable> type, String label) {
         this.type = type;

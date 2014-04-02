@@ -15,12 +15,11 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
-
 /**
  * Abstract class to help with batch processes, track errors, and managing the batches.
  * 
  * @author abrin
- *
+ * 
  * @param <P>
  */
 public abstract class ScheduledBatchProcess<P extends Persistable> extends ScheduledProcess.Base<P> {
@@ -106,8 +105,9 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public void processBatch(List<Long> batch) {
-        if (batch.isEmpty())
+        if (batch.isEmpty()) {
             return;
+        }
         for (P entity : genericDao.findAll(getPersistentClass(), batch)) {
             try {
                 process(entity);
@@ -140,8 +140,8 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         // we use subList to iterate and clear
         // batches and so LinkedList may offer better traversal/removal
         // performance at the cost of increased memory usage.
-        if (tdarConfiguration.getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID &&
-                tdarConfiguration.getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID) {
+        if ((tdarConfiguration.getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID) &&
+                (tdarConfiguration.getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID)) {
             return genericDao.findAllIds(getPersistentClass());
         } else {
             return genericDao.findAllIds(getPersistentClass(),
@@ -153,7 +153,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         if (getAllIds() == null) {
             setAllIds(findAllIds());
             Collections.sort(getAllIds());
-            logger.debug("{} ids in queue", CollectionUtils.size(getAllIds()) );
+            logger.debug("{} ids in queue", CollectionUtils.size(getAllIds()));
         }
         return getAllIds();
     }

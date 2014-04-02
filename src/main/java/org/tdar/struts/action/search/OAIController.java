@@ -88,11 +88,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     // results
     public static final String SUCCESS_IDENTIFY = "success-identify";
     public static final String SUCCESS_LIST_IDENTIFIERS = "success-list-identifiers";
-    public  static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
+    public static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
     public static final String SUCCESS_GET_RECORD = "success-get-record";
     public static final String SUCCESS_LIST_RECORDS = "success-list-records";
     @SuppressWarnings("unused")
-    public  static final String SUCCESS_LIST_SETS = "success-list-sets";
+    public static final String SUCCESS_LIST_SETS = "success-list-sets";
 
     // OAI-PMH URL parameters
     private String verb;
@@ -218,7 +218,6 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         return OAIMetadataFormat.fromString(getMetadataPrefix());
     }
 
-
     private String identifyVerb() throws OAIException {
         String message = getText("oaiController.not_allowed_with_identity");
         assertParameterIsNull(metadataPrefix, "metadataPrefix", message);
@@ -232,7 +231,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
         if (parameter != null) {
-            throw new OAIException(getText("oaiController.bad_arguement", parameterName , message), OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.bad_arguement", parameterName, message), OaiErrorCode.BAD_ARGUMENT);
         }
     }
 
@@ -250,7 +249,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // Check parameters
 
         // The only valid parameters for ListRecords are verb, from, until, set, resumptionToken, and metadataPrefix: identifier is always invalid
-        assertParameterIsNull(identifier, "identifier",getText("oaiController.not_allowed_with_list"));
+        assertParameterIsNull(identifier, "identifier", getText("oaiController.not_allowed_with_list"));
         // the resumptionToken parameter is exclusive - if present, then no other parameters may be present apart from verb
         if (resumptionToken != null) {
             String message = "Not allowed with resumptionToken";
@@ -318,14 +317,14 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // if any of the queries returned more than a page of search results, create a resumptionToken to allow
         // the client to continue harvesting from that point
         int recordsPerPage = getRecordsPerPage();
-        if (totalResources > recordsPerPage || totalPersons > recordsPerPage || totalInstitutions > recordsPerPage) {
+        if ((totalResources > recordsPerPage) || (totalPersons > recordsPerPage) || (totalInstitutions > recordsPerPage)) {
             // ... then this is a partial response, and should be terminated with a ResumptionToken
             // which may be empty if this is the last page of results
             newResumptionToken = new OAIResumptionToken();
             // advance the cursor by one page
             cursor = getNextPageStartRecord();
             // check if there would be any resources, persons or institutions in that hypothetical next page
-            if (totalResources > cursor || totalPersons > cursor || totalInstitutions > cursor) {
+            if ((totalResources > cursor) || (totalPersons > cursor) || (totalInstitutions > cursor)) {
                 // ... populate the resumptionToken so the harvester can continue harvesting from the next page
                 newResumptionToken.setCursor(cursor);
                 newResumptionToken.setFromDate(effectiveFrom);
@@ -335,7 +334,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         }
 
         // if there were no records found, then throw an exception
-        if (totalResources + totalPersons + totalInstitutions == 0) {
+        if ((totalResources + totalPersons + totalInstitutions) == 0) {
             throw new OAIException(getText("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
         }
 
@@ -355,8 +354,9 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             total = getTotalRecords();
             List<Long> ids = new ArrayList<>();
             for (Indexable i : getResults()) {
-                if (i instanceof Viewable && !((Viewable) i).isViewable())
+                if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
                     continue;
+                }
                 OaiDcProvider resource = (OaiDcProvider) i;
                 ids.add(resource.getId());
                 // create OAI metadata for the record
@@ -379,7 +379,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     private void switchProjectionModel(QueryBuilder queryBuilder) {
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-        if (queryBuilder instanceof ResourceQueryBuilder){
+        if (queryBuilder instanceof ResourceQueryBuilder) {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
     }
@@ -404,7 +404,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // from the Hibernate session, which will prevent loading lazily-initialized properties.
         // xmlService.convertToXML((Persistable) object);
         if (object instanceof Obfuscatable) {
-            obfuscationService.obfuscate((Obfuscatable) object,getAuthenticatedUser());
+            obfuscationService.obfuscate((Obfuscatable) object, getAuthenticatedUser());
         }
 
         // if the desired metadata format is "tdar", then simply marshal the Person
@@ -437,7 +437,6 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         return NodeModel.wrap(document);
     }
 
-    
     // For strict compliance with the OAI-PMH specification, it's necessary to be able to disseminate oai_dc for every record
     // In the case of Person and Institution records, the oai_dc metadata format is quite inappropriate and not very useful,
     // so this method exists to create a "stub" record for the sake of compliance. In real life these records generally won't be harvested.
@@ -520,9 +519,10 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // check the requested metadata format
         OAIMetadataFormat requestedFormat = getMetadataPrefixEnum();
 
-        if (requestedFormat == null)
+        if (requestedFormat == null) {
             throw new OAIException(getText("oaiController.invalid_metadata_param"),
                     OaiErrorCode.BAD_ARGUMENT);
+        }
 
         // check that this kind of record can be disseminated in the requested format
         getIdentifiedRecordType().checkCanDisseminateFormat(requestedFormat);
@@ -608,10 +608,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                     break;
             }
             setOaiObject((OaiDcProvider) getGenericService().find(oaiObjectClass, getIdentifierRecordNumber()));
-            if (getOaiObject() == null)
+            if (getOaiObject() == null) {
                 throw new OAIException(
                         getText("oaiController.no_identifier", oaiObjectClass.getSimpleName()),
                         OaiErrorCode.ID_DOES_NOT_EXIST);
+            }
 
         } catch (OAIException e) {
             // save this exception to throw later when the main oai() method is called

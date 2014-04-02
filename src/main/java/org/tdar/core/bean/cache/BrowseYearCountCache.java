@@ -6,8 +6,9 @@ import javax.persistence.Table;
 
 /**
  * This caches the counts of resources-per-year for the browse page.
+ * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "explore_cache_year")

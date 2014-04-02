@@ -66,7 +66,7 @@ public class AuthorityManagementService {
         DELETE_DUPLICATES("Delete Duplicates (irreversable)"),
         MARK_DUPS_AND_CONSOLDIATE("Mark duplicates and update references (somewhat reversable)"),
         MARK_DUPS_ONLY("Mark As Dup (reversable)");
-        
+
         private String label;
 
         private DupeMode(String label) {
@@ -77,7 +77,7 @@ public class AuthorityManagementService {
         public String getLabel() {
             return label;
         }
-        
+
         @Override
         public String getLocaleKey() {
             return MessageHelper.formatLocalizableKey(this);
@@ -167,9 +167,9 @@ public class AuthorityManagementService {
         return total;
     }
 
-
     /**
      * Create an aggregated map of Ids and counts to report to the user what's going to be changed or adjusted
+     * 
      * @param referredClass
      * @param idlist
      * @return
@@ -244,13 +244,14 @@ public class AuthorityManagementService {
             throw new TdarRecoverableRuntimeException("authorityManagementService.dedup_not_allowed_protected");
         }
 
-        /* -if many-to-many or one-to-many, 
-           + get collection getter and remove dupes
-           + add authority records to collection
-           + (this may be unnecessary if many-to-many target deletion implicitly deletes rows in jointable... test this out!)
-           - if many-to-one
-           + get scalar setter and set to authority record
-         -hibsession.save() each reference
+        /*
+         * -if many-to-many or one-to-many,
+         * + get collection getter and remove dupes
+         * + add authority records to collection
+         * + (this may be unnecessary if many-to-many target deletion implicitly deletes rows in jointable... test this out!)
+         * - if many-to-one
+         * + get scalar setter and set to authority record
+         * -hibsession.save() each reference
          */
         AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user, dupeMode);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
@@ -267,7 +268,7 @@ public class AuthorityManagementService {
                         Collection<T> collection = reflectionService.callFieldGetter(referrer, field);
                         for (T dupe : dupes) {
                             if (collection.remove(dupe)) {
-                                authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                                authorityManagementLog.add(referrer, field, dupe);
                             }
                         }
                         if (!collection.contains(authority)) {
@@ -276,7 +277,7 @@ public class AuthorityManagementService {
                     }
                     else {
                         T dupe = reflectionService.callFieldGetter(referrer, field);
-                        authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                        authorityManagementLog.add(referrer, field, dupe);
                         reflectionService.callFieldSetter(referrer, field, authority);
                     }
                     genericDao.saveOrUpdate(referrer);
@@ -289,8 +290,9 @@ public class AuthorityManagementService {
         // FIXME: this seems dodgy to me. replace with the slower/safer way.
         // Throw an exception if this operation touched on too many records. Here we rely upon the assumption that throwing an exception will rollback the
         // underlying transaction and all will be set back to normal. A much slower, but safer, way to go about it would be to pre-count the affected records.
-        if (dupeMode != DupeMode.MARK_DUPS_ONLY && affectedRecordCount > maxAffectedRecordsCount) {
-            String msg = MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_too_many",Arrays.asList( NumberFormat.getNumberInstance().format(maxAffectedRecordsCount)));
+        if ((dupeMode != DupeMode.MARK_DUPS_ONLY) && (affectedRecordCount > maxAffectedRecordsCount)) {
+            String msg = MessageHelper.getMessage("authorityManagementService.dedup_not_allowed_too_many",
+                    Arrays.asList(NumberFormat.getNumberInstance().format(maxAffectedRecordsCount)));
             throw new TdarRecoverableRuntimeException(msg);
         }
 
@@ -305,7 +307,9 @@ public class AuthorityManagementService {
     }
 
     /**
-     * For People, we have "protected" resources, those that have User accounts, we have to count them to ensure that we don't try and dedup two into one (which is unsupported, and bad).
+     * For People, we have "protected" resources, those that have User accounts, we have to count them to ensure that we don't try and dedup two into one (which
+     * is unsupported, and bad).
+     * 
      * @param dupes
      * @return
      */
@@ -322,6 +326,7 @@ public class AuthorityManagementService {
 
     /**
      * Old names become synonyms... this makrs items as synonyms as needed
+     * 
      * @param authority
      * @param dupes
      * @param markAndConsoldiateDups
@@ -346,6 +351,7 @@ public class AuthorityManagementService {
 
     /**
      * Log the results of the deduplication (XML/text) and notify the admins (email)
+     * 
      * @param logData
      */
     private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData) {
@@ -369,9 +375,9 @@ public class AuthorityManagementService {
 
         // now send a summary email
         String subject = MessageHelper.getMessage("authorityManagementService.email_subject",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), 
-                MessageHelper.getMessage("authorityManagementService.service_name"),
-                logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(),
+                        MessageHelper.getMessage("authorityManagementService.service_name"),
+                        logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("log", logData);
@@ -386,11 +392,11 @@ public class AuthorityManagementService {
         }
     }
 
-
     /**
      * Static entry for the XML / bean representation to an entire Log
+     * 
      * @author abrin
-     *
+     * 
      * @param <R>
      */
     @XmlRootElement
@@ -486,8 +492,9 @@ public class AuthorityManagementService {
 
     /**
      * Static class for the Log Entry Part used to log to XML via JAXB
+     * 
      * @author abrin
-     *
+     * 
      */
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)

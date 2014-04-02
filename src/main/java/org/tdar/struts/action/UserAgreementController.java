@@ -44,8 +44,9 @@ public class UserAgreementController extends AuthenticationAware.Base implements
             @Result(name = TdarActionSupport.INPUT, type = "redirectAction", params = { "actionName", "show-notices", "namespace", "/" })
     })
     public String agreementResponse() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return LOGIN;
+        }
 
         if (DECLINE.equals(userResponse)) {
             String fmt = getText("userAgreementController.decline_message");
@@ -79,8 +80,9 @@ public class UserAgreementController extends AuthenticationAware.Base implements
 
     @Action(value = "show-notices")
     public String showNotices() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return LOGIN;
+        }
         return SUCCESS;
     }
 

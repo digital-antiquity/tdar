@@ -100,7 +100,7 @@ public class XmlService {
     @Autowired
     private ObfuscationService obfuscationService;
 
-    /** 
+    /**
      * Convert the existing object to an XML representation using JAXB
      * 
      * @param object
@@ -134,12 +134,12 @@ public class XmlService {
             }
         });
 
-        
         return tempFile;
     }
-    
+
     /**
      * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
+     * 
      * @param resource
      */
     @Transactional(readOnly = true)
@@ -153,7 +153,8 @@ public class XmlService {
         try {
             StorageMethod rotate = StorageMethod.DATE;
             // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
+            TdarConfiguration.getInstance().getFilestore()
+                    .storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new TdarRecoverableRuntimeException("xmlService.could_not_save");
@@ -169,9 +170,9 @@ public class XmlService {
         logger.trace("done saving");
     }
 
-
     /**
      * Convert an Object to XML via JAXB, but use the writer instead of a String (For writing directly to a file or Stream)
+     * 
      * @param object
      * @param writer
      * @return
@@ -211,7 +212,7 @@ public class XmlService {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JaxbAnnotationModule());
         ObjectWriter objectWriter = null;
-        if(logger.isTraceEnabled()) {
+        if (logger.isTraceEnabled()) {
             objectWriter = mapper.writerWithDefaultPrettyPrinter();
         } else {
             objectWriter = mapper.writer();
@@ -221,6 +222,7 @@ public class XmlService {
 
     /**
      * Convert an object to JSON using JAXB to string
+     * 
      * @param object
      * @return
      * @throws IOException
@@ -316,7 +318,7 @@ public class XmlService {
         if (rdf == null) {
             throw new TdarRecoverableRuntimeException("xmlService.cannot_determine_creator");
         }
-        
+
         for (LogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {
@@ -342,7 +344,7 @@ public class XmlService {
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEAN), log.getKeywordMean().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEDIAN), log.getKeywordMedian().toString());
 
-        File file = new File(TdarConfiguration.getInstance().getTempDirectory(),creator.getId() + FOAF_XML);
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + FOAF_XML);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
@@ -395,15 +397,15 @@ public class XmlService {
      * @param baseUrl
      * @param person
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     public void generateCreatorLog(Creator creator, CreatorInfoLog log) throws Exception {
-        File file = new File(TdarConfiguration.getInstance().getTempDirectory(),creator.getId() + ".xml");
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
         FileStoreFile fsf = new FileStoreFile(DirectoryType.SUPPORT, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
-        
+
     }
 }

@@ -43,11 +43,11 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
-     * refers to the combined count of authorized users +the count of resources associated with a collection.   Big
+     * refers to the combined count of authorized users +the count of resources associated with a collection. Big
      * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
      * system may choose to mitigate these effects (somehow)
      */
-    public  static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
+    public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<>();
@@ -72,8 +72,9 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public boolean isEditable() {
-        if (isNullOrNew())
+        if (isNullOrNew()) {
             return false;
+        }
         return getAuthenticationAndAuthorizationService().canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
@@ -110,7 +111,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
 
         getGenericService().saveOrUpdate(persistable);
-        getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
+        getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
+                getAuthenticatedUser());
         getLogger().trace("resources (original):{}", resources);
         getLogger().trace("resources (retained):{}", getRetainedResources());
         resources.addAll(getRetainedResources());
@@ -246,6 +248,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     /**
      * resources that that the current user is prohibited from removing when editing a collection
+     * 
      * @return
      */
     private List<Resource> getRetainedResources() {
@@ -263,8 +266,9 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void loadExtraViewMetadata() {
-        if (Persistable.Base.isNullOrTransient(getId()))
+        if (Persistable.Base.isNullOrTransient(getId())) {
             return;
+        }
         Set<ResourceCollection> findAllChildCollections;
         // FIXME: reconcile
         if (isAuthenticated()) {
@@ -294,7 +298,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
             // the visibilty fence should take care of visible vs. shared above
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                    getResourceCollection(), getAuthenticatedUser(),this);
+                    getResourceCollection(), getAuthenticatedUser(), this);
             getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
             setSortField(getPersistable().getSortBy());
@@ -304,7 +308,7 @@ public class CollectionController extends AbstractPersistableController<Resource
                     setSecondarySortField(getPersistable().getSecondarySortBy());
                 }
             }
-            
+
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (Exception e) {
@@ -312,6 +316,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             }
         }
     }
+
     /**
      * @return the resources
      */
@@ -349,7 +354,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return allSubmittedProjects;
     }
 
-//    @DoNotObfuscate
+    // @DoNotObfuscate
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
@@ -497,8 +502,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 
@@ -529,15 +535,15 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     /**
-     * A hint to the view-layer that this resource collection is "big".  The view-layer may choose to gracefully degrade the presentation to save on bandwidth and/or
+     * A hint to the view-layer that this resource collection is "big". The view-layer may choose to gracefully degrade the presentation to save on bandwidth
+     * and/or
      * client resources.
-     *
+     * 
      * @return
      */
     public boolean isBigCollection() {
-        return getResources().size() + getAuthorizedUsers().size() > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
-
 
     public Long getViewCount() {
         return viewCount;

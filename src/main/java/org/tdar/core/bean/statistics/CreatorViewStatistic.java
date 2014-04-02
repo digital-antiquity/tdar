@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.Creator;
 
 @Entity
 @Table(name = "creator_view_statistics", indexes = {
-        @Index(name="creator_view_stats_count_id", columnList="creator_id, id")
+        @Index(name = "creator_view_stats_count_id", columnList = "creator_id, id")
 })
 public class CreatorViewStatistic extends AbstractResourceStatistic<Creator> {
 

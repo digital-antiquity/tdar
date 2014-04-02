@@ -25,6 +25,8 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
+import com.opensymphony.xwork2.Action;
+
 import freemarker.template.Configuration;
 
 /**
@@ -73,9 +75,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
-        assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
+        assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_username_already_registered"), controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_username_already_registered"), controller
+                .getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
     }
 
@@ -89,9 +92,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
-        assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
+        assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message",  MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors()
+                .iterator().next());
         setIgnoreActionErrors(true);
     }
 
@@ -113,7 +117,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         String execute = controller.create();
-        assertEquals(TdarActionSupport.SUCCESS, execute);
+        assertEquals(Action.SUCCESS, execute);
 
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
         assertTrue("could not delete user", deleteUser);
@@ -123,16 +127,16 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testExistingDraftUserWithoutLogin() {
         String email = "tiffany.clark@asu.edu";
-        Person p = testCreatePerson(email, Status.ACTIVE, TdarActionSupport.SUCCESS);
+        Person p = testCreatePerson(email, Status.ACTIVE, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
 
-        p = testCreatePerson(email, Status.DRAFT, TdarActionSupport.SUCCESS);
+        p = testCreatePerson(email, Status.DRAFT, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
 
-        p = testCreatePerson(email, Status.DELETED, TdarActionSupport.ERROR);
+        p = testCreatePerson(email, Status.DELETED, Action.ERROR);
         assertEquals(Status.DELETED, p.getStatus());
 
-        p = testCreatePerson(email, Status.FLAGGED, TdarActionSupport.ERROR);
+        p = testCreatePerson(email, Status.FLAGGED, Action.ERROR);
         assertEquals(Status.FLAGGED, p.getStatus());
         setIgnoreActionErrors(true);
     }
@@ -212,7 +216,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
         List<String> emails = Arrays.asList("aaaa-bbbbbb.ccccccc-ddddd@eeeeeee.ffff.hh");
-        
+
         for (String email : emails) {
             assertTrue(authenticationAndAuthorizationService.isValidEmail(email));
             assertTrue(authenticationAndAuthorizationService.isValidUsername(email));
@@ -288,7 +292,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
-        assertTrue(firstError.equals( MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
+        assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
         setIgnoreActionErrors(true);
     }
 
@@ -296,11 +300,11 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testUserCreatedTooSlow() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setTimeCheck(System.currentTimeMillis() + 1000 * 61);
+        controller.setTimeCheck(System.currentTimeMillis() + (1000 * 61));
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
-        assertTrue(firstError.equals( MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
+        assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
         setIgnoreActionErrors(true);
     }
 
@@ -335,7 +339,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail("test@tdar.org");
         assertTrue(p.getId().equals(-1L));
         controller.validate();
-        assertTrue("expecting user existing", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_username_already_registered")));
+        assertTrue("expecting user existing",
+                controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
         setIgnoreActionErrors(true);
     }
 
@@ -352,7 +357,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail(TESTING_EMAIL);
         controller.setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_choose_password")));
+        assertTrue("expecting password", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
         setIgnoreActionErrors(true);
     }
 
@@ -367,7 +372,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm email", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_confirm_email")));
+        assertTrue("expecting confirm email", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
         setIgnoreActionErrors(true);
     }
 
@@ -382,7 +387,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setConfirmEmail(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm password", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_confirm_password")));
+        assertTrue("expecting confirm password", controller.getActionErrors()
+                .contains(MessageHelper.getMessage("userAccountController.error_confirm_password")));
         setIgnoreActionErrors(true);
     }
 
@@ -398,7 +404,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
+        assertTrue("expecting matching passwords",
+                controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
         setIgnoreActionErrors(true);
     }
 
@@ -418,7 +425,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains( MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
+        assertTrue("expecting matching passwords",
+                controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
         assertEquals(1, controller.getActionErrors().size());
         setIgnoreActionErrors(true);
     }
@@ -457,7 +465,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String accountResponse = setupValidUserInController(controller, p, "super.secret");
         logger.info(accountResponse);
         logger.info("errors: {}", controller.getActionErrors());
-        assertEquals("user should have been successfully created", UserAccountController.SUCCESS, accountResponse);
+        assertEquals("user should have been successfully created", Action.SUCCESS, accountResponse);
 
         // okay, now try to "login": mock a POST request with empty session
         LoginController loginAction = generateNewController(LoginController.class);
@@ -467,7 +475,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         loginAction.setSessionData(new SessionData());
 
         String loginResponse = loginAction.authenticate();
-        assertEquals("login should have been successful", LoginController.AUTHENTICATED, loginResponse);
+        assertEquals("login should have been successful", TdarActionSupport.AUTHENTICATED, loginResponse);
     }
 
     // return a new person reference. an @after method will try to delete this person from crowd

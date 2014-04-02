@@ -19,7 +19,8 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * 
@@ -85,10 +86,9 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         llb = controller.getResource().getFirstActiveLatitudeLongitudeBox();
         assertFalse(llb.getMaxObfuscatedLatitude().equals(Double.valueOf(0.0001)));
         assertTrue("Unexpected Action Exceptions were found", controller.getActionErrors().size() == 0);
-        assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, TdarActionSupport.SUCCESS, saveResult);
+        assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, Action.SUCCESS, saveResult);
     }
-    
-    
+
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testIsSwitchableMapObfuscationOnForFaims() {

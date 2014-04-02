@@ -21,7 +21,7 @@ import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
  * A JSON Object that represents the result of a financial transaction. Could be successful or failed.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "pos_transaction_log")

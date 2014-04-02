@@ -58,9 +58,10 @@ public class ConvertDatasetTask extends AbstractTask {
                     return;
                 }
 
-                if (versionToConvert == null || !versionToConvert.getTransientFile().exists()) {
+                if ((versionToConvert == null) || !versionToConvert.getTransientFile().exists()) {
                     // abort!
-                    throw new TdarRecoverableRuntimeException("convertDatasetTask.file_does_not_exist", Arrays.asList(versionToConvert, versionToConvert.getId()));
+                    throw new TdarRecoverableRuntimeException("convertDatasetTask.file_does_not_exist", Arrays.asList(versionToConvert,
+                            versionToConvert.getId()));
                 }
 
                 // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
@@ -80,7 +81,7 @@ public class ConvertDatasetTask extends AbstractTask {
                 File indexedContents = databaseConverter.getIndexedContentsFile();
                 getLogger().trace("FILE:**** : " + indexedContents);
 
-                if (indexedContents != null && indexedContents.length() > 0) {
+                if ((indexedContents != null) && (indexedContents.length() > 0)) {
                     addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
                 }
                 transientDataset.getDataTables().addAll(tablesToPersist);

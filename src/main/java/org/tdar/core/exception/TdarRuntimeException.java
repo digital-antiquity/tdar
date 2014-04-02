@@ -23,9 +23,9 @@ public class TdarRuntimeException extends I18nRuntimeException {
     }
 
     public TdarRuntimeException(String message, List<?> values) {
-        super (message, values);
+        super(message, values);
     }
-    
+
     public TdarRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }

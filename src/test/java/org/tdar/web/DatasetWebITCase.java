@@ -187,7 +187,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
         logger.trace(getPageText());
         submitForm();
@@ -200,8 +200,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             assertTextPresentInPage(docValMap.get(key), false);
 
         }
@@ -220,8 +221,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : docValMap.keySet()) {
 
             String val = docValMap.get(key);
-            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
         }
@@ -268,8 +270,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             if (!key.contains("ontology.id")) {
                 assertTextPresentInPage(codingMap.get(key), false);
             }
@@ -351,8 +354,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             assertTextPresentInPage(codingMap.get(key), false);
         }
         assertTextPresent(NEW_YORK_1);

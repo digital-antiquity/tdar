@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * Lists the name of the site in the resource 
+ * Lists the name of the site in the resource
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$

@@ -69,7 +69,7 @@ public enum StatusCode {
             case HttpStatus.SC_GONE:
             case HttpStatus.SC_OK:
                 return false;
-            default: 
+            default:
                 return true;
         }
     }

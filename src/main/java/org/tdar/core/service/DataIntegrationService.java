@@ -136,12 +136,12 @@ public class DataIntegrationService {
                         if (column != null) { // RAW VALUE
                             value = tdarDataImportDatabase.getResultSetValueAsString(resultSet, resultSetPosition, column);
                         }
-                        if (column != null && !integrationColumn.isDisplayColumn() && StringUtils.isEmpty(value)) {
+                        if ((column != null) && !integrationColumn.isDisplayColumn() && StringUtils.isEmpty(value)) {
                             value = MessageHelper.getMessage("database.null_empty_integration_value");
                         }
                         values.add(value);
                         ontologyNodes.add(OntologyNode.NULL); // initialize the array so we have columns line up
-                        if (column != null && !integrationColumn.isDisplayColumn()) { // MAPPED VALUE if not display column
+                        if ((column != null) && !integrationColumn.isDisplayColumn()) { // MAPPED VALUE if not display column
                             String mappedVal = null;
                             // FIXME: get the appropriately aggregated OntologyNode for the given value, add a method in DataIntegrationService
                             // OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
@@ -180,16 +180,18 @@ public class DataIntegrationService {
      * @param column
      */
     public void updateMappedCodingRules(DataTableColumn column) {
-        if (column == null) 
+        if (column == null) {
             return;
+        }
         CodingSheet codingSheet = column.getDefaultCodingSheet();
         logger.info("col {}", column);
         logger.info("sheet {}", codingSheet);
         if (codingSheet != null) {
             logger.info("any rules {}", CollectionUtils.isEmpty(codingSheet.getCodingRules()));
         }
-        if (codingSheet == null || CollectionUtils.isEmpty(codingSheet.getCodingRules()))
+        if ((codingSheet == null) || CollectionUtils.isEmpty(codingSheet.getCodingRules())) {
             return;
+        }
         logger.info("select distinct values");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
         logger.info("values: {} ", values);
@@ -231,6 +233,7 @@ public class DataIntegrationService {
 
     /**
      * Based on the set of @link IntegrationColumns generate the results of the data integration managed by the @link IntegrationDataResult
+     * 
      * @param integrationColumns
      * @param tables
      * @return
@@ -270,6 +273,7 @@ public class DataIntegrationService {
 
     /**
      * Writes the results of the Data Integration to an Excel file and stores it in the @link PersonalFilestore for later distribution
+     * 
      * @param integrationColumns
      * @param generatedIntegrationData
      * @param person
@@ -301,7 +305,6 @@ public class DataIntegrationService {
 
         return ticket;
     }
-
 
     /**
      * Convert the integration context to XML for persistance in the @link PersonalFilestore and logging
@@ -343,7 +346,8 @@ public class DataIntegrationService {
     }
 
     /**
-     * When a user maps a @link DataTableColumn to an @link Ontology without a @link CodingSheet specifically chosen, create one on-the-fly from the @link OntologyNode values.
+     * When a user maps a @link DataTableColumn to an @link Ontology without a @link CodingSheet specifically chosen, create one on-the-fly from the @link
+     * OntologyNode values.
      * 
      * @param column
      * @param submitter
@@ -351,7 +355,7 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
-    @SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="null check earlier in the method")
+    @SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "null check earlier in the method")
     public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
@@ -364,8 +368,10 @@ public class DataIntegrationService {
         codingSheet.setDefaultOntology(ontology);
         codingSheet.setCategoryVariable(ontology.getCategoryVariable());
 
-        codingSheet.setDescription(provider.getText("dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(), column.getDataTable().getDataset()
+        codingSheet.setDescription(provider.getText(
+                "dataIntegrationService.generated_coding_sheet_description",
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(), column.getDataTable()
+                        .getDataset()
                         .getId(), codingSheet.getDateCreated())));
         genericDao.save(codingSheet);
         // generate identity coding rules
@@ -403,6 +409,7 @@ public class DataIntegrationService {
 
     /**
      * Given a @link CodingSheet and a set of @link CodingRule entries, create a CSV File
+     * 
      * @param sheet
      * @param rules
      * @return
@@ -419,7 +426,8 @@ public class DataIntegrationService {
     }
 
     /**
-     * Iterate over every {@link DataTableColumn} in every {@link DataTable} and find ones that have shared {@link Ontology} entries. Return those back in Lists of Lists.
+     * Iterate over every {@link DataTableColumn} in every {@link DataTable} and find ones that have shared {@link Ontology} entries. Return those back in Lists
+     * of Lists.
      * 
      * @param selectedDataTables
      * @return
@@ -432,7 +440,7 @@ public class DataIntegrationService {
         for (DataTable table : selectedDataTables) {
             List<DataTableColumn> dataTableColumns;
 
-            //FIXME: not sure if this is correct
+            // FIXME: not sure if this is correct
             if (TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled()) {
                 dataTableColumns = table.getLeftJoinColumns();
             } else {
@@ -451,8 +459,8 @@ public class DataIntegrationService {
         // okay now we have a map of the data table columns,
         List<List<DataTableColumn>> columnAutoList = new ArrayList<>();
         for (Ontology key : dataTableAutoMap.keySet()) {
-            Pair<ArrayList<Long>,ArrayList<DataTableColumn>> set1 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
-            Pair<ArrayList<Long>,ArrayList<DataTableColumn>> set2 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
+            Pair<ArrayList<Long>, ArrayList<DataTableColumn>> set1 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
+            Pair<ArrayList<Long>, ArrayList<DataTableColumn>> set2 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
 
             // go through the hashMap and try and pair out by set of rules assuming that there is one column per table at a time
             // and there might be a case where there are more than one
@@ -469,10 +477,12 @@ public class DataIntegrationService {
 
             // might want to tune this to some logic like:
             // if just one table, then anything with an ontology if more than one, just show lists with at least two ontologies
-            if (set1.getSecond().size() > 0)
+            if (set1.getSecond().size() > 0) {
                 columnAutoList.add(set1.getSecond());
-            if (set2.getSecond().size() > 0)
+            }
+            if (set2.getSecond().size() > 0) {
                 columnAutoList.add(set2.getSecond());
+            }
         }
         return columnAutoList;
     }

@@ -54,6 +54,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Find all ontologies, but return them with sparse objects (Title, Description only)
+     * 
      * @return
      */
     public List<Ontology> findSparseOntologyList() {
@@ -65,7 +66,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      * 
      * @param ontology
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void shred(Ontology ontology) {
         InformationResourceFileVersion latestUploadedFile = ontology.getLatestUploadedVersion();
         // Collection<InformationResourceFileVersion> latestVersions = ontology.getLatestVersions(VersionType.UPLOADED);
@@ -149,7 +150,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
             Long incomingId = incoming.getId();
             incoming = getDao().merge(incoming, existing);
 
-            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(), original);
+            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(),
+                    original);
             incomingOntologyNodes.set(index, incoming);
             existingOntologyNodes.remove(existing);
             existingSet.remove(existing.getIri());
@@ -164,9 +166,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
     }
 
-
     /**
      * Takes an Ontology and finds the OWL @link InformationResourceFileVersion of the @link Ontology and returns the OntologyModel
+     * 
      * @param ontology
      * @return
      * @throws FileNotFoundException
@@ -182,8 +184,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
             if (file.exists()) {
                 OntModel ontologyModel = ModelFactory.createOntologyModel();
                 String url = ontology.getUrl();
-                if (url == null)
+                if (url == null) {
                     url = "";
+                }
                 try {
                     ontologyModel.read(new FileReader(file), url);
                     return ontologyModel;
@@ -198,6 +201,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Filters a List of @link OntologyNode entries to to just the direct children of the @link OntologyNode.
+     * 
      * @param allNodes
      * @param parent
      * @return
@@ -205,8 +209,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
-            if (currentNode.getIndex().equals(parent.getIndex() + "." + currentNode.getIntervalStart()))
+            if (currentNode.getIndex().equals(parent.getIndex() + "." + currentNode.getIntervalStart())) {
                 toReturn.add(currentNode);
+            }
         }
         getLogger().trace("returning: {}", toReturn);
         return toReturn;
@@ -214,6 +219,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Returns @link OntologyNode entries that are at the root of their trees (i.e. first Branches; their parent is the root).
+     * 
      * @param allNodes
      * @return
      */
@@ -230,6 +236,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Find the number of @link CodingRule entries that refer to the @link DataTableColumn
+     * 
      * @param dataTableColumn
      * @return
      */
@@ -240,6 +247,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Check if the @link DataTableColumn has any associations with an @link Ontology
+     * 
      * @param dataTableColumn
      * @return
      */
@@ -250,6 +258,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Converts a Text representation of an @link Ontology using TABs to an RDF/XML/OWL Ontology
+     * 
      * @param id
      * @param fileTextInput
      * @return

@@ -142,7 +142,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         Query query = session.createQuery(hql);
         query.setParameterList("idlist", idlist);
 
-        List<Resource> results = (List<Resource>) query.list();
+        List<Resource> results = query.list();
         logger.debug("keywords: {}", results);
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
         assertTrue(Collection.class.isAssignableFrom(cultureKeywordField.getType()));

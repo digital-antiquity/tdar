@@ -161,14 +161,15 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     public void addOrExecuteBatch(DataTable dataTable, boolean force) {
         Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
         logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
-        if (statementPair == null)
+        if (statementPair == null) {
             return;
+        }
 
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
 
         statementPair.setSecond(batchNum);
-        if (batchNum < BATCH_SIZE && !force) {
+        if ((batchNum < BATCH_SIZE) && !force) {
             try {
                 statement.addBatch();
             } catch (SQLException e) {
@@ -183,8 +184,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                 if (numUpdates[i] == -2) {
                     logger.error("Execution " + i + ": unknown number of rows updated");
                     success = "some";
-                } else
+                } else {
                     logger.trace("Execution " + i + " successful: " + numUpdates[i] + " rows updated");
+                }
             }
             logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
             // cleanup
@@ -281,8 +283,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             return Collections.emptyList();
         }
         String templateSql = SELECT_DISTINCT_NOT_BLANK;
-        if (dataTableColumn.getColumnDataType().isNumeric())
+        if (dataTableColumn.getColumnDataType().isNumeric()) {
             templateSql = SELECT_DISTINCT_NOT_BLANK_NUM;
+        }
 
         String distinctSql = String.format(templateSql, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
                 dataTableColumn.getName(), dataTableColumn.getName(), dataTableColumn.getName());
@@ -497,8 +500,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     @Override
     public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception {
-        if (MapUtils.isEmpty(valueColumnMap))
+        if (MapUtils.isEmpty(valueColumnMap)) {
             return;
+        }
 
         Pair<PreparedStatement, Integer> statementPair = getOrCreate(dataTable, preparedStatementMap, createPreparedStatementPairCallable(dataTable));
         PreparedStatement preparedStatement = statementPair.getFirst();
@@ -811,7 +815,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {
@@ -863,7 +867,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {

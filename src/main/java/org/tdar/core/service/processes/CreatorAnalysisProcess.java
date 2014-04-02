@@ -100,8 +100,8 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
          * We could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
-        if (findRecent ) {
-        return findCreatorsOfRecentlyModifiedResources();
+        if (findRecent) {
+            return findCreatorsOfRecentlyModifiedResources();
         } else {
             return findEverything();
         }
@@ -121,14 +121,16 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
             for (Creator creator : resource.getRelatedCreators()) {
 
-                if (creator == null)
+                if (creator == null) {
                     continue;
+                }
 
                 if (creator.isDuplicate()) {
                     creator = entityService.findAuthorityFromDuplicate(creator);
                 }
-                if (creator == null || !creator.isActive())
+                if ((creator == null) || !creator.isActive()) {
                     continue;
+                }
                 ids.add(creator.getId());
 
             }
@@ -136,8 +138,8 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         return new ArrayList<>(ids);
     }
 
-	public List<Long> findEverything() {
-	        /*
+    public List<Long> findEverything() {
+        /*
          * Theoretically, we could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
          * last wwek, and then use those resources to grab all associated creators, and then process those
          */
@@ -146,7 +148,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             return Persistable.Base.extractIds(results);
         }
         return null;
-	}
+    }
 
     @Override
     public void execute() {
@@ -165,15 +167,17 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
             Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
-            if (!creator.isActive()) 
+            if (!creator.isActive()) {
                 continue;
+            }
             QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
             try {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
                 total = search.getResultSize();
-                if (total == 0)
+                if (total == 0) {
                     continue;
+                }
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
@@ -209,7 +213,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 part.setName(key.getProperName());
                 log.getCollaboratorLogPart().add(part);
             }
-            
+
             for (Entry<Keyword, Double> entrySet : keywords.entrySet()) {
                 LogPart part = new LogPart();
                 part.setCount(entrySet.getValue().longValue());
@@ -381,8 +385,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
 
     private void incrementCreators(Creator current, Map<Creator, Double> collaborators, Resource resource, List<Long> userIdsToIgnoreInLargeTasks) {
         for (Creator creator : resource.getRelatedCreators()) {
-            if (creator == null || StringUtils.isBlank(creator.getProperName()))
+            if ((creator == null) || StringUtils.isBlank(creator.getProperName())) {
                 continue;
+            }
 
             if (CollectionUtils.isNotEmpty(userIdsToIgnoreInLargeTasks) && userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
                 continue;
@@ -391,8 +396,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (creator.isDuplicate()) {
                 creator = entityService.findAuthorityFromDuplicate(creator);
             }
-            if (ObjectUtils.equals(creator.getId(), current.getId()) || !creator.isActive())
+            if (ObjectUtils.equals(creator.getId(), current.getId()) || !creator.isActive()) {
                 continue;
+            }
 
             Double count = collaborators.get(creator);
             if (count == null) {
@@ -408,8 +414,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (kwd.isDuplicate()) {
                 kwd = genericKeywordService.findAuthority(kwd);
             }
-            if (!kwd.isActive())
+            if (!kwd.isActive()) {
                 continue;
+            }
 
             Double count = keywords.get(kwd);
             if (count == null) {

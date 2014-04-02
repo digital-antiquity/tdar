@@ -231,7 +231,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {
@@ -243,7 +244,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public List<Dataset> getBookmarkedDatasets() {
         List<Dataset> datasets = new ArrayList<Dataset>();
         for (Resource resource : getBookmarkedResources()) {
-            if (resource instanceof Dataset && resource.isActive()) {
+            if ((resource instanceof Dataset) && resource.isActive()) {
                 Dataset dataset = (Dataset) resource;
                 datasets.add(dataset);
             }
@@ -320,7 +321,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
         Iterator<IntegrationColumn> iterator = integrationColumns.iterator();
         while (iterator.hasNext()) {
             IntegrationColumn column = iterator.next();
-            if (column == null || column.getColumns().size() == 0) {
+            if ((column == null) || (column.getColumns().size() == 0)) {
                 getLogger().debug("removing null column");
                 iterator.remove();
             }

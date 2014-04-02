@@ -18,7 +18,7 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizable {
-    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset",  CodingSheet.class),
+    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
@@ -176,8 +176,9 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
 
     public static ResourceType fromClass(Class<?> clas) {
         for (ResourceType type : values()) {
-            if (type.getResourceClass().equals(clas))
+            if (type.getResourceClass().equals(clas)) {
                 return type;
+            }
         }
         return null;
     }
@@ -236,7 +237,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
-            case GEOSPATIAL: 
+            case GEOSPATIAL:
             case SENSORY_DATA:
                 return true;
             default:
@@ -248,7 +249,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
         switch (this) {
             case PROJECT:
             case IMAGE:
-            case GEOSPATIAL: 
+            case GEOSPATIAL:
             case SENSORY_DATA:
                 return false;
             default:
@@ -293,7 +294,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
 
     public static ResourceType[] getTypesSupportingBulkUpload() {
         List<ResourceType> types = new ArrayList<>();
-        for (ResourceType type: values()) {
+        for (ResourceType type : values()) {
             if (type.supportBulkUpload()) {
                 types.add(type);
             }

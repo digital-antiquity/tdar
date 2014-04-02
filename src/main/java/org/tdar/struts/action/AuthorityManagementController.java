@@ -80,9 +80,10 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
      */
     @Action(value = "select-authority", results = { @Result(name = SUCCESS, location = "select-authority.ftl"), @Result(name = INPUT, location = "index.ftl") })
     public String selectAuthority() {
-        if (hasActionErrors())
+        if (hasActionErrors()) {
             return INPUT;
-        getLogger().debug("{}" , getLocale());
+        }
+        getLogger().debug("{}", getLocale());
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
             addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;
@@ -97,7 +98,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     private void inflateSelectedDupes() {
         // populate the list of selected items
         for (Long id : selectedDupeIds) {
-            Dedupable<?> p = (Dedupable<?>) getGenericService().find(entityType.getType(), id);
+            Dedupable<?> p = getGenericService().find(entityType.getType(), id);
             selectedDuplicates.put(id, p);
         }
     }
@@ -112,7 +113,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         }
 
         // remove the authority record from the selected items
-        Dedupable<?> authority = (Dedupable<?>) getGenericService().find(entityType.getType(), authorityId);
+        Dedupable<?> authority = getGenericService().find(entityType.getType(), authorityId);
         selectedDuplicates.remove(authority.getId());
         selectedDupeIds.remove(authorityId);
 
@@ -129,7 +130,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
             addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
         }
-        
+
         return SUCCESS;
     }
 

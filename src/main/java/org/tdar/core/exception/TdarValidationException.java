@@ -13,7 +13,7 @@ public class TdarValidationException extends TdarRecoverableRuntimeException {
     public TdarValidationException(String key, List<?> values) {
         super(key, values);
     }
-    
+
     public TdarValidationException() {
         super();
     }

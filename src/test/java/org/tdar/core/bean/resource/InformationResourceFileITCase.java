@@ -58,7 +58,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         for (Creator resource : resourceService.findAll(Creator.class)) {
             xmlService.logRecordXmlToFilestore(resource);
         }
-}
+    }
 
     @Test
     @Rollback
@@ -68,8 +68,9 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertNotNull(foundFile);
         boolean found = false;
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
-            if (file.equals(foundFile))
+            if (file.equals(foundFile)) {
                 found = true;
+            }
         }
         assertTrue(found);
 
@@ -77,7 +78,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-//    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
         InformationResource ir = generateDocumentWithFileAndUser();
 
@@ -86,7 +87,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
         int size = irFile.getLatestVersions().size();
-        if (size != 3 && size != 6) {
+        if ((size != 3) && (size != 6)) {
             Assert.fail("wrong number of derivatives found");
         }
 
@@ -131,7 +132,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-//    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testReprocessInformationResourceFile() throws Exception {
         InformationResource ir = generateDocumentWithFileAndUser();
 
@@ -140,7 +141,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
         int size = irFile.getLatestVersions().size();
-        if (size != 3 && size != 6) {
+        if ((size != 3) && (size != 6)) {
             Assert.fail("wrong number of derivatives found");
         }
 

@@ -106,7 +106,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         Assert.assertFalse(resourceWithAttachmentMatch.getInformationResourceFiles().isEmpty());
         Assert.assertEquals(1, resourceWithAttachmentMatch.getInformationResourceFiles().size());
         int size = resourceWithAttachmentMatch.getInformationResourceFiles().iterator().next().getInformationResourceFileVersions().size();
-        if (size != 3 && size != 6) {
+        if ((size != 3) && (size != 6)) {
             Assert.fail("wrong number of derivatives found");
         }
     }

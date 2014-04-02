@@ -37,8 +37,9 @@ public class ConversionStatisticsManager {
     // modifies the provided map in that in removes desired-datatypelist items for the provided column if the provided value
     // cannot be converted to that datatype. Null values have no effect on the statistics
     public void updateStatistics(DataTableColumn column, String value, int rowNumber) {
-        if (value == null)
+        if (value == null) {
             return;
+        }
         List<ColumnAnalyzer> analyzers = statistics.get(column);
         Iterator<ColumnAnalyzer> iter = analyzers.iterator();
         while (iter.hasNext()) {

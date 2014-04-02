@@ -45,7 +45,7 @@ public class SheetEvaluator {
 
         // IF WE HAVE ONLY A FEW MERGED REGIONS AND THE REGION IS SMALL, BUT IS IN THE HEADER
         // THEN, SKIP IT
-        if (currentSheet.getNumMergedRegions() > 0 && currentSheet.getNumMergedRegions() < 5) {
+        if ((currentSheet.getNumMergedRegions() > 0) && (currentSheet.getNumMergedRegions() < 5)) {
             for (int i = 0; i < currentSheet.getNumMergedRegions(); i++) {
                 CellRangeAddress mergedRegion = currentSheet.getMergedRegion(i);
                 int firstRow = mergedRegion.getFirstRow();
@@ -65,12 +65,12 @@ public class SheetEvaluator {
             if (row == null) {
                 continue;
             }
-            int cellCount = (int) row.getLastCellNum();
+            int cellCount = row.getLastCellNum();
             // EVALUATE FOR EMPTY CELLS -- TEST SANITY
             cellCount = evaluateForBlankCells(row, 0, cellCount);
 
             // if the cellCount is greater than or equal to the current, then reset the start
-            if (cellCount >= getMaxCellCount() && !skip.contains(i)) {
+            if ((cellCount >= getMaxCellCount()) && !skip.contains(i)) {
                 setStartAt(i);
             }
 
@@ -102,7 +102,8 @@ public class SheetEvaluator {
     }
 
     private void throwTdarRecoverableRuntimeException(int rowNumber, short offendingColumnIndex, int columnNameBound, String sheetName) {
-        throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns", "sheetEvaluator.row_has_more_columns_url", Arrays.asList(rowNumber, offendingColumnIndex,columnNameBound,sheetName));
+        throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns", "sheetEvaluator.row_has_more_columns_url", Arrays.asList(rowNumber,
+                offendingColumnIndex, columnNameBound, sheetName));
     }
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
@@ -119,11 +120,11 @@ public class SheetEvaluator {
         if (cell == null) {
             return null;
         }
-        List<?> errors =Arrays.asList(cell.getRowIndex() +1, cell.getColumnIndex()+1);
+        List<?> errors = Arrays.asList(cell.getRowIndex() + 1, cell.getColumnIndex() + 1);
         try {
 
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
-                 throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
+                throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
             }
 
             return formatter.formatCellValue(cell, evaluator);

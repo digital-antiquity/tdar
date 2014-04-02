@@ -15,9 +15,9 @@ public enum UserAffiliation implements HasLabel, Localizable {
     CRM_ARCHAEOLOGIST("CRM Firm Archaeologist"),
     NON_PROFESSIONAL_ARCH("Nonprofessional/Avocational Archaeologist"),
     GENERAL_PUBLIC("General Public");
-    
+
     private String label;
-    
+
     private UserAffiliation(String label) {
         this.label = label;
     }
@@ -31,8 +31,5 @@ public enum UserAffiliation implements HasLabel, Localizable {
     public String getLabel() {
         return label;
     }
-    
-    
-    
 
 }

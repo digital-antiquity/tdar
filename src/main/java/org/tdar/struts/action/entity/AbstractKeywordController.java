@@ -56,8 +56,9 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     public String loadViewMetadata() {
         // lets avoid the implications of creating a new keyword (for now)
-        if (Persistable.Base.isNullOrTransient(getPersistable()))
+        if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return REDIRECT_HOME;
+        }
         return SUCCESS;
     }
 

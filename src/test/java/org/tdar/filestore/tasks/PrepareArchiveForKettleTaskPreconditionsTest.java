@@ -97,7 +97,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveValidControlFileDir() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         task.setKettleInputPath("");
         try {
             task.run();
@@ -111,7 +111,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveValidCopyFileDir() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         task.getWorkflowContext().setWorkingDirectory(new File(""));
         try {
             task.run();
@@ -125,7 +125,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveAFileToWorkWith() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         try {
             task.run();
             assertTrue("Should not be here", false);
@@ -134,12 +134,12 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
             assertTrue(e.getMessage(), e.getMessage().startsWith("Must have an archive file to work with"));
         }
     }
-    
+
     @Test
     public void willSelectAdminEmailIfNoUploaderEmail() {
         assertTrue(task.getEmailToNotify(archive).equals(TdarConfiguration.getInstance().getSystemAdminEmail()));
     }
-    
+
     @Test
     public void willSelectUploaderEmailIfSet() {
         Person updater = new Person();
@@ -147,7 +147,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         archive.setUpdatedBy(updater);
         assertTrue(task.getEmailToNotify(archive).equals(BOB_AT_CAT_COM));
     }
-    
+
     @Test
     public void mustHaveAProjectAssigned() {
         try {

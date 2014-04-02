@@ -23,6 +23,7 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public interface Filestore {
         }
 
     }
-    
+
     public enum ObjectType {
         LOG,
         RESOURCE,
@@ -72,6 +73,7 @@ public interface Filestore {
             }
             return null;
         }
+
         public String getRootDir() {
             switch (this) {
                 case RESOURCE:
@@ -206,7 +208,7 @@ public interface Filestore {
         public static String getContentType(File file, String overrideValue) {
             MediaType mediaType = null;
             Metadata md = new Metadata();
-            md.set(Metadata.RESOURCE_NAME_KEY, file.getName());
+            md.set(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
             Detector detector = new DefaultDetector(TikaConfig.getDefaultConfig().getMimeRepository());
             try {
                 FileInputStream fis = new FileInputStream(file);
@@ -224,18 +226,23 @@ public interface Filestore {
         protected InformationResourceFileVersion updateVersionInfo(File file, InformationResourceFileVersion version) throws IOException {
             String mimeType = getContentType(file, "UNKNOWN/UNKNOWN");
             logger.trace("MIMETYPE: {}", mimeType);
-            if (StringUtils.isEmpty(version.getFilename()))
+            if (StringUtils.isEmpty(version.getFilename())) {
                 version.setFilename(file.getName());
-            if (StringUtils.isEmpty(version.getMimeType()))
+            }
+            if (StringUtils.isEmpty(version.getMimeType())) {
                 version.setMimeType(mimeType);
+            }
             String relative = getRelativePath(file);
             File parent = getParentDirectory(new File(relative));
-            if (StringUtils.isEmpty(version.getPath()))
+            if (StringUtils.isEmpty(version.getPath())) {
                 version.setPath(parent.getPath());
-            if (version.getFileLength() == null)
+            }
+            if (version.getFileLength() == null) {
                 version.setFileLength(file.length());
-            if (version.getUncompressedSizeOnDisk() == null)
+            }
+            if (version.getUncompressedSizeOnDisk() == null) {
                 version.setUncompressedSizeOnDisk(file.length());
+            }
             if (StringUtils.isEmpty(version.getChecksum())) {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
@@ -245,11 +252,13 @@ public interface Filestore {
                     FileUtils.write(checksum, version.getChecksum());
                 }
             }
-            if (version.getDateCreated() == null)
+            if (version.getDateCreated() == null) {
                 version.setDateCreated(new Date());
+            }
 
-            if (StringUtils.isEmpty(version.getExtension()))
+            if (StringUtils.isEmpty(version.getExtension())) {
                 version.setExtension(FilenameUtils.getExtension(file.getName()));
+            }
             return version;
         }
 

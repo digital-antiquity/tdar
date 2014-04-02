@@ -48,7 +48,6 @@ public interface Workflow {
 
     Set<String> getValidExtensionsForResourceType(ResourceType type);
 
-
     Map<String, List<String>> getRequiredExtensions();
 
     Map<String, List<String>> getSuggestedExtensions();
@@ -159,7 +158,7 @@ public interface Workflow {
 
         @Override
         public void registerFileExtension(String fileExtension, ResourceType... resourceTypes) {
-            if (resourceTypes == null || resourceTypes.length == 0) {
+            if ((resourceTypes == null) || (resourceTypes.length == 0)) {
                 logger.warn("Trying to register a null resource type with file extension: {}", fileExtension);
                 return;
             }
@@ -175,7 +174,7 @@ public interface Workflow {
         }
 
         public void registerFileExtensions(String[] fileExtensions, ResourceType... resourceTypes) {
-            if (resourceTypes == null || resourceTypes.length == 0 || fileExtensions == null || fileExtensions.length == 0) {
+            if ((resourceTypes == null) || (resourceTypes.length == 0) || (fileExtensions == null) || (fileExtensions.length == 0)) {
                 logger.warn("invalid file extensions {} or resource types {}", getAsList(fileExtensions), getAsList(resourceTypes));
                 return;
             }
@@ -184,8 +183,9 @@ public interface Workflow {
             }
         }
 
-       /**
-        * A utility method to return the argument in a list in a NPE safe way
+        /**
+         * A utility method to return the argument in a list in a NPE safe way
+         * 
          * @param targetArray
          * @return
          */

@@ -51,6 +51,7 @@ public class Invoice extends Base implements Updatable {
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
+
     public enum TransactionStatus implements HasLabel, Localizable {
         PREPARED("Prepared"),
         PENDING_TRANSACTION("Pending Transaction"),
@@ -143,7 +144,7 @@ public class Invoice extends Base implements Updatable {
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     private BillingTransactionLog response;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
     private Person transactedBy;
@@ -265,9 +266,11 @@ public class Invoice extends Base implements Updatable {
     }
 
     private <T> T coalesce(@SuppressWarnings("unchecked") T... items) {
-        for (T i : items)
-            if (i != null)
+        for (T i : items) {
+            if (i != null) {
                 return i;
+            }
+        }
         return null;
     }
 
@@ -290,12 +293,12 @@ public class Invoice extends Base implements Updatable {
                 Long space = coalesce(activity.getNumberOfMb(), 0L);
                 Long numberOfResources = coalesce(activity.getNumberOfResources(), 0L);
 
-                if (numberOfFiles > 0L && discountedFiles > 0L) {
+                if ((numberOfFiles > 0L) && (discountedFiles > 0L)) {
                     couponValue += activity.getPrice() * discountedFiles;
                     discountedFiles = 0L;
                 }
 
-                if (space > 0L && discountedSpace > 0L) {
+                if ((space > 0L) && (discountedSpace > 0L)) {
                     couponValue += activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
@@ -488,12 +491,11 @@ public class Invoice extends Base implements Updatable {
     }
 
     public boolean hasValidValue() {
-        if (isLessThan(getNumberOfFiles(), 1) && isLessThan(getNumberOfMb(), 1) && getCoupon() == null) {
+        if (isLessThan(getNumberOfFiles(), 1) && isLessThan(getNumberOfMb(), 1) && (getCoupon() == null)) {
             return false;
-        } 
+        }
         return true;
     }
-
 
     private boolean isLessThan(Long val, long comp) {
         if (val == null) {

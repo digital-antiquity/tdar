@@ -145,7 +145,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
             }
         }
-        
+
         // make sure we're only doing this if we have files to process
         if (irFiles.size() > 0) {
             addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
@@ -287,9 +287,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         logger.info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
         for (DataTable table : tablesToRemove) {
-        	if (table != null && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
-        		columnsToUnmap.addAll(table.getDataTableColumns());
-        	}
+            if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
+                columnsToUnmap.addAll(table.getDataTableColumns());
+            }
         }
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
@@ -314,7 +314,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             irFile.setDateMadePublic(null);
         }
 
-        if (fileProxy.getAction() == FileAction.MODIFY_METADATA || fileProxy.getAction() == FileAction.ADD) {
+        if ((fileProxy.getAction() == FileAction.MODIFY_METADATA) || (fileProxy.getAction() == FileAction.ADD)) {
             irFile.setDescription(fileProxy.getDescription());
             irFile.setFileCreatedDate(fileProxy.getFileCreatedDate());
         }
@@ -361,12 +361,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
         processFiles(ir, latestVersions);
         // this is a known case where we need to purge the session
-//        getDao().synchronize();
+        // getDao().synchronize();
 
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             final WorkflowContext workflowContext = irFile.getWorkflowContext();
             // may be null for "skipped" or composite file
-            if (workflowContext != null && !workflowContext.isProcessedSuccessfully()) {
+            if ((workflowContext != null) && !workflowContext.isProcessedSuccessfully()) {
                 new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
             }
         }
@@ -379,8 +379,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional(readOnly = false)
     private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
-        if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
-            throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found",Arrays.asList(fileProxy.getFilename()));
+        if ((fileProxy.getFile() == null) || !fileProxy.getFile().exists()) {
+            throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found", Arrays.asList(fileProxy.getFilename()));
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {
@@ -404,7 +404,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     /**
      * We autowire the setter to help with autowiring issues
-     * @param analyzer the analyzer to set
+     * 
+     * @param analyzer
+     *            the analyzer to set
      */
     @Autowired
     public void setAnalyzer(FileAnalyzer analyzer) {

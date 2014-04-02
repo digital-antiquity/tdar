@@ -61,7 +61,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
             labels.add(status.getLabel());
         }
 
-        if (labels.size() == 1 && seenActive) {
+        if ((labels.size() == 1) && seenActive) {
             return "";
         }
         List<String> vals = new ArrayList<>();

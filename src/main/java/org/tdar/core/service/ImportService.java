@@ -116,13 +116,12 @@ public class ImportService {
         // If the object already has a tDAR ID
         created = reconcileIncomingObjectWithExisting(authorizedUser, incomingResource, created);
 
-        if (Persistable.Base.isNotNullOrTransient(projectId) && incoming_ instanceof InformationResource) {
+        if (Persistable.Base.isNotNullOrTransient(projectId) && (incoming_ instanceof InformationResource)) {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
         }
 
         validateInvalidImportFields(incomingResource);
 
-        
         reconcilePersistableChildBeans(authorizedUser, incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
         Person blessedAuthorizedUser = genericService.merge(authorizedUser);
@@ -132,7 +131,7 @@ public class ImportService {
         // genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
-            ((InformationResource) incomingResource).setDate(((InformationResource)incomingResource).getDate());
+            ((InformationResource) incomingResource).setDate(((InformationResource) incomingResource).getDate());
         }
 
         processFiles(authorizedUser, proxies, incomingResource);
@@ -144,6 +143,7 @@ public class ImportService {
 
     /**
      * Iterate through the @link FileProxy objects and Files and import them setting metadata and permissions as needed.
+     * 
      * @param authorizedUser
      * @param proxies
      * @param incomingResource
@@ -155,8 +155,10 @@ public class ImportService {
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
-                if (!extensionsForType.contains(ext))
-                    throw new APIException("importService.invalid_file_type", Arrays.asList(ext, StringUtils.join(extensionsForType, ", ")), StatusCode.FORBIDDEN);
+                if (!extensionsForType.contains(ext)) {
+                    throw new APIException("importService.invalid_file_type", Arrays.asList(ext, StringUtils.join(extensionsForType, ", ")),
+                            StatusCode.FORBIDDEN);
+                }
             }
 
             ActionMessageErrorListener listener = new ActionMessageErrorListener();
@@ -205,14 +207,15 @@ public class ImportService {
     }
 
     /**
-     * Find all of the @link Persistable children and look them up in the database, using the entries that have ids or equivalents in tDAR before using the ones that are attached to the XML.
+     * Find all of the @link Persistable children and look them up in the database, using the entries that have ids or equivalents in tDAR before using the ones
+     * that are attached to the XML.
      * 
      * @param authorizedUser
      * @param incomingResource
      * @throws APIException
      */
-    @Transactional(readOnly=false)
-    public <R extends Resource> void reconcilePersistableChildBeans(final Person authorizedUser,final R incomingResource) throws APIException {
+    @Transactional(readOnly = false)
+    public <R extends Resource> void reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
@@ -225,9 +228,9 @@ public class ImportService {
             if (Collection.class.isAssignableFrom(content.getClass())) {
                 List<Persistable> toAdd = new ArrayList<Persistable>();
                 @SuppressWarnings("unchecked")
-                Collection<Persistable> originalList = (Collection<Persistable>)content;
+                Collection<Persistable> originalList = (Collection<Persistable>) content;
                 Collection<Persistable> contents = new ArrayList<Persistable>(originalList);
-                //using a separate collection to avoid concurrent modification of bi-directional double-lists 
+                // using a separate collection to avoid concurrent modification of bi-directional double-lists
                 Iterator<Persistable> iterator = contents.iterator();
                 originalList.clear();
                 while (iterator.hasNext()) {
@@ -264,11 +267,10 @@ public class ImportService {
 
         if (incomingResource instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) incomingResource;
-            if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) || 
+            if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getCodingRules()) ||
-                    Persistable.Base.isNotNullOrTransient(codingSheet.getDefaultOntology())
-                    ) {
+                    Persistable.Base.isNotNullOrTransient(codingSheet.getDefaultOntology())) {
                 throw new APIException(MessageHelper.getMessage("importService.coding_sheet_mappings_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }
@@ -293,7 +295,7 @@ public class ImportService {
             if (CollectionUtils.isNotEmpty(informationResource.getRelatedDatasetData().keySet())) {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
-            
+
             if (Persistable.Base.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
@@ -315,7 +317,7 @@ public class ImportService {
         P toReturn = property;
 
         // if we're not transient, find by id...
-        if (Persistable.Base.isNotNullOrTransient((Persistable) property)) {
+        if (Persistable.Base.isNotNullOrTransient(property)) {
             // if (property instanceof HasResource<?> && toReturn instanceof Validatable && ((Validatable)toReturn).isValidForController()) {
             // if (property instanceof ResourceCreator) {
             // entityService.findOrSaveResourceCreator((ResourceCreator) property);
@@ -337,7 +339,7 @@ public class ImportService {
             if (property instanceof Keyword) {
                 Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
                 if (property instanceof ControlledKeyword) {
-                    Keyword findByLabel = (Keyword) genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
+                    Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
                     if (findByLabel == null) {
                         throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
                                 StatusCode.FORBIDDEN);
@@ -353,7 +355,9 @@ public class ImportService {
 
             if (property instanceof ResourceCollection) {
                 ResourceCollection collection = (ResourceCollection) property;
-                resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true, ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);;
+                resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+                ;
             }
 
             if (property instanceof ResourceAnnotation) {
@@ -367,9 +371,9 @@ public class ImportService {
                 if (!((Validatable) property).isValidForController()) {
                     if (property instanceof Project) {
                         toReturn = (P) Project.NULL;
-                    } else if (property instanceof Creator && ((Creator) property).hasNoPersistableValues()) {
+                    } else if ((property instanceof Creator) && ((Creator) property).hasNoPersistableValues()) {
                         toReturn = null;
-                    } else if (property instanceof ResourceCollection && ((ResourceCollection)property).isInternal()) {
+                    } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
                         toReturn = property;
                     } else {
                         throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);

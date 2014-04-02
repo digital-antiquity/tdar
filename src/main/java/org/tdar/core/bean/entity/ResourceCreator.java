@@ -43,11 +43,11 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  */
 @Entity
 @Table(name = "resource_creator", indexes = {
-        @Index(name="creator_sequence", columnList="resource_id, sequence_number, creator_id"),
+        @Index(name = "creator_sequence", columnList = "resource_id, sequence_number, creator_id"),
         @Index(name = "creatorid", columnList = "creator_id"),
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
-public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
+public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
 
@@ -66,7 +66,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     private ResourceCreatorRole role;
-
 
     private transient Boolean obfuscatedObjectDifferent = false;
 
@@ -118,7 +117,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
      */
     @Override
     public boolean isValid() {
-        if (role == null || creator == null) {
+        if ((role == null) || (creator == null)) {
             logger.trace(String.format("role:%s creator:%s ", role, creator));
             return false;
         }
@@ -152,7 +151,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Transient
     public static final String getCreatorRoleIdentifier(Creator creatorToFormat, ResourceCreatorRole creatorRole) {
         String toReturn = "";
-        if (creatorToFormat != null && creatorToFormat.getCreatorType() != null) {
+        if ((creatorToFormat != null) && (creatorToFormat.getCreatorType() != null)) {
             String code = creatorToFormat.getCreatorType().getCode();
             String role = "";
             if (creatorRole != null) {

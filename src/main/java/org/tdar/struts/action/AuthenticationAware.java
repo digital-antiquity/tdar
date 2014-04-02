@@ -39,7 +39,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
     AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
-    @DoNotObfuscate(reason="never obfuscate the session user")
+    @DoNotObfuscate(reason = "never obfuscate the session user")
     Person getAuthenticatedUser();
 
     boolean isAuthenticated();
@@ -54,10 +54,11 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         @Override
-        @DoNotObfuscate(reason="never obfuscate the session user")
+        @DoNotObfuscate(reason = "never obfuscate the session user")
         public Person getAuthenticatedUser() {
-            if (getSessionData() == null)
+            if (getSessionData() == null) {
                 return null;
+            }
             if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
                 return getGenericService().find(Person.class, getSessionData().getPerson().getId());
             } else {
@@ -141,7 +142,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
             List<Long> validIds = new ArrayList<Long>();
             for (Long id : rawIds) {
-                if (id != null && id >= GenericService.MINIMUM_VALID_ID) {
+                if ((id != null) && (id >= GenericService.MINIMUM_VALID_ID)) {
                     validIds.add(id);
                 }
             }

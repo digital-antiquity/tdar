@@ -330,7 +330,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
             logger.info("file: {} ", file);
             logger.info("dataset: {} ", transientDataset);
-            assertTrue(transientDataset == null || CollectionUtils.isEmpty(transientDataset.getDataTables()));
+            assertTrue((transientDataset == null) || CollectionUtils.isEmpty(transientDataset.getDataTables()));
             assertTrue(CollectionUtils.isEmpty(file.getWorkflowContext().getExceptions()));
         }
     }
@@ -371,7 +371,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testCodingSheetMapping() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
-	}
+    }
 
     @Test
     @Rollback
@@ -386,14 +386,14 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheetController.prepare();
         codingSheet = codingSheetController.getCodingSheet();
 
-//        List<File> uploadedFiles = new ArrayList<File>();
-//        List<String> uploadedFileNames = new ArrayList<String>();
-//        uploadedFiles.add(PERIOD_2);
-//        uploadedFileNames.add(PERIOD_2.getName());
-//        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
-//        codingSheetController.setUploadedFiles(uploadedFiles);
+        // List<File> uploadedFiles = new ArrayList<File>();
+        // List<String> uploadedFileNames = new ArrayList<String>();
+        // uploadedFiles.add(PERIOD_2);
+        // uploadedFileNames.add(PERIOD_2.getName());
+        // codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+        // codingSheetController.setUploadedFiles(uploadedFiles);
         codingSheetController.setFileTextInput(FileUtils.readFileToString(PERIOD_2));
-        codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
+        codingSheetController.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         assertNotNull(codingId);
@@ -445,7 +445,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             rules.add(createRule("3", "three", codingSheet));
             genericService.save(codingSheet);
 
-//            File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+            // File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();
@@ -465,13 +465,12 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             ExcelUnit excelUnit = new ExcelUnit();
             excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
-            
+
             DownloadController dc = generateNewInitializedController(DownloadController.class);
             dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
             dc.execute();
             assertEquals("bigsheet_translated.xls", dc.getFileName());
-            
-            
+
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
         }
@@ -578,7 +577,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheet.setDefaultOntology(ontology);
         if (textFile != null) {
             codingSheetController.setFileTextInput(FileUtils.readFileToString(textFile));
-            codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
+            codingSheetController.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
         } else {
             List<File> uploadedFiles = new ArrayList<File>();
             List<String> uploadedFileNames = new ArrayList<String>();

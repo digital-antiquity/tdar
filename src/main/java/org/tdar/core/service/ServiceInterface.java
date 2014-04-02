@@ -51,6 +51,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
     /**
      * Save or Update all Persistables in the collection
+     * 
      * @see #saveOrUpdate(T)
      * 
      * @param c
@@ -100,12 +101,14 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
     /**
      * Find all sorted by #getDefaultOrderingProperty() default is ID
+     * 
      * @return
      */
     List<T> findAllSorted();
 
     /**
      * Find all sorted by ordering clause
+     * 
      * @param orderingClause
      * @return
      */
@@ -120,12 +123,14 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
     /**
      * Save just the entity (Save is hibernate's concept of save, new objects only)
+     * 
      * @param entity
      */
     void save(T entity);
 
     /**
      * Useful hibernate construct, save if needed, otherwise update
+     * 
      * @param entity
      */
     void saveOrUpdate(T entity);
@@ -153,6 +158,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
 
     /**
      * Provide access to the Dao to the service.
+     * 
      * @return
      */
     S getDao();
@@ -231,48 +237,54 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         @Transactional(readOnly = false)
         @Override
         public void save(List<E> persistentCollection) {
-            if (persistentCollection == null)
+            if (persistentCollection == null) {
                 return;
+            }
             dao.save(persistentCollection);
         }
 
         @Transactional(readOnly = false)
         @Override
         public void save(E entity) {
-            if (entity == null)
+            if (entity == null) {
                 return;
+            }
             dao.save(entity);
         }
 
         @Transactional(readOnly = false)
         @Override
         public void saveOrUpdate(E entity) {
-            if (entity == null)
+            if (entity == null) {
                 return;
+            }
             dao.saveOrUpdate(entity);
         }
 
         @Transactional(readOnly = false)
         @Override
         public void update(E entity) {
-            if (entity == null)
+            if (entity == null) {
                 return;
+            }
             dao.update(entity);
         }
 
         @Transactional(readOnly = false)
         @Override
         public E merge(E entity) {
-            if (entity == null)
+            if (entity == null) {
                 return null;
+            }
             return dao.merge(entity);
         }
 
         @Transactional(readOnly = false)
         @Override
         public void delete(E entity) {
-            if (entity == null)
+            if (entity == null) {
                 return;
+            }
             dao.delete(entity);
         }
 
@@ -300,19 +312,20 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         @Transactional(readOnly = false)
         @Override
         public void saveOrUpdateAll(Collection<E> c) {
-            if (CollectionUtils.isEmpty(c))
+            if (CollectionUtils.isEmpty(c)) {
                 return;
+            }
             for (E o : c) {
                 dao.saveOrUpdate(o);
             }
         }
 
-
         @Transactional(readOnly = false)
         @Override
         public void delete(Collection<E> persistentCollection) {
-            if (CollectionUtils.isEmpty(persistentCollection))
+            if (CollectionUtils.isEmpty(persistentCollection)) {
                 return;
+            }
             dao.delete(persistentCollection);
         }
 

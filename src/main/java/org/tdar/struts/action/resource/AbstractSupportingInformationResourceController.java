@@ -74,8 +74,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
-        if (latestUploadedTextVersion != null
-                && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
+        if ((latestUploadedTextVersion != null)
+                && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR)) {
             if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
                 getLogger().info("incoming and current file input text is the same, skipping further actions");
                 return null;
@@ -162,7 +162,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     public List<Resource> getRelatedResources() {
         if (relatedResources == null) {
             relatedResources = new ArrayList<Resource>();
-            for (DataTable table : getDataTableService().findDataTablesUsingResource((Resource) getPersistable())) {
+            for (DataTable table : getDataTableService().findDataTablesUsingResource(getPersistable())) {
                 if (!table.getDataset().isDeleted()) {
                     relatedResources.add(table.getDataset());
                 }
@@ -176,7 +176,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         List<Resource> related = getRelatedResources();
         if (related.size() > 0) {
             String titles = StringUtils.join(related, ',');
-            String message = getText("abstractSupportingInformationResourceController.remove_mappings",titles);
+            String message = getText("abstractSupportingInformationResourceController.remove_mappings", titles);
             addActionErrorWithException(getText("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
             return ERROR;
         }

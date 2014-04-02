@@ -2,18 +2,15 @@ package org.tdar.core.service;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 
 public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
@@ -23,7 +20,7 @@ public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private RebuildHomepageCache homepageCache;
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
@@ -39,22 +36,22 @@ public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(output.contains(boash));
     }
 
-//    @Test
-//    public void testFreemarkerRenderingToFile() throws IOException {
-//        homepageCache.execute();
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        String heir = "Hieronymous";
-//        map.put("foo", heir);
-//        String boash = "Boash";
-//        map.put("bar", boash);
-//        map.put("themeDir", "includes/themes/tdar");
-//        map.put("siteAcronym", "tDAR");
-//        map.put("geographicKeywordCache", genericService.findAll(HomepageGeographicKeywordCache.class));
-//        File output = freemarkerService.renderWithCache("test-map.html", "WEB-INF/content/map.ftl", map);
-//        String outTxt = FileUtils.readFileToString(output);
-//        logger.debug("output: {}", output);
-//        assertTrue(outTxt.contains(heir));
-//        assertTrue(outTxt.contains(boash));
-//    }
+    // @Test
+    // public void testFreemarkerRenderingToFile() throws IOException {
+    // homepageCache.execute();
+    // Map<String, Object> map = new HashMap<String, Object>();
+    // String heir = "Hieronymous";
+    // map.put("foo", heir);
+    // String boash = "Boash";
+    // map.put("bar", boash);
+    // map.put("themeDir", "includes/themes/tdar");
+    // map.put("siteAcronym", "tDAR");
+    // map.put("geographicKeywordCache", genericService.findAll(HomepageGeographicKeywordCache.class));
+    // File output = freemarkerService.renderWithCache("test-map.html", "WEB-INF/content/map.ftl", map);
+    // String outTxt = FileUtils.readFileToString(output);
+    // logger.debug("output: {}", output);
+    // assertTrue(outTxt.contains(heir));
+    // assertTrue(outTxt.contains(boash));
+    // }
 
 }

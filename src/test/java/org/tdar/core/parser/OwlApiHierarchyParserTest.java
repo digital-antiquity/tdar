@@ -94,8 +94,9 @@ public class OwlApiHierarchyParserTest {
             OntologyNode rootNode = classNodeMap.get(rootClass);
             assertNotNull(rootNode);
             for (OntologyNode ontologyNode : nodes) {
-                if (rootNode.equals(ontologyNode))
+                if (rootNode.equals(ontologyNode)) {
                     continue;
+                }
                 assertTrue(rootNode.getIntervalStart() < ontologyNode.getIntervalStart());
                 assertTrue(rootNode.getIntervalEnd() > ontologyNode.getIntervalEnd());
             }

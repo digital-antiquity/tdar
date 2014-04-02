@@ -29,6 +29,8 @@ import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
+import com.opensymphony.xwork2.Action;
+
 /**
  * @author Adam Brin
  * 
@@ -69,7 +71,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController.setAuthorizedUsers(new ArrayList<AuthorizedUser>());
         imageController.setServletRequest(getServletPostRequest());
         // create the dataset
-        assertEquals(TdarActionSupport.SUCCESS, imageController.save());
+        assertEquals(Action.SUCCESS, imageController.save());
         evictCache();
         imageController = generateNewController(ImageController.class);
         init(imageController, p);
@@ -119,7 +121,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         imageController.getAuthorizedUsers().clear();
         imageController.getResourceCollections().clear();
         imageController.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, imageController.save());
+        assertEquals(Action.SUCCESS, imageController.save());
         evictCache();
 
         genericService.refresh(image);

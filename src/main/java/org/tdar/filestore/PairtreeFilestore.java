@@ -98,13 +98,13 @@ public class PairtreeFilestore extends BaseFilestore {
                 logger.error(errorMessage);
                 throw new TdarRuntimeException(errorMessage);
             }
-            
+
             if (version instanceof InformationResourceFileVersion) {
-                InformationResourceFileVersion irfv = (InformationResourceFileVersion)version;
+                InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
                 if (irfv.isUploaded()) {
                     outFile.setWritable(false);
                 }
-                
+
                 updateVersionInfo(outFile, irfv);
             }
             MessageDigest digest = digestInputStream.getMessageDigest();
@@ -126,7 +126,7 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     private File rotateFileIfNeeded(StorageMethod rotate, File outFile) {
-        if (outFile.exists() && rotate.getRotations() > 0) {
+        if (outFile.exists() && (rotate.getRotations() > 0)) {
             rotate(outFile, rotate);
         }
 
@@ -146,7 +146,7 @@ public class PairtreeFilestore extends BaseFilestore {
         String s = Long.toString(val.longValue());
         int i = 0;
         StringBuffer out = new StringBuffer(File.separator);
-        while (i + CHARACTERS_PER_LEVEL < s.length()) {
+        while ((i + CHARACTERS_PER_LEVEL) < s.length()) {
             out.append(s.substring(i, i + CHARACTERS_PER_LEVEL));
             out.append(File.separator);
             i += CHARACTERS_PER_LEVEL;
@@ -174,7 +174,7 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     @Override
     public String storeAndRotate(ObjectType type, File content, FileStoreFileProxy version, StorageMethod rotations) throws IOException {
-        if (content == null || !content.isFile()) {
+        if ((content == null) || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
             return "";
         }
@@ -188,8 +188,9 @@ public class PairtreeFilestore extends BaseFilestore {
     public File retrieveFile(ObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(type, version));
         logger.trace("file requested: {}", file);
-        if (!file.isFile())
-            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",Arrays.asList(file.getAbsolutePath())));
+        if (!file.isFile()) {
+            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getAbsolutePath())));
+        }
 
         // version.setTransientFile(file);
         return file;
@@ -248,10 +249,10 @@ public class PairtreeFilestore extends BaseFilestore {
                     append(base, DERIV);
                 }
             }
-        }        
-        
+        }
+
         if (version instanceof FileStoreFile) {
-            FileStoreFile fsf = (FileStoreFile)version;
+            FileStoreFile fsf = (FileStoreFile) version;
             append(base, fsf.getType().toString().toLowerCase());
         }
         logger.trace("{}", base);
@@ -262,7 +263,7 @@ public class PairtreeFilestore extends BaseFilestore {
         base.append(obj);
         base.append(File.separator);
     }
-    
+
     /**
      * Constructs the relative path to the file in the filestore with a given
      * fileId.
@@ -334,9 +335,10 @@ public class PairtreeFilestore extends BaseFilestore {
      * @throws {@link IOException}
      */
     private void cleanEmptyParents(File dir) throws IOException {
-        if (dir == null)
+        if (dir == null) {
             return;
-        if (dir.exists() && dir.list().length == 0) {
+        }
+        if (dir.exists() && (dir.list().length == 0)) {
             FileUtils.deleteDirectory(dir);
             cleanEmptyParents(dir.getParentFile());
         }

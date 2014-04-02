@@ -167,7 +167,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docMultiValMap.keySet());
         prepIndexedFields(docUnorderdValMap.keySet());
     }
-    
+
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
@@ -178,9 +178,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
         submitForm();
     }
 
@@ -298,9 +300,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
 
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
@@ -360,8 +364,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email"))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email")) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTrue("looking for '" + val + "' in text", textContains(val));

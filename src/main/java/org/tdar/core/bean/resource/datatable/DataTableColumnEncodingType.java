@@ -8,10 +8,10 @@ import org.tdar.utils.MessageHelper;
  * Manages the column type that the user tells us.
  * 
  * @author abrin
- *
+ * 
  */
 public enum DataTableColumnEncodingType implements HasLabel, Localizable {
-    UNCODED_VALUE("Uncoded Value",false,true,false),
+    UNCODED_VALUE("Uncoded Value", false, true, false),
     CODED_VALUE("Coded Value", true, true, false),
     MEASUREMENT("Measurement", false, false, true),
     COUNT("Count", false, false, false);
@@ -32,12 +32,11 @@ public enum DataTableColumnEncodingType implements HasLabel, Localizable {
     public String getLabel() {
         return this.label;
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     /**
      * @param supportsOntology

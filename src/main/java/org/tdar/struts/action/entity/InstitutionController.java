@@ -26,8 +26,9 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     protected String save(Institution persistable) {
-        if (hasActionErrors())
+        if (hasActionErrors()) {
             return INPUT;
+        }
 
         // name has a unique key; so we need to be careful with it
         persistable.setName(getName());
@@ -63,7 +64,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     public String loadViewMetadata() {
-        if (!isEditor() ) {
+        if (!isEditor()) {
             CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
             getGenericService().saveOrUpdate(cvs);
         }
@@ -96,8 +97,9 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     public boolean isEditable() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return false;
+        }
         return getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
     }
 

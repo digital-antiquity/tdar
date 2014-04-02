@@ -169,6 +169,7 @@ public class ReflectionService {
 
     /**
      * From the string generate the getter name
+     * 
      * @param name
      * @return
      */
@@ -208,12 +209,13 @@ public class ReflectionService {
         // logger.debug("calling getter on: {} {} ", obj, field.getName());
         logger.trace("{}", field.getDeclaringClass());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
-        if (method.getReturnType() != Void.TYPE)
+        if (method.getReturnType() != Void.TYPE) {
             try {
                 return (T) method.invoke(obj);
             } catch (Exception e) {
                 logger.debug("cannot call field getter for field: {}", field, e);
             }
+        }
         return null;
     }
 
@@ -284,8 +286,8 @@ public class ReflectionService {
         Logger logger = LoggerFactory.getLogger(ReflectionService.class);
 
         if (WildcardType.class.isAssignableFrom(type.getClass())) {
-            WildcardType subType = (WildcardType)type;
-            logger.trace(" wildcard type: {} [{}]", type, type.getClass() );
+            WildcardType subType = (WildcardType) type;
+            logger.trace(" wildcard type: {} [{}]", type, type.getClass());
             logger.trace(" lower: {} upper: {}", subType.getLowerBounds(), subType.getUpperBounds());
             return subType.getUpperBounds().getClass();
         }
@@ -330,8 +332,9 @@ public class ReflectionService {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void scanForPersistables() throws ClassNotFoundException {
-        if (persistableLookup != null)
+        if (persistableLookup != null) {
             return;
+        }
 
         Set<BeanDefinition> findCandidateComponents = findClassesThatImplement(Persistable.class);
         persistableLookup = new HashMap<>();
@@ -362,7 +365,7 @@ public class ReflectionService {
     }
 
     private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();
-    
+
     /**
      * Check whether the identified Method or Action has the annotation
      * 
@@ -385,13 +388,13 @@ public class ReflectionService {
 
         String key = annotationClass.getCanonicalName() + "|" + action.getClass().getCanonicalName() + "$" + methodName;
         Boolean found = annotationLookupCache.get(key);
-        staticLogger.trace("key: {}, found: {}", key,found);
+        staticLogger.trace("key: {}, found: {}", key, found);
         if (found != null) {
             return found;
         }
-        
+
         found = Boolean.FALSE;
-        
+
         if (action != null) {
             method = action.getClass().getMethod(methodName);
         }
@@ -399,13 +402,13 @@ public class ReflectionService {
         if (method != null) {
             Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
             Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
-            found = (class_ != null || method_ != null);
+            found = ((class_ != null) || (method_ != null));
         }
         annotationLookupCache.put(key, found);
 
         return found;
     }
-    
+
     /**
      * For the specified Method, return the annotation of the identified Class.
      * 
@@ -480,8 +483,9 @@ public class ReflectionService {
             Class<? extends Persistable> type = null;
             // generic collections
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || java.lang.reflect.Modifier.isTransient(field.getModifiers())
-                    || java.lang.reflect.Modifier.isFinal(field.getModifiers()))
+                    || java.lang.reflect.Modifier.isFinal(field.getModifiers())) {
                 continue;
+            }
 
             if (Collection.class.isAssignableFrom(field.getType())) {
                 ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
@@ -534,7 +538,7 @@ public class ReflectionService {
         List<Class<?>> runWith = new ArrayList<Class<?>>();
         for (Field field : class2.getDeclaredFields()) {
             BulkImportField annotation = field.getAnnotation(annotationToFind);
-            if (annotation != null && ArrayUtils.isNotEmpty(annotation.implementedSubclasses())) {
+            if ((annotation != null) && ArrayUtils.isNotEmpty(annotation.implementedSubclasses())) {
                 runWith.addAll(Arrays.asList(annotation.implementedSubclasses()));
                 runMultiple = field;
             }
@@ -606,9 +610,10 @@ public class ReflectionService {
                         continue;
                     }
 
-                    if (TdarConfiguration.getInstance().getLicenseEnabled() == false
-                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText")))
+                    if ((TdarConfiguration.getInstance().getLicenseEnabled() == false)
+                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText"))) {
                         continue;
+                    }
                     set.add(new CellMetadata(field, annotation, class2, stack, prefix));
 
                     // set.add(field);
@@ -680,9 +685,8 @@ public class ReflectionService {
         }
     }
 
-
     /**
-     * Find all getters of beans that support the @link Obfuscatable interface and any child beans throughout the graph 
+     * Find all getters of beans that support the @link Obfuscatable interface and any child beans throughout the graph
      * 
      * @param cls
      * @return
@@ -692,14 +696,14 @@ public class ReflectionService {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
-        Class<?> actualClass = null; 
+        Class<?> actualClass = null;
         while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             // find first implemented tDAR class (actual class);
             if (actualClass == null) {
                 actualClass = cls;
             }
             for (Method method : cls.getDeclaredMethods()) {
-                
+
                 if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith(GET)) {
                     declaredFields.add(method);
                 }
@@ -711,10 +715,10 @@ public class ReflectionService {
             Class<? extends Obfuscatable> type = null;
             // generic collections
             if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) || java.lang.reflect.Modifier.isTransient(method.getModifiers())
-                    || java.lang.reflect.Modifier.isFinal(method.getModifiers()))
+                    || java.lang.reflect.Modifier.isFinal(method.getModifiers())) {
                 continue;
+            }
 
-            
             // logger.info("TYPE: {} {} ", method.getGenericReturnType(), method.getName());
             // logger.info("{} ==> {}", actualClass, method.getDeclaringClass());
             // logger.info(" {} {} {} ", dcl.getTypeParameters(), dcl.getGenericInterfaces(), dcl.getGenericSuperclass());
@@ -723,7 +727,7 @@ public class ReflectionService {
                 Class<?> type2 = getType(method.getGenericReturnType());
                 if (type2 == null) {
                     force = true;
-                } else if (Obfuscatable.class.isAssignableFrom((Class<? extends Obfuscatable>) type2)) {
+                } else if (Obfuscatable.class.isAssignableFrom(type2)) {
                     type = (Class<? extends Obfuscatable>) type2;
                     logger.trace("\t -> {}", type); // class java.lang.String.
                 }
@@ -735,7 +739,7 @@ public class ReflectionService {
             }
 
             // things to add
-            if (type != null || force) {
+            if ((type != null) || force) {
                 if (force) {
                     logger.trace("forcing method to be obfuscated because cannot figure out gneric type {} (good luck)", method);
                 }

@@ -11,8 +11,6 @@ import com.opensymphony.xwork2.TextProvider;
 
 public class ProjectIdLookupQueryPart extends FieldQueryPart<Long> {
 
-
-
     public ProjectIdLookupQueryPart(Long projectId) {
         add(projectId);
     }
@@ -30,7 +28,7 @@ public class ProjectIdLookupQueryPart extends FieldQueryPart<Long> {
 
     @Override
     public String getDescription(TextProvider provider) {
-        return provider.getText("projectIdLookupQueryPart.description", Arrays.asList(StringUtils.join(getFieldValues(),",")));
+        return provider.getText("projectIdLookupQueryPart.description", Arrays.asList(StringUtils.join(getFieldValues(), ",")));
     }
 
     @Override

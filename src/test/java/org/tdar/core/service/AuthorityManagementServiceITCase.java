@@ -74,7 +74,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         long newCount = authorityManagementService.getTotalReferrerCount(keyword.getClass(), Arrays.asList(keyword.getId()));
         logger.debug("original count:{}\tnew count:{}", origCount, newCount);
         Assert.assertTrue("reference count should have increased by one and only one. ref1:" + origCount + " ref2:" + newCount,
-                newCount == origCount + 1);
+                newCount == (origCount + 1));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
             Long origCount = entry.getValue();
             Long newCount = newMap.get(id);
             logger.debug("keyword id:{}  oldcount:{}  newcount:{}", new Object[] { id, origCount, newCount });
-            Assert.assertTrue("itemcount should increase by 1 and only 1", origCount + 1 == newCount);
+            Assert.assertTrue("itemcount should increase by 1 and only 1", (origCount + 1) == newCount);
         }
 
         Assert.assertTrue(!origMap.isEmpty());

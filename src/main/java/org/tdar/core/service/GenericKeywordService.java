@@ -58,6 +58,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find all Approved keywords (controlled) from the keyword cache
+     * 
      * @param cls
      * @return
      */
@@ -71,6 +72,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find all @link HierarchicalKeyword entries that are children of the specified class
+     * 
      * @param cls
      * @param keyword
      * @return
@@ -82,6 +84,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find or create a set of keywords by label
+     * 
      * @see #findOrCreateByLabel(Class, String)
      * 
      * @param cls
@@ -114,21 +117,24 @@ public class GenericKeywordService extends GenericService {
      */
     @Transactional(readOnly = true)
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
-        if (label == null)
+        if (label == null) {
             return null;
+        }
         return genericKeywordDao.findByLabel(cls, label);
     }
-    
+
     /**
      * Find or Create a keyword of specified class by Label
+     * 
      * @param cls
      * @param label
      * @return
      */
     @Transactional(readOnly = false)
     public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label) {
-        if (label == null)
+        if (label == null) {
             return null;
+        }
         K keyword = genericKeywordDao.findByLabel(cls, label);
         if (keyword == null) {
             try {
@@ -146,6 +152,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get uncontrolled Culture keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -155,6 +162,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get controlled Culture keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -164,6 +172,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Geographic keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -173,6 +182,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get InvestigationType keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -182,6 +192,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Material keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -191,6 +202,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Other keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -200,6 +212,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get SiteName keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -209,6 +222,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get controlled SiteType Keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -247,6 +261,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find the Authority version of a @link Keyword based on the duplicate
+     * 
      * @param kwd
      * @return
      */

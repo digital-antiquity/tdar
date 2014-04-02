@@ -31,7 +31,6 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
-
 /**
  * Represnts a 3-D scan or sensory-data scan of an object.
  * 

@@ -43,7 +43,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private final OWLOntology owlOntology;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final List<OWLClass> rootClasses = new ArrayList<OWLClass>();
     private final HashMap<OWLClass, Set<OWLClass>> owlHierarchyMap = new HashMap<OWLClass, Set<OWLClass>>();
     private final HashMap<OWLClass, OntologyNode> classNodeMap = new HashMap<OWLClass, OntologyNode>();
@@ -136,19 +136,19 @@ public class OwlApiHierarchyParser implements OntologyParser {
         node.setImportOrder(extractImportOrder(owlClass));
         node.setDescription(extractDescription(owlClass));
         if (node.getDescription() != null) {
-        logger.debug(node.getDescription());
+            logger.debug(node.getDescription());
         }
         node.setIri(iri.getFragment());
         String uri_string = iri.toURI().toString();
-        //FIXME: the OWL API does not appear to support IRIs that start with numbers... 
+        // FIXME: the OWL API does not appear to support IRIs that start with numbers...
         // https://github.com/owlcs/owlapi/wiki/Documentation
         // this is a workaround
 
-        // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with  () in them
+        // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with () in them
         logger.trace("node: {}", node.getIri());
-        if (StringUtils.isBlank(node.getIri()) && StringUtils.indexOf(uri_string, "#")> 0){
-          node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
-        logger.info(uri_string);
+        if (StringUtils.isBlank(node.getIri()) && (StringUtils.indexOf(uri_string, "#") > 0)) {
+            node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#") + 1));
+            logger.info(uri_string);
         }
         String displayName = extractNodeLabel(owlClass);
         if (allSynonymLabels.contains(displayName)) {
@@ -160,7 +160,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             for (OWLClass syn : equiv.getClassesInSignature()) {
                 String label = extractNodeLabel(syn);
                 synonymLabels.add(label);
-                logger.trace(syn.getIRI().getFragment() + " - " + iri.getFragment() + " ["+label+"]");
+                logger.trace(syn.getIRI().getFragment() + " - " + iri.getFragment() + " [" + label + "]");
             }
         }
         node.setSynonyms(synonymLabels);
@@ -194,7 +194,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             firstSibling = false;
         }
         logger.trace("{}", node);
-        
+
         if (StringUtils.isBlank(node.getIri())) {
             List<Object> vals = new ArrayList<>();
             vals.add(node);

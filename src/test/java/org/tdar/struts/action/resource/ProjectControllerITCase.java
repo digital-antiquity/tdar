@@ -39,6 +39,8 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
+import com.opensymphony.xwork2.Action;
+
 public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -71,7 +73,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore //ignored because bad test with HashCode
+    @Ignore
+    // ignored because bad test with HashCode
     public void testProjectResourceCreator() throws Exception {
         Institution inst = new Institution("da");
 
@@ -235,18 +238,18 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         // try and fail due to rights
         ProjectController controller = tryAndSaveCollectionToController(rc);
-        assertNotEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertNotEquals(Action.SUCCESS, controller.save());
 
         rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
         genericService.saveOrUpdate(rc);
         evictCache();
         // try ... and should succeed now that we add the user + permissions
         controller = tryAndSaveCollectionToController(rc);
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(Action.SUCCESS, controller.save());
 
         assertNotNull(controller.getProject());
         Long id = controller.getProject().getId();
-        assertTrue("project should have been saved", id != null && id != -1L);
+        assertTrue("project should have been saved", (id != null) && (id != -1L));
         logger.info("HI!!! {}", id);
 
         Project loadedProject = genericService.find(Project.class, id);
@@ -312,7 +315,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertUniqueCollections(controller.getResourceCollections(), name1, name2);
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, result);
+        assertEquals(Action.SUCCESS, result);
         Long id = project.getId();
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);

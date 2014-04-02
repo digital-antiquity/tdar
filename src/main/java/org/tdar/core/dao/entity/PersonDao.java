@@ -44,10 +44,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public List<Person> findAllRegisteredUsers(Integer num) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
-        if (num != null && num > 0) {
+        if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
         }
-        return (List<Person>) query.list();
+        return query.list();
     }
 
     /**
@@ -92,7 +92,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Person findAuthorityFromDuplicate(Person dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
                 return find(result.get(0).longValue());
@@ -189,7 +189,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Long getCreatorViewCount(Creator creator) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
         query.setParameter("id", creator.getId());
-        Number result = (Number)query.uniqueResult();
+        Number result = (Number) query.uniqueResult();
         return result.longValue();
     }
 

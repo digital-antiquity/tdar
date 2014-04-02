@@ -44,9 +44,9 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     enum SessionType {
-        READ_ONLY,WRITEABLE
+        READ_ONLY, WRITEABLE
     }
-    
+
     @Autowired
     private transient GenericService genericService;
     @Autowired
@@ -70,7 +70,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         Activity activity = null;
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
-            if (getSessionData() != null && getSessionData().isAuthenticated()) {
+            if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
                 activity.setUser(sessionData.getPerson());
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
@@ -83,11 +83,12 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
         }
-        
-        
+
         response.setHeader("Access-Control-Allow-Origin", "*");
-        //response.setHeader("Content-Security-Policy", "'default-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" + TdarConfiguration.getInstance().getContentSecurityPolicyAdditions() +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
-        //http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+        // response.setHeader("Content-Security-Policy", "'default-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" +
+        // TdarConfiguration.getInstance().getContentSecurityPolicyAdditions()
+        // +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
+        // http://www.html5rocks.com/en/tutorials/security/content-security-policy/
 
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {

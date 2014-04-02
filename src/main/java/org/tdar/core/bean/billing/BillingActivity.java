@@ -56,7 +56,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Column(name = "sort_order")
     private Integer order;
 
-    @ManyToOne(optional = false,cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @NotNull
     private BillingActivityModel model;
 
@@ -221,7 +221,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public boolean supportsFileLimit() {
-        if (getNumberOfFiles() != null && getNumberOfFiles() > 0) {
+        if ((getNumberOfFiles() != null) && (getNumberOfFiles() > 0)) {
             return true;
         }
         return false;
@@ -257,21 +257,23 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     private boolean isNullOrZero(Number number) {
-        if (number == null || number.floatValue() == 0.0) {
+        if ((number == null) || (number.floatValue() == 0.0)) {
             return true;
         }
         return false;
     }
-    
+
     public boolean isSpaceOnly() {
-        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfBytes() != null && getNumberOfBytes() > 0 && isNullOrZero(getNumberOfFiles()) ) {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && (getNumberOfBytes() != null) && (getNumberOfBytes() > 0)
+                && isNullOrZero(getNumberOfFiles())) {
             return true;
         }
         return false;
     }
 
     public boolean isFilesOnly() {
-        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfFiles() != null && getNumberOfFiles() > 0 && isNullOrZero(getNumberOfBytes()) ) {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && (getNumberOfFiles() != null) && (getNumberOfFiles() > 0)
+                && isNullOrZero(getNumberOfBytes())) {
             return true;
         }
         return false;

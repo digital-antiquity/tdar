@@ -62,6 +62,8 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.TestConfiguration;
 
+import com.opensymphony.xwork2.Action;
+
 /**
  * $Id$
  * 
@@ -79,7 +81,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Autowired
     XmlService xmlService;
-    
+
     @Test
     @Rollback
     public void testExcelTemplate() throws FileNotFoundException, IOException {
@@ -88,7 +90,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File file = File.createTempFile("tempTemplate", ".xls");
         String downloadBulkTemplate = bulkUploadController.downloadBulkTemplate();
         logger.info(bulkUploadController.getTemplateFile().getCanonicalPath());
-        assertEquals(TdarActionSupport.SUCCESS, downloadBulkTemplate);
+        assertEquals(Action.SUCCESS, downloadBulkTemplate);
         FileInputStream templateInputStream = bulkUploadController.getTemplateInputStream();
         assertFalse(null == templateInputStream);
         FileOutputStream fos = new FileOutputStream(file);
@@ -162,7 +164,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             assertEquals(note.getType(), resourceNote.getType());
             assertEquals(note.getNote(), resourceNote.getNote());
             assertFalse(resource.getResourceCreators().isEmpty());
-			assertEquals(projectId, ((InformationResource) resource).getProjectId());
+            assertEquals(projectId, ((InformationResource) resource).getProjectId());
             if (resource.getTitle().equals("Grand Canyon")) {
                 assertEquals("A photo of the grand canyon", resource.getDescription());
                 assertEquals(1, resource.getResourceCreators().size());
@@ -273,7 +275,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.debug(bulkUploadController.getAsyncErrors());
         assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         Resource find1 = resourceService.find(details.get(0).getFirst());
-		assertEquals(Status.ACTIVE, find1.getStatus());
+        assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
         assertEquals(new Integer(1234), ((InformationResource) resourceService.find(details.get(0).getFirst())).getDate());
         assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
@@ -292,8 +294,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 "<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type: IMAGE</li>"));
         // should be two results, one deleted b/c of errors
         assertEquals(0, bulkUploadController.getDetails().size());
-//        assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
-//        assertEquals(Status.ACTIVE, resourceService.find(details.get(1).getFirst()).getStatus());
+        // assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
+        // assertEquals(Status.ACTIVE, resourceService.find(details.get(1).getFirst()).getStatus());
     }
 
     @Test
@@ -329,7 +331,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         String manifestFilename = "document_manifest_required_col_has_blanks.xls";
         // this file should fail validation and shouldn't even get to the async saving part.
         // the controller will always return success, however
-        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.SUCCESS_ASYNC);
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, TdarActionSupport.SUCCESS_ASYNC);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         assertFalse(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Title, Description, Date Created (Year)</li>"));
@@ -337,18 +339,18 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 .getAsyncErrors()
                 .contains(
                         "<li>Filename \"Codes E1 txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E2.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E3.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E4.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E5A.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E5B.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E6.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E7.txt\" was not found in the import batch</li"
-                        + "><li>Filename \"Codes E8.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E9.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E10.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E11.txt\" was not found in the import batch</li>"
-                        + "<li>Filename \"Codes E12.txt\" was not found in the import batch</li>"));
+                                + "<li>Filename \"Codes E2.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E3.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E4.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E5A.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E5B.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E6.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E7.txt\" was not found in the import batch</li"
+                                + "><li>Filename \"Codes E8.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E9.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E10.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E11.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E12.txt\" was not found in the import batch</li>"));
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {
@@ -378,7 +380,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws Exception {
-        return setupBasicBulkUploadTest(manifestName, BulkUploadController.SUCCESS_ASYNC);
+        return setupBasicBulkUploadTest(manifestName, TdarActionSupport.SUCCESS_ASYNC);
     }
 
     @Test
@@ -601,7 +603,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
-                logger.debug("\t\t {}",rc);
+                logger.debug("\t\t {}", rc);
             }
 
             collections.addAll(resourceCollections);

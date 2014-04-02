@@ -21,7 +21,7 @@ public class ExceptionWrapper implements Serializable {
     private String stackTrace;
     private String code;
     private String moreInfoUrlKey;
-    
+
     private static final String CODE_NULL_STACKTRACE = "0";
     public static final int CODE_MAXLENGTH = 5;
 
@@ -72,14 +72,18 @@ public class ExceptionWrapper implements Serializable {
     }
 
     public static String convertExceptionToCode(Throwable t) {
-        if(t == null) return CODE_NULL_STACKTRACE;
+        if (t == null) {
+            return CODE_NULL_STACKTRACE;
+        }
         String trace = ExceptionUtils.getFullStackTrace(t);
         String code = Integer.toHexString(trace.hashCode());
         return code.toUpperCase();
     }
 
     public static String convertExceptionToCode(String trace) {
-        if(trace == null) return CODE_NULL_STACKTRACE;
+        if (trace == null) {
+            return CODE_NULL_STACKTRACE;
+        }
         String code = Integer.toHexString(trace.hashCode());
         return code.toUpperCase();
     }

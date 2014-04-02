@@ -19,7 +19,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * Describes the type of site in the resource 
+ * Describes the type of site in the resource
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -27,7 +27,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "site_type_keyword", indexes = {
-        @Index(name="sitetype_appr", columnList="approved, id")})
+        @Index(name = "sitetype_appr", columnList = "approved, id") })
 @Indexed(index = "Keyword")
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 

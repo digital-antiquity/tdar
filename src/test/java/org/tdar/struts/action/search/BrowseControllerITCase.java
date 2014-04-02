@@ -19,7 +19,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
@@ -93,7 +94,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(creator.getId());
-        assertEquals(TdarActionSupport.SUCCESS, controller.browseCreators());
+        assertEquals(Action.SUCCESS, controller.browseCreators());
         assertEquals(creator, controller.getCreator());
         log.info(controller.getResults());
         assertTrue(controller.getResults().size() > 0);

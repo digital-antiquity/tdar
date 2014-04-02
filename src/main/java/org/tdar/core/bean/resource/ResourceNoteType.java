@@ -12,22 +12,22 @@ import org.tdar.utils.MessageHelper;
  * @author Adam Brin
  * @version $Revision$
  */
-public enum ResourceNoteType implements HasLabel, Localizable { 
+public enum ResourceNoteType implements HasLabel, Localizable {
     GENERAL("General Note"),
     REDACTION("Redaction Note"),
     RIGHTS_ATTRIBUTION("Rights & Attribution"),
     ADMIN("Administration Note");
-    
+
     private final String label;
 
     private ResourceNoteType(String label) {
         this.label = label;
     }
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     @Override
     public String getLabel() {

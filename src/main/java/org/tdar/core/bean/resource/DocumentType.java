@@ -46,7 +46,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
         this.schema = schema;
     }
 
-    private DocumentType(String label,  String genre, String pubName, String pubLoc, String schema) {
+    private DocumentType(String label, String genre, String pubName, String pubLoc, String schema) {
         this.label = label;
         this.openUrlGenre = genre;
         this.publisherName = pubName;
@@ -58,7 +58,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
     public String getLabel() {
         return label;
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
@@ -71,15 +71,15 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType>, Localizab
             default:
                 return false;
         }
-        
+
     }
-    
+
     /**
      * Returns the ResourceType corresponding to the String given or null if none exists. Used in place of valueOf since
      * valueOf throws RuntimeExceptions.
      */
     public static DocumentType fromString(String string) {
-        if (string == null || "".equals(string)) {
+        if ((string == null) || "".equals(string)) {
             return null;
         }
         // try to convert incoming resource type String query parameter to ResourceType enum.. unfortunately valueOf only throws RuntimeExceptions.

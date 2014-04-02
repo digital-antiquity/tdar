@@ -10,41 +10,38 @@ public class I18nException extends Exception implements LocalizableException {
     private Locale locale;
     private Object[] values;
     private String message;
-    
+
     public I18nException() {
         this.setLocale(Locale.getDefault());
     }
 
-
     public I18nException(String message) {
         this.message = message;
     }
-
 
     public I18nException(String message, Throwable cause) {
         super(cause);
         this.message = message;
     }
 
-    public I18nException(String message, Object ... values) {
+    public I18nException(String message, Object... values) {
         this.message = message;
         this.values = values;
     }
 
-
-    public I18nException(String message, Throwable cause, Object ... values) {
+    public I18nException(String message, Throwable cause, Object... values) {
         super(cause);
         this.message = message;
         this.values = values;
     }
-
 
     public I18nException(Throwable cause) {
         super(cause);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#getLocale()
      */
     @Override
@@ -52,21 +49,24 @@ public class I18nException extends Exception implements LocalizableException {
         return locale;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#getLocalizedMessage()
      */
     @Override
     public String getLocalizedMessage() {
-        return MessageHelper.getMessage(message,locale,values);
+        return MessageHelper.getMessage(message, locale, values);
     };
 
-  @Override
-  public String getMessage() {
-      return getLocalizedMessage();
-  }
+    @Override
+    public String getMessage() {
+        return getLocalizedMessage();
+    }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#setLocale(java.util.Locale)
      */
     @Override

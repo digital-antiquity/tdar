@@ -104,8 +104,10 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
             // 1-based count for PreparedStatement's weirdness.
             int count = 1;
             Map<DataTableColumn, String> columnToValueMap = new HashMap<DataTableColumn, String>();
-            if (line.length > getHeaderLine().length)
-                throw new TdarRecoverableRuntimeException("simpleConverter.column_has_more", Arrays.asList(numberOfLines, line.length, dataTable.getDisplayName()));
+            if (line.length > getHeaderLine().length) {
+                throw new TdarRecoverableRuntimeException("simpleConverter.column_has_more", Arrays.asList(numberOfLines, line.length,
+                        dataTable.getDisplayName()));
+            }
 
             for (int i = 0; i < line.length; i++) {
                 if (count <= getHeaderLine().length) {
@@ -113,7 +115,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
                             dataTable.getDataTableColumns().get(i), line[i]);
                     statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(i), line[i], i);
                 } else {
-                    logger.warn("Discarding degenerate data value at index "+ count + " : " + line[i]);
+                    logger.warn("Discarding degenerate data value at index " + count + " : " + line[i]);
                 }
             }
             targetDatabase.addTableRow(dataTable, columnToValueMap);

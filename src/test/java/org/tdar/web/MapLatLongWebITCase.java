@@ -16,7 +16,7 @@ import org.tdar.utils.TestConfiguration;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 
-public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
+public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     private static final String RESOURCE_WITH_NORMAL = "resource with normal";
@@ -39,7 +39,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
         String url = getCurrentUrlPath() + "?type=1";
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();    
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         latLong.setMaximumLatitude(45.336701909968106);
         latLong.setMinimumLatitude(32.175612478499325);
         latLong.setMaximumLongitude(-83.0126953125);
@@ -50,10 +50,11 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         detailedLatLong.setMaximumLongitude(-106.38383388519287);
         detailedLatLong.setMinimumLongitude(-106.38091564178467);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
-        Long confidentialFile =setupDocumentWithProject(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE,latLong, Status.ACTIVE, file, FileAccessRestriction.CONFIDENTIAL);
-        Long obfuscatedMap = setupDocumentWithProject(RESOURCE_WITH_OBFUSCATED_LAT_LONG,detailedLatLong, Status.ACTIVE, null, null);
-        Long draft = setupDocumentWithProject(RESOURCE_WITH_DRAFT,latLong, Status.DRAFT,null, null);
-        Long normal = setupDocumentWithProject(RESOURCE_WITH_NORMAL,latLong, Status.ACTIVE,null, null);
+        Long confidentialFile = setupDocumentWithProject(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE, latLong, Status.ACTIVE, file,
+                FileAccessRestriction.CONFIDENTIAL);
+        Long obfuscatedMap = setupDocumentWithProject(RESOURCE_WITH_OBFUSCATED_LAT_LONG, detailedLatLong, Status.ACTIVE, null, null);
+        Long draft = setupDocumentWithProject(RESOURCE_WITH_DRAFT, latLong, Status.DRAFT, null, null);
+        Long normal = setupDocumentWithProject(RESOURCE_WITH_NORMAL, latLong, Status.ACTIVE, null, null);
 
         gotoPage(url);
         logger.info(getPageBodyCode());
@@ -67,8 +68,8 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         assertNodeDoesNotLatLongAttributes(confidentialFile);
 
         // should do the same thing with urls:
-        gotoPage("/search/results?query="+LAT_LONG_SECURITY_TEST+"&orientation=MAP");
-        
+        gotoPage("/search/results?query=" + LAT_LONG_SECURITY_TEST + "&orientation=MAP");
+
         logout();
         gotoPage(url);
         // anonymous user
@@ -83,7 +84,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
 
         login(config.getUsername(), config.getPassword());
         gotoPage(url);
-        
+
         assertTextPresent(RESOURCE_WITH_DRAFT);
         assertNodeHasLatLongAttributes(draft);
         assertTextPresent(RESOURCE_WITH_NORMAL);
@@ -95,7 +96,6 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
 
         // make assertions
     }
-
 
     private void assertNodeHasLatLongAttributes(Long confidentialFile) {
         DomNode node = getPageContentsWithId(confidentialFile);
@@ -116,21 +116,19 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         }
     }
 
-
     private DomNode getPageContentsWithId(Long confidentialFile) {
-        return htmlPage.getElementById("resource-"+confidentialFile);
+        return htmlPage.getElementById("resource-" + confidentialFile);
     }
-
 
     private Long setupDocumentWithProject(String resourceName, LatitudeLongitudeBox latLong, Status status, File file, FileAccessRestriction access) {
         String ticketId = getPersonalFilestoreTicketId();
         if (file != null) {
             uploadFileToPersonalFilestore(ticketId, file.getAbsolutePath());
         }
-        
+
         gotoPage("/document/add");
         setInput("document.title", resourceName);
-        setInput("document.description",  "hi mom");
+        setInput("document.description", "hi mom");
         setInput("document.date", "1999");
         setInput("document.documentType", "OTHER");
         setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
@@ -142,16 +140,16 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase{
             setInput("latitudeLongitudeBoxes[0].maximumLatitude", latLong.getMaximumLatitude());
             setInput("latitudeLongitudeBoxes[0].maximumLongitude", latLong.getMaximumLongitude());
             setInput("latitudeLongitudeBoxes[0].minimumLatitude", latLong.getMinimumLatitude());
-            setInput("latitudeLongitudeBoxes[0].minimumLongitude",latLong.getMinimumLongitude());
+            setInput("latitudeLongitudeBoxes[0].minimumLongitude", latLong.getMinimumLongitude());
         }
         if (status != null) {
-            setInput("status",status.name());
+            setInput("status", status.name());
         }
 
         setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
         if (file != null) {
-        setInput("ticketId", ticketId);
-        addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, file.getName());
+            setInput("ticketId", ticketId);
+            addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, file.getName());
         }
         submitForm();
         return extractTdarIdFromCurrentURL();

@@ -84,8 +84,9 @@ public class SheetProxy implements Serializable {
     }
 
     public String getSheetName(int sheetNum) {
-        if (sheetNum == 0)
+        if (sheetNum == 0) {
             return name;
+        }
         return String.format("%s (%s)", name, sheetNum);
     }
 
@@ -94,7 +95,7 @@ public class SheetProxy implements Serializable {
     }
 
     public void setName(String name) {
-        if (workbook != null && workbook.getSheet(name) != null) {
+        if ((workbook != null) && (workbook.getSheet(name) != null)) {
             throw new TdarRecoverableRuntimeException("sheetProxy.workbook_name_already_exists", Arrays.asList(name));
         }
         this.name = name;
@@ -133,8 +134,9 @@ public class SheetProxy implements Serializable {
     }
 
     public SpreadsheetVersion getVersion() {
-        if (workbook instanceof HSSFWorkbook)
+        if (workbook instanceof HSSFWorkbook) {
             return SpreadsheetVersion.EXCEL97;
+        }
         return SpreadsheetVersion.EXCEL2007;
     }
 
@@ -175,13 +177,15 @@ public class SheetProxy implements Serializable {
     }
 
     public void preProcess() {
-        if (preCallback != null)
+        if (preCallback != null) {
             preCallback.apply(workbook);
+        }
     }
 
     public void postProcess() {
-        if (postCallback != null)
+        if (postCallback != null) {
             postCallback.apply(workbook);
+        }
     }
 
     public String getExtension() {

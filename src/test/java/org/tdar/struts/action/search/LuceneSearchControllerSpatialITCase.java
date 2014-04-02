@@ -108,7 +108,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
         logger.info("bb2Scale:{}", doc2.getFirstActiveLatitudeLongitudeBox().getScale());
         assertFalse(controller.getResults().contains(doc));
         assertTrue(controller.getResults().contains(doc2));
-        assertTrue(searchBox.getScale() + SpatialQueryPart.SCALE_RANGE < doc.getFirstActiveLatitudeLongitudeBox().getScale());
+        assertTrue((searchBox.getScale() + SpatialQueryPart.SCALE_RANGE) < doc.getFirstActiveLatitudeLongitudeBox().getScale());
 
     }
 

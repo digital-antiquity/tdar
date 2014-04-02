@@ -34,6 +34,7 @@ import org.apache.lucene.util.Version;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
+import org.hibernate.search.ProjectionConstants;
 import org.hibernate.search.Search;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
@@ -106,7 +107,7 @@ public class SearchService {
 
     @Autowired
     private DatasetDao datasetDao;
-    
+
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
@@ -151,6 +152,7 @@ public class SearchService {
 
     /**
      * Perform a search based on the @link QueryBuilder and @link SortOption array.
+     * 
      * @param queryBuilder
      * @param sortOptions
      * @return
@@ -166,7 +168,7 @@ public class SearchService {
         }
         FullTextQuery ftq = fullTextSession.createFullTextQuery(query, queryBuilder.getClasses());
 
-        if (sortOptions == null || sortOptions.length == 0) {
+        if ((sortOptions == null) || (sortOptions.length == 0)) {
             // if no sort specified we sort by descending score
             ftq.setSort(new Sort(new SortField(SortOption.getDefaultSortOption().getSortField(), SortOption.getDefaultSortOption().getLuceneSortType())));
         }
@@ -183,7 +185,6 @@ public class SearchService {
         logger.trace(ftq.getQueryString());
         return ftq;
     }
-
 
     /**
      * This method actually handles the Lucene search, passed in from the Query Builder and sets the results
@@ -236,13 +237,15 @@ public class SearchService {
 
     /**
      * Generate Facet Requests based on those specified on the @link SearchResultHandler
+     * 
      * @param ftq
      * @param resultHandler
      */
     @SuppressWarnings("rawtypes")
     private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
-        if (resultHandler.getFacetFields() == null)
+        if (resultHandler.getFacetFields() == null) {
             return;
+        }
 
         for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
             FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
@@ -271,7 +274,7 @@ public class SearchService {
      */
     private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
         List<Indexable> toReturn = new ArrayList<>();
-        LinkedHashMap<Long,Object[]> ids = new LinkedHashMap<>();
+        LinkedHashMap<Long, Object[]> ids = new LinkedHashMap<>();
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
         if (projectionModel == null) {
             projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
@@ -285,15 +288,15 @@ public class SearchService {
             if (projectionModel == ProjectionModel.HIBERNATE_DEFAULT) {
                 p = (Indexable) obj[0];
                 if (Persistable.Base.isNullOrTransient(p)) {
-                    logger.error("persistable is null? {} " , obj);
+                    logger.error("persistable is null? {} ", obj);
                 } else {
                     ids.put(p.getId(), obj);
                 }
-            } 
+            }
             toReturn.add(p);
         }
-       // iterate over all of the objects and create an objectMap if needed
-       if (CollectionUtils.isNotEmpty(ids.keySet())) {
+        // iterate over all of the objects and create an objectMap if needed
+        if (CollectionUtils.isNotEmpty(ids.keySet())) {
             switch (projectionModel) {
                 case LUCENE:
                     toReturn.clear();
@@ -306,15 +309,15 @@ public class SearchService {
                 default:
                     break;
             }
-            
+
             for (Indexable p : toReturn) {
                 if (Persistable.Base.isNullOrTransient(p)) {
                     continue;
                 }
                 Object[] obj = ids.get(p.getId());
-                Float score = (Float) obj[projections.indexOf(FullTextQuery.SCORE)];
+                Float score = (Float) obj[projections.indexOf(ProjectionConstants.SCORE)];
                 if (resultHandler.isDebug()) {
-                    Explanation ex = (Explanation) obj[projections.indexOf(FullTextQuery.EXPLANATION)];
+                    Explanation ex = (Explanation) obj[projections.indexOf(ProjectionConstants.EXPLANATION)];
                     p.setExplanation(ex);
                 }
                 if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
@@ -337,10 +340,10 @@ public class SearchService {
      */
     private List<Indexable> createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, List<String> projections, LinkedHashMap<Long, Object[]> ids) {
         List<Indexable> toReturn = new ArrayList<>();
-        for (Entry<Long,Object[]> entry : ids.entrySet()) {
+        for (Entry<Long, Object[]> entry : ids.entrySet()) {
             Object[] obj = entry.getValue();
             @SuppressWarnings("unchecked")
-            Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
+            Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(ProjectionConstants.OBJECT_CLASS)];
 
             try {
                 Indexable p = cast.newInstance();
@@ -357,9 +360,9 @@ public class SearchService {
             } catch (Exception e) {
                 throw new TdarRecoverableRuntimeException(e);
             }
-            
+
         }
-                
+
         return toReturn;
     }
 
@@ -372,8 +375,8 @@ public class SearchService {
      */
     private List<String> setupProjectionsForSearch(SearchResultHandler<?> resultHandler, FullTextQuery ftq) {
         List<String> projections = new ArrayList<>();
-        projections.add(FullTextQuery.THIS); // Hibernate Object
-        projections.add(FullTextQuery.OBJECT_CLASS); // class to project
+        projections.add(ProjectionConstants.THIS); // Hibernate Object
+        projections.add(ProjectionConstants.OBJECT_CLASS); // class to project
 
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
         if (projectionModel == null) {
@@ -381,14 +384,14 @@ public class SearchService {
         }
 
         if (projectionModel != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
-            projections.remove(FullTextQuery.THIS);
+            projections.remove(ProjectionConstants.THIS);
             projections.addAll(resultHandler.getProjectionModel().getProjections());
         }
 
-        projections.add(FullTextQuery.SCORE);
+        projections.add(ProjectionConstants.SCORE);
         if (resultHandler.isDebug()) {
             logger.debug("debug mode on for results handling");
-            projections.add(FullTextQuery.EXPLANATION);
+            projections.add(ProjectionConstants.EXPLANATION);
         }
         ftq.setProjection(projections.toArray(new String[0]));
         return projections;
@@ -399,7 +402,7 @@ public class SearchService {
      * 
      * @param q
      */
-    @SuppressWarnings({ "rawtypes","unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Persistable> void hydrateQueryParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = findAllHydratableParts(q);
         Map<Class, Set<T>> lookupMap = new HashMap<>();
@@ -481,7 +484,7 @@ public class SearchService {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
-        qb.append(reservedSearchParameters,provider);
+        qb.append(reservedSearchParameters, provider);
         qb.setOperator(Operator.AND);
         qb.append(new FieldQueryPart<>(fieldName, indexable.getId()));
 
@@ -523,7 +526,6 @@ public class SearchService {
         QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_35, pair.getFirst(), pair.getSecond());
         qb.setQueryParser(parser);
     }
-
 
     /**
      * The <b>fields</b> list specifies all of the generic fields that do not use the default analyzer.
@@ -610,7 +612,7 @@ public class SearchService {
         // Also, consider moving into genericService
         List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
         for (List<? extends Persistable> list : lists) {
-            logger.debug("inflating list of sparse objects: {}", list );
+            logger.debug("inflating list of sparse objects: {}", list);
             // making unchecked cast so compiler accepts call to set()
             @SuppressWarnings("unchecked")
             ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
@@ -635,16 +637,17 @@ public class SearchService {
     public void updateResourceCreators(SearchParameters group, Integer maxCreatorsToResolve) throws ParseException {
         logger.trace("updating proxies");
         int maxToResolve = 1000;
-        if (maxCreatorsToResolve != null && maxCreatorsToResolve > 0) {
+        if ((maxCreatorsToResolve != null) && (maxCreatorsToResolve > 0)) {
             maxToResolve = maxCreatorsToResolve;
         }
         Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<>();
         List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
         for (ResourceCreatorProxy proxy : proxies) {
-            if (proxy == null)
+            if (proxy == null) {
                 continue;
+            }
             ResourceCreator rc = proxy.getResourceCreator();
-            if (rc != null && proxy.isValid()) {
+            if ((rc != null) && proxy.isValid()) {
                 ArrayList<ResourceCreatorProxy> values = new ArrayList<>();
                 Creator creator = rc.getCreator();
                 if (Persistable.Base.isTransient(creator)) {
@@ -715,7 +718,7 @@ public class SearchService {
      * @param user
      * @return
      */
-    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user,TextProvider provider) {
+    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user, TextProvider provider) {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
@@ -727,24 +730,26 @@ public class SearchService {
             }
             params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
         }
-        queryBuilder.append(params,provider);
+        queryBuilder.append(params, provider);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
-        queryBuilder.append(reservedSearchParameters,provider);
+        queryBuilder.append(reservedSearchParameters, provider);
         return queryBuilder;
     }
 
     /**
      * Applies the @link ResourceType facet to a search
+     * 
      * @param qb
      * @param selectedResourceTypes
      * @param handler
      */
     public void addResourceTypeFacetToViewPage(ResourceQueryBuilder qb, List<ResourceType> selectedResourceTypes, SearchResultHandler<?> handler) {
         if (CollectionUtils.isNotEmpty(selectedResourceTypes)) {
-            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, MessageHelper.getMessage("searchService.resourceType"), Operator.OR, selectedResourceTypes));
+            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, MessageHelper.getMessage("searchService.resourceType"), Operator.OR,
+                    selectedResourceTypes));
             // If we sort by resource type, then change the primary sort field to the secondary as we're faceting by resource type
-            if (handler.getSortField() == SortOption.RESOURCE_TYPE || handler.getSortField() == SortOption.RESOURCE_TYPE_REVERSE) {
+            if ((handler.getSortField() == SortOption.RESOURCE_TYPE) || (handler.getSortField() == SortOption.RESOURCE_TYPE_REVERSE)) {
                 handler.setSortField(handler.getSecondarySortField());
             }
         }
@@ -762,7 +767,7 @@ public class SearchService {
         result.setStartRecord(0);
         result.setRecordsPerPage(10);
         handleSearch(qb, result);
-        return (List<Resource>)((List<?>)result.getResults());
+        return (List<Resource>) ((List<?>) result.getResults());
     }
 
 }

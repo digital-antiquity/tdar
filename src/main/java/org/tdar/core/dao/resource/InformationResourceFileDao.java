@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -55,8 +56,9 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if (objs == null || objs[0] == null)
+                if ((objs == null) || (objs[0] == null)) {
                     continue;
+                }
                 toReturn.put(String.format("%s (%s)", objs[0], objs[1]), ((Long) objs[1]).floatValue());
                 total += (Long) objs[1];
             } catch (Exception e) {
@@ -88,7 +90,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         for (InformationResourceFileVersion version : irFile.getLatestVersions()) {
             logger.debug("deleting version:{}  isTranslated:{}", version, version.isTranslated());
             if (version.isTranslated()) {
-                //HQL here avoids issue where hibernate delays the delete
+                // HQL here avoids issue where hibernate delays the delete
                 deleteVersionImmediately(version);
                 // we don't need safeguards on a translated file, so tell the dao to delete no matter what.
                 // informationResourceFileVersionDao.forceDelete(version);
@@ -100,7 +102,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         if (Persistable.Base.isNullOrTransient(version)) {
             throw new TdarRecoverableRuntimeException("error.cannot_delete_transient");
         }
-        
+
         if (version.isUploadedOrArchival()) {
             throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
         }
@@ -119,14 +121,14 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             Person authenticatedUser, List<Status> resourceStatus,
             List<FileStatus> fileStatus) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_STATUS);
-        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         query.setParameterList("statuses", resourceStatus);
         query.setParameterList("fileStatuses", fileStatus);
         query.setParameter("submitterId", authenticatedUser.getId());
         List<InformationResource> list = new ArrayList<>();
-        for (ResourceProxy proxy : (List<ResourceProxy>)query.list()) {
+        for (ResourceProxy proxy : (List<ResourceProxy>) query.list()) {
             try {
-                list.add((InformationResource)proxy.generateResource());
+                list.add((InformationResource) proxy.generateResource());
             } catch (IllegalAccessException | InvocationTargetException
                     | InstantiationException e) {
                 logger.error("error happened manifesting: {} ", e);

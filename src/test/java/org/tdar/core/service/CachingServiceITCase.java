@@ -41,8 +41,9 @@ public class CachingServiceITCase extends AbstractControllerITCase {
     public Long countActive() {
         int count = 0;
         for (CodingSheet sheet : codingSheetService.findAll()) {
-            if (sheet.getStatus().equals(Status.ACTIVE))
+            if (sheet.getStatus().equals(Status.ACTIVE)) {
                 count++;
+            }
         }
         return new Long(count);
     }

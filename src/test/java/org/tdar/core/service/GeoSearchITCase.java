@@ -102,11 +102,13 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         logger.info("{}", countryInfo);
         for (GeographicKeyword kwd : countryInfo) {
             logger.debug("{}", kwd);
-            if (kwd.getLabel().contains("US"))
+            if (kwd.getLabel().contains("US")) {
                 found = true;
+            }
         }
-        if (!geoSearchService.isEnabled())
+        if (!geoSearchService.isEnabled()) {
             return;
+        }
         assertTrue("country search found item not in US", found);
     }
 
@@ -136,8 +138,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         for (GeographicKeyword kwd : extractedGeoInfo) {
             assertFalse(kwd.getLabel().contains("Asia"));
 
-            if (kwd.getLabel().contains("US") || kwd.getLabel().contains("Virginia") || kwd.getLabel().contains("Alexandria"))
+            if (kwd.getLabel().contains("US") || kwd.getLabel().contains("Virginia") || kwd.getLabel().contains("Alexandria")) {
                 fnd++;
+            }
         }
         assertEquals("expected 3 (1 for US, Virginia, Alexandria) " + fnd, 3, fnd);
         genericService.saveOrUpdate(project);
@@ -159,13 +162,14 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         int totalRecords = ftq.getResultSize();
         ftq.setFirstResult(0);
         ftq.setMaxResults(100);
-        List<Project> projects = (List<Project>) ftq.list();
+        List<Project> projects = ftq.list();
         logger.info("found: " + totalRecords);
         boolean found = false;
         for (Project p : projects) {
             logger.info("{}", p);
-            if (p.getId().equals(project2.getId()))
+            if (p.getId().equals(project2.getId())) {
                 found = true;
+            }
         }
         assertTrue("managed geo keywords found in index", found);
 
@@ -176,16 +180,18 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
     public void testFipsSearch() {
         String fips = "02090";
         LatitudeLongitudeBox latLong = geoSearchDao.extractLatLongFromFipsCode(fips);
-        if (!geoSearchService.isEnabled())
+        if (!geoSearchService.isEnabled()) {
             return;
+        }
         assertNotNull(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         extractAllGeographicInfo.addAll(geoSearchService.extractCountyInfo(latLong));
         boolean found = false;
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
             logger.debug("{}", kwd);
-            if (kwd.getLabel().contains("Fairbanks"))
+            if (kwd.getLabel().contains("Fairbanks")) {
                 found = true;
+            }
         }
         assertTrue("should have found fairbanks in the fips lookup", found);
         logger.info("{}", extractAllGeographicInfo);
@@ -203,8 +209,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         boolean found = false;
         logger.info("{}", latLong);
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
-            if (kwd.getLabel().contains("Guam"))
+            if (kwd.getLabel().contains("Guam")) {
                 found = true;
+            }
             logger.info("{}", kwd.getLabel());
         }
         assertTrue("Should have found Guam", found);
@@ -225,8 +232,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         String[] fips = { "66999", "69999", "60999" };
         LatitudeLongitudeBox latLong = geoSearchDao.extractLatLongFromFipsCode(fips);
         logger.info("{}", latLong);
-        if (!geoSearchService.isEnabled())
+        if (!geoSearchService.isEnabled()) {
             return;
+        }
         assertNotNull(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         boolean found = false;
@@ -240,10 +248,12 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
             // if (kwd.getLabel().contains("Guam"))
             // found3 = true;
 
-            if (kwd.getLabel().contains("Samoa"))
+            if (kwd.getLabel().contains("Samoa")) {
                 found = true;
-            if (kwd.getLabel().contains("Belize"))
+            }
+            if (kwd.getLabel().contains("Belize")) {
                 found2 = true;
+            }
         }
         assertTrue("should have found Milne in the fips", found);
         // assertTrue("should have found Guam in the fips", found3);
@@ -255,14 +265,16 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
     public void testFipsExpandedSearch() {
         String fips = "02999";
         LatitudeLongitudeBox latLong = geoSearchDao.extractLatLongFromFipsCode(fips);
-        if (!geoSearchService.isEnabled())
+        if (!geoSearchService.isEnabled()) {
             return;
+        }
         assertNotNull(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
-            if (kwd.getLabel().contains("RU (") || kwd.getLabel().contains("CA (") || kwd.getLabel().contains("US ("))
+            if (kwd.getLabel().contains("RU (") || kwd.getLabel().contains("CA (") || kwd.getLabel().contains("US (")) {
                 found++;
+            }
         }
         // assertTrue(latLong.getMinimumLatitude().equals(62.73741335487087));
         // assertTrue(latLong.getMaximumLatitude().equals(64.37669436945947));
@@ -281,8 +293,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
             boolean found = false;
             for (GeographicKeyword kwd : adminInfo) {
                 logger.debug("{}", kwd);
-                if (kwd.getLabel().contains("California"))
+                if (kwd.getLabel().contains("California")) {
                     found = true;
+                }
             }
             assertTrue("country search found item not in California", found);
         }
@@ -308,8 +321,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         int found = 0;
         logger.debug(extractAllGeographicInfo.size() + " geographic terms being returned {}", extractAllGeographicInfo);
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
-            if (kwd.getLabel().contains("ML (") || kwd.getLabel().contains("GY (") || kwd.getLabel().contains("TZ ("))
+            if (kwd.getLabel().contains("ML (") || kwd.getLabel().contains("GY (") || kwd.getLabel().contains("TZ (")) {
                 found++;
+            }
         }
         assertEquals("Should not find africa for search for Micronesia", 0, found);
     }

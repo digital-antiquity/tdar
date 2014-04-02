@@ -152,7 +152,7 @@ public class BulkManifestProxy implements Serializable {
     public void setRequired(Set<CellMetadata> required) {
         this.required = required;
     }
-    
+
     public Set<CellMetadata> getRequired() {
         return required;
     }

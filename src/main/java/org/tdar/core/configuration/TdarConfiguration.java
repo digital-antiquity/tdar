@@ -29,7 +29,7 @@ import org.tdar.filestore.PairtreeFilestore;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public class TdarConfiguration  {
+public class TdarConfiguration {
 
     public static final int HTTPS_PORT_DEFAULT = 443;
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
@@ -41,8 +41,6 @@ public class TdarConfiguration  {
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
-
-
 
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final int DEFAULT_PORT = 80; // we use this in test
@@ -85,14 +83,14 @@ public class TdarConfiguration  {
         filestore = loadFilestore();
         initPersonalFilestorePath();
     }
-    
+
     public void initialize() {
         logger.debug("initializing filestore and setup");
-        //initPersonalFilestorePath();
+        // initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
         intializeCouponCodes();
-        
+
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
         } else {
@@ -105,12 +103,11 @@ public class TdarConfiguration  {
         if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
             throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
         }
-        
+
         File filestoreLoc = new File(getFileStoreLocation());
         if (!filestoreLoc.exists()) {
             throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
         }
-
 
     }
 
@@ -437,7 +434,7 @@ public class TdarConfiguration  {
             dir = dir.substring(1);
         }
         if (dir.endsWith("/") || dir.startsWith("\\")) {
-            dir = dir.substring(0,dir.length() -1);
+            dir = dir.substring(0, dir.length() - 1);
         }
         return dir;
     }
@@ -716,13 +713,13 @@ public class TdarConfiguration  {
     }
 
     public boolean obfuscationInterceptorDisabled() {
-        return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+        return assistant.getBooleanProperty("obfuscation.interceptor.disabled", false);
     }
 
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
     }
-    
+
     public boolean isJSCSSMergeServletEnabled() {
         return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
@@ -734,28 +731,29 @@ public class TdarConfiguration  {
     public boolean isStaticContentEnabled() {
         return assistant.getBooleanProperty("static.content.enabled", false);
     }
-    
+
     public int getStaticContentSSLPort() {
         return assistant.getIntProperty("static.content.sslPort", HTTPS_PORT_DEFAULT);
     }
+
     public int getStaticContentPort() {
         return assistant.getIntProperty("static.content.port", DEFAULT_PORT);
     }
-    
+
     public String getStaticContentHost() {
-        return assistant.getStringProperty("static.content.host",getHostName());
+        return assistant.getStringProperty("static.content.host", getHostName());
     }
 
     public String getContentSecurityPolicyAdditions() {
-        return assistant.getStringProperty("content.security.policy.additions","");
+        return assistant.getStringProperty("content.security.policy.additions", "");
     }
 
     public Boolean getContentSecurityPolicyEnabled() {
-        return assistant.getBooleanProperty("content.security.policy.enabled",true);
+        return assistant.getBooleanProperty("content.security.policy.enabled", true);
     }
 
-	public boolean ignoreMissingFilesInFilestore() {
-        return assistant.getBooleanProperty("filestore.ignoreMissing",false);
-	}
+    public boolean ignoreMissingFilesInFilestore() {
+        return assistant.getBooleanProperty("filestore.ignoreMissing", false);
+    }
 
 }

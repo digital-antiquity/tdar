@@ -30,7 +30,7 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
     })
     public String execute() {
         getLogger().trace(System.getProperty("enableContextSwitchingConfig"));
-        if (getConfigurationFile() != null && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
+        if ((getConfigurationFile() != null) && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
             getLogger().info("switching tDarConfig to:" + getConfigurationFile());
             TdarConfiguration.getInstance().setConfigurationFile(configurationFile);
         } else {

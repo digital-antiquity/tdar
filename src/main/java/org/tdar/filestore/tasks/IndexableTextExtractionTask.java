@@ -17,6 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
+import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
@@ -40,7 +41,6 @@ public class IndexableTextExtractionTask extends AbstractTask {
     private static final String METADATA2 = ".metadata";
     private static final long serialVersionUID = -5207578211297342261L;
 
-
     @Override
     public void run() throws Exception {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
@@ -59,11 +59,11 @@ public class IndexableTextExtractionTask extends AbstractTask {
             Tika tika = new Tika();
             Metadata metadata = new Metadata();
             String mimeType = tika.detect(input);
-            metadata.set(Metadata.CONTENT_TYPE, mimeType);
+            metadata.set(HttpHeaders.CONTENT_TYPE, mimeType);
 
             Parser parser = new AutoDetectParser();
             ParseContext parseContext = new ParseContext();
-            
+
             metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + METADATA2);
             metadataOutputStream = new FileOutputStream(metadataFile);
             if (!FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED.contains(FilenameUtils.getExtension(filename).toLowerCase())) {
@@ -71,8 +71,8 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
                 BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
                 BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
-                //If we're dealing with a zip, read only the beginning of the file
-                    stream = new FileInputStream(file);
+                // If we're dealing with a zip, read only the beginning of the file
+                stream = new FileInputStream(file);
                 try { // FIXME: Remove when PDFBox is upgraded to 1.8.4
                     parser.parse(stream, handler, metadata, parseContext);
                     IOUtils.closeQuietly(indexedFileOutputStream);
@@ -80,7 +80,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                         addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
                     }
                 } catch (NullPointerException npe) {
-                    getLogger().debug("NPE from PDF issue" , npe);
+                    getLogger().debug("NPE from PDF issue", npe);
                 }
             }
             Thread.yield();
@@ -114,7 +114,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
             IOUtils.closeQuietly(metadataOutputStream);
         }
 
-        if (metadataFile != null && metadataFile.exists() && metadataFile.length() > 0) {
+        if ((metadataFile != null) && metadataFile.exists() && (metadataFile.length() > 0)) {
             addDerivativeFile(version, metadataFile, VersionType.METADATA);
 
         }

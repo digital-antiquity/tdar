@@ -6,8 +6,9 @@ import org.tdar.utils.MessageHelper;
 
 /**
  * Represents a type of License for a Resource
+ * 
  * @author abrin
- *
+ * 
  */
 public enum LicenseType implements HasLabel, Localizable {
     PUBLIC_DOMAIN("Public Domain", "Public Domain", "This option dictates that the work in question has no applicable attribution and can be reused freely.",

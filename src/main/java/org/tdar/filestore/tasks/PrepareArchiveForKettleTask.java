@@ -57,7 +57,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             "    <updated_by>${" + UPDATED_BY_EMAIL + "}</updated_by>" + lineSeparator() +
             "</run_settings>";
 
-
     private String kettleInputPath = TdarConfiguration.getInstance().getKettleInputPath();
     private File controlFileOuputDir;
     private File archiveCopiesDir;
@@ -142,9 +141,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
-        
-        // has the archive been assigned to a project? 
-        if (archive.getProjectId() == null || archive.getProjectId() <= 0) {
+
+        // has the archive been assigned to a project?
+        if ((archive.getProjectId() == null) || (archive.getProjectId() <= 0)) {
             recordErrorAndExit("Cannot unpack an archive that has not yet been assigned to a project!");
         }
 
@@ -191,7 +190,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     }
 
     /**
-     * @param archive that is being extracted
+     * @param archive
+     *            that is being extracted
      * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
      */
     protected String getEmailToNotify(Archive archive) {

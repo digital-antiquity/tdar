@@ -20,8 +20,8 @@ import org.tdar.utils.MessageHelper;
  * @version $Rev$
  */
 public enum ResourceAnnotationType implements HasLabel, Localizable {
-    
-	IDENTIFIER("Resource Identifier");
+
+    IDENTIFIER("Resource Identifier");
 
     private final String label;
 

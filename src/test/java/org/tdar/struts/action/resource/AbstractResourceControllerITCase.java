@@ -21,8 +21,9 @@ import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.BillingAccountController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
@@ -41,7 +42,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     AccountService accountService;
 
     @Deprecated()
-    //don't call this, just call edit 
+    // don't call this, just call edit
     public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
         controller.setId(id);
         controller.prepare();
@@ -72,7 +73,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
-            assertEquals(TdarActionSupport.SUCCESS, controller.createCouponCode());
+            assertEquals(Action.SUCCESS, controller.createCouponCode());
         } catch (Exception e) {
             logger.warn("{}", e);
         }
@@ -98,7 +99,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         accountService.updateQuota(controller.getAccount());
         try {
             logger.info("saving account");
-            assertEquals(TdarActionSupport.SUCCESS, controller.save());
+            assertEquals(Action.SUCCESS, controller.save());
         } catch (Exception e) {
             logger.error("exception : {}", e);
             seen = true;

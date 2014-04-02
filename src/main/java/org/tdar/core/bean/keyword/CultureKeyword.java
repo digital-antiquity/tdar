@@ -19,7 +19,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * Represents a Culture described by a resource.  
+ * Represents a Culture described by a resource.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -27,7 +27,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "culture_keyword", indexes = {
-        @Index(name="cltkwd_appr", columnList="approved, id")
+        @Index(name = "cltkwd_appr", columnList = "approved, id")
 })
 @Indexed(index = "Keyword")
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {

@@ -19,7 +19,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
  * A service to help with the obfuscation of @link Persistable Beans supporting @link Obfuscatable
  * 
  * @author abrin
- *
+ * 
  */
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +35,7 @@ public class ObfuscationService {
 
     /**
      * Obfuscates a collection of objects based on the specified user.
+     * 
      * @see #obfuscate(Obfuscatable, Person)
      * 
      * @param targets
@@ -72,22 +73,22 @@ public class ObfuscationService {
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, Person user) {
 
-        if (target == null || target.isObfuscated()) {
+        if ((target == null) || target.isObfuscated()) {
             logger.trace("target is already obfuscated or null: {} ({}}", target, user);
             return;
         }
 
-//        if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
-//            return;
-//        }
+        // if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
+        // return;
+        // }
 
         if (authService.isEditor(user)) {
-//            logger.debug("user is editor: {} ({}}", target, user);
+            // logger.debug("user is editor: {} ({}}", target, user);
             return;
         }
-        
+
         // don't obfuscate someone for themself
-        if (target instanceof Person && ObjectUtils.equals(user, (Person)target)) {
+        if ((target instanceof Person) && ObjectUtils.equals(user, target)) {
             logger.trace("not obfuscating person: {}", user);
             return;
         }
@@ -102,7 +103,8 @@ public class ObfuscationService {
     }
 
     /**
-     * Ultimately, this should be replaced with a Vistor pattern for obfuscation, but right now, it handles the obfuscation by calling @link Obfuscatable.obfuscate()
+     * Ultimately, this should be replaced with a Vistor pattern for obfuscation, but right now, it handles the obfuscation by calling @link
+     * Obfuscatable.obfuscate()
      * 
      * @param target
      * @return
@@ -113,6 +115,5 @@ public class ObfuscationService {
         target.setObfuscated(true);
         return target.obfuscate();
     }
-    
 
 }

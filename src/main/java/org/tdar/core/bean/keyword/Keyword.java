@@ -33,8 +33,8 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
- * Interface and Abstract Class for all keywords.  Unique entities managed outside of resources, and linked to them.
- *  
+ * Interface and Abstract Class for all keywords. Unique entities managed outside of resources, and linked to them.
+ * 
  * Base Class for all keywords
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>

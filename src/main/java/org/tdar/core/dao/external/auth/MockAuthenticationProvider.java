@@ -53,21 +53,23 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name,
-                                             String password) {
-        if(!isEnabled() || !isConfigured()) return REMOTE_EXCEPTION;
-        if(TdarConfiguration.getInstance().isProductionEnvironment()) {
+            String password) {
+        if (!isEnabled() || !isConfigured()) {
+            return REMOTE_EXCEPTION;
+        }
+        if (TdarConfiguration.getInstance().isProductionEnvironment()) {
             logger.error("Mock Authentication is not allowed in production.");
             return REMOTE_EXCEPTION;
         }
 
         AuthenticationResult result = ACCOUNT_DOES_NOT_EXIST;
         logger.debug("trying to authenticate:: user: {}  groupname:{}", name, password);
-        if(users.containsKey(name)) {
+        if (users.containsKey(name)) {
             TdarGroup group = TdarGroup.fromString(password);
             logger.debug("user found:{}  group:{}", name, group);
             users.put(name, group.getGroupName());
             result = VALID;
-            if(group == TdarGroup.UNAUTHORIZED) {
+            if (group == TdarGroup.UNAUTHORIZED) {
                 result = INVALID_PASSWORD;
             }
         } else {
@@ -117,9 +119,10 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public String[] findGroupMemberships(Person person) {
         TdarGroup group = TdarGroup.fromString(users.get(person.getUsername()));
-        logger.debug("group membership request: name:{}   groupname:{},    group:{}", new Object[]{person.getUsername(), users.get(person.getUsername()), group});
+        logger.debug("group membership request: name:{}   groupname:{},    group:{}", new Object[] { person.getUsername(), users.get(person.getUsername()),
+                group });
         List<String> toReturn = new ArrayList<String>();
-        switch(group) {
+        switch (group) {
             case TDAR_ADMIN:
                 toReturn.add(TdarGroup.TDAR_ADMIN.getGroupName());
             case TDAR_EDITOR:
@@ -128,8 +131,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
                 toReturn.add(TdarGroup.TDAR_USERS.getGroupName());
                 break;
         }
-        String [] result = toReturn.toArray(new String[0]);
-        logger.debug("group membership request: name:{}   groupname:{},  group:{},  membership:[{}]", new Object[]{person.getUsername(), users.get(person.getUsername()), group, result});
+        String[] result = toReturn.toArray(new String[0]);
+        logger.debug("group membership request: name:{}   groupname:{},  group:{},  membership:[{}]",
+                new Object[] { person.getUsername(), users.get(person.getUsername()), group, result });
         return result;
     }
 
@@ -141,12 +145,12 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Autowired
     public void setEntityService(EntityService entityService) {
-        if(TdarConfiguration.getInstance().isProductionEnvironment()) {
+        if (TdarConfiguration.getInstance().isProductionEnvironment()) {
             logger.info("Mock Authentication is not allowed in production. System will not load mock user db");
             return;
         }
         List<Person> registeredUsers = entityService.findAllRegisteredUsers();
-        for(Person user : registeredUsers) {
+        for (Person user : registeredUsers) {
             users.put(user.getUsername(), user.getUsername());
         }
     }

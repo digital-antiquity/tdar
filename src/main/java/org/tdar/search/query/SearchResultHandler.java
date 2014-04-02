@@ -38,7 +38,7 @@ public interface SearchResultHandler<I extends Indexable> extends TextProvider {
         HIBERNATE_DEFAULT,
         LUCENE,
         RESOURCE_PROXY;
-        
+
         private List<String> projections = new ArrayList<>();
 
         public List<String> getProjections() {
@@ -51,11 +51,11 @@ public interface SearchResultHandler<I extends Indexable> extends TextProvider {
         public void setProjections(List<String> projections) {
             this.projections = projections;
         }
-        
+
     }
-    
+
     ProjectionModel getProjectionModel();
-    
+
     /**
      * Sets the total number of records found by the SearchService.
      * When resultSize is less than startRecord + recordsPerPage, then there are more pages of results available.

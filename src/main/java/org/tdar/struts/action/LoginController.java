@@ -100,15 +100,16 @@ public class LoginController extends AuthenticationAware.Base {
 
         setReturnUrl(parseReturnUrl());
         if (StringUtils.isNotBlank(getReturnUrl())) {
-        getSessionData().setReturnUrl(getReturnUrl());
-        return REDIRECT;
+            getSessionData().setReturnUrl(getReturnUrl());
+            return REDIRECT;
         }
         return AUTHENTICATED;
     }
 
     private String parseReturnUrl() {
-        if (getSessionData().getReturnUrl() == null && StringUtils.isEmpty(url))
+        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
             return null;
+        }
 
         String url_ = getSessionData().getReturnUrl();
         if (StringUtils.isBlank(url_)) {

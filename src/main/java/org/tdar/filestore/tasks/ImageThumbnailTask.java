@@ -48,6 +48,7 @@ public class ImageThumbnailTask extends AbstractTask {
     public static final int SMALL = 96;
     private transient ImagePlus ijSource;
     private boolean jaiImageJenabled = true;
+
     /*
      * public static void main(String[] args) {
      * ImageThumbnailTask task = new ImageThumbnailTask();
@@ -80,7 +81,7 @@ public class ImageThumbnailTask extends AbstractTask {
     }
 
     public void processImage(InformationResourceFileVersion version, File sourceFile) {
-        if (sourceFile == null || !sourceFile.exists()) {
+        if ((sourceFile == null) || !sourceFile.exists()) {
             getWorkflowContext().setErrorFatal(true);
             throw new TdarRecoverableRuntimeException("error.file_not_found");
         }
@@ -107,8 +108,8 @@ public class ImageThumbnailTask extends AbstractTask {
         if (StringUtils.isNotBlank(msg)) {
             getLogger().error(msg);
         }
-        
-        if (isJaiImageJenabled() && ijSource == null) {
+
+        if (isJaiImageJenabled() && (ijSource == null)) {
             getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
             try {
                 // http://sourceforge.net/projects/ij-plugins/files/ij-imageio/v.1.2.4/
@@ -118,7 +119,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 getLogger().error("could not open image with ImageJ-ImageIO" + sourceFile, e);
             }
         }
-        
+
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
             if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
@@ -177,10 +178,11 @@ public class ImageThumbnailTask extends AbstractTask {
 
     protected float getScalingRatio(int sourceWidth, int sourceHeight, int resolution) {
         float ratio;
-        if (sourceWidth >= sourceHeight)
-            ratio = (float) ((float) resolution / (float) sourceWidth);
-        else
-            ratio = (float) ((float) resolution / (float) sourceHeight);
+        if (sourceWidth >= sourceHeight) {
+            ratio = (float) resolution / (float) sourceWidth;
+        } else {
+            ratio = (float) resolution / (float) sourceHeight;
+        }
 
         return ratio;
     }
@@ -225,15 +227,16 @@ public class ImageThumbnailTask extends AbstractTask {
                 // First interpolate to this size, then use the new image for scaling to all the smaller sizes
                 ip.setInterpolate(true);
                 ip.smooth();
-                ip = ip.resize((int) Math.round(ip.getWidth() * scalingRatio),
-                        (int) Math.round(ip.getHeight() * scalingRatio));
+                ip = ip.resize(Math.round(ip.getWidth() * scalingRatio),
+                        Math.round(ip.getHeight() * scalingRatio));
             } else {
                 ip = averageReductionScale(ip, ijSource, resolution);
             }
 
             // ip is now a scaled image processor
-            if (resolution != SMALL)
+            if (resolution != SMALL) {
                 ip.sharpen();
+            }
 
             // Get the destination width and height.
             int destWidth = ip.getWidth();
@@ -286,12 +289,13 @@ public class ImageThumbnailTask extends AbstractTask {
         double product = xshrink * xshrink;
         int samples;
 
-        if (source.getBitDepth() == 32)
+        if (source.getBitDepth() == 32) {
             return null;
+        }
 
         samples = (ip instanceof ColorProcessor) ? 3 : 1;
-        int w = (int) ((double) ip.getWidth() / dxshrink);
-        int h = (int) ((double) ip.getHeight() / dxshrink);
+        int w = (int) (ip.getWidth() / dxshrink);
+        int h = (int) (ip.getHeight() / dxshrink);
         ImageProcessor ip2 = ip.createProcessor(w, h);
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
@@ -314,13 +318,15 @@ public class ImageThumbnailTask extends AbstractTask {
 
         for (int y2 = 0; y2 < xshrink; y2++) {
             for (int x2 = 0; x2 < xshrink; x2++) {
-                pixel = ip.getPixel(x * xshrink + x2, y * xshrink + y2, pixel);
-                for (int i = 0; i < samples; i++)
+                pixel = ip.getPixel((x * xshrink) + x2, (y * xshrink) + y2, pixel);
+                for (int i = 0; i < samples; i++) {
                     sum[i] += pixel[i];
+                }
             }
         }
-        for (int i = 0; i < samples; i++)
-            sum[i] = (int) (sum[i] / product + 0.5d);
+        for (int i = 0; i < samples; i++) {
+            sum[i] = (int) ((sum[i] / product) + 0.5d);
+        }
         return sum;
     }
 

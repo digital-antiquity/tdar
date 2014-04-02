@@ -32,6 +32,8 @@ import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.Action;
+
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
@@ -107,7 +109,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertFalse(rc.isAllowedToCreateResource());
         Assert.assertTrue(rc.isPayPerIngestEnabled());
         Assert.assertNull(tdae);
-        Assert.assertEquals(ResourceController.SUCCESS, result);
+        Assert.assertEquals(Action.SUCCESS, result);
     }
 
     @Test
@@ -115,7 +117,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testInitialSaveWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
         Pair<String, Exception> tdae = setupResource(setupDocument());
-        assertEquals(DocumentController.INPUT, tdae.getFirst());
+        assertEquals(Action.INPUT, tdae.getFirst());
         Long newId = controller.getResource().getId();
 
         // Assert.assertNull(entityService.findByEmail("new@email.com"));
@@ -186,7 +188,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setAccountId(expectedAccount.getId());
         controller.setServletRequest(getServletPostRequest());
         UsagePair statsBefore = amountRemaining(expectedAccount);
-        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), TdarActionSupport.SUCCESS, controller.save());
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), Action.SUCCESS, controller.save());
 
         UsagePair statsAfter = amountRemaining(expectedAccount);
         assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
@@ -205,7 +207,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setFileProxies(uploadFilesAsync.getSecond());
         long fileSize = file.length();
         controller.setServletRequest(getServletPostRequest());
-        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), TdarActionSupport.SUCCESS, controller.save());
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), Action.SUCCESS, controller.save());
         statsAfter = amountRemaining(expectedAccount);
         assertEquals(title + ":files remaining should decrement by 1", statsBefore.files() - 1, statsAfter.files());
         assertEquals(title + ":space remaining should decrement by " + fileSize, statsBefore.bytes() - fileSize, statsAfter.bytes());
@@ -214,7 +216,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     private Pair<String, Exception> setupResource(Document d) {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
-        if (d != null && d.getId() != null) {
+        if ((d != null) && (d.getId() != null)) {
             controller.setId(d.getId());
         }
         initControllerFields();

@@ -74,7 +74,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Action(value = "checkstatusAsync", results = {
             @Result(name = "success", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) }
             )
-    public String checkStatusAsync() {
+            public String checkStatusAsync() {
         percentDone = 0;
         phase = "Initializing";
         Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
@@ -85,7 +85,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             part = part.substring(part.lastIndexOf(" "));
             float pct = Float.parseFloat(part);
             phase = msg;
-            percentDone = (int)pct;
+            percentDone = (int) pct;
         }
         return SUCCESS;
     }

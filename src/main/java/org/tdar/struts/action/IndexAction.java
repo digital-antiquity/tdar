@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -53,11 +50,11 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private Project featuredProject;
 
-//    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+    // private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
-    private HashMap<String,HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
-    
+    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+
     @Autowired
     private RssService rssService;
 
@@ -65,15 +62,20 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private String sitemapFile = "sitemap_index.xml";
 
-    
     @HttpOnlyIfUnauthenticated
     @Actions({
-        @Action(value = "page-not-found",results = { @Result(name = ERROR, type="freemarkerhttp",  location = "/WEB-INF/content/errors/page-not-found.ftl", params={"status","404"})  }),
-        @Action(value = "not-found",     results = { @Result(name = ERROR, type="freemarkerhttp", location = "/WEB-INF/content/errors/page-not-found.ftl", params={"status","404"}) }),
-        @Action(value = "gone",          results = { @Result(name = ERROR, type="freemarkerhttp", location = "/WEB-INF/content/errors/resource-deleted.ftl", params={"status","410"}) }),
-        @Action(value = "unauthorized",  results = { @Result(name = ERROR, type="freemarkerhttp", location = "/WEB-INF/content/errors/unauthorized.ftl", params={"status","401"}) }),
-        @Action(value = "access-denied", results = { @Result(name = ERROR, type="freemarkerhttp", location = "/WEB-INF/content/errors/access-denied.ftl", params={"status","403"}) }),
-        @Action(value = "invalid-token", results = { @Result(name = ERROR, type="freemarkerhttp", location = "/WEB-INF/content/errors/double-submit.ftl", params={"status","500"}) })
+            @Action(value = "page-not-found", results = { @Result(name = ERROR, type = "freemarkerhttp",
+                    location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) }),
+            @Action(value = "not-found", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/page-not-found.ftl",
+                    params = { "status", "404" }) }),
+            @Action(value = "gone", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/resource-deleted.ftl",
+                    params = { "status", "410" }) }),
+            @Action(value = "unauthorized", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/unauthorized.ftl",
+                    params = { "status", "401" }) }),
+            @Action(value = "access-denied", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/access-denied.ftl",
+                    params = { "status", "403" }) }),
+            @Action(value = "invalid-token", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/double-submit.ftl",
+                    params = { "status", "500" }) })
     })
     public String error() {
         return ERROR;
@@ -112,7 +114,7 @@ public class IndexAction extends AuthenticationAware.Base {
     @HttpOnlyIfUnauthenticated
     public String about() {
         getResourceService().setupWorldMap(worldMapData);
-        
+
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         try {
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
@@ -123,7 +125,7 @@ public class IndexAction extends AuthenticationAware.Base {
             for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
-                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((InformationResource) key, null);
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
                 }
                 if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
                     getObfuscationService().obfuscate(key, getAuthenticatedUser());
@@ -204,11 +206,11 @@ public class IndexAction extends AuthenticationAware.Base {
         this.sitemapFile = sitemapFile;
     }
 
-    public HashMap<String,HomepageGeographicKeywordCache> getWorldMapData() {
+    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
         return worldMapData;
     }
 
-    public void setWorldMapData(HashMap<String,HomepageGeographicKeywordCache> worldMapData) {
+    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         this.worldMapData = worldMapData;
     }
 

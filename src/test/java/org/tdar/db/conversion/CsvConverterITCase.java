@@ -121,7 +121,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
             ex = e;
         }
         assertNotNull(ex);
-        assertEquals(MessageHelper.getMessage("postgresDatabase.datatable_to_long"),ex.getMessage());
+        assertEquals(MessageHelper.getMessage("postgresDatabase.datatable_to_long"), ex.getMessage());
     }
 
     @Test
@@ -163,8 +163,8 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("aaaa", rs.getString(1));
                         final Date date = rs.getDate(2);
                         // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
-                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == 2003 - 1900);
-                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1 - 1);
+                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == (2003 - 1900));
+                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == (1 - 1));
                         assertTrue("Day should be 2: " + date.getDate(), date.getDate() == 2);
                         assertEquals(0, rs.getLong(3));
                         assertTrue(rs.wasNull());

@@ -6,7 +6,10 @@
  */
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -94,21 +97,18 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("resource creator is not"));
     }
 
-    
     @Test
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR})
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR })
     @Ignore
     public void testExtraFile() throws MalformedURLException {
         Map<String, String> extra = new HashMap<String, String>();
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = new ArrayList<File>(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
-        listFiles.add(new File(TestConstants.TEST_DOCUMENT_DIR,TestConstants.TEST_DOCUMENT_NAME));
+        listFiles.add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         logger.debug(getPageBodyCode());
         assertTrue(getPageCode().contains(TestConstants.TEST_DOCUMENT_NAME));
     }
-
-    
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
@@ -259,7 +259,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 }
             }
         }
-        if (extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) {
+        if ((extra != null) && !extra.containsKey(PROJECT_ID_FIELDNAME)) {
             setInput("projectId", "");
         }
 
@@ -296,7 +296,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             count++;
         }
         if (expectSuccess && !getPageCode().contains("errors\":\"\"")) {
-        	Assert.fail(getPageBodyCode());
+            Assert.fail(getPageBodyCode());
         }
     }
 }

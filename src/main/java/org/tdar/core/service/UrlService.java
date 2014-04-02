@@ -22,7 +22,6 @@ public class UrlService {
 
     /*
      * Get the tDAR Base URL
-     * 
      */
     public static String getBaseUrl() {
         if (baseUrl == null) {
@@ -33,6 +32,7 @@ public class UrlService {
 
     /**
      * Generate an absolute URL for anything that's Addressable (has getUriPart()
+     * 
      * @param resource
      * @return
      */
@@ -90,7 +90,6 @@ public class UrlService {
     public String downloadUrl(InformationResourceFileVersion version) {
         return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
-
 
     /**
      * get the URL for a thumbnail image

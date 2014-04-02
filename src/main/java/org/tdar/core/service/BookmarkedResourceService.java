@@ -58,6 +58,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
 
     /**
      * Returns true if a @link BookmarkedResouce exists for a @link Person and @link Resource and it was removed successfully.
+     * 
      * @param resource
      * @param person
      * @return

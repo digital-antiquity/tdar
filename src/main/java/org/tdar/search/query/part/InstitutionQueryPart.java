@@ -53,7 +53,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
             }
         }
         sb.append(sbacro).append(" ) ");
-        if (sbacro.length() == 0 && sbauto.length() == 0) {
+        if ((sbacro.length() == 0) && (sbauto.length() == 0)) {
             return "";
         }
         return sb.toString();

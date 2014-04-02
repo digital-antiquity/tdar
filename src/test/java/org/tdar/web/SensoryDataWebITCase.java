@@ -139,8 +139,9 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         clickLinkWithText("edit");
         for (String key : sensoryHash.keySet()) {
             String val = sensoryHash.get(key);
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (key.contains("[0]") || key.contains("[1]")) {
                 assertTextPresent(sensoryHash.get(key));

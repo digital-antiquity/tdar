@@ -135,18 +135,18 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "resource",indexes= {
-        @Index(name="resource_active", columnList="id, submitter_id, status"),
-        @Index(name ="resource_title_index", columnList = "title"),
-        @Index(name="resource_active_draft", columnList="submitter_id, status, id"),
-        @Index(name="resource_status", columnList="id, status"),
-        @Index(name="resource_status2", columnList="status, id"),
+@Table(name = "resource", indexes = {
+        @Index(name = "resource_active", columnList = "id, submitter_id, status"),
+        @Index(name = "resource_title_index", columnList = "title"),
+        @Index(name = "resource_active_draft", columnList = "submitter_id, status, id"),
+        @Index(name = "resource_status", columnList = "id, status"),
+        @Index(name = "resource_status2", columnList = "status, id"),
 
-        //can't use @Index on entity fields - they have to go here
+        // can't use @Index on entity fields - they have to go here
         @Index(name = "res_submitterid", columnList = "submitter_id"),
         @Index(name = "res_uploaderid", columnList = "uploader_id"),
         @Index(name = "res_updaterid", columnList = "updater_id"),
-        @Index(name = "resource_type_index", columnList="resource_type")
+        @Index(name = "resource_type_index", columnList = "resource_type")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
@@ -224,9 +224,9 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     /**
      * Instantiate a "sparse" resource object instance that has a very limited number of populated fields. This is
-     * useful in the context of displaying summary information about a collection of resources.  You should not
+     * useful in the context of displaying summary information about a collection of resources. You should not
      * attempt to persist objects created using this constructor.
-     *
+     * 
      * @param id
      * @param title
      * @param resourceType
@@ -250,10 +250,8 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
-
-
-    //FIXME: I don't think this index helps us.  Can we get rid of it?
-//    @Index(name = "resource_title_index")
+    // FIXME: I don't think this index helps us. Can we get rid of it?
+    // @Index(name = "resource_title_index")
     @Length(max = 512)
     private String title;
 
@@ -504,8 +502,9 @@ public class Resource extends JsonModel.Base implements Persistable,
                     GeneralPermissions.VIEW_ALL, true));
         }
         for (Person p : writable) {
-            if (Persistable.Base.isNullOrTransient(p))
+            if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
+            }
             users.add(p.getId());
         }
         // FIXME: decide whether right should inherit from projects (1) of (2)
@@ -586,8 +585,9 @@ public class Resource extends JsonModel.Base implements Persistable,
             Collection<K> keywords) {
         Set<K> uncontrolledKeys = new HashSet<K>();
         for (K key : keywords) {
-            if (!key.isApproved())
+            if (!key.isApproved()) {
                 uncontrolledKeys.add(key);
+            }
         }
         return uncontrolledKeys;
     }
@@ -597,8 +597,9 @@ public class Resource extends JsonModel.Base implements Persistable,
             Collection<K> keywords) {
         Set<K> approvedKeys = new HashSet<K>();
         for (K key : keywords) {
-            if (key.isApproved())
+            if (key.isApproved()) {
                 approvedKeys.add(key);
+            }
         }
         return approvedKeys;
     }
@@ -707,8 +708,9 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Override
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getTitleSort() {
-        if (getTitle() == null)
+        if (getTitle() == null) {
             return "";
+        }
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
@@ -729,6 +731,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.dateCreated = dateRegistered;
     }
 
+    @Override
     @XmlAttribute(name = "submitterRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @NotNull
@@ -779,7 +782,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      */
     public void setLatitudeLongitudeBox(
             LatitudeLongitudeBox latitudeLongitudeBox) {
-        if (latitudeLongitudeBox == null || !latitudeLongitudeBox.isValid()) {
+        if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
             getLatitudeLongitudeBoxes().clear();
             return;
         }
@@ -817,14 +820,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
-        if (hasConfidentialFiles() || latLongBox == null) {
+        if (hasConfidentialFiles() || (latLongBox == null)) {
             logger.trace("latLong for {} is confidential or null", getId());
             return Boolean.FALSE;
         }
 
         if (latLongBox.isInitializedAndValid()) {
             logger.trace("latLong for {} is initialized", getId());
-            if (latLongBox.getCenterLatitudeIfNotObfuscated() != null && latLongBox.getCenterLongitudeIfNotObfuscated() != null) {
+            if ((latLongBox.getCenterLatitudeIfNotObfuscated() != null) && (latLongBox.getCenterLongitudeIfNotObfuscated() != null)) {
                 return Boolean.TRUE;
             }
         }
@@ -1153,8 +1156,9 @@ public class Resource extends JsonModel.Base implements Persistable,
                 .getPrimaryCreatorRoles(getResourceType());
         if (resourceCreators != null) {
             for (ResourceCreator creator : resourceCreators) {
-                if (primaryRoles.contains(creator.getRole()) && !creator.getCreator().isDeleted())
+                if (primaryRoles.contains(creator.getRole()) && !creator.getCreator().isDeleted()) {
                     authors.add(creator);
+                }
             }
 
         }
@@ -1199,7 +1203,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         setUpdatedBy(p);
         setUpdated(true);
         setDateUpdated(new Date());
-        if (dateCreated == null || submitter == null) {
+        if ((dateCreated == null) || (submitter == null)) {
             setDateCreated(new Date());
             setSubmitter(p);
             setUploader(p);
@@ -1262,7 +1266,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public String getAdditonalKeywords() {
         return "";
     }
-    
+
     private transient String keywords = null;
 
     @SuppressWarnings("unchecked")
@@ -1272,7 +1276,7 @@ public class Resource extends JsonModel.Base implements Persistable,
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
             @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     public String getKeywords() {
-        if (isReadyToIndex() && keywords != null) {
+        if (isReadyToIndex() && (keywords != null)) {
             return keywords;
         }
         // note, consider using a transient field here, as the getter is called
@@ -1284,8 +1288,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         Collection<Keyword> kwds = getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
-            if (kwd.isDeleted())
+            if (kwd.isDeleted()) {
                 continue;
+            }
             if (kwd instanceof HierarchicalKeyword) {
                 for (String label : ((HierarchicalKeyword<?>) kwd).getParentLabelList()) {
                     sb.append(label).append(" ");
@@ -1301,8 +1306,9 @@ public class Resource extends JsonModel.Base implements Persistable,
             sb.append(note.getNote()).append(" ");
         }
         for (ResourceCreator creator : getResourceCreators()) {
-            if (creator.getCreator().isDeleted())
+            if (creator.getCreator().isDeleted()) {
                 continue;
+            }
             sb.append(creator.getCreator().getName()).append(" ");
             sb.append(creator.getCreator().getProperName()).append(" ");
         }
@@ -1323,7 +1329,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         for (SourceCollection src : getSourceCollections()) {
             sb.append(src.getText()).append(" ");
         }
-        
+
         if (readyToIndex) {
             keywords = sb.toString();
         } else {
@@ -1613,7 +1619,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
         for (ResourceCreator creator : getPrimaryCreators()) {
-            if (creator.getRole() == ResourceCreatorRole.AUTHOR || creator.getRole() == ResourceCreatorRole.CREATOR) {
+            if ((creator.getRole() == ResourceCreatorRole.AUTHOR) || (creator.getRole() == ResourceCreatorRole.CREATOR)) {
                 appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
             }
         }

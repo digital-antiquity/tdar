@@ -86,8 +86,9 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         getLogger().info(url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (!getResponseParams().containsKey(item.getKey()) || item == NelnetTransactionItemResponse.KEY)
+            if (!getResponseParams().containsKey(item.getKey()) || (item == NelnetTransactionItemResponse.KEY)) {
                 continue;
+            }
             pairs.add(new BasicNameValuePair(item.getKey(), responseParams.get(item.getKey())[0]));
         }
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));

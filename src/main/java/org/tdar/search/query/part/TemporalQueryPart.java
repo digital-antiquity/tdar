@@ -47,7 +47,7 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     @Override
     protected String formatValueAsStringForQuery(int index) {
         CoverageDate date = getFieldValues().get(index);
-        if (date == null || !date.isValidForController()) {
+        if ((date == null) || !date.isValidForController()) {
             return "";
         }
         return String.format(
@@ -70,7 +70,7 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     @Override
     public void add(CoverageDate... coverageDates) {
         for (CoverageDate date : coverageDates) {
-            if (date != null && date.getDateType() != null && date.getDateType() != CoverageType.NONE && date.isInitialized()) {
+            if ((date != null) && (date.getDateType() != null) && (date.getDateType() != CoverageType.NONE) && date.isInitialized()) {
                 logger.info("adding {}", date);
                 super.add(date);
             }

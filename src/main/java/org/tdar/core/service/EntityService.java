@@ -49,7 +49,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param id
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Person findPerson(Long id) {
         return find(id);
     }
@@ -60,68 +60,73 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param maxResults
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Person> findAllRegisteredUsers(int maxResults) {
         return getDao().findAllRegisteredUsers(maxResults);
     }
 
     /**
      * Find all registered users
+     * 
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Person> findAllRegisteredUsers() {
         return getDao().findAllRegisteredUsers(null);
     }
 
     /**
      * Find all @link Institution entities.
+     * 
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Institution> findAllInstitutions() {
         return institutionDao.findAll();
     }
 
     /**
      * Find an @link Institution by exact name
+     * 
      * @param name
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Institution findInstitutionByName(String name) {
         return institutionDao.findByName(name);
     }
 
     /**
      * Find a @link Institution by ID
+     * 
      * @param id
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Institution findInstitution(long id) {
         return institutionDao.find(id);
     }
 
     /**
-     * Find an @link Institution based on name bounded by wildcards %name% 
+     * Find an @link Institution based on name bounded by wildcards %name%
+     * 
      * @param name
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Institution> findInstitutionLike(String name) {
         return institutionDao.withNameLike(name);
     }
 
-
     /**
      * Find a @link Person by their email
+     * 
      * @param email
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Person findByEmail(String email) {
-        if (email == null || email.isEmpty()) {
+        if ((email == null) || email.isEmpty()) {
             return null;
         }
         return getDao().findByEmail(email);
@@ -129,12 +134,13 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     /**
      * Find a @link Person by their Username
+     * 
      * @param username
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Person findByUsername(String username) {
-        if (username == null || username.isEmpty()) {
+        if ((username == null) || username.isEmpty()) {
             return null;
         }
         return getDao().findByUsername(username);
@@ -152,6 +158,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     /**
      * Find the @link AuthenticationToken by Id
+     * 
      * @param id
      * @return
      */
@@ -170,7 +177,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     /**
-     * Find or saveCreator based on type 
+     * Find or saveCreator based on type
+     * 
      * @see #findOrSaveInstitution(Institution)
      * @see #findOrSavePerson(Person)
      * 
@@ -188,7 +196,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (transientCreator instanceof Institution) {
             creatorToReturn = (C) findOrSaveInstitution((Institution) transientCreator);
         }
-        if (creatorToReturn != null && creatorToReturn.isDeleted()) {
+        if ((creatorToReturn != null) && creatorToReturn.isDeleted()) {
             creatorToReturn.setStatus(Status.ACTIVE);
         }
 
@@ -217,7 +225,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     /**
-     * Find a @link Person by id, email 
+     * Find a @link Person by id, email
      * 
      * @param transientPerson
      * @return
@@ -226,7 +234,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public Person findPerson(Person transientPerson) {
         // now find or save the person (if the person was found the institution field is ignored
         // entirely and replaced with the persisted person's institution
-        if (transientPerson == null || transientPerson.hasNoPersistableValues()) {
+        if ((transientPerson == null) || transientPerson.hasNoPersistableValues()) {
             return null;
         }
 
@@ -262,7 +270,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return blessedPerson;
     }
-    
 
     /**
      * Find the @link Institution by name
@@ -270,10 +277,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param transientInstitution
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     private Institution findInstitution(Institution transientInstitution) {
-        if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName()))
+        if ((transientInstitution == null) || StringUtils.isBlank(transientInstitution.getName())) {
             return null;
+        }
 
         if (Persistable.Base.isNotNullOrTransient(transientInstitution.getId())) {
             return getDao().find(Institution.class, transientInstitution.getId());
@@ -283,10 +291,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST);
         if (CollectionUtils.isNotEmpty(examples)) {
             return examples.get(0);
-        } 
+        }
         return null;
-        
+
     }
+
     /**
      * Find the @link Institution by name, or save a new one if it does not exist.
      * 
@@ -297,7 +306,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private Institution findOrSaveInstitution(Institution transientInstitution) {
         Institution blessedInstitution = findInstitution(transientInstitution);
         if (blessedInstitution == null) {
-            if (transientInstitution == null || transientInstitution.hasNoPersistableValues()) {
+            if ((transientInstitution == null) || transientInstitution.hasNoPersistableValues()) {
                 return null;
             }
             institutionDao.save(transientInstitution);
@@ -322,10 +331,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     /**
      * List @link ResourceCollection entries that a @link Person (user) has access to
+     * 
      * @param user
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
         return authorizedUserDao.findAccessibleResourceCollections(user);
     }
@@ -335,7 +345,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * 
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Person> showRecentLogins() {
         return getDao().findRecentLogins();
     }
@@ -380,6 +390,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     /**
      * Find all Ids of (actual) contributors within the system based on "submitter" id
+     * 
      * @return
      */
     @Transactional(readOnly = true)
@@ -398,17 +409,19 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     /**
      * get aggregate view counts for creators
+     * 
      * @param creator
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Long getCreatorViewCount(Creator creator) {
-        if (Persistable.Base.isNullOrTransient(creator))
+        if (Persistable.Base.isNullOrTransient(creator)) {
             return 0L;
+        }
         return getDao().getCreatorViewCount(creator);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void findResourceCreator(ResourceCreator creator) {
         Creator incomingCreator = creator.getCreator();
         if (incomingCreator instanceof Person) {
@@ -417,7 +430,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (incomingCreator instanceof Institution) {
             incomingCreator = findInstitution((Institution) incomingCreator);
         }
-        if (incomingCreator != null && incomingCreator.isDeleted()) {
+        if ((incomingCreator != null) && incomingCreator.isDeleted()) {
             incomingCreator.setStatus(Status.ACTIVE);
         }
         if (incomingCreator != null) {

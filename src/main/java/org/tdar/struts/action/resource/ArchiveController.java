@@ -35,7 +35,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
         // this is a little hacky, but we need to re-process the file to get the work flow to make a copy of the tarball if
         // the user has checked the 'do import content' flag. In the time frame available I can't think of another way to do this.
         boolean isOnlyMetadataChanged = false;
-        for( FileProxy fp: fileProxies) {
+        for (FileProxy fp : fileProxies) {
             if (fp.getAction() == FileAction.MODIFY_METADATA) {
                 isOnlyMetadataChanged = true;
                 break;
@@ -67,8 +67,9 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Archive getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

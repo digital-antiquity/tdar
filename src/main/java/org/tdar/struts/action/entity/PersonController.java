@@ -69,18 +69,20 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     public void validateEmailRequiredForActiveUsers() {
-        if(getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
+        if (getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
             addFieldError("email", getText("userAccountController.email_invalid"));
         }
     }
 
     public void validateUniqueEmail() {
-        if(StringUtils.isBlank(getPersistable().getEmail())) return;
+        if (StringUtils.isBlank(getPersistable().getEmail())) {
+            return;
+        }
 
-        //person2 should be null or same person being edited.  Anything else means email address is not unique.
+        // person2 should be null or same person being edited. Anything else means email address is not unique.
         Person person2 = getEntityService().findByEmail(email);
-        if(person2 != null) {
-            if(!person2.equals(getPersistable())) {
+        if (person2 != null) {
+            if (!person2.equals(getPersistable())) {
                 addFieldError("email", getText("userAccountController.username_not_available"));
             }
         }
@@ -95,14 +97,15 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     @Override
     @Validations(
-            emails = {@EmailValidator(type = ValidatorType.SIMPLE, fieldName= "email",  key= "userAccountController.email_invalid")},
-            stringLengthFields = {@StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName="person.contributorReason", key= "userAccountController.contributorReason_invalid", maxLength = "512")}
-    )
-    protected String save(Person person) {
-        if(!StringUtils.equals(email, getPersistable().getEmail())) {
+            emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", key = "userAccountController.email_invalid") },
+            stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "person.contributorReason",
+                    key = "userAccountController.contributorReason_invalid", maxLength = "512") }
+            )
+            protected String save(Person person) {
+        if (!StringUtils.equals(email, getPersistable().getEmail())) {
             getPersistable().setEmail(email);
         }
-        validateAndProcessPasswordChange();     //TODO: this should just be in validate()
+        validateAndProcessPasswordChange(); // TODO: this should just be in validate()
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
         }
@@ -157,8 +160,9 @@ public class PersonController extends AbstractCreatorController<Person> {
     // check whether password change was requested and whether it was valid
     private void validateAndProcessPasswordChange() {
         // no change requested
-        if (StringUtils.isBlank(password) && StringUtils.isBlank(confirmPassword))
+        if (StringUtils.isBlank(password) && StringUtils.isBlank(confirmPassword)) {
             return;
+        }
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
             addActionError(getText("userAccountController.error_passwords_dont_match"));
@@ -172,8 +176,9 @@ public class PersonController extends AbstractCreatorController<Person> {
     // check whether password change was requested and whether it was valid
     private boolean validateAndProcessUsernameChange() {
         // no change requested
-        if (StringUtils.isBlank(newUsername))
+        if (StringUtils.isBlank(newUsername)) {
             return false;
+        }
 
         if (StringUtils.isBlank(password)) {
             throw new TdarRecoverableRuntimeException(getText("userAccountController.error_reenter_password_to_change_username"));
@@ -214,7 +219,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
         try {
-            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) getPersistable()));
+            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPersistable()));
         } catch (Throwable e) {
             getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }

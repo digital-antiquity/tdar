@@ -18,10 +18,12 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
      */
     @Override
     public boolean analyze(String value, DataTableColumn column, int row) {
-        if (value == null)
+        if (value == null) {
             return true;
-        if ("".equals(value))
+        }
+        if ("".equals(value)) {
             return true;
+        }
         try {
             Double.parseDouble(value);
         } catch (NumberFormatException nfx) {

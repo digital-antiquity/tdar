@@ -77,8 +77,9 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     @Action(value = GET)
     public String execute() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
-        if (informationResourceFileId == null)
+        if (informationResourceFileId == null) {
             return ERROR;
+        }
         irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
         if (irFileVersion == null) {
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
@@ -90,19 +91,20 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return FORBIDDEN;
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
-        getLogger().info("user {} downloaded {}",getSessionData().getPerson(), irFileVersion);
+        getLogger().info("user {} downloaded {}", getSessionData().getPerson(), irFileVersion);
         getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
 
     @Actions({
-        @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }),
-        @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+            @Action(value = THUMBNAIL, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }),
+            @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     })
     public String thumbnail() throws TdarActionException {
         InformationResourceFileVersion irFileVersion = null;
-        if (informationResourceFileId == null)
+        if (informationResourceFileId == null) {
             return ERROR;
+        }
         irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
         if (irFileVersion == null) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
@@ -126,8 +128,9 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     @Action(value = DOWNLOAD_ALL)
     public String downloadZipArchive() throws TdarActionException {
-        if (getInformationResourceId() == null)
+        if (getInformationResourceId() == null) {
             return ERROR;
+        }
 
         InformationResource ir = (InformationResource) getResourceService().find(getInformationResourceId());
         List<InformationResourceFileVersion> versions = new ArrayList<>();
@@ -145,7 +148,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         if (CollectionUtils.isEmpty(versions)) {
             return ERROR;
         }
-        
+
         getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
         return SUCCESS;
     }

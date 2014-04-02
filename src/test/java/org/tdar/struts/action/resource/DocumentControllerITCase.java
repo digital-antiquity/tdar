@@ -29,9 +29,14 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.search.query.SortOption;
@@ -40,6 +45,8 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UploadController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
+
+import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
@@ -69,11 +76,11 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     public void testDocumentProjectRights() throws TdarActionException {
         /*
          * Collection
-         *  |_ Authorized User with Rights
-         *  |_ Child Collection
-         *      |_ Project
-         *      
-         *  Issue -- project doesn't show up in AbstractInformationResourceController.getPotentialParents()
+         * |_ Authorized User with Rights
+         * |_ Child Collection
+         * |_ Project
+         * 
+         * Issue -- project doesn't show up in AbstractInformationResourceController.getPotentialParents()
          */
         Project project = new Project();
         project.setTitle("test rights project");
@@ -108,7 +115,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         String add = dc.add();
-        assertEquals(TdarActionSupport.SUCCESS, add);
+        assertEquals(Action.SUCCESS, add);
         List<Resource> potentialParents = dc.getPotentialParents();
 
         logger.debug("my parents:  size:{}  contents:{}", potentialParents.size(), potentialParents);
@@ -127,7 +134,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setDate(1234);
         doc.setDescription("my description");
         dc.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+        assertEquals(Action.SUCCESS, dc.save());
 
         // change the submitter to the admin
         Long id = doc.getId();
@@ -138,14 +145,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.edit();
         dc.setSubmitter(newUser);
         dc.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+        assertEquals(Action.SUCCESS, dc.save());
 
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(id);
         dc.prepare();
         try {
-            assertNotEquals(TdarActionSupport.SUCCESS, dc.edit());
+            assertNotEquals(Action.SUCCESS, dc.edit());
         } catch (TdarActionException e) {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
         }
@@ -157,7 +164,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc = generateNewInitializedController(DocumentController.class, newUser);
         dc.setId(id);
         dc.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, dc.edit());
+        assertEquals(Action.SUCCESS, dc.edit());
 
     }
 
@@ -278,7 +285,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
         boolean seen = false;
         for (ResourceNote note : controller.getDocument().getResourceNotes()) {
-            if (note.getType() == ResourceNoteType.ADMIN && note.getNote().equals(deletionReason)) {
+            if ((note.getType() == ResourceNoteType.ADMIN) && note.getNote().equals(deletionReason)) {
                 seen = true;
             }
         }
@@ -339,7 +346,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         rcp.getInstitution().setName(name);
         // FIXME: THIS NEEDS TO WORK WITHOUT SETTING AN ID as well as when an ID
         // IS SET
-        if (System.currentTimeMillis() % 2 == 0) {
+        if ((System.currentTimeMillis() % 2) == 0) {
             rcp.getInstitution().setId(-1L);
         }
         rcp.setRole(role);
@@ -544,7 +551,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setDescription("my description");
         dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
         dc.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+        assertEquals(Action.SUCCESS, dc.save());
 
         logger.debug("RC: {}", doc.getInternalResourceCollection().getAuthorizedUsers());
         // change the submitter to the admin
@@ -556,7 +563,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.edit();
         dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_GROUP));
         dc.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+        assertEquals(Action.SUCCESS, dc.save());
 
         evictCache();
 
@@ -575,7 +582,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setDescription("my description");
         dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
         dc.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, dc.save());
+        assertEquals(Action.SUCCESS, dc.save());
 
         // change the submitter to the admin
         Long id = doc.getId();

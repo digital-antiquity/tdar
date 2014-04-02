@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.Audio;
 public class ExtractAudioInfoTaskTest {
 
     private static final String JAVA_SOUND_API_NEEDS_UPGRADING_TO_DETERMINE_CONTENT = "Java Sound API needs upgrading to determine content.";
-    
+
     private static final String AIFF_EXPECTED =
             "AIFF (.aif) file, byte length: 829726, data format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, big-endian, frame length: 207360";
     private static final String WAV_EXPECTED =
@@ -34,7 +34,7 @@ public class ExtractAudioInfoTaskTest {
     public void readWavFileMetadata() {
         testFileCodec("testing.wav", WAV_EXPECTED);
     }
-    
+
     @Test
     public void readFlacFileMetadata() {
         testFileCodec("testing.flac", JAVA_SOUND_API_NEEDS_UPGRADING_TO_DETERMINE_CONTENT);
@@ -44,7 +44,6 @@ public class ExtractAudioInfoTaskTest {
     public void readMp3FileMetadata() {
         testFileCodec("testing.mp3", JAVA_SOUND_API_NEEDS_UPGRADING_TO_DETERMINE_CONTENT);
     }
-
 
     private void testFileCodec(String fileName, String expected) {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();

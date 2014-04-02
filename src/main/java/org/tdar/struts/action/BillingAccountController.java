@@ -176,13 +176,13 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     })
     public String updateQuotas() {
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
-        return TdarActionSupport.SUCCESS;
+        return com.opensymphony.xwork2.Action.SUCCESS;
     }
 
-    
     /**
      * Temporary controller to fix issue where deleted items were counted wrong/differently before
      * we're changing the values here automatically
+     * 
      * @return
      */
     @SkipValidation
@@ -195,18 +195,18 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
         getGenericService().refresh(getAccount());
         getLogger().debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
-        if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && getAccount().getInvoices().size() == 1) {
+        if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && (getAccount().getInvoices().size() == 1)) {
             Invoice invoice = getAccount().getInvoices().iterator().next();
             Long space = getAccount().getSpaceUsedInMb() + 10l;
             Long files = getAccount().getFilesUsed() + 1l;
             for (BillingItem item : invoice.getItems()) {
                 if (item.getActivity().isSpaceOnly()) {
-                    getLogger().debug("changing space from: {} to {}",item.getQuantity(), space);
+                    getLogger().debug("changing space from: {} to {}", item.getQuantity(), space);
                     item.setQuantity(space.intValue());
                 }
 
                 if (item.getActivity().isFilesOnly()) {
-                    getLogger().debug("changing files from: {} to {}",item.getQuantity(), files);
+                    getLogger().debug("changing files from: {} to {}", item.getQuantity(), files);
                     item.setQuantity(files.intValue());
                 }
             }
@@ -214,7 +214,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         }
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
         getLogger().debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
-        return TdarActionSupport.SUCCESS;
+        return com.opensymphony.xwork2.Action.SUCCESS;
     }
 
     @Override
@@ -250,10 +250,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     public Account getAccount() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
 
-        return (Account) getPersistable();
+        return getPersistable();
     }
 
     @Override
@@ -301,7 +302,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return new Person();
     }
 
-    @DoNotObfuscate(reason="needs access to Email Address on view page")
+    @DoNotObfuscate(reason = "needs access to Email Address on view page")
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }

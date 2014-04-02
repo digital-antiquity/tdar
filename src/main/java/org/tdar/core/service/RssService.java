@@ -87,8 +87,9 @@ public class RssService implements Serializable {
 
     /**
      * Types of spatial objects returned by GeoRSS extension;
+     * 
      * @author abrin
-     *
+     * 
      */
     public enum GeoRssMode {
         NONE, POINT, ENVELOPE;
@@ -125,7 +126,6 @@ public class RssService implements Serializable {
         return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
-
     /**
      * Parse a RSS feed
      * 
@@ -145,7 +145,7 @@ public class RssService implements Serializable {
             SyndFeed feed = input.build(xmlReader);
             result.addAll(feed.getEntries());
         } catch (ParsingFeedException pfe) {
-            // faims are filling up the log files with stack traces that are very distracting, 
+            // faims are filling up the log files with stack traces that are very distracting,
             // simply because their feed isn't parsing correctly.
             logger.warn(pfe.getMessage());
         }
@@ -169,17 +169,17 @@ public class RssService implements Serializable {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType(ATOM_1_0);
 
-        List<Object> vals =new ArrayList<>();
+        List<Object> vals = new ArrayList<>();
         vals.add(TdarConfiguration.getInstance().getSiteAcronym());
         vals.add(cleanStringForXML(handler.getSearchTitle()));
-        feed.setTitle(handler.getText("rssService.title",vals));
+        feed.setTitle(handler.getText("rssService.title", vals));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(handler.getRecordsPerPage());
         osm.setStartIndex(handler.getStartRecord());
         osm.setTotalResults(handler.getTotalRecords());
 
         Link link = new Link();
-        link.setHref(urlService.getBaseUrl() + INCLUDES_OPENSEARCH_XML);
+        link.setHref(UrlService.getBaseUrl() + INCLUDES_OPENSEARCH_XML);
         link.setType(APPLICATION_OPENSEARCHDESCRIPTION_XML);
         osm.setLink(link);
         List<Module> modules = feed.getModules();
@@ -212,12 +212,14 @@ public class RssService implements Serializable {
      * @param resource_
      * @return
      */
-    private <I extends Indexable> SyndEntry createRssEntryForResource(SearchResultHandler<I> handler, GeoRssMode mode, boolean includeEnclosures, List<SyndEntry> entries,
+    private <I extends Indexable> SyndEntry createRssEntryForResource(SearchResultHandler<I> handler, GeoRssMode mode, boolean includeEnclosures,
+            List<SyndEntry> entries,
             I resource_) {
-        if (resource_ instanceof Viewable && !((Viewable) resource_).isViewable())
+        if ((resource_ instanceof Viewable) && !((Viewable) resource_).isViewable()) {
             return null;
+        }
         if (resource_ instanceof Obfuscatable) {
-            obfuscationService.obfuscate((Obfuscatable)resource_,handler.getAuthenticatedUser());
+            obfuscationService.obfuscate((Obfuscatable) resource_, handler.getAuthenticatedUser());
         }
         SyndEntry entry = new SyndEntryImpl();
         if (resource_ instanceof OaiDcProvider) {
@@ -242,13 +244,12 @@ public class RssService implements Serializable {
                     entry.setAuthors(authors);
                 }
 
-                
                 boolean hasRestrictions = false;
                 if (includeEnclosures) {
                     hasRestrictions = addFileEnclosures(handler, resource_, entry, resource);
                 }
 
-                if (mode != GeoRssMode.NONE ) {
+                if (mode != GeoRssMode.NONE) {
                     addGeoRssLatLongBox(mode, entry, resource, hasRestrictions);
                 }
             }
@@ -264,6 +265,7 @@ public class RssService implements Serializable {
 
     /**
      * Add file Enclosures to a Entry for a @link Resource
+     * 
      * @param handler
      * @param includeEnclosures
      * @param resource_
@@ -302,7 +304,7 @@ public class RssService implements Serializable {
         /*
          * If LatLong is not Obfuscated and we don't have confidential files then ...
          */
-        if (latLong != null && !latLong.isObfuscated() && !hasRestrictions) {
+        if ((latLong != null) && !latLong.isObfuscated() && !hasRestrictions) {
             GeoRSSModule geoRss = new GMLModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
                 geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
@@ -315,7 +317,6 @@ public class RssService implements Serializable {
         }
     }
 
-
     /**
      * Add an enclosure
      * 
@@ -325,9 +326,10 @@ public class RssService implements Serializable {
      */
     @SuppressWarnings("unchecked")
     private void addEnclosure(Person user, SyndEntry entry, InformationResourceFileVersion version) {
-        if (version == null)
+        if (version == null) {
             return;
-        if (user != null && authenticationAndAuthorizationService.canDownload(version, user)) {
+        }
+        if ((user != null) && authenticationAndAuthorizationService.canDownload(version, user)) {
             logger.info("allowed:" + version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());

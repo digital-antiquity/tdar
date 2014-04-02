@@ -25,7 +25,6 @@ import org.tdar.core.service.resource.ResourceService;
 @Component
 public class UpgradeResourceCollectionPermissions extends ScheduledBatchProcess<ResourceCollection> {
 
-
     /**
      * 
      */

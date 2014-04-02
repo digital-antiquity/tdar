@@ -32,14 +32,14 @@ import org.tdar.filestore.FileStoreFileProxy;
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
-
 /**
  * Representation a specific file or derivative version of an InformationResourceFile. Each InformationResouceFile may have multiple versions, eg. web sized imzges (small/med/large) or indexable data, as well as the original file version.
  * 
  * @author abrin
  *
  */
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension, FileStoreFileProxy {
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension,
+        FileStoreFileProxy {
 
     private static final long serialVersionUID = 3768354809654162949L;
 
@@ -310,7 +310,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     public boolean isUploaded() {
-        return (getFileVersionType() == VersionType.UPLOADED || getFileVersionType() == VersionType.UPLOADED_ARCHIVAL);
+        return ((getFileVersionType() == VersionType.UPLOADED) || (getFileVersionType() == VersionType.UPLOADED_ARCHIVAL));
     }
 
     @Transient
@@ -321,7 +321,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Transient
     public boolean isArchival() {
         // FIXME: change back later and update test
-        return (getFileVersionType() == VersionType.ARCHIVAL || getFileVersionType() == VersionType.UPLOADED_ARCHIVAL);
+        return ((getFileVersionType() == VersionType.ARCHIVAL) || (getFileVersionType() == VersionType.UPLOADED_ARCHIVAL));
     }
 
     @Transient
@@ -374,8 +374,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     @XmlAttribute(name = "informationResourceFileId")
     public Long getInformationResourceFileId() {
-        if (informationResourceFile != null)
+        if (informationResourceFile != null) {
             return informationResourceFile.getId();
+        }
         return informationResourceFileId;
     }
 
@@ -397,8 +398,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @XmlAttribute(name = "informationResourceId")
     @Transient
     public Long getInformationResourceId() {
-        if (informationResourceFile != null && informationResourceFile.getInformationResource() != null)
+        if ((informationResourceFile != null) && (informationResourceFile.getInformationResource() != null)) {
             return informationResourceFile.getInformationResource().getId();
+        }
         return informationResourceId;
     }
 

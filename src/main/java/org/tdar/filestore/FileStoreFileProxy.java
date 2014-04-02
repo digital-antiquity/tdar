@@ -22,5 +22,4 @@ public interface FileStoreFileProxy {
 
     Long getPersistableId();
 
-
 }

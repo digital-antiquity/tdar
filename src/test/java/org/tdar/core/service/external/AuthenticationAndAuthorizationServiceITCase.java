@@ -35,12 +35,10 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.UserAgreementController;
-import org.tdar.utils.TestConfiguration;
 
-import java.util.Arrays;
+import com.opensymphony.xwork2.Action;
 
 // jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
 // need a non-mocked service.
@@ -60,7 +58,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         user.setContributorAgreementVersion(creatorAgreementVersion);
         return user;
     }
-    
+
     @Test
     @Rollback
     public void testBillingAdminRetained() {
@@ -72,7 +70,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         assertTrue(ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), TdarGroup.TDAR_BILLING_MANAGER));
 
         authenticationAndAuthorizationService.removeIfNotAllowed(list, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
-        logger.debug("{}",list);
+        logger.debug("{}", list);
     }
 
     @Test
@@ -149,30 +147,29 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         });
 
     }
-    
+
     @Test
     @Rollback
     public void testCrowdDisconnected() {
-        // Create a user ... replace crowd witha  "broken crowd" and then 
+        // Create a user ... replace crowd witha "broken crowd" and then
         Person person = new Person("Thomas", "Angell", "tangell@pvd.state.ri.us");
         person.setUsername(person.getEmail());
         person.setContributor(true);
-        AbstractConfigurableService<AuthenticationProvider> prov = (AbstractConfigurableService<AuthenticationProvider>) authenticationAndAuthorizationService.getProviders();
+        AbstractConfigurableService<AuthenticationProvider> prov = (AbstractConfigurableService<AuthenticationProvider>) authenticationAndAuthorizationService
+                .getProviders();
         List<AuthenticationProvider> allServices = new ArrayList<>(prov.getAllServices());
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
         prov.getAllServices().clear();
         Properties crowdProperties = new Properties();
-        crowdProperties.put("application.name","tdar.test");
-        crowdProperties.put("application.password","tdar.test");
-        crowdProperties.put("application.login.url","http://localhost/crowd");
-        crowdProperties.put("crowd.server.url","http://localhost/crowd");
+        crowdProperties.put("application.name", "tdar.test");
+        crowdProperties.put("application.password", "tdar.test");
+        crowdProperties.put("application.login.url", "http://localhost/crowd");
+        crowdProperties.put("crowd.server.url", "http://localhost/crowd");
 
         prov.getAllServices().add(new CrowdRestDao(crowdProperties));
 
-
         String password = "super.secret";
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-
 
         // create account, making sure the controller knows we're legit.
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
@@ -195,10 +192,10 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         prov.getAllServices().clear();
         prov.getAllServices().addAll(allServices);
         logger.info("errors: {}", controller.getActionErrors());
-        assertEquals("result is not input :" + execute, execute , TdarActionSupport.ERROR);
+        assertEquals("result is not input :" + execute, execute, Action.ERROR);
         logger.info("person:{}", person);
         assertTrue("person should not have an id", Persistable.Base.isTransient(person));
         setIgnoreActionErrors(true);
     }
-    
+
 }

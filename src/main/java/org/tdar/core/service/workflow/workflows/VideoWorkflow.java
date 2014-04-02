@@ -18,25 +18,24 @@ import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
  */
 @Component
 public class VideoWorkflow extends BaseWorkflow {
-    
+
     /**
      * <p>
      * From: http://guides.archaeologydataservice.ac.uk/g2gp/Video_2
      * <p>
-     * We are only going to support those formats that are marked as being suitable for preservation.
-     * We have excluded Matroska because we won’t know the codec in advance
+     * We are only going to support those formats that are marked as being suitable for preservation. We have excluded Matroska because we won’t know the codec
+     * in advance
      * <p>
-     * At the moment we only want to upload an save the files, but at a later date we do want to extract extra information.
-     * One possible approach would be to use xuggler (http://www.xuggle.com/xuggler/documentation), however we would have to
-     * build the jar ourselves, due to the licensing conditions. The formats that are claimed to be supported
-     * by xuggler  are here: http://stackoverflow.com/questions/9727590/what-codecs-does-xuggler-support. 
+     * At the moment we only want to upload an save the files, but at a later date we do want to extract extra information. One possible approach would be to
+     * use xuggler (http://www.xuggle.com/xuggler/documentation), however we would have to build the jar ourselves, due to the licensing conditions. The formats
+     * that are claimed to be supported by xuggler are here: http://stackoverflow.com/questions/9727590/what-codecs-does-xuggler-support.
      * <p>
-     * Another approach might be to install MediaInfo (http://mediaarea.net/en/MediaInfo) and use JNI to grab the info.
-     * More on these two here: http://stackoverflow.com/questions/2168472/media-information-extractor-for-java
+     * Another approach might be to install MediaInfo (http://mediaarea.net/en/MediaInfo) and use JNI to grab the info. More on these two here:
+     * http://stackoverflow.com/questions/2168472/media-information-extractor-for-java
      * <p>
      * We need to be able to extract a thumbnail
      */
-    public static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2" ,"mjp2"});
+    public static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
 
     public VideoWorkflow() {
         for (String extension : VIDEO_EXTENSIONS_SUPPORTED) {

@@ -39,7 +39,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
 
         @XmlElement
         @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-        private  K key;
+        private K key;
 
         @XmlElement
         private V value;
@@ -63,7 +63,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
     @Override
     public PersistableMapAdapter<K, V> marshal(Map<K, V> arg0) throws Exception {
         // TODO Auto-generated method stub
-        return new PersistableMapAdapter<K, V>((Map<K, V>) arg0);
+        return new PersistableMapAdapter<K, V>(arg0);
     }
 
 }

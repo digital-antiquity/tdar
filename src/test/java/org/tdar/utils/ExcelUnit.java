@@ -266,11 +266,13 @@ public class ExcelUnit {
 
     private boolean isRowEmpty(int i) {
         Row row = getSheet().getRow(i);
-        if (row == null)
+        if (row == null) {
             return true;
+        }
         for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
-            if (!isCellEmpty(row.getCell(j)))
+            if (!isCellEmpty(row.getCell(j))) {
                 return false;
+            }
         }
         return true;
     }

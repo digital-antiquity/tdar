@@ -24,7 +24,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.resource.ResourceService;
 
-@Ignore(value="performance test cases ... ignore")
+@Ignore(value = "performance test cases ... ignore")
 public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -35,16 +35,17 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     List<Level> oldLevels = new LinkedList<>();
     List<Logger> loggers = new LinkedList<>();
-    //turn off *all* loggers.  revert state with tron(). Careful: if you don't call tron() or if an unhandled
-    //exception occurs the loggers will remain off for the remainder of your unit tests.
+
+    // turn off *all* loggers. revert state with tron(). Careful: if you don't call tron() or if an unhandled
+    // exception occurs the loggers will remain off for the remainder of your unit tests.
     void disableLogging() {
         getVerifyTransactionCallback();
         loggers.clear();
         oldLevels.clear();
-        loggers.addAll(Collections.<Logger>list(LogManager.getCurrentLoggers()));
+        loggers.addAll(Collections.<Logger> list(LogManager.getCurrentLoggers()));
         loggers.add(LogManager.getRootLogger());
-        for ( Logger logger : loggers ) {
-            //out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
+        for (Logger logger : loggers) {
+            // out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
             oldLevels.add(logger.getLevel());
             logger.setLevel(Level.OFF);
         }
@@ -52,21 +53,21 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     void enableLogging() {
         ListIterator<Logger> itor = loggers.listIterator();
-        for(Level level : oldLevels) {
+        for (Level level : oldLevels) {
             itor.next().setLevel(level);
         }
     }
 
     void logstats(String title, SummaryStatistics stats) {
         String fmt = "[{}::\tn:{}\tsum:{}\tmin:{}\tmax:{}\tavg:{}\tsdv:±{}]";
-        Object[] args = new Object[]{
+        Object[] args = new Object[] {
                 title,
                 stats.getN(),
                 seconds(stats.getSum()),
                 seconds(stats.getMin()),
                 seconds(stats.getMax()),
                 seconds(stats.getMean()),
-                seconds(stats.getStandardDeviation())};
+                seconds(stats.getStandardDeviation()) };
 
         logger.debug(fmt, args);
     }
@@ -75,8 +76,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         return nano / 1000000000.0;
     }
 
-    
-    //obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
+    // obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
     Session cleanSession() {
         evictCache();
         searchIndexService.flushToIndexes();
@@ -97,29 +97,37 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         final StopWatch stopwatch = new StopWatch();
         int total = 50;
         Runnable[] strategies = new Runnable[] {
-            new Runnable() {@Override
-            public void run() {newWay(ids);}},
-            new Runnable() {@Override
-            public void run() {oldWay(ids);}}
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        newWay(ids);
+                    }
+                },
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        oldWay(ids);
+                    }
+                }
         };
         SummaryStatistics newstats1 = new SummaryStatistics();
         SummaryStatistics oldstats = new SummaryStatistics();
-        SummaryStatistics[] strategyStats = new SummaryStatistics[] {newstats1, oldstats};
+        SummaryStatistics[] strategyStats = new SummaryStatistics[] { newstats1, oldstats };
         int nextStrategy = 0;
 
         try {
             disableLogging();
-            for (int i=0; i < total; i++) {
-                //mix up the load order
+            for (int i = 0; i < total; i++) {
+                // mix up the load order
                 Collections.shuffle(idScript);
                 idScript.toArray(ids);
-                //obliterate cache
+                // obliterate cache
                 cleanSession();
-                //The first call in each pass may run slower than subsequent calls (due to hibernate caching, jvm caching, cpu caching, who knows)
-                //so, choose a different strategy to go first in each pass to distribute the first-mover penalty more evenly across all participants
+                // The first call in each pass may run slower than subsequent calls (due to hibernate caching, jvm caching, cpu caching, who knows)
+                // so, choose a different strategy to go first in each pass to distribute the first-mover penalty more evenly across all participants
                 nextStrategy++;
                 shuffleArray(strategies);
-                for(int j = 0; j < strategies.length;  j++) {
+                for (int j = 0; j < strategies.length; j++) {
                     nextStrategy = nextStrategy % strategies.length;
                     stopwatch.start();
                     strategies[nextStrategy].run();
@@ -137,20 +145,20 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         logstats(" old way", oldstats);
         logstats("new1 way", newstats1);
     }
-    
-    //http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
+
+    // http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
     // Implementing Fisher–Yates shuffle
     static void shuffleArray(Runnable[] ar)
     {
-      Random rnd = new Random();
-      for (int i = ar.length - 1; i > 0; i--)
-      {
-        int index = rnd.nextInt(i + 1);
-        // Simple swap
-        Runnable a = ar[index];
-        ar[index] = ar[i];
-        ar[i] = a;
-      }
+        Random rnd = new Random();
+        for (int i = ar.length - 1; i > 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            Runnable a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
     }
 
     @Test
@@ -161,7 +169,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         SummaryStatistics newstats1 = new SummaryStatistics();
         int total = 51;
         disableLogging();
-        for (int i=0; i < total; i++) {
+        for (int i = 0; i < total; i++) {
             cleanSession();
             stopwatch.start();
 
@@ -198,7 +206,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         SummaryStatistics oldstats = new SummaryStatistics();
         SummaryStatistics newstats1 = new SummaryStatistics();
         disableLogging();
-        for(int i = 0; i < trials; i++) {
+        for (int i = 0; i < trials; i++) {
             Long id = setupDoc();
             Long id2 = setupDoc();
 
@@ -235,29 +243,29 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         return doc.getId();
     }
 
-    private void newWay(Long ... id) {
+    private void newWay(Long... id) {
         List<Resource> docs = resourceService.findSkeletonsForSearch(id);
         for (Resource rec : docs) {
             logForTiming(rec);
         }
     }
 
-    private void oldWay(Long ... id) {
+    private void oldWay(Long... id) {
         List<Resource> recs = resourceService.findOld(id);
         for (Resource rec : recs) {
             logForTiming(rec);
         }
     }
 
-
     public void logForTiming(Resource res) {
         if (res instanceof InformationResource) {
-            InformationResource ir = (InformationResource)res;
-            String msg = String.format("%s %s %s %s %s",  res, ir.getLatitudeLongitudeBoxes(), res.getResourceCreators(), res.getSubmitter(), ir.getProject(), ir.getInformationResourceFiles());
+            InformationResource ir = (InformationResource) res;
+            String msg = String.format("%s %s %s %s %s", res, ir.getLatitudeLongitudeBoxes(), res.getResourceCreators(), res.getSubmitter(), ir.getProject(),
+                    ir.getInformationResourceFiles());
             logger.debug(msg);
         } else {
-        String msg = String.format("%s %s %s %s",  res, res.getLatitudeLongitudeBoxes(), res.getResourceCreators(), res.getSubmitter());
-        logger.debug(msg);
+            String msg = String.format("%s %s %s %s", res, res.getLatitudeLongitudeBoxes(), res.getResourceCreators(), res.getSubmitter());
+            logger.debug(msg);
         }
-    }    
+    }
 }

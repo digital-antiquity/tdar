@@ -57,7 +57,7 @@ public interface DatasetConverter {
     Set<DataTableRelationship> getKeys();
 
     DataTable getDataTableByName(String name);
-    
+
     DataTable getDataTableByOriginalName(String name);
 
     Set<DataTableRelationship> getRelationships();
@@ -129,7 +129,7 @@ public interface DatasetConverter {
             if (dataTableNames.contains(name_)) {
                 int add = 1;
 
-                if (name_.length() + 1 > targetDatabase.getMaxTableLength()) {
+                if ((name_.length() + 1) > targetDatabase.getMaxTableLength()) {
                     name_ = name_.substring(0, targetDatabase.getMaxTableLength() - 2);
                 }
 
@@ -186,7 +186,8 @@ public interface DatasetConverter {
                 throw tex;
             } catch (Exception e) {
                 logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion().getFilename()));
+                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion()
+                        .getFilename()));
             }
         }
 
@@ -202,8 +203,9 @@ public interface DatasetConverter {
         @Override
         public DataTable getDataTableByName(String name) {
             for (DataTable table : dataTables) {
-                if (name.equals(table.getName()))
+                if (name.equals(table.getName())) {
                     return table;
+                }
             }
             return null;
         }
@@ -211,7 +213,7 @@ public interface DatasetConverter {
         @Override
         public DataTable getDataTableByOriginalName(String name) {
             for (DataTable table : dataTables) {
-                if (ObjectUtils.equals(getInternalTableName(name),getInternalTableName(table.getName()))) {
+                if (ObjectUtils.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
                     return table;
                 }
             }
@@ -268,8 +270,9 @@ public interface DatasetConverter {
         protected String generateDataTableName(String tableName) {
             StringBuilder sb = new StringBuilder(getDatabasePrefix());
             sb.append('_').append(getIrFileId()).append('_');
-            if (!StringUtils.isBlank(getFilename()))
+            if (!StringUtils.isBlank(getFilename())) {
                 sb.append(getFilename()).append('_');
+            }
             sb.append(targetDatabase.normalizeTableOrColumnNames(tableName));
             return targetDatabase.normalizeTableOrColumnNames(sb.toString());
         }

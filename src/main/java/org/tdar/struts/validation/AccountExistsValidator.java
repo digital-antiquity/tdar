@@ -23,11 +23,12 @@ public class AccountExistsValidator extends FieldValidatorSupport implements Sho
     public void validate(Object actionBean) throws ValidationException {
         String fieldName = getFieldName();
         Object value = getFieldValue(fieldName, actionBean);
-        if (value == null)
+        if (value == null) {
             return;
+        }
         String email = value.toString();
         Person person = entityService.findByEmail(email);
-        if (person == null || !person.isRegistered()) {
+        if ((person == null) || !person.isRegistered()) {
             addFieldError(fieldName, actionBean);
         }
     }

@@ -46,9 +46,9 @@ import org.tdar.core.configuration.JSONTransient;
 @Entity
 // @Indexed(interceptor=DontIndexWhenGeneratedInterceptor.class)
 @Indexed
-@Table(name = "coding_sheet", indexes={
-        @Index(name = "coding_catvar_id",columnList="category_variable_id"),
-        @Index(name = "coding_sheet_default_ontology_id_idx", columnList="default_ontology_id")
+@Table(name = "coding_sheet", indexes = {
+        @Index(name = "coding_catvar_id", columnList = "category_variable_id"),
+        @Index(name = "coding_sheet_default_ontology_id_idx", columnList = "default_ontology_id")
 })
 @XmlRootElement(name = "codingSheet")
 public class CodingSheet extends InformationResource implements SupportsResource {
@@ -246,8 +246,9 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     public List<CodingRule> findRuleMappedToOntologyNode(OntologyNode node) {
-        if (node == null || CollectionUtils.isEmpty(getCodingRules()))
+        if ((node == null) || CollectionUtils.isEmpty(getCodingRules())) {
             return new ArrayList<CodingRule>();
+        }
         Map<OntologyNode, List<CodingRule>> nodeToDataValueMap = getNodeToDataValueMap();
         return nodeToDataValueMap.get(node);
         // for (CodingRule rule : getCodingRules()) {

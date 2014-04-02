@@ -69,7 +69,7 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
 
         for (int i = 0; i < chars.length; i++) {
             // retrieve ascii value of character, subtract 96 so number corresponds to place in alphabet. ascii 'a' = 97
-            multiplier = (int) chars[i] - 96;
+            multiplier = chars[i] - 96;
             // mult the number by 26^(position in array)
             retVal += multiplier * Math.pow(26, i);
         }

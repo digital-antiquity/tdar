@@ -22,7 +22,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testCreateThenEditCollection() {
         assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
-        String desc = "description goes here: "+ System.currentTimeMillis();
+        String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
@@ -30,7 +30,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
         for (Resource resource : someResources) {
-            if (resource.getStatus() == Status.ACTIVE || resource.getStatus() == Status.DRAFT) {
+            if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
                 assertTextPresent(resource.getTitle());
             }
         }
@@ -40,9 +40,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
-            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
                 continue;
-            createUserWithPermissions(i, user,GeneralPermissions.VIEW_ALL);
+            }
+            createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
             i++;
         }
 
@@ -62,8 +63,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace("page contents: {}", getPageText());
         // assert all the added names are on the view page
         for (Person user : registeredUsers) {
-            if (StringUtils.containsIgnoreCase(user.getProperName(), "user"))
+            if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
                 continue;
+            }
             assertTextPresent(user.getProperName()); // let's assume the view page uses tostring to format the user names.
         }
 
@@ -78,13 +80,12 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent("collection is not accessible");
     }
 
-    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testDeleteCollection() {
         assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
-        String desc = "description goes here: "+ System.currentTimeMillis();
+        String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
         createTestCollection(name, desc, someResources);
         assertTextPresent(name);
@@ -93,7 +94,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String currentUrlPath = getCurrentUrlPath();
         logger.debug(currentUrlPath);
         for (Resource resource : someResources) {
-            if (resource.getStatus() == Status.ACTIVE || resource.getStatus() == Status.DRAFT) {
+            if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
                 assertTextPresent(resource.getTitle());
             }
         }
@@ -109,7 +110,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     }
 
-    
     // assign a parent collection, then go back to dashboard
     @Test
     public void testCreateChildCollection() {
@@ -196,8 +196,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {
-            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
+            }
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), person.getId());
             createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), person.getLastName());
             createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), person.getFirstName());
@@ -223,8 +224,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresent("my fancy collection");
         for (Person person : nonUsers) {
-            if (StringUtils.containsIgnoreCase(person.getProperName(), "user"))
+            if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
+            }
             assertTextNotPresent(person.getLastName());
         }
 

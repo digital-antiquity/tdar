@@ -85,20 +85,20 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
         query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
-        return (List<Long>) query.list();
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
         query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
-        return (List<Long>) query.list();
+        return query.list();
     }
 
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
         Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
         String sql = String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray()));
-        if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || resourceIdMap.keySet().size() == 1 && resourceIdMap.keySet().contains(-1L)) {
+        if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || ((resourceIdMap.keySet().size() == 1) && resourceIdMap.keySet().contains(-1L))) {
             return;
         }
         Query query = getCurrentSession().createSQLQuery(sql);
@@ -145,7 +145,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
         for (Coupon coupon : account.getCoupons()) {
             totalFiles += coupon.getNumberOfFiles();
-            totalSpaceInBytes += coupon.getNumberOfMb() * Coupon.ONE_MB;
+            totalSpaceInBytes += coupon.getNumberOfMb() * Persistable.ONE_MB;
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
@@ -193,7 +193,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Object obj = query.uniqueResult();
         if (obj != null) {
             logger.debug("{}", obj);
-            return (Account)obj;
+            return (Account) obj;
         }
         return null;
     }

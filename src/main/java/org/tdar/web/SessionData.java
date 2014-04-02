@@ -54,7 +54,7 @@ public class SessionData implements Serializable {
     }
 
     public boolean isAuthenticated() {
-        return authenticationToken != null && authenticationToken.isValid();
+        return (authenticationToken != null) && authenticationToken.isValid();
     }
 
     @Override
@@ -96,8 +96,9 @@ public class SessionData implements Serializable {
 
     public boolean isContributor() {
         Person person = getPerson();
-        if (person == null)
+        if (person == null) {
             return false;
+        }
         return person.getContributor();
     }
 

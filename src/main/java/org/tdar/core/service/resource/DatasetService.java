@@ -110,7 +110,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private DataTableDao dataTableDao;
 
     /*
-     * Translates a @link DataTableColumn based on the default 
+     * Translates a @link DataTableColumn based on the default
      */
     @Transactional
     public void translate(DataTableColumn column) {
@@ -153,6 +153,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     /*
      * Untranslate a coding sheet (remove the mapped data column for the coding sheet and then rename the column from the original to the name specified in the
+     * 
      * @link DataTableColumn
      */
     @Transactional
@@ -171,8 +172,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     /*
-     * For a given @link Dataset, create a translated file which includes all of the columns that are mapped to a @link CodingSheet and their mapped values as well
-     * as the code.  The translated version is stored on the @link InformationResourceFileVersion as a derivative
+     * For a given @link Dataset, create a translated file which includes all of the columns that are mapped to a @link CodingSheet and their mapped values as
+     * well
+     * as the code. The translated version is stored on the @link InformationResourceFileVersion as a derivative
      */
     @SuppressWarnings("deprecation")
     @Transactional
@@ -180,7 +182,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // assumes that Datasets only have a single file
         Set<InformationResourceFile> activeFiles = dataset.getActiveInformationResourceFiles();
         InformationResourceFile file = null;
-        if(!activeFiles.isEmpty()) {
+        if (!activeFiles.isEmpty()) {
             file = dataset.getActiveInformationResourceFiles().iterator().next();
         }
 
@@ -192,7 +194,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
 
-        //        getDao().synchronize();
+        // getDao().synchronize();
 
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
@@ -223,8 +225,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
     public void reprocess(Dataset dataset) {
         logger.debug("Reprocessing {}", dataset);
-        if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles()))
+        if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles())) {
             return;
+        }
         try {
             for (InformationResourceFile file : dataset.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion latestUploadedVersion = file.getLatestUploadedVersion();
@@ -264,7 +267,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     private SheetProxy toExcel(Dataset dataset, OutputStream outputStream) throws IOException {
         Set<DataTable> dataTables = dataset.getDataTables();
-        if (dataTables == null || dataTables.isEmpty()) {
+        if ((dataTables == null) || dataTables.isEmpty()) {
             return null;
         }
         final SheetProxy proxy = new SheetProxy();
@@ -299,7 +302,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         return getDao().canLinkDataToOntology(dataset);
     }
 
-
     /*
      * When we import a @link Dataset, if there's an existing set of @link DataTable entries mapped to a Dataset, we reconcile each @link DataTable and @link
      * DataTableColunn on import such that if the old DataTables and Columns match the incomming, then we'll re-use the mappings. If they're different, their
@@ -329,7 +331,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         datasetFile.setInformationResource(dataset);
 
         getDao().merge(dataset);
-//        getDao().synchronize();
+        // getDao().synchronize();
     }
 
     /*
@@ -349,7 +351,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // first check that the incoming data table has data table columns.
             String internalTableName = tableToPersist.getInternalName();
             DataTable existingTable = existingTablesMap.get(internalTableName);
-            if (existingTable == null && existingTablesMap.size() == 1 && transientDatasetToPersist.getDataTables().size() == 1) {
+            if ((existingTable == null) && (existingTablesMap.size() == 1) && (transientDatasetToPersist.getDataTables().size() == 1)) {
                 // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
                 existingTable = existingTablesMap.values().iterator().next();
             }
@@ -422,7 +424,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     /**
-     * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the 
+     * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the
      * existing column before returning.
      * 
      * @param incomingTable
@@ -513,7 +515,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                             rule.setCode(value);
                         } else if (columnName.equals(valueColumn.getName())) {
                             rule.setTerm(value);
-                        } else if (descriptionColumn != null && columnName.equals(descriptionColumn.getName())) {
+                        } else if ((descriptionColumn != null) && columnName.equals(descriptionColumn.getName())) {
                             rule.setDescription(value);
                         }
                     }
@@ -532,7 +534,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     /*
-     * Find all Rows within a @link DataTable with Pagination.  Used to browse a Data Table
+     * Find all Rows within a @link DataTable with Pagination. Used to browse a Data Table
      */
     @SuppressWarnings("deprecation")
     @Transactional
@@ -574,7 +576,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     /*
-     * Finds a set of Database rows from the TdarMetadata database that are associated with the String specified, and wraps them in a @link ResultsMetadataWrapper 
+     * Finds a set of Database rows from the TdarMetadata database that are associated with the String specified, and wraps them in a @link
+     * ResultsMetadataWrapper
      */
     @Transactional
     public ResultMetadataWrapper findRowsFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
@@ -582,7 +585,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
 
-        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable,false);
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable, false);
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated, query));
         } catch (BadSqlGrammarException e) {
@@ -590,7 +593,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         return wrapper;
     }
-
 
     /*
      * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
@@ -618,7 +620,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void assignMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();
-        if (StringUtils.isBlank(key) || column == null) {
+        if (StringUtils.isBlank(key) || (column == null)) {
             return;
         }
         final DataTable table = column.getDataTable();
@@ -656,8 +658,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             logger.info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
             if (dataset == null) {
-                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column",Arrays.asList(column));
-                }
+                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(column));
+            }
             else if (ObjectUtils.notEqual(project, dataset.getProject())) {
                 throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", Arrays.asList(project, dataset.getProject()));
             }
@@ -684,7 +686,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void remapColumnsAsync(final List<DataTableColumn> columns, final Project project) {
         remapColumns(columns, project);
     }
-    
+
     /*
      * A special feature of a @link Dataset is if it's associated with a @link Project, we can use data from a @link DataTable to associate additional data with
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
@@ -693,7 +695,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         logger.info("remapping columns: {} in {} ", columns, project);
-        if (CollectionUtils.isNotEmpty(columns) && project != null) {
+        if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
             getDao().refresh(project);
             // have to reindex...
@@ -718,7 +720,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * necessary.
      */
     @Transactional
-    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns,
+    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
+            List<DataTableColumn> dataTableColumns,
             Person authenticatedUser) {
         boolean hasOntologies = false;
         Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
@@ -755,7 +758,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             logger.debug("default ontology: {}", defaultOntology);
             logger.debug("incoming coding sheet: {}", incomingCodingSheet);
             incomingColumn.setDefaultOntology(defaultOntology);
-            if (defaultOntology != null && Base.isNullOrTransient(incomingCodingSheet)) {
+            if ((defaultOntology != null) && Base.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
                         defaultOntology);
@@ -775,8 +778,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     logger.debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
             }
-            if (incomingColumn.getDefaultCodingSheet() != null && !incomingColumn.getColumnEncodingType().isSupportsCodingSheet()
-                    && defaultOntology == null) {
+            if ((incomingColumn.getDefaultCodingSheet() != null) && !incomingColumn.getColumnEncodingType().isSupportsCodingSheet()
+                    && (defaultOntology == null)) {
                 incomingColumn.setDefaultCodingSheet(null);
                 logger.debug("column encoding type didn't support coding sheets - setting default coding sheet to null on column {} (encoding type: {})",
                         incomingColumn, incomingColumn.getColumnEncodingType());
@@ -797,7 +800,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // copy off all of the values that can be directly copied from the bean
             existingColumn.copyUserMetadataFrom(incomingColumn);
             if (!existingColumn.isValid()) {
-                throw new TdarRecoverableRuntimeException("datasetService.invalid_column",Arrays.asList(existingColumn));
+                throw new TdarRecoverableRuntimeException("datasetService.invalid_column", Arrays.asList(existingColumn));
             }
 
             if (needToRemap) {
@@ -830,7 +833,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Checks whether based on an incoming and an existing @link CodingSheet, whether retranslation is necessary
      */
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
-        logger.info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
+        logger.info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet,
+                ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
         if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
@@ -841,7 +845,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return true;
         }
     }
-
 
     /*
      * Each @link CodingSheet is mapped to one or many @link Dataset records. Because of this, when we re-map a @link CodingSheet to a @link Ontology, we need
@@ -877,6 +880,5 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
     }
-
 
 }

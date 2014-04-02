@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -26,6 +25,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
@@ -229,7 +230,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupReadUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
-        assertEquals(DownloadController.SUCCESS, controller.execute());
+        assertEquals(Action.SUCCESS, controller.execute());
     }
 
     @Test
@@ -238,19 +239,19 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
-        assertEquals(DownloadController.SUCCESS, controller.execute());
+        assertEquals(Action.SUCCESS, controller.execute());
     }
 
     @Test
     @Rollback
-//    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
         InformationResourceFileVersion currentVersion = irFile.getCurrentVersion(VersionType.WEB_SMALL);
         logger.info("{}", currentVersion.getId());
-        if (irFile.getInformationResourceFileVersions().size() == 3 && irFile.getCurrentVersion(VersionType.WEB_SMALL) == null) {
+        if ((irFile.getInformationResourceFileVersions().size() == 3) && (irFile.getCurrentVersion(VersionType.WEB_SMALL) == null)) {
             Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
         }
 
@@ -260,16 +261,16 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-//    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testThumbnailController() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
-        if (irFile.getInformationResourceFileVersions().size() == 3 && irFile.getCurrentVersion(VersionType.WEB_SMALL) == null) {
+        if ((irFile.getInformationResourceFileVersions().size() == 3) && (irFile.getCurrentVersion(VersionType.WEB_SMALL) == null)) {
             Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
         }
         controller.setInformationResourceFileId(irFile.getCurrentVersion(VersionType.WEB_SMALL).getId());
-        assertEquals(DownloadController.SUCCESS, controller.thumbnail());
+        assertEquals(Action.SUCCESS, controller.thumbnail());
     }
 
     /*

@@ -57,7 +57,8 @@ public class JaxbDocumentResult implements Result {
     public void execute(ActionInvocation invocation) throws Exception {
         JaxbDocument jaxbDocument = (JaxbDocument) invocation.getStack().findValue(documentName);
         if (jaxbDocument == null) {
-            String msg = MessageHelper.getMessage("jaxbDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(), Arrays.asList(documentName).toArray());
+            String msg = MessageHelper.getMessage("jaxbDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(),
+                    Arrays.asList(documentName).toArray());
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -70,8 +71,9 @@ public class JaxbDocumentResult implements Result {
             JaxbDocumentWriter.write(jaxbDocument, writer, formatOutput);
             logger.trace("Serving Jaxb result [{}]", documentName);
         } finally {
-            if (writer != null)
+            if (writer != null) {
                 writer.close();
+            }
         }
     }
 }

@@ -12,7 +12,6 @@ import com.opensymphony.xwork2.TextProvider;
 
 public class CategoryTermQueryPart extends FieldQueryPart<String> {
 
-
     private Long sortCategoryId;
     private String term;
 

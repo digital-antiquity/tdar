@@ -140,8 +140,9 @@ public class NelNetTransactionRequestTemplate implements Serializable {
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItem item : list) {
-            if (item == NelnetTransactionItem.HASH)
+            if (item == NelnetTransactionItem.HASH) {
                 continue;
+            }
             String key = item.key;
             String value = values.get(key);
             if (values.containsKey(key) && StringUtils.isNotBlank(value)) {
@@ -218,8 +219,9 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case STREET_ONE:
                 case STREET_TWO:
                 case ZIP:
-                    if (Persistable.Base.isNullOrTransient(invoice.getAddress()))
+                    if (Persistable.Base.isNullOrTransient(invoice.getAddress())) {
                         break;
+                    }
                     switch (item) {
                         case CITY:
                             value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.getLength());

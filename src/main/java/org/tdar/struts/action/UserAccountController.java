@@ -128,10 +128,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @HttpsOnly
     public String view() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return "new";
-        if (getAuthenticatedUser().equals(person))
+        }
+        if (getAuthenticatedUser().equals(person)) {
             return SUCCESS;
+        }
         getLogger().warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
                 getAuthenticatedUser().getId(), person, personId });
         return UNAUTHORIZED;
@@ -174,21 +176,22 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
-            @Result(name = ADD, type = "redirect", location = "/account/add"),
-            @Result(name = INPUT, location = "edit.ftl") })
+                    @Result(name = ADD, type = "redirect", location = "/account/add"),
+                    @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
     @PostOnly
     @WriteableSession
-    @DoNotObfuscate(reason="person may have not been set on the session before sent to obfuscator, so don't want to wipe email")
+    @DoNotObfuscate(reason = "person may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
-        if (person == null || !isPostRequest()) {
+        if ((person == null) || !isPostRequest()) {
             return ADD;
         }
 
         checkRecaptcha();
 
         try {
-            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName, getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
+            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
+                    getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
             if (result.isValid()) {
                 setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
@@ -221,7 +224,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
     }
 
-
     public boolean isUsernameRegistered(String username) {
         getLogger().trace("testing username:", username);
         if (StringUtils.isBlank(username)) {
@@ -229,7 +231,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             return true;
         }
         Person person = getEntityService().findByUsername(username);
-        return (person != null && person.isRegistered());
+        return ((person != null) && person.isRegistered());
     }
 
     @Override
@@ -305,8 +307,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (getPerson() != null) {
             try {
                 if (getPerson().getEmail().endsWith("\\r") ||
-                        getPerson().getFirstName().equals(getPerson().getLastName())
-                        && getPerson().getPhone().equals("123456")) {
+                        (getPerson().getFirstName().equals(getPerson().getLastName())
+                        && getPerson().getPhone().equals("123456"))) {
                     getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
                     addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
                     return true;
@@ -325,7 +327,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
 
         now -= timeCheck;
-        if (now < FIVE_SECONDS_IN_MS || now > ONE_HOUR_IN_MS) {
+        if ((now < FIVE_SECONDS_IN_MS) || (now > ONE_HOUR_IN_MS)) {
             getLogger().debug(String.format("we think this user was a spammer, due to the time taken " +
                     "to complete the form field: %s  -- %s", getConfirmEmail(), now));
             addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));

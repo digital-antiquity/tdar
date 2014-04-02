@@ -222,7 +222,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
 
         submitForm();
@@ -286,8 +286,9 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTextPresent(docValMap.get(key));

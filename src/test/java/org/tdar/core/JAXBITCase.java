@@ -113,16 +113,16 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testLoad() throws FileNotFoundException, Exception {
         Project p = new Project();
         String convertToXML = xmlService.convertToXML(p);
-//        logger.debug(convertToXML);
+        // logger.debug(convertToXML);
         try {
             xmlService.parseXml(new StringReader(convertToXML));
-        xmlService.parseXml(new FileReader(new File("c:/Users/abrin/Documents/1979.020.xml"))); // confirm goodxml loads fine
+            xmlService.parseXml(new FileReader(new File("c:/Users/abrin/Documents/1979.020.xml"))); // confirm goodxml loads fine
         } catch (Exception e) {
             logger.error("{}", e);
         }
 
     }
-    
+
     // make sure we're detecting enum errors.
     @Test
     @Rollback

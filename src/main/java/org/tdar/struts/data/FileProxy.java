@@ -63,7 +63,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.description = file.getDescription();
         this.fileCreatedDate = file.getFileCreatedDate();
         InformationResourceFileVersion latestVersion = file.getLatestUploadedVersion();
-//        this.informationResourceFile = file;
+        // this.informationResourceFile = file;
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
             this.filename = latestVersion.getFilename();

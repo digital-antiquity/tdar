@@ -2,7 +2,6 @@ package org.tdar.web.functional;
 
 import static org.junit.Assert.assertTrue;
 
-import com.opensymphony.xwork2.interceptor.annotations.Before;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -213,7 +212,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#dateCreated").val("2012");
         find("#projectId").val("3805");
         find("#cbInheritingCreditRoles").click();
-        //this project should have about four contributors.
+        // this project should have about four contributors.
         waitFor("#creditTable > :nth-child(4)");
         find("#submitButton").click();
     }
@@ -232,4 +231,3 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setScreenshotsAllowed(true);
     }
 }
-

@@ -97,7 +97,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
     public ProjectionModel getProjectionModel() {
         return ProjectionModel.HIBERNATE_DEFAULT;
     };
-    
+
     public QueryBuilders getQueryBuilder() {
         return queryBuilder;
     }

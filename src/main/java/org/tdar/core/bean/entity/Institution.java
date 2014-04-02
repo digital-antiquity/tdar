@@ -48,8 +48,8 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
  */
 
 @Entity
-@Table(name = "institution", indexes= {
-        @Index(name = "institution_name_key", columnList="name")
+@Table(name = "institution", indexes = {
+        @Index(name = "institution_name_key", columnList = "name")
 })
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
@@ -163,7 +163,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Override
     public boolean isValid() {
-        return isValidForController() && getId() != null;
+        return isValidForController() && (getId() != null);
     }
 
     @Override

@@ -190,13 +190,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
             logger.info("{}", resource);
             boolean seen = checkResourceForValue(namePart, resource);
             if (resource instanceof Project) {
-                for (Resource r : projectService.findAllResourcesInProject((Project)resource, Status.values())) {
+                for (Resource r : projectService.findAllResourcesInProject((Project) resource, Status.values())) {
                     if (seen) {
                         break;
                     }
                     seen = checkResourceForValue(namePart, r);
                 }
-                
+
             }
             assertTrue("should have seen term somwehere", seen);
         }
@@ -210,7 +210,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
         if (resource instanceof InformationResource) {
             Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-            if (institution != null && institution.getName().contains(namePart)) {
+            if ((institution != null) && institution.getName().contains(namePart)) {
                 logger.debug("seen in institution");
                 seen = true;
             }
@@ -302,7 +302,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         String label = "Sinagua";
         firstGroup().getUncontrolledCultureKeywords().add(label);
         Keyword keyword = genericKeywordService.findByLabel(CultureKeyword.class, label);
-        
+
         doSearch();
         assertTrue("we should get back at least one hit", !controller.getResults().isEmpty());
 
@@ -525,7 +525,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
-                if (Status.DUPLICATE == status || Status.FLAGGED_ACCOUNT_BALANCE == status) {
+                if ((Status.DUPLICATE == status) || (Status.FLAGGED_ACCOUNT_BALANCE == status)) {
                     continue;
                 }
                 resource.setStatus(status);
@@ -546,12 +546,12 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.getResourceTypes().add(resourceType);
         controller.getIncludedStatuses().add(status);
-        if (status == Status.DELETED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user) ||
-                status == Status.FLAGGED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user)) {
+        if (((status == Status.DELETED) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user)) ||
+                ((status == Status.FLAGGED) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user))) {
             logger.debug("expecting exception");
             doSearch(true);
             assertTrue(String.format("expected action errors %s", stat), controller.getActionErrors().size() > 0);
-        } else if (status == Status.DRAFT && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
+        } else if ((status == Status.DRAFT) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
             // this was in the test, but with the new status search I think this is more accurate to be commented out as
             doSearch(null);
             for (Resource res : controller.getResults()) {
@@ -576,7 +576,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         firstGroup().getProjects().add(sparseProject(projectId));
         doSearch();
         logger.info("{}", controller.getResults());
-        Resource found = (Resource) controller.getResults().iterator().next();
+        Resource found = controller.getResults().iterator().next();
         logger.info("{}", found);
         Assert.assertEquals(message, expectedId, found.getId());
     }
@@ -819,7 +819,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertEquals("only one result expected", 1L, controller.getResults().size());
         assertEquals(doc, controller.getResults().iterator().next());
     }
-    
+
     @Test
     @Rollback
     public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException {
@@ -885,7 +885,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         genericService.saveOrUpdate(doc1);
         genericService.saveOrUpdate(doc2);
         evictCache();
-        searchIndexService.index(doc1,doc2);
+        searchIndexService.index(doc1, doc2);
         searchIndexService.flushToIndexes();
         SearchParameters params = new SearchParameters();
         controller.getG().add(params);
@@ -903,7 +903,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getResults().contains(doc1));
         assertFalse(controller.getResults().contains(doc2));
     }
-    
+
     @Test
     @Rollback(true)
     public void testCalDateSearch() throws InstantiationException, IllegalAccessException {
@@ -1135,10 +1135,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     protected boolean resultsContainId(Long id) {
         boolean found = false;
         for (Resource r_ : controller.getResults()) {
-            Resource r = (Resource) r_;
+            Resource r = r_;
             logger.trace(r.getId() + " " + r.getResourceType());
-            if (id.equals(r.getId()))
+            if (id.equals(r.getId())) {
                 found = true;
+            }
         }
         return found;
     }

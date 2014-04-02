@@ -54,7 +54,7 @@ public class ScholarController extends AbstractLookupController {
         setRecordsPerPage(250);
         DateTime dt = new DateTime();
         DateTime start = dt.withYear(getYear()).withDayOfYear(1);
-        DateTime end = dt.withYear(getYear() +1).withDayOfYear(1);
+        DateTime end = dt.withYear(getYear() + 1).withDayOfYear(1);
         param.getRegisteredDates().add(new DateRange(start.toDate(), end.toDate()));
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(QueryParser.Operator.AND);
@@ -62,7 +62,7 @@ public class ScholarController extends AbstractLookupController {
         try {
             handleSearch(queryBuilder);
         } catch (ParseException e) {
-            addActionErrorWithException("could not generate page",e);
+            addActionErrorWithException("could not generate page", e);
             return INPUT;
         }
         return SUCCESS;

@@ -169,11 +169,11 @@ public class DataTable extends Persistable.Base {
         ArrayList<DataTableColumn> leftJoinColumns = new ArrayList<DataTableColumn>(getSortedDataTableColumns());
         for (DataTableRelationship r : getRelationships()) {
             // Include fields from related tables unless they're on the "many" side of a one-to-many relationship
-            if (this.equals(r.getLocalTable()) && r.getType() != DataTableColumnRelationshipType.ONE_TO_MANY) {
+            if (this.equals(r.getLocalTable()) && (r.getType() != DataTableColumnRelationshipType.ONE_TO_MANY)) {
                 // this is the "local" table in a many-to-one or one-to-one relationship,
                 // so including the "foreign" table's fields will not increase the cardinality of this query
                 leftJoinColumns.addAll(r.getForeignTable().getLeftJoinColumns());
-            } else if (this.equals(r.getForeignTable()) && r.getType() != DataTableColumnRelationshipType.MANY_TO_ONE) {
+            } else if (this.equals(r.getForeignTable()) && (r.getType() != DataTableColumnRelationshipType.MANY_TO_ONE)) {
                 // this is the "foreign" table in a one-to-many or one-to-one relationship,
                 // so including the "local" table's fields will not increase the cardinality of this query
                 leftJoinColumns.addAll(r.getLocalTable().getLeftJoinColumns());
@@ -230,7 +230,7 @@ public class DataTable extends Persistable.Base {
 
     @Transient
     public DataTableColumn getColumnByName(String name) {
-        if (nameToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+        if ((nameToColumnMap == null) || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
             initializeNameToColumnMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
@@ -255,7 +255,7 @@ public class DataTable extends Persistable.Base {
 
     @Transient
     public DataTableColumn getColumnByDisplayName(String name) {
-        if (displayNameToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+        if ((displayNameToColumnMap == null) || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
             initializeNameToColumnMap();
         }
         return displayNameToColumnMap.get(name);
@@ -263,7 +263,7 @@ public class DataTable extends Persistable.Base {
 
     @Transient
     public DataTableColumn getColumnById(Long id) {
-        if (idToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+        if ((idToColumnMap == null) || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
             initializeNameToColumnMap();
         }
         return idToColumnMap.get(id);

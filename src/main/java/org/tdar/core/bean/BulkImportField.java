@@ -44,17 +44,17 @@ public @interface BulkImportField {
     String YEAR_LABEL = "Date Created (Year)";
 
     // a way to tell the parser about subclasses (Creator -> Person/Institution)
-     Class<?>[] implementedSubclasses() default {};
+    Class<?>[] implementedSubclasses() default {};
 
     // the label that will show in Excel
-     String label() default "";
+    String label() default "";
 
     // The comment field in excel
-     String comment() default "";
+    String comment() default "";
 
     // Whether the field is required or not
-     boolean required() default false;
+    boolean required() default false;
 
     // The sort order for the excel columns, lower means closer to the left. Sorting is within the class
-     int order() default 0;
+    int order() default 0;
 }

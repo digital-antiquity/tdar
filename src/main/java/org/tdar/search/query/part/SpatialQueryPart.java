@@ -92,10 +92,12 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         StringBuilder q = new StringBuilder();
 
         for (LatitudeLongitudeBox spatialLimit : getFieldValues()) {
-            if (!spatialLimit.isInitialized())
+            if (!spatialLimit.isInitialized()) {
                 continue;
-            if (q.length() > 0)
+            }
+            if (q.length() > 0) {
                 q.append(" " + operator.name() + " ");
+            }
 
             String format = SPATIAL_QUERY_FORMAT;
 
@@ -158,8 +160,8 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         }
         String seperator = " " + operator.name().toLowerCase() + " ";
         List<String> vals = new ArrayList<>();
-        vals.add( StringUtils.join(latlongs, seperator));
-        String fmt = provider.getText("spatialQueryPart.resource_located",vals);
+        vals.add(StringUtils.join(latlongs, seperator));
+        String fmt = provider.getText("spatialQueryPart.resource_located", vals);
         return fmt;
     }
 

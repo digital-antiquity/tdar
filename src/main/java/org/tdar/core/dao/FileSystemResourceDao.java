@@ -43,7 +43,7 @@ public class FileSystemResourceDao {
     private XPathFactory xPathFactory = XPathFactory.newInstance();
 
     public static Boolean wroExists = null;
-    
+
     public boolean testWRO() {
         if (wroExists != null) {
             return wroExists;
@@ -54,22 +54,22 @@ public class FileSystemResourceDao {
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
             XPathExpression xPathExpr = xpath.compile(".//groups/group");
-            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             if (nodes.getLength() > 0) {
                 Node group = nodes.item(0).getAttributes().getNamedItem("name");
-                Resource resource = resourceLoader.getResource("wro/"+group.getTextContent()+".js");
+                Resource resource = resourceLoader.getResource("wro/" + group.getTextContent() + ".js");
                 wroExists = resource.exists();
                 if (wroExists) {
                     logger.debug("WRO found? true");
                     return true;
                 }
             } else {
-            	logger.debug("wro does not exist");
+                logger.debug("wro does not exist");
                 wroExists = false;
             }
 
         } catch (Exception e) {
-            logger.error("{}",e);
+            logger.error("{}", e);
         }
         logger.debug("WRO found? false");
         return false;
@@ -84,7 +84,7 @@ public class FileSystemResourceDao {
         Document dom = db.parse(getClass().getClassLoader().getResourceAsStream("wro.xml"));
         return dom;
     }
-    
+
     // helper to load the PDF Template for the cover page
     public File loadTemplate(String path) throws IOException, FileNotFoundException {
         Resource resource = resourceLoader.getResource(path);
@@ -112,16 +112,15 @@ public class FileSystemResourceDao {
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
             XPathExpression xPathExpr = xpath.compile(".//" + prefix);
-            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
                 toReturn.add(nodes.item(i).getTextContent());
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file",e);
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file", e);
         }
         return toReturn;
     }
-
 
     public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
         logger.info("opening {}", filename);
@@ -135,7 +134,6 @@ public class FileSystemResourceDao {
         }
         return dom;
     }
-
 
     public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
         List<NodeModel> toReturn = new ArrayList<>();
@@ -155,7 +153,7 @@ public class FileSystemResourceDao {
                 if (sidebarValuesToShow < toReturn.size()) {
                     return toReturn;
                 }
-                if (limit || count < mean) {
+                if (limit || (count < mean)) {
                     if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
                             StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
                             StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel())) {

@@ -21,7 +21,6 @@ import com.opensymphony.xwork2.TextProvider;
 
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
-
     private String descriptionLabel;
     private boolean inclusive = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,7 +36,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         this(field, "Value");
         if (CollectionUtils.isNotEmpty(values)) {
             for (Range<C> range : values) {
-                if (range == null || !range.isInitialized() || range.getStart() == null && range.getEnd() == null) {
+                if ((range == null) || !range.isInitialized() || ((range.getStart() == null) && (range.getEnd() == null))) {
                     continue;
                 }
                 add(range);
@@ -56,10 +55,12 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         Range<C> value = getFieldValues().get(index);
         String start = convert(value.getStart());
         String end = convert(value.getEnd());
-        if (StringUtils.isBlank(start))
+        if (StringUtils.isBlank(start)) {
             start = "*";
-        if (StringUtils.isBlank(end))
+        }
+        if (StringUtils.isBlank(end)) {
             end = "*";
+        }
 
         String phrase = String.format("%s TO %s", start, end);
         if (inclusive) {
@@ -72,15 +73,17 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     private static String convert(Date date) {
-        if (date == null)
+        if (date == null) {
             return null;
+        }
         DateTime dateTime = new DateTime(date);
         return dateTime.toString(dtf);
     }
 
     private static String convert(Object object) {
-        if (object == null)
+        if (object == null) {
             return null;
+        }
         if (object instanceof Date) {
             return convert((Date) object);
         }
@@ -96,8 +99,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     private static String convert(Number number) {
-        if (number == null)
+        if (number == null) {
             return null;
+        }
         return TdarIndexNumberFormatter.format(number);
     }
 
@@ -128,8 +132,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     private boolean isBlank(C item) {
-        if (item == null)
+        if (item == null) {
             return true;
+        }
         return StringUtils.isBlank(item.toString());
     }
 

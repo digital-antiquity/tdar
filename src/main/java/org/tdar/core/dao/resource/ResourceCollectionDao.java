@@ -91,7 +91,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         // FIXME: move all this 'permission-1' hoo-ha from the caller to the query
         query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         @SuppressWarnings("unchecked")
-        List<ResourceCollection> list = (List<ResourceCollection>) query.list();
+        List<ResourceCollection> list = query.list();
         if (list.size() > 1) {
             logger.error("query found more than one resource collection: user:{}, coll:{}", user, collection);
         }
@@ -112,7 +112,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS);
         query.setParameterList("ids", Arrays.asList(persistable.getId()));
         query.setParameterList("statuses", Arrays.asList(statuses));
-        return (List<Resource>) query.list();
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")
@@ -128,12 +128,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
-        Set<ResourceCollection>allCollections = new HashSet<>();
+        Set<ResourceCollection> allCollections = new HashSet<>();
 
-        //get all collections that grant explicit edit permissions to person
+        // get all collections that grant explicit edit permissions to person
         List<ResourceCollection> collections = findInheritedCollections(user, generalPermissions);
 
-        for(ResourceCollection rc : collections) {
+        for (ResourceCollection rc : collections) {
             allCollections.addAll(findAllChildCollectionsOnly(rc, ResourceCollection.CollectionType.SHARED));
             allCollections.add(rc);
         }
@@ -159,13 +159,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES);
         query.setLong("id", collectionId);
-        return (List<Resource>) query.list();
+        return query.list();
     }
 
     public Long getCollectionViewCount(ResourceCollection persistable) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.COLLECTION_VIEW);
         query.setParameter("id", persistable.getId());
-        Number result = (Number)query.uniqueResult();
+        Number result = (Number) query.uniqueResult();
         return result.longValue();
     }
 
@@ -175,7 +175,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
         query.setLong("id", persistable.getId());
-        return (List<ResourceCollection>) query.list();
+        return query.list();
     }
 
 }

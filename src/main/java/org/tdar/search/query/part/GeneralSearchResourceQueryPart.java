@@ -46,7 +46,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         if (StringUtils.isBlank(cleanedQueryString)) {
             return queryPart;
         }
-        
+
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
         FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
@@ -55,14 +55,14 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         if (cleanedQueryString.contains(" ")) {
             creatorPart.setProximity(2);
         }
-        
+
         // if we're searching for something numeric, put the tDAR ID into the query string and weight it appropriately.
         if (StringUtils.isNumeric(value)) {
             FieldQueryPart<String> idPart = new FieldQueryPart<String>(QueryFieldNames.ID, cleanedQueryString);
             idPart.setBoost(ID_BOOST);
             queryPart.append(idPart);
         }
-        
+
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         queryPart.append(content);

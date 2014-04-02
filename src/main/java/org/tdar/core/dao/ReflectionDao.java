@@ -60,7 +60,7 @@ public class ReflectionDao {
         query.setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize());
         return query.scroll(ScrollMode.FORWARD_ONLY);
     }
-    
+
     /**
      * Returns the count of objects that refer to the specified object via the specified Field. In other words,
      * this method returns a count of the instances of the field's declaring class.
@@ -86,7 +86,7 @@ public class ReflectionDao {
             logger.warn("encountered a one-to-many relationship  on {} when looking for references.  Treating the same as many-to-many", field);
             fmt = TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES;
         } else {
-            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.field_must_be_jpa_relationship" , Arrays.asList(field)));
+            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.field_must_be_jpa_relationship", Arrays.asList(field)));
         }
 
         hql = String.format(fmt, targetClass, field.getName());

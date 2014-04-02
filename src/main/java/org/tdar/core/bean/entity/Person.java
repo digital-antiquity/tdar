@@ -55,8 +55,8 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 @Entity
-@Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id")})
-//FIXME:  not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
+@Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
+// FIXME: not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
@@ -104,10 +104,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String firstName;
 
-    @Column(name="orcid_id")
+    @Column(name = "orcid_id")
     private String orcidId;
-    //http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
-    
+    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
@@ -254,8 +254,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     public void setLastName(String lastName) {
-        if (lastName == null)
+        if (lastName == null) {
             return;
+        }
         this.lastName = lastName.trim();
     }
 
@@ -264,8 +265,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     public void setFirstName(String firstName) {
-        if (firstName == null)
+        if (firstName == null) {
             return;
+        }
         this.firstName = firstName.trim();
     }
 
@@ -300,7 +302,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public String toString() {
-        if (institution != null && !StringUtils.isBlank(institution.toString())) {
+        if ((institution != null) && !StringUtils.isBlank(institution.toString())) {
             return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
         }
         return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
@@ -311,8 +313,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      */
     @Override
     public int compareTo(Person otherPerson) {
-        if (this == otherPerson)
+        if (this == otherPerson) {
             return 0;
+        }
         int comparison = lastName.compareTo(otherPerson.lastName);
         if (comparison == 0) {
             comparison = firstName.compareTo(otherPerson.firstName);
@@ -473,7 +476,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     @Override
     public boolean hasNoPersistableValues() {
-        if (StringUtils.isBlank(email) && (institution == null || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
+        if (StringUtils.isBlank(email) && ((institution == null) || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
                 StringUtils.isBlank(firstName) && Persistable.Base.isNullOrTransient(getId())) {
             return true;
         }
@@ -482,7 +485,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public boolean isValid() {
-        return isValidForController() && getId() != null;
+        return isValidForController() && (getId() != null);
     }
 
     public String getUsername() {
@@ -537,12 +540,17 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     /**
      * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * 
+     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
      * */
     @Deprecated
     public String getTempDisplayName() {
-        if(StringUtils.isBlank(firstName)) return "";
-        if(StringUtils.isBlank(lastName)) return "";
+        if (StringUtils.isBlank(firstName)) {
+            return "";
+        }
+        if (StringUtils.isBlank(lastName)) {
+            return "";
+        }
         if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
             setTempDisplayName(getProperName());
         }
@@ -551,7 +559,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     /**
      * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * 
+     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
      * */
     @Deprecated
     public void setTempDisplayName(String tempName) {
