@@ -192,9 +192,10 @@ public class DataIntegrationService {
             return;
         logger.info("select distinct values");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
+        logger.info("values: {} ", values);
         logger.info("iterating over coding rules");
         for (CodingRule rule : codingSheet.getCodingRules()) {
-            logger.info("term: {}, values: {} ", rule.getTerm(), values);
+            logger.info("term: {} ", rule.getTerm());
             if (values.contains(rule.getTerm())) {
                 rule.setMappedToData(column);
                 logger.trace("\t{}", rule);
