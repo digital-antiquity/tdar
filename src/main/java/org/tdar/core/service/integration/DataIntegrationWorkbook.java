@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -21,6 +22,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Ontology;
@@ -59,7 +62,9 @@ public class DataIntegrationWorkbook  implements Serializable {
     private List<String> names;
     private PersonalFilestoreTicket ticket;
     private TextProvider provider;
-    
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+
     public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person, Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
         this.setExcelService(excelService);
         this.person = person;
@@ -347,12 +352,13 @@ public class DataIntegrationWorkbook  implements Serializable {
     }
 
     public String getFileName() {
-        String fileName = provider.getText("dataIntegrationWorkbook.file_name",  Arrays.asList(StringUtils.join(names, "_")));
-        if (fileName.length() > MAX_FILENAME_LENGTH) {
-            fileName = fileName.substring(0,MAX_FILENAME_LENGTH);
-        }
+        //MD5 is probably overkill, but we want  a filename that is unique based on the included result sheets while avoiding any OS filename restrictions (e.g. maxlength)
+        String basename = StringUtils.join(names, "");
+        String basenameMd5 = DigestUtils.md5Hex(basename);
+        String fileName = provider.getText("dataIntegrationWorkbook.file_name",  Arrays.asList(basenameMd5));
         return fileName;
     }
+
     
     /**
      *  write to temp file
@@ -362,6 +368,7 @@ public class DataIntegrationWorkbook  implements Serializable {
      */
     public File writeToTempFile() throws IOException {
         File resultFile = File.createTempFile(getFileName(), ".xls", TdarConfiguration.getInstance().getTempDirectory());
+        logger.trace("writing temp file:{}", resultFile);
         resultFile.deleteOnExit();
         getWorkbook().write(new FileOutputStream(resultFile));
         return resultFile;
