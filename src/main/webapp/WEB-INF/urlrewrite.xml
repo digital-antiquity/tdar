@@ -318,7 +318,7 @@
 
 	<rule>
 		<name>remove version hash</name>
-		<from>^(/[a-z]+)/vc/[0-9\.a-f]+/(.*)$</from>
+		<from>^/(wro)/[0-9\.a-f]+/(.*)$</from>
 		<to>/$1/$2</to>
 	</rule>
 	<rule>
