@@ -59,7 +59,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
- * 
+ *
  * @author Adam Brin
  */
 public class CommandLineAPITool {
@@ -108,7 +108,7 @@ public class CommandLineAPITool {
     private static final String OPTION_SHOW_LOG = "log";
 
     private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
-    
+
     private static int errorCount = 0;
     private DefaultHttpClient httpclient = new DefaultHttpClient();
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
@@ -130,9 +130,9 @@ public class CommandLineAPITool {
      * <li>0 : no issues were encountered and the run completed successfully
      * <li>any number > 0 : the number of files that the tool was not able to import successfully.
      * </ul>
-     * 
+     *
      * @param args
-     * @throws IOException 
+     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
         CommandLineAPITool importer = new CommandLineAPITool();
@@ -387,8 +387,9 @@ public class CommandLineAPITool {
                 logger.trace("None");
             } else {
                 for (int i = 0; i < cookies.size(); i++) {
-                    if (cookies.get(i).getName().equals("crowd.token_key"))
-                        sawCrowdAuth = true;
+                    if (cookies.get(i).getName().equals("crowd.token_key")) {
+						sawCrowdAuth = true;
+					}
                     logger.trace("- " + cookies.get(i).toString());
                 }
             }
@@ -417,15 +418,16 @@ public class CommandLineAPITool {
      * @throws IOException
      * @throws UnsupportedEncodingException
      */
-    private void processDirectory(File parentDir) throws UnsupportedEncodingException, IOException {
+    private void processDirectory(File parentDir) {
         List<File> directories = new ArrayList<>();
         List<File> attachments = new ArrayList<>();
         List<File> records = new ArrayList<>();
 
         if (parentDir.isDirectory()) {
             for (File file : parentDir.listFiles()) {
-                if (file.isHidden())
+                if (file.isHidden()) {
                     continue;
+                }
                 String fileName = file.getName();
                 if (file.isDirectory()) {
                     directories.add(file);
@@ -437,9 +439,10 @@ public class CommandLineAPITool {
             }
         } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
             records.add(parentDir);
-        } 
+        }
 
-        // if there is more than one record in a directory after scanning of the directory is
+        // if there is more than one record in a directory after scanning of the
+        // directory is
         // complete, then ignore all files that are not xml records
         if (records.size() > 1) {
             logger.debug("processing multiple xml files ...  (ignoring attachments) " + records);
@@ -460,70 +463,78 @@ public class CommandLineAPITool {
         }
     }
 
-    public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
-        String path = record.getPath();
-        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));
-        MultipartEntity reqEntity = new MultipartEntity();
+    public boolean makeAPICall(File record, List<File> attachments) {
         boolean callSuccessful = true;
-        if (seen.contains(path)) {
-            logger.warn("skipping: " + path);
-        }
-        reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
+        try {
+            String path = record.getPath();
+            HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
+                    + URLEncoder.encode(path, "UTF-8"));
+            MultipartEntity reqEntity = new MultipartEntity();
+            if (seen.contains(path)) {
+                logger.warn("skipping: " + path);
+            }
+            reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
 
-        if (projectId != null) {
-            logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
-            reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
-        }
-        if (accountId != null) {
-            logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
-            reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
-        }
+            if (projectId != null) {
+                logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
+                reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
+            }
+            if (accountId != null) {
+                logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
+                reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
+            }
 
-        reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
+            reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
 
-        if (!CollectionUtils.isEmpty(attachments)) {
-            for (int i = 0; i < attachments.size(); i++) {
-                reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
-                if (getFileAccessRestriction().isRestricted()) {
-                    reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
+            if (!CollectionUtils.isEmpty(attachments)) {
+                for (int i = 0; i < attachments.size(); i++) {
+                    reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
+                    if (getFileAccessRestriction().isRestricted()) {
+                        reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
+                    }
                 }
             }
-        }
 
-        apicall.setEntity(reqEntity);
-        logger.debug("      files: " + StringUtils.join(attachments, ", "));
+            apicall.setEntity(reqEntity);
+            logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
-        HttpResponse response = httpclient.execute(apicall);
-        int statusCode = response.getStatusLine().getStatusCode();
-        
-        if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
-            logger.error("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
-            callSuccessful = false;
-        } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-            logger.error("Server returned found: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
-            callSuccessful = false;
-        }
-        logger.info(record.toString() + " - " + response.getStatusLine());
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-            String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
-            entity.consumeContent();
-            if (StringUtils.isNotBlank(resp)) {
-                logger.info(resp);
+            HttpResponse response = httpclient.execute(apicall);
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
+                logger.error("Server returned error: [" + record.getAbsolutePath() + "]:"
+                        + response.getStatusLine().getReasonPhrase());
+                callSuccessful = false;
+            } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                logger.error("Server returned found: [" + record.getAbsolutePath() + "]:"
+                        + response.getStatusLine().getReasonPhrase());
+                callSuccessful = false;
             }
-        }
-        if (callSuccessful) {
-            FileUtils.writeStringToFile(getSeenFile(), path + " successful: " + callSuccessful + lineSeparator(), true);
-            logger.info("successful: " + path);
-        } else {
-            logger.error("couldn't import: " + path);
-        }
-        
-        try {
-            Thread.sleep(msSleepBetween);
+            logger.info(record.toString() + " - " + response.getStatusLine());
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
+                entity.consumeContent();
+                if (StringUtils.isNotBlank(resp)) {
+                    logger.info(resp);
+                }
+            }
+            if (callSuccessful) {
+                FileUtils.writeStringToFile(getSeenFile(), path + " successful: " + callSuccessful + lineSeparator(),
+                        true);
+                logger.info("successful: " + path);
+            } else {
+                logger.error("couldn't import: " + path);
+            }
+
+            try {
+                Thread.sleep(msSleepBetween);
+            } catch (Exception e) {
+                // we woke up early...
+            }
         } catch (Exception e) {
-            // we woke up early...
-        }
+            // we want to suppress all exceptions that might stop the next file from being imported
+    	}
         return callSuccessful;
     }
 
