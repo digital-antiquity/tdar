@@ -309,7 +309,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
 
                 if (actor.equals(incomingUser.getUser()) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
-                    if (!authenticationAndAuthorizationService.canDo(actor, resourceCollection, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
+                    if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
                         throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user",Arrays.asList(incomingUser.getUser(), incomingUser.getGeneralPermission()));
                     }
                     // find highest permission for actor
