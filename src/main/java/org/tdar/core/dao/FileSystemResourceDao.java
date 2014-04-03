@@ -3,8 +3,10 @@ package org.tdar.core.dao;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +24,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.MessageHelper;
@@ -29,6 +32,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.hp.hpl.jena.util.FileUtils;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -41,6 +46,8 @@ public class FileSystemResourceDao {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
     private XPathFactory xPathFactory = XPathFactory.newInstance();
+
+    private String wroTempDirName;
 
     public static Boolean wroExists = null;
 
@@ -57,7 +64,9 @@ public class FileSystemResourceDao {
             NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             if (nodes.getLength() > 0) {
                 Node group = nodes.item(0).getAttributes().getNamedItem("name");
-                Resource resource = resourceLoader.getResource("wro/" + group.getTextContent() + ".js");
+                String wroFile = getWroDir() + "/" + group.getTextContent() + ".js";
+                logger.debug("wroFile: {}", wroFile);
+                Resource resource = resourceLoader.getResource(wroFile);
                 wroExists = resource.exists();
                 if (wroExists) {
                     logger.debug("WRO found? true");
@@ -153,7 +162,7 @@ public class FileSystemResourceDao {
                 if (sidebarValuesToShow < toReturn.size()) {
                     return toReturn;
                 }
-                if (limit || (count < mean)) {
+                if (limit || count < mean) {
                     if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
                             StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
                             StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel())) {
@@ -167,6 +176,21 @@ public class FileSystemResourceDao {
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, MessageHelper.getMessage("browseController.parse_creator_log"), e);
         }
         return toReturn;
+    }
+
+    public String getWroDir() {
+        if (wroTempDirName != null) {
+            return wroTempDirName;
+        }
+        try {
+            String file = FileUtils.readWholeFileAsUTF8(getClass().getClassLoader().getResourceAsStream("version.txt"));
+            file = StringUtils.replace(file, "+", "");
+            wroTempDirName = "/wro/" + file.trim();
+            return wroTempDirName;
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+        return null;
     }
 
 }

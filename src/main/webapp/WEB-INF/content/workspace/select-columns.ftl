@@ -158,16 +158,18 @@ Drag columns from your selected data tables onto the integration table .
 			                   <#assign description = column.description />
 			               </#if>
 			                 <#if count % numCols == 0><tr></#if>
-			                 <td width="${(100 / numCols)?floor }%"><div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
-			                 <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if> 
-			                 title="${description?html}"
-			                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if> 
-			                 data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>
-							<span class="name">${column.displayName}</span>
-		    			     <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
-			               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
-			                   <#assign count = count+1 />
-			                </div> </td>
+			                 <td width="${(100 / numCols)?floor }%">
+				                 <div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
+				                 <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if> 
+				                 title="${description?html}"
+				                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if> 
+				                 data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>
+								<span class="name">${column.displayName}</span>
+			    			     <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+				               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
+				                   <#assign count = count+1 />
+				                </div>
+				             </td>
 			                 <#if count % numCols == 0></tr></#if>
 			               </#list>
 			                 <#if count % numCols != 0></tr></#if>
@@ -177,7 +179,6 @@ Drag columns from your selected data tables onto the integration table .
 
 	         </div>
 	       </div>
-	     </div>
 
       </#list>
   </div>

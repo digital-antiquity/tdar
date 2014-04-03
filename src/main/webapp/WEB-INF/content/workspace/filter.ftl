@@ -52,8 +52,8 @@ checks, absent values are indicated with red x's.
         <tr>
         <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
 
-        (<span class="link" onclick='selectAllChildren("${integrationcolumn_index}", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
-        | <span class="link"onclick='selectAllChildren("${integrationcolumn_index}", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
+        (<span class="link" onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
+        | <span class="link"onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
         <#list integrationColumn.columns as column>
         <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
         </#list>
@@ -77,13 +77,14 @@ checks, absent values are indicated with red x's.
             <#assign disabled=false />
         </#if>
     </#list>
+    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index}_${ontologyNode.id?c}" />
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
-    <label class="inline-label nodeLabel" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
+    <label class="inline-label nodeLabel" for='${node_id}'>
     <#list 1..numberOfParents as indentationLevel>
         &nbsp;&nbsp;&nbsp;&nbsp;
     </#list>
-     <input type='checkbox' id='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'
+     <input type='checkbox' id='${node_id}'
     name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
     <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
     <#assign totalCheckboxCount=totalCheckboxCount+1>
@@ -92,8 +93,8 @@ checks, absent values are indicated with red x's.
         <#if !disabled></b></#if>
     </label>
     <#if ontologyNode.parent ><span class="right">
-    &nbsp;(<span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", true);'>all</span>
-    | <span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", false);'>clear</span>)</span>
+    &nbsp;(<span class="link" onclick='selectChildren("${node_id}", true);'>all</span>
+    | <span class="link" onclick='selectChildren("${node_id}", false);'>clear</span>)</span>
     </#if>
     
     </td>
@@ -132,10 +133,12 @@ checks, absent values are indicated with red x's.
 
 <script type='text/javascript'>
 function selectAllChildren(id, value) {
-    $("input:enabled[id*='ontologyNodeCheckboxId_" + id + "']").prop('checked', value);
+	var prefix = id.substr(0, id.lastIndexOf("_"));
+    $("input:enabled[id*='" + prefix + "']").prop('checked', value);
     return false;
 }
-function selectChildren(index, value) {
+function selectChildren(id, value) {
+	var index = id.substr(0, id.lastIndexOf("_"));
     $("input:enabled[id$='" + index + "']").prop('checked', value);
     $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
     return false;

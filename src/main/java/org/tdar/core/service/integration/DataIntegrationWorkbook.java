@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -21,6 +22,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Ontology;
@@ -43,9 +46,9 @@ import com.opensymphony.xwork2.TextProvider;
  * Proxy class to handle the generation of the Excel Workbook at the end of the DataIntegration
  * 
  * @author abrin
- * 
+ *
  */
-public class DataIntegrationWorkbook implements Serializable {
+public class DataIntegrationWorkbook  implements Serializable {
 
     private static final int MAX_FILENAME_LENGTH = 250;
     private static final long serialVersionUID = -2452046179173301666L;
@@ -59,9 +62,10 @@ public class DataIntegrationWorkbook implements Serializable {
     private List<String> names;
     private PersonalFilestoreTicket ticket;
     private TextProvider provider;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person,
-            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
+
+    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person, Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
         this.setExcelService(excelService);
         this.person = person;
         this.provider = provider;
@@ -119,9 +123,9 @@ public class DataIntegrationWorkbook implements Serializable {
         ticket.setDescription(getDescription().toString());
         this.setTicket(ticket);
     }
-
+    
     /**
-     * Create the workbook for the actual data
+     * Create the workbook for the actual data 
      * 
      * @param integrationColumns
      * @param integrationDataResults
@@ -183,13 +187,8 @@ public class DataIntegrationWorkbook implements Serializable {
         Sheet summarySheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.description_worksheet"));
         Row summaryRow = summarySheet.createRow(0);
         // FIXME: Should I have the ontology mappings too??
-        excelService
-                .createHeaderCell(
-                        summaryStyle,
-                        summaryRow,
-                        0,
-                        provider.getText("dataIntegrationWorkbook.description_header",
-                                Arrays.asList(person.getProperName(), new SimpleDateFormat().format(new Date()))));
+        excelService.createHeaderCell(summaryStyle, summaryRow, 0,
+                provider.getText("dataIntegrationWorkbook.description_header", Arrays.asList(person.getProperName() , new SimpleDateFormat().format(new Date()))));
         summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 
         int currentRow = 3;
@@ -209,10 +208,10 @@ public class DataIntegrationWorkbook implements Serializable {
             List<String> labels = new ArrayList<String>();
             List<String> descriptions = new ArrayList<String>();
             List<String> mappings = new ArrayList<String>();
-            descriptions.add(provider.getText("dataIntegrationWorkbook.description_description_column", Arrays.asList("    ")));
+            descriptions.add(provider.getText("dataIntegrationWorkbook.description_description_column",Arrays.asList("    ")));
             if (integrationColumn.isIntegrationColumn()) {
                 labels.add(provider.getText("dataIntegrationWorkbook.description_integration_column", Arrays.asList("    ")));
-                mappings.add(provider.getText("dataIntegrationWorkbook.description_mapped_column", Arrays.asList("    ")));
+                mappings.add(provider.getText("dataIntegrationWorkbook.description_mapped_column",Arrays.asList("    ")));
             } else {
                 labels.add(" Display Column:");
             }
@@ -246,7 +245,6 @@ public class DataIntegrationWorkbook implements Serializable {
 
     /**
      * Create the "pivot" table worksheet ("summmary")
-     * 
      * @param workbook
      * @param tableList
      * @param columnNames
@@ -284,6 +282,7 @@ public class DataIntegrationWorkbook implements Serializable {
             excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
     }
+
 
     public ExcelService getExcelService() {
         return excelService;
@@ -336,7 +335,7 @@ public class DataIntegrationWorkbook implements Serializable {
     public Person getPerson() {
         return person;
     }
-
+    
     public void setPerson(Person person) {
         this.person = person;
     }
@@ -353,21 +352,23 @@ public class DataIntegrationWorkbook implements Serializable {
     }
 
     public String getFileName() {
-        String fileName = provider.getText("dataIntegrationWorkbook.file_name", Arrays.asList(StringUtils.join(names, "_")));
-        if (fileName.length() > MAX_FILENAME_LENGTH) {
-            fileName = fileName.substring(0, MAX_FILENAME_LENGTH);
-        }
+        //MD5 is probably overkill, but we want  a filename that is unique based on the included result sheets while avoiding any OS filename restrictions (e.g. maxlength)
+        String basename = StringUtils.join(names, "");
+        String basenameMd5 = DigestUtils.md5Hex(basename);
+        String fileName = provider.getText("dataIntegrationWorkbook.file_name",  Arrays.asList(basenameMd5));
         return fileName;
     }
 
+    
     /**
-     * write to temp file
+     *  write to temp file
      * 
      * @return
      * @throws IOException
      */
     public File writeToTempFile() throws IOException {
         File resultFile = File.createTempFile(getFileName(), ".xls", TdarConfiguration.getInstance().getTempDirectory());
+        logger.trace("writing temp file:{}", resultFile);
         resultFile.deleteOnExit();
         getWorkbook().write(new FileOutputStream(resultFile));
         return resultFile;
