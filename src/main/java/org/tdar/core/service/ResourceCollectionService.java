@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -262,7 +263,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSaveResource
      */
     @Transactional
-    public void saveAuthorizedUsersForResourceCollection(SimpleSearch source, ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource, Person actor) {
+    public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource, Person actor) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
@@ -297,7 +298,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param incomingUser
      * @param resourceCollection 
      */
-    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, Person actor, ResourceCollection resourceCollection, SimpleSearch source) {
+    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, Person actor, ResourceCollection resourceCollection, HasSubmitter source) {
         if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
             Person user = getDao().find(Person.class, incomingUser.getUser().getId());
             if (user != null) {

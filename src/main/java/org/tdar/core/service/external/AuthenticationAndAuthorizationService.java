@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
@@ -470,7 +471,7 @@ public class AuthenticationAndAuthorizationService  implements Accessible {
      * (c) checks if user is allowed to perform action based on @link AuthorizedUser / @link ResourceCollection permissions
      * (d) check's iuf user was submitter
      */
-    public boolean canDo(Person person, SimpleSearch resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
+    public boolean canDo(Person person, HasSubmitter resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null)
             return false;
