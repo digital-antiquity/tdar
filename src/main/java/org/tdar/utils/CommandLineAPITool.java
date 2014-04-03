@@ -465,8 +465,8 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) {
         boolean callSuccessful = true;
+        String path = record.getPath();
         try {
-            String path = record.getPath();
             HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
                     + URLEncoder.encode(path, "UTF-8"));
             MultipartEntity reqEntity = new MultipartEntity();
@@ -534,6 +534,7 @@ public class CommandLineAPITool {
             }
         } catch (Exception e) {
             // we want to suppress all exceptions that might stop the next file from being imported
+            logger.error("couldn't import: " + path, e);
     	}
         return callSuccessful;
     }
