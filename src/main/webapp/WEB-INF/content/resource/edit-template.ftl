@@ -195,6 +195,10 @@ $(function(){
 		</#if>
 	</#if>
 	
+	<#if local_.afterUpload?? && local_.afterUpload?is_macro>
+        <@local_.afterUpload />
+    </#if>
+	
 	<#if local_.localSection?? && local_.localSection?is_macro>
 		<@local_.localSection />
 	</#if>
