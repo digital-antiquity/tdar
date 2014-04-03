@@ -25,7 +25,9 @@ Unchecked values at the top (leftmost) level are ignored, along with  any unchec
 subdivision categories.  Values that occur in each dataset are indicated with blue
 checks, absent values are indicated with red x's.
 </div>
-
+<#if editor!>
+<button id="btnDisplaySelections" type="button" class="btn btn-small">Display my current selections</button>
+</#if>
 <#assign integrationcolumn_index =0>
 
 <!--
@@ -172,5 +174,56 @@ $(document).ready(function() {
 
   });
 </script>
+<#if editor!><#noescape>
+<div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="divModalStoreLabel">Store filter Selections</h3>
+  </div>
+  <div class="modal-body">
+    <p>Code for your current selections</p>
+    <code id="codeCb2str"></code>
+
+    <p>If you would like to reload previous selections, paste your code here:</p>
+    <textarea id="txtStr2cb" cols=120 rows=5></textarea>
+  </div>
+  <div class="modal-footer">
+    <button  class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button id="btnStr2cb" class="btn btn-primary">Load my previous selections</button>
+  </div>
+</div>
+
+
+<script>
+//Example 1: serialize to a popup (alternately you could save to a global or to localstorage)
+//    alert(cb2str());
+ 
+//Example 2: load serialized data from a popup 
+//    str2cb(prompt("enter serialized string"));
+
+//return serialized list of checked checkboxes
+function cb2str() {
+    return JSON.stringify($.map($("[id]:checkbox:checked").get(), function(el){return el.id}))
+}
+ 
+//check the boxes from a serialized list of checkboxes
+function str2cb(str) {
+    $.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});
+}
+
+$(function() {
+  $("#btnStr2cb").click(function() {
+    var str = $.trim($("#txtStr2cb").val());
+    str2cb(str);
+  });
+
+  $("#btnDisplaySelections").click(function(){
+    $("#codeCb2str").text(cb2str());
+    $("#divModalStore").modal();
+  });
+});
+
+</script>
+</#noescape></#if>
 </body>
 </#escape>
