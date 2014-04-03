@@ -2,12 +2,15 @@ package org.tdar.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -56,7 +59,7 @@ public class TdarConfiguration  {
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
     private final transient static Logger logger = LoggerFactory.getLogger(TdarConfiguration.class);
-
+    private String wroTempDirName;
     private ConfigurationAssistant assistant;
 
     private Filestore filestore;

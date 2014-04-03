@@ -58,8 +58,6 @@
         <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
         <#include "${themeDir}/head.dec" />
         
-
-
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
     <#if (uri != '' && uri != '/about')>

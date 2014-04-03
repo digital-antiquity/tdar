@@ -813,4 +813,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         return false;
     }
+
+    public String getWroTempDirName() {
+        return filesystemResourceService.getWroDir();
+    }
 }
