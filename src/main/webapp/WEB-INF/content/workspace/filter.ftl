@@ -79,7 +79,7 @@ checks, absent values are indicated with red x's.
             <#assign disabled=false />
         </#if>
     </#list>
-    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index}_${ontologyNode.id?c}" />
+    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
     <label class="inline-label nodeLabel" for='${node_id}'>
@@ -182,9 +182,9 @@ $(document).ready(function() {
   </div>
   <div class="modal-body">
     <p>Code for your current selections</p>
-<!--    <code id="codeCb2str"></code> -->
 
-    <textarea id="txtStr2cb" cols=300 rows=5></textarea>
+
+    <textarea id="txtStr2cb" cols=300 rows=5 style="width:90%; font-family:monospace; font-size:smaller"></textarea>
     <p>If you would like to reload previous selections, replace the values with your code</p>
   </div>
   <div class="modal-footer">
@@ -201,9 +201,14 @@ $(document).ready(function() {
 //Example 2: load serialized data from a popup 
 //    str2cb(prompt("enter serialized string"));
 
-//return serialized list of checked checkboxes
+//return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
 function cb2str() {
-    return JSON.stringify($.map($("[id]:checkbox:checked").get(), function(el){return el.id}));
+    var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
+    if(elems.length) {
+        return JSON.stringify(elems);
+    } else {
+        return "";
+    }
 }
  
 //check the boxes from a serialized list of checkboxes
