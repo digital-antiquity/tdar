@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
@@ -319,4 +321,14 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.synonym = synonym;
     }
 
+    public String getFormattedNameWithSynonyms() {
+        if (CollectionUtils.isNotEmpty(getSynonyms())) {
+            String txt = String.format("%s (%s)",getDisplayName(), StringUtils.join(getSynonyms(), ", "));
+            logger.debug(txt);
+            return txt;
+        } else {
+            logger.debug(getDisplayName());
+            return getDisplayName();
+        }
+    }
 }
