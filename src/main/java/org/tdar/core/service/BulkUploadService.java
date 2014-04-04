@@ -74,8 +74,6 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 
-import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
-
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
  * the user interface
@@ -365,6 +363,7 @@ public class BulkUploadService {
         ResourceCollection bulkUpload = new ResourceCollection(CollectionType.SHARED);
         Person submitter = genericDao.find(Person.class, submitterId);
         bulkUpload.markUpdated(submitter);
+        bulkUpload.setVisible(false);
         bulkUpload.setName(String.format("bulk upload for %s on %s", bulkUpload.getSubmitter().getProperName(), new Date()));
         genericDao.saveOrUpdate(bulkUpload);
         Iterator<Resource> iterator = resources.iterator();
