@@ -179,17 +179,7 @@
 		                    ${column.defaultCodingSheet.title!"no title"}</a>
 		                    <#else>none</#if>
 		                </td><td>
-		                <#if column.defaultOntology?? >
-			                <#assign ont = column.defaultOntology/>
-		                <#elseif (column.defaultCodingSheet.defaultOntology)?has_content>
-		                	<#assign ont = column.defaultCodingSheet.defaultOntology />
-						</#if>
-						<#if ont??>
-		                <a href="<@s.url value="/ontology/${ont.id?c}"/>">
-		                    ${ont.title!"no title"}</a>
-		                <#else>
-		                none
-		                </#if>
+			                <@_printOntology column />
 		                </td>
 		            </tr>
 		            </#list>
@@ -223,6 +213,21 @@
 		</#list>
 	</#if>
 </#if>
+
+<#macro _printOntology column>
+	<#local ont="" />
+    <#if column.defaultOntology?? >
+        <#local ont = column.defaultOntology/>
+    <#elseif (column.defaultCodingSheet.defaultOntology)?has_content>
+    	<#local ont = column.defaultCodingSheet.defaultOntology />
+	</#if>
+	<#if ont?has_content>
+    <a href="<@s.url value="/ontology/${ont.id?c}"/>">
+        ${ont.title!"no title"}</a>
+    <#else>
+    none
+    </#if>
+</#macro>
 
 
 <h2>Cite this Record</h2>
