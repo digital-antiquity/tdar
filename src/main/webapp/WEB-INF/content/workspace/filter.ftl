@@ -25,8 +25,8 @@ Unchecked values at the top (leftmost) level are ignored, along with  any unchec
 subdivision categories.  Values that occur in each dataset are indicated with blue
 checks, absent values are indicated with red x's.
 </div>
-<#if editor!>
-<button id="btnDisplaySelections" type="button" class="btn btn-small">Display my current selections</button>
+<#if editor!false>
+<button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button>
 </#if>
 <#assign integrationcolumn_index =0>
 
@@ -182,10 +182,10 @@ $(document).ready(function() {
   </div>
   <div class="modal-body">
     <p>Code for your current selections</p>
-    <code id="codeCb2str"></code>
+<!--    <code id="codeCb2str"></code> -->
 
-    <p>If you would like to reload previous selections, paste your code here:</p>
-    <textarea id="txtStr2cb" cols=120 rows=5></textarea>
+    <textarea id="txtStr2cb" cols=300 rows=5></textarea>
+    <p>If you would like to reload previous selections, replace the values with your code</p>
   </div>
   <div class="modal-footer">
     <button  class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -221,7 +221,7 @@ $(function() {
   });
 
   $("#btnDisplaySelections").click(function(){
-    $("#codeCb2str").text(cb2str());
+    $("#txtStr2cb").text(cb2str());
     $("#divModalStore").modal();
   });
 });

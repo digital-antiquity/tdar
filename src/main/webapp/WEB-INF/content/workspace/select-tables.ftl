@@ -27,7 +27,8 @@
             <td>
                 <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}"/>
             </td>
-            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title} - ${table.displayName}</label></td>
+            <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title} - ${table.displayName}</label>
+            (Table from <a href="/${dataset.resourceType.urlNamespace}/${dataset.id?c}">${dataset.title} (${dataset.id?c})</a>)</td>
             <td>
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
