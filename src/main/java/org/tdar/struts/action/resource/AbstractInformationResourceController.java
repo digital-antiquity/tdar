@@ -714,21 +714,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     
     public List<Pair<InformationResourceFile, ExceptionWrapper>> getHistoricalFileErrors() {
         List<Pair<InformationResourceFile, ExceptionWrapper>> toReturn = new ArrayList<>();
-        if (isHasFileProxyChanges()) {
-            return toReturn;
-        }
-        for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
-        	if (file.isDeleted()) {
-        		continue;
-        	}
-            String message = file.getErrorMessage();
-            String stackTrace = file.getErrorMessage();
-            if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
-                message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
-                stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+        try {
+            if (isHasFileProxyChanges()) {
+                return toReturn;
             }
-            Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
-            toReturn.add(pair);
+            for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
+            	if (file.isDeleted()) {
+            		continue;
+            	}
+                String message = file.getErrorMessage();
+                String stackTrace = file.getErrorMessage();
+                if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
+                    message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
+                    stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+                }
+                Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
+                toReturn.add(pair);
+            }
+        } catch (Exception e) {
+            getLogger().error("got an exception while evaluating whether we should show one, should we?", e );
         }
         return toReturn;
     }
