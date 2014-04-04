@@ -199,7 +199,7 @@ $(document).ready(function() {
 //    alert(cb2str());
  
 //Example 2: load serialized data from a popup 
-//    str2cb(prompt("enter serialized string"));
+//    str2cb(prompt("enter serialized string"));d
 
 //return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
 function cb2str() {
