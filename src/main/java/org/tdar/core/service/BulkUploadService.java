@@ -689,7 +689,7 @@ public class BulkUploadService {
             informationResource.setTitle(fileName);
             informationResource.markUpdated(proxy.getSubmitter());
             informationResource.setDescription(" ");
-            informationResource.setStatus(Status.ACTIVE);
+//            informationResource.setStatus(Status);
             // make sure we're not on the session, period
             genericDao.detachFromSession(informationResource);
             proxy.getResourcesCreated().put(fileName, informationResource);

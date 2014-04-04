@@ -86,10 +86,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
      */
     @Override
     protected String save(Image image) {
+        Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
         getGenericService().markReadOnly(getPersistable());
         getLogger().info("saving batches...");
-
+        getPersistable().setStatus(oldStatus);
         if (Persistable.Base.isNullOrTransient(getTicketId())) {
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
