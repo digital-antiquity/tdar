@@ -11,23 +11,24 @@ input[disabled] + label {
 font-weight: normal !important;
 }
 .inline-label {clear:none;display:inline-block; }
+.wf-loading {
+    visibility: visible !important;
+}
 </style>
 </head>
 <body>
 <h1>Filter Ontology Values</h1>
-<div class='glide'>
-You can filter data values for the datasets listed below.  Only checked values mapped to an 
+<p>You can filter data values for the datasets listed below.  Only checked values mapped to an
 ontology will be reported below.  Select checkboxes next to the
 values that you would like to be included or aggregated to that level.  Checkboxes are automatically checked if values are present in ALL datatables.
-<br/>
-Indented unchecked values are aggregated to the next higher level that is checked.
+</p>
+<p>
+    Indented unchecked values are aggregated to the next higher level that is checked.
 Unchecked values at the top (leftmost) level are ignored, along with  any unchecked
 subdivision categories.  Values that occur in each dataset are indicated with blue
 checks, absent values are indicated with red x's.
-</div>
-<#if editor!false>
-<button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button>
-</#if>
+</p>
+<p><button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button></p>
 <#assign integrationcolumn_index =0>
 
 <!--
@@ -174,7 +175,7 @@ $(document).ready(function() {
 
   });
 </script>
-<#if editor!><#noescape>
+<#noescape>
 <div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -184,7 +185,7 @@ $(document).ready(function() {
     <p>Code for your current selections</p>
 
 
-    <textarea id="txtStr2cb" cols=300 rows=5 style="width:90%; font-family:monospace; font-size:smaller"></textarea>
+    <textarea id="txtStr2cb" cols=300 rows=5 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal" spellcheck="false"></textarea>
     <p>If you would like to reload previous selections, replace the values with your code</p>
   </div>
   <div class="modal-footer">
@@ -232,6 +233,6 @@ $(function() {
 });
 
 </script>
-</#noescape></#if>
+</#noescape>
 </body>
 </#escape>
