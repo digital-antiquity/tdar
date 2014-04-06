@@ -63,6 +63,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
@@ -118,7 +119,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 @XmlRootElement(name = "ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

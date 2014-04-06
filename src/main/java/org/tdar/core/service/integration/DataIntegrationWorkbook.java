@@ -258,7 +258,7 @@ public class DataIntegrationWorkbook  implements Serializable {
         rowIndex = 2;
         List<String> rowHeaders = new ArrayList<String>(columnNames);
         for (DataTable table : tableList) {
-            rowHeaders.add(table.getDisplayName());
+            rowHeaders.add(table.getDataset().getName() + " (" + table.getDisplayName() + ")");
         }
 
         excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, rowHeaders);
@@ -268,6 +268,7 @@ public class DataIntegrationWorkbook  implements Serializable {
             for (OntologyNode col : key) {
                 if (col != null) {
                     rowData.add(col.getDisplayName());
+                    //rowData.add(col.getIndex());
                 }
             }
             Map<DataTable, Integer> vals = pivot.get(key);

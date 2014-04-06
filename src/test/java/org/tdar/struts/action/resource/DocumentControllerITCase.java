@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.lucene.facet.search.params.FacetRequest.SortBy;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -87,13 +88,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         project.setDescription(project.getTitle());
         project.markUpdated(getAdminUser());
         genericService.saveOrUpdate(project);
-        ResourceCollection collection = new ResourceCollection();
-        collection.setName("parent collection with rights");
-        collection.setSortBy(SortOption.RELEVANCE);
-        collection.setOrientation(DisplayOrientation.GRID);
-        collection.setType(CollectionType.SHARED);
-        collection.setDescription(collection.getTitle());
-        collection.markUpdated(getAdminUser());
+        ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection);
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
@@ -120,6 +115,66 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         logger.debug("my parents:  size:{}  contents:{}", potentialParents.size(), potentialParents);
         assertTrue(potentialParents.contains(project));
+    }
+
+    
+
+    @Test
+    @Rollback
+    public void testDocumentEditRights() throws TdarActionException {
+        Document doc = new Document();
+        doc.setTitle("test rights project");
+        doc.setDescription(doc.getTitle());
+        doc.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(doc);
+        ResourceCollection collection = createResourceCollectionWithAdminRights();
+        genericService.saveOrUpdate(collection);
+        ResourceCollection internal = new ResourceCollection(CollectionType.INTERNAL);
+        internal.setName("internal");
+        internal.setDescription("internal");
+        internal.setSortBy(SortOption.TITLE);
+        internal.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(internal);
+        internal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(internal);
+        
+        doc.getResourceCollections().add(collection);
+        doc.getResourceCollections().add(internal);
+        internal.getResources().add(doc);
+        collection.getResources().add(doc);
+        genericService.saveOrUpdate(internal);
+        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(doc);
+        Long docId = doc.getId();
+        doc = null;
+        internal=null;
+        collection = null;
+        genericService.synchronize();
+
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(docId);
+        dc.prepare();
+        String add = dc.edit();
+        assertEquals(TdarActionSupport.SUCCESS, add);
+        List<Resource> potentialParents = dc.getPotentialParents();
+        dc.setServletRequest(getServletPostRequest());
+        String save = dc.save();
+        assertEquals(TdarActionSupport.SUCCESS, save);
+
+    }
+
+    private ResourceCollection createResourceCollectionWithAdminRights() {
+        ResourceCollection collection = new ResourceCollection();
+        collection.setName("parent collection with rights");
+        collection.setSortBy(SortOption.RELEVANCE);
+        collection.setOrientation(DisplayOrientation.GRID);
+        collection.setType(CollectionType.SHARED);
+        collection.setDescription(collection.getTitle());
+        collection.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(collection);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(collection);
+        return collection;
     }
 
     @Test

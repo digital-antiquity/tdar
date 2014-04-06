@@ -30,13 +30,13 @@
 
 	<#macro sidebarDataBottom>
         <#if resource.isbn?has_content>
-            <li><strong>ISBN</strong><br><span itemprop="isbn">${resource.isbn}</span></li>
+            <li><strong>ISBN</strong><br><span itemprop="isbn"><a href="http://www.worldcat.org/isbn/${resource.isbn?replace("-","")}">${resource.isbn}</a></span></li>
         </#if>
         <#if resource.issn?has_content>
             <li><strong>ISSN</strong><br><span itemprop="issn">${resource.issn}</span></li>
         </#if>
         <#if resource.doi?has_content>
-            <li><strong>DOI</strong><br>${resource.doi}</li>
+            <li><strong>DOI</strong><br><a href="http://dx.doi.org/${resource.doi}">${resource.doi}</a></li>
         <#elseif resource.externalId?has_content>
             <li><strong>DOI</strong><br>${resource.externalId}</li>
         </#if>

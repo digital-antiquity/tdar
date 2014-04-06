@@ -96,6 +96,8 @@ public class DownloadService {
             addFileToDownload(dh, files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             fileName = irFileVersion.getFilename();
             if (!irFileVersion.isDerivative()) {
+                logger.debug("User %s is trying to DOWNLOAD: %s (t%s: %s)", authenticatedUser, irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
+                        irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 // don't count download stats if you're downloading your own stuff
                 if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), authenticatedUser) && !dh.isEditor()) {

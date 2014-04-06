@@ -365,6 +365,7 @@ public class BulkUploadService {
         ResourceCollection bulkUpload = new ResourceCollection(CollectionType.SHARED);
         Person submitter = genericDao.find(Person.class, submitterId);
         bulkUpload.markUpdated(submitter);
+        bulkUpload.setVisible(false);
         bulkUpload.setName(String.format("bulk upload for %s on %s", bulkUpload.getSubmitter().getProperName(), new Date()));
         genericDao.saveOrUpdate(bulkUpload);
         Iterator<Resource> iterator = resources.iterator();
@@ -691,7 +692,7 @@ public class BulkUploadService {
             informationResource.setTitle(fileName);
             informationResource.markUpdated(proxy.getSubmitter());
             informationResource.setDescription(" ");
-            informationResource.setStatus(Status.ACTIVE);
+//            informationResource.setStatus(Status);
             // make sure we're not on the session, period
             genericDao.detachFromSession(informationResource);
             proxy.getResourcesCreated().put(fileName, informationResource);

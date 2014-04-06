@@ -11,21 +11,24 @@ input[disabled] + label {
 font-weight: normal !important;
 }
 .inline-label {clear:none;display:inline-block; }
+.wf-loading {
+    visibility: visible !important;
+}
 </style>
 </head>
 <body>
 <h1>Filter Ontology Values</h1>
-<div class='glide'>
-You can filter data values for the datasets listed below.  Only checked values mapped to an 
+<p>You can filter data values for the datasets listed below.  Only checked values mapped to an
 ontology will be reported below.  Select checkboxes next to the
 values that you would like to be included or aggregated to that level.  Checkboxes are automatically checked if values are present in ALL datatables.
-<br/>
-Indented unchecked values are aggregated to the next higher level that is checked.
+</p>
+<p>
+    Indented unchecked values are aggregated to the next higher level that is checked.
 Unchecked values at the top (leftmost) level are ignored, along with  any unchecked
 subdivision categories.  Values that occur in each dataset are indicated with blue
 checks, absent values are indicated with red x's.
-</div>
-
+</p>
+<p><button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button></p>
 <#assign integrationcolumn_index =0>
 
 <!--
@@ -77,7 +80,7 @@ checks, absent values are indicated with red x's.
             <#assign disabled=false />
         </#if>
     </#list>
-    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index}_${ontologyNode.id?c}" />
+    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
     <label class="inline-label nodeLabel" for='${node_id}'>
@@ -172,5 +175,64 @@ $(document).ready(function() {
 
   });
 </script>
+<#noescape>
+<div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="divModalStoreLabel">Store filter Selections</h3>
+  </div>
+  <div class="modal-body">
+    <p>Code for your current selections</p>
+
+
+    <textarea id="txtStr2cb" cols=300 rows=5 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal" spellcheck="false"></textarea>
+    <p>If you would like to reload previous selections, replace the values with your code</p>
+  </div>
+  <div class="modal-footer">
+    <button  class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button id="btnStr2cb" class="btn btn-primary">Load my previous selections</button>
+  </div>
+</div>
+
+
+<script>
+//Example 1: serialize to a popup (alternately you could save to a global or to localstorage)
+//    alert(cb2str());
+ 
+//Example 2: load serialized data from a popup 
+//    str2cb(prompt("enter serialized string"));d
+
+//return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
+function cb2str() {
+    var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
+    if(elems.length) {
+        return JSON.stringify(elems);
+    } else {
+        return "";
+    }
+}
+ 
+//check the boxes from a serialized list of checkboxes
+function str2cb(str) {
+    if(str){$.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});}
+}
+
+$(function() {
+  $("#btnStr2cb").click(function() {
+    var str = $.trim($("#txtStr2cb").val());
+    $("#divModalStore").modal('hide');
+    $("#divModalStore").on('hidden', function(){
+          str2cb(str);
+    });
+  });
+
+  $("#btnDisplaySelections").click(function(){
+    $("#txtStr2cb").text(cb2str());
+    $("#divModalStore").modal();
+  });
+});
+
+</script>
+</#noescape>
 </body>
 </#escape>

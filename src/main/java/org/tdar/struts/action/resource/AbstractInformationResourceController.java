@@ -97,6 +97,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
 
+
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
      * Currently the only InformationResourceS that employ this method of content/data entry are CodingSheetS and OntologyS.
@@ -112,7 +113,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      *             If there was an IO error
      */
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        throw new UnsupportedOperationException(getText("abstractInformationResourceController.didnt_override", getClass()));
+        throw new UnsupportedOperationException(getText("abstractInformationResourceController.didnt_override", getClass() ));
     }
 
     public boolean isMultipleFileUploadEnabled() {
@@ -164,7 +165,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getLogger().debug("Final proxy set: {}", proxies);
 
             for (FileProxy proxy : proxies) {
-                if ((proxy != null) && (proxy.getAction() != FileAction.NONE)) {
+                if (proxy != null && proxy.getAction() != FileAction.NONE) {
                     setHasFileProxyChanges(true);
                 }
             }
@@ -178,8 +179,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                         GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
-        // abstractInformationResourceController.didnt_override=%s didn't override properly
-        // abstractInformationResourceController.didnt_override=%s didn't override properly
+      //abstractInformationResourceController.didnt_override=%s didn't override properly
+      //abstractInformationResourceController.didnt_override=%s didn't override properly
 
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
@@ -229,7 +230,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (CollectionUtils.isEmpty(uploadedFiles)) {
             // check for metadata change iff this resource has an existing file.
             InformationResourceFile file = getPersistable().getFirstInformationResourceFile();
-            if ((file != null) && singleFileProxy.isDifferentFromFile(file)) {
+            if (file != null && singleFileProxy.isDifferentFromFile(file)) {
                 singleFileProxy.setAction(FileAction.MODIFY_METADATA);
                 singleFileProxy.setFileId(file.getId());
                 toProcess.add(singleFileProxy);
@@ -267,7 +268,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getResource().setPublisher(null);
         }
 
-        if (isCopyrightMandatory() && (copyrightHolderProxies != null)) {
+        if (isCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             getLogger().debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
@@ -350,7 +351,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         List<FileProxy> fileProxies = new ArrayList<>();
-        // FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
+        //FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
         for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
@@ -425,12 +426,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public Project getProject() {
         return project;
     }
-
+    
+    
     protected void resolveProject() {
         project = Project.NULL;
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
-        }
+        } 
         json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
@@ -462,7 +464,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * The return list is mostly sorted, with the exception of Project.NULL
      * which is always the first item in the list
      */
-    @DoNotObfuscate(reason = "always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
+    @DoNotObfuscate(reason="always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
         getLogger().info("get potential parents");
         if (potentialParents == null) {
@@ -514,13 +516,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (getResource().isInheritingOtherInformation()) {
             setOtherKeywords(null);
         }
-
+        
         if (getResource().isInheritingIndividualAndInstitutionalCredit()) {
             if (CollectionUtils.isNotEmpty(getCreditProxies())) {
                 getCreditProxies().clear();
             }
         }
-
+        
         if (getResource().isInheritingCollectionInformation()) {
             if (CollectionUtils.isNotEmpty(getRelatedComparativeCollections())) {
                 getRelatedComparativeCollections().clear();
@@ -529,19 +531,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 getSourceCollections().clear();
             }
         }
-
+        
         if (getResource().isInheritingNoteInformation()) {
             if (CollectionUtils.isNotEmpty(getResourceNotes())) {
                 getResourceNotes().clear();
             }
         }
-
+        
         if (getResource().isInheritingIdentifierInformation()) {
             if (CollectionUtils.isNotEmpty(getResourceAnnotations())) {
                 getResourceAnnotations().clear();
             }
         }
-
+        
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
@@ -550,7 +552,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
-        this.analyzer = analyzer;
+        this.analyzer= analyzer;
     }
 
     public Collection<String> getValidFileExtensions() {
@@ -574,9 +576,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public List<Language> getLanguages() {
-        if (languages == null) {
+        if (languages == null)
             languages = getInformationResourceService().findAllLanguages();
-        }
         return languages;
     }
 
@@ -622,9 +623,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public void prepare() {
         super.prepare();
-        if (getPersistable() == null) {
+        if (getPersistable() == null)
             return;
-        }
     }
 
     /*
@@ -642,10 +642,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         if (isCopyrightMandatory()) {
             // first check to see if the form has copyright holders specified
-            if ((copyrightHolderProxies != null) && (copyrightHolderProxies.getActualCreatorType() != null)) {
+            if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
                 getLogger().info("{} {}", copyrightHolderProxies, transientCreator);
-                if ((transientCreator != null) && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
+                if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
                     getLogger().debug("No copyright holder set for {}", getPersistable());
                     addActionError(getText("abstractInformationResourceController.add_copyright_holder"));
                 }
@@ -711,26 +711,30 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public boolean isResourceEditPage() {
         return true;
     }
-
+    
     public List<Pair<InformationResourceFile, ExceptionWrapper>> getHistoricalFileErrors() {
         List<Pair<InformationResourceFile, ExceptionWrapper>> toReturn = new ArrayList<>();
-        if (isHasFileProxyChanges()) {
-            return toReturn;
-        }
-        for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
-            if (file.isDeleted()) {
-                continue;
+        try {
+            if (isHasFileProxyChanges()) {
+                return toReturn;
             }
-            String message = file.getErrorMessage();
-            String stackTrace = file.getErrorMessage();
-            if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
-                message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
-                stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+            for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
+            	if (file.isDeleted()) {
+            		continue;
+            	}
+                String message = file.getErrorMessage();
+                String stackTrace = file.getErrorMessage();
+                if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
+                    message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
+                    stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+                }
+                Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
+                toReturn.add(pair);
             }
-            Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
-            toReturn.add(pair);
+        } catch (Exception e) {
+            getLogger().error("got an exception while evaluating whether we should show one, should we?", e );
         }
         return toReturn;
     }
-
+    
 }

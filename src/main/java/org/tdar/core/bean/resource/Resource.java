@@ -79,6 +79,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.OaiDcProvider;
@@ -165,7 +166,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 public class Resource extends JsonModel.Base implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
-        HasStatus, OaiDcProvider, Obfuscatable, Viewable, Addressable,
+        HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
         DeHydratable {
 
     private static final long serialVersionUID = -230400285817185637L;

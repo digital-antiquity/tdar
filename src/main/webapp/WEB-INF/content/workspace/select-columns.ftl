@@ -84,21 +84,6 @@ Drag columns from your selected data tables onto the integration table .
 
 <div id='fixedList' class="affix-top no-indent span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 <h4>Each Column Below will be a Column In Excel</h4>
-<table width="100%">
-    <tr>
-        <td>
-            <label for="autoselect">
-            <input type="checkbox" id="autoselect" class="checkbox inline"/>
-            Auto-select integratable columns
-            </label>
-        </td>
-        <td>
-            <label for="clear">
-            <input type="checkbox" id="clear"  class="checkbox inline" /> 
-            Clear all columns</label>
-        </td>
-    </tr>
-</table>
 <table id="drplist" width="100%">
 <tr>
 <#if integrationColumns?? && !integrationColumns.empty >
@@ -112,7 +97,9 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
   <div class="status"></div>
-<button class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</button>
+<span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
+<span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
+<span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
 <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
 </div>
@@ -139,7 +126,7 @@ Drag columns from your selected data tables onto the integration table .
        <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
 
 	       <div class="accordion-heading">
-			   <h4>${table_index  +1}: ${table.dataset.title}
+			   <h4>${table_index  +1}: ${table.dataset.title} : ${table.displayName}
 	         <a class="showhide accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${table_index}">(show/hide)</a> </h4>
 	       </div>
 	       <div id="collapse${table_index}" class="accordion-body collapse in">

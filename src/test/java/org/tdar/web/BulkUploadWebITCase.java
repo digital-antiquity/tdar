@@ -156,6 +156,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("investigationTypeIds", "1");
+        extra.put("status", "DRAFT");
         extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
         extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");

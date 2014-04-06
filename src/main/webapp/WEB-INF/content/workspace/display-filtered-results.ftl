@@ -3,28 +3,28 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
 <head>
-<title>Data Integration: Filtered results</title>
+<title>Data Integration: Filtered Results</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 </head>
 
 
 <div class="glide">
-<p>
-The integrated data results are displayed below.<br/>
 <#assign totalRows = 0 />
 <#list integrationDataResults as result>
   <#assign totalRows = totalRows + result.rowData?size />
 </#list>
 <#if (totalRows > 0 )>
-<b><a href='<@s.url value="download?ticketId=${ticketId?c}"/>' id="downloadLink">DOWNLOAD all results as an Excel file</a></b>.
+<div class="">
+    <a class="btn btn-primary pull-right" href='<@s.url value="download?ticketId=${ticketId?c}"/>' id="downloadLink">Download results as an Excel document</a>
+    <h2>Data Integration: Filtered Results</h2>
+</div>
 </#if>
-</p>
 </div>
 
 <div class="glide">
 
-<h2>Summary of Integration Results (counts of integration column values)</h2>
+<h3>Summary of Integration Results (counts of integration column values)</h3>
 
 <table  class="tableFormat table table-striped">
 <thead>
@@ -67,8 +67,8 @@ The integrated data results are displayed below.<br/>
 <@s.iterator value='integrationDataResults' var='integrationDataResult'>
 <div class="glide">
 
-<h2>Integration results for ${integrationDataResult.dataTable.displayName} (from
-${integrationDataResult.dataTable.dataset.title})</h2>
+<h3>Integration Results for ${integrationDataResult.dataTable.displayName} (from
+${integrationDataResult.dataTable.dataset.title})</h3>
 <table class="tableFormat table table-striped">
 <thead>
 <tr>
