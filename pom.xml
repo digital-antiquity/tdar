@@ -1709,7 +1709,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
+                <version>2.17</version>
                 <configuration>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
@@ -1749,7 +1749,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.16</version>
+                <version>2.17</version>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -1766,6 +1766,7 @@
                 </executions>
                 <configuration>
                     <runOrder>alphabetical</runOrder>
+                   <forkCount>0</forkCount>
                     <systemPropertyVariables>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>

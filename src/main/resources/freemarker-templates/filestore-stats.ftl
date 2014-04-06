@@ -22,7 +22,10 @@ No issues found
 </#if>
 
 <#macro printSection header>
-<@bar /> ${header} <@bar />
+
+<@bar /> 
+	${header} 
+<@bar />
 <#nested/>
 </#macro>
 
