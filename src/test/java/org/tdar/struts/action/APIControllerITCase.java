@@ -310,25 +310,31 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         genericService.detachFromSession(old);
-        genericService.detachFromSession(getAdminUser());
         old = null;
+        String docXml = findADocumentToReplace(oldId);
         APIController controller = generateNewInitializedController(APIController.class);
+        genericService.detachFromSession(getAdminUser());
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
+        controller.setRecord(docXml);
+        String uploadStatus = controller.upload();
+        
+        logger.info(controller.getErrorMessage());
+        assertEquals(APIController.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
+        controller = null;
+        old = (Document) resourceService.find(oldId);
+        assertEquals(oldIRId, old.getFirstInformationResourceFile().getId());
+    }
+
+    private String findADocumentToReplace(Long oldId) throws Exception {
         Document document = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(document);
         document.setId(oldId);
         removeInvalidFields(document);
         String docXml = xmlService.convertToXML(document);
         genericService.detachFromSession(document);
-        controller.setRecord(docXml);
-        String uploadStatus = controller.upload();
-        logger.info(controller.getErrorMessage());
-        assertEquals(APIController.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
         document = null;
-        controller = null;
-        old = (Document) resourceService.find(oldId);
-        assertEquals(oldIRId, old.getFirstInformationResourceFile().getId());
+        return docXml;
     }
 
     @SuppressWarnings("null")
