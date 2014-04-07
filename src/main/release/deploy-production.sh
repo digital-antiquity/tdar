@@ -48,7 +48,7 @@ perl src/main/release/release.pl
 sudo rm /tmp/.wro4j/buildContext.properties
 sudo rmdir /tmp/.wro4j/
 
-mvn clean compile war:war -Pproduction
+mvn clean compile war:war -Pproduction,minify-web-resources
 if [ $? -ne 0 ] 
   then
    echoerr "==============================================="
