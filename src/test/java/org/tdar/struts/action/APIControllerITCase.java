@@ -306,7 +306,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testReplaceRecord() throws Exception {
-        Document old = generateDocumentWithFileAndUseDefaultUser();
+        Document old = generateDocumentWithFileAndUser();
         Person user = old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
