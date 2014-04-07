@@ -180,6 +180,9 @@ public class ExcelConverter extends DatasetConverter.Base {
         sheetEvalator.evaluateBeginning(currentSheet, 25);
 
         Row columnNamesRow = currentSheet.getRow(sheetEvalator.getFirstNonHeaderRow());
+        if (columnNamesRow == null) {
+            throw new TdarRecoverableRuntimeException("excelConverter.could_not_find_header_row");
+        }
         generateDataTableColumns(columnNamesRow, dataTable);
 
         if (dataTable.getDataTableColumns() == null || dataTable.getDataTableColumns().isEmpty()) {
