@@ -232,7 +232,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     }
 
     private Long setupDoc() throws InstantiationException, IllegalAccessException {
-        Document doc = generateDocumentWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUseDefaultUser();
         doc.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));
         doc.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
         doc.getResourceCreators().add(new ResourceCreator(getAdminUser().getInstitution(), ResourceCreatorRole.CONTACT));

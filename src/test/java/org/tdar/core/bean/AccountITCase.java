@@ -55,7 +55,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testBillingAccountSetup() throws InstantiationException, IllegalAccessException {
-        Document document = generateDocumentWithFileAndUser();
+        Document document = generateDocumentWithFileAndUseDefaultUser();
         accountProcess.process(document.getSubmitter());
         evictCache();
     }
@@ -106,7 +106,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         Account account = new Account();
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, account.canAddResource(re));
@@ -128,7 +128,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountCanAddResource() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
         Account account = setupAccountWithInvoiceForOneResource(model, getUser());
@@ -156,7 +156,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         updateModel(model, false, false, true);
         Account account = setupAccountWithInvoiceFor6Mb(model, getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -182,7 +182,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountForPerson(getUser());
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -215,8 +215,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
-        Document resource = generateDocumentWithFileAndUser();
-        Document resource2 = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource2 = generateDocumentWithFileAndUseDefaultUser();
         // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
 
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
@@ -357,8 +357,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setCountingResources(true);
         assertFalse(re.accountHasMinimumForNewResource(new Account(), null));
         Image img = new Image();
-        InformationResource irfile = generateDocumentWithFileAndUser();
-        InformationResource irfile2 = generateDocumentWithFileAndUser();
+        InformationResource irfile = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource irfile2 = generateDocumentWithFileAndUseDefaultUser();
         InformationResourceFile irfProcessed = new InformationResourceFile(FileStatus.PROCESSED, null);
         InformationResourceFile irfDeleted = new InformationResourceFile(FileStatus.PROCESSED, null);
         irfDeleted.setDeleted(true);

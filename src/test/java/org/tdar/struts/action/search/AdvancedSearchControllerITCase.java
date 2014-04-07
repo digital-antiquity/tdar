@@ -508,7 +508,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException {
-        Document doc = generateDocumentWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
         doSearch();

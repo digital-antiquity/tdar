@@ -73,8 +73,8 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
         // create new resources (1) without file (1) with file (2) with file, ancient date, and already has DOI
         InformationResource generateInformationResourceWithUser = generateDocumentWithUser();
-        InformationResource file = generateDocumentWithFileAndUser();
-        InformationResource file2 = generateDocumentWithFileAndUser();
+        InformationResource file = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource file2 = generateDocumentWithFileAndUseDefaultUser();
         file2.setDateUpdated(new Date(10000)); // forever ago -- should not register
         file2.setExternalId("1234");
         genericService.saveOrUpdate(file2);

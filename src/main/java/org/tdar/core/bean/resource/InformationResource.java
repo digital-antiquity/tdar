@@ -1007,6 +1007,9 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {
+            if (logger.isTraceEnabled()) {
+                logger.debug("{}", irfile.getLatestThumbnail());
+            }
             if (irfile.getLatestThumbnail() != null) {
                 visibleFiles.add(irfile);
             }
@@ -1021,6 +1024,9 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} ({} {} )", irfile, irfile.isViewable(), irfile.isDeleted());
+            }
             if (irfile.isViewable() && !irfile.isDeleted()) {
                 visibleFiles.add(irfile);
             }

@@ -219,7 +219,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
-        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUser();
+        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);

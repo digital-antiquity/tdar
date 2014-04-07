@@ -190,8 +190,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateDocumentWithFileAndUser();
-        InformationResource draft = generateDocumentWithFileAndUser();
+        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource draft = generateDocumentWithFileAndUseDefaultUser();
         final Long normalId = normal.getId();
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
@@ -259,7 +259,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateDocumentWithFileAndUser();
+        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
         final Long normalId = normal.getId();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));
