@@ -12,14 +12,18 @@ import org.tdar.filestore.tasks.PrepareArchiveForKettleTask;
 
 /**
  * $Id$
- * 
+ *
  * @author Adam Brin
  * @version $Revision$
  */
 @Component
 public class FileArchiveWorkflow extends BaseWorkflow {
 
-    public static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
+    // TODO: due to user confusion on the interface, we have a choice of limiting the file archive
+    // type to bz2 or of changing the user interface
+    public static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "bz2" });
+
+    // public static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
 
     public FileArchiveWorkflow() {
         for (String extension : ARCHIVE_EXTENSIONS_SUPPORTED) {
