@@ -36,6 +36,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
+import org.hibernate.Cache;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -595,6 +596,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         sessionFactory.getCurrentSession().flush();
     }
 
+    protected void evictCache() {
+      Cache cache = sessionFactory.getCache();
+      if (cache != null) {
+          cache.evictAllRegions();
+      }
+
+    }
+    
     protected Long getAdminUserId() {
         return TestConfiguration.getInstance().getAdminUserId();
     }

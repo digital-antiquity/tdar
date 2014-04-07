@@ -307,15 +307,18 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testReplaceRecord() throws Exception {
         Document old = generateDocumentWithFileAndUser();
+        Person user = old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         genericService.detachFromSession(old);
         old = null;
         String docXml = findADocumentToReplace(oldId);
-        APIController controller = generateNewInitializedController(APIController.class, getAdminUser());
-        genericService.detachFromSession(getAdminUser());
-        flush();
+        APIController controller = generateNewInitializedController(APIController.class, user);
+        genericService.detachFromSession(user);
         genericService.synchronize();
+        flush();
+        evictCache();
+        
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
