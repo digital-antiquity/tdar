@@ -41,7 +41,7 @@
             });
 
 
-            if (numFiles == numMb && numMb == 0 && $(MetadataForm_code).val() == '') {
+            if (numFiles == numMb && numMb == 0 && $("#MetadataForm_code").val() == '') {
                 alert('please enter space or files');
                 return false;
             }
