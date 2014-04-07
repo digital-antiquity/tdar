@@ -197,7 +197,7 @@
 						<b><@s.text name="error.action_resource_edit_historical"/></b>
 							<ul>
 							<#list historicalFileErrors as fileError>
-								<li>${fileError.first.filename} ${fileError.second.message} 
+								<li>${fileError.first.filename} ${(fileError.second.message)!"Unknown Error"} 
 									<#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
 							</#list>
 							</ul>
