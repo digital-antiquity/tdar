@@ -312,8 +312,9 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         genericService.detachFromSession(old);
         old = null;
         String docXml = findADocumentToReplace(oldId);
-        APIController controller = generateNewInitializedController(APIController.class);
+        APIController controller = generateNewInitializedController(APIController.class, getAdminUser());
         genericService.detachFromSession(getAdminUser());
+        
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
