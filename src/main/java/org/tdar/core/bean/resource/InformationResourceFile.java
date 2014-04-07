@@ -333,6 +333,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @XmlTransient
     public InformationResourceFileVersion getLatestThumbnail() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}=?={} {} {}", version.getVersion(), latestVersion, version.isThumbnail(), version);
+            }
             if (version.getVersion().equals(latestVersion) && version.isThumbnail())
                 return version;
         }

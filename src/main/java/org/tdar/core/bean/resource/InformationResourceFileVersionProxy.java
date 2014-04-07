@@ -252,6 +252,7 @@ public class InformationResourceFileVersionProxy  implements Serializable {
         vers.setHeight(getHeight());
         vers.setWidth(getWidth());
         vers.setExtension(getExtension());
+        vers.setFileVersionType(getFileVersionType());
         vers.setDateCreated(getDateCreated());
         vers.setFormat(getFormat());
         vers.setMimeType(getMimeType());
