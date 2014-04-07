@@ -2050,49 +2050,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>ro.isdc.wro4j</groupId>
-                        <artifactId>wro4j-maven-plugin</artifactId>
-                        <version>${wro4j.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <targetGroups>default</targetGroups>
-                            <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/${project.build.finalName}/wro/${hg.version.as_dir}/</destinationFolder>
-                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
-                            <wroFile>src/main/resources/wro.xml</wroFile>
-                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-                            <ignoreMissingResources>false</ignoreMissingResources>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <!-- this is to put an extra copy where other things like the tDAR website 
-                            can deal with it. JS doesn't change that often so, it should be okay -->
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy todir="${project.build.directory}/generated/webapp/wro/">
-                                            <fileset dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}"/>
-                                        </copy>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
             <properties>
