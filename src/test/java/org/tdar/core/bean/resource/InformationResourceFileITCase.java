@@ -63,7 +63,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void findByFilename() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         InformationResourceFile foundFile = informationResourceService.findFileByFilename(ir, TestConstants.TEST_DOCUMENT_NAME);
         assertNotNull(foundFile);
         boolean found = false;
@@ -79,7 +79,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
 //    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -113,7 +113,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testIndexableTextExtractionInPDF() throws InstantiationException, IllegalAccessException, IOException {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         List<Long> irfvids = new ArrayList<Long>();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
@@ -133,7 +133,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
 //    @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testReprocessInformationResourceFile() throws Exception {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -191,7 +191,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         boolean seen = false;
         try {
             InformationResourceFile irFile = ir.getFirstInformationResourceFile();
@@ -214,7 +214,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFileStatus() throws Exception {
-        InformationResource ir = generateDocumentWithFileAndUser();
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());

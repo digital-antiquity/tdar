@@ -306,10 +306,11 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testReplaceRecord() throws Exception {
-        Document old = generateDocumentWithFileAndUser();
+        Document old = generateDocumentWithFileAndUseDefaultUser();
         Person user = old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
+        String originalXml = xmlService.convertToXML(old);
         genericService.detachFromSession(old);
         old = null;
         String docXml = findADocumentToReplace(oldId);
@@ -318,6 +319,8 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         genericService.synchronize();
         flush();
         evictCache();
+        logger.debug("ORIGINAL: {}", originalXml);
+        logger.debug("INCOMING: {}", docXml);
         
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
@@ -335,10 +338,8 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         Document document = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(document);
         document.setId(oldId);
-        removeInvalidFields(document);
         String docXml = xmlService.convertToXML(document);
         genericService.detachFromSession(document);
-        document = null;
         return docXml;
     }
 

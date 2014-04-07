@@ -183,7 +183,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
 
-        Document doc = generateDocumentWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUseDefaultUser();
         genericService.saveOrUpdate(doc);
         final Long id = doc.getId();
         logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
