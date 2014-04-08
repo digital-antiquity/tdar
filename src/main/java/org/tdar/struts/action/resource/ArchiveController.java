@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,14 +9,13 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Archive;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
 /**
  * Wraps an archive file, such as a zip file or a tarball.
- * 
+ *
  * @author Martin Paulo
  */
 @ParentPackage("secured")
@@ -54,7 +54,12 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.ARCHIVE);
+        //return analyzer.getExtensionsForType(ResourceType.ARCHIVE);
+        // TODO: due to user confusion on the interface, we have a choice of limiting the file archive
+        // type to bz2 or of changing the user interface. So we limit it here.
+        Set<String> toReturn = new HashSet<>();
+        toReturn.add("bz2");
+        return toReturn;
     }
 
     public void setArchive(final Archive archive) {
@@ -67,8 +72,9 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Archive getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 
