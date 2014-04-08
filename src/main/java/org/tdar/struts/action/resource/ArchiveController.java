@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
@@ -54,9 +55,12 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        //return analyzer.getExtensionsForType(ResourceType.ARCHIVE);
-        // TODO: due to user confusion on the interface, we have a choice of limiting the file archive
-        // type to bz2 or of changing the user interface. So we limit it here.
+        // The following used to be the returned value. I'm leaving it as dead code so 
+        // any refactoring that might happen (? unlikely, but..) will still affect it. 
+        @SuppressWarnings("unused")
+        Set<String> usedToBe = analyzer.getExtensionsForType(ResourceType.ARCHIVE);
+        // But due to user confusion on the interface, we have a choice of limiting the file archive
+        // type to bz2 or of changing the user interface. So we limit it here for the time being.
         Set<String> toReturn = new HashSet<>();
         toReturn.add("bz2");
         return toReturn;
