@@ -441,8 +441,7 @@ public class CommandLineAPITool {
             records.add(parentDir);
         }
 
-        // if there is more than one record in a directory after scanning of the
-        // directory is
+        // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records
         if (records.size() > 1) {
             logger.debug("processing multiple xml files ...  (ignoring attachments) " + records);
