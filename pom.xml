@@ -1766,7 +1766,6 @@
                 </executions>
                 <configuration>
                     <runOrder>alphabetical</runOrder>
-                   <forkCount>0</forkCount>
                     <systemPropertyVariables>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
