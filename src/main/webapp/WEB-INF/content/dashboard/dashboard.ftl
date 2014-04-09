@@ -240,7 +240,7 @@
 	
    <div class="" id="collection-section">
    <h2>Collections You Created </h2>
-      <@common.listCollections collections=resourceCollections>
+      <@common.listCollections collections=allResourceCollections>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
       </@common.listCollections>
    </div>

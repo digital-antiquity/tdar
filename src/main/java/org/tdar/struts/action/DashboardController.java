@@ -43,7 +43,7 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class DashboardController extends AuthenticationAware.Base {
+public class DashboardController extends AuthenticationAware.Base implements DataTableResourceDisplay {
 
     private static final long serialVersionUID = -2959809512424441740L;
     private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
@@ -54,7 +54,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private Map<ResourceType, Map<Status, Long>> resourceCountAndStatusForUser = new HashMap<ResourceType, Map<Status, Long>>();
-    private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
@@ -90,20 +90,20 @@ public class DashboardController extends AuthenticationAware.Base {
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
+        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getLogger().trace("accessible collections");
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
-        List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
+        List<Long> collectionIds = Persistable.Base.extractIds(getAllResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
         getLogger().trace("reconcile tree1");
-        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
+        getResourceCollectionService().reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
         getLogger().trace("reconcile tree2");
         getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
 
         getLogger().trace("removing duplicates");
-        getSharedResourceCollections().removeAll(getResourceCollections());
+        getSharedResourceCollections().removeAll(getAllResourceCollections());
         getLogger().trace("sorting");
-        Collections.sort(resourceCollections);
+        Collections.sort(allResourceCollections);
         Collections.sort(sharedResourceCollections);
         getLogger().trace("done sort");
     }
@@ -274,12 +274,12 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     @DoNotObfuscate(reason="not needed / performance test")
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
+    public List<ResourceCollection> getAllResourceCollections() {
+        return allResourceCollections;
     }
 
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
+        this.allResourceCollections = resourceCollections;
     }
 
     /**

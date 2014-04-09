@@ -39,7 +39,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource> {
+public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource>, DataTableResourceDisplay {
 
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -51,6 +51,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
 
     private List<Long> selectedResourceIds = new ArrayList<Long>();
     private Long parentId;
@@ -202,6 +203,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
+        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
+
         resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
@@ -547,4 +550,13 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.viewCount = viewCount;
     }
 
+    public List<ResourceCollection> getAllResourceCollections() {
+        return allResourceCollections;
+    }
+
+    public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
+        this.allResourceCollections = allResourceCollections;
+    }
+
+    
 }
