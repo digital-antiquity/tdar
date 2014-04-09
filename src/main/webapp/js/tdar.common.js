@@ -278,7 +278,10 @@ TDAR.common = function() {
      * @param form
      */
     var _initRegformValidation = function(form) {
+
         var $form = $(form);
+        //disable double-submit protection if user gets here via backbutton
+        var $submit = $form.find(".submitButton").prop("disabled", false);
         var options = {
             errorLabelContainer:
                     $("#error"),
@@ -314,6 +317,15 @@ TDAR.common = function() {
                     minlength: jQuery.format("Your password must be at least {0} characters."),
                     equalTo: "Please make sure your passwords match."
                 }
+            }
+            ,submitHandler : function(f) {
+                var $submit = $(f).find(".submitButton").prop("disabled", true);
+                //prevent doublesubmit for certain amount of time.
+                $submit.prop("disabled", true);
+                setTimeout(function(){
+                    $submit.prop("disabled", false);
+                }, 10 * 1000)
+                f.submit();
             }
         };
         $form.validate($.extend({},  _defaultValidateOptions, options));

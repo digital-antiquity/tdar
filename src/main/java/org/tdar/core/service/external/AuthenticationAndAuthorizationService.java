@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasStatus;
@@ -843,9 +844,20 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
-    @Transactional(readOnly = false)
-    public AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request,
-            HttpServletResponse response, SessionData sessionData, boolean contributor) {
+    /**
+     * Authenticate a user, and optionally create the user account prior to authentication.
+     *
+     * @param person_
+     * @param password
+     * @param institutionName
+     * @param request
+     * @param response
+     * @param sessionData
+     * @param contributor
+     * @return
+     */
+    @Transactional(readOnly=false )
+    public synchronized AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request, HttpServletResponse response, SessionData sessionData, boolean contributor) {
         Person person = person_;
         Person findByUsername = personDao.findByUsername(person.getUsername());
         // short circut the login process -- if there username and password are registered and valid -- just move on.

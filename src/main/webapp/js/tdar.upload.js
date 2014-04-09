@@ -419,7 +419,6 @@ TDAR.fileupload = (function(TDAR, $) {
         console.log("registering replace button")
 
         //invoke the fileupload widget's "send" method
-        //FIXME: this would be more efficient if we passed the specific div that holds the upload section (instead of entire form)
         $(fileuploadSelector).on("change", ".replace-file" , function (e) {
             console.log("triggering file upload");
             var $elem = $(this);
@@ -440,7 +439,12 @@ TDAR.fileupload = (function(TDAR, $) {
             });
 
             $replaceTarget.removeClass("replace-target");
-            $elem.prop("disabled", true);
+
+            //disable replace 'button' during transfer (except if we are doing iframe-based transport, which will not
+            // work with disabled elements)
+            if(e.target.files) {
+                $elem.prop("disabled", true);
+            }
 
         });
 
