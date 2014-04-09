@@ -106,7 +106,7 @@
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
-        <td><#if file.status?has_content>${file.status!""}</#if></td>
+        <td><#if file.status?has_content>${file.status!""}</#if><#if file.deleted>DELETED</#if></td>
            <#assign orig = file.latestUploadedVersion />
            <td></td>
            <td></td>
