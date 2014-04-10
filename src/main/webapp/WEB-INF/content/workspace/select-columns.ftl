@@ -105,7 +105,9 @@ Drag columns from your selected data tables onto the integration table .
 </div>
 </div>
 <div class="glide">
+<br/><br/>
 <h2>Select Variables</h2>
+
 <table width="100%" class="legend">
 <tr>
 <td class="legend displayColumn">&nbsp;</td> <td><b>Display Variable</b></td>
@@ -115,6 +117,11 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
 <br/>
+<p><b>The following ontologies are shared by all data tables and are good candidates for integration.</b> Click on one of them to add it to the table</p>
+
+<#list sharedOntologies as ontology>
+<span class="button btn" onClick="TDAR.integration.addColumn('${ontology.id?c}')">${ontology.name}</span>
+</#list>
 
 <div class="accordion" id="accordion">
       <#assign numCols = 6 />

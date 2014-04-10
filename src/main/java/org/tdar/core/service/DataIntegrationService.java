@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -485,5 +486,34 @@ public class DataIntegrationService {
             }
         }
         return columnAutoList;
+    }
+
+    public Set<Ontology> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
+        HashMap<Ontology,Integer> allOntologies = new HashMap<>();
+        if (CollectionUtils.isEmpty(bookmarkedDataTables)) {
+            return allOntologies.keySet();
+        }
+        for (DataTable table :bookmarkedDataTables){
+            for (DataTableColumn column : table.getDataTableColumns()) {
+                Ontology ontology = column.getMappedOntology();
+                if (ontology != null) {
+                    Integer count = allOntologies.get(ontology);
+                    if (count == null) {
+                        count = 1;
+                    }
+                    allOntologies.put(ontology,count);
+                }
+            }
+        }
+        if (showOnlyShared) {
+            Set<Ontology> toReturn = new HashSet<>();
+             for (Entry<Ontology, Integer> entrySet : allOntologies.entrySet()) {
+                 if (entrySet.getValue().intValue() == bookmarkedDataTables.size()) {
+                     toReturn.add(entrySet.getKey());
+                 }
+             }
+        }
+        
+        return allOntologies.keySet();
     }
 }

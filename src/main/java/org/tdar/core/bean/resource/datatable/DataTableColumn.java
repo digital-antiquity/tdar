@@ -405,4 +405,15 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return values;
     }
 
+    @Transient
+    public Ontology getMappedOntology() {
+        if (getDefaultOntology() != null) {
+            return getDefaultOntology();
+        }
+        if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
+            return getDefaultCodingSheet().getDefaultOntology() ;
+        }
+        return null;
+    }
+
 }

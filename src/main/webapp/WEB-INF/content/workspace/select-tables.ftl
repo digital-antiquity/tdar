@@ -7,6 +7,7 @@
                     <tr>
                         <th></th>
                         <th>Active Dataset</th>
+                        <th>Shared Ontologies</th>
                         <th>Table</th>
                     <tr>
                 </thead>
@@ -25,10 +26,28 @@
         <#list dataset.getDataTables() as table>
         <tr>
             <td>
-                <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}"/>
+                <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}" disabled="${((table.columnsWithOntologyMappings?size!0) == 0)?c }"/>
             </td>
             <td><label class="datatableListItem" for="datatable_checkbox_${table.id?c}">${dataset.title} - ${table.displayName}</label>
             (Table from <a href="/${dataset.resourceType.urlNamespace}/${dataset.id?c}">${dataset.title} (${dataset.id?c})</a>)</td>
+            <td>
+            <#local comma = false />
+    		<#list sharedOntologies as ontology>
+    		<#local seen  = false>
+	            <#list table.dataTableColumns as column>
+	            	<#local ontId = (column.mappedOntology.id)!-1 />
+	            	<#if ontId != -1>
+	            		 <#if ontology.id == ontId>
+	            		 	<#local seen = true />
+	            		 </#if>
+	            	</#if>
+            	</#list>
+        		<#if seen>
+        			<#if !comma><#local comma = true><#else>,</#if>
+					${ontology.name}
+        		</#if>
+            </#list>
+			</td>
             <td>
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">

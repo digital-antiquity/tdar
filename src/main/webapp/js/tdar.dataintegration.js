@@ -478,17 +478,18 @@
             $("#txtStr2cb").text(cb2str());
             $("#divModalStore").modal();
         });
-    }
+    };
 
 
     //expose public elements
     TDAR.integration = {
         "initDataIntegration": _initDataIntegration,
+        "addColumn": _addColumn,
         "setStatus": _setStatus,
         "integrationClearAll": _integrationClearAll,
         "selectChildren": _selectChildren,
         "selectAllChildren": _selectAllChildren,
-        "initOntologyFilterPage": _initOntologyFilterPage
+        "initOntologyFilterPage": _initOntologyFilterPage,
     };
 
 

@@ -280,4 +280,15 @@ public class DataTable extends Persistable.Base {
     public String getInternalName() {
         return getName().replaceAll("^((\\w+)_)(\\d+)(_?)", "");
     }
+    
+    @Transient
+    public List<DataTableColumn> getColumnsWithOntologyMappings() {
+        List<DataTableColumn> columns = new ArrayList<>();
+        for (DataTableColumn column : getDataTableColumns()) {
+            if (column.getMappedOntology() != null) {
+                columns.add(column);
+            }
+        }
+        return columns;
+    }
 }

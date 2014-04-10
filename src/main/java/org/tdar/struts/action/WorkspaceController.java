@@ -55,6 +55,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -3538370664425794045L;
 
     private List<Resource> bookmarkedResources;
+    private Set<Ontology> sharedOntologies;
     private List<IntegrationColumn> integrationColumns;
     private List<Long> tableIds;
     private List<DataTable> selectedDataTables;
@@ -79,6 +80,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
+        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getBookmarkedDataTables(),false));
         return SUCCESS;
     }
 
@@ -94,6 +96,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
             addActionError(getText("workspaceController.selectTables"));
             return INPUT;
         }
+        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getSelectedDataTables(),true));
         return SUCCESS;
     }
 
@@ -339,5 +342,13 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public Map<List<OntologyNode>, Map<DataTable, Integer>> getPivotData() {
         return pivotData;
+    }
+
+    public Set<Ontology> getSharedOntologies() {
+        return sharedOntologies;
+    }
+
+    public void setSharedOntologies(Set<Ontology> sharedOntologies) {
+        this.sharedOntologies = sharedOntologies;
     }
 }
