@@ -18,20 +18,34 @@ font-weight: normal !important;
 </head>
 <body>
 <h1>Filter Ontology Values</h1>
-<p>You can filter data values for the datasets listed below.  Only checked values mapped to an
-ontology will be reported below.  Select checkboxes next to the
-values that you would like to be included or aggregated to that level.  Checkboxes are automatically checked if values are present in ALL datatables.
-</p>
+<div class="row">
+	<div class="span8">
+	<h3>Instructions</h3>
+<p>The complete ontologies for each integration column are listed below, along with columns for each data table that you've chosen to integrated. 
+You can filter the data values for each data table listed below that will be used in the data integration.  Only the values mapped to an ontology will be reported below.  
+Select checkboxes next to the values that you would like to be included or aggregated to that level. </p>
 <p>
-    Indented unchecked values are aggregated to the next higher level that is checked.
+Indented unchecked values are aggregated to the next higher level that is checked.
 Unchecked values at the top (leftmost) level are ignored, along with  any unchecked
-subdivision categories.  Values that occur in each dataset are indicated with blue
-checks, absent values are indicated with red x's.
+subdivision categories. 
 </p>
+<ul>
+    <li>Values that occur in a dataset are indicated with blue checks ( <img src="<@s.url value="/images/checked.gif" />"/> )</li>
+    <li>Values that do not occur in a dataset are indicated with red X's ( <img src="<@s.url value="/images/unchecked.gif" />"/>).</li>
+</ul>
+</div>
+	<div class="span4">
+<#-- display links with taxonomy expanded -->
+<h3>Copy / Restore Previous Selection</h3>
+<p>If you are regularly performing data integrations, you can save time by reusing previous selections.</p>
+<p><strong>To Copy:</strong> Make your selections, then click the button below and "copy" the codes for future use.</p>
+<p><strong>To Restore:</strong> Click the button below, "paste" the codes into the text box, and finally click "Load my previous selections." </p>
+	
+	<button id="btnDisplaySelections" type="button" class="btn btn-mini">Copy/Paste Codes</button></p>
+	</div>
+</div>
 <#assign integrationcolumn_index =0>
 
-<#-- display links with taxonomy expanded -->
-<p class="text-right"><button id="btnDisplaySelections" type="button" class="btn btn-mini">Copy/Paste Codes</button></p>
 <@s.form method='post' action='display-filtered-results' id="filterForm">
 
 <#assign totalCheckboxCount=0>
@@ -46,13 +60,19 @@ checks, absent values are indicated with red x's.
   </#list>
  <#else>
  <#if integrationColumn.sharedOntology??>
+
+ <br/></br/>
+<p class="pull-right">
+    <span class=" btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'><i class=" icon-ok-circle"></i>Select All</span>
+    <span class="autocheck btn  button"><i class=" icon-ok"></i><i class=" icon-ok"></i> Select Shared Values</span>
+    <span class="button  btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i class=" icon-remove-circle"></i>Clear All</span>
+    <span class="button btn hideElements"><i class=" icon-remove"></i>Hide Unmapped</span>
+</p>
+<h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
  <table class='tableFormat table table-striped integrationTable'>
     <thead>
         <tr>
-        <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
-
-        (<span class="link" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
-        | <span class="link"onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
+        <th>Ontology labels</th>
         <#list integrationColumn.columns as column>
         <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
         </#list>
