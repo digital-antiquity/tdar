@@ -1523,7 +1523,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -1569,7 +1568,7 @@
                         </goals>
                         <configuration>
                         <exportAntProperties>true</exportAntProperties>
-                            <tasks>
+                            <target>
                                 <condition property="hg.location"
                                     value="/usr/local/bin/hg">
                                     <available file="/usr/local/bin/hg" />
@@ -1594,7 +1593,7 @@
                                         <deletecharacters chars="\t\r\n+"/>
                                     </filterchain>
                                  </loadfile>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                     <execution>
@@ -1606,13 +1605,13 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <mkdir dir="target" />
                                 <mkdir dir="target/generated" />
                                 <mkdir dir="target/generated/db" />
                                 <mkdir dir="target/generated/webapp" />
                                 <mkdir dir="target/generated/webapp-test" />
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
@@ -1983,14 +1982,14 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <mkdir dir="target" />
                                         <mkdir dir="target/generated" />
                                         <mkdir dir="target/generated/db" />
                                         <mkdir dir="target/generated/webapp" />
                                         <mkdir
                                             dir="target/generated/webapp-test" />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -2035,7 +2034,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <mkdir dir="target" />
                                         <mkdir dir="target/generated" />
                                         <mkdir dir="target/generated/db" />
@@ -2044,7 +2043,7 @@
                                             dir="target/generated/webapp-test" />
                                         <!--<rmdir dir="src/main/webapp/wro" 
                                             /> -->
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -2076,14 +2075,13 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <mkdir dir="target" />
                                         <mkdir dir="target/generated" />
                                         <mkdir dir="target/generated/db" />
                                         <mkdir dir="target/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                    </tasks>
+                                        <mkdir dir="target/generated/webapp-test" />
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -2129,11 +2127,11 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
 	                                    <copy todir="${project.build.directory}/generated/webapp/wro/">
 	                                    	<fileset dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}"/>
 	                                    </copy>
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -2335,7 +2333,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <copy
                                             file="src/main/resources/crowd.properties.template"
                                             tofile="src/main/resources/crowd.properties" />
@@ -2361,7 +2359,7 @@
                                             message="the following can be used to grab all of the config files into a tar from an existing repo" />
                                         <echo
                                             message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
