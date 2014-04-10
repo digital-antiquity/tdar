@@ -18,24 +18,34 @@ font-weight: normal !important;
 </head>
 <body>
 <h1>Filter Ontology Values</h1>
-<p>You can filter data values for the datasets listed below.  Only checked values mapped to an
-ontology will be reported below.  Select checkboxes next to the
-values that you would like to be included or aggregated to that level.  Checkboxes are automatically checked if values are present in ALL datatables.
-</p>
+<div class="row">
+	<div class="span8">
+	<h3>Instructions</h3>
+<p>The complete ontologies for each integration column are listed below, along with columns for each data table that you've chosen to integrated. 
+You can filter the data values for each data table listed below that will be used in the data integration.  Only the values mapped to an ontology will be reported below.  
+Select checkboxes next to the values that you would like to be included or aggregated to that level. </p>
 <p>
-    Indented unchecked values are aggregated to the next higher level that is checked.
+Indented unchecked values are aggregated to the next higher level that is checked.
 Unchecked values at the top (leftmost) level are ignored, along with  any unchecked
-subdivision categories.  Values that occur in each dataset are indicated with blue
-checks, absent values are indicated with red x's.
+subdivision categories. 
 </p>
-<p><button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button></p>
+<ul>
+    <li>Values that occur in a dataset are indicated with blue checks ( <img src="<@s.url value="/images/checked.gif" />"/> )</li>
+    <li>Values that do not occur in a dataset are indicated with red X's ( <img src="<@s.url value="/images/unchecked.gif" />"/>).</li>
+</ul>
+</div>
+	<div class="span4">
+<#-- display links with taxonomy expanded -->
+<h3>Copy / Restore Previous Selection</h3>
+<p>If you are regularly performing data integrations, you can save time by reusing previous selections.</p>
+<p><strong>To Copy:</strong> Make your selections, then click the button below and "copy" the codes for future use.</p>
+<p><strong>To Restore:</strong> Click the button below, "paste" the codes into the text box, and finally click "Load my previous selections." </p>
+	
+	<button id="btnDisplaySelections" type="button" class="btn btn-mini">Copy/Paste Codes</button></p>
+	</div>
+</div>
 <#assign integrationcolumn_index =0>
 
-<!--
-<div class="parent-info">
-  ${siteAcronym} has automatically selected values that occur accross all datasets below.  To clear this, please click "clear all" below.
-</div>-->
-<#-- display links with taxonomy expanded -->
 <@s.form method='post' action='display-filtered-results' id="filterForm">
 
 <#assign totalCheckboxCount=0>
@@ -50,13 +60,19 @@ checks, absent values are indicated with red x's.
   </#list>
  <#else>
  <#if integrationColumn.sharedOntology??>
+
+ <br/></br/>
+<p class="pull-right">
+    <span class=" btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'><i class=" icon-ok-circle"></i>Select All</span>
+    <span class="autocheck btn  button"><i class=" icon-ok"></i><i class=" icon-ok"></i> Select Shared Values</span>
+    <span class="button  btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i class=" icon-remove-circle"></i>Clear All</span>
+    <span class="button btn hideElements"><i class=" icon-remove"></i>Hide Unmapped</span>
+</p>
+<h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
  <table class='tableFormat table table-striped integrationTable'>
     <thead>
         <tr>
-        <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
-
-        (<span class="link" onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
-        | <span class="link"onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
+        <th>Ontology labels</th>
         <#list integrationColumn.columns as column>
         <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
         </#list>
@@ -135,104 +151,24 @@ checks, absent values are indicated with red x's.
 
 
 <script type='text/javascript'>
-function selectAllChildren(id, value) {
-	var prefix = id.substr(0, id.lastIndexOf("_"));
-    $("input:enabled[id*='" + prefix + "']").prop('checked', value);
-    return false;
-}
-function selectChildren(id, value) {
-	var index = id.substr(0, id.lastIndexOf("_"));
-    $("input:enabled[id$='" + index + "']").prop('checked', value);
-    $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
-    return false;
-}
-
-$("#filterForm").submit(function() {
-    var errors = "";
-    $(".integrationTable").each(function() {
-        if ($(":checked ",$(this)).length == 0) {
-            errors = "at least one table does not have any filter values checked";
-        }
-    });
-    
-    if (errors != '') {
-        alert(errors);
-        return false;
-    };
-  if ($("#filterForm :checked").length < 1) {
-    alert("please select at least one variable");
-    return false;
-  }
-});
-$(document).ready(function() {
-  $(".autocheck").click(function() {
-      $("[canautocheck]",$(this).closest("table")).attr("checked","checked");
-  });
-
-  $(".hideElements").click(function() {
-      $("tr.disabled",$(this).closest("table")).hide();
-  });
-
-  });
+    $(function(){
+        TDAR.integration.initOntologyFilterPage();
+    })
 </script>
-<#noescape>
 <div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="divModalStoreLabel">Store filter Selections</h3>
+    <h3 id="divModalStoreLabel">Ontology Filter Codes</h3>
+      <span>The codes in the textbox below represent your current ontology selections. </span>
+      <span>To restore ontology filter selections from a previous integration, paste those selection codes into the textbox. </span>
   </div>
   <div class="modal-body">
-    <p>Code for your current selections</p>
-
-
     <textarea id="txtStr2cb" cols=300 rows=5 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal" spellcheck="false"></textarea>
-    <p>If you would like to reload previous selections, replace the values with your code</p>
   </div>
   <div class="modal-footer">
     <button  class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button id="btnStr2cb" class="btn btn-primary">Load my previous selections</button>
   </div>
 </div>
-
-
-<script>
-//Example 1: serialize to a popup (alternately you could save to a global or to localstorage)
-//    alert(cb2str());
- 
-//Example 2: load serialized data from a popup 
-//    str2cb(prompt("enter serialized string"));d
-
-//return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
-function cb2str() {
-    var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
-    if(elems.length) {
-        return JSON.stringify(elems);
-    } else {
-        return "";
-    }
-}
- 
-//check the boxes from a serialized list of checkboxes
-function str2cb(str) {
-    if(str){$.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});}
-}
-
-$(function() {
-  $("#btnStr2cb").click(function() {
-    var str = $.trim($("#txtStr2cb").val());
-    $("#divModalStore").modal('hide');
-    $("#divModalStore").on('hidden', function(){
-          str2cb(str);
-    });
-  });
-
-  $("#btnDisplaySelections").click(function(){
-    $("#txtStr2cb").text(cb2str());
-    $("#divModalStore").modal();
-  });
-});
-
-</script>
-</#noescape>
 </body>
 </#escape>

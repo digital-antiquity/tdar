@@ -98,19 +98,19 @@
     </tr>
 <#list resource.informationResourceFiles as file>
     <tr>
-        <td colspan="2">${file.filename!"unnamed file"}
-        <#if file.latestThumbnail?has_content>
- 	       <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>"/>
+        <td colspan="2"><strong>${file.filename!"unnamed file"}</strong>
+        <#if file.latestThumbnail?? && !file.deleted>
+           <br><img src="<@s.url value="/filestore/${file.latestThumbnail.id?c}/thumbnail"/>">
         </#if>
         </td>
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
-        <td><#if file.status?has_content>${file.status!""}</#if></td>
-           <#assign orig = file.latestUploadedVersion />
-           <td></td>
-           <td></td>
-           <td></td>
+        <td>${file.status!""} ${file.deleted?string("(deleted)", "")}</td>
+        <#assign orig = file.latestUploadedVersion />
+        <td></td>
+        <td></td>
+        <td></td>
         <td><#if !file.processed && file.errorMessage?has_content>${file.errorMessage}</#if></td>
     </tr>
     <#list file.informationResourceFileVersions as vers>

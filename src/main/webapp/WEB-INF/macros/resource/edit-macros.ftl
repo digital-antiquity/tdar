@@ -982,7 +982,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <div class="">
                 <select name="_tdar.collection" id="collection-selector" class="input-block-level">
                     <option value="" selected='selected'>All Collections</option>
-                    <@s.iterator value='resourceCollections' var='rc'>
+                    <@s.iterator value='allResourceCollections' var='rc'>
                         <option value="${rc.id?c}" title="${rc.name!""?html}"><@common.truncate rc.name!"(No Name)" 70 /></option>
                     </@s.iterator>
                 </select>

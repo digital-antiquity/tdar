@@ -249,7 +249,7 @@ View freemarker macros
         <@fileInfoSection extended=true; irfile, showAll, ext>
         <#if !irfile.deleted || userAbleToViewDeletedFiles >
         <#local twoRow = (irfile.hasTranslatedVersion || irfile.description?has_content ) />
-            <tr class="${irfile.status!""}">
+            <tr class="${irfile.status!""} ${irfile.deleted?string("DELETED","")}">
                 <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                 <td><@createFileLink irfile false false false /></td>
                 <td><@common.convertFileSize version.fileLength /></td>
@@ -262,7 +262,7 @@ View freemarker macros
 				</#if>
             </tr>
             <#if twoRow>
-            <tr class="${irfile.status!''}">
+            <tr class="${irfile.status!''} ${irfile.deleted?string("DELETED","")}">
                 <td colspan=<#if showDownloads>6<#else>5</#if>>
                     ${irfile.description!""}
                     <@translatedFileSection irfile />
