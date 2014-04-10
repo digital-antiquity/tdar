@@ -459,11 +459,13 @@
         });
 
         $(".autocheck").click(function() {
-            $("[canautocheck]",$(this).closest("table")).prop("checked","checked");
+            $(this).closest(".integration-column").find("[canautocheck]").prop("checked", true);
+            //$("[canautocheck]",$(this).closest("table")).prop("checked","checked");
         });
 
         $(".hideElements").click(function() {
-            $("tr.disabled",$(this).closest("table")).hide();
+            $(this).closest(".integration-column").find("tr.disabled").toggle();
+            //$("tr.disabled",$(this).closest("table")).hide();
         });
 
         $("#btnStr2cb").click(function() {
