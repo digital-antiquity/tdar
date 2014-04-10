@@ -28,14 +28,10 @@ Unchecked values at the top (leftmost) level are ignored, along with  any unchec
 subdivision categories.  Values that occur in each dataset are indicated with blue
 checks, absent values are indicated with red x's.
 </p>
-<p><button id="btnDisplaySelections" type="button" class="btn btn-small">Save/Load Previous Settings</button></p>
 <#assign integrationcolumn_index =0>
 
-<!--
-<div class="parent-info">
-  ${siteAcronym} has automatically selected values that occur accross all datasets below.  To clear this, please click "clear all" below.
-</div>-->
 <#-- display links with taxonomy expanded -->
+<p class="text-right"><button id="btnDisplaySelections" type="button" class="btn btn-mini">Copy/Paste Codes</button></p>
 <@s.form method='post' action='display-filtered-results' id="filterForm">
 
 <#assign totalCheckboxCount=0>
@@ -55,8 +51,8 @@ checks, absent values are indicated with red x's.
         <tr>
         <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
 
-        (<span class="link" onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
-        | <span class="link"onclick='selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
+        (<span class="link" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'>Select All</span> | <span class="autocheck link">Select All With Shared Values</span>
+        | <span class="link"onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'>Clear All</span> | <span class="link hideElements">Hide Unmapped</span>)</th>
         <#list integrationColumn.columns as column>
         <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
         </#list>
@@ -135,104 +131,24 @@ checks, absent values are indicated with red x's.
 
 
 <script type='text/javascript'>
-function selectAllChildren(id, value) {
-	var prefix = id.substr(0, id.lastIndexOf("_"));
-    $("input:enabled[id*='" + prefix + "']").prop('checked', value);
-    return false;
-}
-function selectChildren(id, value) {
-	var index = id.substr(0, id.lastIndexOf("_"));
-    $("input:enabled[id$='" + index + "']").prop('checked', value);
-    $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
-    return false;
-}
-
-$("#filterForm").submit(function() {
-    var errors = "";
-    $(".integrationTable").each(function() {
-        if ($(":checked ",$(this)).length == 0) {
-            errors = "at least one table does not have any filter values checked";
-        }
-    });
-    
-    if (errors != '') {
-        alert(errors);
-        return false;
-    };
-  if ($("#filterForm :checked").length < 1) {
-    alert("please select at least one variable");
-    return false;
-  }
-});
-$(document).ready(function() {
-  $(".autocheck").click(function() {
-      $("[canautocheck]",$(this).closest("table")).attr("checked","checked");
-  });
-
-  $(".hideElements").click(function() {
-      $("tr.disabled",$(this).closest("table")).hide();
-  });
-
-  });
+    $(function(){
+        TDAR.integration.initOntologyFilterPage();
+    })
 </script>
-<#noescape>
 <div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="divModalStoreLabel">Store filter Selections</h3>
+    <h3 id="divModalStoreLabel">Ontology Filter Codes</h3>
+      <span>The codes in the textbox below represent your current ontology selections. </span>
+      <span>To restore ontology filter selections from a previous integration, paste those selection codes into the textbox. </span>
   </div>
   <div class="modal-body">
-    <p>Code for your current selections</p>
-
-
     <textarea id="txtStr2cb" cols=300 rows=5 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal" spellcheck="false"></textarea>
-    <p>If you would like to reload previous selections, replace the values with your code</p>
   </div>
   <div class="modal-footer">
     <button  class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button id="btnStr2cb" class="btn btn-primary">Load my previous selections</button>
   </div>
 </div>
-
-
-<script>
-//Example 1: serialize to a popup (alternately you could save to a global or to localstorage)
-//    alert(cb2str());
- 
-//Example 2: load serialized data from a popup 
-//    str2cb(prompt("enter serialized string"));d
-
-//return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
-function cb2str() {
-    var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
-    if(elems.length) {
-        return JSON.stringify(elems);
-    } else {
-        return "";
-    }
-}
- 
-//check the boxes from a serialized list of checkboxes
-function str2cb(str) {
-    if(str){$.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});}
-}
-
-$(function() {
-  $("#btnStr2cb").click(function() {
-    var str = $.trim($("#txtStr2cb").val());
-    $("#divModalStore").modal('hide');
-    $("#divModalStore").on('hidden', function(){
-          str2cb(str);
-    });
-  });
-
-  $("#btnDisplaySelections").click(function(){
-    $("#txtStr2cb").text(cb2str());
-    $("#divModalStore").modal();
-  });
-});
-
-</script>
-</#noescape>
 </body>
 </#escape>

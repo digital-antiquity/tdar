@@ -393,12 +393,102 @@
         }
     }
 
+    /**
+     * Ontology Filter: Select All Children
+     * @param id
+     * @param value
+     * @returns {boolean}
+     */
+    function _selectAllChildren(id, value) {
+        var prefix = id.substr(0, id.lastIndexOf("_"));
+        $("input:enabled[id*='" + prefix + "']").prop('checked', value);
+        return false;
+    }
+
+    /**
+     * Ontology Filter: Select Children
+     * @param id
+     * @param value
+     * @returns {boolean}
+     */
+    function _selectChildren(id, value) {
+        var index = id.substr(0, id.lastIndexOf("_"));
+        $("input:enabled[id$='" + index + "']").prop('checked', value);
+        $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
+        return false;
+    }
+
+    //return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
+    function cb2str() {
+        var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
+        if(elems.length) {
+            return JSON.stringify(elems);
+        } else {
+            return "";
+        }
+    }
+
+    //check the boxes from a serialized list of checkboxes
+    function str2cb(str) {
+        if(str){$.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});}
+    }
+
+
+    /**
+     * Initialize the "Filter Ontology Values" page
+     * @private
+     */
+    var  _initOntologyFilterPage = function() {
+
+        $("#filterForm").submit(function() {
+            var errors = "";
+            $(".integrationTable").each(function() {
+                if ($(":checked ",$(this)).length == 0) {
+                    errors = "at least one table does not have any filter values checked";
+                }
+            });
+
+            if (errors != '') {
+                alert(errors);
+                return false;
+            };
+            if ($("#filterForm :checked").length < 1) {
+                alert("please select at least one variable");
+                return false;
+            }
+        });
+
+        $(".autocheck").click(function() {
+            $("[canautocheck]",$(this).closest("table")).prop("checked","checked");
+        });
+
+        $(".hideElements").click(function() {
+            $("tr.disabled",$(this).closest("table")).hide();
+        });
+
+        $("#btnStr2cb").click(function() {
+            var str = $.trim($("#txtStr2cb").val());
+            $("#divModalStore").modal('hide');
+            $("#divModalStore").on('hidden', function(){
+                str2cb(str);
+            });
+        });
+
+        $("#btnDisplaySelections").click(function(){
+            $("#txtStr2cb").text(cb2str());
+            $("#divModalStore").modal();
+        });
+    }
+
 
     //expose public elements
     TDAR.integration = {
         "initDataIntegration": _initDataIntegration,
         "setStatus": _setStatus,
-        "integrationClearAll": _integrationClearAll
+        "integrationClearAll": _integrationClearAll,
+        "selectChildren": _selectChildren,
+        "selectAllChildren": _selectAllChildren,
+        "initOntologyFilterPage": _initOntologyFilterPage
     };
 
 

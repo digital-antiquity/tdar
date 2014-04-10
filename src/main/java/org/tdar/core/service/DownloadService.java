@@ -123,9 +123,12 @@ public class DownloadService {
                 generateZipArchive(files, resourceFile);
                 // although in temp, it might be quite large, so let's not leave it lying around
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
-            } else {
+            } else if(files.keySet().size() == 1){
                 resourceFile = (File) files.keySet().toArray()[0];
                 dh.setInputStream(new FileInputStream(resourceFile));
+            } else {
+                logger.info("No files present in files.keySet() - could be thumbnail request for file w/ deleted status");
+                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
             }
             dh.setFileName(fileName);
             dh.setContentLength(resourceFile.length());
