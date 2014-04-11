@@ -1,6 +1,5 @@
-
 TDAR.advancedSearch = {}
-TDAR.advancedSearch = (function() {
+TDAR.advancedSearch = (function () {
     "use strict";
 
     /**
@@ -25,7 +24,6 @@ TDAR.advancedSearch = (function() {
             var $select = $(this);
             var searchType = $select.val();
             var $controlGroup = $select.parent();
-
 
             // get a copy of the template term controls
             var row = $('div.' + searchType, '#template').clone();
@@ -118,7 +116,7 @@ TDAR.advancedSearch = (function() {
 
         // register any treeviews
         $('.tdar-treeview', containerElem).treeview({
-            collapsed : true
+            collapsed: true
         });
 
         // register any person autocomplete fields (don't cull nonusers, don't show
@@ -135,20 +133,19 @@ TDAR.advancedSearch = (function() {
         }
 
         $('.datepicker', containerElem).datepicker({
-            dateFormat : 'm/d/y'
+            dateFormat: 'm/d/y'
         });
 
         // collection, project combo boxes
         TDAR.autocomplete.applyResourceAutocomplete($('.projectcombo', containerElem), "PROJECT");
         TDAR.autocomplete.applyCollectionAutocomplete($('.collectioncombo', containerElem), {
-            minLength : 0
+            minLength: 0
         }, {});
 
-        $('#searchGroups').find('.searchgroup').each(function(){
+        $('#searchGroups').find('.searchgroup').each(function () {
             _showGroupingSelectorIfNecessary($(this));
         });
     }
-
 
     /**
      * Perform a stringformat on the specified element attribute value,  using a map to serve as
@@ -159,9 +156,11 @@ TDAR.advancedSearch = (function() {
      * @private
      */
     function _replaceAttributeValues($elem, attr, map) {
-        if(typeof $elem.attr(attr) === 'undefined') return;
+        if (typeof $elem.attr(attr) === 'undefined') {
+            return;
+        }
         var newstr = $elem.attr(attr);
-        for ( var key in map) {
+        for (var key in map) {
             newstr = newstr.split(key).join(map[key]);
         }
         $elem.attr(attr, newstr);
@@ -180,11 +179,11 @@ TDAR.advancedSearch = (function() {
     function _updateAttributesForRow($root, groupnum, rownum) {
         // todo: *[id], *[name] instead
         var map = {
-                "{groupid}" : groupnum,
-                "{termid}" : rownum};
-        $.each($root.find('*'), function(ignored, elem) {
+            "{groupid}": groupnum,
+            "{termid}": rownum};
+        $.each($root.find('*'), function (ignored, elem) {
             // don't update all attributes, just id, name, for, etc.
-            $.each([ "id", "name", "for", "autocompleteIdElement", "autocompleteParentElement" ], function(ignored, attrName) {
+            $.each([ "id", "name", "for", "autocompleteIdElement", "autocompleteParentElement" ], function (ignored, attrName) {
                 _replaceAttributeValues($(elem), attrName, map);
             });
         });
@@ -200,7 +199,7 @@ TDAR.advancedSearch = (function() {
         // if more than one term, show the grouping selector
         var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
         var $groupingControl = $groupDiv.find(".groupingSelectDiv");
-        if($visibleRows.length > 1) {
+        if ($visibleRows.length > 1) {
             $groupingControl.find('select').show();
             $groupingControl.addClass("in");
         } else {
@@ -220,7 +219,7 @@ TDAR.advancedSearch = (function() {
      * @private
      */
     function _serializeFormState() {
-        $("#searchGroups").submit(function() {
+        $("#searchGroups").submit(function () {
             var frm = this;
             var $frm = $(this);
 
@@ -230,7 +229,7 @@ TDAR.advancedSearch = (function() {
             // Note: in theory radio buttons and disabled items need similar
             // treatment, but they aren't used in this form
 
-            $("input[type=text],input[type=hidden]", frm).each(function(idx, inputElem) {
+            $("input[type=text],input[type=hidden]", frm).each(function (idx, inputElem) {
                 $(inputElem).attr("value", inputElem.value);
             });
 
@@ -245,7 +244,6 @@ TDAR.advancedSearch = (function() {
             $("#queryField").val("");
         });
     }
-
 
     /**
      * Back-button hackery: set the attribute values of a form input element to match the current value of the same-named element property.
@@ -263,7 +261,7 @@ TDAR.advancedSearch = (function() {
         // assumption: the attribute named ${booleanPropertyName} is a string, and
         // the only acceptable value (if exists) is
         // ${booleanPropertyName}="${booleanPropertyName}"
-        $formElements.each(function(idx, elem) {
+        $formElements.each(function (idx, elem) {
             var $elem = $(elem);
             if ($elem.prop(booleanPropertyName)) {
                 $elem.attr(booleanPropertyName, booleanPropertyName);
@@ -275,8 +273,8 @@ TDAR.advancedSearch = (function() {
         });
     }
 
-return {
-    serializeFormState: _serializeFormState,
-    initAdvancedSearch: _initAdvancedSearch
-};
+    return {
+        serializeFormState: _serializeFormState,
+        initAdvancedSearch: _initAdvancedSearch
+    };
 })();

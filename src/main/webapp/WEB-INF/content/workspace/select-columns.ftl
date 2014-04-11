@@ -1,214 +1,231 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
+    <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <head>
- <style type="text/css">
+    <style type="text/css">
 
-.drg {
-//z-index:50000 !important;
-}
- .showhide {
-	 display: inline;
-	 font-size: 80%;
-	 right: 0px;
- }
- 
- .collapse {
- 	overflow:visible !important;
- }
- 
-.fixed {
-    position: fixed;
-    top: 0;
-    z-index:1000;
-    border: 1px solid #AAA;
-    background-color: #DEDEDE;
-    padding: 4px;
-    margin:0px;
-    opacity:.95;
-}
-.buttontable .integrationTableNumber {
-    display:none;
-    visibility:hidden;
-}
+        .drg {
+        / / z-index : 50000 !important;
+        }
 
-.integrationColumn div[table] .ontology {
- display:none !important;
-}
+        .showhide {
+            display: inline;
+            font-size: 80%;
+            right: 0px;
+        }
 
-.status {
-  color:#660033;
-  font-weight:bold;
-}
+        .collapse {
+            overflow: visible !important;
+        }
 
-#drplist {border:1px solid #ccc;}
+        .fixed {
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            border: 1px solid #AAA;
+            background-color: #DEDEDE;
+            padding: 4px;
+            margin: 0px;
+            opacity: .95;
+        }
 
-#submitbutton {
-    right: -540px !important;
-    position: relative !important;
-}
+        .buttontable .integrationTableNumber {
+            display: none;
+            visibility: hidden;
+        }
 
-.addAnother { margin-left:1em !important; font-weight:bold;}
+        .integrationColumn div[table] .ontology {
+            display: none !important;
+        }
 
-.addAnother img {
-    bottom: 2px !important;
-    position: relative !important;
-} 
-</style>
+        .status {
+            color: #660033;
+            font-weight: bold;
+        }
+
+        #drplist {
+            border: 1px solid #ccc;
+        }
+
+        #submitbutton {
+            right: -540px !important;
+            position: relative !important;
+        }
+
+        .addAnother {
+            margin-left: 1em !important;
+            font-weight: bold;
+        }
+
+        .addAnother img {
+            bottom: 2px !important;
+            position: relative !important;
+        }
+    </style>
 
 </head>
- 
+
 <body>
     <@s.form name='selectDTColForm' method='post' action='filter' id="selectDTColForm">
 
-<h3>Data Integration</h3>
-<div class="glide">
-Drag columns from your selected data tables onto the integration table .
-</div>
-<div class="glide">
-<h3>Create your Integration Table:</h3>
+    <h3>Data Integration</h3>
 
-<#macro setupIntegrationColumn column idx=0 init=false>
-<td data-colnum="${idx}" class="<#if column.displayColumn><#if !init>displayColumn<#else>defaultColumn</#if><#else>integrationColumn</#if>">
-  <div class="label">Column ${idx + 1} <span class="colType"></span>
-  <input type="hidden" name="integrationColumns[${idx}].columnType" value="<#if column.displayColumn>DISPLAY<#else>INTEGRATION</#if>" class="colTypeField"/>
-  <input type="hidden" name="integrationColumns[${idx}].sequenceNumber" value="${idx}" class="sequenceNumber" />
-</div>
-<#if column.columns.empty><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span></#if>
-<#list column.columns as col>
-  <input type="hidden" name="integrationColumns[${idx}].columns[${col_index}].id" value="${col.id?c}" />
-  
-</#list>
-</td>
+    <div class="glide">
+        Drag columns from your selected data tables onto the integration table .
+    </div>
+    <div class="glide">
+        <h3>Create your Integration Table:</h3>
 
-</#macro>
+        <#macro setupIntegrationColumn column idx=0 init=false>
+            <td data-colnum="${idx}" class="<#if column.displayColumn><#if !init>displayColumn<#else>defaultColumn</#if><#else>integrationColumn</#if>">
+                <div class="label">Column ${idx + 1} <span class="colType"></span>
+                    <input type="hidden" name="integrationColumns[${idx}].columnType" value="<#if column.displayColumn>DISPLAY<#else>INTEGRATION</#if>"
+                           class="colTypeField"/>
+                    <input type="hidden" name="integrationColumns[${idx}].sequenceNumber" value="${idx}" class="sequenceNumber"/>
+                </div>
+                <#if column.columns.empty><span
+                        class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span></#if>
+                <#list column.columns as col>
+                    <input type="hidden" name="integrationColumns[${idx}].columns[${col_index}].id" value="${col.id?c}"/>
 
-<div id='fixedList' class="affix-top no-indent span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
-<h4>Each Column Below will be a Column In Excel</h4>
-<table id="drplist" width="100%">
-<tr>
-<#if integrationColumns?? && !integrationColumns.empty >
+                </#list>
+            </td>
+
+        </#macro>
+
+        <div id='fixedList' class="affix-top no-indent span12 row navbar-static" data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+            <h4>Each Column Below will be a Column In Excel</h4>
+            <table id="drplist" width="100%">
+                <tr>
+                    <#if integrationColumns?? && !integrationColumns.empty >
  <#list integrationColumns as integrationColumn>
-   <@setupIntegrationColumn integrationColumn integrationColumn_index />
- </#list>
+                        <@setupIntegrationColumn integrationColumn integrationColumn_index />
+                    </#list>
 <#else>
-  <@setupIntegrationColumn blankIntegrationColumn 0 true/>
-</#if>
+                        <@setupIntegrationColumn blankIntegrationColumn 0 true/>
+                    </#if>
 
-</tr>
-</table>
-  <div class="status"></div>
-  <div class="btn-group">
-<span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
-<span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
-<span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
-</div>
-<@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
+                </tr>
+            </table>
+            <div class="status"></div>
+            <div class="btn-group">
+                <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
+                <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
+                <span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
+            </div>
+            <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
-</div>
-</div>
-<div class="glide">
-<br/><br/>
-<h2>Select Variables</h2>
+        </div>
+    </div>
+    <div class="glide">
+        <br/><br/>
+        <h2>Select Variables</h2>
 
-<table width="100%" class="legend">
-<tr>
-<td class="legend displayColumn">&nbsp;</td> <td><b>Display Variable</b></td>
-<td class="legend integrationColumn">&nbsp;&nbsp;</td> <td><b>Integration Variable with mapped Ontology</b></td>
-<td class="legend measurementColumn">&nbsp;&nbsp;</td> <td><b>Measurement Variable</b></td>
-<td class="legend countColumn">&nbsp;&nbsp;</td> <td><b>Count Variable</b></td>
-</tr>
-</table>
-<br/>
-<p><b>The following ontologies are shared by all data tables and are good candidates for integration.</b> Click on one of them to add it to the table</p>
+        <table width="100%" class="legend">
+            <tr>
+                <td class="legend displayColumn">&nbsp;</td>
+                <td><b>Display Variable</b></td>
+                <td class="legend integrationColumn">&nbsp;&nbsp;</td>
+                <td><b>Integration Variable with mapped Ontology</b></td>
+                <td class="legend measurementColumn">&nbsp;&nbsp;</td>
+                <td><b>Measurement Variable</b></td>
+                <td class="legend countColumn">&nbsp;&nbsp;</td>
+                <td><b>Count Variable</b></td>
+            </tr>
+        </table>
+        <br/>
+        <p><b>The following ontologies are shared by all data tables and are good candidates for integration.</b> Click on one of them to add it to the table
+        </p>
 
-<#list sharedOntologies as ontology>
-<span class="button btn" onClick="TDAR.integration.addColumn('${ontology.id?c}')">${ontology.name}</span>
-</#list>
+        <#list sharedOntologies as ontology>
+            <span class="button btn" onClick="TDAR.integration.addColumn('${ontology.id?c}')">${ontology.name}</span>
+        </#list>
 
-<div class="accordion" id="accordion">
-      <#assign numCols = 6 />
+    <div class="accordion" id="accordion">
+        <#assign numCols = 6 />
 
-     <div class="accordion-group">
+        <div class="accordion-group">
 
-      <#list selectedDataTables as table>
-      <!-- setting for error condition -->
-       <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
+            <#list selectedDataTables as table>
+                <!-- setting for error condition -->
+                <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
 
-	       <div class="accordion-heading">
-			   <h4>${table_index  +1}: ${table.dataset.title} : ${table.displayName}
-	         <a class="showhide accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${table_index}">(show/hide)</a> </h4>
-	       </div>
-	       <div id="collapse${table_index}" class="accordion-body collapse in">
-	         <div class="accordion-inner">
-			     <table class="buttontable">
-			         <tbody>
-			              <#if leftJoinDataIntegrationFeatureEnabled>
-			                 <#assign columns = table.leftJoinColumns>
-			             <#else>
-			                 <#assign columns = table.sortedDataTableColumns>
-			             </#if>
-			           <#assign count = 0>
-			               <#list columns as column>
-			               <#assign description = ""/>
-			               <#if column?? && column.description??>
-			                   <#assign description = column.description />
-			               </#if>
-			                 <#if count % numCols == 0><tr></#if>
-			                 <td width="${(100 / numCols)?floor }%">
-				                 <div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
-				                 <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if> 
-				                 title="${description?html}"
-				                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if> 
-				                 data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>
+                <div class="accordion-heading">
+                    <h4>${table_index  +1}: ${table.dataset.title} : ${table.displayName}
+                        <a class="showhide accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${table_index}">(show/hide)</a></h4>
+                </div>
+                <div id="collapse${table_index}" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        <table class="buttontable">
+                            <tbody>
+                                <#if leftJoinDataIntegrationFeatureEnabled>
+                                    <#assign columns = table.leftJoinColumns>
+                                <#else>
+                                    <#assign columns = table.sortedDataTableColumns>
+                                </#if>
+                                <#assign count = 0>
+                                <#list columns as column>
+                                    <#assign description = ""/>
+                                    <#if column?? && column.description??>
+                                        <#assign description = column.description />
+                                    </#if>
+                                    <#if count % numCols == 0>
+                                    <tr></#if>
+                                    <td width="${(100 / numCols)?floor }%">
+                                        <div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
+                                             <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if>
+                                             title="${description?html}"
+                                             <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if>
+                                             data-table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}
+                                            . </span>
 								<span class="name">${column.displayName}</span>
-			    			     <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
-				               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
-				                   <#assign count = count+1 />
-				                </div>
-				             </td>
-			                 <#if count % numCols == 0></tr></#if>
-			               </#list>
-			                 <#if count % numCols != 0></tr></#if>
+                                            <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+                                            <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id" value="${column.id?c}"/></span>
+                                            <#assign count = count+1 />
+                                        </div>
+                                    </td>
+                                    <#if count % numCols == 0></tr></#if>
+                                </#list>
+                                <#if count % numCols != 0></tr></#if>
 
-			         </tbody>
-			         </table>
+                            </tbody>
+                        </table>
 
-	         </div>
-	       </div>
+                    </div>
+                </div>
 
-      </#list>
-  </div>
-	  <div >
+            </#list>
+        </div>
+        <div>
 
-<br/><br/>
-<@s.submit value='Next: filter values' cssClass="submitbutton btn btn-primary submitButton" />
+            <br/><br/>
+            <@s.submit value='Next: filter values' cssClass="submitbutton btn btn-primary submitButton" />
 
 
-</div>
-</@s.form>
-<form name="autosave" style="display:none;visibility:hidden">
-<textarea  id="autosave"></textarea>
-</form>
+        </div>
+    </@s.form>
+    <form name="autosave" style="display:none;visibility:hidden">
+        <textarea id="autosave"></textarea>
+    </form>
 
-<script>
+    <script>
 
-jQuery(document).ready(function($){
-    TDAR.integration.initDataIntegration();
-});
-</script>
+        jQuery(document).ready(function ($) {
+            TDAR.integration.initDataIntegration();
+        });
+    </script>
 
-<div class="modal hide fade" id="columnSave">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Warning</h3>
-  </div>
-  <div class="modal-body">
-    <p>Please use at least one integration column.</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" id="modalHide" class="btn btn-primary">Ok</a>
-  </div>
-</div>
+    <div class="modal hide fade" id="columnSave">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>Warning</h3>
+        </div>
+        <div class="modal-body">
+            <p>Please use at least one integration column.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#" id="modalHide" class="btn btn-primary">Ok</a>
+        </div>
+    </div>
 
 </body>
 </#escape>

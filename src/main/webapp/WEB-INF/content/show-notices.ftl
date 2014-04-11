@@ -15,9 +15,9 @@
     </label>
     </#if>
 
-    <div class="form-actions">
-        <button name="submit" type="submit" value="accept" id="accept" class="btn btn-primary">Accept Agreement And Go To Dashboard</button>
-        <button name="submit" type="submit" value="decline" id="decline" class="btn">I Will Decide Later - Logout</button>
-    </div>
+<div class="form-actions">
+    <button name="submit" type="submit" value="accept" id="accept" class="btn btn-primary">Accept Agreement And Go To Dashboard</button>
+    <button name="submit" type="submit" value="decline" id="decline" class="btn">I Will Decide Later - Logout</button>
+</div>
 
 </@s.form>
