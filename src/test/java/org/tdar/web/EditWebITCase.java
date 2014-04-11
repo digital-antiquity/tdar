@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * @author Adam Brin
  *
  */
@@ -28,7 +28,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlOption;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String EXACT_LOCATION_CHECKBOX_TEXT = "Is it OK to show the exact location?";
+    private static final String EXACT_LOCATION_CHECKBOX_TEXT = "Reveal location to public users?";
     public static String PROJECT_ID_FIELDNAME = "projectId";
     public static String DOCUMENT_TITLE_FIELDNAME = "document.title";
     public static String DOCUMENT_TYPE_FIELDNAME = "document.documentType";
@@ -104,7 +104,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // clickLinkWithText("link ontology");
         // assertTextPresentInPage("Match column values");
     }
-    
+
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testFaimsDatasetView() {
@@ -113,7 +113,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // following should appear on the page when run with the FAIMS property file
         assertTextPresent(EXACT_LOCATION_CHECKBOX_TEXT);
     }
-    
+
     // an malformed file should take you back to save.action and contain an action error
     @Test
     public void testMalformedAttachmentDisplaysError() {
