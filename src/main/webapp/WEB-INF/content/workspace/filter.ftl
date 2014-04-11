@@ -61,76 +61,78 @@ subdivision categories.
  <#else>
  <#if integrationColumn.sharedOntology??>
 
- <br/></br/>
-<p class="pull-right">
-    <span class=" btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'><i class=" icon-ok-circle"></i>Select All</span>
-    <span class="autocheck btn  button"><i class=" icon-ok"></i><i class=" icon-ok"></i> Select Shared Values</span>
-    <span class="button  btn" onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i class=" icon-remove-circle"></i>Clear All</span>
-    <span class="button btn hideElements"><i class=" icon-remove"></i>Hide Unmapped</span>
-</p>
-<h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
- <table class='tableFormat table table-striped integrationTable'>
-    <thead>
-        <tr>
-        <th>Ontology labels</th>
-        <#list integrationColumn.columns as column>
-        <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
-        </#list>
-        </tr>
-    </thead>
-    <tbody>
-  <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType!"integration"}" />
-  <#list integrationColumn.columns as col>
-    <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}" />
-  </#list>
+<div class="integration-column">
 
-<#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
-    <#assign numberOfParents=ontologyNode.numberOfParents>
-    <#assign checkForUser=true />
-    <#assign disabled=true />
-    <#if ontologyNode.parent><#assign disabled=false /></#if>
-    <#list ontologyNode.columnHasValueArray as hasValue>
-        <#if !hasValue>
-            <#assign checkForUser=false />
-        <#else>
-            <#assign disabled=false />
+    <div class="btn-group pull-right">
+        <span class=" btn " onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'><i class=" icon-ok-circle"></i> Select All</span>
+        <span class="autocheck btn  "><i class=" icon-ok"></i> Select Shared Values</span>
+        <span class="button  btn " onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i class=" icon-remove-circle"></i> Clear All</span>
+        <span class="button btn  hideElements"><i class=" icon-remove"></i> Hide/Show Unmapped</span>
+    </div>
+    <h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
+     <table class='tableFormat table table-striped integrationTable'>
+        <thead>
+            <tr>
+            <th>Ontology labels</th>
+            <#list integrationColumn.columns as column>
+            <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
+            </#list>
+            </tr>
+        </thead>
+        <tbody>
+      <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType!"integration"}" />
+      <#list integrationColumn.columns as col>
+        <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}" />
+      </#list>
+
+    <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
+        <#assign numberOfParents=ontologyNode.numberOfParents>
+        <#assign checkForUser=true />
+        <#assign disabled=true />
+        <#if ontologyNode.parent><#assign disabled=false /></#if>
+        <#list ontologyNode.columnHasValueArray as hasValue>
+            <#if !hasValue>
+                <#assign checkForUser=false />
+            <#else>
+                <#assign disabled=false />
+            </#if>
+        </#list>
+        <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
+        <tr class="<#if disabled>disabled</#if>">
+        <td style="white-space: nowrap;">
+        <label class="inline-label nodeLabel" for='${node_id}'>
+        <#list 1..numberOfParents as indentationLevel>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </#list>
+         <input type='checkbox' id='${node_id}'
+        name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
+        <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
+        <#assign totalCheckboxCount=totalCheckboxCount+1>
+            <#if !disabled><b></#if>
+                <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
+            <#if !disabled></b></#if>
+        </label>
+        <#if ontologyNode.parent ><span class="right">
+        &nbsp;(<span class="link" onclick='selectChildren("${node_id}", true);'>all</span>
+        | <span class="link" onclick='selectChildren("${node_id}", false);'>clear</span>)</span>
         </#if>
+
+        </td>
+        <#list ontologyNode.columnHasValueArray as hasValue>
+        <td>
+            <#if hasValue>
+                <img src="<@s.url value="/images/checked.gif" />"/>
+            <#else>
+                <img src="<@s.url value="/images/unchecked.gif" />"/>
+            </#if>
+        </td>
+        </#list>
+    </tr>
     </#list>
-    <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
-    <tr class="<#if disabled>disabled</#if>">
-    <td style="white-space: nowrap;">
-    <label class="inline-label nodeLabel" for='${node_id}'>
-    <#list 1..numberOfParents as indentationLevel>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-    </#list>
-     <input type='checkbox' id='${node_id}'
-    name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
-    <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
-    <#assign totalCheckboxCount=totalCheckboxCount+1>
-        <#if !disabled><b></#if>
-            <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
-        <#if !disabled></b></#if>
-    </label>
-    <#if ontologyNode.parent ><span class="right">
-    &nbsp;(<span class="link" onclick='selectChildren("${node_id}", true);'>all</span>
-    | <span class="link" onclick='selectChildren("${node_id}", false);'>clear</span>)</span>
-    </#if>
-    
-    </td>
-    <#list ontologyNode.columnHasValueArray as hasValue>
-    <td>
-        <#if hasValue>
-    	    <img src="<@s.url value="/images/checked.gif" />"/>
-        <#else>
-    	    <img src="<@s.url value="/images/unchecked.gif" />"/>
-        </#if>
-    </td>
-    </#list>
-</tr>
-</#list>
-</tbody>
-</table>
- 
+    </tbody>
+    </table>
+ </div>
+
  <#else>
     These columns do not share a common ontology but ontology integration has not been
     fully implemented yet.  
