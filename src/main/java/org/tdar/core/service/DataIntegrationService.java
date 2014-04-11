@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -488,32 +489,34 @@ public class DataIntegrationService {
         return columnAutoList;
     }
 
-    public Set<Ontology> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
-        HashMap<Ontology,Integer> allOntologies = new HashMap<>();
+    public Map<Ontology,List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
+        HashMap<Ontology,List<DataTable>> allOntologies = new HashMap<>();
         if (CollectionUtils.isEmpty(bookmarkedDataTables)) {
-            return allOntologies.keySet();
+            return Collections.EMPTY_MAP;
         }
         for (DataTable table :bookmarkedDataTables){
             for (DataTableColumn column : table.getDataTableColumns()) {
                 Ontology ontology = column.getMappedOntology();
                 if (ontology != null) {
-                    Integer count = allOntologies.get(ontology);
-                    if (count == null) {
-                        count = 1;
+                    List<DataTable> values = allOntologies.get(ontology);
+                    if (values == null) {
+                        values = new ArrayList<>();
                     }
-                    allOntologies.put(ontology,count);
+                    values.add(table);
+                    allOntologies.put(ontology, values);
                 }
             }
         }
         if (showOnlyShared) {
-            Set<Ontology> toReturn = new HashSet<>();
-             for (Entry<Ontology, Integer> entrySet : allOntologies.entrySet()) {
-                 if (entrySet.getValue().intValue() == bookmarkedDataTables.size()) {
-                     toReturn.add(entrySet.getKey());
+            HashMap<Ontology,List<DataTable>> toReturn = new HashMap<>();
+             for (Entry<Ontology, List<DataTable>> entrySet : allOntologies.entrySet()) {
+                 if (entrySet.getValue().size() == bookmarkedDataTables.size()) {
+                     toReturn.put(entrySet.getKey(), entrySet.getValue());
                  }
              }
+             return toReturn;
         }
         
-        return allOntologies.keySet();
+        return allOntologies;
     }
 }

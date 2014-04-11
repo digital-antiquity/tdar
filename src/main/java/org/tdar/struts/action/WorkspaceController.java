@@ -80,7 +80,9 @@ public class WorkspaceController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getBookmarkedDataTables(),false));
+        Map<Ontology, List<DataTable>> suggestions = getDataIntegrationService().getIntegrationSuggestions(getBookmarkedDataTables(),false);
+        setSharedOntologies(suggestions.keySet());
+        // in the future we could use the Map to prompt the user with suggestions
         return SUCCESS;
     }
 
@@ -96,7 +98,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
             addActionError(getText("workspaceController.selectTables"));
             return INPUT;
         }
-        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getSelectedDataTables(),true));
+        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getSelectedDataTables(),true).keySet());
         return SUCCESS;
     }
 

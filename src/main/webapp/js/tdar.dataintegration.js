@@ -259,6 +259,20 @@
      */
     function _addColumn(strOntologyId) {
         var colNum = $("#drplist tr").children().length + 1;
+        
+        var cols = $("#drplist tr td");
+        console.log(cols);
+        console.log(cols.last());
+
+        console.log($(".drg",cols.last()).size());
+        
+        if ($(".drg",cols.last()).size() == 0 && parseInt(strOntologyId) > 0) {
+            cols.last().remove();
+        }
+        var remove = "<button class='removeColumn'>X</button>";
+        if (colNum == 1) {
+            remove = "";
+        } 
         $(
             "<td data-colnum="
                 + (colNum - 1)
@@ -270,11 +284,14 @@
                 + (colNum - 1)
                 + "].sequenceNumber' value='"
                 + (colNum - 1)
-                + "' class='sequenceNumber'/><button class='removeColumn'>X</button></div></td>")
+                + "' class='sequenceNumber'/>"+remove+"</div></td>")
             .droppable(drpOptions).appendTo("#drplist tr");
         var $chld = $("#drplist td:last");
         $("button.removeColumn", $chld).button().click(function () {
             $(this).parent().parent().remove();
+            if ($("#drplist td").size() == 0) {
+                _addColumn();
+            }
             return false;
         });
         _expandColumn($chld);
@@ -312,13 +329,10 @@
                     $this.remove();
                 }
             });
-        setTimeout(function () {
-            $("#clear").attr('checked', false);
-        }, 400);
     }
 
     /**
-     * Add all integrateable columns to the Integration Tagble
+     * Add all integrateable columns to the Integration Table
      * @private
      */
     function _integrationAutoselect() {
@@ -360,9 +374,6 @@
         }
 
         //you know, rumors tell of an html element that implements this.. button-like behavior.
-        setTimeout(function () {
-            $("#autoselect").attr('checked', false);
-        }, 400);
     }
 
     /**

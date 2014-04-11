@@ -97,9 +97,11 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
   <div class="status"></div>
+  <div class="btn-group">
 <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
 <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
 <span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
+</div>
 <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
 </div>
