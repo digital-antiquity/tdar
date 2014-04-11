@@ -19,17 +19,19 @@ import org.tdar.core.bean.entity.Person;
 
 /**
  * <p>
- * A persistable pointer to a resource that has been "bookmarked" by a user.  Bookmarked resources serve two purposes:<ul>
- *  <li> Bookmarks facilitate a rudimentary, user-specific organizational tool for users.
- *  <li> Bookmarked datasets serve as a the "pool" from which a user may choose to include in a dataset integration task.
- *  </ul>
- *</p>
+ * A persistable pointer to a resource that has been "bookmarked" by a user. Bookmarked resources serve two purposes:
+ * <ul>
+ * <li>Bookmarks facilitate a rudimentary, user-specific organizational tool for users.
+ * <li>Bookmarked datasets serve as a the "pool" from which a user may choose to include in a dataset integration task.
+ * </ul>
+ * </p>
+ * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
 
 @Entity
-@Table(name = "bookmarked_resource", indexes = { 
+@Table(name = "bookmarked_resource", indexes = {
         @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
         @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
 })

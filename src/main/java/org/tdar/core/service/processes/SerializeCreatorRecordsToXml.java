@@ -20,7 +20,7 @@ import org.tdar.core.service.XmlService;
 public class SerializeCreatorRecordsToXml extends ScheduledBatchProcess<Creator> {
 
     private static final long serialVersionUID = -3071550641041719444L;
-    
+
     @Autowired
     private transient XmlService xmlService;
 

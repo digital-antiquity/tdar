@@ -30,7 +30,6 @@ public class APIException extends I18nException {
         this.setCode(forbidden);
     }
 
-
     public void setCode(StatusCode code) {
         this.code = code;
     }

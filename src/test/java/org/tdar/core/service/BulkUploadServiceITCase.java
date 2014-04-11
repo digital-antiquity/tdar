@@ -193,7 +193,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
         bulkUploadService.readExcelFile(manifestProxy);
-        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
         assertTrue(asyncErrors.contains("is not a valid value for the"));
     }
 
@@ -238,7 +238,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         manifestProxy.setResourcesCreated(filenameResourceMap);
         bulkUploadService.readExcelFile(manifestProxy);
-        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
         logger.debug(asyncErrors);
         assertTrue(asyncErrors.contains("was not found in the import batchFilename"));
     }
@@ -268,7 +268,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
         bulkUploadService.readExcelFile(manifestProxy);
-        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(),"");
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
         assertTrue(asyncErrors.contains("is not valid for the resource type"));
     }
 

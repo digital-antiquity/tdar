@@ -16,6 +16,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 
+import com.opensymphony.xwork2.Action;
+
 public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -38,7 +40,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("TQF");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertTrue("person list should have exactly one item", people.contains(person));
     }
@@ -49,7 +51,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("University of");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         logger.info("{}", people);
         assertTrue("person list should have at least two items", people.size() >= 2);
@@ -66,7 +68,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         // FIXME: should not need to be quoted
         controller.setInstitution("University ABCD");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertEquals("person list should have 0 item(s)", 0, people.size());
     }

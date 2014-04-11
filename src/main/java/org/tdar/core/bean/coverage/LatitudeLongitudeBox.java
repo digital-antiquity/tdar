@@ -47,7 +47,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 @Entity
 @Table(name = "latitude_longitude", indexes = {
-        @Index(name="resource_latlong", columnList="resource_id, id")})
+        @Index(name = "resource_latlong", columnList = "resource_id, id") })
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")
@@ -60,12 +60,11 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public static final double MAX_LATITUDE = 90d;
     public static final double MIN_LATITUDE = -90d;
-    
+
     public static final double MAX_LONGITUDE = 180d;
     public static final double MIN_LONGITUDE = -180d;
     public static final int LATITUDE = 1;
     public static final int LONGITUDE = 2;
-    
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
@@ -73,7 +72,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private transient boolean obfuscated;
 
     /** if true, then the location does not need to be hidden */
-    @Column(nullable = false, name = "is_ok_to_show_exact_location" , columnDefinition="boolean default false")
+    @Column(nullable = false, name = "is_ok_to_show_exact_location", columnDefinition = "boolean default false")
     private boolean isOkayToShowExactLocation;
 
     @Column(name = "min_obfuscated_lat")
@@ -176,7 +175,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * http://www.movable-type.co.uk/scripts/html
      */
     protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
-        if (num1 == null && num2 == null) {
+        if ((num1 == null) && (num2 == null)) {
             return null;
         }
         Random r = new Random();
@@ -187,7 +186,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = (num2 != null) ? num2: num1 + salt / 2;
+        Double numTwo = (num2 != null) ? num2 : num1 + (salt / 2);
         if (Math.abs(num1.doubleValue() - numTwo.doubleValue()) < salt) {
             add += salt / 2;
         } else {
@@ -199,19 +198,22 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             salt *= -1;
         }
         // -5 - .05 - .02
-        double ret = num1.doubleValue() + add + salt * r.nextDouble();
+        double ret = num1.doubleValue() + add + (salt * r.nextDouble());
         if (type == LONGITUDE) {
-            if (ret > MAX_LONGITUDE)
+            if (ret > MAX_LONGITUDE) {
                 ret -= 360;
-            if (ret < MIN_LONGITUDE)
+            }
+            if (ret < MIN_LONGITUDE) {
                 ret += 360;
+            }
         }
 
         // NOTE: Ideally, this should do something different, but in reality, how
         // many archaeological sites are really going to be in this area???
         if (type == LATITUDE) {
-            if (Math.abs(ret) > MAX_LATITUDE)
+            if (Math.abs(ret) > MAX_LATITUDE) {
                 ret = MAX_LATITUDE;
+            }
         }
 
         return new Double(ret);
@@ -219,6 +221,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     /**
      * Puts all the logic around the returning of obfuscated values vs actual values into one place.
+     * 
      * @param obfuscatedValue
      * @param actualValue
      * @return either the obfuscated value or the actual value passed in, depending on the setting of the isOkayToShowExactLocation switch
@@ -228,7 +231,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (isOkayToShowExactLocation) {
             result = actualValue;
         }
-        return result ;
+        return result;
     }
 
     private void setMinObfuscatedLatitude() {
@@ -242,13 +245,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (minObfuscatedLatitude == null) {
             setMinObfuscatedLatitude();
         }
-        return getProtectedResult(minObfuscatedLatitude, minimumLatitude) ;
+        return getProtectedResult(minObfuscatedLatitude, minimumLatitude);
     }
 
     private void setMaxObfuscatedLatitude() {
         maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE);
     }
-    
+
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
@@ -284,15 +287,17 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (maxObfuscatedLongitude == null) {
             setMaxObfuscatedLongitude();
         }
-        return getProtectedResult(maxObfuscatedLongitude, maximumLongitude) ;
+        return getProtectedResult(maxObfuscatedLongitude, maximumLongitude);
     }
 
     /**
-     * @throws TdarRuntimeException if the specified latitude falls outside the minimum and maximum latitude settings.
-     * @param minimumLatitude the new minimum latitude
+     * @throws TdarRuntimeException
+     *             if the specified latitude falls outside the minimum and maximum latitude settings.
+     * @param minimumLatitude
+     *            the new minimum latitude
      */
     public void setMinimumLatitude(Double minimumLatitude) {
-        if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
+        if ((minimumLatitude != null) && !isValidLatitude(minimumLatitude)) {
             throw new TdarValidationException("latLong.lat_invalid");
         }
         setMiny(minimumLatitude);
@@ -313,11 +318,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     /**
-     * @throws TdarRuntimeException if the specified latitude falls outside the minimum and maximum latitude settings.
-     * @param maximumLatitude the new maximum latitude
+     * @throws TdarRuntimeException
+     *             if the specified latitude falls outside the minimum and maximum latitude settings.
+     * @param maximumLatitude
+     *            the new maximum latitude
      */
     public void setMaximumLatitude(Double maximumLatitude) {
-        if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
+        if ((maximumLatitude != null) & !isValidLatitude(maximumLatitude)) {
             throw new TdarValidationException("latLong.lat_invalid");
         }
         setMaxy(maximumLatitude);
@@ -336,13 +343,15 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public Double getMinimumLongitude() {
         return minimumLongitude;
     }
-    
+
     /**
-     * @throws TdarRuntimeException if the specified longitude falls outside the minimum and maximum longitude settings.
-     * @param minimumLongitude the new minimum longitude
+     * @throws TdarRuntimeException
+     *             if the specified longitude falls outside the minimum and maximum longitude settings.
+     * @param minimumLongitude
+     *            the new minimum longitude
      */
     public void setMinimumLongitude(Double minimumLongitude) {
-        if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
+        if ((minimumLongitude != null) && !isValidLongitude(minimumLongitude)) {
             throw new TdarValidationException("latLong.long_invalid");
         }
         setMinx(minimumLongitude);
@@ -351,7 +360,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * Sets the minimum longitude, with no validation checking.
      * 
-     * @param minX the new minimum longitude
+     * @param minX
+     *            the new minimum longitude
      */
     @Transient
     public void setMinx(Double minX) {
@@ -368,11 +378,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     /**
-     * @throws TdarRuntimeException if the specified longitude falls outside the minimum and maximum longitude settings.
-     * @param maximumLongitude the new maximum longitude
+     * @throws TdarRuntimeException
+     *             if the specified longitude falls outside the minimum and maximum longitude settings.
+     * @param maximumLongitude
+     *            the new maximum longitude
      */
     public void setMaximumLongitude(Double maximumLongitude) {
-        if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
+        if ((maximumLongitude != null) && !isValidLongitude(maximumLongitude)) {
             throw new TdarValidationException("latLong.long_invalid");
         }
         setMaxx(maximumLongitude);
@@ -380,7 +392,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     /**
      * Sets the maximum longitude, with no validation checking.
-     * @param maxX the new maximum longitude
+     * 
+     * @param maxX
+     *            the new maximum longitude
      */
     @Transient
     public void setMaxx(Double maxX) {
@@ -391,13 +405,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public boolean isValidLatitude(Double latitude) {
         // FIXME: verify that this works at extreme case (+/- 90)
-        return latitude != null && latitude >= MIN_LATITUDE && latitude <= MAX_LATITUDE;
+        return (latitude != null) && (latitude >= MIN_LATITUDE) && (latitude <= MAX_LATITUDE);
     }
 
     @Transient
     public boolean isValidLongitude(Double longitude) {
         // FIXME: verify that this works for extreme cases (+/- 180)
-        return longitude != null && longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE;
+        return (longitude != null) && (longitude >= MIN_LONGITUDE) && (longitude <= MAX_LONGITUDE);
     }
 
     @Override
@@ -406,9 +420,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
                 && isValidLatitude(minimumLatitude)
                 && isValidLongitude(minimumLongitude)
                 && isValidLongitude(maximumLongitude)
-                && maximumLatitude >= minimumLatitude
+                && (maximumLatitude >= minimumLatitude)
                 && isValidLongitudeSpan(minimumLongitude, maximumLongitude)
-                && Math.abs(maximumLatitude - minimumLatitude) < 180) {
+                && (Math.abs(maximumLatitude - minimumLatitude) < 180)) {
             return true;
         }
         return false;
@@ -416,7 +430,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
     private boolean isValidLongitudeSpan(double min, double max) {
-        if (max < 0 && min > 0) {
+        if ((max < 0) && (min > 0)) {
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
         }
@@ -466,7 +480,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
          * and breaks it in two over the IDL instead of choosing the smaller box.
          * return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
          */
-        if (minLongitude > 0f && maxLongitude < 0f) {
+        if ((minLongitude > 0f) && (maxLongitude < 0f)) {
             return true;
         }
 
@@ -474,7 +488,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public static boolean crossesPrimeMeridian(double minLongitude, double maxLongitude) {
-        if (minLongitude < 0f && maxLongitude > 0f) {
+        if ((minLongitude < 0f) && (maxLongitude > 0f)) {
             return true;
         }
 
@@ -513,7 +527,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Override
-//    @XmlTransient
+    // @XmlTransient
     @JSONTransient
     public List<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
@@ -603,7 +617,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isInitialized() {
-        if (maximumLatitude == null || minimumLatitude == null || maximumLongitude == null || minimumLongitude == null) {
+        if ((maximumLatitude == null) || (minimumLatitude == null) || (maximumLongitude == null) || (minimumLongitude == null)) {
             return false;
         }
         return true;
@@ -622,8 +636,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     /**
-     * @param isOkayToShowExactLocation if true, then the contents of this lat/long box can be shown without obfuscation: 
-     * if false, they must be obfuscated
+     * @param isOkayToShowExactLocation
+     *            if true, then the contents of this lat/long box can be shown without obfuscation:
+     *            if false, they must be obfuscated
      */
     public void setOkayToShowExactLocation(boolean isOkayToShowExactLocation) {
         this.isOkayToShowExactLocation = isOkayToShowExactLocation;

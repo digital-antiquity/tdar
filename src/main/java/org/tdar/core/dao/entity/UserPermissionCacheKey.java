@@ -13,7 +13,7 @@ public class UserPermissionCacheKey {
         TRUE,
         FALSE,
         NOT_FOUND;
-        
+
         public Boolean getBooleanEquivalent() {
             switch (this) {
                 case TRUE:
@@ -25,7 +25,7 @@ public class UserPermissionCacheKey {
             }
         }
     }
-    
+
     private int key;
 
     public UserPermissionCacheKey(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
@@ -37,12 +37,12 @@ public class UserPermissionCacheKey {
     public int getKey() {
         return key;
     }
-    
+
     @Override
     public int hashCode() {
         return key;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

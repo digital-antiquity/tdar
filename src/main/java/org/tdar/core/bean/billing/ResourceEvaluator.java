@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -28,8 +29,7 @@ import org.tdar.core.exception.TdarValidationException;
 public class ResourceEvaluator implements Serializable {
 
     private static final long serialVersionUID = 3621509880429873050L;
-    
-    
+
     private boolean includeDeletedFilesInCounts = false;
     private boolean includeAllVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
@@ -43,6 +43,7 @@ public class ResourceEvaluator implements Serializable {
 
     /*
      * Creates a Resource Evaluator passing in a @link BillingActivityModel to specify what charges get charged
+     * 
      * @param BillingActivityModel model the billing model to use
      */
     public ResourceEvaluator(BillingActivityModel model) {
@@ -68,14 +69,16 @@ public class ResourceEvaluator implements Serializable {
     public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
         logger.info("f: {} s: {} r: {}", new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
         if (evaluatesNumberOfResources()) {
-            if (!getUncountedResourceTypes().contains(resourceType) && account.getAvailableResources() <= 0) {
+            if (!getUncountedResourceTypes().contains(resourceType) && (account.getAvailableResources() <= 0)) {
                 return false;
             }
         }
-        if (evaluatesNumberOfFiles() && account.getAvailableNumberOfFiles() <= 0)
+        if (evaluatesNumberOfFiles() && (account.getAvailableNumberOfFiles() <= 0)) {
             return false;
-        if (evaluatesSpace() && account.getAvailableSpaceInMb() <= 0)
+        }
+        if (evaluatesSpace() && (account.getAvailableSpaceInMb() <= 0)) {
             return false;
+        }
         return true;
     }
 
@@ -125,7 +128,7 @@ public class ResourceEvaluator implements Serializable {
                     if (file.isDeleted() && !includeDeletedFilesInCounts) {
                         continue;
                     }
-                    
+
                     // composite files, like GIS or datasets are counted differently, one file per composite in total, regardless of actual files
                     if (informationResource.getResourceType().isCompositeFilesEnabled()) {
                         filesUsed_ = 1;
@@ -136,7 +139,7 @@ public class ResourceEvaluator implements Serializable {
                     // count space
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
-                        if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {
+                        if ((!includeAllVersionsInCounts && !version.getVersion().equals(1)) || !version.isUploaded()) {
                             continue;
                         }
                         if (version.getFileLength() != null) {
@@ -145,7 +148,7 @@ public class ResourceEvaluator implements Serializable {
                     }
                 }
             }
-            
+
             // set the transient values
             resource.setSpaceInBytesUsed(spaceUsed_);
             resource.setFilesUsed(filesUsed_);
@@ -204,7 +207,7 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public long getSpaceUsedInMb() {
-        return (long) Math.ceil((double) spaceUsedInBytes / (double) Invoice.ONE_MB);
+        return (long) Math.ceil((double) spaceUsedInBytes / (double) Persistable.ONE_MB);
     }
 
     public void setSpaceUsed(long spaceUsed) {
@@ -224,7 +227,8 @@ public class ResourceEvaluator implements Serializable {
     }
 
     /*
-     * Used to compare two different resource evaluators -- at the beginning of an operation and at the end, for example to see what the effective difference for the account would or should be
+     * Used to compare two different resource evaluators -- at the beginning of an operation and at the end, for example to see what the effective difference
+     * for the account would or should be
      */
     public void subtract(ResourceEvaluator initialEvaluation) {
         if (!initialEvaluation.getModel().equals(getModel())) {

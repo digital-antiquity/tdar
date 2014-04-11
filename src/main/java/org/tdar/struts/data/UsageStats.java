@@ -19,6 +19,7 @@ public class UsageStats implements Serializable {
     public List<AggregateViewStatistic> getView() {
         return view;
     }
+
     public void setView(List<AggregateViewStatistic> view) {
         this.view = view;
     }
@@ -30,6 +31,5 @@ public class UsageStats implements Serializable {
     public void setDownload(Map<String, List<AggregateDownloadStatistic>> download) {
         this.download = download;
     }
-
 
 }

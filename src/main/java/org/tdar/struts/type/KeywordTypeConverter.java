@@ -15,8 +15,9 @@ public class KeywordTypeConverter extends StrutsTypeConverter {
 
     @Override
     public Object convertFromString(Map context, String[] values, Class toClass) {
-        if (values.length < 1 || !Keyword.class.isAssignableFrom(toClass))
+        if ((values.length < 1) || !Keyword.class.isAssignableFrom(toClass)) {
             return null;
+        }
         logger.debug("Attempting to convert something.");
         try {
             Keyword keyword = (Keyword) toClass.newInstance();

@@ -41,15 +41,14 @@ import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.SheetProxy;
 
 /**
- * This is a service specific to trying to centralize all of the specific issues with writing 
+ * This is a service specific to trying to centralize all of the specific issues with writing
  * excel files. It could handle helper functions for reading in the future too.
  * 
  * @author abrin
- *
+ * 
  */
 @Service
 public class ExcelService {
-
 
     private static final String TRUNCATED = "[TRUNCATED]";
 
@@ -113,6 +112,7 @@ public class ExcelService {
 
     /**
      * Adds Integer validation for a column of a Worksheet
+     * 
      * @param sheet
      * @param i
      * @param validationHelper
@@ -143,6 +143,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR red to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -152,6 +153,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR beige to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -161,6 +163,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR dark beige to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -170,6 +173,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR dark green to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -179,6 +183,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR light yellow to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -188,6 +193,7 @@ public class ExcelService {
 
     /**
      * Adds a generic color to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -253,10 +259,11 @@ public class ExcelService {
      * @return
      */
     public Workbook createWorkbook(SpreadsheetVersion version) {
-        if (version == DEFAULT_EXCEL_VERSION)
+        if (version == DEFAULT_EXCEL_VERSION) {
             return new HSSFWorkbook();
-        else
+        } else {
             return new XSSFWorkbook();
+        }
 
     }
 
@@ -323,7 +330,7 @@ public class ExcelService {
 
         if (!StringUtils.isEmpty(value)) {
             if (value.startsWith("http")) {
-                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(Hyperlink.LINK_URL);
+                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);
                 cell.setHyperlink(hyperlink);
@@ -373,8 +380,9 @@ public class ExcelService {
      * @param commentText
      */
     public void addComment(CreationHelper factory, Drawing drawing, Cell cell, String commentText) {
-        if (StringUtils.isEmpty(commentText))
+        if (StringUtils.isEmpty(commentText)) {
             return;
+        }
         ClientAnchor anchor = factory.createClientAnchor();
         anchor.setCol1(cell.getColumnIndex());
         anchor.setCol2(cell.getColumnIndex() + 3);
@@ -519,7 +527,7 @@ public class ExcelService {
             }
             rowNum++;
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
-            if (rowNum >= maxRows - 1) {
+            if (rowNum >= (maxRows - 1)) {
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
                 }
@@ -532,9 +540,9 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-
     /**
      * try to auto-size each column
+     * 
      * @param sheet
      */
     private void autoSizeColumnsOnSheet(Sheet sheet) {
@@ -547,10 +555,11 @@ public class ExcelService {
     }
 
     /**
-     * Add a key-value pair column eg: 
-     *      KEY: value
-     *      KEY: value
-     *      ..
+     * Add a key-value pair column eg:
+     * KEY: value
+     * KEY: value
+     * ..
+     * 
      * @param sheet
      * @param rowNum
      * @param i

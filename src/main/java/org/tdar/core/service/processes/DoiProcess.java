@@ -51,9 +51,10 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             return false;
         }
     };
-    
+
     /**
      * Used in testing
+     * 
      * @return the providers
      */
     public ConfigurableService<ExternalIDProvider> getProviders() {
@@ -156,6 +157,6 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     @Override
     public boolean isEnabled() {
         ExternalIDProvider idProvider = providers.getProvider();
-        return idProvider != null && idProvider.isConfigured();
+        return (idProvider != null) && idProvider.isConfigured();
     }
 }

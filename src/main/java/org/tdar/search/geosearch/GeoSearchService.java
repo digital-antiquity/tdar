@@ -61,7 +61,7 @@ public class GeoSearchService {
             Set<GeographicKeyword> admin = extractAdminInfo(latLong);
             geoSet.addAll(admin);
             // if we're larger than this, then don't show county info
-            if (latLong.getArea() < 2 && admin.size() < 3) {
+            if ((latLong.getArea() < 2) && (admin.size() < 3)) {
                 geoSet.addAll(extractCountyInfo(latLong));
             }
         }
@@ -97,8 +97,9 @@ public class GeoSearchService {
      * Finds and/or creates a geographic keyword from the level and label info
      */
     public GeographicKeyword createGeoKeyword(String label, Level level) {
-        if (StringUtils.isEmpty(label) || level == null)
+        if (StringUtils.isEmpty(label) || (level == null)) {
             return null;
+        }
         GeographicKeyword entityToFind = new GeographicKeyword();
         entityToFind.setLabel(GeographicKeyword.getFormattedLabel(label, level));
         entityToFind.setLevel(level);

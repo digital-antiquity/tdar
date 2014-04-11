@@ -107,7 +107,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public String node() throws TdarActionException {
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri() ));
+            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
         }
         setChildren(getChildElements(node));
         setParentNode(getOntologyNodeService().getParent(node));
@@ -119,8 +119,9 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public List<OntologyNode> getChildElements(String index) {
         getLogger().trace("get children:" + index);
         for (OntologyNode node : getPersistable().getOntologyNodes()) {
-            if (node.getIndex().equals(index))
+            if (node.getIndex().equals(index)) {
                 return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
+            }
         }
         return null;
     }

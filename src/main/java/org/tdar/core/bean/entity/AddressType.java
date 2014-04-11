@@ -6,8 +6,9 @@ import org.tdar.utils.MessageHelper;
 
 /**
  * Enum for Type of Address
+ * 
  * @author abrin
- *
+ * 
  */
 public enum AddressType implements HasLabel, Localizable {
     MAILING("Mailing Address"),
@@ -24,7 +25,7 @@ public enum AddressType implements HasLabel, Localizable {
     public String getLabel() {
         return label;
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);

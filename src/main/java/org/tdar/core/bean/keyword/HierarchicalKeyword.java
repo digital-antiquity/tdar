@@ -32,7 +32,7 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
  * @version $Rev$
  */
 @MappedSuperclass
-//@XmlElement
+// @XmlElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "hierKwdbase")
 public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends Keyword.Base<HierarchicalKeyword<T>> {
@@ -74,8 +74,9 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
-        if (getParent() == null)
+        if (getParent() == null) {
             return list;
+        }
         list.add(getParent().getLabel());
         list.addAll(getParent().getParentLabelList());
         return list;
@@ -89,8 +90,9 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @Transient
     public int getLevel() {
         // get the level without visiting the ancestors
-        if (StringUtils.isBlank(index))
+        if (StringUtils.isBlank(index)) {
             return 0;
+        }
         return 1 + StringUtils.countMatches(index, ".");
     }
 

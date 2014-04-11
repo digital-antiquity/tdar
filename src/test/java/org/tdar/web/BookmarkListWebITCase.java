@@ -70,7 +70,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         gotoPage("/document/add");
         setDocumentRequiredFields(docTitle, docDescription);
 
-        if (status != Status.DELETED && status != Status.FLAGGED) {
+        if ((status != Status.DELETED) && (status != Status.FLAGGED)) {
             setInput("status", status.name());
         }
 
@@ -84,7 +84,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
         assertTextPresentInCode(docTitle);
 
-        if (status == Status.DELETED || status == Status.FLAGGED) {
+        if ((status == Status.DELETED) || (status == Status.FLAGGED)) {
             // now delete it, and check again: it should be gone.
             gotoPage(viewPage);
             clickLinkOnPage("edit");

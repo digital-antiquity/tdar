@@ -16,7 +16,6 @@ import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.utils.Pair;
 
-
 @Component
 public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
 

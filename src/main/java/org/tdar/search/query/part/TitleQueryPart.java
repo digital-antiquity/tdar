@@ -31,11 +31,13 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     @Override
     public boolean isEmpty() {
         // we define this as empty if we have no values or if ALL values are blank.
-        if (getFieldValues().isEmpty())
+        if (getFieldValues().isEmpty()) {
             return true;
+        }
         for (String value : getFieldValues()) {
-            if (StringUtils.isNotBlank(value))
+            if (StringUtils.isNotBlank(value)) {
                 return false;
+            }
         }
         return true;
     }
@@ -46,8 +48,9 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     }
 
     protected QueryPart<?> getQueryPart(String value) {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         QueryPartGroup group = new QueryPartGroup();
         group.setOperator(Operator.OR);
@@ -81,7 +84,7 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     @Override
     public String getDescription(TextProvider provider) {
         List<String> vals = new ArrayList<>();
-        vals.add(StringUtils.join(getFieldValues(),";"));
+        vals.add(StringUtils.join(getFieldValues(), ";"));
         return provider.getText("titleQueryPart.description", vals);
     }
 

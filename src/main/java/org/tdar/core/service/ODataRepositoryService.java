@@ -27,8 +27,8 @@ import org.tdar.web.SessionDataAware;
 /**
  * Provide core methods needed to support the OData Data editing protocol
  * 
- * @author 
- *
+ * @author
+ * 
  */
 @Service
 public class ODataRepositoryService implements RepositoryService, SessionDataAware {
@@ -40,7 +40,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
 
     @Autowired
     private EntityService entityService;
-    
+
     @Autowired
     private RowOperations databaseService;
 
@@ -73,12 +73,11 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             List<ResourceType> types = new ArrayList<>();
             types.add(ResourceType.DATASET);
             for (Resource resource : authService.findEditableResources(knownPerson, false, types)) {
-                ownedDatasets.add((Dataset)resource);
+                ownedDatasets.add((Dataset) resource);
             }
         }
         return ownedDatasets;
     }
-
 
     /**
      * Find All @link DataTable entries that a user has access to
@@ -102,7 +101,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
         assert entitySetName != null;
         assert entitySetName.length() > 0;
         List<DataTable> dataTables = findAllOwnedDataTables();
-        for (DataTable table :dataTables) {
+        for (DataTable table : dataTables) {
             if (entitySetName.equals(table.getName())) {
                 return table;
             }
@@ -141,7 +140,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canView(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view", Arrays.asList(authenticatedUser, dataset)));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             dataRecords.addAll(databaseService.findAllRows(dataTable));
         }
@@ -163,7 +163,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canEdit(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit", Arrays.asList(authenticatedUser, dataset)));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             Map<?, ?> data = dataRecord.asMap();
             databaseService.editRow(dataTable, dataRecord.getId(), data);

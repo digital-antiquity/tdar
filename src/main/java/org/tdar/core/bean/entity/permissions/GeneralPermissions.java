@@ -95,7 +95,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         }
         return permissions;
     }
-    
+
     /**
      * @return the context
      */

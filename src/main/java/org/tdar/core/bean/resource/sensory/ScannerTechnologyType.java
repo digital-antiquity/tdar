@@ -11,7 +11,7 @@ import org.tdar.utils.MessageHelper;
  * The type of scan controlls the type of metadata that we display
  * 
  * @author abrin
- *
+ * 
  */
 public enum ScannerTechnologyType implements HasLabel, Localizable {
     NONE("Not Specified"),

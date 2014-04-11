@@ -59,7 +59,7 @@ public class GenericService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * A 2nd-level cache of objects that don't change frequently. 
+     * A 2nd-level cache of objects that don't change frequently.
      * 
      */
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
@@ -90,10 +90,11 @@ public class GenericService {
 
     /**
      * Find all ids given a specified class
+     * 
      * @param persistentClass
      * @return
      */
-    @Transactional 
+    @Transactional
     public <T extends Persistable> List<Long> findAllIds(Class<T> persistentClass) {
         return genericDao.findAllIds(persistentClass);
     }
@@ -123,7 +124,7 @@ public class GenericService {
     }
 
     /**
-     * Useful for comparing data across sessions.  This gets the session-id for hibernate effectively.
+     * Useful for comparing data across sessions. This gets the session-id for hibernate effectively.
      * 
      * @return
      */
@@ -244,6 +245,7 @@ public class GenericService {
 
     /**
      * Find all @link Persistable of class.
+     * 
      * @param persistentClass
      * @return
      */
@@ -293,7 +295,7 @@ public class GenericService {
 
     /**
      * Find all @link Persistable objects, sorted by the defaultSortOption() (id).
-     *
+     * 
      * @param persistentClass
      * @return
      */
@@ -335,7 +337,7 @@ public class GenericService {
      */
     @Transactional(readOnly = true)
     public <T> T find(Class<T> persistentClass, Long id) {
-        return (T) genericDao.find(persistentClass, id);
+        return genericDao.find(persistentClass, id);
     }
 
     /**
@@ -382,11 +384,12 @@ public class GenericService {
      */
     @Transactional
     public <T> T merge(T entity) {
-        return (T) genericDao.merge(entity);
+        return genericDao.merge(entity);
     }
 
     /**
      * Update the @link Persistable in the database with the version passed in
+     * 
      * @param obj
      */
     @Transactional
@@ -419,6 +422,7 @@ public class GenericService {
 
     /**
      * Save the obeject in the database and validate before it's done
+     * 
      * @param entity
      */
     @Transactional
@@ -461,6 +465,7 @@ public class GenericService {
 
     /**
      * Save or Update a @link Persistable based on whether it's been persisted before or not.
+     * 
      * @param obj
      */
     @Transactional
@@ -468,7 +473,7 @@ public class GenericService {
         enforceValidation(obj);
         genericDao.saveOrUpdate(obj);
     }
-    
+
     /**
      * @see #saveOrUpdate(Object)
      * @param persistentCollection
@@ -499,7 +504,7 @@ public class GenericService {
                 errors.add(violations);
                 throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", errors));
             }
-            if (obj instanceof Validatable && !((Validatable) obj).isValid()) {
+            if ((obj instanceof Validatable) && !((Validatable) obj).isValid()) {
                 throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", errors));
             }
         }
@@ -582,6 +587,7 @@ public class GenericService {
 
     /**
      * Mark an object as "read only" so that changes are not persisted to the database (used in obfuscation, for example)..
+     * 
      * @param obj
      */
     public void markReadOnly(Object obj) {
@@ -644,6 +650,7 @@ public class GenericService {
 
     /**
      * Get the hibernate statistics for the session, # of transactions, slow queries, etc.
+     * 
      * @return
      */
     @Transactional(readOnly = true)
@@ -669,7 +676,7 @@ public class GenericService {
      * @return the number of deleted entities
      * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
         return genericDao.deleteAll(persistentClass);
     }
@@ -680,14 +687,14 @@ public class GenericService {
      * 
      * @param entity
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void forceDelete(Object entity) {
         genericDao.forceDelete(entity);
     }
 
     /**
      * Sort @link Updatable by their updated date.
-     *
+     * 
      * @param resourcesToEvaluate
      */
     public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {

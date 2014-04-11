@@ -55,7 +55,7 @@ public enum LookupSource implements HasLabel, Localizable {
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-    
+
     public String getCollectionName() {
         return this.collectionName;
     }

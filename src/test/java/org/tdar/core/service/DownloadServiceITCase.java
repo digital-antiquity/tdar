@@ -29,11 +29,11 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
@@ -64,9 +64,8 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
 
-
         ArchiveInputStream ais = null;
-        Map<String,Long> nameSize = unzipArchive(archive);
+        Map<String, Long> nameSize = unzipArchive(archive);
         List<String> errs = new ArrayList<>();
         for (File expected : expectedFiles) {
             Long size = nameSize.get(expected.getName());
@@ -93,12 +92,12 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             fail("problems found in archive:" + archive);
         }
     }
-    
+
     public Map<String, Long> unzipArchive(File archive) {
-        Map<String,Long> files = new HashMap<>();
+        Map<String, Long> files = new HashMap<>();
         try {
             ZipFile zipfile = new ZipFile(archive);
-            for (Enumeration e = zipfile.entries(); e.hasMoreElements(); ) {
+            for (Enumeration e = zipfile.entries(); e.hasMoreElements();) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
                 files.put(entry.getName(), entry.getSize());
                 logger.info("{} {}", entry.getName(), entry.getSize());
@@ -140,7 +139,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
-        assertEquals(TdarActionSupport.SUCCESS, controller.downloadZipArchive());
+        assertEquals(Action.SUCCESS, controller.downloadZipArchive());
         logger.info(controller.getFileName());
         File file = File.createTempFile("test", ".zip");
         FileOutputStream output = new FileOutputStream(file);
@@ -154,7 +153,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         assertArchiveContents(files, file, false);
     }
 
-    
     @Test
     @Rollback
     public void testDownloadArchiveControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
@@ -162,22 +160,21 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         List<File> files = new ArrayList<>();
         File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
         files.add(file1);
-//        files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
+        // files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
         Document document = generateDocumentWithUser();
-        for(File file : files) {
+        for (File file : files) {
             addFileToResource(document, file);
         }
-        
+
         InformationResourceFile deleted = document.getFirstInformationResourceFile();
         deleted.setDeleted(true);
         genericService.saveOrUpdate(deleted);
-        
+
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
-        assertEquals(TdarActionSupport.ERROR, controller.downloadZipArchive());
+        assertEquals(Action.ERROR, controller.downloadZipArchive());
         logger.info(controller.getFileName());
     }
-
 
     @Test
     @Rollback
@@ -187,16 +184,16 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         genericService.saveOrUpdate(doc);
         final Long id = doc.getId();
         logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
-        genericService.synchronize();
+        evictCache();
 
-        Document document =genericService.find(Document.class, id);
+        Document document = genericService.find(Document.class, id);
         assertTrue(Persistable.Base.isNotNullOrTransient(document));
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         // controller.setInformationResourceId(document.getId());
 
         controller.setInformationResourceFileId(document.getFirstInformationResourceFile().getLatestPDF().getId());
         try {
-            assertEquals(TdarActionSupport.SUCCESS, controller.execute());
+            assertEquals(Action.SUCCESS, controller.execute());
             assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
         } catch (TdarActionException e) {
             // TODO Auto-generated catch block

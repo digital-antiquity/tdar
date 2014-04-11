@@ -83,8 +83,9 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return last element of the selection, or null if this selection is empty.
      */
     public WebElement last() {
-        if (elements.isEmpty())
+        if (elements.isEmpty()) {
             return null;
+        }
         return get(elements.size() - 1);
     }
 
@@ -171,8 +172,9 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @see org.openqa.selenium.WebElement#getAttribute(java.lang.String)
      */
     public String getAttribute(String name) {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         return first().getAttribute(name);
     }
 
@@ -472,10 +474,12 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return Selection containing
      */
     public WebElementSelection parent() {
-        if (isEmpty())
+        if (isEmpty()) {
             return this;
-        if (StringUtils.equalsIgnoreCase("body", getTagName()))
+        }
+        if (StringUtils.equalsIgnoreCase("body", getTagName())) {
             return new WebElementSelection(driver);
+        }
         return new WebElementSelection(first().findElements(By.xpath("..")), driver);
     }
 
@@ -507,8 +511,9 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     private static boolean hasClass(WebElement elem, String cssClass) {
         String attr = elem.getAttribute("class");
-        if (attr == null)
+        if (attr == null) {
             return false;
+        }
         List<String> cssClasses = Arrays.asList(attr.split(" "));
         return cssClasses.contains(cssClass);
     }

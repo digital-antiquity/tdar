@@ -16,7 +16,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 
 @Entity
 @Table(name = "resource_collection_view_statistics", indexes = {
-        @Index(name="resource_collection_view_stats_count_id", columnList="resource_collection_id, id")
+        @Index(name = "resource_collection_view_stats_count_id", columnList = "resource_collection_id, id")
 })
 public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<ResourceCollection> {
 

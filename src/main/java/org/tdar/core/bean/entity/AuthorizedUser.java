@@ -31,11 +31,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  *         This is the representation of a user and a permission combined and an association with a resource collection.
  */
 @Table(name = "authorized_user", indexes = {
-        @Index(name="authorized_user_cid", columnList="id, resource_collection_id"),
-        @Index(name="authorized_user_cid2", columnList="user_id, resource_collection_id"),
-        @Index(name="authorized_user_perm", columnList="resource_collection_id, general_permission_int, user_id"),
+        @Index(name = "authorized_user_cid", columnList = "id, resource_collection_id"),
+        @Index(name = "authorized_user_cid2", columnList = "user_id, resource_collection_id"),
+        @Index(name = "authorized_user_perm", columnList = "resource_collection_id, general_permission_int, user_id"),
         @Index(name = "authorized_user_resource_collection_id_idx", columnList = "resource_collection_id"),
-        @Index(name = "authorized_user_user_id_idx", columnList="user_id")
+        @Index(name = "authorized_user_user_id_idx", columnList = "user_id")
 })
 @Entity
 public class AuthorizedUser extends Base implements Persistable {
@@ -125,14 +125,14 @@ public class AuthorizedUser extends Base implements Persistable {
             name = user.toString();
         }
         logger.trace("calling validate collection for user/permission/registered: [{} / {} / {}]", name, generalPermission != null, registered);
-        return user != null && generalPermission != null && user.isRegistered();
+        return (user != null) && (generalPermission != null) && user.isRegistered();
     }
 
     @Override
     public String toString() {
         Long userid = null;
         String properName = null;
-        if(user != null) {
+        if (user != null) {
             userid = user.getId();
             properName = user.getProperName();
         }

@@ -88,7 +88,7 @@ public class EZIDDao implements ExternalIDProvider {
     public EZIDDao() {
         try {
             assistant.loadProperties("ezid.properties");
-            
+
             URL url = new URL(getDOIProviderHostname());
             int port = TdarConfiguration.DEFAULT_PORT;
             if (url.getPort() == -1) {
@@ -155,10 +155,10 @@ public class EZIDDao implements ExternalIDProvider {
         String result = IOUtils.toString(content);
         content.close();
 
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK && response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+        if ((response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) && (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect",Arrays.asList(result , authenticationRequest.getRequestLine().toString()));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect", Arrays.asList(result, authenticationRequest.getRequestLine().toString()));
         }
         recievedEntity.consumeContent();
         return result;
@@ -246,7 +246,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi",Arrays.asList(result));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi", Arrays.asList(result));
         }
         return typeMap;
     }
@@ -298,7 +298,7 @@ public class EZIDDao implements ExternalIDProvider {
             }
         }
 
-        if (r.getStatus() != Status.ACTIVE || delete) {
+        if ((r.getStatus() != Status.ACTIVE) || delete) {
             // EZID does not support DELETION, instead SETTING ALL VALUES TO EMPTY
             // responseBuilder.append(DATACITE_CREATOR).append(":").append("\n");
             // responseBuilder.append(DATACITE_RESOURCE_TYPE).append(":").append("\n");
@@ -328,8 +328,9 @@ public class EZIDDao implements ExternalIDProvider {
     }
 
     protected String aNVLEscape(String s) {
-        if (StringUtils.isEmpty(s))
+        if (StringUtils.isEmpty(s)) {
             return "";
+        }
         return s.replace("%", "%25").replace("\n", "%0A").
                 replace("\r", "%0D").replace(":", "%3A");
     }

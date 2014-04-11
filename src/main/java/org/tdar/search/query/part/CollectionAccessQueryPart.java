@@ -18,17 +18,16 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
     private Person user;
     private GeneralPermissions permissions;
     private boolean admin;
-    
+
     public CollectionAccessQueryPart(Person person, boolean admin, GeneralPermissions generalPermissions) {
         this.user = person;
         this.permissions = generalPermissions;
         this.admin = admin;
     }
 
-
     @Override
     public boolean isEmpty() {
-        return (Persistable.Base.isNullOrTransient(user) || permissions == null);
+        return (Persistable.Base.isNullOrTransient(user) || (permissions == null));
     }
 
     protected QueryPart<?> getQueryPart(Person value, GeneralPermissions permissions) {
@@ -68,7 +67,7 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
 
     @Override
     public String generateQueryString() {
-        return this.getQueryPart(user,permissions).generateQueryString();
+        return this.getQueryPart(user, permissions).generateQueryString();
     }
 
     @Override

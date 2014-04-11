@@ -25,8 +25,8 @@ import org.tdar.core.service.workflow.workflows.GenericDocumentWorkflow;
 import org.tdar.core.service.workflow.workflows.PDFWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.filestore.PairtreeFilestore;
 
 /**
  * @author Adam Brin

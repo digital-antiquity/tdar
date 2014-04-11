@@ -38,6 +38,8 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
+import com.opensymphony.xwork2.Action;
+
 @Transactional
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
@@ -215,10 +217,10 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         }
         if (b == Boolean.TRUE) {
             Assert.assertTrue(String.format("there should be an exception %s or returned input %s", e, msg),
-                    e != null || AbstractLookupController.INPUT.equals(msg));
+                    (e != null) || Action.INPUT.equals(msg));
         } else if (b == Boolean.FALSE) {
             Assert.assertTrue("there should not be an exception: " + ExceptionUtils.getFullStackTrace(e), e == null);
-            assertEquals(AbstractLookupController.SUCCESS, msg);
+            assertEquals(Action.SUCCESS, msg);
         } else {
             // "maybe" state -- in some cases (looped state in AdvancedSearchController.testResultCountsAsBasicUser for example)
         }
@@ -229,7 +231,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void doSearch(String query, Boolean exceptions) {
-        genericService.synchronize();
+        evictCache();
         controller.setQuery(query);
         doSearch(controller, LookupSource.RESOURCE, exceptions);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());

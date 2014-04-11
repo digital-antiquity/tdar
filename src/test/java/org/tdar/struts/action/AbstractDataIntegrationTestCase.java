@@ -49,7 +49,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-//    public static final long SPITAL_IR_ID = 503l;
+    // public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
@@ -126,18 +126,18 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return version;
     }
 
-
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
         File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
-        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(),converter.getTableNames().toArray(new String[0])));
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
         return converter;
     }
 
-    static Long spitalIrId = (long)(Math.random()* 10000);
+    static Long spitalIrId = (long) (Math.random() * 10000);
+
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
         spitalIrId++;
         DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
@@ -151,12 +151,12 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     String[] dataImportTables = new String[0];
-    
+
     public String[] getDataImportTables() {
         return dataImportTables;
     }
-    
-    public void setDataImportTables(String[] dataImportTables ) {
+
+    public void setDataImportTables(String[] dataImportTables) {
         this.dataImportTables = dataImportTables;
     }
 
@@ -240,8 +240,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             colCount += integrationDataResult.getIntegrationColumns().size();
 
             for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
-                if (!col.isDisplayColumn())
+                if (!col.isDisplayColumn()) {
                     colCount++;
+                }
             }
 
             int size = 0;
@@ -268,8 +269,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (integrationColumn.isDisplayColumn())
+            if (integrationColumn.isDisplayColumn()) {
                 continue;
+            }
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
                 int foundNodeCount = 0;
                 for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {

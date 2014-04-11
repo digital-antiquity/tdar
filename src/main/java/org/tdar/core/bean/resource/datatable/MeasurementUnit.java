@@ -8,7 +8,7 @@ import org.tdar.utils.MessageHelper;
  * Represents a measurement unit
  * 
  * @author abrin
- *
+ * 
  */
 public enum MeasurementUnit implements HasLabel, Localizable {
     KILOGRAM("kilogram", "kg"),

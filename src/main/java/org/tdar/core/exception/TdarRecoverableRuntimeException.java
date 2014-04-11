@@ -17,7 +17,7 @@ public class TdarRecoverableRuntimeException extends I18nRuntimeException {
     private static final long serialVersionUID = 6246686753761896569L;
 
     private String moreInfoUrlKey;
-    
+
     public TdarRecoverableRuntimeException() {
         super();
     }

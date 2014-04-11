@@ -25,6 +25,7 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     public static final String PROJECT_QUERY = "Archaeology";
     private Dimension originalSize;
     private Dimension testSize = new Dimension(1024, 768);
+
     @Before
     public void setupContextSearch() {
         Dimension size2 = driver.manage().window().getSize();
@@ -38,10 +39,10 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     @After
     public void resetSize() {
         if (originalSize != null) {
-        driver.manage().window().setSize(originalSize);
+            driver.manage().window().setSize(originalSize);
         }
     }
-    
+
     @Test
     public void testProjectResults2() {
         basicTest(format("/project/%s", PROJECT_ID), PROJECT_QUERY);
@@ -52,16 +53,15 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
         basicTest(format("/collection/%s", COLLECTION_ID), COLLECTION_QUERY);
     }
 
-
-    private void  basicTest(String path, String query) {
+    private void basicTest(String path, String query) {
         gotoPage(path);
 
-        //Focus on the searchbox.  The contextual search option should appear.
+        // Focus on the searchbox. The contextual search option should appear.
         WebElementSelection sb = find("input.searchbox").click();
         assertThat(sb, is(not(emptySelection())));
         assertThat(sb, is(visible()));
 
-        //enable contextual search, enter text that matches one of the resources we want to find
+        // enable contextual search, enter text that matches one of the resources we want to find
         takeScreenshot("after-clicking-ctx-checkbox");
         find("#cbctxid").click();
         sb.val(query).sendKeys(Keys.RETURN);

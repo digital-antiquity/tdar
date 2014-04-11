@@ -94,7 +94,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         AndsPidResponse response;
-       try {
+        try {
             response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
             if (response.isSuccess()) {
@@ -110,7 +110,7 @@ public class AndsPidsDao implements ExternalIDProvider {
         } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
             List<String> vals = new ArrayList<>();
             vals.add(resourceUrl);
-            throw new TdarRecoverableRuntimeException("andsPidDao.creation_fail", e,vals);
+            throw new TdarRecoverableRuntimeException("andsPidDao.creation_fail", e, vals);
         }
         return typeMap;
     }
@@ -144,7 +144,7 @@ public class AndsPidsDao implements ExternalIDProvider {
             logger.debug("could not modify handle for resource: {}", resourceUrl);
             List<String> vals = new ArrayList<>();
             vals.add(resourceUrl);
-            throw new TdarRecoverableRuntimeException("andsPidDao.update_fail", e,vals);
+            throw new TdarRecoverableRuntimeException("andsPidDao.update_fail", e, vals);
         }
         return typeMap;
     }
@@ -155,13 +155,14 @@ public class AndsPidsDao implements ExternalIDProvider {
         try {
             String handle = identifier;
             typeMap.put(DoiProcess.DOI_KEY, handle);
-            if (r.getStatus() != Status.ACTIVE)
+            if (r.getStatus() != Status.ACTIVE) {
                 pidsClient.deleteValueByIndex(handle, 1);
+            }
         } catch (Exception e) {
             logger.debug("could not delete handle for resource: {}", resourceUrl);
             List<String> vals = new ArrayList<>();
             vals.add(resourceUrl);
-            throw new TdarRecoverableRuntimeException("andsPidDao.delete_fail", e,vals);
+            throw new TdarRecoverableRuntimeException("andsPidDao.delete_fail", e, vals);
         }
         return typeMap;
     }

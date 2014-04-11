@@ -20,7 +20,7 @@ import freemarker.template.Configuration;
  * Enables the use of Freemarker for non-ftl files, such as emails
  * 
  * @author jtdevos
- *
+ * 
  */
 @Service
 public class FreemarkerService {
@@ -34,7 +34,7 @@ public class FreemarkerService {
     private FileSystemResourceDao fileDao;
 
     /**
-     * Given a template name and an object model, render the FTL to the string. 
+     * Given a template name and an object model, render the FTL to the string.
      * 
      * @param templateName
      * @param dataModel
@@ -51,7 +51,7 @@ public class FreemarkerService {
     }
 
     /**
-     * Given a template name and an object model, render the FTL to the string. 
+     * Given a template name and an object model, render the FTL to the string.
      * 
      * @param templateName
      * @param dataModel
@@ -73,7 +73,8 @@ public class FreemarkerService {
             }
         }
         try {
-            FileUtils.writeStringToFile(cacheFile, FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel));
+            FileUtils.writeStringToFile(cacheFile,
+                    FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel));
         } catch (Exception e) {
             logger.error("Unable to process template " + templateName, e);
             throw new TdarRecoverableRuntimeException(e);

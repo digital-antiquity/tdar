@@ -226,7 +226,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput(String.format("%s.%s", rt.getFieldName(), "title"), title);
         setInput(String.format("%s.%s", rt.getFieldName(), "description"), title + "::description");
         if (!rt.isProject()) {
-            if (TdarConfiguration.getInstance().getCopyrightMandatory() ) {
+            if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
                 // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
                 setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
             }
@@ -410,7 +410,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             logger.trace("no element found: " + name);
         }
 
-        if (input == null && overrideCreate) {
+        if ((input == null) && overrideCreate) {
             // test for duplicating fields with the two cases we have (a) struts, or
             // (b) the non-standard file-upload
             if (name.matches(indexedNamePattern)) {
@@ -507,7 +507,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public <T> void createTextInputs(String nameFormat, List<T> values, int startingIndex) {
-        for (int i = startingIndex; i < startingIndex + values.size(); i++) {
+        for (int i = startingIndex; i < (startingIndex + values.size()); i++) {
             T value = values.get(i);
             String name = String.format(nameFormat, i);
             createTextInput(name, value);
@@ -515,8 +515,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public boolean removeElementsByName(String elementName) {
-        if (htmlPage == null)
+        if (htmlPage == null) {
             return false;
+        }
         List<DomElement> elements = htmlPage.getElementsByName(elementName);
         int count = 0;
         for (DomElement element : elements) {
@@ -530,27 +531,31 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         List<DomElement> els = getHtmlPage().getElementsByName(name);
         for (DomElement el : els) {
             logger.trace(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
-            if (el instanceof HtmlTextArea && ((HtmlTextArea) el).getText().equals(val)) {
+            if ((el instanceof HtmlTextArea) && ((HtmlTextArea) el).getText().equals(val)) {
                 return true;
             } else if (el instanceof HtmlSelect) {
                 HtmlSelect sel = (HtmlSelect) el;
                 for (HtmlOption o : sel.getSelectedOptions()) {
-                    if (o.getValueAttribute().equalsIgnoreCase(val))
+                    if (o.getValueAttribute().equalsIgnoreCase(val)) {
                         return true;
+                    }
                 }
-            } else if (el instanceof HtmlCheckBoxInput || el instanceof HtmlRadioButtonInput) {
-                if (els.size() == 1 && val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
+            } else if ((el instanceof HtmlCheckBoxInput) || (el instanceof HtmlRadioButtonInput)) {
+                if (((els.size() == 1) && val.equalsIgnoreCase("true")) || val.equalsIgnoreCase("false")) {
                     if (el.getAttribute("value").equalsIgnoreCase(val)) {
-                        if (el.hasAttribute("checked") && val.equalsIgnoreCase("true"))
+                        if (el.hasAttribute("checked") && val.equalsIgnoreCase("true")) {
                             return true;
-                        if (!el.hasAttribute("checked") && val.equalsIgnoreCase("false"))
+                        }
+                        if (!el.hasAttribute("checked") && val.equalsIgnoreCase("false")) {
                             return true;
+                        }
                     }
                 } else if (el.getAttribute("value").equalsIgnoreCase(val)
-                        && (el instanceof HtmlCheckBoxInput && ((HtmlCheckBoxInput) el).isChecked() || el instanceof HtmlRadioButtonInput
-                                && ((HtmlRadioButtonInput) el).isChecked()))
+                        && (((el instanceof HtmlCheckBoxInput) && ((HtmlCheckBoxInput) el).isChecked()) || ((el instanceof HtmlRadioButtonInput)
+                        && ((HtmlRadioButtonInput) el).isChecked()))) {
                     return true;
-            } else if ((el instanceof HtmlTextInput || el instanceof HtmlHiddenInput || el instanceof HtmlPasswordInput)
+                }
+            } else if (((el instanceof HtmlTextInput) || (el instanceof HtmlHiddenInput) || (el instanceof HtmlPasswordInput))
                     && el.getAttribute("value").equals(val)) {
                 return true;
             }
@@ -668,7 +673,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
 
-public static List<String> errorPatterns = Arrays.asList("http error","server error","{0}","{1}", "{2}","{3}","{4}",".exception.","caused by");
+    public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by");
 
     public void assertNoEscapeIssues() {
         String html = getPageCode().toLowerCase();
@@ -766,7 +771,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
         String content = getPageCode();
         String out = "";
         try {
-            if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
+            if ((content.indexOf(BEGIN_PAGE_HEADER) != -1) && (content.indexOf(BEGIN_TDAR_CONTENT) != -1) && (content.indexOf(BEGIN_TDAR_FOOTER) != -1)) {
                 out = content.substring(0, content.indexOf(BEGIN_PAGE_HEADER)) + ELIPSIS;
                 out += content.subSequence(content.indexOf(BEGIN_TDAR_CONTENT) + BEGIN_TDAR_CONTENT.length(), content.indexOf(BEGIN_TDAR_FOOTER)) + ELIPSIS;
                 return out;
@@ -804,7 +809,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
             public void warning(CSSParseException exception) throws CSSException {
                 String uri = exception.getURI();
                 if (uri.contains(getBaseUrl()) && uri.contains("/css/")) {
-                    logger.trace("CSS Warning:",exception);
+                    logger.trace("CSS Warning:", exception);
                 }
             }
 
@@ -812,7 +817,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
             public void fatalError(CSSParseException exception) throws CSSException {
                 String uri = exception.getURI();
                 if (uri.contains(getBaseUrl()) && uri.contains("/css/")) {
-                    logger.warn("CSS Fatal Error:",exception);
+                    logger.warn("CSS Fatal Error:", exception);
                 }
             }
 
@@ -957,8 +962,9 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
 
     // set the main form to be first form that contains a child element with the specified id
     private void updateMainFormIfNull(String id) {
-        if (_internalForm != null || StringUtils.isBlank(id))
+        if ((_internalForm != null) || StringUtils.isBlank(id)) {
             return;
+        }
         for (HtmlForm form : getHtmlPage().getForms()) {
             if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'" + id + "')]") != null) {
                 logger.info("updating main for for id: " + id + " to form: " + form);
@@ -1020,7 +1026,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
             webRequest.setEncodingType(FormEncodingType.MULTIPART);
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
-            Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
+            Assert.assertTrue(assertNoErrors && (code == HttpStatus.OK.value()));
             if (file != null) {
                 assertFileSizes(page, Arrays.asList(new File[] { file }));
             }
@@ -1238,7 +1244,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
         }
         setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
-        genericService.synchronize();
+        evictCache();
         setSessionUser(entityService.findByUsername(username));
     }
 
@@ -1284,7 +1290,7 @@ public static List<String> errorPatterns = Arrays.asList("http error","server er
                 fail("InterruptedException during reindex.  sorry.");
             }
             gotoPage("/admin/searchindex/checkstatus?userId=" + getAdminUserId());
-            if (count % 10 == 5) { 
+            if ((count % 10) == 5) {
                 logger.info(getPageCode());
             }
             if (count == 1000) {

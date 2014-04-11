@@ -16,7 +16,7 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
 /**
- * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction. 
+ * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction.
  * 
  */
 @Entity
@@ -50,7 +50,7 @@ public class BillingItem extends Base implements Validatable {
     }
 
     public Integer getQuantity() {
-        if (quantity == null || quantity < 1) {
+        if ((quantity == null) || (quantity < 1)) {
             return 0;
         }
         return quantity;

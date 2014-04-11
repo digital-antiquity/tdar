@@ -23,7 +23,8 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
- * <p> ResourceNotes allow for free-text notes about a resource.
+ * <p>
+ * ResourceNotes allow for free-text notes about a resource.
  * 
  * @author Adam Brin
  * @version $Revision$
@@ -31,7 +32,7 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 @Entity
 @Table(name = "resource_note", indexes = {
-        @Index(name="resid_noteid", columnList="resource_id, id")})
+        @Index(name = "resid_noteid", columnList = "resource_id, id") })
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
@@ -65,8 +66,9 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     }
 
     public String getNote() {
-        if (note == null)
+        if (note == null) {
             return "";
+        }
         return note;
     }
 
@@ -76,8 +78,9 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @XmlAttribute
     public ResourceNoteType getType() {
-        if (type == null)
+        if (type == null) {
             return ResourceNoteType.GENERAL;
+        }
         return type;
     }
 
@@ -92,7 +95,7 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @Override
     public boolean isValid() {
-        if (type != null && !StringUtils.isEmpty(note)) {
+        if ((type != null) && !StringUtils.isEmpty(note)) {
             return true;
         }
         return false;

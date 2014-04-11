@@ -8,7 +8,7 @@ import org.tdar.core.service.GenericService;
  * Abstract class to help manage the cache data.
  * 
  * @author abrin
- *
+ * 
  * @param <C>
  * @param <D>
  */
@@ -19,7 +19,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
     private static final long serialVersionUID = -1407077845657074783L;
 
     @Override
-   public String getLabel() {
+    public String getLabel() {
         return GenericService.extractStringValue(getKey());
     }
 
@@ -31,7 +31,7 @@ public abstract class AbstractCountCache<C extends AbstractCountCache, D extends
     @SuppressWarnings("unchecked")
     @Override
     public int compareTo(C o) {
-        return ObjectUtils.compare(getKey(), (D) (o.getKey()));
+        return ObjectUtils.compare(getKey(), (o.getKey()));
     }
 
     @Override

@@ -49,8 +49,8 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 fullName.setBoost(6f);
                 group.append(fullName);
                 setOperator(Operator.OR);
-           }
-            
+            }
+
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 ems.add(pers.getEmail());
             }

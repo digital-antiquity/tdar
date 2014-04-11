@@ -22,7 +22,7 @@ import org.tdar.core.exception.TdarValidationException;
  * Represents a physical address for a person or institution.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "creator_address")
@@ -160,7 +160,7 @@ public class Address extends Base implements Persistable, Validatable {
 
     public String getAddressSingleLine() {
         StringBuilder sb = new StringBuilder(getStreet1());
-        if (sb.length() > 0 && StringUtils.isNotBlank(getStreet2())) {
+        if ((sb.length() > 0) && StringUtils.isNotBlank(getStreet2())) {
             sb.append(" ").append(getStreet2());
         }
         if (sb.length() > 0) {

@@ -26,6 +26,7 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
 
     /**
      * returns all services that the system knows about regardless of whether they're enabled or not.
+     * 
      * @return
      */
     public List<S> getAllServices() {
@@ -34,8 +35,11 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
 
     /**
      * Chooses the providers of the service. The first configured and enabled one will become the one that is used.
-     * @param providers The list of providers that will be examined to see if they are suitable. Ordinarily provided by Spring.
-     * @throws IllegalStateException if the service is required, but a correctly configured and enabled provider is not found. 
+     * 
+     * @param providers
+     *            The list of providers that will be examined to see if they are suitable. Ordinarily provided by Spring.
+     * @throws IllegalStateException
+     *             if the service is required, but a correctly configured and enabled provider is not found.
      */
     @Autowired
     public void setAllServices(List<S> providers) {
@@ -75,8 +79,8 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
     @Override
     public S getProvider() {
         if (allServices.isEmpty()) {
-           logger.warn(String.format("no available provider found by service  %s", getClass()));
-           return null;
+            logger.warn(String.format("no available provider found by service  %s", getClass()));
+            return null;
         }
         return allServices.get(0);
     }
@@ -84,6 +88,7 @@ public abstract class AbstractConfigurableService<S extends Configurable> implem
     /**
      * If not required, the getProvider method can return <b>null</b> if no provider is found!<br />
      * Made abstract to ensure that you are aware of this point if you override this class!
+     * 
      * @see org.tdar.core.service.ConfigurableService#isServiceRequired()
      */
     @Override

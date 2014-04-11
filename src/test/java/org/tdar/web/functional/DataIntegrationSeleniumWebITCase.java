@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.struts.action.DataIntegrationITCase;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 @Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
@@ -81,10 +81,10 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             find(By.className("bookmark-label")).click();
             String datasetViewUrl = getCurrentUrl();
             find(By.linkText(GENERATED + "Species Common name")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getTaxonValueMap());
             gotoPage(datasetViewUrl);
             find(By.linkText(GENERATED + BONE_COMMON_NAME)).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getElementValueMap());
 
             Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
                     TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
@@ -95,10 +95,10 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             find(By.className("bookmark-label")).click();
             datasetViewUrl = getCurrentUrl();
             find(By.linkText(GENERATED + "Taxon")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getTaxonValueMap());
             gotoPage(datasetViewUrl);
             find(By.linkText(GENERATED + "BELEMENT")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getElementValueMap());
         }
 
         find(By.linkText("Integrate")).click();
@@ -187,7 +187,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         find(By.className("mappingLink")).find(By.tagName("a")).click();
 
         for (Entry<String, String> entry : map.entrySet()) {
-            WebElementSelection nodePairs = find(By.id("row_"+entry.getKey()));
+            WebElementSelection nodePairs = find(By.id("row_" + entry.getKey()));
             WebElementSelection match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
             if (match == null) {
                 continue;

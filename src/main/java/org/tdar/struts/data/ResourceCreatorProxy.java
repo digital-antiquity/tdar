@@ -79,7 +79,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
                     resourceCreator.setCreator(person);
                     Institution institution = person.getInstitution();
                     // FIXME: what is the purpose of this check?
-                    if (institution == null || StringUtils.isBlank(institution.getName())) {
+                    if ((institution == null) || StringUtils.isBlank(institution.getName())) {
                         person.setInstitution(null);
                     }
                     logger.trace("creator type implicitly set to person:" + person);
@@ -112,8 +112,9 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     public ResourceCreator getResourceCreator() {
-        if (!initialized)
+        if (!initialized) {
             resolveResourceCreator();
+        }
         return resourceCreator;
     }
 
@@ -126,9 +127,10 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * 
      * @return creatorType, if system can figure out based on available info. otherwise null.
      */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH",
+            justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
-        if (institution == null && person == null) {
+        if ((institution == null) && (person == null)) {
             throw new TdarRecoverableRuntimeException("resourceCreatorProxy.err_determine_creator_insufficient_info");
         }
         boolean hasNoPersistableValues = institution.hasNoPersistableValues();
@@ -136,7 +138,8 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return null;
         }
         if (!hasNoPersistableValues && !person.hasNoPersistableValues()) {
-            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", Arrays.asList(getPerson(), getInstitution(), getType()));
+            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info",
+                    Arrays.asList(getPerson(), getInstitution(), getType()));
             logger.warn(err);
             return type;
         }
@@ -147,7 +150,6 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return CreatorType.INSTITUTION;
         }
     }
-
 
     @Transient
     public CreatorType getActualCreatorType() {
@@ -167,10 +169,10 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * @return
      */
     public boolean isValid() {
-        if (person != null && !person.hasNoPersistableValues()) {
+        if ((person != null) && !person.hasNoPersistableValues()) {
             return true;
         }
-        if (institution != null && !institution.hasNoPersistableValues()) {
+        if ((institution != null) && !institution.hasNoPersistableValues()) {
             return true;
         }
         return false;

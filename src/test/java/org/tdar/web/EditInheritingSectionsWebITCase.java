@@ -83,8 +83,9 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
         logger.debug("page json:" + json);
         assertTrue("json is not empty", json.length() > 0);
         JSONObject jsonObj = JSONObject.fromObject(json);
-        if (jsonObj == null)
+        if (jsonObj == null) {
             fail("failed to parse json result");
+        }
         long actualId = jsonObj.getLong("id");
         assertEquals(PARENT_PROJECT_ID, actualId);
         testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "cultureKeywords");

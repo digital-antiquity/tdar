@@ -94,8 +94,8 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * @return
      */
     private static boolean isOnlyOneDateFound(List<DateGroup> candidateDates) {
-        return candidateDates.size() == 1
-                && candidateDates.get(0).getDates().size() == 1
+        return (candidateDates.size() == 1)
+                && (candidateDates.get(0).getDates().size() == 1)
                 && !candidateDates.get(0).isRecurring();
     }
 

@@ -99,7 +99,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String DC = "dc";
     public static final String MODS = "mods";
 
-
     private static final long serialVersionUID = 8620875853247755760L;
 
     private List<MaterialKeyword> allMaterialKeywords;
@@ -162,16 +161,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (isViewPage) {
             resourceCreators = getPersistable().getActiveResourceCreators();
         }
-        if (resourceCreators == null)
+        if (resourceCreators == null) {
             return;
+        }
         authorshipProxies = new ArrayList<>();
         creditProxies = new ArrayList<>();
 
         // this may be duplicative... check
         for (ResourceCreator rc : resourceCreators) {
             if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-                if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
-                    getObfuscationService().obfuscate(rc.getCreator(),getAuthenticatedUser());
+                if ((rc.getCreatorType() == CreatorType.PERSON) && !isAuthenticated()) {
+                    getObfuscationService().obfuscate(rc.getCreator(), getAuthenticatedUser());
                 }
             }
 
@@ -217,7 +217,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         List<Account> accounts = new LinkedList<>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         if (getResource() != null) {
             Account resourceAccount = getResource().getAccount();
-            if (resourceAccount != null && !accounts.contains(resourceAccount)) {
+            if ((resourceAccount != null) && !accounts.contains(resourceAccount)) {
                 accounts.add(0, resourceAccount);
             }
         }
@@ -282,8 +282,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SuppressWarnings("unchecked")
     @Override
     public String loadViewMetadata() throws TdarActionException {
-        if (getResource() == null)
+        if (getResource() == null) {
             return ERROR;
+        }
         // loadBasicMetadata();
         initializeResourceCreatorProxyLists(true);
         loadCustomMetadata();
@@ -337,7 +338,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             loadAddMetadata();
         }
 
-        if (shouldSaveResource() && getResource() != null) {
+        if (shouldSaveResource() && (getResource() != null)) {
             getXmlService().logRecordXmlToFilestore(getPersistable());
         }
 
@@ -367,8 +368,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isAbleToCreateBillableItem() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true
-                && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true)) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || ((getAuthenticatedUser().getContributor() == true)
+                && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true))) {
             return true;
         }
         return false;
@@ -378,21 +379,22 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private void resolveAnnotations(Collection<ResourceAnnotation> incomingAnnotations) {
         List<ResourceAnnotation> toAdd = new ArrayList<>();
         for (ResourceAnnotation incomingAnnotation : incomingAnnotations) {
-            if (incomingAnnotation == null)
+            if (incomingAnnotation == null) {
                 continue;
+            }
             ResourceAnnotationKey incomingKey = incomingAnnotation.getResourceAnnotationKey();
             ResourceAnnotationKey resolvedKey = getGenericService().findByExample(ResourceAnnotationKey.class, incomingKey, FindOptions.FIND_FIRST_OR_CREATE)
                     .get(0);
             incomingAnnotation.setResourceAnnotationKey(resolvedKey);
-            
+
             if (incomingAnnotation.isTransient()) {
                 List<String> vals = new ArrayList<>();
                 vals.add(incomingAnnotation.getValue());
                 cleanupKeywords(vals);
-                
+
                 if (vals.size() > 1) {
                     incomingAnnotation.setValue(vals.get(0));
-                    for (int i =1 ; i < vals.size(); i++) {
+                    for (int i = 1; i < vals.size(); i++) {
                         toAdd.add(new ResourceAnnotation(resolvedKey, vals.get(i)));
                     }
                 }
@@ -405,8 +407,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isEditable() {
-        if (isNullOrNew())
+        if (isNullOrNew()) {
             return false;
+        }
         if (editable == null) {
             editable = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
@@ -429,7 +432,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             getLogger().trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT), getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
+            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT),
+                    getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
         }
 
         return false;
@@ -473,8 +477,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Set<String> toAdd = new HashSet<>();
         while (iter.hasNext()) {
             String keyword = iter.next();
-            if (StringUtils.isBlank(keyword))
+            if (StringUtils.isBlank(keyword)) {
                 continue;
+            }
 
             if (keyword.contains(delim)) {
                 for (String sub : StringUtils.split(keyword, delim)) {
@@ -502,9 +507,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getResourceService().saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, latitudeLongitudeBoxes,
                 getResource().getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
-        
+
         if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)) {
-            addActionMessage(getText("abstractResourceController.no_map",Arrays.asList(getResource().getResourceType().getLabel())));
+            addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(getResource().getResourceType().getLabel())));
         }
         Persistable.Base.reconcileSet(getPersistable().getGeographicKeywords(),
                 getGenericKeywordService().findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
@@ -574,10 +579,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
-        if (list == null)
+        if (list == null) {
             return;
-        if (list.isEmpty())
+        }
+        if (list.isEmpty()) {
             return;
+        }
         list.removeAll(Collections.singletonList(null));
         Sequence.applySequence(list);
     }
@@ -588,16 +595,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void saveResourceCreators() {
         List<ResourceCreatorProxy> allProxies = new ArrayList<>();
-        if (authorshipProxies != null)
+        if (authorshipProxies != null) {
             allProxies.addAll(authorshipProxies);
-        if (creditProxies != null)
+        }
+        if (creditProxies != null) {
             allProxies.addAll(creditProxies);
+        }
         getLogger().info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;
         List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
         // convert the list of proxies to a list of resource creators
         for (ResourceCreatorProxy proxy : allProxies) {
-            if (proxy != null && proxy.isValid()) {
+            if ((proxy != null) && proxy.isValid()) {
                 ResourceCreator resourceCreator = proxy.getResourceCreator();
                 resourceCreator.setSequenceNumber(sequence++);
                 getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
@@ -653,12 +662,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
         Set<ResourceCollection> tempSet = new HashSet<>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection != null && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
+            if ((collection != null) && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
             }
         }
         ResourceCollection internal = getResource().getInternalResourceCollection();
-        if (internal != null &&
+        if ((internal != null) &&
                 CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
             tempSet.add(internal);
         }
@@ -816,7 +825,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public ModsDocument getModsDocument() {
         if (modsDocument == null) {
-            getObfuscationService().obfuscate(getResource(),getAuthenticatedUser());
+            getObfuscationService().obfuscate(getResource(), getAuthenticatedUser());
             modsDocument = ModsTransformer.transformAny(getResource());
         }
         return modsDocument;
@@ -834,7 +843,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public DublinCoreDocument getDcDocument() {
         if (dcDocument == null) {
-            getObfuscationService().obfuscate(getResource(),getAuthenticatedUser());
+            getObfuscationService().obfuscate(getResource(), getAuthenticatedUser());
             dcDocument = DcTransformer.transformAny(getResource());
         }
         return dcDocument;
@@ -884,7 +893,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public Set<ResourceAnnotationKey> getAllResourceAnnotationKeys() {
         Set<ResourceAnnotationKey> keys = new HashSet<>();
-        if (getPersistable() != null && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
+        if ((getPersistable() != null) && CollectionUtils.isNotEmpty(getPersistable().getActiveResourceAnnotations())) {
             for (ResourceAnnotation ra : getPersistable().getActiveResourceAnnotations()) {
                 keys.add(ra.getResourceAnnotationKey());
             }
@@ -994,8 +1003,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public List<ResourceAnnotation> getResourceAnnotations() {
-        if (resourceAnnotations == null)
+        if (resourceAnnotations == null) {
             resourceAnnotations = new ArrayList<>();
+        }
         return resourceAnnotations;
     }
 
@@ -1090,8 +1100,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             try {
                 getInformationResourceService().reprocessInformationResourceFiles(ir, this);
             } catch (Exception e) {
-//                consider removing the "sorry we were unable to ... just showing error message"
-//                addActionErrorWithException(null, e);
+                // consider removing the "sorry we were unable to ... just showing error message"
+                // addActionErrorWithException(null, e);
                 addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
             }
             if (hasActionErrors()) {
@@ -1195,14 +1205,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public String getJsonStats() {
         String json = "null";
-        //FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this?  Also, why bail if only one is null?
-        if(usageStatsForResources == null || downloadStats == null) return json;
+        // FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this? Also, why bail if only one is null?
+        if ((usageStatsForResources == null) || (downloadStats == null)) {
+            return json;
+        }
 
         try {
             json = getXmlService().convertToJson(new UsageStats(usageStatsForResources, downloadStats));
         } catch (IOException e) {
             getLogger().error("failed to convert stats to json", e);
-            json =  String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
+            json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
         }
         return json;
     }
@@ -1217,9 +1229,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public boolean isUserAbleToViewDeletedFiles() {
         return isEditor();
     }
-    
+
     public boolean isUserAbleToViewUnobfuscatedMap() {
         return isEditor();
     }
-    
+
 }

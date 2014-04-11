@@ -64,8 +64,9 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     @Override
     public Video getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 }

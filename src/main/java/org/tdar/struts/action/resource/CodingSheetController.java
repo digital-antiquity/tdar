@@ -107,7 +107,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
 
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
-        OntologyNodeSuggestionGenerator generator  = new OntologyNodeSuggestionGenerator();
+        OntologyNodeSuggestionGenerator generator = new OntologyNodeSuggestionGenerator();
         suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
@@ -160,7 +160,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         this.setPersistable(codingSheet);
     }
 
-
     @Override
     public Set<String> getValidFileExtensions() {
         return getAnalyzer().getExtensionsForType(ResourceType.CODING_SHEET);
@@ -200,7 +199,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     public boolean isOkToMapOntology() {
         Ontology defaultOntology = getPersistable().getDefaultOntology();
-        if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())){
+        if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
             getLogger().debug("cannot map, ontology issues, null or transient");
             return false;
         }

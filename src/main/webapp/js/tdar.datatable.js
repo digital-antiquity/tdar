@@ -142,7 +142,9 @@ TDAR.datatable = function () {
         // derive sort column from the field name and reversed status
         var tdarSortOption = aoColumns[oData["iSortCol_0"]].tdarSortOption;
         var sSortReversed = {desc: 'true'}[oData["sSortDir_0"]];
-        if (sSortReversed) tdarSortOption += '_REVERSE';
+        if (sSortReversed) {
+            tdarSortOption += '_REVERSE';
+        }
         var translatedData = {
             startRecord: oData.iDisplayStart,
             recordsPerPage: oData.iDisplayLength,
@@ -153,7 +155,6 @@ TDAR.datatable = function () {
 
         return translatedData;
     }
-
 
     /**
      * callback that renders the "id" column of the datatable.
@@ -170,8 +171,7 @@ TDAR.datatable = function () {
             resourceType = resourceType.toLowerCase();
         }
         //console.log("resource type:%s", resourceType);
-        return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' +
-            '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
+        return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' + '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
     }
 
     /**
@@ -296,7 +296,6 @@ TDAR.datatable = function () {
             $.cookie($(this).attr("id"), $(this).val());
         });
 
-
         $("#statuses").change(function () {
             $("#resource_datatable").dataTable().fnDraw();
             $.cookie($(this).attr("id"), $(this).val());
@@ -346,8 +345,7 @@ TDAR.datatable = function () {
 
         //bind row delete button
         $resourcesTable.on('click', 'button', function () {
-            var button = this,
-                resourceid = $(button).data("rid");
+            var button = this, resourceid = $(button).data("rid");
             _removeResourceClicked(resourceid, button, dataTable);
         });
     }
@@ -402,7 +400,9 @@ TDAR.datatable = function () {
         var $table = $row.closest('table');
         // var $div = $row.closest('div');
         $row.remove();
-        if ($table.find('tr').length == 1) $table.hide(); // FIXME: DRY
+        if ($table.find('tr').length == 1) {
+            $table.hide();
+        } // FIXME: DRY
 
     }
 
@@ -452,21 +452,18 @@ TDAR.datatable = function () {
         });
     }
 
-
     /**
      * Define sorting behavior when user clicks on datatable columns.
      * @private
      */
     function _extendSorting() {
 
-        jQuery.fn.dataTableExt.aTypes.unshift(
-            function (sData) {
-                if (typeof sData === "number" || $.trim(sData).match(/\$?\-?([\d,\.])*/g)) {
-                    return 'tdar-number';
-                }
-                return null;
-            }
-        );
+        jQuery.fn.dataTableExt.aTypes.unshift(function (sData) {
+                    if (typeof sData === "number" || $.trim(sData).match(/\$?\-?([\d,\.])*/g)) {
+                        return 'tdar-number';
+                    }
+                    return null;
+                });
 
         jQuery.fn.dataTableExt.oSort['tdar-number-asc'] = function (x_, y_) {
             var x = parseFloat(x_.replace(/([\$|\s|\,]*)/g, ""));

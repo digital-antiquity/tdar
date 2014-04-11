@@ -11,7 +11,7 @@ import org.tdar.core.bean.resource.InformationResource;
  * This caches a one or a set of Resources on the homepage.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "homepage_featured_item_cache")

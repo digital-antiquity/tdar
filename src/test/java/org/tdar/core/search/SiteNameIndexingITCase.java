@@ -37,7 +37,7 @@ public class SiteNameIndexingITCase {
         assertMatches(compile, "LA 9219");
         assertMatches(compile, "AR-03-12-01-1927");
         assertMatches(compile, "38AK933");
-        
+
     }
 
     @Test
@@ -45,18 +45,18 @@ public class SiteNameIndexingITCase {
         StringReader reader = new StringReader(" CA-AAA-0000 asasd qrqewr 22:22:13-0000 sadas d RI-0000");
         SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
         TokenStream tokenStream = tokenizer.tokenStream("test", reader);
-        while(tokenStream.incrementToken()) {
+        while (tokenStream.incrementToken()) {
             String term = tokenStream.getAttribute(CharTermAttribute.class).toString();
             logger.debug(term);
             assertMatches(SiteCodeTokenizingAnalyzer.pattern, term);
         }
         tokenizer.close();
     }
-    
+
     public void assertMatches(Pattern pattern, String text) {
         logger.debug("\"{}\" --> {}", text, pattern.pattern());
         assertTrue("String matches:" + text, pattern.matcher(text).matches());
-        Assert.assertFalse(StringUtils.containsIgnoreCase(text,"q"));
-        Assert.assertFalse(StringUtils.containsIgnoreCase(text,"sa"));
+        Assert.assertFalse(StringUtils.containsIgnoreCase(text, "q"));
+        Assert.assertFalse(StringUtils.containsIgnoreCase(text, "sa"));
     }
 }

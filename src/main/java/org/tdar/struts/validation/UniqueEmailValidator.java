@@ -20,7 +20,7 @@ public class UniqueEmailValidator extends FieldValidatorSupport implements Short
         }
         String email = value.toString();
         Person person = entityService.findByEmail(email);
-        if (person != null && person.isRegistered()) {
+        if ((person != null) && person.isRegistered()) {
             addFieldError(fieldName, actionBean);
         }
     }

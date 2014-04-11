@@ -152,8 +152,9 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (Object dis_ : CollectionUtils.subtract(modsRecordsList, modsIdentifiersList)) {
             String dis = (String) dis_;
             logger.info(dis);
-            if (StringUtils.isBlank(dis))
+            if (StringUtils.isBlank(dis)) {
                 continue;
+            }
             if (dis.indexOf(":") != -1) {
                 dis = dis.substring(dis.lastIndexOf(":") + 1);
             }

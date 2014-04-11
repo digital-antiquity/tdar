@@ -99,11 +99,11 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;
         for (BillingActivity activity : activeBillingActivities) {
-            if (activity.getEnabled() == true && !activity.isProduction()) {
-                if (activity.getNumberOfFiles() == 1L && activity.getNumberOfMb() == 0L) {
+            if ((activity.getEnabled() == true) && !activity.isProduction()) {
+                if ((activity.getNumberOfFiles() == 1L) && (activity.getNumberOfMb() == 0L)) {
                     oneFileActivity = activity;
                 }
-                if (activity.getNumberOfFiles() == 0L && activity.getNumberOfMb() == 1L) {
+                if ((activity.getNumberOfFiles() == 0L) && (activity.getNumberOfMb() == 1L)) {
                     oneMbActivity = activity;
                 }
             }

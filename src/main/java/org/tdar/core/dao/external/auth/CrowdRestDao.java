@@ -29,7 +29,6 @@ import com.atlassian.crowd.exception.InvalidUserException;
 import com.atlassian.crowd.exception.MembershipAlreadyExistsException;
 import com.atlassian.crowd.exception.ObjectNotFoundException;
 import com.atlassian.crowd.exception.OperationFailedException;
-import com.atlassian.crowd.exception.UserNotFoundException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
 import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
@@ -59,8 +58,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private CrowdClient securityServerClient;
-    private CrowdHttpAuthenticator httpAuthenticator; 
-
+    private CrowdHttpAuthenticator httpAuthenticator;
 
     private Properties crowdProperties;
     private String passwordResetURL;
@@ -75,18 +73,18 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
-            httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
-            logger.debug("maxHttpConnections: {} timeout: {}",clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
+            httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties,
+                    CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
+            logger.debug("maxHttpConnections: {} timeout: {}", clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
     }
 
-
     @Override
     public boolean isConfigured() {
         logger.info("testing crowdRestDao: {} {}", securityServerClient, httpAuthenticator);
-        if (securityServerClient == null || httpAuthenticator == null) {
+        if ((securityServerClient == null) || (httpAuthenticator == null)) {
             logger.debug("client and/or authenticator are null " + securityServerClient + " " + httpAuthenticator);
             return false;
         }
@@ -109,11 +107,11 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
             httpAuthenticator.logout(request, response);
         } catch (ApplicationPermissionException e) {
-            logger.error("application permission exception",e);
+            logger.error("application permission exception", e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("invalid authentication token",e);
+            logger.error("invalid authentication token", e);
         } catch (OperationFailedException e) {
-            logger.error("operation failed",e);
+            logger.error("operation failed", e);
         }
     }
 
@@ -178,7 +176,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         String login = person.getUsername();
         User user = null;
         try {
-            
+
             user = securityServerClient.getUser(login);
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
@@ -193,7 +191,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
                     logger.error("AccountExists, but issues... ", e);
                     return AuthenticationResult.ACCOUNT_EXISTS;
                 }
-             }
+            }
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (OperationFailedException e) {
@@ -209,11 +207,12 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         boolean userNew = false;
         PasswordEntity passwordEntity = new PasswordEntity(password);
         PasswordCredential credential = new PasswordCredential(password);
- 
-        if (user == null)  {
+
+        if (user == null) {
             userNew = true;
             logger.debug("Adding user : " + person);
-            user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity , true);
+            user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
+                    true);
         }
         if (ArrayUtils.isEmpty(groups)) {
             groups = AuthenticationProvider.DEFAULT_GROUPS;
@@ -245,9 +244,9 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             logger.error("++++ CROWD: Unable to add user (operation failed): " + login + " " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("++++ CROWD: Unable to add user (invalid authentication): " + login +" " + e.getMessage());
+            logger.error("++++ CROWD: Unable to add user (invalid authentication): " + login + " " + e.getMessage());
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
-        } 
+        }
 
         return AuthenticationResult.VALID;
     }
@@ -322,7 +321,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
             List<Group> groupsForUser = securityServerClient.getGroupsForUser(toFind, 0, 100);
             List<String> groups = new ArrayList<>();
-            for (Group group: groupsForUser) {
+            for (Group group : groupsForUser) {
                 groups.add(group.getName());
             }
             return groups.toArray(new String[0]);
@@ -353,10 +352,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     {
         this.passwordResetURL = url;
     }
-    
+
     @Override
     public boolean isEnabled() {
-        if (crowdProperties == null || crowdProperties.getProperty("crowd.server.url") == null) {
+        if ((crowdProperties == null) || (crowdProperties.getProperty("crowd.server.url") == null)) {
             return false;
         }
         return true;

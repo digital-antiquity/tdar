@@ -41,7 +41,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
                     file = null;
                 } else {
                     logger.error("trying to delete temp file in FILESTORE!!!!!!: {}", file);
-                    throw new TdarRuntimeException("deleteOnCloseFileInputStream.cannot_delete_file", Arrays.asList( file.getCanonicalPath()));
+                    throw new TdarRuntimeException("deleteOnCloseFileInputStream.cannot_delete_file", Arrays.asList(file.getCanonicalPath()));
                 }
             }
         }

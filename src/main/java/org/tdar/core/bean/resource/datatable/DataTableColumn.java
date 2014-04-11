@@ -50,10 +50,10 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "data_table_column", indexes={
-        @Index(name = "data_table_column_data_table_id_idx", columnList="data_table_id"),
-        @Index(name = "data_table_column_default_ontology_id_idx", columnList="default_ontology_id"),
-        @Index(name = "data_table_column_default_coding_sheet_id_idx",columnList="default_coding_sheet_id")
+@Table(name = "data_table_column", indexes = {
+        @Index(name = "data_table_column_data_table_id_idx", columnList = "data_table_id"),
+        @Index(name = "data_table_column_default_ontology_id_idx", columnList = "default_ontology_id"),
+        @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
 })
 @XmlRootElement
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
@@ -357,13 +357,13 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
                     throw new TdarValidationException("dataTableColumn.invalid_measurement", keys);
                 }
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
-                if (columnDataType == null || !columnDataType.isNumeric()) {
+                if ((columnDataType == null) || !columnDataType.isNumeric()) {
                     throw new TdarValidationException("dataTableColumn.invalid_measurement_numeric", keys);
                 }
                 break;
             case COUNT:
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
-                if (columnDataType == null || !columnDataType.isNumeric()) {
+                if ((columnDataType == null) || !columnDataType.isNumeric()) {
                     keys.add("count was not numeric");
                     throw new TdarValidationException("dataTableColumn.invalid_count_numeric", keys);
                 }
@@ -403,6 +403,17 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             }
         }
         return values;
+    }
+
+    @Transient
+    public Ontology getMappedOntology() {
+        if (getDefaultOntology() != null) {
+            return getDefaultOntology();
+        }
+        if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
+            return getDefaultCodingSheet().getDefaultOntology() ;
+        }
+        return null;
     }
 
 }

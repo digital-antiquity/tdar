@@ -29,7 +29,8 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
      * translated file if it exists.
      * 
      * @param file
-     * @param purge Purge the File from the Filestore
+     * @param purge
+     *            Purge the File from the Filestore
      */
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file, boolean purge) {
@@ -43,10 +44,10 @@ public class InformationResourceFileVersionService extends ServiceInterface.Type
      * Purge a set of @link InformationResourceFileVersion fiels
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void delete(Collection<InformationResourceFileVersion> files) {
         for (InformationResourceFileVersion object : files) {
-            delete((InformationResourceFileVersion) object);
+            delete(object);
         }
     }
 

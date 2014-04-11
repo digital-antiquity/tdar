@@ -54,8 +54,9 @@ public enum Language implements HasLabel, Localizable {
     public static Language fromISO(String str) {
         if (!StringUtils.isEmpty(str)) {
             for (Language val : Language.values()) {
-                if (val.getIso639_2().equalsIgnoreCase(str))
+                if (val.getIso639_2().equalsIgnoreCase(str)) {
                     return val;
+                }
             }
         }
         return null;
@@ -66,7 +67,7 @@ public enum Language implements HasLabel, Localizable {
      * valueOf throws RuntimeExceptions.
      */
     public static Language fromString(String string) {
-        if (string == null || "".equals(string)) {
+        if ((string == null) || "".equals(string)) {
             return null;
         }
         // try to convert incoming resource type String query parameter to ResourceType enum.. unfortunately valueOf only throws RuntimeExceptions.

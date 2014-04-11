@@ -96,7 +96,7 @@ public class UploadController extends AuthenticationAware.Base {
                 File file = uploadFile.get(i);
                 String fileName = uploadFileFileName.get(i);
                 // put upload in holding area to be retrieved later (maybe) by the informationResourceController
-                if (file != null && file.exists()) {
+                if ((file != null) && file.exists()) {
                     String contentType = "";
                     try {
                         contentType = uploadFileContentType.get(i);

@@ -1,6 +1,5 @@
-(function(TDAR, $) {
+(function (TDAR, $) {
     'use strict';
-
 
     /**
      * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes the color if mapped properly
@@ -97,7 +96,7 @@
             mapDetail.show();
         }
 
-        if(!valid) {
+        if (!valid) {
             square.addClass("invalid");
         }
 
@@ -138,12 +137,12 @@
 
         // set up ajax calls, no caching
         $.ajaxSetup({
-            cache : false
+            cache: false
         });
 
         TDAR.common.applyWatermarks(document);
 
-        $('#table_select').change(function() {
+        $('#table_select').change(function () {
             window.location = '?dataTableId=' + $(this).val();
         });
 
@@ -164,18 +163,18 @@
         pageInitialized = true;
         TDAR.datasetMetadata.updateSummaryTable();
         // clear all hidden ontology/coding sheet hidden fields to avoid polluting the controller
-        $form.submit(function() {
+        $form.submit(function () {
             $('input', $('.ontologyInfo:hidden')).val('');
             $('input', $('.codingInfo:hidden')).val('');
         });
 
-        $("#fakeSubmitButton").click(function() {
+        $("#fakeSubmitButton").click(function () {
             $("#submitButton").click();
         });
 
         var $window = $(window);
 
-        $("#chooseColumn").change(function(e) {
+        $("#chooseColumn").change(function (e) {
             TDAR.datasetMetadata.gotoColumn($(this));
         });
 
@@ -195,12 +194,13 @@
         $(".mapped_label", $summary).html($("div.datatablecolumn .columnSquare.mapped").length);
         $(".measurement_label", $summary).html($("div.datatablecolumn .columnSquare.measurement").length);
     }
+
     // expose public elements
     TDAR.datasetMetadata = {
-        "init" : _init,
-        "gotoColumn" : _gotoColumn,
-        "updateSummaryTable" : _updateSummaryTable,
-        "registerCheckboxInfo" : _registerCheckboxInfo
+        "init": _init,
+        "gotoColumn": _gotoColumn,
+        "updateSummaryTable": _updateSummaryTable,
+        "registerCheckboxInfo": _registerCheckboxInfo
     };
 
 })(TDAR, jQuery);

@@ -35,12 +35,11 @@ public enum ResourceAccessType implements HasLabel, Facetable, Localizable {
     public String getLabel() {
         return label;
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     public void setLabel(String label) {
         this.label = label;

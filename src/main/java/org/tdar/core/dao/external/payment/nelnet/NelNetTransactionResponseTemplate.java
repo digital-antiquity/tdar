@@ -153,8 +153,9 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (item == NelnetTransactionItemResponse.HASH || item == NelnetTransactionItemResponse.KEY)
+            if ((item == NelnetTransactionItemResponse.HASH) || (item == NelnetTransactionItemResponse.KEY)) {
                 continue;
+            }
             String value = getValuesFor(item);
             if (getValues().containsKey(item.getKey()) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);

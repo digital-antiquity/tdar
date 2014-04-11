@@ -16,6 +16,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 
+import com.opensymphony.xwork2.Action;
+
 public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -33,7 +35,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setFirstName("bobby");
         String result = controller.lookupPerson();
-        assertEquals("operation successful", result, LookupController.SUCCESS);
+        assertEquals("operation successful", result, Action.SUCCESS);
         List<Indexable> people = controller.getResults();
         assertEquals("person list should be empty", people.size(), 0);
     }
@@ -44,7 +46,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setLastName("B");
         controller.setMinLookupLength(0);
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertFalse("person list should have exactly 0 items", people.size() == 0);
     }
@@ -54,7 +56,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setLastName("Br");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertEquals("person list should have exactly 0 items", people.size(), 0);
     }
@@ -64,7 +66,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setEmail("test@tdar.org");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertEquals("person list should have exactly one item", people.size(), 1);
     }
@@ -76,7 +78,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         // FIXME: need more invalid input examples than just paren
         controller.setLastName("(    ");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
     }
 
@@ -86,7 +88,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setFirstName("Keit");
         controller.setRegistered("true");
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertEquals("person list should have exactly one item", 2, people.size());
     }
@@ -108,7 +110,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setEmail(email);
         controller.setInstitution(institution);
         String result = controller.lookupPerson();
-        assertEquals("result should be success", LookupController.SUCCESS, result);
+        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertTrue("person list should contain the persion created", people.contains(person));
     }
@@ -126,8 +128,6 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         }
         assertTrue("at least two people in search results", people.size() >= 2);
     }
-    
-    
 
     @Test
     @Rollback
@@ -144,27 +144,27 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
             this.log.debug("people size:" + people.size() + "value:" + people);
         }
         assertTrue("at least two people in search results", people.size() >= 2);
-        Person p1 = (Person)people.get(0);
-        Person p2 = (Person)people.get(1);
+        Person p1 = (Person) people.get(0);
+        Person p2 = (Person) people.get(1);
         assertTrue("person name is John H", p1.getProperName().startsWith(name));
         assertTrue("person name is John H", p2.getProperName().startsWith(name));
     }
 
     private void setupUsers() {
-        createUser("John","Howard","jh@asd.edu");
-        createUser("John","Anderies","msdfaderies@ads.edu");
-        createUser("Joshua","Watts","joasdftts@aas.edu");
-        createUser("Annie","Way","agwfdsfadsaf@wuasdfsad.edu");
-        createUser("John","Wade","wad@esadf.edu");
-        createUser("John","Wall","johnw@gmsadfasdfail.com");
-        createUser("John","Wallrodt","johnsdf@cladsfasdf.uc.edu");
-        createUser("John","Howard","johsfsd@uasdfsagsd.ie");
-        createUser("John","Roney","jrc@o.com");
-        createUser("John","de Bry","jry@logy.org");
+        createUser("John", "Howard", "jh@asd.edu");
+        createUser("John", "Anderies", "msdfaderies@ads.edu");
+        createUser("Joshua", "Watts", "joasdftts@aas.edu");
+        createUser("Annie", "Way", "agwfdsfadsaf@wuasdfsad.edu");
+        createUser("John", "Wade", "wad@esadf.edu");
+        createUser("John", "Wall", "johnw@gmsadfasdfail.com");
+        createUser("John", "Wallrodt", "johnsdf@cladsfasdf.uc.edu");
+        createUser("John", "Howard", "johsfsd@uasdfsagsd.ie");
+        createUser("John", "Roney", "jrc@o.com");
+        createUser("John", "de Bry", "jry@logy.org");
     }
 
     private void createUser(String string, String string2, String string3) {
-        Person person = new Person(string, string2,string3);
+        Person person = new Person(string, string2, string3);
         person.setUsername(string3);
         person.setRegistered(true);
         genericService.saveOrUpdate(person);

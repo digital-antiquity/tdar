@@ -28,8 +28,9 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.web.SessionData;
+
+import com.opensymphony.xwork2.Action;
 
 @Transactional
 public class LuceneExcelExportControllerITCase extends AbstractSearchControllerITCase {
@@ -50,12 +51,12 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
-//        currentUser = getBasicUser();
+        // currentUser = getBasicUser();
         controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
-        assertEquals(TdarActionSupport.SUCCESS, controller.viewExcelReport());
+        assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
         FileOutputStream fileOutputStream = new FileOutputStream(tempFile);

@@ -36,12 +36,11 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
  */
 @Entity
 @Immutable
-@Subselect(value="select * from information_resource_file")
+@Subselect(value = "select * from information_resource_file")
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
 
     @Column(name = "sequence_number")
     protected Integer sequenceNumber = 0;
@@ -64,7 +63,7 @@ public class InformationResourceFileProxy implements Serializable {
 
     @Id
     private Long id;
-    
+
     @Column(name = "part_of_composite")
     private Boolean partOfComposite = Boolean.FALSE;
 
@@ -75,12 +74,12 @@ public class InformationResourceFileProxy implements Serializable {
     @Column(name = "latest_version")
     private Integer latestVersion = 0;
 
-    @Column(name = "filename", length=FieldLength.FIELD_LENGTH_255)
+    @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
-    
+
     @OneToMany()
     @SortNatural
-    @JoinColumn(name="information_resource_file_id")
+    @JoinColumn(name = "information_resource_file_id")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 
     @Enumerated(EnumType.STRING)
@@ -96,7 +95,6 @@ public class InformationResourceFileProxy implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(length = FieldLength.FIELD_LENGTH_32)
     private FileStatus status;
-
 
     public FileType getInformationResourceFileType() {
         return informationResourceFileType;
@@ -144,7 +142,6 @@ public class InformationResourceFileProxy implements Serializable {
         this.restriction = restriction;
     }
 
-
     public boolean isPartOfComposite() {
         if (partOfComposite == null) {
             return false;
@@ -175,7 +172,7 @@ public class InformationResourceFileProxy implements Serializable {
         file.setFilename(getFilename());
         file.setStatus(getStatus());
         file.setDateMadePublic(getDateMadePublic());
-        
+
         for (InformationResourceFileVersionProxy prox : getInformationResourceFileVersionProxies()) {
             file.getInformationResourceFileVersions().add(prox.generateInformationResourceFileVersion());
         }

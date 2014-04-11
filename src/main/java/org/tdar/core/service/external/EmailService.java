@@ -91,6 +91,7 @@ public class EmailService {
 
     /**
      * The mailSender allows us to plug in our own SMTP server to test
+     * 
      * @return the mailSender
      */
     public MailSender getMailSender() {

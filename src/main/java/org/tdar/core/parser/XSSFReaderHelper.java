@@ -77,9 +77,8 @@ public class XSSFReaderHelper {
         } catch (IndexOutOfBoundsException aob) {
             logger.error("{}", aob);
         } catch (ParserConfigurationException e) {
-            throw new TdarRuntimeException("xssfReaderHelpher.sax_parser_broken",e);
-        }
-        finally {
+            throw new TdarRuntimeException("xssfReaderHelpher.sax_parser_broken", e);
+        } finally {
             if (sheetInputStream != null) {
                 IOUtils.closeQuietly(sheetInputStream);
             }

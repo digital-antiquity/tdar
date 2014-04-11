@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.TextProvider;
  * A centralized service used for the creation and management of PDF documents
  * 
  * @author abrin
- *
+ * 
  */
 
 @Service
@@ -68,10 +68,11 @@ public class PdfService {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public File mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException, URISyntaxException {
+    public File mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException,
+            URISyntaxException {
         try {
             InformationResource informationResource = version.getInformationResourceFile().getInformationResource();
-            if (version.getExtension().equalsIgnoreCase("PDF") && informationResource instanceof Document) {
+            if (version.getExtension().equalsIgnoreCase("PDF") && (informationResource instanceof Document)) {
                 // get the tDAR document and get the path to the template
                 Document document = (Document) version.getInformationResourceFile().getInformationResource();
                 String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
@@ -94,7 +95,7 @@ public class PdfService {
     }
 
     /**
-     * Merges the list of files in that order. 
+     * Merges the list of files in that order.
      * 
      * @param files
      * @return
@@ -124,7 +125,8 @@ public class PdfService {
      * @throws FileNotFoundException
      * @throws URISyntaxException
      */
-    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description) throws IOException, COSVisitorException, FileNotFoundException,
+    private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description) throws IOException,
+            COSVisitorException, FileNotFoundException,
             URISyntaxException {
         PDDocument doc = PDDocument.load(template);
         PDPage page = null;
@@ -152,14 +154,17 @@ public class PdfService {
                 PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.published"), document.getFormattedSourceInformation(), PdfFontHelper.HELVETICA_TWELVE_POINT,
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.published"), document.getFormattedSourceInformation(),
+                PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.document_type"), document.getDocumentType().getLabel(), PdfFontHelper.HELVETICA_TWELVE_POINT,
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.document_type"), document.getDocumentType().getLabel(),
+                PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
 
-        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.stable_url"), urlService.absoluteUrl(document), PdfFontHelper.HELVETICA_TWELVE_POINT,
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.stable_url"), urlService.absoluteUrl(document),
+                PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
 
@@ -169,21 +174,22 @@ public class PdfService {
                     LEFT_MARGIN,
                     cursorPositionFromBottom);
         }
-        
+
         String doi = document.getDoi();
         if (StringUtils.isBlank(doi)) {
             doi = document.getExternalId();
         }
 
         if (StringUtils.isNotBlank(doi)) {
-            cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT, LEFT_MARGIN, cursorPositionFromBottom);
+            cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT,
+                    LEFT_MARGIN, cursorPositionFromBottom);
 
         }
         cursorPositionFromBottom = 200;
         List<Object> byOn = new ArrayList<>();
         byOn.add(submitter.getProperName());
         byOn.add(new Date());
-        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText("pdfService.by_on",byOn),
+        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText("pdfService.by_on", byOn),
                 PdfFontHelper.HELVETICA_EIGHT_POINT,
                 LEFT_MARGIN, cursorPositionFromBottom);
 

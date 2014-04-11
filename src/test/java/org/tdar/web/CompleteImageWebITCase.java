@@ -137,7 +137,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
         logger.trace(getPageText());
         submitForm();
@@ -180,8 +180,9 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         for (String key : docValMap.keySet()) {
 
             String val = docValMap.get(key);
-            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (key.startsWith("individual") || key.startsWith("sourceC") || key.startsWith("relatedC") || key.startsWith("institution") ||
                     key.contains("authorized")) {
@@ -189,8 +190,9 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
                 continue;
             }
 
-            if (key.contains("dateType"))
+            if (key.contains("dateType")) {
                 continue;
+            }
 
             HtmlElement input = getInput(key);
             assertTrue(String.format("element: %s should be set to: %s but was", key, val, input.asText()), checkInput(key, val));

@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -77,19 +77,19 @@ public class ResourceService extends GenericService {
     @Autowired
     private GeoSearchService geoSearchService;
 
-    
-    @Transactional(readOnly=true)
-    public List<Resource> findSkeletonsForSearch(Long ... ids) {
+    @Transactional(readOnly = true)
+    public List<Resource> findSkeletonsForSearch(Long... ids) {
         return datasetDao.findSkeletonsForSearch(ids);
     }
 
-    @Transactional(readOnly=true)
-    public List<Resource> findOld(Long ... ids) {
+    @Transactional(readOnly = true)
+    public List<Resource> findOld(Long... ids) {
         return datasetDao.findOld(ids);
     }
 
     /**
      * Find all @Link Resource Ids submitted by @link Person
+     * 
      * @param person
      * @return
      */
@@ -100,20 +100,22 @@ public class ResourceService extends GenericService {
 
     /**
      * Find @link Resource by Id only.
+     * 
      * @param id
      * @return
      */
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <R extends Resource> R find(Long id) {
-        if (id == null)
+        if (id == null) {
             return null;
+        }
         ResourceType rt = datasetDao.findResourceType(id);
         logger.trace("finding resource " + id + " type:" + rt);
         if (rt == null) {
             return null;
         }
-        return (R)datasetDao.find(rt.getResourceClass(), id);
+        return (R) datasetDao.find(rt.getResourceClass(), id);
     }
 
     /**
@@ -133,9 +135,9 @@ public class ResourceService extends GenericService {
         return datasetDao.findRecentlyUpdatedItemsInLastXDays(days);
     }
 
-
     /**
      * Adds a @link ResourceRevisionLog entry for the resource based on the message.
+     * 
      * @param <T>
      * @param modifiedResource
      * @param message
@@ -146,9 +148,9 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
-
     /**
      * Adds a @link ResourceRevisionLog entry for the resource based on the message.
+     * 
      * @param <T>
      * @param modifiedResource
      * @param message
@@ -165,9 +167,9 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
-
     /**
      * Lists all tDAR @link Status entries.
+     * 
      * @return
      */
     public List<Status> findAllStatuses() {
@@ -189,6 +191,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Updates the transient access count entry on @link Resource
+     * 
      * @param resource
      */
     @Transactional(readOnly = true)
@@ -198,6 +201,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Provides a count of the total number of active resources.
+     * 
      * @param type
      * @return
      */
@@ -208,6 +212,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Provides a count of the total number of active resources with files.
+     * 
      * @param type
      * @return
      */
@@ -229,7 +234,7 @@ public class ResourceService extends GenericService {
 
     /**
      * For a given @link Resource and set of @link LatitudeLogitudeBox entries, pass the LatitudeLogitudeBoxes to the @link GeographicSearchService to generate
-     * GeographicKeyword entries from the LatitudeLogitudeBox. The implementation will clear the old keywords when creating the new ones.  It will use Shapefiles 
+     * GeographicKeyword entries from the LatitudeLogitudeBox. The implementation will clear the old keywords when creating the new ones. It will use Shapefiles
      * and the tdar_gis database (tdar.support repo) to look up where the LatitudeLogitudeBox is.
      * 
      * @param resource
@@ -280,7 +285,7 @@ public class ResourceService extends GenericService {
         Collection<H> incoming = incoming_;
         // there are cases where current and incoming_ are the same object, if that's the case
         // then we need to copy incoming_ before
-        if (incoming_ == current && !CollectionUtils.isEmpty(incoming_)) {
+        if ((incoming_ == current) && !CollectionUtils.isEmpty(incoming_)) {
             incoming = new ArrayList<H>();
             incoming.addAll(incoming_);
             current.clear();
@@ -378,6 +383,7 @@ public class ResourceService extends GenericService {
 
     /**
      * For a given @link ResourceType and @link Status provide a count of @link Resource entries.
+     * 
      * @param resourceType
      * @param status
      * @return
@@ -388,6 +394,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * 
      * @param proxy
      * @param resourceClass
      * @return
@@ -396,8 +403,10 @@ public class ResourceService extends GenericService {
     public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
         return createResourceFrom(proxy, resourceClass, true);
     }
+
     /**
      * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * 
      * @param proxy
      * @param resourceClass
      * @return
@@ -464,7 +473,7 @@ public class ResourceService extends GenericService {
             cloneSet(resource, resource.getRelatedComparativeCollections(), proxy.getRelatedComparativeCollections());
             cloneSet(resource, resource.getSourceCollections(), proxy.getSourceCollections());
 
-            if (resource instanceof InformationResource && proxy instanceof InformationResource) {
+            if ((resource instanceof InformationResource) && (proxy instanceof InformationResource)) {
                 InformationResource proxyInformationResource = (InformationResource) proxy;
                 InformationResource informationResource = (InformationResource) resource;
                 informationResource.setDate(proxyInformationResource.getDate());
@@ -507,6 +516,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Given a Set of objects that support @link HasResource, clone the bean and attach it to the new Set
+     * 
      * @param resource
      * @param targetCollection
      * @param sourceCollection
@@ -548,6 +558,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Find the count of views for all resources for a given date range, limited by the minimum occurrence count.
+     * 
      * @param granularity
      * @param start
      * @param end
@@ -561,6 +572,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Find the count of downloads for all InformationResourceFiles for a given date range, limited by the minimum occurrence count.
+     * 
      * @param granularity
      * @param start
      * @param end
@@ -579,6 +591,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
+     * 
      * @param granularity
      * @param start
      * @param end
@@ -593,6 +606,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Find the count of views for the specified resources for a given date range, limited by the minimum occurrence count.
+     * 
      * @param granularity
      * @param start
      * @param end
@@ -607,18 +621,21 @@ public class ResourceService extends GenericService {
 
     /**
      * Return all resource revision log entries for a specified @link Resource.
+     * 
      * @param resource
      * @return
      */
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
-        if (Persistable.Base.isNullOrTransient(resource))
+        if (Persistable.Base.isNullOrTransient(resource)) {
             return Collections.emptyList();
+        }
         return datasetDao.getLogEntriesForResource(resource);
     }
 
     /**
      * Find all ids of @link InformationResource entries that actually have files.
+     * 
      * @return
      */
     @Transactional
@@ -628,6 +645,7 @@ public class ResourceService extends GenericService {
 
     /**
      * Find all @link ResourceType entries that are active within the system (as opposed to exist).
+     * 
      * @return
      */
     public List<ResourceType> getAllResourceTypes() {
@@ -646,7 +664,7 @@ public class ResourceService extends GenericService {
     @Transactional
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         return datasetDao.findAllResourcesWithPublicImagesForSitemap(gisg);
-        
+
     }
 
     @Transactional

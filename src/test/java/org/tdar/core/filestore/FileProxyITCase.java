@@ -32,6 +32,8 @@ import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.Action;
+
 /**
  * @author Adam Brin
  * 
@@ -56,7 +58,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -90,7 +92,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);

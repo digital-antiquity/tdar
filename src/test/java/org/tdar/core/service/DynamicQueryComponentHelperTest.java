@@ -30,8 +30,9 @@ public class DynamicQueryComponentHelperTest {
     public void testMultiChildFieldAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("resourceCreators.creator.name"))
+            if (dqc.getLabel().equalsIgnoreCase("resourceCreators.creator.name")) {
                 found = true;
+            }
             logger.trace(dqc.getLabel());
         }
         assertTrue("Child @Field annotation not found on: creatorPersons.person.institution.acronym", found);
@@ -41,8 +42,9 @@ public class DynamicQueryComponentHelperTest {
     public void testEnumAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase(QueryFieldNames.INTEGRATABLE))
+            if (dqc.getLabel().equalsIgnoreCase(QueryFieldNames.INTEGRATABLE)) {
                 found = true;
+            }
             if (dqc.getLabel().toLowerCase().endsWith("etype") || dqc.getLabel().toLowerCase().contains("status") || dqc.getLabel().contains("integratable")) {
                 Assert.assertNotNull(dqc.getAnalyzer());
             }
@@ -55,10 +57,12 @@ public class DynamicQueryComponentHelperTest {
         boolean found = false;
         boolean found2 = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("resourceProviderInstitution.name_auto"))
+            if (dqc.getLabel().equalsIgnoreCase("resourceProviderInstitution.name_auto")) {
                 found = true;
-            if (dqc.getLabel().equalsIgnoreCase("resourceProviderInstitution.name"))
+            }
+            if (dqc.getLabel().equalsIgnoreCase("resourceProviderInstitution.name")) {
                 found2 = true;
+            }
         }
         assertTrue("Child @Field annotation not found on: resourceProviderInstitution.name_auto", found);
         assertTrue("Child @Field annotation not found on: resourceProviderInstitution.name", found2);
@@ -68,8 +72,9 @@ public class DynamicQueryComponentHelperTest {
     public void testSimpleChildFieldAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("activeCoverageDates.startDate"))
+            if (dqc.getLabel().equalsIgnoreCase("activeCoverageDates.startDate")) {
                 found = true;
+            }
         }
         assertTrue("Child @Field annotation not found on: CoverageDate.startDate", found);
     }
@@ -78,8 +83,9 @@ public class DynamicQueryComponentHelperTest {
     public void testEmbeddedChildMethodAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("activeOtherKeywords.label"))
+            if (dqc.getLabel().equalsIgnoreCase("activeOtherKeywords.label")) {
                 found = true;
+            }
         }
         assertTrue("Child @Field annotation not found on: activeOtherKeywords.label", found);
     }
@@ -90,8 +96,9 @@ public class DynamicQueryComponentHelperTest {
         HashSet<DynamicQueryComponent> createFields2 = DynamicQueryComponentHelper.createFields(Project.class, "");
         for (DynamicQueryComponent dqc : createFields2) {
             logger.trace(dqc.getLabel() + "{}" + dqc.getParent());
-            if (dqc.getLabel().contains("informationResources.activeOtherKeywords.label"))
+            if (dqc.getLabel().contains("informationResources.activeOtherKeywords.label")) {
                 found = true;
+            }
         }
         assertTrue("Child @Field annotation not found on: activeOtherKeywords.label", found);
     }
@@ -100,8 +107,9 @@ public class DynamicQueryComponentHelperTest {
     public void testIdAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("updatedBy.id"))
+            if (dqc.getLabel().equalsIgnoreCase("updatedBy.id")) {
                 found = true;
+            }
         }
         assertTrue("@Id annotation not found on: updatedBy.id", found);
     }
@@ -110,8 +118,9 @@ public class DynamicQueryComponentHelperTest {
     public void testSimpleFieldAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("id"))
+            if (dqc.getLabel().equalsIgnoreCase("id")) {
                 found = true;
+            }
         }
         assertTrue("@Field annotation not found on: id", found);
     }
@@ -120,8 +129,9 @@ public class DynamicQueryComponentHelperTest {
     public void testSimpleMethodAnnotation() {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
-            if (dqc.getLabel().equalsIgnoreCase("dateCreated"))
+            if (dqc.getLabel().equalsIgnoreCase("dateCreated")) {
                 found = true;
+            }
         }
         assertTrue("@Field annotation not found on: dateCreated", found);
     }

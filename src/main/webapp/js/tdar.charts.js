@@ -2,7 +2,7 @@
  * additional chart and graph support
  */
 
-(function($, TDAR){
+(function ($, TDAR) {
     "use strict";
 
     var _defaults = {
@@ -20,13 +20,15 @@
      * @returns {*} jqplot series - array of [x, y] arrays.
      * @private
      */
-    var _toSeries = function(data, colx, coly) {
-        var tdata = $.map(data, function(val){
+    var _toSeries = function (data, colx, coly) {
+        var tdata = $.map(data, function (val) {
             var xval = typeof colx === "function" ? colx(val) : val[colx];
             var yval = typeof coly === "function" ? coly(val) : val[coly];
 
             //this double-walled array is intentional: jqplot expects 2d array but $.map 'unrolls' nested array.
-            return [[xval, yval]];
+            return [
+                [xval, yval]
+            ];
         });
         return tdata;
     }
@@ -38,7 +40,9 @@
      * @returns {number}
      * @private
      */
-    var _datesort = function(a,b) {return a[0] - b[0]};
+    var _datesort = function (a, b) {
+        return a[0] - b[0]
+    };
 
     TDAR.charts = {
 
@@ -46,7 +50,7 @@
          * Generate admin usage stats graph
          * @param options
          */
-        adminUsageStats: function(options) {
+        adminUsageStats: function (options) {
             var opts = $.extend({}, _defaults, options);
             var $chart = $("#" + opts.id);
             var chartOpts = {
@@ -56,7 +60,7 @@
             $.extend(opts, chartOpts);
             var seriesList = [];
             var seriesLabels = [];
-            var getxval = function(val) {
+            var getxval = function (val) {
                 return new Date(val["date"]);
             };
 
@@ -67,9 +71,7 @@
 
             seriesList.push(viewseries);
             for (var key in opts.rawData.download) {
-                var dldata = opts.rawData.download[key],
-                    filename = key,
-                    dlseries = _toSeries(dldata, getxval, "count");
+                var dldata = opts.rawData.download[key], filename = key, dlseries = _toSeries(dldata, getxval, "count");
 
                 dlseries.sort(_datesort);
                 seriesList.push(dlseries);
@@ -78,7 +80,7 @@
 
             var plot1 = $.jqplot(opts.id, seriesList, {
                 //FIXME: TDAR.colors should be driven by tdar theme file.
-                seriesColors: TDAR.colors || ["#EBD790","#4B514D","#2C4D56","#C3AA72","#DC7612","#BD3200","#A09D5B","#F6D86B","#660000","#909D5B"],
+                seriesColors: TDAR.colors || ["#EBD790", "#4B514D", "#2C4D56", "#C3AA72", "#DC7612", "#BD3200", "#A09D5B", "#F6D86B", "#660000", "#909D5B"],
                 title: opts.title,
                 //stackSeries: true,  //jtd: i think stacked looks better, especially when several files involved
                 axes: {
@@ -93,9 +95,9 @@
                 },
                 series: seriesLabels,
                 animate: !$.jqplot.use_excanvas,
-                seriesDefaults:{
-                    renderer:$.jqplot.BarRenderer,
-                    pointLabels: { 
+                seriesDefaults: {
+                    renderer: $.jqplot.BarRenderer,
+                    pointLabels: {
                         show: true,
                         location: 'n',
                         edgeTolerance: -35
@@ -117,11 +119,11 @@
                     drawBorder: false,
                     shadow: false,
                     gridLineColor: 'none',
-                    borderWidth:0,
+                    borderWidth: 0,
                     gridLineWidth: 0,
-                    drawGridlines:false
-              }
-                
+                    drawGridlines: false
+                }
+
             });
         },
 
@@ -130,10 +132,9 @@
          * @param size number of colors in palette
          * @param bgcolor in '#rrggbb' format
          */
-        generateSeriesColors: function(size, bgcolor) {
+        generateSeriesColors: function (size, bgcolor) {
             //TODO: all the awesome stuff that the docs say it does
         }
     }
-
 
 })(jQuery, TDAR);

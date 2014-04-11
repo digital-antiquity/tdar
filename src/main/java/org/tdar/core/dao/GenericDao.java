@@ -16,6 +16,7 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
@@ -60,15 +61,16 @@ public class GenericDao {
 
     public <T> T find(Class<T> cls, Long id) {
         // FIXME: push guard checks into Service layer.
-        if (id == null)
+        if (id == null) {
             return null;
+        }
         Object objectInSession = getCurrentSession().get(cls, id);
         logger.trace("{}", objectInSession);
         T obj = cls.cast(objectInSession);
         logger.trace("object: {}", obj);
         return obj;
     }
-    
+
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<T> ret = findAll(class1, ids);
@@ -150,7 +152,7 @@ public class GenericDao {
             executableCriteria.setMaxResults(numberOfRecords);
             executableCriteria.setFirstResult(start);
         }
-        return (List<T>) executableCriteria.list();
+        return executableCriteria.list();
     }
 
     public <P extends Persistable> List<P> loadFromSparseEntities(Collection<P> incoming, Class<P> cls) {
@@ -159,8 +161,9 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <P extends Persistable> List<P> populateSparseObjectsById(Collection<Long> ids, Class<?> cls) {
-        if (CollectionUtils.isEmpty(ids))
+        if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
+        }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
         if (cls.isAssignableFrom(ResourceCollection.class)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP);
@@ -187,7 +190,7 @@ public class GenericDao {
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
-        return (List<T>) query.list();
+        return query.list();
     }
 
     public <T> List<T> findAllSorted(Class<T> cls) {
@@ -225,7 +228,7 @@ public class GenericDao {
     }
 
     protected String addWildCards(String value) {
-        if (value.charAt(0) == '%' || value.charAt(value.length() - 1) == '%') {
+        if ((value.charAt(0) == '%') || (value.charAt(value.length() - 1) == '%')) {
             // no-op if any wildcards are already present.
             return value;
         }
@@ -323,11 +326,11 @@ public class GenericDao {
     }
 
     protected <T> DetachedCriteria getDetachedCriteria(Class<T> persistentClass) {
-        return DetachedCriteria.forClass(persistentClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return DetachedCriteria.forClass(persistentClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     protected <T> Criteria getCriteria(Class<T> persistentClass) {
-        return getCurrentSession().createCriteria(persistentClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return getCurrentSession().createCriteria(persistentClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     public <T> void save(Collection<T> persistentEntities) {
@@ -342,21 +345,21 @@ public class GenericDao {
         }
     }
 
-    public<T> void persist(T entity) {
+    public <T> void persist(T entity) {
         getCurrentSession().persist(entity);
     }
 
-    public<T> void save(T entity) {
+    public <T> void save(T entity) {
         Session session = getCurrentSession();
         session.save(entity);
     }
 
-    public<T> void saveOrUpdate(T entity) {
+    public <T> void saveOrUpdate(T entity) {
         Session session = getCurrentSession();
         session.saveOrUpdate(entity);
     }
 
-    public<T> void update(T entity) {
+    public <T> void update(T entity) {
         Session session = getCurrentSession();
         session.update(entity);
     }
@@ -384,9 +387,9 @@ public class GenericDao {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
             return;
-        } 
-        
-        if (entity  instanceof InformationResourceFileVersion) {
+        }
+
+        if (entity instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
                 throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
             }
@@ -400,19 +403,19 @@ public class GenericDao {
         session.delete(entity);
     }
 
-    public<T> void detachFromSession(T entity) {
+    public <T> void detachFromSession(T entity) {
         Session session = getCurrentSession();
         session.evict(entity);
     }
 
-    public<T> void detachFromSession(Collection<T> entities) {
+    public <T> void detachFromSession(Collection<T> entities) {
         Session session = getCurrentSession();
         for (T entity : entities) {
             session.evict(entity);
         }
     }
 
-    public<T> void detachFromSessionAndWarn(T entity) {
+    public <T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
         if (session.contains(entity)) {
             logger.error("This entity should not be on the session: {}", entity);
@@ -519,11 +522,11 @@ public class GenericDao {
         }
         return obj;
     }
-    
+
     public <T> T markWritable(T obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
-            if (obj instanceof Persistable && Persistable.Base.isNotTransient((Persistable) obj)) {
+            if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);

@@ -37,6 +37,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
 
     /*
      * (non-Javadoc)
+     * 
      * @see org.springframework.jdbc.core.ResultSetExtractor#extractData(java.sql.ResultSet)
      */
     @Override
@@ -49,7 +50,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
             }
 
-            if (rowNum > start && rowNum <= start + page) {
+            if ((rowNum > start) && (rowNum <= (start + page))) {
                 ArrayList<String> values = new ArrayList<String>();
                 for (DataTableColumn col : wrapper.getFields()) {
                     if (col.isVisible() || (returnRowId && TargetDatabase.TDAR_ID_COLUMN.equals(col.getName()))) {
@@ -66,7 +67,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
         }
         return results;
     }
-    
+
     /*
      * Should the tdar_id row be included or not
      */

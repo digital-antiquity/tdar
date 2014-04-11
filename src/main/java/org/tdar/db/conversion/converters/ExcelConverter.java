@@ -123,7 +123,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             }
             numberOfActualSheets++;
             try {
-                if (numberOfActualSheets == 1 && sheetName.equals(DEFAULT_SHEET_NAME)) {
+                if ((numberOfActualSheets == 1) && sheetName.equals(DEFAULT_SHEET_NAME)) {
                     sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getTransientFile().getName());
                 }
                 processSheet(currentSheet, sheetName);
@@ -185,7 +185,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         }
         generateDataTableColumns(columnNamesRow, dataTable);
 
-        if (dataTable.getDataTableColumns() == null || dataTable.getDataTableColumns().isEmpty()) {
+        if ((dataTable.getDataTableColumns() == null) || dataTable.getDataTableColumns().isEmpty()) {
             logger.info(sheetName + " appears to be empty or have non-tabular data, skipping data table");
             dataTables.remove(dataTable);
         }
@@ -211,11 +211,13 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         for (int rowIndex = startRow; rowIndex <= endRow; ++rowIndex) {
             Row currentRow = currentSheet.getRow(rowIndex);
-            if (currentRow == null)
+            if (currentRow == null) {
                 continue;
+            }
 
-            if (currentRow.getFirstCellNum() < 0)
+            if (currentRow.getFirstCellNum() < 0) {
                 continue;
+            }
 
             sheetEvalator.evaluateForBlankCells(currentRow, startColumnIndex);
 

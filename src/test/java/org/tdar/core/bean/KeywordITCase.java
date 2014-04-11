@@ -102,8 +102,10 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     private <K extends Keyword> void testKeywordStats(List<Pair<K, Integer>> stats) {
         assertFalse(CollectionUtils.isEmpty(stats));
         if (stats.get(0).getFirst() instanceof HierarchicalKeyword)
+        {
             return; // for heirarchical keywords we sort by index then by count
-        for (int i = 0; i < stats.size() - 2; i++) {
+        }
+        for (int i = 0; i < (stats.size() - 2); i++) {
             int currentCount = stats.get(i).getSecond();
             int nextCount = stats.get(i + 1).getSecond();
             String msg = String.format("keywordcount for '%s(%s)' should be less than '%s(%s)'", stats.get(i).getFirst(), currentCount, stats.get(i + 1)

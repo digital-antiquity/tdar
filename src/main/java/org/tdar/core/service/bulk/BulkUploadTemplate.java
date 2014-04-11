@@ -31,7 +31,7 @@ import org.tdar.core.service.excel.CellFormat;
  * Create an Excel Template for use by the @link BulkUploadService
  * 
  * @author abrin
- *
+ * 
  */
 public class BulkUploadTemplate implements Serializable {
 
@@ -47,7 +47,7 @@ public class BulkUploadTemplate implements Serializable {
 
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     /**
      * Initialize with the @link ExcelService
      * 
@@ -119,7 +119,7 @@ public class BulkUploadTemplate implements Serializable {
 
             row.createCell(i).setCellValue(field.getOutputName());
             CellStyle style = defaultStyle;
-            if (field.getMappedClass() != null && field.getMappedClass().equals(Document.class)) {
+            if ((field.getMappedClass() != null) && field.getMappedClass().equals(Document.class)) {
                 style = headerStyle2;
             } else if (field.isRequired()) {
                 style = requiredStyle;
@@ -173,8 +173,9 @@ public class BulkUploadTemplate implements Serializable {
 
         i = 0;
         for (CellMetadata field : enumFields) {
-            if (field.getName().equals("ResourceCreatorInstitution.role"))
+            if (field.getName().equals("ResourceCreatorInstitution.role")) {
                 continue;
+            }
             addReferenceColumn(referenceSheet, field.getEnumList().toArray(new Enum[0]), field.getDisplayName() + " Values:", summaryStyle, i);
             i++;
         }
@@ -192,6 +193,7 @@ public class BulkUploadTemplate implements Serializable {
 
     /**
      * Add a column with a list of definited Enum Values
+     * 
      * @param wb
      * @param labels
      * @param header

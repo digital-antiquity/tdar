@@ -266,7 +266,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * Ideally, this should be a stand alone class with most, if not all, data stored on the LDAP server.
      */
     public class PersonLdapDao {
-        
+
         private static final String CLASS_PERSON = "inetOrgPerson";
         private static final String CLASS_GROUP = "posixgroup";
         private static final String ATTR_MEMBER = "memberuid";

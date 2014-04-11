@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -27,7 +28,6 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -59,6 +59,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Find the account (if exists) associated with the invoice
+     * 
      * @param invoice
      * @return
      */
@@ -68,6 +69,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Find all accounts for user: return accounts that are active and have not met their quota
+     * 
      * @param user
      * @param statuses
      * @return
@@ -81,6 +83,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Find all accounts for user: return accounts that are active and have not met their quota
+     * 
      * @param user
      * @return
      */
@@ -93,6 +96,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
+     * 
      * @return
      */
     public List<BillingActivity> getActiveBillingActivities() {
@@ -118,9 +122,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
         BillingActivityModel latest = null;
         for (BillingActivityModel model : findAll) {
-            if (!model.getActive())
+            if (!model.getActive()) {
                 continue;
-            if (latest == null || latest.getVersion() == null || model.getVersion() > latest.getVersion()) {
+            }
+            if ((latest == null) || (latest.getVersion() == null) || (model.getVersion() > latest.getVersion())) {
                 latest = model;
             }
         }
@@ -129,6 +134,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Get a pre-configured @link ResourceEvaluator with the specified array of @link Resource entries.
+     * 
      * @param resources
      * @return
      */
@@ -138,6 +144,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Get a pre-configured @link ResourceEvaluator with the specified collection of @link Resource entries.
+     * 
      * @param resources
      * @return
      */
@@ -147,6 +154,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Get the @link AccountGroup referenced by the @link Account
+     * 
      * @param account
      * @return
      */
@@ -156,6 +164,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Check that an @link Invoice can be assigned to an @link Account based on the permissions of who transacted the Invoice
+     * 
      * @param find
      * @param account
      * @return
@@ -197,7 +206,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
             logger.info("unassigned invoices: {} ", unassignedInvoices);
             if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-                if (CollectionUtils.isNotEmpty(accounts) && accounts.size() == 1) {
+                if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
                     account = accounts.iterator().next();
                 } else {
                     account = new Account();
@@ -218,6 +227,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Marks a @link Resource @link Status to be FLAGGED_ACCOUNT_BALANCE
+     * 
      * @param resources
      */
     @Transactional
@@ -232,13 +242,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Set the @link Resource back to whatever the resource.getPreviousStatus() was set to; set to Status.ACTIVE if NULL.
+     * 
      * @param resources
      */
     @Transactional
     protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
-            if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)
+            if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
                 continue;
+            }
             Status status = resource.getPreviousStatus();
             if (status == null) {
                 status = Status.ACTIVE;
@@ -249,6 +261,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Update quota for account based on an array of @link Resource entries
+     * 
      * @param account
      * @param resources
      * @return
@@ -260,6 +273,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Refresh the account info for an @link Account
+     * 
      * @param account
      */
     @Transactional
@@ -279,7 +293,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param resourcesToEvaluate
      * @return
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
@@ -325,7 +339,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
             for (Coupon coupon : account.getCoupons()) {
                 account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
-                account.setSpaceUsedInBytes(coupon.getNumberOfMb() * Coupon.ONE_MB + account.getSpaceUsedInBytes());
+                account.setSpaceUsedInBytes((coupon.getNumberOfMb() * Persistable.ONE_MB) + account.getSpaceUsedInBytes());
             }
 
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
@@ -364,6 +378,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Log out the account info and the identified change
+     * 
      * @param account
      * @param helper
      */
@@ -377,6 +392,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Update a Collection of @link Resource entries to use the specified @link Account and keep track using the @link AccountEvaluationHelper
+     * 
      * @param account
      * @param resourcesToEvaluate
      * @param helper
@@ -387,12 +403,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         // Account localAccount = account;
         Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
-//        for (Resource r : account.getResources()) {
-//            for (ResourceCollection rc : r.getResourceCollections()) {
-//                rc.setUpdater(getDao().merge(rc.getUpdater()));
-//                rc.setOwner(getDao().merge(rc.getOwner()));
-//            }
-//        }
+        // for (Resource r : account.getResources()) {
+        // for (ResourceCollection rc : r.getResourceCollections()) {
+        // rc.setUpdater(getDao().merge(rc.getUpdater()));
+        // rc.setOwner(getDao().merge(rc.getOwner()));
+        // }
+        // }
         getDao().merge(account);
 
         for (Resource resource : resourcesToEvaluate) {
@@ -429,6 +445,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Once the @link Account has been reconcilled, update all of the @link Status entires for each @link Resource and report back
+     * 
      * @param helper
      * @param status
      * @return
@@ -449,7 +466,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Process through all @link Resource entries chronologically and identify items that should be marked as Status.FLAGGED_FOR_BILLING 
+     * Process through all @link Resource entries chronologically and identify items that should be marked as Status.FLAGGED_FOR_BILLING
+     * 
      * @param helper
      * @param resourcesToEvaluate
      */
@@ -496,7 +514,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * Update the account files and space settings. Based on Mode. Mode for a full re-evaulation of the account will be
      * ADD whereby the total space used is evaluated. Otherwise, in UPDATE, the differential change between last save and
      * current is used.
-     *
+     * 
      * @param resource
      * @param helper
      * @param mode
@@ -519,6 +537,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Check that an @link Account has space for the @link Resource using the metadata in @link AccountEvaluationHelper
+     * 
      * @param resource
      * @param helper
      * @param mode
@@ -532,7 +551,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             space = resource.getSpaceInBytesUsed();
         }
 
-        if (files == 0 && space == 0) {
+        if ((files == 0) && (space == 0)) {
             return true;
         }
         if (!resource.isCountedInBillingEvaluation()) {
@@ -540,14 +559,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return true;
         }
         logger.trace("mode: {}", mode);
-        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() , space, files, resource.getId(), resource.getStatus()};
+        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles(), space,
+                files, resource.getId(), resource.getStatus() };
         logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
-        if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
+        if (helper.getModel().getCountingSpace() && ((helper.getAvailableSpaceInBytes() - space) < 0)) {
             logger.debug("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
             return false;
         }
-        if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
+        if (helper.getModel().getCountingFiles() && ((helper.getAvailableNumberOfFiles() - files) < 0)) {
             logger.trace("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
             return false;
         }
@@ -572,13 +592,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public void updateTransientAccountInfo(Resource resource) {
         // TODO: add hql/sql for account lookup by resource
-        if (resource == null)
+        if (resource == null) {
             return;
+        }
         updateTransientAccountInfo(Arrays.asList(resource));
     }
 
     /**
      * Iterate through all active @link BillingActivity entries and find the first that is only MB.
+     * 
      * @return
      */
     public BillingActivity getSpaceActivity() {
@@ -586,9 +608,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             if (activity.getActivityType() == BillingActivityType.TEST) {
                 continue;
             }
-            if ((activity.getNumberOfFiles() == null || activity.getNumberOfFiles() == 0)
-                    && (activity.getNumberOfResources() == null || activity.getNumberOfResources() == 0) && activity.getNumberOfMb() != null
-                    && activity.getNumberOfMb() > 0) {
+            if (((activity.getNumberOfFiles() == null) || (activity.getNumberOfFiles() == 0))
+                    && ((activity.getNumberOfResources() == null) || (activity.getNumberOfResources() == 0)) && (activity.getNumberOfMb() != null)
+                    && (activity.getNumberOfMb() > 0)) {
                 return activity;
             }
         }
@@ -614,7 +636,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             numMb = numMb_;
         }
 
-        if (numFiles == 0 && numMb == 0) {
+        if ((numFiles == 0) && (numMb == 0)) {
             return null;
         }
 
@@ -627,15 +649,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         for (BillingActivity activity : getActiveBillingActivities()) {
             int calculatedNumberOfFiles = numFiles.intValue(); // Don't use test activities or activities that are Just about MB
-            if (activity.getActivityType() == BillingActivityType.TEST || !activity.supportsFileLimit()) {
+            if ((activity.getActivityType() == BillingActivityType.TEST) || !activity.supportsFileLimit()) {
                 continue;
             }
             logger.trace("n:{} min:{}", numFiles, activity.getMinAllowedNumberOfFiles());
-            if (exact && numFiles < activity.getMinAllowedNumberOfFiles())
+            if (exact && (numFiles < activity.getMinAllowedNumberOfFiles())) {
                 continue;
+            }
 
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
-            if (!exact && activity.getMinAllowedNumberOfFiles() >= numFiles) {
+            if (!exact && (activity.getMinAllowedNumberOfFiles() >= numFiles)) {
                 calculatedNumberOfFiles = activity.getMinAllowedNumberOfFiles().intValue();
             }
 
@@ -672,7 +695,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("space act: {} ", getSpaceActivity());
         calculateSpaceActivity(option, spaceActivity, spaceNeeded);
 
-        if (option.getTotalMb() < numMb || option.getTotalFiles() < numFiles) {
+        if ((option.getTotalMb() < numMb) || (option.getTotalFiles() < numFiles)) {
             return null;
         }
 
@@ -688,8 +711,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
         BillingItem extraSpace;
-        if (spaceNeeded > 0 && spaceActivity != null) {
-            int qty = (int) Account.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
+        if ((spaceNeeded > 0) && (spaceActivity != null)) {
+            int qty = (int) Base.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
             extraSpace = new BillingItem(spaceActivity, qty);
             option.getItems().add(extraSpace);
         }
@@ -712,14 +735,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             spaceInMb = spaceInMb_;
         }
 
-        if (numFiles.longValue() == 0L && spaceInMb.longValue() == 0L) {
+        if ((numFiles.longValue() == 0L) && (spaceInMb.longValue() == 0L)) {
             return null;
         }
 
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         BillingActivity spaceActivity = getSpaceActivity();
-        if (spaceActivity != null && (numFiles == null || numFiles.intValue() == 0)) {
+        if ((spaceActivity != null) && ((numFiles == null) || (numFiles.intValue() == 0))) {
             calculateSpaceActivity(option, spaceActivity, spaceInMb);
             return option;
         }
@@ -730,17 +753,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
 
             if (activity.supportsFileLimit()) {
-                Long total = Account.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
+                Long total = Base.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
                 Long minAllowedNumberOfFiles = activity.getMinAllowedNumberOfFiles();
                 if (minAllowedNumberOfFiles == null) {
                     minAllowedNumberOfFiles = 0L;
                 }
 
-                if (total * activity.getNumberOfFiles() < minAllowedNumberOfFiles) {
+                if ((total * activity.getNumberOfFiles()) < minAllowedNumberOfFiles) {
                     total = minAllowedNumberOfFiles;
                 }
 
-                if (total < numFiles / activity.getNumberOfFiles()) {
+                if (total < (numFiles / activity.getNumberOfFiles())) {
                     total = numFiles;
                 }
                 items.add(new BillingItem(activity, total.intValue()));
@@ -755,7 +778,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         option.getItems().add(lowest);
-        if (option == null || option.getTotalMb() < spaceInMb || option.getTotalFiles() < numFiles) {
+        if ((option == null) || (option.getTotalMb() < spaceInMb) || (option.getTotalFiles() < numFiles)) {
             return null;
         }
 
@@ -779,7 +802,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (lowestByMB != null) {
             logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
         }
-        if (lowestByMB == null || (lowestByFiles != null && lowestByFiles.getSubtotal() < lowestByMB.getSubtotal())) {
+        if ((lowestByMB == null) || ((lowestByFiles != null) && (lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()))) {
             return lowestByFiles;
         }
         return lowestByMB;
@@ -806,6 +829,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Confirm that @link Coupon can be used (Not assigned, not expired)
+     * 
      * @param coupon
      * @param invoice
      */
@@ -816,6 +840,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Apply a @link Coupon to a @link Invoice
+     * 
      * @param persistable
      * @param user
      * @param code
@@ -842,16 +867,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         invoice.setCoupon(coupon);
         coupon.setUser(user);
         coupon.setDateRedeemed(new Date());
-        
+
         Long files = invoice.getNumberOfFiles();
         Long mb = invoice.getNumberOfMb();
-        if (files == null || coupon.getNumberOfFiles() > files.longValue()) {
+        if ((files == null) || (coupon.getNumberOfFiles() > files.longValue())) {
             invoice.setNumberOfFiles(coupon.getNumberOfFiles());
         }
-        if (mb == null || coupon.getNumberOfMb() > mb.longValue()) {
+        if ((mb == null) || (coupon.getNumberOfMb() > mb.longValue())) {
             invoice.setNumberOfMb(coupon.getNumberOfMb());
         }
-        
+
         getDao().saveOrUpdate(coupon);
     }
 
@@ -872,6 +897,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Based on an @link Account and criteria, generate a @link Coupon
+     * 
      * @param account
      * @param numberOfFiles
      * @param numberOfMb
@@ -889,15 +915,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (Persistable.Base.isNotNullOrTransient(numberOfMb)) {
             coupon.setNumberOfMb(numberOfMb);
         }
-        if (coupon.getNumberOfFiles() > 0L && coupon.getNumberOfMb() > 0L) {
+        if ((coupon.getNumberOfFiles() > 0L) && (coupon.getNumberOfMb() > 0L)) {
             throw new TdarRecoverableRuntimeException("accountService.specify_either_space_or_files");
         }
 
-        if ((Persistable.Base.isNullOrTransient(numberOfFiles) || numberOfFiles < 1) && (Persistable.Base.isNullOrTransient(numberOfMb) || numberOfMb < 1)) {
+        if ((Persistable.Base.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1)) && (Persistable.Base.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
             throw new TdarRecoverableRuntimeException("accountService.cannot_generate_a_coupon_for_nothing");
         }
 
-        if (account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles() || account.getAvailableSpaceInMb() < coupon.getNumberOfMb()) {
+        if ((account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles()) || (account.getAvailableSpaceInMb() < coupon.getNumberOfMb())) {
             logger.trace("{}", account.getTotalNumberOfFiles());
             logger.debug("{} < {} ", account.getAvailableNumberOfFiles(), coupon.getNumberOfFiles());
             logger.debug("{} < {} ", account.getAvailableSpaceInMb(), coupon.getNumberOfMb());
@@ -909,7 +935,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         code.append(coupon.getId()).append("-");
         List<String> codes = TdarConfiguration.getInstance().getCouponCodes();
         for (int i = 0; i < 5; i++) {
-            code.append(codes.get((int) (Math.random() * (double) codes.size())));
+            code.append(codes.get((int) (Math.random() * codes.size())));
             code.append("-");
         }
         code.append((int) (Math.random() * 9999));

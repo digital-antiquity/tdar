@@ -15,8 +15,9 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     boolean indexed = false;
 
     public void reindexOnce() {
-        if (indexed)
+        if (indexed) {
             return;
+        }
 
         reindexUnauthenticated();
         indexed = true;

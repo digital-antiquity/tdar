@@ -39,7 +39,6 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
-
 /**
  * $Id$
  * 
@@ -127,9 +126,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
         getGenericService().detachFromSession(getPersistable());
         setPersistable(null);
         getGenericService().detachFromSession(getAuthenticatedUser());
-//        getGenericService().detachFromSession(getPersistable().getResourceCollections());
+        // getGenericService().detachFromSession(getPersistable().getResourceCollections());
         for (ResourceCreator rc : image.getResourceCreators()) {
-            getLogger().debug("resourceCreators:{} {}",rc, rc.getId());
+            getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
         }
 
         getAuthorizedUsers().clear();
@@ -140,7 +139,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             getLogger().info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
-//        setPersistable(null);
+        // setPersistable(null);
         return SUCCESS_ASYNC;
     }
 
@@ -157,7 +156,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @SkipValidation
     public String templateValidate() {
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
-        if (CollectionUtils.isEmpty(getUploadedFiles()) || getUploadedFiles().get(0) == null) {
+        if (CollectionUtils.isEmpty(getUploadedFiles()) || (getUploadedFiles().get(0) == null)) {
             addActionError(getText("bulkUploadController.upload_template"));
             return VALIDATE_ERROR;
         }
@@ -169,7 +168,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             image.setProject(Project.NULL);
 
             BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getAuthenticatedUser(), null, null);
-            
+
             List<String> htmlAsyncErrors = manifestProxy.getAsyncUpdateReceiver().getHtmlAsyncErrors();
             if (CollectionUtils.isNotEmpty(htmlAsyncErrors)) {
                 for (String error : htmlAsyncErrors) {
@@ -193,7 +192,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (CollectionUtils.isNotEmpty(getActionErrors())) {
             return VALIDATE_ERROR;
         }
-        addActionMessage(getText("bulkUploadController.template_validation_success",Arrays.asList(getTemplateFilename())));
+        addActionMessage(getText("bulkUploadController.template_validation_success", Arrays.asList(getTemplateFilename())));
         return SUCCESS;
     }
 
@@ -215,16 +214,16 @@ public class BulkUploadController extends AbstractInformationResourceController<
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
-//                ResourceRevisionLog log = new ResourceRevisionLog();
-//                log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
-//                log.setTimestamp(new Date());
-//                log.setResource(Project.NULL);
-//                int size = 0;
-//                if (CollectionUtils.isNotEmpty(details)) {
-//                    size = details.size();
-//                }
-//                log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
-//                getGenericService().save(log);
+                // ResourceRevisionLog log = new ResourceRevisionLog();
+                // log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
+                // log.setTimestamp(new Date());
+                // log.setResource(Project.NULL);
+                // int size = 0;
+                // if (CollectionUtils.isNotEmpty(details)) {
+                // size = details.size();
+                // }
+                // log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
+                // getGenericService().save(log);
             }
             return WAIT;
         } else {

@@ -68,11 +68,11 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
         try {
             wsg = WebSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
             gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
-            sig = new SitemapIndexGenerator(config.getBaseUrl(),new File(dir,"sitemap_index.xml"));
+            sig = new SitemapIndexGenerator(config.getBaseUrl(), new File(dir, "sitemap_index.xml"));
             // wsg.set
             List<Resource> resources = resourceService.findAllSparseActiveResources();
             total += resources.size();
-            
+
             logger.info("({}) resources in sitemap", resources.size());
             for (Resource resource : resources) {
                 String url = urlService.absoluteUrl(resource);
@@ -84,13 +84,12 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             }
 
             logger.info("({}) images in sitemap", totalImages);
-            
 
             List<Long> people = genericService.findActiveIds(Person.class);
             total += people.size();
             logger.info("({}) people in sitemap", people.size());
             for (Long id : people) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
 
@@ -98,7 +97,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             total += institutions.size();
             logger.info("({}) institutions in sitemap", institutions.size());
             for (Long id : institutions) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
 
@@ -106,7 +105,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             total += collections.size();
             logger.info("({}) collections in sitemap", collections.size());
             for (Long id : collections) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
             if (total > 0) {
@@ -121,16 +120,16 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
                 if (file.getName().equals("sitemap_index.xml")) {
                     continue;
                 }
-                File sitemap1 = new File(dir,"sitemap1.xml.gz");
+                File sitemap1 = new File(dir, "sitemap1.xml.gz");
                 if (file.getName().equals("sitemap.xml.gz") && sitemap1.exists()) {
                     continue;
                 }
-                File imageSitemap1 = new File(dir,"image_sitemap1.xml.gz");
+                File imageSitemap1 = new File(dir, "image_sitemap1.xml.gz");
                 if (file.getName().equals("image_sitemap.xml.gz") && imageSitemap1.exists()) {
                     continue;
                 }
-                
-                sig.addUrl(String.format("%s/%s/%s",config.getBaseUrl(),"sitemap",file.getName()), date);
+
+                sig.addUrl(String.format("%s/%s/%s", config.getBaseUrl(), "sitemap", file.getName()), date);
             }
 
             sig.write();

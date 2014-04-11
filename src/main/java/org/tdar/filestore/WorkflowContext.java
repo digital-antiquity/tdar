@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -78,14 +77,16 @@ public final class WorkflowContext implements Serializable {
     @XmlElementWrapper(name = "versions")
     @XmlElement(name = "informationResourceFileVersion")
     public List<InformationResourceFileVersion> getVersions() {
-        if (versions == null)
+        if (versions == null) {
             versions = new ArrayList<InformationResourceFileVersion>();
+        }
         return versions;
     }
 
     public void addVersion(InformationResourceFileVersion version) {
-        if (this.versions == null)
+        if (this.versions == null) {
             this.versions = new ArrayList<InformationResourceFileVersion>();
+        }
         this.versions.add(version);
     }
 
@@ -211,7 +212,7 @@ public final class WorkflowContext implements Serializable {
         StringBuilder sb = new StringBuilder();
 
         sb.append(e.getMessage());
-        while (thrw.getCause() != null && maxDepth > -1) {
+        while ((thrw.getCause() != null) && (maxDepth > -1)) {
             thrw = thrw.getCause();
             if (StringUtils.isNotBlank(thrw.getMessage())) {
                 sb.append(": ").append(thrw.getMessage());

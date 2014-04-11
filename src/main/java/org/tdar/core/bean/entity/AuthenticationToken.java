@@ -17,7 +17,7 @@ import org.tdar.utils.MessageHelper;
  * Controller token for managing the session's logged-in user.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "user_session")
@@ -71,7 +71,7 @@ public class AuthenticationToken extends Persistable.Base {
      */
     @Transient
     public boolean isValid() {
-        return person != null && person.isRegistered();
+        return (person != null) && person.isRegistered();
     }
 
     public Date getSessionEnd() {

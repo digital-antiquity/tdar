@@ -73,7 +73,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
     @Autowired
     private GenericKeywordService genericKeywordService;
-    
+
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -94,7 +94,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
     }
 
-    @SuppressWarnings({ "unchecked"})
+    @SuppressWarnings({ "unchecked" })
     @Override
     public SearchResults getTopRecords(String sessionId, Query query, int numberOfRecords) {
 
@@ -117,12 +117,12 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             for (SubjectType type : what.getSubjectTerm()) {
                 for (String stTerm : siteTypeQueryMapper.findMappedValues(type)) {
                     SiteTypeKeyword stk = genericKeywordService.findByLabel(SiteTypeKeyword.class, stTerm);
-//                    params.getUncontrolledSiteTypes().add(stTerm);
+                    // params.getUncontrolledSiteTypes().add(stTerm);
                     terms.add(stk.getId().toString());
                 }
             }
             params.getApprovedSiteTypeIdLists().add(terms);
-//            qb.append(new HydrateableKeywordQueryPart<>(ACTIVE_SITE_TYPE_KEYWORDS, originalClass, fieldValues_));
+            // qb.append(new HydrateableKeywordQueryPart<>(ACTIVE_SITE_TYPE_KEYWORDS, originalClass, fieldValues_));
         }
         if (when != null) {
             params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, when.getMinDate(), when.getMaxDate()));
@@ -163,8 +163,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
         if (q != null) {
             totalRecords = q.getResultSize();
-            if (totalRecords > 0)
+            if (totalRecords > 0) {
                 firstRec = 1;
+            }
             q.setMaxResults(numberOfRecords);
             if (totalRecords > numberOfRecords) {
                 totalExceedsRequested = true;
@@ -198,8 +199,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         List<Long> projIds = new ArrayList<Long>();
 
         for (Project p : resources) {
-            if (!totalExceedsRequested)
+            if (!totalExceedsRequested) {
                 projIds.add(p.getId());
+            }
             ResultType res = new ResultType();
             res.setIdentifier(p.getId().toString());
             res.setTitle(p.getTitle());
@@ -275,6 +277,6 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             sb.append("groups[").append(i).append("].projects.id=").append(projIds.get(i)).append("&");
         }
         return String.format("%s/search/search?query=%s&integratableOptions=%s&resourceTypes=DATASET&referrer=TAG",
-                urlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
+                UrlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
     }
 }

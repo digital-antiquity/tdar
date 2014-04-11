@@ -8,7 +8,7 @@ import javax.persistence.Table;
  * This caches the resource-count-per-decade on the homepage.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "explore_cache_decade")

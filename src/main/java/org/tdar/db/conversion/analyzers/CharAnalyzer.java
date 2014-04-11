@@ -25,10 +25,12 @@ public class CharAnalyzer implements ColumnAnalyzer {
      */
     @Override
     public boolean analyze(String value, DataTableColumn column, int rowNumber) {
-        if (value == null)
+        if (value == null) {
             return true;
-        if ("".equals(value))
+        }
+        if ("".equals(value)) {
             return true;
+        }
         if (value.matches(EXCEL_BAD_REGEX)) {
             String columnName = "unknown";
             String tableName = "unknown";
@@ -36,8 +38,8 @@ public class CharAnalyzer implements ColumnAnalyzer {
                 columnName = column.getDisplayName();
             }
             DataTable table = column.getDataTable();
-            if (table != null && StringUtils.isNotBlank(table.getDisplayName())) {
-                tableName =table.getDisplayName();
+            if ((table != null) && StringUtils.isNotBlank(table.getDisplayName())) {
+                tableName = table.getDisplayName();
             }
             throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error", Arrays.asList(rowNumber, columnName, tableName));
         }

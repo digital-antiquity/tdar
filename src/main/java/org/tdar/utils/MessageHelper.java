@@ -27,17 +27,17 @@ public class MessageHelper implements Serializable, TextProvider {
 
     protected MessageHelper() {
         // Exists only to defeat instantiation.
-     }
+    }
 
     protected MessageHelper(ResourceBundle bundle) {
         this.bundle = bundle;
-     }
+    }
 
     public static MessageHelper getInstance() {
-       if(instance == null) {
-          instance = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
-       }
-       return instance;
+        if (instance == null) {
+            instance = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+        }
+        return instance;
     }
 
     /*
@@ -53,6 +53,7 @@ public class MessageHelper implements Serializable, TextProvider {
     public static String getMessage(String lookup, List<?> formatKeys) {
         return getMessage(lookup, formatKeys.toArray());
     }
+
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
@@ -61,9 +62,9 @@ public class MessageHelper implements Serializable, TextProvider {
             logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
         }
         String key = getKey(lookup);
-        return MessageFormat.format(key,formatKeys);
+        return MessageFormat.format(key, formatKeys);
     }
-    
+
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
@@ -72,10 +73,9 @@ public class MessageHelper implements Serializable, TextProvider {
             logger.trace("Calling getMessage: {}, {}", lookup, formatKeys);
         }
         String key = getKey(lookup);
-        return MessageFormat.format(key,formatKeys);
+        return MessageFormat.format(key, formatKeys);
     }
 
-    
     /*
      * Wraps getMessage() with Message.format() to enable us to include parameterized replacement
      */
@@ -89,7 +89,7 @@ public class MessageHelper implements Serializable, TextProvider {
         if (!StringUtils.contains(lookup, " ")) {
             key = getMessage(lookup);
             if (StringUtils.isBlank(key)) {
-                logger.error("looked for localization key: {}, but not found",lookup);
+                logger.error("looked for localization key: {}, but not found", lookup);
                 key = lookup;
             }
         }
@@ -99,18 +99,18 @@ public class MessageHelper implements Serializable, TextProvider {
     private ResourceBundle getBundle() {
         return bundle;
     }
-    
+
     public static boolean checkKey(String key) {
         return getInstance().getBundle().containsKey(key);
-}
+    }
 
     public boolean containsKey(String key) {
         return getBundle().containsKey(key);
-}
+    }
 
     @Override
     public boolean hasKey(String key) {
-            return checkKey(key);
+        return checkKey(key);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class MessageHelper implements Serializable, TextProvider {
 
     @Override
     public String getText(String key, String[] args) {
-        return MessageHelper.getMessage(key,args);
+        return MessageHelper.getMessage(key, args);
     }
 
     @Override

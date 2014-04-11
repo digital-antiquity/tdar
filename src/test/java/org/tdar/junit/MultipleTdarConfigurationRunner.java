@@ -62,8 +62,8 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
         RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
-        if (annotation != null &&
-                method.getAnnotation(Ignore.class) == null) {
+        if ((annotation != null) &&
+                (method.getAnnotation(Ignore.class) == null)) {
             String[] configs = annotation.runWith();
 
             if (configs.length > 0) {

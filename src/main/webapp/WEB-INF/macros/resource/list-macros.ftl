@@ -1,8 +1,8 @@
 <#escape _untrusted as _untrusted?html>
-<#import "view-macros.ftl" as view>
-<#import "common.ftl" as common>
-<#assign DEFAULT_SORT = 'RELEVANCE' />
-<#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
+    <#import "view-macros.ftl" as view>
+    <#import "common.ftl" as common>
+    <#assign DEFAULT_SORT = 'RELEVANCE' />
+    <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
 
 <#-- emit a list of resource summary information (e.g. for a a search results page, or a resource collection view page
     @param resourcelist:list<Persistable> List of Resources or Collections. Required.
@@ -17,107 +17,107 @@
     @param mapPositon: where to show the map in relation to the result list
     @param mapHeight: how high the map should be
 -->
-<#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
+    <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
-	
 
-  <#local showProject = false />
-  <#global prev =""/>
-  <#global first = true/>
-  <#local listTag_=listTag/>  
-  <#local itemTag_=itemTag/> 
-  <#local itemClass = ""/>
-  <#global isGridLayout = (orientation=="GRID") />
-  <#global isMapLayout = (orientation=="MAP") />
-  
-  <@common.reindexingNote />
-  
-  <#-- set default ; add map wrapper -->
-  <#if orientation == "GRID">
-    <#local listTag_="div"/>  
-    <#local itemClass = "span2"/>
-    <#local itemTag_="div"/> 
-  <#elseif orientation == "MAP" >
-    <#local listTag_="ol"/>  
-    <#local itemTag_="li"/> 
-    <div class="resource-list row">
-      <#if mapPosition=="top" || mapPosition == "right">
-        <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> > </div>
-      </#if>    
-    
-      <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
-  </#if>
 
-  <#local rowCount = -1 />
+        <#local showProject = false />
+        <#global prev =""/>
+        <#global first = true/>
+        <#local listTag_=listTag/>
+        <#local itemTag_=itemTag/>
+        <#local itemClass = ""/>
+        <#global isGridLayout = (orientation=="GRID") />
+        <#global isMapLayout = (orientation=="MAP") />
 
-  <#if resourcelist??>  
-  <#list resourcelist as resource>
-    <#assign key = "" />
-    <#assign defaultKeyLabel="No Project"/>
+        <@common.reindexingNote />
 
-    <#-- if we're viewable -->
-    <#if ((resource.viewable)!false) >
-       <#local rowCount= rowCount+1 />
-
-		<#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
-		<@_printListHeaders sortfield first resource headerTag orientation listTag_ />
-
-        <#-- printing item tag start / -->
-        <${itemTag_} class="listItem ${itemClass!''}"
-            <#if orientation == 'MAP' && resource.latLongVisible >
-            data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
-            data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
+    <#-- set default ; add map wrapper -->
+        <#if orientation == "GRID">
+            <#local listTag_="div"/>
+            <#local itemClass = "span2"/>
+            <#local itemTag_="div"/>
+        <#elseif orientation == "MAP" >
+            <#local listTag_="ol"/>
+            <#local itemTag_="li"/>
+        <div class="resource-list row">
+            <#if mapPosition=="top" || mapPosition == "right">
+                <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> ></div>
             </#if>
-			id="resource-${resource.id?c}">
 
-		<#-- if we're at a new row; close the above tag and re-open it (bug) -->
-		<@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+        <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
+        </#if>
 
-		<#-- add grid thumbnail -->
-        <#if isGridLayout>
-            <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
+        <#local rowCount = -1 />
+
+        <#if resourcelist??>
+            <#list resourcelist as resource>
+                <#assign key = "" />
+                <#assign defaultKeyLabel="No Project"/>
+
+            <#-- if we're viewable -->
+                <#if ((resource.viewable)!false) >
+                    <#local rowCount= rowCount+1 />
+
+                <#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
+                    <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
+
+                <#-- printing item tag start / -->
+                    <${itemTag_} class="listItem ${itemClass!''}"
+                    <#if orientation == 'MAP' && resource.latLongVisible >
+                        data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+                        data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
+                        data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
+                    </#if>
+                    id="resource-${resource.id?c}">
+
+                <#-- if we're at a new row; close the above tag and re-open it (bug) -->
+                    <@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+
+                <#-- add grid thumbnail -->
+                    <#if isGridLayout>
+                        <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
 	            <@view.firstThumbnail resource /><#t>
-	        </a><br/>
+                        </a><br/>
+                    </#if>
+
+                <#-- add the title -->
+                    <@searchResultTitleSection resource titleTag />
+
+                <#-- if in debug add lucene description to explain relevancy -->
+                    <@_printLuceneExplanation  resource />
+
+                <#-- print resource's description -->
+                    <@_printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
+
+                <#-- close item tag -->
+                </${itemTag_}>
+                    <#local first=false/>
+                </#if>
+            </#list>
+
+        <#-- if we didn't have any results, don't close the list tag, as there was none -->
+            <#if rowCount != -1>
+            </${listTag_}>
+            </#if>
         </#if>
-		
-		<#-- add the title -->
-        <@searchResultTitleSection resource titleTag />
 
-        <#-- if in debug add lucene description to explain relevancy -->
-        <@_printLuceneExplanation  resource />
-
-        <#-- print resource's description -->
-        <@_printDescription resource=resource orientation=orientation length=500 showProject=showProject/>
-
-		<#-- close item tag -->
-        </${itemTag_}>
-        <#local first=false/>
-     </#if>
-    </#list>
-    
-    <#-- if we didn't have any results, don't close the list tag, as there was none -->
-    <#if rowCount != -1>
-	  </${listTag_}>
-    </#if>
-  </#if>
-  
-    <#if orientation == "MAP">
-    </div>
-        <#if mapPosition=="left" || mapPosition == "bottom">
-        <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
-
+        <#if orientation == "MAP">
         </div>
-        </#if>
-    </div>
-    <script>
-        $(document).ready(function() {
-            TDAR.maps.setupMapResult();
-        });
-    </script>
-    </#if>
+            <#if mapPosition=="left" || mapPosition == "bottom">
+            <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
 
-</#macro>
+            </div>
+            </#if>
+        </div>
+        <script>
+            $(document).ready(function () {
+                TDAR.maps.setupMapResult();
+            });
+        </script>
+        </#if>
+
+    </#macro>
 
 <#-- divider between the sections of results -->
     <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
@@ -127,97 +127,101 @@
                 <#if (!isGridLayout)>
                 <hr/>
                 <#elseif rowCount % itemsPerRow == 0>
-                </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
+                </div>    </div>
+                <hr/>
+                <div class=" ${orientation} resource-list row">
+                <div class="span2">
                 </#if>
             </#if>
         </#if>
     </#macro>
 
-<#macro _printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>
+    <#macro _printListHeaders sortfield first resource=null headerTag="" orientation='LIST' listTag_='li'>
     <#-- handle grouping/sorting with indentation -->
     <#-- special sorting for RESOURCE_TYPE and PROJECT to group lists by these; sort key stored in "key" -->
-    <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
-        <#if sortfield?contains('RESOURCE_TYPE')>
-            <#assign key = resource.resourceType.plural />
-            <#assign defaultKeyLabel="No Resource Type"/>  
-        </#if>
-        <#if sortfield?contains('PROJECT')>
-            <#if resource.project??>
-                <#assign key = resource.project.title />
-            <#elseif resource.resourceType.project >
-                <#assign key = resource.title />
+        <#if (sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')) && resource.resourceType?has_content>
+            <#if sortfield?contains('RESOURCE_TYPE')>
+                <#assign key = resource.resourceType.plural />
+                <#assign defaultKeyLabel="No Resource Type"/>
             </#if>
-        </#if>
+            <#if sortfield?contains('PROJECT')>
+                <#if resource.project??>
+                    <#assign key = resource.project.title />
+                <#elseif resource.resourceType.project >
+                    <#assign key = resource.title />
+                </#if>
+            </#if>
         <#-- print special header and group/list tag -->
-        <#if first || (prev != key) && key?has_content>
-            <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
-            <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
+            <#if first || (prev != key) && key?has_content>
+                <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}
+                    ></#if>
+                <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
 
-			<#-- if we're a grid, then reset rows -->
+            <#-- if we're a grid, then reset rows -->
+                <#if isGridLayout>
+                <div class='resource-list row ${orientation}'>
+                <#else>
+                <${listTag_} class="resource-list ${orientation}">
+                </#if>
+            </#if>
+            <#assign prev=key />
+        <#elseif first>
+        <#-- default case for group tag -->
             <#if isGridLayout>
             <div class='resource-list row ${orientation}'>
             <#else>
-            <${listTag_} class="resource-list ${orientation}">
+                <${listTag_} class="resource-list ${orientation}">
             </#if>
         </#if>
-        <#assign prev=key />
-    <#elseif first>
-        <#-- default case for group tag -->
-        <#if isGridLayout>
-        <div class='resource-list row ${orientation}'>
-        <#else>
-        <${listTag_} class="resource-list ${orientation}">
-        </#if>
-    </#if>  
-</#macro>
+    </#macro>
 
-<#macro _printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
-	<#if resource?has_content>
-		<#local _desc = "Description not available"/>
-		<#if (resource.description)?has_content >
-			<#if !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
-				<#local _desc = resource.description />
-			</#if>
-		</#if>
-		<#local _rid = resource.id?c >
-		<#if resource.class.simpleName == 'ResourceCollection'>
-			<#local _rid = "C${resource.id?c}" >
-		</#if>
-	
-        <#if orientation == 'LIST_FULL'>
-            <div class="listItemPart">
-	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
-		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
-	            </#if>
-	            <@common.cartouche resource true><@_listCreators resource/></@common.cartouche>
-	            <#if resource.resourceType?has_content>
-		            <@view.unapiLink resource  />
-	            </#if>
-	            <#if showProject && !resource.resourceType.project >
-		            <p class="project">${resource.project.title}</p>
-	            </#if>
-	            <p class="abstract">
-	                <span class="pull-right small">[tDAR id: ${_rid}]</span>                        
-	                <@common.truncate _desc length />
-	            </p>
-            </div>
+    <#macro _printDescription resource=resource orientation=DEFAULT_ORIENTATION length=80 showProject=false>
+        <#if resource?has_content>
+            <#local _desc = "Description not available"/>
+            <#if (resource.description)?has_content >
+                <#if !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
+                    <#local _desc = resource.description />
+                </#if>
+            </#if>
+            <#local _rid = resource.id?c >
+            <#if resource.class.simpleName == 'ResourceCollection'>
+                <#local _rid = "C${resource.id?c}" >
+            </#if>
+
+            <#if orientation == 'LIST_FULL'>
+                <div class="listItemPart">
+                    <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
+                        <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
+                    </#if>
+                    <@common.cartouche resource true><@_listCreators resource/></@common.cartouche>
+                    <#if resource.resourceType?has_content>
+                        <@view.unapiLink resource  />
+                    </#if>
+                    <#if showProject && !resource.resourceType.project >
+                        <p class="project">${resource.project.title}</p>
+                    </#if>
+                    <p class="abstract">
+                        <span class="pull-right small">[tDAR id: ${_rid}]</span>
+                        <@common.truncate _desc length />
+                    </p>
+                </div>
+            </#if>
         </#if>
-	</#if>
-</#macro>
+    </#macro>
 
 <#--emit the lucene score for the specified resource for the current search -->
-<#macro _printLuceneExplanation resource>
+    <#macro _printLuceneExplanation resource>
         <#if resource.explanation?has_content>
-        <blockquote class="luceneExplanation">
-            <b>explanation:</b>${resource.explanation}<br/>
-        </blockquote>
+            <blockquote class="luceneExplanation">
+                <b>explanation:</b>${resource.explanation}<br/>
+            </blockquote>
         </#if>
         <#if resource.score?has_content>
-        <blockquote class="luceneScore">
-            <b>score:</b>${resource.score}<br/>
-        </blockquote>
+            <blockquote class="luceneScore">
+                <b>score:</b>${resource.score}<br/>
+            </blockquote>
         </#if>
-</#macro>
+    </#macro>
 
 
 <#--emit the title section of the resource (as part of a list of search results), including title, status indicator,
@@ -225,60 +229,61 @@ bookmark indicator, etc..
     @param result:Peristable the resource/collection
     @param titleTag:String  name of the html tag that will wrap the actual resource title (e.g. "li", "div", "td")
  -->
-<#macro searchResultTitleSection result titleTag >
-    <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
-    <#if titleTag?has_content>
-        <${titleTag} class="${titleCssClass}">
-    </#if>
-    <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
-    <#if result.title?has_content>
-        ${result.title!"No Title"} <#if result.status?has_content && (editor || result.viewable) && !result.active ><small>[${result.status?upper_case}]</small></#if><#t>
-    <#elseif result.properName?has_content>
-        ${result.properName!"No Name"}<#t>
-     <#else>
-         No Title
-    </#if>
-    <#if isMapLayout && result.latLongVisible><i class="icon-map-marker"></i></#if>
-        <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
-    </a><#lt>
-    <@bookmark result false/>
-    <#if titleTag?has_content>
+    <#macro searchResultTitleSection result titleTag >
+        <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
+        <#if titleTag?has_content>
+            <${titleTag} class="${titleCssClass}">
+        </#if>
+        <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
+            <#if result.title?has_content>
+            ${result.title!"No Title"} <#if result.status?has_content && (editor || result.viewable) && !result.active >
+                <small>[${result.status?upper_case}]</small></#if><#t>
+            <#elseif result.properName?has_content>
+            ${result.properName!"No Name"}<#t>
+            <#else>
+                No Title
+            </#if>
+            <#if isMapLayout && result.latLongVisible><i class="icon-map-marker"></i></#if>
+            <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
+        </a><#lt>
+        <@bookmark result false/>
+        <#if titleTag?has_content>
         </${titleTag}>
-    </#if>
-</#macro>
+        </#if>
+    </#macro>
 
 <#--list the author/editor/creators of a resource - part of the summary information included in a a search result item -->
-<#macro _listCreators resource_>
-     <#assign showSubmitter=true/>
-     <#if resource_.primaryCreators?has_content>
-      <span class="authors">
-        <#list resource_.primaryCreators as creatr>
-          <#assign showSubmitter=false/>
-          ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-        </#list>
-      </span>
-    </#if>    
+    <#macro _listCreators resource_>
+        <#assign showSubmitter=true/>
+        <#if resource_.primaryCreators?has_content>
+        <span class="authors">
+            <#list resource_.primaryCreators as creatr>
+                <#assign showSubmitter=false/>
+            ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
+            </#list>
+        </span>
+        </#if>
 
-     <#if resource_.editors?has_content>
-      <span class="editors">
-        <#list resource_.editors as creatr>
-          <#assign showSubmitter=false/>
-          <#if creatr_index == 0><span class="editedBy">Edited by:</span></#if>
-          ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-        </#list>
-      </span>
-    </#if>
+        <#if resource_.editors?has_content>
+        <span class="editors">
+            <#list resource_.editors as creatr>
+                <#assign showSubmitter=false/>
+                <#if creatr_index == 0><span class="editedBy">Edited by:</span></#if>
+            ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
+            </#list>
+        </span>
+        </#if>
 
-    <#if showSubmitter && resource_.submitter?has_content>
-    <#assign label = "Created" />
-    <#if resource_.resourceType?has_content>
-        <#assign label = "Uploaded" />
-    </#if>
+        <#if showSubmitter && resource_.submitter?has_content>
+            <#assign label = "Created" />
+            <#if resource_.resourceType?has_content>
+                <#assign label = "Uploaded" />
+            </#if>
         <span class="creators"> 
           <span class="createdBy">${label} by:</span> ${resource_.submitter.properName}
         </span>
-    </#if>
-</#macro>
+        </#if>
+    </#macro>
 
 <#--
     Emit the bookmark indicator for a resource.
@@ -295,104 +300,106 @@ bookmark indicator, etc..
     @param _resource:Resource a resource object
 -->
 
-<#macro bookmark _resource showLabel=true useListItem=false>
-  <#if sessionData?? && sessionData.authenticated>
-      <#if _resource.resourceType?has_content>
-      <#assign status = "disabled-bookmark" />
+    <#macro bookmark _resource showLabel=true useListItem=false>
+        <#if sessionData?? && sessionData.authenticated>
+            <#if _resource.resourceType?has_content>
+                <#assign status = "disabled-bookmark" />
 
-        <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-           <#assign status = "un-bookmark" />
-        <#else>
-           <#assign status = "bookmark" />
-        </#if>
-        
-        <#if useListItem>
-            <li class="${status}">
-        </#if>
+                <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                    <#assign status = "un-bookmark" />
+                <#else>
+                    <#assign status = "bookmark" />
+                </#if>
 
-        <#if _resource.deleted?? && _resource.deleted>
-            <#if showLabel>
-                <span class="disabled" title='Deleted items cannot be bookmarked.'>
+                <#if useListItem>
+                <li class="${status}">
+                </#if>
+
+                <#if _resource.deleted?? && _resource.deleted>
+                    <#if showLabel>
+                        <span class="disabled" title='Deleted items cannot be bookmarked.'>
             	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
                 bookmark</span><#t>
+                    </#if>
+                <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                    <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
+                       bookmark-state="bookmarked">
+                        <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
+                        <#if showLabel>
+                            <span class="bookmark-label">un-bookmark</span><#t>
+                        </#if>
+                    </a><#t>
+                <#else>
+                    <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
+                       bookmark-state="bookmark">
+                        <i title="bookmark or unbookmark" class="bookmark-icon tdar-icon-bookmark"></i>
+                        <#if showLabel>
+                            <span class="bookmark-label"> bookmark</span><#t>
+                        </#if>
+                    </a><#t>
+                </#if>
+
+                <#if useListItem>
+                </li>
+                </#if>
+
             </#if>
-        <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" >
-                	<i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
-                <#if showLabel>
-                    <span class="bookmark-label">un-bookmark</span><#t>
-                </#if>
-            </a><#t>
-        <#else>
-            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>"  class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmark">
-                	<i title="bookmark or unbookmark"  class="bookmark-icon tdar-icon-bookmark"></i>
-                <#if showLabel>
-                    <span class="bookmark-label"> bookmark</span><#t>
-                </#if>
-            </a><#t>    
         </#if>
-
-        <#if useListItem>
-            </li>
-        </#if>
-        
-      </#if>
-  </#if>
-</#macro>
+    </#macro>
 
 
-<#macro table data cols id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable"  colLabels=cols>
+    <#macro table data cols id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable"  colLabels=cols>
     <table id="${id}" class="${cssClass}">
         <thead>
-            <tr>
-                <#list colLabels as colLabel>
+        <tr>
+            <#list colLabels as colLabel>
                 <th>${colLabel}</th>
-                </#list>
-            </tr>
+            </#list>
+        </tr>
         </thead>
         <tbody>
             <#list data as dataRow>
-                <tr>
-                    <#nested dataRow, dataRow_index, cols, colLabels>
-                </tr>
+            <tr>
+                <#nested dataRow, dataRow_index, cols, colLabels>
+            </tr>
             </#list>
         </tbody>
     </table>
-</#macro>
+    </#macro>
 
-<#macro easytable data cols id="tblEasyTable" cssClass="table tableFormat datatableSortable" cols=data?keys >
-<@table data cols id cssClass colLabels; rowdata>
-    <#list cols as key>
-        <#local val = rowdata[key]!"">
-        <#if val?is_date><#local val = val?datetime></#if>
-        <td>${val}</td>
-    </#list>
-</@table>
-</#macro>
+    <#macro easytable data cols id="tblEasyTable" cssClass="table tableFormat datatableSortable" cols=data?keys >
+        <@table data cols id cssClass colLabels; rowdata>
+            <#list cols as key>
+                <#local val = rowdata[key]!"">
+                <#if val?is_date><#local val = val?datetime></#if>
+            <td>${val}</td>
+            </#list>
+        </@table>
+    </#macro>
 
 
-<#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssClass="table tableFormat datatableSortable">
-<table id="${id}" class="${cssClass}">
-    <thead>
+    <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssClass="table tableFormat datatableSortable">
+    <table id="${id}" class="${cssClass}">
+        <thead>
         <tr>
             <th>${keyLabel}</th>
             <th>${valueLabel}</th>
         </tr>
-    </thead>
-    <tbody>
-        <#list data?keys as key>
-        <#if key?has_content>
-        <#local val = data[key]!''>
-        <#if val?is_date><#local val = val?datetime></#if>
-            <tr>
-                <td>${key}</td>
-                <td>${val}</td>
-            </tr>
-		</#if>
-        </#list>
-    </tbody>
-</table>
-</#macro>
+        </thead>
+        <tbody>
+            <#list data?keys as key>
+                <#if key?has_content>
+                    <#local val = data[key]!''>
+                    <#if val?is_date><#local val = val?datetime></#if>
+                <tr>
+                    <td>${key}</td>
+                    <td>${val}</td>
+                </tr>
+                </#if>
+            </#list>
+        </tbody>
+    </table>
+    </#macro>
 
 
 </#escape>

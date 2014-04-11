@@ -92,7 +92,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         this.setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
-        if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
+        if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
             getLogger().info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
@@ -129,8 +129,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(this.term) && !checkMinString(keywordType))
+        if (!checkMinString(this.term) && !checkMinString(keywordType)) {
             return SUCCESS;
+        }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
         this.setLookupSource(LookupSource.KEYWORD);
