@@ -124,7 +124,7 @@ public class DownloadService {
                 generateZipArchive(files, resourceFile);
                 // although in temp, it might be quite large, so let's not leave it lying around
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
-            } else if(files.keySet().size() == 1){
+            } else if (files.keySet().size() == 1) {
                 resourceFile = (File) files.keySet().toArray()[0];
                 dh.setInputStream(new FileInputStream(resourceFile));
             } else {

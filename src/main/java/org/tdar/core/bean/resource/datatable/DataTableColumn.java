@@ -411,7 +411,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
             return getDefaultOntology();
         }
         if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
-            return getDefaultCodingSheet().getDefaultOntology() ;
+            return getDefaultCodingSheet().getDefaultOntology();
         }
         return null;
     }

@@ -564,5 +564,4 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.allResourceCollections = allResourceCollections;
     }
 
-    
 }

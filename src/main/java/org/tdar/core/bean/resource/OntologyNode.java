@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -324,7 +323,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public String getFormattedNameWithSynonyms() {
         if (CollectionUtils.isNotEmpty(getSynonyms())) {
-            String txt = String.format("%s (%s)",getDisplayName(), StringUtils.join(getSynonyms(), ", "));
+            String txt = String.format("%s (%s)", getDisplayName(), StringUtils.join(getSynonyms(), ", "));
             logger.debug(txt);
             return txt;
         } else {

@@ -489,12 +489,12 @@ public class DataIntegrationService {
         return columnAutoList;
     }
 
-    public Map<Ontology,List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
-        HashMap<Ontology,List<DataTable>> allOntologies = new HashMap<>();
+    public Map<Ontology, List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
+        HashMap<Ontology, List<DataTable>> allOntologies = new HashMap<>();
         if (CollectionUtils.isEmpty(bookmarkedDataTables)) {
             return Collections.EMPTY_MAP;
         }
-        for (DataTable table :bookmarkedDataTables){
+        for (DataTable table : bookmarkedDataTables) {
             for (DataTableColumn column : table.getDataTableColumns()) {
                 Ontology ontology = column.getMappedOntology();
                 if (ontology != null) {
@@ -508,15 +508,15 @@ public class DataIntegrationService {
             }
         }
         if (showOnlyShared) {
-            HashMap<Ontology,List<DataTable>> toReturn = new HashMap<>();
-             for (Entry<Ontology, List<DataTable>> entrySet : allOntologies.entrySet()) {
-                 if (entrySet.getValue().size() == bookmarkedDataTables.size()) {
-                     toReturn.put(entrySet.getKey(), entrySet.getValue());
-                 }
-             }
-             return toReturn;
+            HashMap<Ontology, List<DataTable>> toReturn = new HashMap<>();
+            for (Entry<Ontology, List<DataTable>> entrySet : allOntologies.entrySet()) {
+                if (entrySet.getValue().size() == bookmarkedDataTables.size()) {
+                    toReturn.put(entrySet.getKey(), entrySet.getValue());
+                }
+            }
+            return toReturn;
         }
-        
+
         return allOntologies;
     }
 }

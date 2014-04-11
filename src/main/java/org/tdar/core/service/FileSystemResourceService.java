@@ -49,7 +49,7 @@ public class FileSystemResourceService {
     public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
         return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
     }
-    
+
     public String getWroDir() {
         return fileSystemResourceDao.getWroDir();
     }

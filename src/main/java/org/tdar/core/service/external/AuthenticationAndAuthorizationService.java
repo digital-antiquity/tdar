@@ -20,14 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -165,6 +163,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * Checks the current cache for the @link Person and their @linkTdarGroup permissions, if it exists, it returns whether the @link Person is a member of the
      * group. If not, it checks the external authentication and authorization service (CROWD/LDAP) to see what @link TdarGroup Memberships are set for that
+     * 
      * @link Person
      * and then updates the cache (HashMap)
      */
@@ -846,7 +845,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
 
     /**
      * Authenticate a user, and optionally create the user account prior to authentication.
-     *
+     * 
      * @param person_
      * @param password
      * @param institutionName
@@ -856,8 +855,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param contributor
      * @return
      */
-    @Transactional(readOnly=false )
-    public synchronized AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request, HttpServletResponse response, SessionData sessionData, boolean contributor) {
+    @Transactional(readOnly = false)
+    public synchronized AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request,
+            HttpServletResponse response, SessionData sessionData, boolean contributor) {
         Person person = person_;
         Person findByUsername = personDao.findByUsername(person.getUsername());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
