@@ -609,7 +609,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
         evictCache();
 
-//        searchIndexService.flushToIndexes();
+        // searchIndexService.flushToIndexes();
         Cache cache = sessionFactory.getCache();
         if (cache != null) {
             cache.evictAllRegions();

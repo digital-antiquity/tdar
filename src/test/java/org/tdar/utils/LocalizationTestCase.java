@@ -67,17 +67,17 @@ public class LocalizationTestCase {
     @Test
     public void testStringFormatErrors() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile((".*\\%(\\w|\\$).*"));
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] {"properties"}, true);
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
-            LineIterator it = FileUtils.lineIterator(file , "UTF-8");
-            try{
+            LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+            try {
                 int lineNum = 0;
-                while (it.hasNext()){
+                while (it.hasNext()) {
                     lineNum++;
                     String line = it.nextLine();
                     Matcher m = pattern.matcher(line);
-                    if(m.matches()){
+                    if (m.matches()) {
                         logger.trace(line);
                         String key = m.group(0);
                         logger.debug(key);
@@ -87,23 +87,22 @@ public class LocalizationTestCase {
                         matchingMap.get(key).add(file.getAbsolutePath() + ":" + lineNum);
                     }
                 }
-             }
-             finally {LineIterator.closeQuietly(it);}
+            } finally {
+                LineIterator.closeQuietly(it);
+            }
         }
 
         List<String> results = new ArrayList<>();
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            String msg = String.format("Locale key using wrong format: %s %s",key.getKey(), key.getValue());
+            String msg = String.format("Locale key using wrong format: %s %s", key.getKey(), key.getValue());
             logger.error(msg);
             results.add(msg);
         }
         if (results.size() > 0) {
-            fail(StringUtils.join(results,"\n"));
+            fail(StringUtils.join(results, "\n"));
         }
     }
 
-
-    
     @Test
     public void testFreemarkerLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile(("^.+(\\.?localText|s\\.text)(\\s*(name=)?)\"([^\"]+)\".+"));

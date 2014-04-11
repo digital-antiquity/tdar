@@ -323,11 +323,11 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         evictCache();
         logger.debug("ORIGINAL: {}", originalXml);
         logger.debug("INCOMING: {}", docXml);
-        
+
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
-        
+
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
         assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());

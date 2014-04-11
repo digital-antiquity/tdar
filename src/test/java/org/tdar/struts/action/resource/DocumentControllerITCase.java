@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.facet.search.params.FacetRequest.SortBy;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -117,8 +116,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(potentialParents.contains(project));
     }
 
-    
-
     @Test
     @Rollback
     public void testDocumentEditRights() throws TdarActionException {
@@ -137,7 +134,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(internal);
         internal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(internal);
-        
+
         doc.getResourceCollections().add(collection);
         doc.getResourceCollections().add(internal);
         internal.getResources().add(doc);
@@ -147,7 +144,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(doc);
         Long docId = doc.getId();
         doc = null;
-        internal=null;
+        internal = null;
         collection = null;
         genericService.synchronize();
 
