@@ -1,4 +1,6 @@
 <div class="span3 logosection">
     <p><a href="/"><img class="faimslogo" src="<@s.url value="/${themeDir}images/faims_logo.png" />" alt="FA|MS" /></a>
-    <strong>${serverEnvironmentStatus}</strong>
+    <#if !production>
+        <strong>${serverEnvironmentStatus}</strong>
+    </#if>
 </div>
