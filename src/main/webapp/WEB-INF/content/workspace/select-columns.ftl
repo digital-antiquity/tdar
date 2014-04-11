@@ -195,5 +195,18 @@ jQuery(document).ready(function($){
 });
 </script>
 
+<div class="modal hide fade" id="columnSave">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Warning</h3>
+  </div>
+  <div class="modal-body">
+    <p>Please use at least one integration column.</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" id="modalHide" class="btn btn-primary">Ok</a>
+  </div>
+</div>
+
 </body>
 </#escape>

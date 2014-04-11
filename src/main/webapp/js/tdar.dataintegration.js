@@ -74,7 +74,19 @@
                 $('#fixedList').removeClass('fixed');
             }
         });
-
+        $("#selectDTColForm").submit(function(event) {
+            if ($(".integrationColumn",$("#drplist")).size()  > 0) {
+                return true;
+            }
+            $('#columnSave').modal({
+                keyboard: false
+              });
+            return false;
+        });
+        
+        $("#modalHide").click(function(event){
+            $('#columnSave').modal('hide');
+        });
     };
 
     /**
@@ -479,7 +491,6 @@
             $("#divModalStore").modal();
         });
     };
-
 
     //expose public elements
     TDAR.integration = {
