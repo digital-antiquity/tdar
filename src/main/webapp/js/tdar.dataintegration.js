@@ -31,11 +31,7 @@
             $("#selectDTColForm").html($("#autosave").val());
         }
 
-        $(".drg").draggable({
-            zIndex: 2700,
-            revert: true,
-            revertDuration: 0
-        });
+        _resetDraggable();
 
         $("#drplist td").droppable(drpOptions);
 
@@ -298,16 +294,17 @@
      */
     function _integrationClearAll() {
         $("#drplist tbody td").each(function () {
-                    var $this = $(this);
-                    if ($this.data("colnum") == 0) {
-                        $this.empty();
-                        $this.html('<div class="label">Column 1 <span class="colType"></span><input type="hidden" name="integrationColumns[0].columnType" value="DISPLAY" class="colTypeField"/><input type="hidden" name="integrationColumns[0].sequenceNumber" value="0" class="sequenceNumber" /></div><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span>');
-                        $this.removeClass("integrationColumn");
-                        $this.addClass("displayColumn");
-                    } else {
-                        $this.remove();
-                    }
-                });
+                var $this = $(this);
+                if ($this.data("colnum") == 0) {
+                    $this.empty();
+                    $this.html('<div class="label">Column 1 <span class="colType"></span><input type="hidden" name="integrationColumns[0].columnType" value="DISPLAY" class="colTypeField"/><input type="hidden" name="integrationColumns[0].sequenceNumber" value="0" class="sequenceNumber" /></div><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span>');
+                    $this.removeClass("integrationColumn");
+                    $this.addClass("displayColumn");
+                } else {
+                    $this.remove();
+                }
+            });
+        _resetDraggable();
     }
 
     /**
@@ -490,6 +487,14 @@
         });
     };
 
+    function _resetDraggable() {
+        $(".drg").draggable({
+            zIndex: 2700,
+            revert: true,
+            revertDuration: 0
+        });
+    }
+    
     //expose public elements
     TDAR.integration = {
         "initDataIntegration": _initDataIntegration,
