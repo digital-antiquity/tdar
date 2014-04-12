@@ -46,10 +46,6 @@
             border: 1px solid #ccc;
         }
 
-        #submitbutton {
-            right: -540px !important;
-            position: relative !important;
-        }
 
         .addAnother {
             margin-left: 1em !important;
@@ -98,6 +94,7 @@
                 <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
                 <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
                 <span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
+                <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
             </div>
             <table id="drplist" width="100%">
                 <tr>
@@ -112,7 +109,6 @@
                 </tr>
             </table>
             <div class="status"></div>
-            <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
         </div>
     </div>
