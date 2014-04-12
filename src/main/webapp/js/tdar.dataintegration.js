@@ -163,7 +163,7 @@
         $(draggable).css("z-index", 100);
         var table = draggable.data("table");
         var ret = true;
-        var children = $target.children("div [data-table]");
+        var children = $target.find("div [data-table]");
         console.log(draggable);
         console.log(table);
         console.log(children);
@@ -192,7 +192,7 @@
         var children = $target.find("div");
 
         newChild.find('*').each(function () {
-            var elem = this;
+            var elem = this;    
             _replaceAttribute(elem, "name", '{COLNUM}', colNum);
             // always have one DIV to start with, so subtract 2
             _replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
