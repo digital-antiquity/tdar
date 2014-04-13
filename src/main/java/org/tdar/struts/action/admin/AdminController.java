@@ -166,15 +166,6 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "buildCollectionTree", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
-    })
-    public String buildCollectionTree() {
-        getLogger().debug("manually running 'build collection tree'");
-        urcp.execute();
-        return SUCCESS;
-    }
-
     @Action(value = "buildCreators", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
