@@ -91,9 +91,20 @@
         <div id='fixedList' class="affix-top no-indent span12 row navbar-static" data-offset-top="250" data-offset-bottom="250" data-spy="affix">
             <h4>Each Column Below will be a Column In Excel</h4>
             <div class="btn-group pull-right">
-                <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</span>
+                <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add Column</span>
                 <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
-                <span class="btn" id="clear"><i class=" icon-remove-circle"></i> Clear all</span>
+                <div class="btn-group">
+                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        Add Integration Column
+                        <span class="caret"></span>
+                      </a>
+                    <ul class="dropdown-menu">
+                    <#list sharedOntologies as ontology>
+                        <li><a href="#" onClick="TDAR.integration.addColumn('${ontology.id?c}')">${ontology.name}</a></li>
+                    </#list>
+                  </ul>
+                </div>
+                <span class="btn" id="clear"><i class=" icon-remove-circle"></i>Clear</span>
                 <@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
             </div>
             <table id="drplist" width="100%">
@@ -129,12 +140,6 @@
             </tr>
         </table>
         <br/>
-        <p><b>The following ontologies are shared by all data tables and are good candidates for integration.</b> Click on one of them to add it to the table
-        </p>
-
-        <#list sharedOntologies as ontology>
-            <span class="button btn" onClick="TDAR.integration.addColumn('${ontology.id?c}')">${ontology.name}</span>
-        </#list>
 
     <div class="accordion" id="accordion">
         <#assign numCols = 6 />
