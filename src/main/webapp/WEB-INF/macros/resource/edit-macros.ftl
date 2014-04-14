@@ -945,10 +945,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             </td>
             <td>
 
-                <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
-                <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
-                <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId}/>
+                <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}">
+                <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}">
+                <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}">
+                <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value="${rowId}">
 
             </td>
         </#if>
