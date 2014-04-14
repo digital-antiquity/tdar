@@ -153,10 +153,15 @@ public class BulkUploadService {
 
     /**
      * The Save method needs to endpoints, one with the @Async annotation to
-     * allow Spring to run it asynchronously. This method: (a) looks at the
-     * excel manifest proxy, tries to parse it, fails fast (b) loads the proxy
-     * image record and clones it to each resource type as needed one per file
-     * being imported (c) applies custom metadata from the manifest (d) returns
+     * allow Spring to run it asynchronously. This method: 
+     *  (a) looks at the excel manifest proxy, tries to parse it, validate it, and fails if there are errors.
+     *  (b) loads the resourceTemplate (image) record and clones it to each resource type as needed one per file
+     *  (c) clones the resourceTemplate and copies
+     *  (d) copies the values from the excel manifest proxy onto the clone for each file
+     *  (e) processes each file through the workflow 
+     *  (f) reconcile account issues
+     *  (g) save records to XML
+     *  (h) reindex if needed
      */
     @Transactional
     public void save(final InformationResource resourceTemplate_, final Long submitterId, final Long ticketId, final File excelManifest_, final Collection<FileProxy> fileProxies,
@@ -239,6 +244,26 @@ public class BulkUploadService {
         }
 
         completeBulkUpload(resourceTemplate, accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
+        
+        try {
+            if (Persistable.Base.isNotNullOrTransient(project)) {
+                remainingResources = null;
+                manifestProxy = null;
+                resourceTemplate= null;
+                excelManifest = null;
+                submitter = null;
+                Long projectId = project.getId();
+                project = null;
+                boolean exceptions = searchIndexService.indexProject(projectId);
+                if (exceptions) {
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
+                }
+            }
+        } catch (Throwable t) {
+            logger.error("reindexing error happened", t);
+            updateReciever.addError(t);
+        }
+
         logger.info("bulk: done");
     }
 
