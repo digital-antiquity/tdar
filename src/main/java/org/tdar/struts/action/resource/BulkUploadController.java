@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
+import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.filestore.FileAnalyzer;
@@ -68,6 +69,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Autowired
     private FileAnalyzer analyzer;
 
+    @Autowired
+    private BulkUploadTemplateService bulkUploadTemplateService;
     private String bulkFileName;
     private long bulkContentLength;
     private FileInputStream templateInputStream;
@@ -214,16 +217,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             if (percentDone == 100f) {
                 List<Pair<Long, String>> details = reciever.getDetails();
                 setDetails(details);
-                // ResourceRevisionLog log = new ResourceRevisionLog();
-                // log.setPayload(StringUtils.join(reciever.getAsyncErrors(), "\r\n"));
-                // log.setTimestamp(new Date());
-                // log.setResource(Project.NULL);
-                // int size = 0;
-                // if (CollectionUtils.isNotEmpty(details)) {
-                // size = details.size();
-                // }
-                // log.setLogMessage(String.format("BulkUpload: %s files %s ",size, success));
-                // getGenericService().save(log);
+                // should create revision log
             }
             return WAIT;
         } else {
@@ -247,7 +241,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public String downloadBulkTemplate() {
         // create temporary file
 
-        HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
+        HSSFWorkbook workbook = bulkUploadTemplateService.createExcelTemplate();
         setBulkFileName("tdar-bulk-upload-template.xls");
         try {
             setTemplateFile(File.createTempFile(getBulkFileName(), ".xls", TdarConfiguration.getInstance().getTempDirectory()));
