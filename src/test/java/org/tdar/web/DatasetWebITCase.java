@@ -296,13 +296,14 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
         logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
 
-        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
+        String regex = "id: \\\"(\\d+)\\\",(?:\\s+)name: \\\"(.+)\\\"";
+        logger.info("regex is: {}", regex);
         Pattern p = Pattern.compile(regex);
 
         HashMap<String, Long> ontologyMap = new HashMap<String, Long>();
         for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
-            logger.info(line);
             Matcher matcher = p.matcher(line);
+            logger.info("line:{} \t matches:{}", line, matcher.matches());
             if (matcher.matches()) {
                 String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
                 logger.info("{} : {}", matcher.group(1), key);
