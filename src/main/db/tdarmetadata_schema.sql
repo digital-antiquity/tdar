@@ -401,8 +401,7 @@ CREATE TABLE creator (
     url character varying(255),
     description text,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
-    occurrence bigint,
-    location character varying
+    occurrence bigint
 );
 
 
@@ -475,7 +474,6 @@ CREATE TABLE culture_keyword (
     parent_id bigint,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -794,7 +792,6 @@ CREATE TABLE geographic_keyword (
     level character varying(50),
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -1165,9 +1162,7 @@ CREATE TABLE institution (
     id bigint NOT NULL,
     name character varying(255) NOT NULL,
     parentinstitution_id bigint,
-    merge_creator_id bigint,
-    location character varying,
-    url character varying
+    merge_creator_id bigint
 );
 
 
@@ -1218,7 +1213,6 @@ CREATE TABLE investigation_type (
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -1307,7 +1301,6 @@ CREATE TABLE material_keyword (
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -1426,7 +1419,6 @@ CREATE TABLE other_keyword (
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -1505,7 +1497,6 @@ CREATE TABLE person (
     username character varying(255),
     merge_creator_id bigint,
     proxy_note text,
-    proxy_institution_id bigint,
     proxyinstitution_id bigint,
     tos_version integer DEFAULT 0 NOT NULL,
     contributor_agreement_version integer DEFAULT 0 NOT NULL,
@@ -2539,7 +2530,6 @@ CREATE TABLE site_name_keyword (
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -2593,7 +2583,6 @@ CREATE TABLE site_type_keyword (
     parent_id bigint,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -2713,7 +2702,6 @@ CREATE TABLE temporal_keyword (
     label character varying(255) NOT NULL,
     status character varying(25) DEFAULT 'ACTIVE'::character varying,
     merge_keyword_id bigint,
-    occurrance bigint,
     occurrence bigint
 );
 
@@ -5385,4 +5373,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
-

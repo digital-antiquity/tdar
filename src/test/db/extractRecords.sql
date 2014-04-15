@@ -59,15 +59,13 @@ insert into test (id) VALUES(4),(3794),(191),(322),(140),(627),(626),(141),(142)
 create temporary table creatorids (id bigint);
 insert into creatorids select submitter_id from resource where id in (select id from test)
     UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test)
-    UNION select user_id from authorized_user where  resource_collection_id in (select distinct collection_id from collection_resource where resource_id in (select id from test))
     UNION select person_id from bookmarked_resource where resource_id in (select id from test)
     UNION select publisher_id from information_resource
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
     UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select 60
+    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
     UNION select provider_institution_id from information_resource where id in (select id from test);
-    
+insert into creatorids select institution_id from person where id in (select * from creatorids);
+
 select * from category_variable where type = 'CATEGORY' order by id;
 select * from category_variable where type = 'SUBCATEGORY' order by id asc;
 select * from category_variable_synonyms;
@@ -77,10 +75,10 @@ select * from investigation_type;
 select * from material_keyword; 
 
 
-select * from creator where id in (select id from creatorIds) ;
-select * from user_info where user_id in (select id from creatorIds);
-select * from institution where id in (select id from creatorIds);
-select * from person where id in (select id from creatorIds);
+select * from creator where id in (select id from creatorIds) order by id asc;
+select * from institution where id in (select id from creatorIds) order by id asc;
+select * from person where id in (select id from creatorIds) order by id asc;
+select * from user_info where user_id in (select id from creatorIds) order by id asc;
 
 
 
