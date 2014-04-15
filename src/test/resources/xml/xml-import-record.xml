@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.tdar.org/namespace">
+	<title>The Arkansas Amateur, Volume 3(3)</title>
+	<resourceType>DOCUMENT</resourceType>
+	<metadataLanguage>ENGLISH</metadataLanguage>
+	<description>
+		This citation has been migrated into tDAR from the National Park Service's
+		National Archaeology Data Base (NADB). Most NADB records consist of
+		citation and other metadata but do not have the documents themselves
+		uploaded.</description>
+	<documentType>BOOK</documentType>
+	<resourceLanguage>ENGLISH</resourceLanguage>
+	<copyLocation>Office of Archaeological Services, Univ of Alabama
+		Museums</copyLocation>
+	<publisherLocation>Springdale, AR</publisherLocation>
+	<date>1964</date>
+	<publisher>Northwest Arkansas Archaeological Society</publisher>
+	<resourceAnnotations>
+		<resourceAnnotation>
+			<value>000000249778</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>NADB citation id number</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>4060696</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>NADB document id number</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+	</resourceAnnotations>
+	<resourceCreators>
+		<resourceCreator sequence="0">
+			<creator class="org.tdar.core.bean.entity.Institution">
+				<name>Northwest Arkansas Archaeological Society</name>
+			</creator>
+			<role>AUTHOR</role>
+		</resourceCreator>
+	</resourceCreators>
+	<siteNameKeywords />
+	<otherKeywords>
+		<otherKeyword>
+			<label>Journal / periodical</label>
+		</otherKeyword>
+		<otherKeyword level="topic">
+			<label>NEWSLETTER</label>
+		</otherKeyword>
+	</otherKeywords>
+	<geographicKeywords />
+	<resourceNotes />
+	<siteTypeKeywords />
+	<temporalKeywords />
+	<cultureKeywords />
+	<materialKeywords />
+	<investigationTypes />
+</document>

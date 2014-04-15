@@ -1,0 +1,2449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <version>11-KNAP</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- managed versions -->
+        <struts2.version>2.3.16.1</struts2.version>
+        <hibernate.version>4.3.4.Final</hibernate.version>
+        <hibernate.search.version>4.5.1.Final</hibernate.search.version>
+        <spring.framework.version>4.0.3.RELEASE</spring.framework.version>
+        <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
+        <spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
+        <postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
+            with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
+        <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
+        <apache.cxf.version>2.7.8</apache.cxf.version>
+        <jena.version>2.11.1</jena.version>
+        <clover.version>3.2.2</clover.version>
+        <!-- /end managed versions -->
+        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m
+            -XX:MaxPermSize=512m</jvm.args>
+        <generated.schema.dir>target/generated/db</generated.schema.dir>
+        <generated.schema.file>schema.sql</generated.schema.file>
+        <wro4j.version>1.7.5</wro4j.version>
+        <jetty.version>8.1.11.v20130520</jetty.version>
+        <jetty.port>8080</jetty.port>
+        <jetty.ssl.port>8443</jetty.ssl.port>
+        <jetty.stop.port>12919</jetty.stop.port>
+        <use.test.classpath>false</use.test.classpath>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <geotools.version>10.5</geotools.version>
+        <tika.version>1.5</tika.version>
+        <batik.version>1.7</batik.version>
+        <odata4j.version>0.7.0</odata4j.version>
+        <jersey.version>1.18.1</jersey.version>
+        <jackson.version>2.3.3</jackson.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <http-components.version>4.3.2</http-components.version>
+        <display.port></display.port>
+        <warfile.name>ROOT</warfile.name>
+        <!-- Following points to the profile directory to use for filtering 
+            resources -->
+        <!-- override by redefining in a profile. don't forget to 'clean' 
+            when redefining -->
+        <!-- Be warned: Eclipse may have a different active profile in play 
+            to the command line -->
+        <build.profile.id>default</build.profile.id>
+    </properties>
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+    <organization>
+        <name>The Digital Archaeological Record</name>
+        <url>http://www.tdar.org</url>
+    </organization>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>4.0.1.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+        <repository>
+            <id>local-dev</id>
+            <url>http://dev.tdar.org/repo/</url>
+        </repository>
+        <repository>
+            <id>imageJ</id>
+            <name>ImageJ Repository</name>
+            <url>http://maven.imagej.net/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Maven Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>codehaus</id>
+            <name>Codehaus Repository</name>
+            <url>http://repository.codehaus.org/</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>libs-release</name>
+            <url>http://repo.springsource.org/libs-release</url>
+        </repository>
+        <repository>
+            <id>repository.springframework.milestone</id>
+            <name>Spring Framework Maven Milestone Repository</name>
+            <url>http://maven.springframework.org/milestone</url>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.libraries.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+            <url>http://repository.springsource.com/maven/libraries/external</url>
+        </repository>
+        <repository>
+            <id>spring-release</id>
+            <url>http://maven.springframework.org/release</url>
+        </repository>
+        <repository>
+            <id>org.jboss.repository.nexus.public</id>
+            <name>Hibernate Public repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
+        </repository>
+        <repository>
+            <id>atlassian-m2-repository</id>
+            <url>https://m2proxy.atlassian.com/repository/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+        </repository>
+        <!-- To pull Log4J e-mail throttler: https://github.com/reaktor/log4j-email-throttle -->
+        <repository>
+            <id>Laughing Panda</id>
+            <url>http://maven.laughingpanda.org/maven2</url>
+        </repository>
+        <!-- <repository> <id>dataone.org</id> <url>http://dev-testing.dataone.org/maven</url> 
+            <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
+            </snapshots> </repository> -->
+    </repositories>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.tdar</groupId>
+    <artifactId>tdar</artifactId>
+    <packaging>war</packaging>
+    <name>The Digital Archaeological Record</name>
+    <url>http://www.tdar.org</url>
+    <description>Preservation of the digital archaeological record for research, analysis, and dissemination</description>
+
+    <!-- 3rd party dependencies and libraries -->
+    <dependencies>
+        <dependency>
+            <groupId>com.joestelmach</groupId>
+            <artifactId>natty</artifactId>
+            <version>0.8</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>keytool-api</artifactId>
+            <version>1.4</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.jgeppert.struts2.bootstrap</groupId>
+            <artifactId>struts2-bootstrap-plugin</artifactId>
+            <version>1.7.0</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.webutilities</groupId>
+            <artifactId>webutilities</artifactId>
+            <version>0.0.6</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <!-- LICENSE: ECLIPSE -->
+        </dependency>
+        <!-- postgres jdbc -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.jdbc.version}</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>1.3.3</version>
+            <!-- LICENSE: LGPL 2 -->
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.46</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcmail-jdk16</artifactId>
+            <version>1.46</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>52.1</version>
+            <!-- LICENSE: MIT (variant?) -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.9.3</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>1.48s</version>
+            <!-- LICENSE: PUBLIC DOMAIN -->
+        </dependency>
+        <dependency>
+            <groupId>net.sf.ij_io</groupId>
+            <artifactId>ij_io</artifactId>
+            <version>1.2.4</version>
+            <!-- LICENSE: APACHE 2.0 / LGPL 2 -->
+        </dependency>
+        <dependency>
+            <groupId>javax.media.jai</groupId>
+            <artifactId>com.springsource.javax.media.jai.core</artifactId>
+            <version>1.1.3</version>
+            <!-- SUN Binary Code License Agreement -->
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.7.4</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.media.jai</groupId>
+            <artifactId>com.springsource.javax.media.jai.codec</artifactId>
+            <version>1.1.3</version>
+            <!-- SUN Binary Code License Agreement -->
+        </dependency>
+        <dependency>
+            <groupId>javax.media</groupId>
+            <artifactId>jmf</artifactId>
+            <version>2.1.1e</version>
+            <!-- SUN Binary Code License Agreement -->
+        </dependency>
+        <dependency>
+            <groupId>jtidy</groupId>
+            <artifactId>jtidy</artifactId>
+            <version>4aug2000r7-dev</version>
+            <!-- LICENSE: MIT VARIENT -->
+        </dependency>
+
+        <dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.7</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.jdmk</groupId>
+                    <artifactId>jmxtools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jmx</groupId>
+                    <artifactId>jmxri</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>apache-log4j-extras</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
+        <dependency>
+            <groupId>fi.reaktor.log4j</groupId>
+            <artifactId>log4j-email-throttle</artifactId>
+            <version>1.0.0</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- crowd integration -->
+        <dependency>
+            <groupId>com.atlassian.crowd</groupId>
+            <artifactId>crowd-integration-client-rest</artifactId>
+            <version>2.7.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-httpclient</artifactId>
+                    <groupId>commons-httpclient</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- <dependency> <groupId>org.dataone</groupId> <artifactId>d1_libclient_java</artifactId> 
+            <version>1.2.5</version> <type>jar</type> <!- LICENSE: APACHE 2.0 -> <exclusions> 
+            <exclusion> <artifactId>httpclient</artifactId> <groupId>org.apache.httpcomponents</groupId> 
+            </exclusion> <exclusion> <artifactId>httpmime</artifactId> <groupId>org.apache.httpcomponents</groupId> 
+            </exclusion> <exclusion> <artifactId>httpcore</artifactId> <groupId>org.apache.httpcomponents</groupId> 
+            </exclusion> </exclusions> </dependency> -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>2.0.3</version>
+            <!-- LICENSE: LGPL -->
+        </dependency>
+        <dependency>
+            <groupId>gov.loc</groupId>
+            <artifactId>bagit</artifactId>
+            <version>4.9.0</version>
+            <!-- LICENSE: PUBLIC DOMAIN -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-codec</artifactId>
+                    <groupId>commons-codec</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-exec</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpmime</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpcore</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId> 
+            <version>1.0.0</version> </dependency> -->
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.0</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>opensearch</artifactId>
+            <version>0.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geonames</groupId>
+            <artifactId>georss-rome</artifactId>
+            <version>0.9.8</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
+            <version>1.4.3</version> </dependency> -->
+        <!-- Spring LDAP -->
+        <dependency>
+            <groupId>org.springframework.ldap</groupId>
+            <artifactId>spring-ldap-core</artifactId>
+            <version>${spring.ldap.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ldap</groupId>
+            <artifactId>spring-ldap-core-tiger</artifactId>
+            <version>${spring.ldap.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- ANDS PID Client -->
+        <dependency>
+            <groupId>net.sourceforge.andspidclient</groupId>
+            <artifactId>ands-pid-client</artifactId>
+            <version>1.0.30</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- Junit -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-legacy</artifactId>
+            <version>2.5.1</version>
+            <!-- LICENSE: MIT/BSD VARIENT -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena.version}</version>
+            <!-- LICENSE: MIT/BSD VARIENT -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>${jena.version}</version>
+            <!-- LICENSE: MIT/BSD VARIENT -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-shapefile</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-xml</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-kml</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-core</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-image</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-extension</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-epsg-hsql</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-wkt</artifactId> 
+            <version>${geotools.version}</version> </dependency> -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geotiff</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-swing</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>com.google.code</groupId>
+            <artifactId>sitemapgen4j</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+            <version>fork-1.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>stax</groupId>
+            <artifactId>stax-api</artifactId>
+            <version>1.0.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.3.5</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.5</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.14</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpmime</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- these are required for htmlunit 2.10 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${http-components.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- /these are required for htmlunit 2.10 -->
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>${struts2.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javassist</artifactId>
+                    <groupId>javassist</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-config-browser-plugin</artifactId>
+            <version>${struts2.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-sitemesh-plugin</artifactId>
+            <version>${struts2.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-spring-plugin</artifactId>
+            <version>${struts2.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-junit-plugin</artifactId>
+            <version>${struts2.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-amqp</artifactId>
+            <version>${spring.amqp.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit</artifactId>
+            <version>${spring.amqp.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-convention-plugin</artifactId>
+            <version>${struts2.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- freemarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.20</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>org.owasp</groupId>
+            <artifactId>antisamy</artifactId>
+            <version>1.4</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <!-- Apache POI / HSSF - included via tika <dependency> <groupId>org.apache.poi</groupId> 
+            <artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency> -->
+        <!-- hibernate and JPA persistence -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <!-- <dependency> -->
+        <!-- <groupId>org.hibernate</groupId> -->
+        <!-- <artifactId>hibernate-entitymanager</artifactId> -->
+        <!-- <version>${hibernate.version}</version> -->
+        <!-- LICENSE: LGPL 2.1 -->
+        <!-- </dependency> -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-search</artifactId>
+            <version>${hibernate.search.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.3.0.Final</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
+            but includes orm, jdbc, aop, tx, -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <!-- needed by spring for @Transactional calls -->
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <!-- seems to be somewhat incompatible with jetty 8 -->
+            <version>2.2.2</version>
+            <!-- <scope>runtime</scope> -->
+            <!-- LICENSE: APACHE 1.1 -->
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <!-- Servlet & Jsp -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- jackcess -->
+        <dependency>
+            <groupId>com.healthmarketscience.jackcess</groupId>
+            <artifactId>jackcess</artifactId>
+            <version>2.0.4</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <!-- OpenCSV -->
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- Jakarta Commons -->
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.2</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.2</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- OWL API access -->
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-apibinding</artifactId>
+            <version>3.4.10</version>
+            <!-- LICENSE: APACHE 2.0 / LGPL -->
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.owlapi</groupId>
+            <artifactId>owlapi-api</artifactId>
+            <version>3.4.10</version>
+            <!-- LICENSE: APACHE 2.0 / LGPL -->
+        </dependency>
+        <!-- CXF for web-services endpoint -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${apache.cxf.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${apache.cxf.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>edu.asu.lib</groupId>
+            <artifactId>jaxb-document-api</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+            <type>jar</type>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>1.8.4</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>${tika.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.pdfbox</groupId>
+                    <artifactId>pdfbox</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-bridge</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-svg-dom</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-dom</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-anim</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-gvt</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-ext</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-awt-util</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>batik</groupId>
+            <artifactId>batik-script</artifactId>
+            <version>${batik.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>4.0.4</version>
+            <type>jar</type>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+            <type>jar</type>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <!-- joda time -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.3</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
+            w/ collections correctly) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>${jackson.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.5</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- OData (odata4j) Stuff: Begin -->
+        <dependency>
+            <groupId>org.odata4j</groupId>
+            <artifactId>odata4j-core</artifactId>
+            <version>${odata4j.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.persistence</artifactId>
+                    <groupId>org.eclipse.persistence</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>eclipselink</artifactId>
+                    <groupId>org.eclipse.persistence</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.odata4j</groupId>
+            <artifactId>odata4j-jersey</artifactId>
+            <version>${odata4j.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.odata4j</groupId>
+            <artifactId>odata4j-fit</artifactId>
+            <version>${odata4j.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- OData REST Infrastructure -->
+        <!-- REMOVED: GPL 2.0 <dependency> <groupId>com.sun.net.httpserver</groupId> 
+            <artifactId>http</artifactId> <version>20070405</version> </dependency> -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${jersey.version}</version>
+            <!-- LICENSE: CDDL / GPL 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-spring</artifactId>
+            <version>${jersey.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- OData Integration Testing Support -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${jetty.version}</version>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 / ECLIPSE 1.0 -->
+        </dependency>
+        <!-- OData (odata4j) Stuff: End -->
+        <!-- Selenium tests -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>2.41.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-phantom-driver</artifactId>
+            <version>1.1.2.Final</version>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-core</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+        <!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId> 
+            <version>${wro4j.version}</version> </dependency> -->
+    </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <includes>
+                        <include>${project.basedir}/src/main/java/**/*.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <enableRSS>false</enableRSS>
+                    <includes>**\/*.java</includes>
+                    <enableRulesSummary>true</enableRulesSummary>
+                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+                    <configLocation>src/main/resources/check_style.xml</configLocation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <rulesets>
+                        <!-- http://pmd.sourceforge.net/pmd-5.0.5/rules/index.html -->
+                        <!-- Two rule sets that come bundled with PMD -->
+                        <ruleset>rulesets/java/braces.xml</ruleset>
+                        <ruleset>rulesets/java/naming.xml</ruleset>
+                        <!-- <ruleset>rulesets/java/coupling.xml</ruleset> 
+                            <ruleset>rulesets/java/design.xml</ruleset> -->
+                        <ruleset>rulesets/java/optimizations.xml</ruleset>
+                        <ruleset>rulesets/java/sunsecure.xml</ruleset>
+                        <!-- Custom local file system rule set <ruleset>d:\rulesets\strings.xml</ruleset> 
+                            Custom remote rule set accessed via a URL <ruleset>http://localhost/design.xml</ruleset> -->
+                    </rulesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <includeTests>false</includeTests>
+                    <excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
+                    <classFilesDirectory></classFilesDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <links>
+                        <link>http://commons.apache.org/lang/api-release/</link>
+                        <link>http://docs.jboss.org/hibernate/orm/3.6/javadocs/</link>
+                        <link>http://static.springsource.org/spring/docs/2.5.x/api</link>
+                        <link>http://www.opensymphony.com/xwork/api</link>
+                        <link>http://struts.apache.org/2.x/struts2-core/apidocs</link>
+                    </links>
+                    <detectLinks>false</detectLinks>
+                    <sourcepath>src/main/java:src/test/java</sourcepath>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.phasebash</groupId>
+                <artifactId>jsdoc3-maven-plugin</artifactId>
+                <version>1.0.7</version>
+                <configuration>
+                    <recursive>true</recursive>
+                    <directoryRoots>
+                        <directoryRoot>src/main/webapp/js</directoryRoot>
+                    </directoryRoots>
+                    <lenient>true</lenient>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>${clover.version}</version>
+                <configuration>
+                    <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
+					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+					bZloaUUnmm
+					]]></license>
+                    <configuration>
+                        <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
+                        <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
+                    </configuration>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/SQLExtract.java</exclude>
+                        <exclude>org/tdar/utils/sensorydata/*.java</exclude>
+                        <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
+                        <exclude>**/PDFCombiner.java</exclude>
+                        <exclude>**/PDFMergerUtility.java</exclude>
+                        <exclude>**/CommandLineAPITool.java</exclude>
+                        <exclude>**/FilesystemFilestore.java</exclude>
+                        <exclude>**/PairtreeFilestoreMigrator.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>cim</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                            <!-- <report>findbugs</report> <report>checkstyle</report> -->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven.java.net</id>
+            <name>Java.net Maven2 Repository</name>
+            <url>http://download.java.net/maven/2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <name>oss.sonatype.org - github-releases</name>
+            <id>oss.sonatype.org-github-releases</id>
+            <url>http://oss.sonatype.org/content/repositories/github-releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <finalName>${warfile.name}</finalName>
+        <resources>
+            <!-- We only want a small set of files to be filtered. -->
+            <resource>
+                <!-- So we switch filerting off for all but the set -->
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>tdar.properties</exclude>
+                    <exclude>crowd.properties</exclude>
+                    <exclude>hibernate.properties</exclude>
+                    <exclude>local-wro-config.properties</exclude>
+                    <exclude>log4j.properties</exclude>
+                    <exclude>struts-local-settings.xml</exclude>
+                    <exclude>common.json</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <!-- And on for the set of files -->
+                <!-- Having to do it as mutally excluse seems brain dead, 
+                    but that's how Maven works -->
+                <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>tdar.properties</include>
+                    <include>crowd.properties</include>
+                    <include>hibernate.properties</include>
+                    <include>local-wro-config.properties</include>
+                    <include>log4j.properties</include>
+                    <include>struts-local-settings.xml</include>
+                    <include>common.json</include>
+                </includes>
+            </resource>
+        </resources>
+        <filters>
+            <filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
+        </filters>
+        <testResources>
+            <testResource>
+                <directory>src/main/webapp</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>wsdl/*</include>
+                    <include>WEB-INF/*.xml</include>
+                </includes>
+            </testResource>
+            <!-- <testResource> <directory>src/main/resources</directory> 
+                <filtering>true</filtering> </testResource> -->
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish</groupId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <goalPrefix>glassfish</goalPrefix>
+                    <app>target/ROOT</app>
+                    <name>tDAR</name>
+                    <port>8080</port>
+                    <contextRoot>/</contextRoot>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>keytool-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <id>generateKeyPair</id>
+                        <goals>
+                            <goal>generateKeyPair</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <keystore>src/main/resources/jetty-ssl.keystore</keystore>
+                    <dname>cn=localhost</dname>
+                    <keypass>jetty6</keypass>
+                    <skipIfExist>true</skipIfExist>
+                    <storepass>jetty6</storepass>
+                    <alias>jetty6</alias>
+                    <keyalg>RSA</keyalg>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>${clover.version}</version>
+                <configuration>
+                    <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
+					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+					bZloaUUnmm
+					]]></license>
+                    <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
+                    <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/SQLExtract.java</exclude>
+                        <exclude>org/tdar/utils/sensorydata/*.java</exclude>
+                        <exclude>org/tdar/utils/sensorydata/enums/*.java</exclude>
+                        <exclude>**/PDFCombiner.java</exclude>
+                        <exclude>**/PDFMergerUtility.java</exclude>
+                        <exclude>**/CommandLineAPITool.java</exclude>
+                        <exclude>**/FilesystemFilestore.java</exclude>
+                        <exclude>**/PairtreeFilestoreMigrator.java</exclude>
+                    </excludes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.cenqua.clover</groupId>
+                        <artifactId>clover</artifactId>
+                        <version>${clover.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>0.26</version>
+                <configuration>
+                    <inScopeClasses>
+                        <param>org.tdar.*</param>
+                    </inScopeClasses>
+                    <targetClasses>
+                        <param>org.tdar.*</param>
+                    </targetClasses>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>javax.servlet-api</artifactId>
+                        <version>${servlet.api.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.tdar.utils.db.SchemaGenerator</mainClass>
+                    <arguments>
+                        <argument>${generated.schema.dir}/${generated.schema.file}</argument>
+                    </arguments>
+                    <includePluginDependencies>true</includePluginDependencies>
+                </configuration>
+            </plugin>
+            <!-- SQL plugin next to drop the database, load the hibernate-generated 
+                schema, and initialize the database -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <version>1.5</version>
+                <dependencies>
+                    <!-- specify the dependent jdbc driver here -->
+                    <dependency>
+                        <groupId>postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.jdbc.version}</version>
+                    </dependency>
+                </dependencies>
+                <!-- common configuration shared by all executions -->
+                <configuration>
+                    <driver>${hibernate.connection.driver_class}</driver>
+                    <url>${hibernate.connection.url}</url>
+                    <username>${hibernate.connection.user}</username>
+                    <password>${hibernate.connection.password}</password>
+                    <!-- You can comment out username/password configurations 
+                        and have maven to look them up in your settings.xml using ${settingsKey} -->
+                    <!--all executions are ignored if -Dmaven.test.skip=true -->
+                    <skip>${maven.createDB.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>drop-db-before-test-if-any</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <!-- need another database to drop the targeted 
+                                one -->
+                            <url>${postgres.templatedb.url}</url>
+                            <autocommit>true</autocommit>
+                            <enableBlockMode>true</enableBlockMode>
+                            <sqlCommand>drop database if exists
+                                ${test.db.name}; drop
+                                database
+                                if exists
+                                ${test.dataimport.db.name};</sqlCommand>
+                            <!-- ignore error when database is not avaiable -->
+                            <onError>continue</onError>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-db</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <enableBlockMode>true</enableBlockMode>
+                            <url>${postgres.templatedb.url}</url>
+                            <!-- no transaction -->
+                            <autocommit>true</autocommit>
+                            <sqlCommand>create database ${test.db.name};
+                                create database
+                                ${test.dataimport.db.name};</sqlCommand>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-schema-and-load-data</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <autocommit>true</autocommit>
+                            <keepFormat>true</keepFormat>
+                            <enableBlockMode>true</enableBlockMode>
+                            <escapeProcessing>false</escapeProcessing>
+                            <srcFiles>
+                                <srcFile>${generated.schema.dir}/${generated.schema.file}</srcFile>
+                                <srcFile>src/test/db/init-test.sql</srcFile>
+                            </srcFiles>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
+                    <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                    <webResources>
+                        <resource>
+                            <directory>target/generated/webapp</directory>
+                            <targetPath>/</targetPath>
+                            <filtering>false</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+
+                    <!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> 
+                        <fork>true</fork> -->
+
+                    <!-- Welcome to Maven World, where 'no' means 'yes' and 
+                        'yes' means 'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 
+                        http://jira.codehaus.org/browse/MCOMPILER-209 -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>ant-run-run</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                        <exportAntProperties>true</exportAntProperties>
+                            <target>
+                                <condition property="hg.location"
+                                    value="/usr/local/bin/hg">
+                                    <available file="/usr/local/bin/hg" />
+                                </condition>
+                                <condition property="hg.location"
+                                    value="/usr/bin/hg">
+                                    <available file="/usr/bin/hg" />
+                                </condition>
+                                <property name="hg.location"
+                                    value="hg" />
+                                <echo
+                                    message=" using mercurial from: ${hg.location}" />
+                                    <mkdir dir="target"/>
+                                    <mkdir dir="target/classes"/>
+                                <exec output="target/classes/version.txt"
+                                    executable="${hg.location}">
+                                    <arg line="id -n" />
+                                </exec>
+                                 <loadfile property="hg.version" srcFile="target/classes/version.txt"/>
+                                 <loadfile property="hg.version.as_dir" srcFile="target/classes/version.txt">
+                                     <filterchain>
+                                        <deletecharacters chars="\t\r\n+"/>
+                                    </filterchain>
+                                 </loadfile>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- when doing a tomcat redeploy these directories 
+                            need to be created -->
+                        <id>ant-run-tomcat-redeploy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="target" />
+                                <mkdir dir="target/generated" />
+                                <mkdir dir="target/generated/db" />
+                                <mkdir dir="target/generated/webapp" />
+                                <mkdir dir="target/generated/webapp-test" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- <repository> <id>maven.org</id> <url>http://repo2.maven.org/maven2</url> 
+                    </repository> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
+                    <version>9.0.0.RC0</version> <configuration> <testClassesDirectory>src/test/resources/</testClassesDirectory> 
+                    <useTestScope>${use.test.classpath}</useTestScope> <connectors> <connector 
+                    implementation="org.eclipse.jetty.server.ServerConnector"> <port>${jetty.port}</port> 
+                    <maxIdleTime>60000</maxIdleTime> </connector> <connector implementation="org.eclipse.jetty.server.ServerConnector"> 
+                    <port>${jetty.ssl.port}</port> <maxIdleTime>60000</maxIdleTime> <keystore>${project.build.directory}/jetty-ssl.keystore</keystore> 
+                    <password>jetty6</password> <keyPassword>jetty6</keyPassword> </connector> 
+                    </connectors> <contextPath>/</contextPath> <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml> 
+                    <scanIntervalSeconds>0</scanIntervalSeconds> <stopKey>tdar</stopKey> <stopPort>${jetty.stop.port}</stopPort> 
+                    </configuration> -->
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <testClassesDirectory>src/test/resources/</testClassesDirectory>
+                    <useTestClasspath>${use.test.classpath}</useTestClasspath>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <scanTargets>
+                        <scanTarget>src/main/webapp/WEB-INF/web.xml</scanTarget>
+                    </scanTargets>
+                    <contextXml>src/main/resources/jetty-context.xml</contextXml>
+                    <connectors>
+                        <connector
+                            implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>${jetty.port}</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                        <connector
+                            implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
+                            <port>${jetty.ssl.port}</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                            <keystore>src/main/resources/jetty-ssl.keystore</keystore>
+                            <password>jetty6</password>
+                            <keyPassword>jetty6</keyPassword>
+                        </connector>
+                    </connectors>
+                    <!-- <contextPath>/</contextPath> -->
+                    <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
+                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                    <stopKey>tdar</stopKey>
+                    <webApp>
+                        <baseResource
+                            implementation="org.eclipse.jetty.util.resource.ResourceCollection">
+                            <resourcesAsCSV>src/main/webapp,${project.build.directory}/generated/webapp</resourcesAsCSV>
+                        </baseResource>
+                    </webApp>
+                    <stopPort>${jetty.stop.port}</stopPort>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>src/test/resources/hibernate.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+                    <skip>${maven.test.skip}</skip>
+                    <runOrder>alphabetical</runOrder>
+                    <systemProperties>
+                        <property>
+                            <name>maven.version</name>
+                            <value>${maven.version}</value>
+                        </property>
+                        <property>
+                            <name>maven.home</name>
+                            <value>${preparedMavenHome}</value>
+                        </property>
+                        <property>
+                            <name>maven.it.global-settings.dir</name>
+                            <value>${project.build.testOutputDirectory}</value>
+                        </property>
+                    </systemProperties>
+                    <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
+                        </includes> -->
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
+                    <junitArtifactName>junit:junit-dep</junitArtifactName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                    <systemPropertyVariables>
+                        <display.port>${display.port}</display.port>
+                    </systemPropertyVariables>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <findbugsXmlOutput>false</findbugsXmlOutput>
+                    <onlyAnalyze>org.tdar.*</onlyAnalyze>
+                    <includeTests>false</includeTests>
+                    <excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>commons-lang</groupId>
+                        <artifactId>commons-lang</artifactId>
+                        <version>2.6</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <enableRSS>false</enableRSS>
+                    <includes>**\/*.java</includes>
+                    <enableRulesSummary>true</enableRulesSummary>
+                    <configLocation>src/main/resources/check_style.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- with this plugin we can do the following to push our 
+                    war file out to the test server -->
+                <!-- mvn clean package tomcat7:redeploy -P faims_test,default 
+                    -Dserver="FAIMS Test Server" -->
+                <!-- note we are using the appropropriate properties declared 
+                    in the property file in the profile dir: -->
+                <!-- /src/main/release/profiles/ -->
+                <!-- there is a nice write up here: http://www.javathinking.com/2013/05/deploying-to-tomcat-7-with-maven.html -->
+                <!-- a point to remember is that the latest version of tomcat 
+                    doesn't allow a role to use both manager gui and manager scripts -->
+                <!-- so we are reduced to a manger scripts role for this 
+                    deployment -->
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <server>${tomcat.server.id}</server>
+                    <url>${tomcat.server.url}</url>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse 
+                    m2e settings only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>properties-maven-plugin</artifactId>
+                                        <versionRange>[1.0-alpha-2,)</versionRange>
+                                        <goals>
+                                            <goal>read-project-properties</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>keytool-maven-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>generateKeyPair</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-antrun-plugin</artifactId>
+                                        <versionRange>[1.3,)</versionRange>
+                                        <goals>
+                                            <goal>run</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>apitool</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.tdar.utils.CommandLineAPITool</mainClass>
+                                    <arguments>
+                                        <argument>-host</argument>
+                                        <argument>alpha.tdar.org</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>yuicompressor-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jslint</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <nosuffix>true</nosuffix>
+                            <failOnWarning>false</failOnWarning>
+                            <excludes>
+                                <exclude>**/*.pack.js</exclude>
+                                <exclude>**/*.min.js</exclude>
+                                <exclude>**/test/**</exclude>
+                                <exclude>**/localization/*.*</exclude>
+                                <exclude>**/compressed.css</exclude>
+                            </excludes>
+                            <webappDirectory>target/generated/webapp</webappDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test</id>
+            <build>
+                <defaultGoal>surefire:test</defaultGoal>
+                <filters>
+                    <filter>src/test/resources/hibernate.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="target" />
+                                        <mkdir dir="target/generated" />
+                                        <mkdir dir="target/generated/db" />
+                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <properties>
+                <jetty.port>8180</jetty.port>
+                <jetty.ssl.port>8143</jetty.ssl.port>
+                <jetty.stop.port>12920</jetty.stop.port>
+                <use.test.classpath>true</use.test.classpath>
+                <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- These are the default passwords for running locally 
+                    when developing -->
+                <!-- For more secret passwords, place them in settings.xml 
+                    in the ~.m2 directory -->
+                <!-- as per: http://maven.apache.org/settings.html -->
+                <!-- For even more secret passwords, encrypt them: http://maven.apache.org/guides/mini/guide-encryption.html -->
+                <application.password>tdardev.crowdpw</application.password>
+                <the.jdbc.password>tdar</the.jdbc.password>
+                <webapp.deploy.dir>/opt/webapps/tdar</webapp.deploy.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="target" />
+                                        <mkdir dir="target/generated" />
+                                        <mkdir dir="target/generated/db" />
+                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
+                                        <!--<rmdir dir="src/main/webapp/wro" 
+                                            /> -->
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <properties>
+                <webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
+                <maven.test.skip>true</maven.test.skip>
+                <maven.createDB.skip>true</maven.createDB.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>alpha</id>
+            <properties>
+                <webapp.deploy.dir>/home/tdar/app</webapp.deploy.dir>
+                <maven.test.skip>true</maven.test.skip>
+                <maven.createDB.skip>true</maven.createDB.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="target" />
+                                        <mkdir dir="target/generated" />
+                                        <mkdir dir="target/generated/db" />
+                                        <mkdir dir="target/generated/webapp" />
+                                        <mkdir dir="target/generated/webapp-test" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>minify-web-resources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>ro.isdc.wro4j</groupId>
+                        <artifactId>wro4j-maven-plugin</artifactId>
+                        <version>${wro4j.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <targetGroups>default</targetGroups>
+                            <minimize>true</minimize>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}</destinationFolder>
+                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                            <wroFile>src/main/resources/wro.xml</wroFile>
+                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+                            <ignoreMissingResources>false</ignoreMissingResources>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+						<!-- this is to put an extra copy where other things like the tDAR website 
+							can deal with it. JS doesn't change that often so, it should be okay -->
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+	                                    <copy todir="${project.build.directory}/generated/webapp/wro/">
+	                                    	<fileset dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}"/>
+	                                    </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>clover</id>
+            <properties>
+                <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
+                <use.test.classpath>true</use.test.classpath>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>maven-clover2-plugin</artifactId>
+                        <configuration>
+                            <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
+                            <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>setup</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.cenqua.clover</groupId>
+                    <artifactId>clover</artifactId>
+                    <version>${clover.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>checkVersions</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.1</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>migrateFilestore</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/main/resources/tdar.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>javax.servlet</groupId>
+                                <artifactId>javax.servlet-api</artifactId>
+                                <version>${servlet.api.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <mainClass>org.tdar.utils.filestore.PairtreeFilestoreMigrator</mainClass>
+                            <arguments>
+                                <argument>${file.store.location}</argument>
+                                <argument>${file.store.location}.new</argument>
+                                <argument>${file.store.location}.new/error.txt</argument>
+                            </arguments>
+                            <includePluginDependencies>true</includePluginDependencies>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>sqlExtract</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/main/resources/tdar.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- mvn -PsqlExtract clean compile exec:java -->
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>javax.servlet</groupId>
+                                <artifactId>javax.servlet-api</artifactId>
+                                <version>${servlet.api.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <mainClass>org.tdar.utils.db.SQLExtract</mainClass>
+                            <arguments>
+                                <argument>src/test/db/extractRecords.sql</argument>
+                                <argument>src/test/db/init-test.sql</argument>
+                            </arguments>
+                            <includePluginDependencies>true</includePluginDependencies>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>start-x-server</id>
+            <properties>
+                <display.port>:20</display.port>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>selenium-maven-plugin</artifactId>
+                        <version>2.3</version>
+                        <configuration>
+                            <display>${display.port}</display>
+                        </configuration>
+                        <executions>
+                            <!-- http://mojo.codehaus.org/selenium-maven-plugin/examples/headless-with-xvfb.html -->
+                            <execution>
+                                <id>xvfb</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>xvfb</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>setup-new-instance</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy
+                                            file="src/main/resources/crowd.properties.template"
+                                            tofile="src/main/resources/crowd.properties" />
+                                        <copy
+                                            file="src/main/resources/ldap.properties.template"
+                                            tofile="src/main/resources/ldap.properties" />
+                                        <copy
+                                            file="src/main/resources/hibernate.properties.template"
+                                            tofile="src/main/resources/hibernate.properties" />
+                                        <copy
+                                            file="src/main/resources/log4j.properties.template"
+                                            tofile="src/main/resources/log4j.properties" />
+                                        <copy
+                                            file="src/main/resources/tdar.properties.template"
+                                            tofile="src/main/resources/tdar.properties" />
+                                        <copy
+                                            file="src/main/resources/struts-local-settings.xml.template"
+                                            tofile="src/main/resources/struts-local-settings.xml" />
+                                        <copy
+                                            file="src/main/resources/spring-local-settings.xml.template"
+                                            tofile="src/main/resources/spring-local-settings.xml" />
+                                        <echo
+                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
+                                        <echo
+                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jsprofile</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.cj.jshintmojo</groupId>
+                    <artifactId>jshint-maven-plugin</artifactId>
+                    <version>1.3.0</version>
+                    <!-- LICENSE: GPL 2 + classpath exception -->
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.cj.jshintmojo</groupId>
+                        <artifactId>jshint-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>lint</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <version>2.4.1</version>
+                            <configFile>src/main/resources/jshint.conf.json</configFile>
+                            <directories>
+                                <directory>src/main/webapp/js</directory>
+                            </directories>
+                            <excludes>
+                                <exclude>src/main/webapp/hackyScript.js</exclude>
+                                <exclude>src/main/webapp/myDirectoryForThirdyPartyStuff</exclude>
+                            </excludes>
+                            <reporter>jslint</reporter>
+                            <reportFile>target/jshint.xml</reportFile>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <scm>
+        <url>https://bitbucket.org/tdar/tdar.src/</url>
+        <connection>scm:hg:https://bitbucket.org/tdar/tdar.src/</connection>
+        <developerConnection>scm:hg:https://bitbucket.org/tdar/tdar.src/</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://dev.tdar.org/jira/</url>
+    </issueManagement>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <ciManagement>
+        <system>Bamboo</system>
+        <url>http://build.tdar.org/bamboo</url>
+    </ciManagement>
+    <mailingLists>
+        <mailingList>
+            <name>Developer Discussion List</name>
+            <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-dev</archive>
+        </mailingList>
+        <mailingList>
+            <name>Developer Notification / Commit List</name>
+            <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
+        </mailingList>
+    </mailingLists>
+</project>
