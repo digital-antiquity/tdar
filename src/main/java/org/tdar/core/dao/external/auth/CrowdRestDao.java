@@ -1,5 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -63,12 +64,17 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private Properties crowdProperties;
     private String passwordResetURL;
 
-    @Autowired
-    public CrowdRestDao(@Qualifier("crowdProperties") Properties crowdProperties) {
+    public CrowdRestDao() throws IOException {
+        Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
+        properties.load(getClass().getClassLoader().getResourceAsStream("crowd.properties"));
+        init(properties);
+    }
+    
+    private void init(Properties properties) {
+        this.crowdProperties = properties;
         logger.info("initializing crowd rest dao: {}", crowdProperties);
-        this.crowdProperties = crowdProperties;
         try {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
@@ -79,6 +85,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
+    }
+
+    public CrowdRestDao(Properties properties) {
+        init(properties);
     }
 
     @Override
