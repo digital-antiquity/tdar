@@ -70,8 +70,9 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
 
     @Override
     public void append(QueryPart<?> q) {
-        if (q == null || q.isEmpty())
+        if ((q == null) || q.isEmpty()) {
             return;
+        }
         if (q instanceof QueryPartGroup) {
             QueryPartGroup group = (QueryPartGroup) q;
             // this may not be a good idea
@@ -128,8 +129,9 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     }
 
     private String getDescription(TextProvider provider, boolean escape) {
-        if (!descriptionVisible)
+        if (!descriptionVisible) {
             return "";
+        }
         List<String> partDescriptions = new ArrayList<String>();
         for (QueryPart<?> part : getParts()) {
             String description = "";

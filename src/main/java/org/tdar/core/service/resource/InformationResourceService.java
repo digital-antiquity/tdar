@@ -33,7 +33,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
     private ResourceCollectionDao resourceCollectionDao;
 
     /**
-     * Find all Resources ... not suggested 
+     * Find all Resources ... not suggested
      */
     @Transactional(readOnly = true)
     public List<InformationResource> findAllResources() {
@@ -42,6 +42,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
     /**
      * Generate the BrowseByDecatedCountCache for a set of @link Status (s).
+     * 
      * @param statuses
      * @return
      */
@@ -52,6 +53,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
     /**
      * Find an @link InformationResourceFile by it's filename when specifying the @link InformationResourceFile
+     * 
      * @param resource
      * @param filename
      * @return
@@ -62,9 +64,12 @@ public class InformationResourceService extends AbstractInformationResourceServi
     }
 
     /**
-     * Find a random set of resources to be featured on the homepage ... 
-     * @param restrictToFiles show only resources with Files
-     * @param maxResults how many to return
+     * Find a random set of resources to be featured on the homepage ...
+     * 
+     * @param restrictToFiles
+     *            show only resources with Files
+     * @param maxResults
+     *            how many to return
      * @return
      */
     public <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
@@ -73,6 +78,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
     /**
      * Find a random set of resources, but limit them to be part of a project for the homepage
+     * 
      * @param restrictToFiles
      * @param project
      * @param maxResults
@@ -84,6 +90,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
     /**
      * Find a random set of resources, but limit them to be part of a collection for the homepage
+     * 
      * @param restrictToFiles
      * @param collectionId
      * @param maxResults
@@ -100,6 +107,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
     /**
      * Generate the BrowseByYearCountCache for a set of @link Status (s).
+     * 
      * @param statuses
      * @return
      */

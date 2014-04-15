@@ -53,7 +53,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
                 fields.add(txt);
             }
         }
-        
+
         FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, fields).setBoost(ANY_FIELD_BOOST);
 
         allFieldsAsPart.setOperator(Operator.AND);

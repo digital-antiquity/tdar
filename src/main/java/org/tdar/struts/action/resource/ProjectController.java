@@ -104,7 +104,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(),this);
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
@@ -284,8 +284,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 

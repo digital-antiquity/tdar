@@ -117,7 +117,7 @@ public class CreatorQueryPart<C extends Creator> extends
         for (int i = 0; i < getFieldValues().size(); i++) {
             Creator creator = getFieldValues().get(i);
             ResourceCreatorRole role = getRoles().get(i);
-            if (creator != null && !creator.hasNoPersistableValues()) {
+            if ((creator != null) && !creator.hasNoPersistableValues()) {
                 if (names.length() > 0) {
                     names.append(" " + getOperator().name().toLowerCase())
                             .append(" ");

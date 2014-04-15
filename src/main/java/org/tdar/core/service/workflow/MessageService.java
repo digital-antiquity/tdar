@@ -141,7 +141,7 @@ public class MessageService {
             logger.warn("Unhandled exception while processing file: " + Arrays.toString(informationResourceFileVersions), e);
             throw new TdarRecoverableRuntimeException("messageService.error_processing");
         }
-        
+
         // }
         return success;
     }

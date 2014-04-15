@@ -56,7 +56,7 @@ public interface TdarNamedQueries {
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse" ;
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
     String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
@@ -76,7 +76,7 @@ public interface TdarNamedQueries {
     String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     String QUERY_RECENT = "adminStats.recentFiles";
-//    String QUERY_MATCHING_FILES = "datasetRelated.Files";
+    // String QUERY_MATCHING_FILES = "datasetRelated.Files";
     String QUERY_USAGE_STATS = "adminStats.usage";
     String QUERY_FILE_STATS = "adminStats.fileDetails";
     String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
@@ -109,16 +109,16 @@ public interface TdarNamedQueries {
     String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
     String FIND_INVOICE_FOR_COUPON = "invoices.coupons";
     String QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY = "sparseCodingSheets.ontology";
-    String QUERY_FILE_SIZE_TOTAL ="file.total_size";
+    String QUERY_FILE_SIZE_TOTAL = "file.total_size";
     String QUERY_RELATED_RESOURCES = "resource.related";
     String QUERY_PROXY_RESOURCE_FULL = "resourceProxy.full";
     String QUERY_PROXY_RESOURCE_SHORT = "resourceProxy.short";
     String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
-    String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY ="irfv.delete";
+    String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "irfv.delete";
     String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited";
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
     String COLLECTION_VIEW = "collection.views";
     String CREATOR_VIEW = "creator.views";
@@ -175,15 +175,18 @@ public interface TdarNamedQueries {
     String QUERY_HQL_UPDATE_MANY_TO_MANY_REFERENCES = ""; // TODO: //Not possible, I think.
     String QUERY_HQL_UPDATE_MANY_TO_ONE_REFERENCES = ""; // TODO: use many_to_one_count in exists clause.
 
-    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where " +
-    " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
-    + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-    " (res.submitter.id=:userId or exists "
-        + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and " +
+    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where "
+            +
+            " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
+            + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
+            +
+            " (res.submitter.id=:userId or exists "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and "
+            +
             " (TRUE=:admin or rescol.owner.id=:userId or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
-        + ")"
-    + ")  ";
+            + ")"
+            + ")  ";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
@@ -203,10 +206,10 @@ public interface TdarNamedQueries {
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id and resource_id in (select project_id from information_resource where inheriting_individual_institutional_credit is true)  group by creator_id),0) ";
     String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
-    
+
     String SELECT_RAW_IMAGE_SITEMAP_FILES = "select r.id as resourceId, r.title, r.description as resourceDescription, r.resource_type, irf.description, irfv.id from resource r, information_resource ir, information_resource_file irf, "
             + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
-    
+
 }

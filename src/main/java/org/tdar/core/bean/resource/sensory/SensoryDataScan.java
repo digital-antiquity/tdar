@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.SensoryData;
  * Represents a sensory-data scan.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "sensory_data_scan")

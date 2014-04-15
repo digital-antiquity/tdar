@@ -1,18 +1,18 @@
 (function (TDAR, $, ctx) {
     'use strict';
 
-    var _initMapping = function() {
+    var _initMapping = function () {
         $("#autosuggest").click(_autosuggest);
         $("#clearAll").click(_clearall);
-        $("#mapontologyform").FormNavigate({message:"Leaving the page will cause any unsaved data to be lost!"});
+        $("#mapontologyform").FormNavigate({message: "Leaving the page will cause any unsaved data to be lost!"});
         $("#selectColumn").unbind("change");
-        $('button.ui-button').hover(function() {
+        $('button.ui-button').hover(function () {
             $(this).addClass("ui-state-hover");
-        }, function() {
+        }, function () {
             $(this).removeClass("ui-state-hover");
         });
 
-        $(".show-all").click(function() {
+        $(".show-all").click(function () {
             var $button = $(this);
             var $div = $button.closest('.input-append');
             var $textfield = $div.find("input[type=text]");
@@ -20,32 +20,31 @@
             $textfield.focus().autocomplete("search", "");
         });
 
-        for (var i=0;i< $(".mappingPair").length;i++) {
-            _applyLocalAutoComplete($("#autocomp_"+i), ctx["autocomp_"+i+"Suggestions"]);
+        for (var i = 0; i < $(".mappingPair").length; i++) {
+            _applyLocalAutoComplete($("#autocomp_" + i), ctx["autocomp_" + i + "Suggestions"]);
         }
     };
-
 
     function _applyLocalAutoComplete(selector, db) {
 
         $(selector).autocomplete({
-            source : function(request, response) {
+            source: function (request, response) {
                 //var timer = new Timer();
                 var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-                var allMatchedItems = $.merge($.map(db, function(item) {
+                var allMatchedItems = $.merge($.map(db, function (item) {
                     if (matcher.test(item.name)) {
                         return {
-                            value : item.name,
-                            label : item.name,
-                            id : item.id
+                            value: item.name,
+                            label: item.name,
+                            id: item.id
                         };
                     }
-                }), $.map(ontology, function(item) {
+                }), $.map(ontology, function (item) {
                     if (matcher.test(item.name)) {
                         return {
-                            value : item.name.replace(/^([\|\-\s])*/ig, ""),
-                            label : item.name,
-                            id : item.id
+                            value: item.name.replace(/^([\|\-\s])*/ig, ""),
+                            label: item.name,
+                            id: item.id
                         };
                     }
                 }));
@@ -53,24 +52,24 @@
                 response(allMatchedItems);
                 //timer.stop();
             },
-            minLength : 0,
-            select : function(event, ui) {
+            minLength: 0,
+            select: function (event, ui) {
                 var $input = $(this); //'this' points to the target element 
                 //get the hidden input next to the textbox and set the id field
                 var $idElement = $($input.attr("autocompleteIdElement"));
                 $idElement.val(ui.item.id);
                 $input.removeClass("error");
             },
-            open : function(event, ui) {
+            open: function (event, ui) {
                 $("ul.ui-autocomplete").css("width", $(this).parent().width());
             },
-            change : function(event, ui) {
+            change: function (event, ui) {
             }
         });
 
         //not to be confused with autocomplete 'change' option,  which is actually a custom 'autocompletechange' event
         //we assume this fires only when you change the textbox and not when via selecting an item from the autocomplete list
-        $(selector).change(function() {
+        $(selector).change(function () {
 
             var input = this; //'this' is the text input element
             var $input = $(input);
@@ -89,7 +88,7 @@
                 var valid = false;
 
                 //troll through onto ontologies until we find one that matches the value of the input element
-                $.each(ontology, function(k, v) {
+                $.each(ontology, function (k, v) {
                     if (v.name.match(matcher)) {
                         valid = true;
                         var $idElement = $($input.attr("autocompleteIdElement"));
@@ -109,8 +108,9 @@
         });
 
     }
+
     function _autosuggest() {
-        $(".manualAutocomplete").each(function() {
+        $(".manualAutocomplete").each(function () {
             var $element = $(this);
             var json = eval($element.attr("id") + "Suggestions");
             if (json.length == 3 && $element.val() == "") {
@@ -123,7 +123,7 @@
     }
 
     function _clearall() {
-        $(".manualAutocomplete").each(function() {
+        $(".manualAutocomplete").each(function () {
             var $element = $(this);
             var $idElement = $($element.attr("autocompleteIdElement"));
             $element.val("");
@@ -131,12 +131,11 @@
         });
     }
 
-        //expose public elements
+    //expose public elements
     TDAR.ontologyMapping = {
         "initMapping": _initMapping,
         "clearAll": _clearall,
         "autoSuggest": _autosuggest
     };
-
 
 })(TDAR, jQuery, window);

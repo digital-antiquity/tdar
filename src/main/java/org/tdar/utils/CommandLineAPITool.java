@@ -370,12 +370,13 @@ public class CommandLineAPITool {
             HttpClientContext context = HttpClientContext.create();
             context.setCookieStore(cookieStore);
 
-            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();
-         
+            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(globalConfig)
+                    .setDefaultCookieStore(cookieStore).build();
+
             if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
                 AuthScope scope = new AuthScope(getHostname(), 443);
                 credsProvider.setCredentials(scope, new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD));
-//                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
+                // httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
                 logger.info("creating challenge/response authentication request for alpha");
                 HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
                 logger.debug(tdarIPAuth.getRequestLine());
@@ -402,8 +403,9 @@ public class CommandLineAPITool {
                 logger.trace("None");
             } else {
                 for (int i = 0; i < cookies.size(); i++) {
-                    if (cookies.get(i).getName().equals("crowd.token_key"))
+                    if (cookies.get(i).getName().equals("crowd.token_key")) {
                         sawCrowdAuth = true;
+                    }
                     logger.trace("- " + cookies.get(i).toString());
                 }
             }
@@ -441,8 +443,9 @@ public class CommandLineAPITool {
         int errorCount = 0;
         if (parentDir.isDirectory()) {
             for (File file : parentDir.listFiles()) {
-                if (file.isHidden())
+                if (file.isHidden()) {
                     continue;
+                }
                 String fileName = file.getName();
                 if (file.isDirectory()) {
                     directories.add(file);
@@ -454,7 +457,7 @@ public class CommandLineAPITool {
             }
         } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
             records.add(parentDir);
-        } 
+        }
 
         // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records
@@ -483,7 +486,7 @@ public class CommandLineAPITool {
         String path = record.getPath();
         HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//        MultipartEntity reqEntity = new MultipartEntity();
+        // MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
             logger.debug("skipping: " + path);

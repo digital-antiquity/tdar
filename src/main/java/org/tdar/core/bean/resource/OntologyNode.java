@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,10 +40,10 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "ontology_node", indexes={
-        @Index(name = "ontology_node_interval_start_index", columnList="interval_start"),
-        @Index(name = "ontology_node_interval_end_index", columnList="interval_end"),
-        @Index(name = "ontology_node_index",columnList="index")
+@Table(name = "ontology_node", indexes = {
+        @Index(name = "ontology_node_interval_start_index", columnList = "interval_start"),
+        @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
+        @Index(name = "ontology_node_index", columnList = "index")
 })
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
@@ -65,11 +64,11 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
+    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
     private Integer intervalStart;
 
-    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
+    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
     private Integer intervalEnd;
 
@@ -173,8 +172,9 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Transient
     public int getNumberOfParents() {
-        if (StringUtils.isEmpty(index))
+        if (StringUtils.isEmpty(index)) {
             return 0;
+        }
         return StringUtils.split(index, '.').length;
     }
 
@@ -240,8 +240,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public String getNormalizedIri() {
         String iri_ = StringUtils.trim(iri);
-        //backwards compatibility to help with mappings which start with digests
-        if (iri_ != null && iri_.matches("^\\_\\d.*")) {
+        // backwards compatibility to help with mappings which start with digests
+        if ((iri_ != null) && iri_.matches("^\\_\\d.*")) {
             return StringUtils.substring(iri_, 1);
         } else {
             return iri_;
@@ -292,7 +292,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Transient
     public boolean isChildOf(OntologyNode parentNode) {
-        return parentNode != null && parentNode.getIntervalStart() < getIntervalStart() && parentNode.getIntervalEnd() >= getIntervalEnd();
+        return (parentNode != null) && (parentNode.getIntervalStart() < getIntervalStart()) && (parentNode.getIntervalEnd() >= getIntervalEnd());
     }
 
     public boolean isParent() {
@@ -323,7 +323,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public String getFormattedNameWithSynonyms() {
         if (CollectionUtils.isNotEmpty(getSynonyms())) {
-            String txt = String.format("%s (%s)",getDisplayName(), StringUtils.join(getSynonyms(), ", "));
+            String txt = String.format("%s (%s)", getDisplayName(), StringUtils.join(getSynonyms(), ", "));
             logger.debug(txt);
             return txt;
         } else {

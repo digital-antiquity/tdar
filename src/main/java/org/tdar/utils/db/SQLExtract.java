@@ -114,10 +114,12 @@ public class SQLExtract {
 
     public SQLExtract(String DRIVER, String URL, String USER, String PASSWORD) {
 
-        if (StringUtils.isNotBlank(DRIVER))
+        if (StringUtils.isNotBlank(DRIVER)) {
             this.DRIVER = DRIVER;
-        if (StringUtils.isNotBlank(URL))
+        }
+        if (StringUtils.isNotBlank(URL)) {
             this.URL = URL;
+        }
         if (StringUtils.isNotBlank(USER)) {
             this.USER = USER;
         }
@@ -236,7 +238,7 @@ public class SQLExtract {
         if (tablename.indexOf(",") != -1) {
             String select = sql.substring(sql.toLowerCase().indexOf("select") + 6);
             select = select.substring(0, sql.toLowerCase().indexOf(" from "));
-            if (select.indexOf(",") == -1 && select.indexOf(".*") != -1) {
+            if ((select.indexOf(",") == -1) && (select.indexOf(".*") != -1)) {
                 tablename = select.substring(0, select.indexOf(".*"));
             } else {
                 appendAndUpdate("can't export sql b/c it joined from multiple tables", DEBUG_ERR);
@@ -281,14 +283,14 @@ public class SQLExtract {
                             vl.append(rs.getInt(i));
                         } else if (rsmd.getColumnType(i) == Types.BOOLEAN) {
                             vl.append(rs.getBoolean(tablename));
-                        } else if (rsmd.getColumnType(i) == Types.DATE || rsmd.getColumnType(i) == Types.TIME || rsmd.getColumnType(i) == Types.TIMESTAMP) {
+                        } else if ((rsmd.getColumnType(i) == Types.DATE) || (rsmd.getColumnType(i) == Types.TIME) || (rsmd.getColumnType(i) == Types.TIMESTAMP)) {
                             vl.append(" '").append(escape(rs.getString(i))).append("'");
                         } else {
                             if (rs.getString(i).equalsIgnoreCase("t")) {
                                 vl.append(" ").append("true").append(" ");
                             } else if (rs.getString(i).equalsIgnoreCase("f")) {
                                 vl.append(" ").append("false").append(" ");
-                            } else if (rsmd.isNullable(i) == ResultSetMetaData.columnNullable && rs.getString(i).equals("")) {
+                            } else if ((rsmd.isNullable(i) == ResultSetMetaData.columnNullable) && rs.getString(i).equals("")) {
                                 vl.append("NULL");
                             } else {
                                 vl.append(" N'").append(escape(rs.getString(i))).append("'");

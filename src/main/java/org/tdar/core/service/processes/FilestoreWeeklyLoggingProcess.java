@@ -72,16 +72,18 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
                 tainted.add(version);
                 logger.debug("other error ", e);
             }
-            if (count % 10_000 == 0) {
+            if ((count % 10) == 0) {
                 Thread.yield();
-                try {
-                    Thread.sleep(1_000l);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if ((count % 10_000) == 0) {
+                    try {
+                        Thread.sleep(1_000l);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
-        
+
         if (count == 0) {
             subject.append(" [NONE]");
         }

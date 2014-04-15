@@ -1,5 +1,5 @@
 <head>
-<title>Access Forbidden</title>
+    <title>Access Forbidden</title>
 </head>
 <p>Sorry, the resource you requested is in <em>draft</em> and only authorized users may view it.</p>
 <#if !authenticatedUser??>

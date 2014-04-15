@@ -104,7 +104,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // clickLinkWithText("link ontology");
         // assertTextPresentInPage("Match column values");
     }
-    
+
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testFaimsDatasetView() {
@@ -113,7 +113,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // following should appear on the page when run with the FAIMS property file
         assertTextPresent(EXACT_LOCATION_CHECKBOX_TEXT);
     }
-    
+
     // an malformed file should take you back to save.action and contain an action error
     @Test
     public void testMalformedAttachmentDisplaysError() {

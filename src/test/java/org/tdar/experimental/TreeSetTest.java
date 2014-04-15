@@ -34,8 +34,9 @@ public class TreeSetTest {
         @Override
         // this is just a simple test: don't be a jerk and compare me to some other class type
         public boolean equals(Object that) {
-            if (that == null)
+            if (that == null) {
                 return false;
+            }
             return this.id == ((Person) that).id;
         }
 

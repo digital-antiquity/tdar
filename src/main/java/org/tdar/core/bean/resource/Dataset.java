@@ -47,7 +47,7 @@ public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> , Localizable {
+    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions>, Localizable {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
@@ -66,7 +66,6 @@ public class Dataset extends InformationResource {
         public String getLocaleKey() {
             return MessageHelper.formatLocalizableKey(this);
         }
-
 
         @Override
         public Integer getCount() {
@@ -120,8 +119,9 @@ public class Dataset extends InformationResource {
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getDefaultOntology() != null)
+                if (dtc.getDefaultOntology() != null) {
                     return IntegratableOptions.YES;
+                }
             }
         }
         return IntegratableOptions.NO;
@@ -133,7 +133,7 @@ public class Dataset extends InformationResource {
      */
     @Transient
     public DataTable getDataTableByName(String name) {
-        if (nameToTableMap == null || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
+        if ((nameToTableMap == null) || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
@@ -147,7 +147,7 @@ public class Dataset extends InformationResource {
     @Transient
     public DataTable getDataTableById(Long id) {
         for (DataTable datatable : getDataTables()) {
-            if (ObjectUtils.equals(datatable.getId() , id)) {
+            if (ObjectUtils.equals(datatable.getId(), id)) {
                 return datatable;
             }
         }
@@ -168,7 +168,7 @@ public class Dataset extends InformationResource {
 
     @Transient
     public DataTable getDataTableByGenericName(String name) {
-        if (genericNameToTableMap == null || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
+        if ((genericNameToTableMap == null) || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync

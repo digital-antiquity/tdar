@@ -48,8 +48,9 @@ public class PatternSubjectSMTPAppender extends SMTPAppender {
             sbuf.append("this ERROR occurred on: " + host + "\r\n");
 
             String t = layout.getHeader();
-            if (t != null)
+            if (t != null) {
                 sbuf.append(t);
+            }
             int len = cb.length();
             for (int i = 0; i < len; i++) {
                 // sbuf.append(MimeUtility.encodeText(layout.format(cb.get())));
@@ -74,8 +75,9 @@ public class PatternSubjectSMTPAppender extends SMTPAppender {
                 }
             }
             t = layout.getFooter();
-            if (t != null)
+            if (t != null) {
                 sbuf.append(t);
+            }
             part.setContent(sbuf.toString(), layout.getContentType());
 
             Multipart mp = new MimeMultipart();

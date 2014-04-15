@@ -26,13 +26,13 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
 
     @SuppressWarnings("unchecked")
     public List<Institution> withNameLike(final String name) {
-        return (List<Institution>) getCriteria().add(Restrictions.like("name", addWildCards(name))).list();
+        return getCriteria().add(Restrictions.like("name", addWildCards(name))).list();
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

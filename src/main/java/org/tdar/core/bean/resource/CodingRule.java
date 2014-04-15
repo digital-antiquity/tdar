@@ -32,10 +32,10 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @latest $Id$
  */
 @Entity
-@Table(name = "coding_rule", indexes={
-        @Index(name = "coding_rule_coding_sheet_id_idx",columnList="coding_sheet_id"),
-        @Index(name = "coding_rule_term_index",columnList="term"),
-        @Index(name = "coding_rule_ontology_node_id_idx",columnList="ontology_node_id")
+@Table(name = "coding_rule", indexes = {
+        @Index(name = "coding_rule_coding_sheet_id_idx", columnList = "coding_sheet_id"),
+        @Index(name = "coding_rule_term_index", columnList = "term"),
+        @Index(name = "coding_rule_ontology_node_id_idx", columnList = "ontology_node_id")
 })
 public class CodingRule extends Persistable.Base implements Comparable<CodingRule> {
 
@@ -111,8 +111,9 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     // strips leading zeros and trims whitespace from string.
     private static String sanitize(String string) {
-        if (string == null || string.isEmpty())
+        if ((string == null) || string.isEmpty()) {
             return null;
+        }
         try {
             Integer integer = Integer.parseInt(string);
             string = String.valueOf(integer);

@@ -1,16 +1,14 @@
 (function (TDAR, $) {
     'use strict';
 
-
     //parse string to integer.  replace blank and NaN with 0.
-    var _parse = function(num) {
-        var _num = num.replace(",","");
+    var _parse = function (num) {
+        var _num = num.replace(",", "");
         _num = Math.ceil(_num);
         _num = isNaN(_num) ? 0 : _num;
         return _num;
     };
 
-    
     var _initPricing = function (form, ajaxUrl) {
         var $form = $(form);
         $("#small-option").click(function () {
@@ -32,14 +30,13 @@
             $form.submit();
         });
 
-        $form.submit(function(f) {
+        $form.submit(function (f) {
             var numFiles = _parse($("#MetadataForm_invoice_numberOfFiles").val());
             var numMb = _parse($("#MetadataForm_invoice_numberOfMb").val());
 
-            $("#MetadataForm_invoice_numberOfFiles, #MetadataForm_invoice_numberOfMb").each(function(){
+            $("#MetadataForm_invoice_numberOfFiles, #MetadataForm_invoice_numberOfMb").each(function () {
                 this.value = _parse(this.value).toFixed(0);
             });
-
 
             if (numFiles == numMb && numMb == 0 && $("#MetadataForm_code").val() == '') {
                 alert('please enter space or files');
@@ -56,10 +53,10 @@
                 numMb = 0;
             }
 
-            if (isNaN(numFiles)){
+            if (isNaN(numFiles)) {
                 numFiles = 0;
             }
-/* give the user an understanding of size in GB if size is > 1/2 GB */
+            /* give the user an understanding of size in GB if size is > 1/2 GB */
             var mb = "";
             if (numMb > 512) {
                 var num = numMb / 1024;
@@ -98,7 +95,6 @@
                         $("#price").html("0.00");
                         var line = TDAR.common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
                         $est.append(line);
-
 
                     } else {
                         $("#price").html(item.subtotal);

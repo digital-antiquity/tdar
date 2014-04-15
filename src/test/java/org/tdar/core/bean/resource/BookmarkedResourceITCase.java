@@ -132,7 +132,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
             boolean equal = false;
             for (BookmarkedResource pbr : persistedDatasetBookmarks) {
                 logger.debug("comparing " + pbr + " with " + br);
-                if (pbr.equals(br) && br.equals(pbr) && pbr.hashCode() == br.hashCode()) {
+                if (pbr.equals(br) && br.equals(pbr) && (pbr.hashCode() == br.hashCode())) {
                     equal = true;
                     break;
                 }

@@ -18,7 +18,6 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -29,6 +28,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
+
 /**
  * $Id$
  * 
@@ -45,14 +45,14 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         super(AuthorizedUser.class);
     }
 
-    
     public boolean isAllowedTo(Person person, HasSubmitter resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (ResourceCollection)resource, permission);
+            return isAllowedTo(person, (ResourceCollection) resource, permission);
         } else {
-            return isAllowedTo(person, (Resource)resource, permission);
+            return isAllowedTo(person, (Resource) resource, permission);
         }
     }
+
     /**
      * @param person
      * @param resource
@@ -76,7 +76,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             return true;
         }
 
-//        // get all of the resource collections and their hierarchical tree, permissions are additive
+        // // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
@@ -100,8 +100,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return isAllowedTo(person, permission, ids);
     }
 
-    // basic weak hashMap to cache session and user permissions... 
-    private final WeakHashMap<Session,Map<UserPermissionCacheKey, Boolean>> userPermissionsCache = new WeakHashMap<>();
+    // basic weak hashMap to cache session and user permissions...
+    private final WeakHashMap<Session, Map<UserPermissionCacheKey, Boolean>> userPermissionsCache = new WeakHashMap<>();
 
     /**
      * Used to simulate change in session or to wipe out cache. Our tests all run in the "same" session, so this is necessary, unfortunately
@@ -110,40 +110,41 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         getLogger().debug("clearing permissions cache");
         userPermissionsCache.clear();
     }
-    
+
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> ids) {
-        if (CollectionUtils.isEmpty(ids) || Persistable.Base.isNullOrTransient(person) ) {
+        if (CollectionUtils.isEmpty(ids) || Persistable.Base.isNullOrTransient(person)) {
             return false;
         }
-        
+
         CacheResult cacheResult = checkUserPermissionsCache(person, permission, ids, getCurrentSession());
         String cached = "";
         if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
-                Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
-                query.setLong("userId", person.getId());
-                query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
-                query.setParameterList("resourceCollectionIds", ids);
+            Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
+            query.setLong("userId", person.getId());
+            query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
+            query.setParameterList("resourceCollectionIds", ids);
 
-                @SuppressWarnings("unchecked")
-                List<Integer> result = query.list();
-                getLogger().debug("results: {}", result);
-                if (result.isEmpty() || result.get(0) != 1) {
-                    updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE );
-                    return false;
-                }
-                updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.TRUE );
-                return true;
+            @SuppressWarnings("unchecked")
+            List<Integer> result = query.list();
+            getLogger().debug("results: {}", result);
+            if (result.isEmpty() || result.get(0) != 1) {
+                updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE);
+                return false;
+            }
+            updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.TRUE);
+            return true;
         } else {
             cached = "CACHED";
         }
-        getLogger().debug("  [{} {}] checkUserPermissionCache: {}:{} [sesion: {}] {}", cacheResult, cached, person.getId(), permission, getCurrentSession().hashCode(), ids);
+        getLogger().debug("  [{} {}] checkUserPermissionCache: {}:{} [sesion: {}] {}", cacheResult, cached, person.getId(), permission,
+                getCurrentSession().hashCode(), ids);
         return cacheResult.getBooleanEquivalent();
     }
-    
+
     private CacheResult checkUserPermissionsCache(Person person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession) {
         UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
         // could be enhanced to check each ID
-        Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession); 
+        Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession);
         CacheResult result = CacheResult.NOT_FOUND;
         if (sessionMap != null) {
             Boolean res = sessionMap.get(key);
@@ -153,7 +154,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
                 result = CacheResult.FALSE;
             }
         }
-        getLogger().trace("  [{}] checkUserPermissionCache: {}:{} [sesion: {}] {}", result, person.getId(), permission, currentSession.hashCode(), collectionIds);
+        getLogger().trace("  [{}] checkUserPermissionCache: {}:{} [sesion: {}] {}", result, person.getId(), permission, currentSession.hashCode(),
+                collectionIds);
         return result;
     }
 
@@ -170,7 +172,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         getLogger().trace("{} ==> {}", permission, permission.getLesserAndEqualPermissions());
         for (GeneralPermissions subPermission : permission.getLesserAndEqualPermissions()) {
             UserPermissionCacheKey key = new UserPermissionCacheKey(person, subPermission, collectionIds);
-            // if things are positive, then set lower permissions to positive too.  Don't make negative assumptions.
+            // if things are positive, then set lower permissions to positive too. Don't make negative assumptions.
             if (result != null && result == CacheResult.TRUE) {
                 sessionMap.put(key, result.getBooleanEquivalent());
             }
@@ -178,8 +180,6 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
         sessionMap.put(key, result.getBooleanEquivalent());
     }
-
-
 
     /**
      * @param person
@@ -222,7 +222,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     }
 
     public List<Resource> findEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds) {
-        //Hey guess what - you always get sorted results.
+        // Hey guess what - you always get sorted results.
         if (CollectionUtils.isEmpty(collectionIds)) {
             collectionIds = new ArrayList<>();
             collectionIds.add(null);
@@ -242,13 +242,12 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         query.setParameter("allStatuses", false);
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-//        query.setParameterList("rescolIds", collectionIds);
+        // query.setParameterList("rescolIds", collectionIds);
         List results = query.list();
 
         return results;
     }
 
-    
     public Set<Resource> findSparseEditableResources(Person person, List<ResourceType> resourceTypes, boolean isAdmin) {
         return new HashSet<>(findSpaseEditableResources(person, resourceTypes, isAdmin, false));
     }

@@ -15,7 +15,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
  * This caches the count of geographic keywords for the world map on the homepage.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "homepage_cache_geographic_keyword")
@@ -36,10 +36,9 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
 
-    
     private transient double totalLogCount = 0d;
     private transient long totalCount = 0l;
-    
+
     public HomepageGeographicKeywordCache() {
 
     }
@@ -89,7 +88,7 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
 
     @Override
     public String getKey() {
-        return getLabel().substring(0,2);
+        return getLabel().substring(0, 2);
     }
 
     @Override

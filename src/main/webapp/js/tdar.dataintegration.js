@@ -31,11 +31,7 @@
             $("#selectDTColForm").html($("#autosave").val());
         }
 
-        $(".drg").draggable({
-            zIndex: 2700,
-            revert: true,
-            revertDuration: 0
-        });
+        _resetDraggable();
 
         $("#drplist td").droppable(drpOptions);
 
@@ -59,8 +55,7 @@
             $('.drg', this).css('height', pheight);
         });
 
-        var top = $('#fixedList').offset().top
-            - parseFloat($('#fixedList').css('marginTop').replace(/auto/, 0));
+        var top = $('#fixedList').offset().top - parseFloat($('#fixedList').css('marginTop').replace(/auto/, 0));
         $(window).scroll(function (event) {
             // what the y position of the scroll is
             var y = $(this).scrollTop();
@@ -74,7 +69,19 @@
                 $('#fixedList').removeClass('fixed');
             }
         });
+        $("#selectDTColForm").submit(function (event) {
+            if ($(".integrationColumn", $("#drplist")).size() > 0) {
+                return true;
+            }
+            $('#columnSave').modal({
+                keyboard: false
+            });
+            return false;
+        });
 
+        $("#modalHide").click(function (event) {
+            $('#columnSave').modal('hide');
+        });
     };
 
     /**
@@ -152,21 +159,19 @@
         $(draggable).css("z-index", 100);
         var table = draggable.data("table");
         var ret = true;
-        var children = $target.children("div [data-table]");
+        var children = $target.find("div [data-table]");
         console.log(draggable);
         console.log(table);
         console.log(children);
         if (children.length > 0) {
-            $(children)
-                .each(
-                function () {
-                    console.log($(this));
-                    if ($(this).data("table") == table) {
-                        msg = "you cannot add more than one variable from the same table to any column";
-                        _setStatus(msg);
-                        ret = false;
-                    }
-                });
+            $(children).each(function () {
+                        console.log($(this));
+                        if ($(this).data("table") == table) {
+                            msg = "you cannot add more than one variable from the same table to any column";
+                            _setStatus(msg);
+                            ret = false;
+                        }
+                    });
         }
 
         if (!ret) {
@@ -177,13 +182,13 @@
         newChild.data("ontology", draggable.data("ontology"));
         newChild.data("table", draggable.data("table"));
         $target.find(".info").detach();
-        draggable.clone(true,true).appendTo(newChild);
+        draggable.clone(true, true).appendTo(newChild);
         newChild.append("&nbsp;&nbsp;&nbsp;&nbsp;<button>X</button>");
         var colNum = $target.data('colnum');
         var children = $target.find("div");
 
         newChild.find('*').each(function () {
-            var elem = this;
+            var elem = this;    
             _replaceAttribute(elem, "name", '{COLNUM}', colNum);
             // always have one DIV to start with, so subtract 2
             _replaceAttribute(elem, "name", '{CELLNUM}', children.length - 2);
@@ -201,15 +206,15 @@
             opacity: .8,
             borderColor: "#000000"
         }, 200).animate({
-                opacity: 1,
-                borderColor: "#AAAAAA"
-            }, 200).animate({
-                opacity: .8,
-                borderColor: "#000000"
-            }, 200).animate({
-                opacity: 1,
-                borderColor: "#AAAAAA"
-            }, 200);
+            opacity: 1,
+            borderColor: "#AAAAAA"
+        }, 200).animate({
+            opacity: .8,
+            borderColor: "#000000"
+        }, 200).animate({
+            opacity: 1,
+            borderColor: "#AAAAAA"
+        }, 200);
     }
 
     /**
@@ -231,12 +236,10 @@
             width: small + "%"
         });
 
-
         $col.stop(true, true).animate({
             width: "50%"
         }).removeClass("short");
     };
-
 
     /**
      * Add a new column to the Integration Table section.
@@ -247,22 +250,27 @@
      */
     function _addColumn(strOntologyId) {
         var colNum = $("#drplist tr").children().length + 1;
-        $(
-            "<td data-colnum="
-                + (colNum - 1)
-                + " class='displayColumn'><div class='label'>Column "
-                + colNum
-                + "<span class='colType'></span> <input type='hidden' name='integrationColumns["
-                + (colNum - 1)
-                + "].columnType' value='DISPLAY' class='colTypeField'/><input type='hidden' name='integrationColumns["
-                + (colNum - 1)
-                + "].sequenceNumber' value='"
-                + (colNum - 1)
-                + "' class='sequenceNumber'/><button class='removeColumn'>X</button></div></td>")
-            .droppable(drpOptions).appendTo("#drplist tr");
+
+        var cols = $("#drplist tr td");
+        console.log(cols);
+        console.log(cols.last());
+
+        console.log($(".drg", cols.last()).size());
+
+        if ($(".drg", cols.last()).size() == 0 && parseInt(strOntologyId) > 0) {
+            cols.last().remove();
+        }
+        var remove = "<button class='removeColumn'>X</button>";
+        if (colNum == 1) {
+            remove = "";
+        }
+        $("<td data-colnum=" + (colNum - 1) + " class='displayColumn'><div class='label'>Column " + colNum + "<span class='colType'></span> <input type='hidden' name='integrationColumns[" + (colNum - 1) + "].columnType' value='DISPLAY' class='colTypeField'/><input type='hidden' name='integrationColumns[" + (colNum - 1) + "].sequenceNumber' value='" + (colNum - 1) + "' class='sequenceNumber'/>" + remove + "</div></td>").droppable(drpOptions).appendTo("#drplist tr");
         var $chld = $("#drplist td:last");
         $("button.removeColumn", $chld).button().click(function () {
             $(this).parent().parent().remove();
+            if ($("#drplist td").size() == 0) {
+                _addColumn();
+            }
             return false;
         });
         _expandColumn($chld);
@@ -285,28 +293,22 @@
      * Clear all columns in Integration Table section
      */
     function _integrationClearAll() {
-        $("#drplist tbody td")
-            .each(
-            function () {
+        $("#drplist tbody td").each(function () {
                 var $this = $(this);
                 if ($this.data("colnum") == 0) {
                     $this.empty();
-                    $this
-                        .html(
-                            '<div class="label">Column 1 <span class="colType"></span><input type="hidden" name="integrationColumns[0].columnType" value="DISPLAY" class="colTypeField"/><input type="hidden" name="integrationColumns[0].sequenceNumber" value="0" class="sequenceNumber" /></div><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span>');
+                    $this.html('<div class="label">Column 1 <span class="colType"></span><input type="hidden" name="integrationColumns[0].columnType" value="DISPLAY" class="colTypeField"/><input type="hidden" name="integrationColumns[0].sequenceNumber" value="0" class="sequenceNumber" /></div><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span>');
                     $this.removeClass("integrationColumn");
                     $this.addClass("displayColumn");
                 } else {
                     $this.remove();
                 }
             });
-        setTimeout(function () {
-            $("#clear").attr('checked', false);
-        }, 400);
+        _resetDraggable();
     }
 
     /**
-     * Add all integrateable columns to the Integration Tagble
+     * Add all integrateable columns to the Integration Table
      * @private
      */
     function _integrationAutoselect() {
@@ -348,9 +350,6 @@
         }
 
         //you know, rumors tell of an html element that implements this.. button-like behavior.
-        setTimeout(function () {
-            $("#autoselect").attr('checked', false);
-        }, 400);
     }
 
     /**
@@ -359,7 +358,7 @@
      * @returns {*}
      * @private
      */
-    var _getFunctionBody = function(func) {
+    var _getFunctionBody = function (func) {
         var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
         return m;
     }
@@ -374,8 +373,9 @@
      * @private
      */
     function _replaceAttribute(elem, attrName, str, rep) {
-        if (!$(elem).attr(attrName))
+        if (!$(elem).attr(attrName)) {
             return;
+        }
         var oldval = $(elem).attr(attrName);
         if (typeof oldval === "function") {
             oldval = _getFunctionBody(oldval);
@@ -384,8 +384,7 @@
         }
         if (oldval.indexOf(str) != -1) {
             var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
-            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
-                oldval.length);
+            var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length, oldval.length);
             var newval = beginPart + rep + endPart;
             $(elem).attr(attrName, newval);
             // console.debug('attr:' + attrName + ' oldval:' + oldval + ' newval:' +
@@ -420,8 +419,10 @@
 
     //return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
     function cb2str() {
-        var elems = $.map($("[id]:checkbox:checked").get(), function(el){return el.id});
-        if(elems.length) {
+        var elems = $.map($("[id]:checkbox:checked").get(), function (el) {
+            return el.id
+        });
+        if (elems.length) {
             return JSON.stringify(elems);
         } else {
             return "";
@@ -430,20 +431,23 @@
 
     //check the boxes from a serialized list of checkboxes
     function str2cb(str) {
-        if(str){$.each(JSON.parse(str), function(i, cbid){$("#" + cbid).prop('checked', true)});}
+        if (str) {
+            $.each(JSON.parse(str), function (i, cbid) {
+                $("#" + cbid).prop('checked', true)
+            });
+        }
     }
-
 
     /**
      * Initialize the "Filter Ontology Values" page
      * @private
      */
-    var  _initOntologyFilterPage = function() {
+    var _initOntologyFilterPage = function () {
 
-        $("#filterForm").submit(function() {
+        $("#filterForm").submit(function () {
             var errors = "";
-            $(".integrationTable").each(function() {
-                if ($(":checked ",$(this)).length == 0) {
+            $(".integrationTable").each(function () {
+                if ($(":checked ", $(this)).length == 0) {
                     errors = "at least one table does not have any filter values checked";
                 }
             });
@@ -451,47 +455,55 @@
             if (errors != '') {
                 alert(errors);
                 return false;
-            };
+            }
+            ;
             if ($("#filterForm :checked").length < 1) {
                 alert("please select at least one variable");
                 return false;
             }
         });
 
-        $(".autocheck").click(function() {
+        $(".autocheck").click(function () {
             $(this).closest(".integration-column").find("[canautocheck]").prop("checked", true);
             //$("[canautocheck]",$(this).closest("table")).prop("checked","checked");
         });
 
-        $(".hideElements").click(function() {
+        $(".hideElements").click(function () {
             $(this).closest(".integration-column").find("tr.disabled").toggle();
             //$("tr.disabled",$(this).closest("table")).hide();
         });
 
-        $("#btnStr2cb").click(function() {
+        $("#btnStr2cb").click(function () {
             var str = $.trim($("#txtStr2cb").val());
             $("#divModalStore").modal('hide');
-            $("#divModalStore").on('hidden', function(){
+            $("#divModalStore").on('hidden', function () {
                 str2cb(str);
             });
         });
 
-        $("#btnDisplaySelections").click(function(){
+        $("#btnDisplaySelections").click(function () {
             $("#txtStr2cb").text(cb2str());
             $("#divModalStore").modal();
         });
+    };
+
+    function _resetDraggable() {
+        $(".drg").draggable({
+            zIndex: 2700,
+            revert: true,
+            revertDuration: 0
+        });
     }
-
-
+    
     //expose public elements
     TDAR.integration = {
         "initDataIntegration": _initDataIntegration,
+        "addColumn": _addColumn,
         "setStatus": _setStatus,
         "integrationClearAll": _integrationClearAll,
         "selectChildren": _selectChildren,
         "selectAllChildren": _selectAllChildren,
-        "initOntologyFilterPage": _initOntologyFilterPage
+        "initOntologyFilterPage": _initOntologyFilterPage,
     };
-
 
 })(TDAR, jQuery);

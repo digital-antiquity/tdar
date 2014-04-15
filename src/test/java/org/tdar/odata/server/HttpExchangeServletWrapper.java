@@ -377,12 +377,12 @@ public class HttpExchangeServletWrapper implements HttpServletRequest {
     @Override
     public void login(String arg0, String arg1) throws ServletException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void logout() throws ServletException {
         // TODO Auto-generated method stub
-        
+
     }
 }

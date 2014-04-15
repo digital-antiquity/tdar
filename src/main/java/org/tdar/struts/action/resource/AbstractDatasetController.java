@@ -95,7 +95,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         public String getResultName(boolean gotoView, Dataset resource) {
             Logger logger = LoggerFactory.getLogger(getClass());
             logger.info(" {} {} ", resource.getTotalNumberOfActiveFiles(), resource.getDataTables());
-            if (resource.getTotalNumberOfActiveFiles() < 1 || CollectionUtils.isEmpty(resource.getDataTables())) {
+            if ((resource.getTotalNumberOfActiveFiles() < 1) || CollectionUtils.isEmpty(resource.getDataTables())) {
                 return AbstractDatasetController.SAVE_VIEW;
             }
             return name();
@@ -165,7 +165,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {
-            if (persistable.getTotalNumberOfActiveFiles() > 0 && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
+            if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
                 setSaveSuccessPath("columns");
             }
         }
@@ -229,7 +229,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
         initializePaginationHelper();
-        
+
         try {
             updateResults = getDatasetService().updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
@@ -400,7 +400,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return;
         }
         this.dataTableColumn = getDataTableService().findDataTableColumn(columnId);
-        if (dataTableColumn != null && getResource() == null) {
+        if ((dataTableColumn != null) && (getResource() == null)) {
             setId(dataTableColumn.getDataTable().getDataset().getId());
         }
     }

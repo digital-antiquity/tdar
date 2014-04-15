@@ -42,7 +42,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 /**
  * $Id$
  * 
- * An Account maintains a set of Invoices and is the entity against which people can charge resource uploads. It also tracks a set of users who can charge against those invoices.
+ * An Account maintains a set of Invoices and is the entity against which people can charge resource uploads. It also tracks a set of users who can charge
+ * against those invoices.
  * 
  * @author TDAR
  * @version $Rev$
@@ -81,12 +82,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @Column(name = "date_updated")
     private Date lastModified = new Date();
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
     private Person owner;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH})
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "modifier_id")
     @NotNull
     private Person modifiedBy;
@@ -103,12 +104,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Coupon> coupons = new HashSet<Coupon>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "user_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE , CascadeType.DETACH}, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<Resource>();
 
@@ -214,8 +215,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public Set<Resource> getFlaggedResources() {
         Set<Resource> flagged = new HashSet<Resource>();
         for (Resource resource : getResources()) {
-            if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE)
+            if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 flagged.add(resource);
+            }
         }
         return flagged;
     }
@@ -231,8 +233,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public void initTotals() {
         resetTransientTotals();
         for (Invoice invoice : getInvoices()) {
-            if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL)
+            if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL) {
                 continue;
+            }
             totalResources += invoice.getTotalResources();
             totalFiles += invoice.getTotalNumberOfFiles();
             totalSpaceInBytes += invoice.getTotalSpaceInBytes();
@@ -259,7 +262,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public Long getTotalSpaceInMb() {
         initTotals();
-        return divideByRoundUp(totalSpaceInBytes, Invoice.ONE_MB);
+        return divideByRoundUp(totalSpaceInBytes, Persistable.ONE_MB);
     }
 
     public Long getTotalSpaceInBytes() {
@@ -279,7 +282,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getAvailableSpaceInMb() {
-        return divideByRoundDown(getAvailableSpaceInBytes(), (double) Invoice.ONE_MB);
+        return divideByRoundDown(getAvailableSpaceInBytes(), (double) Persistable.ONE_MB);
     }
 
     public Long getAvailableResources() {
@@ -297,21 +300,21 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public AccountAdditionStatus canAddResource(ResourceEvaluator re) {
         if (re.evaluatesNumberOfFiles()) {
             logger.debug("available files {} trying to use {}", getAvailableNumberOfFiles(), re.getFilesUsed());
-            if (getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
+            if ((getAvailableNumberOfFiles() - re.getFilesUsed()) < 0) {
                 return AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
 
         if (re.evaluatesNumberOfResources()) {
             logger.debug("available resources {} trying to use {}", getAvailableResources(), re.getResourcesUsed());
-            if (getAvailableResources() - re.getResourcesUsed() < 0) {
+            if ((getAvailableResources() - re.getResourcesUsed()) < 0) {
                 return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
             }
         }
 
         if (re.evaluatesSpace()) {
             logger.debug("available space {} trying to use {}", getAvailableSpaceInBytes(), re.getSpaceUsedInBytes());
-            if (getAvailableSpaceInBytes() - re.getSpaceUsedInBytes() < 0) {
+            if ((getAvailableSpaceInBytes() - re.getSpaceUsedInBytes()) < 0) {
                 return AccountAdditionStatus.NOT_ENOUGH_SPACE;
             }
         }
@@ -423,7 +426,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getSpaceUsedInMb() {
-        return divideByRoundUp(spaceUsedInBytes, Invoice.ONE_MB);
+        return divideByRoundUp(spaceUsedInBytes, Persistable.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {

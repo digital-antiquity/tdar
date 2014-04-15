@@ -20,7 +20,7 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
         logout();
         login();
         logger.info(docUrl);
-        //start at 0
+        // start at 0
         gotoPage(url.toString());
         gotoPageWithoutErrorCheck(docUrl);
         logout();

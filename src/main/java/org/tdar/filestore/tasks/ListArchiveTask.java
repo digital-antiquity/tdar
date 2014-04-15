@@ -39,7 +39,6 @@ public class ListArchiveTask extends AbstractTask {
 
     private long effectiveSize = 0l;
 
-
     /*
      * (non-Javadoc)
      * 
@@ -64,7 +63,7 @@ public class ListArchiveTask extends AbstractTask {
                 String filename = f_.getName().toLowerCase();
                 if (filename.endsWith(".tgz") || filename.endsWith("tar.gz")) {
                     stream = new GzipCompressorInputStream(new FileInputStream(f_));
-                } else if (filename.endsWith(".bz2") ) {
+                } else if (filename.endsWith(".bz2")) {
                     stream = new BZip2CompressorInputStream(new FileInputStream(f_));
                 } else {
                     stream = new FileInputStream(f_);
@@ -73,7 +72,7 @@ public class ListArchiveTask extends AbstractTask {
                 getLogger().info(ais.getClass().toString());
                 ArchiveEntry entry = ais.getNextEntry();
                 while (entry != null) {
-                    if (entry.getSize() > 0 && entry.getLastModifiedDate().getTime() > 1) {
+                    if ((entry.getSize() > 0) && (entry.getLastModifiedDate().getTime() > 1)) {
                         validEntries = true;
                     }
                     writeToFile(archiveContents, entry.getName());
@@ -81,17 +80,17 @@ public class ListArchiveTask extends AbstractTask {
                     entry = ais.getNextEntry();
                 }
             } catch (ArchiveException e) {
-              throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", Arrays.asList(f_));
+                throw new TdarRecoverableRuntimeException("listArchiveTask.couldn_not_find_file", Arrays.asList(f_));
             } finally {
                 if (ais != null) {
                     IOUtils.closeQuietly(ais);
                 }
             }
-            
-            if (seenFiles < 2 && !validEntries) {
+
+            if ((seenFiles < 2) && !validEntries) {
                 throw new TdarRecoverableRuntimeException("listArchiveTask.invalid");
             }
-            
+
             // write that to a file with a known format (one file per line)
             FileUtils.writeStringToFile(f, archiveContents.toString());
             InformationResourceFileVersion version_ = generateInformationResourceFileVersionFromOriginal(version, f, VersionType.TRANSLATED);

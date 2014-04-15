@@ -64,7 +64,7 @@ public class AdminController extends AuthenticationAware.Base {
 
     @Autowired
     private UpgradeResourceCollectionPermissions urcp;
-    
+
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
     private List<Pair<CultureKeyword, Integer>> uncontrolledCultureKeywordStats;
@@ -122,7 +122,8 @@ public class AdminController extends AuthenticationAware.Base {
     public String fileInfo() {
         setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
         setFileStats(getStatisticService().getFileStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
+        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(
+                Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setFiles(getInformationResourceFileService().findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
@@ -165,16 +166,6 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "buildCollectionTree", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
-    })
-    public String buildCollectionTree() {
-        getLogger().debug("manually running 'build collection tree'");
-        urcp.execute();
-        return SUCCESS;
-    }
-
-
     @Action(value = "buildCreators", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
@@ -191,7 +182,6 @@ public class AdminController extends AuthenticationAware.Base {
         setUserLoginStats(getStatisticService().getUserLoginStats());
         return SUCCESS;
     }
-
 
     @Action("user-mailchimp")
     public String userMailchipInfo() {

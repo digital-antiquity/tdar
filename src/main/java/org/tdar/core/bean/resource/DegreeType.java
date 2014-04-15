@@ -8,11 +8,11 @@ import org.tdar.utils.MessageHelper;
  * The type of degree
  * 
  * @author abrin
- *
+ * 
  */
 public enum DegreeType implements HasLabel, Localizable {
-    UNDERGRADUATE("Undergraduate Thesis"), 
-    MASTERS("Masters Thesis"), 
+    UNDERGRADUATE("Undergraduate Thesis"),
+    MASTERS("Masters Thesis"),
     DOCTORAL("Doctoral Dissertation");
     private String label;
 

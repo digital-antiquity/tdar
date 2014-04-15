@@ -59,7 +59,7 @@ public class DocumentCitationFormatTestCase {
         document.getResourceCreators().add(new ResourceCreator(new Institution("Collaborating institution"), ResourceCreatorRole.COLLABORATOR));
         document.setDocumentType(type);
         document.setDate(1234);
-        if (document.getId() == null || document.getId() == -1) {
+        if ((document.getId() == null) || (document.getId() == -1)) {
             document.setId(123456L);
         }
         document.setDescription("description");

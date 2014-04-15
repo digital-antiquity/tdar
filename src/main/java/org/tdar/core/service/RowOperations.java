@@ -9,8 +9,8 @@ import org.tdar.odata.server.AbstractDataRecord;
 /**
  * Abstract out the backend databased connection for tdardata for use by the MockDaos
  * 
- * @author 
- *
+ * @author
+ * 
  */
 public interface RowOperations {
 

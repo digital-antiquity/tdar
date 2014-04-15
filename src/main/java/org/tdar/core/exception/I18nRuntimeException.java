@@ -16,16 +16,14 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
     private Locale locale;
     private List<?> values;
     private String message;
-    
+
     public I18nRuntimeException() {
         this.setLocale(Locale.getDefault());
     }
 
-
     public I18nRuntimeException(String message) {
         this.message = message;
     }
-
 
     public I18nRuntimeException(String message, Throwable cause) {
         super(cause);
@@ -37,20 +35,19 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
         this.values = values;
     }
 
-
     public I18nRuntimeException(String message, Throwable cause, List<?> values) {
         super(cause);
         this.message = message;
         this.values = values;
     }
 
-
     public I18nRuntimeException(Throwable cause) {
         super(cause);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#getLocale()
      */
     @Override
@@ -58,24 +55,27 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
         return locale;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#getLocalizedMessage()
      */
     @Override
     public String getLocalizedMessage() {
-        if (CollectionUtils.isEmpty(values)){
-            return MessageHelper.getMessage(message,locale);
+        if (CollectionUtils.isEmpty(values)) {
+            return MessageHelper.getMessage(message, locale);
         }
-        return MessageHelper.getMessage(message,locale, values.toArray());
+        return MessageHelper.getMessage(message, locale, values.toArray());
     };
 
-  @Override
-  public String getMessage() {
-      return getLocalizedMessage();
-  }
+    @Override
+    public String getMessage() {
+        return getLocalizedMessage();
+    }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.exception.Localizable#setLocale(java.util.Locale)
      */
     @Override

@@ -37,6 +37,7 @@ import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.Cache;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -174,9 +175,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private XmlService xmlService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
-    @Autowired 
+    @Autowired
     AuthorizedUserDao authorizedUserDao;
-
 
     @Autowired
     protected EmailService emailService;
@@ -201,7 +201,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     };
 
     @Before
-    public  void announceTestStarting() {
+    public void announceTestStarting() {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
 
@@ -221,13 +221,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     @After
-    public  void announceTestOver() {
+    public void announceTestOver() {
 
         int errorCount = 0;
         List<String> errors = new ArrayList<>();
         if (!isIgnoreActionErrors()) {
             for (ActionSupport controller : getControllers()) {
-                if (controller != null && !controller.getActionErrors().isEmpty()) {
+                if ((controller != null) && !controller.getActionErrors().isEmpty()) {
                     logger.error("action errors {}", controller.getActionErrors());
                     errorCount += controller.getActionErrors().size();
                     errors.addAll(controller.getActionErrors());
@@ -238,7 +238,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         if (errorCount > 0) {
-            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount,StringUtils.join(errors.toArray(new String[0]))));
+            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount, StringUtils.join(errors.toArray(new String[0]))));
         }
     }
 
@@ -342,7 +342,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
-            genericService.synchronize();
+            evictCache();
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -465,11 +465,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return logger;
     }
 
-
     protected <T> T generateNewController(Class<T> controllerClass) {
         authorizedUserDao.clearUserPermissionsCache();
+        // evictCache();
 
-        T controller = (T) applicationContext.getBean(controllerClass);
+        T controller = applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
             TdarActionSupport tas = (TdarActionSupport) controller;
             tas.setServletRequest(getServletRequest());
@@ -480,16 +480,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
         ActionContext context = new ActionContext(contextMap);
         context.setLocale(Locale.getDefault());
-        //http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
+        // http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
         ConfigurationManager configurationManager = new ConfigurationManager();
         OgnlValueStackFactory factory = new OgnlValueStackFactory();
-        
-        //FIXME: needs to be a better way to handle this
+
+        // FIXME: needs to be a better way to handle this
         TextProviderFactory textProviderFactory = new TextProviderFactory();
         String bundle = "Locales/tdar-messages";
-        
+
         LocalizedTextUtil.addDefaultResourceBundle(bundle);
-        factory.setTextProvider(textProviderFactory.createInstance(ResourceBundle.getBundle(bundle), (LocaleProvider)controller));
+        factory.setTextProvider(textProviderFactory.createInstance(ResourceBundle.getBundle(bundle), (LocaleProvider) controller));
 
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
         configurationManager.getConfiguration().getContainer().inject(factory);
@@ -504,7 +504,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller != null) {
             controller.setSessionData(getSessionData());
 
-            if (user != null && Persistable.Base.isTransient(user)) {
+            if ((user != null) && Persistable.Base.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 Person user_ = genericService.find(Person.class, user.getId());
@@ -531,7 +531,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 init((TdarActionSupport) controller);
             }
         }
-        getControllers().add((ActionSupport) controller);
+        getControllers().add(controller);
         return controller;
     }
 
@@ -576,7 +576,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return getUser(getBasicUserId());
     }
 
-
     protected Person getEditorUser() {
         return getUser(getEditorUserId());
     }
@@ -590,29 +589,38 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Person getUser(Long id) {
-        Person p = genericService.find(Person.class,id);
+        Person p = genericService.find(Person.class, id);
         if (Persistable.Base.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
         genericService.refresh(p);
         Assert.assertNotNull(p.getEmail());
-//        genericService.markWritableOnExistingSession(p);
-//        logger.info("({}) {}",p.getEmail(),p);
+        // genericService.markWritableOnExistingSession(p);
+        // logger.info("({}) {}",p.getEmail(),p);
         return p;
     }
 
     protected void flush() {
-        sessionFactory.getCurrentSession().flush();
+        Session session = sessionFactory.getCurrentSession();
+        if (session != null) {
+            session.flush();
+            session.clear();
+        }
+
+        evictCache();
+
+        // searchIndexService.flushToIndexes();
+        Cache cache = sessionFactory.getCache();
+        if (cache != null) {
+            cache.evictAllRegions();
+        }
+
     }
 
-    protected void evictCache() {
-      Cache cache = sessionFactory.getCache();
-      if (cache != null) {
-          cache.evictAllRegions();
-      }
-
+    public void evictCache() {
+        genericService.synchronize();
     }
-    
+
     protected Long getAdminUserId() {
         return TestConfiguration.getInstance().getAdminUserId();
     }
@@ -774,7 +782,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     private static Map<String, File> schemaMap = new HashMap<String, File>();
 
-    
     private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
         File schema = null;
         if (schemaMap.containsKey(url)) {

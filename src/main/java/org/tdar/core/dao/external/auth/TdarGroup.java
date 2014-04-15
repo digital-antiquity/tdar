@@ -35,7 +35,7 @@ public enum TdarGroup implements HasLabel {
     public String getGroupName() {
         return groupName;
     }
-    
+
     public List<TdarGroup> getGroupsWithGreaterPermissions() {
         List<TdarGroup> toReturn = new ArrayList<>();
         for (TdarGroup group : TdarGroup.values()) {
@@ -52,7 +52,9 @@ public enum TdarGroup implements HasLabel {
     }
 
     public static TdarGroup fromString(String groupName) {
-        if(groupName == null) return UNAUTHORIZED;
+        if (groupName == null) {
+            return UNAUTHORIZED;
+        }
         for (TdarGroup group : values()) {
             if (group.getGroupName().equalsIgnoreCase(groupName.trim())) {
                 return group;

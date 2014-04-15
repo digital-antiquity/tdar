@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,8 +29,8 @@ public class LocalizationTestCase {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private String exceptionRegex = "";
-    private Map<String,List<String>> matchingMap = new HashMap<>();
-    
+    private Map<String, List<String>> matchingMap = new HashMap<>();
+
     @Test
     public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
         Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(LocalizableException.class);
@@ -42,8 +42,8 @@ public class LocalizationTestCase {
             exceptionRegex += cls.getSimpleName();
         }
         logger.debug(exceptionRegex);
-        Pattern pattern = Pattern.compile(("^.+((get(Text|Message))|"+exceptionRegex+")\\(\\s*\"([^\"]+)\".+"));
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/java"), new String[] {"java"}, true);
+        Pattern pattern = Pattern.compile(("^.+((get(Text|Message))|" + exceptionRegex + ")\\(\\s*\"([^\"]+)\".+"));
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/java"), new String[] { "java" }, true);
         while (iterateFiles.hasNext()) {
             handleFile(pattern, iterateFiles.next());
         }
@@ -54,31 +54,30 @@ public class LocalizationTestCase {
                 continue;
             }
             if (!MessageHelper.checkKey(key.getKey())) {
-                String msg = String.format("Locale key is not available in localeFile: %s %s",key.getKey(), key.getValue());
+                String msg = String.format("Locale key is not available in localeFile: %s %s", key.getKey(), key.getValue());
                 logger.error(msg);
                 results.add(msg);
             }
         }
         if (results.size() > 0) {
-            fail(StringUtils.join(results,"\n"));
+            fail(StringUtils.join(results, "\n"));
         }
     }
 
-    
     @Test
     public void testStringFormatErrors() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile((".*\\%(\\w|\\$).*"));
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] {"properties"}, true);
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/resources/Locales"), new String[] { "properties" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
-            LineIterator it = FileUtils.lineIterator(file , "UTF-8");
-            try{
+            LineIterator it = FileUtils.lineIterator(file, "UTF-8");
+            try {
                 int lineNum = 0;
-                while (it.hasNext()){
+                while (it.hasNext()) {
                     lineNum++;
                     String line = it.nextLine();
                     Matcher m = pattern.matcher(line);
-                    if(m.matches()){
+                    if (m.matches()) {
                         logger.trace(line);
                         String key = m.group(0);
                         logger.debug(key);
@@ -88,27 +87,26 @@ public class LocalizationTestCase {
                         matchingMap.get(key).add(file.getAbsolutePath() + ":" + lineNum);
                     }
                 }
-             }
-             finally {LineIterator.closeQuietly(it);}
+            } finally {
+                LineIterator.closeQuietly(it);
+            }
         }
 
         List<String> results = new ArrayList<>();
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            String msg = String.format("Locale key using wrong format: %s %s",key.getKey(), key.getValue());
+            String msg = String.format("Locale key using wrong format: %s %s", key.getKey(), key.getValue());
             logger.error(msg);
             results.add(msg);
         }
         if (results.size() > 0) {
-            fail(StringUtils.join(results,"\n"));
+            fail(StringUtils.join(results, "\n"));
         }
     }
 
-
-    
     @Test
     public void testFreemarkerLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile(("^.+(\\.?localText|s\\.text)(\\s*(name=)?)\"([^\"]+)\".+"));
-        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main"), new String[] {"ftl","dec"}, true);
+        Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main"), new String[] { "ftl", "dec" }, true);
         while (iterateFiles.hasNext()) {
             File file = iterateFiles.next();
             handleFile(pattern, file);
@@ -118,30 +116,31 @@ public class LocalizationTestCase {
         MessageHelper freemarkerBundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-freemarker-messages"));
         MessageHelper bundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            if (key.getKey().startsWith("${"))
+            if (key.getKey().startsWith("${")) {
                 continue;
-            
-            if (!bundle.containsKey(key.getKey()) &&  !freemarkerBundle.containsKey(key.getKey())) {
-                String msg = String.format("Locale key is not available in localeFile: %s %s",key.getKey(), key.getValue());
+            }
+
+            if (!bundle.containsKey(key.getKey()) && !freemarkerBundle.containsKey(key.getKey())) {
+                String msg = String.format("Locale key is not available in localeFile: %s %s", key.getKey(), key.getValue());
                 logger.error(msg);
                 results.add(msg);
             }
         }
         if (results.size() > 0) {
-            fail(StringUtils.join(results,"\n"));
+            fail(StringUtils.join(results, "\n"));
         }
     }
 
     protected void handleFile(Pattern pattern, File file) throws IOException
     {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try{
+        try {
             int lineNum = 0;
-            while (it.hasNext()){
+            while (it.hasNext()) {
                 lineNum++;
                 String line = it.nextLine();
                 Matcher m = pattern.matcher(line);
-                if(m.matches()){
+                if (m.matches()) {
                     logger.trace(line);
                     String key = m.group(4);
                     logger.debug(key);
@@ -151,7 +150,8 @@ public class LocalizationTestCase {
                     matchingMap.get(key).add(file.getAbsolutePath() + ":" + lineNum);
                 }
             }
-         }
-         finally {LineIterator.closeQuietly(it);}
+        } finally {
+            LineIterator.closeQuietly(it);
+        }
     }
 }

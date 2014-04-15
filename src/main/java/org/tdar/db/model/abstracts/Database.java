@@ -31,7 +31,7 @@ public interface Database
      *            type id as defined in {@link java.sql.Types}
      */
     // TODO: add throws TypeConversionException?
-    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type); 
+    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type);
 
     /**
      * Attempt to change the datatype of the specified column in the specified table
@@ -46,7 +46,7 @@ public interface Database
      *            type id as defined in {@link java.sql.Types}
      */
     // TODO: add throws TypeConversionException?
-    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type, int length); 
+    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type, int length);
 
     void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet);
 

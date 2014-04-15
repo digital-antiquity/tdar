@@ -309,10 +309,11 @@ public class SearchParameters {
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
-        queryPartGroup.append(new TitleQueryPart(this.getTitles(),getOperator()));
+        queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames));
-        
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"),
+                getOperator(), filenames));
+
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
         appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
@@ -330,16 +331,20 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, InvestigationType.class, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class, getOperator(), getProjects()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
+                getOperator(), getProjects()));
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
 
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
                 Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE,support.getText("searchParameter.integratable"), getIntegratableOptions(), Operator.OR,
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, support.getText("searchParameter.integratable"), getIntegratableOptions(),
+                Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
 
-        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_type"), Operator.OR, getDocumentTypes()));
-        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support.getText("searchParameter.resource_access_type"), Operator.OR,
+        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_type"), Operator.OR,
+                getDocumentTypes()));
+        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support
+                .getText("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, getOperator(), getRegisteredDates()));
@@ -350,8 +355,9 @@ public class SearchParameters {
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                ResourceCollection.class,getOperator(), getCollections()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                support.getText("searchParameter.resource_collection"), "resourceCollections.",
+                ResourceCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -360,7 +366,7 @@ public class SearchParameters {
         // explore: title starts with
         if (startingLetter != null) {
             FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, startingLetter.toLowerCase());
-            part.setDisplayName(support.getText("searchParameter.title_starts_with",Arrays.asList(startingLetter)));
+            part.setDisplayName(support.getText("searchParameter.title_starts_with", Arrays.asList(startingLetter)));
             part.setPhraseFormatters(PhraseFormatter.WILDCARD);
             queryPartGroup.append(part);
         }
@@ -377,7 +383,7 @@ public class SearchParameters {
             tqp.setPrefix(prefix);
             for (Persistable p : values) {
                 HasName name = (HasName) p;
-                if (name != null && StringUtils.isNotBlank(name.getName())) {
+                if ((name != null) && StringUtils.isNotBlank(name.getName())) {
                     tqp.add(name.getName());
                 }
             }
@@ -401,8 +407,9 @@ public class SearchParameters {
 
     protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, Class<K> type, String fieldName, List<List<String>> idListList) {
         for (List<String> strings : idListList) {
-            if (CollectionUtils.isNotEmpty(strings))
+            if (CollectionUtils.isNotEmpty(strings)) {
                 group.append(createKeywordQueryPart(type, fieldName, strings));
+            }
         }
     }
 
@@ -419,7 +426,7 @@ public class SearchParameters {
                     keyword = (K) value;
                 } else if (StringUtils.isNotBlank(value.toString()) && StringUtils.isNumeric(value.toString())) {
                     Long id = Long.valueOf(value.toString());
-                    if (id != null && id > -1) {
+                    if ((id != null) && (id > -1)) {
                         keyword.setId(id);
                     }
                 } else {

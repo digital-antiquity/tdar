@@ -47,9 +47,10 @@ public abstract class QueryBuilder extends QueryPartGroup {
         this.overrides = over;
     }
 
-    public void append(SearchParameters param,TextProvider provider) {
-        if (param != null)
+    public void append(SearchParameters param, TextProvider provider) {
+        if (param != null) {
             append(param.toQueryPartGroup(provider));
+        }
     }
 
     /*
@@ -92,8 +93,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
     }
 
     public String stringContainedInLabel(String label) {
-        if (createPartialLabelOverrides() == null)
+        if (createPartialLabelOverrides() == null) {
             return null;
+        }
         Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
 
         for (String omitItem : omitContainedLabels) {

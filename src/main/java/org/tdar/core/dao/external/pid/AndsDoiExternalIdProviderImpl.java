@@ -208,7 +208,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete",Arrays.asList(operation ,response.getMessage()));
+            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete", Arrays.asList(operation, response.getMessage()));
         }
     }
 
@@ -219,7 +219,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         if (r instanceof InformationResource) { // should always be true, but
             Creator copyrightHolder = ((InformationResource) r).getCopyrightHolder();
             if (copyrightHolder != null) {
-                //uploaded resources might not have these set.
+                // uploaded resources might not have these set.
                 creatorNames.add(copyrightHolder.getName());
             }
         }

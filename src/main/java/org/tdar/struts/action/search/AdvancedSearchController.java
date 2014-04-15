@@ -133,10 +133,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // we will do this by having the same setter names as the old search
     // controller for these search types, but we will stuff them in a
     // searchParams instance
-    
+
     private Long projectId;
     private Long collectionId;
-    
+
     private SearchParameters legacySearchParameters = new SearchParameters();
 
     // SearchParams.toQueryGroup only returns 'dehydrated' query parts. after
@@ -152,7 +152,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // contentLength for excel download requests
     private Long contentLength;
 
-    
     @Action(value = "results", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
@@ -264,7 +263,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             getLogger().warn("search parse exception: {}", e.getMessage());
             addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
         }
-        
+
         if (getActionErrors().isEmpty()) {
             return SUCCESS;
         } else {
@@ -286,7 +285,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             setMode("rss");
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setSearchDescription(getText("advancedSearchController.rss_subtitle",TdarConfiguration.getInstance().getSiteAcronym(), StringEscapeUtils.escapeXml(getSearchPhrase())));
+            setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),
+                    StringEscapeUtils.escapeXml(getSearchPhrase())));
             // if (getAuthenticatedUser() == null) {
             // geoMode = GeoRssMode.NONE;
             // }
@@ -335,13 +335,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
 
         LatitudeLongitudeBox ll = getMap();
-        if (ll == null || !ll.isInitializedAndValid()) {
+        if ((ll == null) || !ll.isInitializedAndValid()) {
             if (!getGroups().isEmpty() && !getGroups().get(0).getLatitudeLongitudeBoxes().isEmpty()) {
                 ll = getGroups().get(0).getLatitudeLongitudeBoxes().get(0);
             }
         }
 
-        if (ll != null && ll.isInitializedAndValid()) {
+        if ((ll != null) && ll.isInitializedAndValid()) {
             setOrientation(DisplayOrientation.MAP);
         }
 
@@ -369,7 +369,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private LatitudeLongitudeBox getParsedLatLongBox() {
         if (StringUtils.isNotBlank(getLatLongBox())) {
             String[] latLong = StringUtils.split(getLatLongBox(), ",");
-            if (latLong == null || latLong.length < 4) {
+            if ((latLong == null) || (latLong.length < 4)) {
                 return null;
             }
             for (String num : latLong) {
@@ -441,8 +441,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             terms.getAllFields().add(query);
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
 
-            //contextual search: resource collection
-            if( Persistable.Base.isNotNullOrTransient(collectionId)) {
+            // contextual search: resource collection
+            if (Persistable.Base.isNotNullOrTransient(collectionId)) {
                 getLogger().debug("contextual search: collection {}", collectionId);
                 ResourceCollection rc = new ResourceCollection();
                 rc.setId(collectionId);
@@ -450,8 +450,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 terms.getCollections().add(rc);
                 terms.getAllFields().add(0, null);
 
-            //contextual search: project
-            } else if( Persistable.Base.isNotNullOrTransient(projectId)) {
+                // contextual search: project
+            } else if (Persistable.Base.isNotNullOrTransient(projectId)) {
                 getLogger().debug("contextual search: project {}", projectId);
                 Project project = new Project();
                 project.setId(projectId);
@@ -470,7 +470,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return advancedSearch();
     }
 
-    @DoNotObfuscate(reason="user submitted map")
+    @DoNotObfuscate(reason = "user submitted map")
     public LatitudeLongitudeBox getMap() {
         if (CollectionUtils.isNotEmpty(getReservedSearchParameters()
                 .getLatitudeLongitudeBoxes())) {
@@ -587,11 +587,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public String getRssUrl() {
         StringBuilder urlBuilder = new StringBuilder();
-        if (getServletRequest() != null)
+        if (getServletRequest() != null) {
             urlBuilder.append(getUrlService().getBaseUrl())
                     .append(getServletRequest().getContextPath())
                     .append(SEARCH_RSS).append("?")
                     .append(getServletRequest().getQueryString());
+        }
         return urlBuilder.toString();
 
     }
@@ -624,7 +625,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
         String narrowedBy = reservedQueryPart.getDescription(this);
-        if (narrowedBy != null && StringUtils.isNotBlank(narrowedBy.trim())) {
+        if ((narrowedBy != null) && StringUtils.isNotBlank(narrowedBy.trim())) {
             sb.append(" ").append(getText("advancedSearchController.narrowed_by"));
             sb.append(narrowedBy);
         }
@@ -671,16 +672,18 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     // alias for faceted search.
     public void setDocumentType(DocumentType doctype) {
-        if (doctype == null)
+        if (doctype == null) {
             return;
+        }
         getReservedSearchParameters().getDocumentTypes().clear();
         getReservedSearchParameters().getDocumentTypes().add(doctype);
     }
 
     // when translating legacysearch, we need to set the field types so that the 'refine your search' feature works
     private void setLegacyFieldtypes(SearchFieldType fieldType, List<?> list) {
-        if (list.size() == 0)
+        if (list.size() == 0) {
             return;
+        }
         legacySearchParameters.getFieldTypes().clear();
         for (int i = 0; i < list.size(); i++) {
             legacySearchParameters.getFieldTypes().add(fieldType);
@@ -716,8 +719,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     // alias for faceted search.
     public void setFileAccess(ResourceAccessType fileAccess) {
-        if (fileAccess == null)
+        if (fileAccess == null) {
             return;
+        }
         getReservedSearchParameters().getResourceAccessTypes().clear();
         getReservedSearchParameters().getResourceAccessTypes().add(fileAccess);
     }
@@ -742,7 +746,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         } else if (isExplore()) {
             // FIXME -- Why can't we delegate this to the searchParameter object?
             if (getExploreKeyword() != null) {
-                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",Arrays.asList(getExploreKeyword().getLabel())));
+                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword", Arrays.asList(getExploreKeyword().getLabel())));
             } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
                 setSearchTitle(getText("advancedSearchController.title_beginning_with_s", Arrays.asList(getFirstGroup().getStartingLetter())));
                 // FIXME: only supports 1
@@ -752,7 +756,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         } else if (isKeywordSearch()) {
             setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword"));
         }
-        
+
     }
 
     private void determineCollectionSearchTitle() {
@@ -808,8 +812,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // searching by keyword then we want to look up the definition of a keyword and
     // display it on the search results page.
     private void processExploreRequest() {
-        if (groups.isEmpty())
+        if (groups.isEmpty()) {
             return;
+        }
         SearchParameters firstGroup = getFirstGroup();
 
         // was it a keyword lookup? if so show the definition of the keyword
@@ -838,7 +843,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
         } catch (java.text.ParseException e) {
-            throw new TdarRecoverableRuntimeException(getText("advancedSearchController.bad_id",id), e);
+            throw new TdarRecoverableRuntimeException(getText("advancedSearchController.bad_id", id), e);
         }
     }
 
@@ -892,21 +897,23 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
                 sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
                 excelService.addDocumentHeaderRow(sheet, rowNum, 0,
-                        Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(), getSearchPhrase())));
+                        Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(),
+                                getSearchPhrase())));
                 rowNum++;
-                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), getUrlService().getBaseUrl() + getServletRequest().getRequestURI()
-                        .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
+                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), getUrlService().getBaseUrl()
+                        + getServletRequest().getRequestURI()
+                                .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
                 excelService.addPairedHeaderRow(sheet, rowNum, 0,
                         Arrays.asList(getText("advancedSearchController.downloaded_by"),
-                                getText("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName() , new Date())));
+                                getText("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName(), new Date())));
                 rowNum++;
                 rowNum++;
-                for (int i=0; i < fieldNames.size(); i++) {
+                for (int i = 0; i < fieldNames.size(); i++) {
                     fieldNames.set(i, getText("advancedSearchController." + fieldNames.get(i)));
                 }
-                
+
                 excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
                 int startRecord = 0;
                 int currentRecord = 0;
@@ -916,9 +923,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                                                               // next search
                     for (Resource result : getResults()) {
                         rowNum++;
-                        if (currentRecord++ > maxRow)
+                        if (currentRecord++ > maxRow) {
                             break;
-                        Resource r = (Resource) result;
+                        }
+                        Resource r = result;
                         Integer dateCreated = null;
                         Integer numFiles = 0;
                         List<String> filenames = new ArrayList<String>();
@@ -1036,10 +1044,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     /**
      * Indicates whether current search is "contextual search", i.e. is the search implicitly filtered by
      * project or filtered by collection.
+     * 
      * @return
      */
     public boolean isContextualSearch() {
-        return collectionId != null || projectId != null;
+        return (collectionId != null) || (projectId != null);
     }
 
 }

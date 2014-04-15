@@ -91,8 +91,9 @@ public class FileAnalyzer {
     public ResourceType suggestTypeForFileExtension(String ext, ResourceType... types) {
         for (ResourceType type : types) {
             for (Workflow w : workflows) {
-                if (w.getValidExtensionsForResourceType(type).contains(ext.toLowerCase()))
+                if (w.getValidExtensionsForResourceType(type).contains(ext.toLowerCase())) {
                     return type;
+                }
             }
         }
         return null;
@@ -104,7 +105,7 @@ public class FileAnalyzer {
             Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
             if (wf == null) {
                 wf = w;
-            } else if (w != null && wf.getClass() != w.getClass()) {
+            } else if ((w != null) && (wf.getClass() != w.getClass())) {
                 throw new TdarRecoverableRuntimeException("filestore.file_version_null");
             }
         }
@@ -132,7 +133,7 @@ public class FileAnalyzer {
             File file = version.getTransientFile();
 
             if (file == null) {
-                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist",Arrays.asList(version)));
+                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist", Arrays.asList(version)));
             }
             if (!file.exists()) {
                 throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getCanonicalPath())));

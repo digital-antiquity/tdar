@@ -37,7 +37,8 @@ public class HttpMethodInterceptor implements Interceptor {
         logger.warn("ERROR_POST_ONLY");
         if (invocation.getAction() instanceof TdarActionSupport) {
 
-            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpMethodInterceptor.error_post_only",invocation.getInvocationContext().getLocale()));
+            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpMethodInterceptor.error_post_only", invocation
+                    .getInvocationContext().getLocale()));
         }
 
         return TdarActionSupport.BAD_REQUEST;

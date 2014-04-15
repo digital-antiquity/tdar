@@ -19,6 +19,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -79,7 +80,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public void assignMappedDataForInformationResource(InformationResource resource) {
         String key = resource.getMappedDataKeyValue();
         DataTableColumn column = resource.getMappedDataKeyColumn();
-        if (StringUtils.isBlank(key) || column == null) {
+        if (StringUtils.isBlank(key) || (column == null)) {
             return;
         }
         final DataTable table = column.getDataTable();
@@ -99,16 +100,18 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public boolean canLinkDataToOntology(Dataset dataset) {
-        if (dataset == null)
+        if (dataset == null) {
             return false;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_DATASET_CAN_LINK_TO_ONTOLOGY);
         query.setLong("datasetId", dataset.getId());
         return !query.list().isEmpty();
     }
 
     public long countResourcesForUserAccess(Person user) {
-        if (user == null)
+        if (user == null) {
             return 0;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_USER_GET_ALL_RESOURCES_COUNT);
         query.setLong("userId", user.getId());
         query.setParameterList("resourceTypes", Arrays.asList(ResourceType.values()));
@@ -129,7 +132,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000l * (long)days));
+        query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         return query.list();
     }
 
@@ -143,10 +146,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
     @SuppressWarnings("unchecked")
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000l * (long)days));
+        query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         query.setCacheMode(CacheMode.IGNORE);
         return query.list();
     }
+
     /*
      * Take the distinct column values mapped and associate them with files in tDAR based on:
      * - shared project
@@ -189,8 +193,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public void unmapAllColumnsInProject(Project project, Collection<DataTableColumn> columns) {
-        if (CollectionUtils.isEmpty(columns))
+        if (CollectionUtils.isEmpty(columns)) {
             return;
+        }
         String rawsql = NamedNativeQueries.removeDatasetMappings(project, columns);
         logger.trace(rawsql);
         Query query = getCurrentSession().createSQLQuery(rawsql);
@@ -216,20 +221,20 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(Long ... ids) {
+    public List<Resource> findSkeletonsForSearch(Long... ids) {
         Session session = getCurrentSession();
-        //distinct prevents duplicates
-        //left join res.informationResourceFiles
+        // distinct prevents duplicates
+        // left join res.informationResourceFiles
         long time = System.currentTimeMillis();
         Query query = session.getNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
-        //if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
+        // if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
         query.setParameterList("ids", Arrays.asList(ids));
-        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
-        List<ResourceProxy> results = (List<ResourceProxy>)query.list();
+        List<ResourceProxy> results = query.list();
         long queryTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
@@ -250,30 +255,30 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         return toReturn;
     }
-    
+
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
         Query query = session.getNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
         query.setParameterList("ids", Arrays.asList(ids));
-        List<Resource> results = (List<Resource>)query.list();
+        List<Resource> results = query.list();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         return results;
     }
-    
+
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
         int count = 0;
         logger.trace(SELECT_RAW_IMAGE_SITEMAP_FILES);
-        for (Object[] row : (List<Object[]>)query.list()) {
-//            select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id 
-            Number id = (Number)row[0];
-            String title = (String)row[1];
-            String description = (String)row[2];
-            ResourceType resourceType = ResourceType.valueOf((String)row[3]);
-            String fileDescription = (String)row[4];
-            Number imageId = (Number)row[5];
-            
+        for (Object[] row : (List<Object[]>) query.list()) {
+            // select r.id, r.title, r.description, r.resource_type, irf.description, irfv.id
+            Number id = (Number) row[0];
+            String title = (String) row[1];
+            String description = (String) row[2];
+            ResourceType resourceType = ResourceType.valueOf((String) row[3]);
+            String fileDescription = (String) row[4];
+            Number imageId = (Number) row[5];
+
             String resourceUrl = UrlService.absoluteUrl(resourceType.getUrlNamespace(), id.longValue());
             String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
             if (StringUtils.isNotBlank(fileDescription)) {
@@ -284,7 +289,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(resourceUrl)).addImage(tag).build();
                 gisg.addUrl(iurl);
                 count++;
-            } catch(Exception e) {
+            } catch (Exception e) {
                 logger.error("error in url generation for sitemap {}", e);
             }
         }

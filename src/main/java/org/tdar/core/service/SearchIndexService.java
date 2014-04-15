@@ -37,7 +37,6 @@ import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
 
-
 @Service
 @Transactional(readOnly = true)
 public class SearchIndexService {
@@ -119,7 +118,7 @@ public class SearchIndexService {
             fullTextSession.setCacheMode(CacheMode.IGNORE);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
-            float maxPer = (1f / (float) classesToIndex.size()) * 100f;
+            float maxPer = (1f / classesToIndex.size()) * 100f;
             for (Class<?> toIndex : classesToIndex) {
                 fullTextSession.purgeAll(toIndex);
                 sf.optimize(toIndex);
@@ -133,12 +132,12 @@ public class SearchIndexService {
 
                 while (scrollableResults.next()) {
                     Object item = scrollableResults.get(0);
-                    currentProgress = (float) numProcessed / total.floatValue();
+                    currentProgress = numProcessed / total.floatValue();
                     index(fullTextSession, item);
                     numProcessed++;
-                    float totalProgress = (currentProgress * maxPer + percent);
+                    float totalProgress = ((currentProgress * maxPer) + percent);
                     String message = "";
-                    if (numProcessed % divisor == 0) {
+                    if ((numProcessed % divisor) == 0) {
                         message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
                         updateReceiver.setStatus(message);
                         updateReceiver.setPercentComplete(totalProgress / 100f);
@@ -270,7 +269,7 @@ public class SearchIndexService {
      * @param indexable
      */
     public <C extends Indexable> boolean indexCollection(Collection<C> indexable) {
-    	boolean exceptions = false;
+        boolean exceptions = false;
         if (indexable != null) {
             log.debug("manual indexing ... " + indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
@@ -295,7 +294,7 @@ public class SearchIndexService {
     }
 
     /**
-     * Similar to @link GenericService.synchronize() forces all pending indexing actions to be written. 
+     * Similar to @link GenericService.synchronize() forces all pending indexing actions to be written.
      * 
      * Should only be used in tests...
      * 
@@ -370,6 +369,7 @@ public class SearchIndexService {
 
     /**
      * Purge all objects of the specified Class frmo the index
+     * 
      * @param classes
      */
     public void purgeAll(List<Class<? extends Indexable>> classes) {
@@ -411,7 +411,7 @@ public class SearchIndexService {
         log.debug("completed reindexing project contents");
         return exceptions;
     }
-    
+
     /**
      * @see #indexProject(Project)
      * @param project
@@ -421,8 +421,8 @@ public class SearchIndexService {
         indexProject(project);
     }
 
-    @Transactional(readOnly=true)
-	public boolean indexProject(Long id) {
-		return indexProject(genericService.find(Project.class, id));
-	}
+    @Transactional(readOnly = true)
+    public boolean indexProject(Long id) {
+        return indexProject(genericService.find(Project.class, id));
+    }
 }

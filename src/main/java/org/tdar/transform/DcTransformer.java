@@ -115,22 +115,27 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
 
     protected String dcConstructPersonalName(String firstName, String lastName, String role, String affiliation) {
         String name = String.format("%s, %s", lastName, firstName);
-        if (!StringUtils.isEmpty(role))
+        if (!StringUtils.isEmpty(role)) {
             name += String.format(", %s", role);
-        if (!StringUtils.isEmpty(affiliation))
+        }
+        if (!StringUtils.isEmpty(affiliation)) {
             name += String.format(" (%s)", affiliation);
+        }
         return name;
     }
 
     protected String dcConstructPersonalName(ResourceCreator resourceCreator) {
-        if (resourceCreator.getCreatorType() != CreatorType.PERSON)
+        if (resourceCreator.getCreatorType() != CreatorType.PERSON) {
             return null;
+        }
         Person person = (Person) resourceCreator.getCreator();
         String name = String.format("%s, %s", person.getLastName(), person.getFirstName());
-        if (!StringUtils.isEmpty("" + resourceCreator.getRole()))
+        if (!StringUtils.isEmpty("" + resourceCreator.getRole())) {
             name += String.format(", %s", resourceCreator.getRole());
-        if (!StringUtils.isEmpty("" + person.getInstitution()))
+        }
+        if (!StringUtils.isEmpty("" + person.getInstitution())) {
             name += String.format(" (%s)", person.getInstitution());
+        }
         return name;
     }
 
@@ -152,8 +157,9 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                 }
             }
             Language resourceLanguage = source.getResourceLanguage();
-            if (resourceLanguage != null)
+            if (resourceLanguage != null) {
                 dc.getLanguage().add(resourceLanguage.getCode());
+            }
 
             if (source.getResourceType().toDcmiTypeString() != null) {
                 dc.getType().add(source.getResourceType().toDcmiTypeString());
@@ -164,19 +170,23 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             }
 
             Institution resourceProviderInstitution = source.getResourceProviderInstitution();
-            if (resourceProviderInstitution != null)
+            if (resourceProviderInstitution != null) {
                 dc.getContributor().add(resourceProviderInstitution.getName());
+            }
 
             String publisherLocation = source.getPublisherLocation();
 
             String pub = "";
             String publisher = source.getPublisherName();
-            if (publisher != null)
+            if (publisher != null) {
                 pub += publisher;
-            if (publisherLocation != null)
+            }
+            if (publisherLocation != null) {
                 pub += ", " + publisherLocation;
-            if (!pub.isEmpty())
+            }
+            if (!pub.isEmpty()) {
                 dc.getPublisher().add(pub);
+            }
 
             return dc;
         }
@@ -191,83 +201,104 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             DublinCoreDocument dc = super.transform(source);
 
             String abst = source.getDescription();
-            if (abst != null)
+            if (abst != null) {
                 dc.getDescription().add(abst);
+            }
 
             String doi = source.getDoi();
-            if (doi != null)
+            if (doi != null) {
                 dc.getIdentifier().add(doi);
+            }
 
             String copyLocation = source.getCopyLocation();
-            if (copyLocation != null)
+            if (copyLocation != null) {
                 dc.getRelation().add(copyLocation);
+            }
 
             String isbn = source.getIsbn();
-            if (isbn != null)
+            if (isbn != null) {
                 dc.getIdentifier().add(isbn);
+            }
             String issn = source.getIssn();
-            if (issn != null)
+            if (issn != null) {
                 dc.getIdentifier().add(issn);
+            }
 
             String seriesName = source.getSeriesName();
             String seriesNumber = source.getSeriesNumber();
             String series = "";
-            if (seriesName != null)
+            if (seriesName != null) {
                 series += seriesName;
-            if (seriesNumber != null)
+            }
+            if (seriesNumber != null) {
                 series += " #" + seriesNumber;
-            if (!series.isEmpty())
+            }
+            if (!series.isEmpty()) {
                 dc.getRelation().add("Series: " + series);
+            }
 
             String journalName = source.getJournalName();
             String bookTitle = source.getBookTitle();
             String src = "";
-            if (journalName != null)
+            if (journalName != null) {
                 src += journalName;
-            if (bookTitle != null)
+            }
+            if (bookTitle != null) {
                 src += bookTitle;
+            }
 
             String volume = source.getVolume();
             String journalNumber = source.getJournalNumber();
             String volIssue = "";
-            if (volume != null)
+            if (volume != null) {
                 volIssue += volume;
-            if (journalNumber != null)
+            }
+            if (journalNumber != null) {
                 volIssue += String.format("(%s)", journalNumber);
+            }
 
             String startPage = source.getStartPage();
             String endPage = source.getEndPage();
             String pages = "";
-            if (startPage != null)
+            if (startPage != null) {
                 pages += startPage + " - ";
-            if (endPage != null)
+            }
+            if (endPage != null) {
                 pages += endPage;
+            }
 
-            if (!volIssue.isEmpty())
+            if (!volIssue.isEmpty()) {
                 src += ", " + volIssue;
-            if (!pages.isEmpty())
+            }
+            if (!pages.isEmpty()) {
                 src += ", " + pages;
-            if (!src.isEmpty())
+            }
+            if (!src.isEmpty()) {
                 src += ".";
+            }
 
             DocumentType documentType = source.getDocumentType();
             dc.getType().add(documentType.getLabel());
             switch (documentType) {
                 case JOURNAL_ARTICLE:
-                    if (!src.isEmpty())
+                    if (!src.isEmpty()) {
                         dc.getSource().add(src);
+                    }
                     break;
                 case BOOK_SECTION:
-                    if (!src.isEmpty())
+                    if (!src.isEmpty()) {
                         dc.getSource().add(src);
+                    }
                     break;
                 case BOOK:
                     String rel = "";
                     String edition = source.getEdition();
-                    if (edition != null)
+                    if (edition != null) {
                         rel += "Edition: " + edition;
-                    if (volume != null)
+                    }
+                    if (volume != null) {
                         rel += " Volume: " + volume;
+                    }
                     dc.getRelation().add(rel.trim());
                     break;
                 default:

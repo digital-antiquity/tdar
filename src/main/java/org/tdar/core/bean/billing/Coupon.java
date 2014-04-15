@@ -14,8 +14,9 @@ import org.tdar.core.bean.entity.Person;
 
 /**
  * A coupon or 'credit' for space or files in tDAR.
+ * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "pos_coupon")

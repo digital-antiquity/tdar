@@ -33,7 +33,7 @@ import org.tdar.core.configuration.JSONTransient;
  */
 @Entity
 @Table(name = "resource_annotation", indexes = {
-        @Index(name="resource_id_keyid", columnList="resource_id, resourceannotationkey_id, id")})
+        @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
@@ -121,7 +121,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     @Override
     public boolean isValid() {
-        return resourceAnnotationKey != null
+        return (resourceAnnotationKey != null)
                 && StringUtils.isNotEmpty(resourceAnnotationKey.getKey())
                 && StringUtils.isNotEmpty(value);
     }

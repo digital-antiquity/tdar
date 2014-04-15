@@ -3,15 +3,16 @@
  *    http://www.quirksmode.org/dom/events/error.html
  *    http://www.quirksmode.org/dom/events/tests/error.html#
  */
-(function(){
+(function () {
     "use strict";
     //assume that no libraries or globals are available to us yet
-    var _head =  document.getElementsByTagName('head')[0];
-    if(typeof(TDAR_jsErrorDelim)==='undefined') TDAR_jsErrorDelim = "\r\n";
+    var _head = document.getElementsByTagName('head')[0];
+    if (typeof(TDAR_jsErrorDelim) === 'undefined') {
+        TDAR_jsErrorDelim = "\r\n";
+    }
     var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
     var _start = Date.now();
-
 
     /**
      * Return current date  - Date.now() is not supported in IE8
@@ -42,8 +43,8 @@
      */
     function _json(obj) {
         var str = "not supported";
-        if(JSON) {
-            str =  JSON.stringify(obj);
+        if (JSON) {
+            str = JSON.stringify(obj);
         }
         return str
     }
@@ -71,7 +72,7 @@
     function _el(objtype, parent, attrs) {
         var el, attr, val;
         el = document.createElement(objtype);
-        for(attr in attrs) {
+        for (attr in attrs) {
             el[attr] = attrs[attr];
         }
     }
@@ -83,7 +84,7 @@
      */
     function _addErr(obj) {
         var txt = "";
-        if(_errors.length > 0) {
+        if (_errors.length > 0) {
             txt += _delim;
         }
         obj.time = ((_now() - _start) / 1000).toFixed(3) + 's';
@@ -92,15 +93,14 @@
         //console.log(_json(obj));
         var ta = _errorTextarea();
         //a page might not have a textarea (e.g. a view page) or an error event happened before it was parsed
-        if(ta) {
+        if (ta) {
             txt = ta.value;
-            for(var k in obj) {
-                txt += "\n" + k + ":"  + obj[k];
+            for (var k in obj) {
+                txt += "\n" + k + ":" + obj[k];
             }
             ta.value = txt;
         }
     }
-
 
     /**
      * Error handler used if the browser supports the Error event.  Otherwise we use a separate window.onerror handler
@@ -120,30 +120,28 @@
         window.onerror = null;
         var evt = e || window.event;
         var tgt = evt.target;
-        var filename = evt.filename,
-            line = evt.lineno,
-            col = evt.colno;
+        var filename = evt.filename, line = evt.lineno, col = evt.colno;
 
         //if filename blank but lineno exists, it's an inline script
-        if(!filename && evt.lineno) {
+        if (!filename && evt.lineno) {
             filename = window.location.pathname;
         }
 
-        if(col) {
-            line += ":"  + col;
+        if (col) {
+            line += ":" + col;
         }
 
         var obj = {
-            message: "errorEvent::" +  (evt.message || "(no error message)"),
+            message: "errorEvent::" + (evt.message || "(no error message)"),
             filename: filename,
             line: line,
             tag: "n/a"
         };
 
-        if(tgt !== window) {
+        if (tgt !== window) {
             obj.tag = tgt.outerHTML;
         }
-        if(!!tgt.tagName && tgt.tagName !== "SCRIPT") {
+        if (!!tgt.tagName && tgt.tagName !== "SCRIPT") {
             //error event happened, but not due to javascript (perhaps css or image failed to load. don't report
             console.log("non-script-related error occured");
         } else {
@@ -161,7 +159,9 @@
      */
     function _onerror(msg, url, line) {
         //ignore dom error events, they're handled by the error listener
-        if(typeof msg !== "string") return;
+        if (typeof msg !== "string") {
+            return;
+        }
 
         _addErr({
             message: "onerror::" + msg,

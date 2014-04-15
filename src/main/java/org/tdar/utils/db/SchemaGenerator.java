@@ -43,12 +43,12 @@ public class SchemaGenerator {
     public SchemaGenerator() throws Exception {
         cfg = new Configuration();
 
-        //allow for xml-based mappings, if present.
-        if(getClass().getClassLoader().getResource(HBM_FILENAME) != null) {
+        // allow for xml-based mappings, if present.
+        if (getClass().getClassLoader().getResource(HBM_FILENAME) != null) {
             cfg.addResource("hibernate.hbm.xml");
         }
 
-        //now add annotated class mappings
+        // now add annotated class mappings
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(NamedQuery.class));
@@ -65,10 +65,9 @@ public class SchemaGenerator {
 
     }
 
-
     /**
      * Method that actually creates the file.
-     *
+     * 
      * @param dbDialect
      *            to use
      */

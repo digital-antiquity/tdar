@@ -82,11 +82,13 @@ public class Pair<R, S> implements Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object object) {
-        if (object == null) 
+        if (object == null) {
             return false;
-        
-        if (object == this)
+        }
+
+        if (object == this) {
             return true;
+        }
         try {
             Pair<R, S> other = (Pair<R, S>) object;
             return new EqualsBuilder().append(first, other.first).append(second, other.second).isEquals();

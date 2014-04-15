@@ -41,8 +41,9 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
     }
 
     public BookmarkedResource findBookmark(Resource resource, Person person) {
-        if (resource == null || person == null)
+        if ((resource == null) || (person == null)) {
             return null;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_IS_ALREADY_BOOKMARKED);
         query.setLong("resourceId", resource.getId());
         query.setLong("personId", person.getId());
@@ -50,8 +51,9 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
     }
 
     public void removeBookmark(Resource resource, Person person) {
-        if (resource == null || person == null)
+        if ((resource == null) || (person == null)) {
             return;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_REMOVE_BOOKMARK);
         query.setLong("resourceId", resource.getId());
         query.setLong("personId", person.getId());
@@ -63,8 +65,9 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = Arrays.asList(Status.ACTIVE, Status.DRAFT);
         }
-        if (person == null)
+        if (person == null) {
             return Collections.emptyList();
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_FIND_RESOURCE_BY_PERSON);
         query.setParameterList("statuses", statuses);
         query.setLong("personId", person.getId());

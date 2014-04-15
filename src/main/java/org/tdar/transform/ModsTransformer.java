@@ -157,18 +157,20 @@ public abstract class ModsTransformer<R extends Resource> implements
                 }
             }
 
-            if (source.getDate() != null && source.getDate() != -1) {
+            if ((source.getDate() != null) && (source.getDate() != -1)) {
                 DateElement createDate = mods.getOriginInfo().createDate(OriginDateType.CREATED);
                 createDate.setValue(source.getDate().toString());
             }
 
-            if (source.getResourceLanguage() != null)
+            if (source.getResourceLanguage() != null) {
                 mods.addLanguage(source.getResourceLanguage().getCode(), false,
                         null, null);
-            if (source.getResourceType().toDcmiTypeString() != null)
+            }
+            if (source.getResourceType().toDcmiTypeString() != null) {
                 mods.addTypeOfResource(
                         DcmiModsTypeMapper.getType(source.getResourceType().toDcmiTypeString()),
                         false, false);
+            }
 
             // FIXME: fixme
             // if (informationResourceFormat != null)
@@ -201,8 +203,9 @@ public abstract class ModsTransformer<R extends Resource> implements
             ModsDocument mods = super.transform(source);
 
             String abst = source.getDescription();
-            if (abst != null)
+            if (abst != null) {
                 mods.addAbstract(abst, null);
+            }
 
             // populate authors, but filter editors and series editors -- we will determine where to
             // put them later
@@ -218,8 +221,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                 }
             }
 
-            if (source.getDoi() != null)
+            if (source.getDoi() != null) {
                 mods.addIdentifier(source.getDoi(), "doi", false, null);
+            }
 
             DocumentType type = source.getDocumentType();
             mods.addGenre(type.getLabel(),
@@ -255,18 +259,21 @@ public abstract class ModsTransformer<R extends Resource> implements
                     RelatedItem artHost = mods.createRelatedItem();
                     artHost.setType(RelatedItemTypeValues.host);
 
-                    if (source.getJournalName() != null)
+                    if (source.getJournalName() != null) {
                         artHost.getTitleInfo().addTitle(source.getJournalName());
+                    }
                     addVolume(artHost, source.getVolume());
-                    if (source.getJournalNumber() != null)
+                    if (source.getJournalNumber() != null) {
                         artHost.getPart().addDetail(source.getJournalNumber(),
                                 null, null, "issue", null);
+                    }
 
                     addPublisher(artHost, source.getPublisherName(), source.getPublisherLocation());
                     addExtent(artHost, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
 
-                    if (source.getIssn() != null)
+                    if (source.getIssn() != null) {
                         artHost.addIdentifier(source.getIssn(), "issn", false, null);
+                    }
                     addPhysicalLocation(artHost, source.getCopyLocation());
 
                     // again, is this a good assumption?
@@ -282,7 +289,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                     if (source.getPublisherName() != null) {
                         degreeGrantor.addNamePart(source.getPublisherName(), null); // institution
                         if (source.getPublisherLocation() != null)
+                        {
                             degreeGrantor.addNamePart(source.getPublisherLocation(), null); // department
+                        }
                         degreeGrantor.addRole("Degree grantor", false, null);
                     }
                     break;
@@ -293,8 +302,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                         conf.addNamePart(source.getPublisherName(), null);
                         conf.addRole("creator", false, null);
                     }
-                    if (source.getPublisherName() != null)
+                    if (source.getPublisherName() != null) {
                         mods.getOriginInfo().addPlace(source.getPublisherLocation(), false, null);
+                    }
                     break;
                 case OTHER:
                     addExtent(mods, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
@@ -306,40 +316,48 @@ public abstract class ModsTransformer<R extends Resource> implements
         }
 
         private void addVolume(ModsElementContainer elem, String volume) {
-            if (volume != null)
+            if (volume != null) {
                 elem.getPart().addDetail(volume, null, null, "volume", null);
+            }
         }
 
         private void addPhysicalLocation(ModsElementContainer elem, String copyLocation) {
-            if (copyLocation != null)
+            if (copyLocation != null) {
                 elem.getLocation().addPhysicalLocation(copyLocation, null);
+            }
         }
 
         private void addPublisher(ModsElementContainer elem, String publisher, String publisherLocation) {
-            if (publisher != null)
+            if (publisher != null) {
                 elem.getOriginInfo().addPublisher(publisher);
-            if (publisherLocation != null)
+            }
+            if (publisherLocation != null) {
                 elem.getOriginInfo().addPlace(publisherLocation, false, null);
+            }
         }
 
         private void addIsbn(ModsElementContainer elem, String isbn) {
-            if (isbn != null)
+            if (isbn != null) {
                 elem.addIdentifier(isbn, "isbn", false, null);
+            }
         }
 
         private void addEdition(ModsElementContainer elem, String edition) {
-            if (edition != null)
+            if (edition != null) {
                 elem.getOriginInfo().addEdition(edition);
+            }
         }
 
         private void addSeriesInfo(ModsElementContainer elem, String seriesName, String seriesNumber) {
-            if (seriesName != null || seriesNumber != null) {
+            if ((seriesName != null) || (seriesNumber != null)) {
                 RelatedItem series = elem.createRelatedItem();
                 series.setType(RelatedItemTypeValues.series);
-                if (seriesName != null)
+                if (seriesName != null) {
                     series.getTitleInfo().addTitle(seriesName);
-                if (seriesNumber != null)
+                }
+                if (seriesNumber != null) {
                     series.getTitleInfo().addPartNumber(seriesNumber);
+                }
             }
         }
 
@@ -348,8 +366,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                     numberOfPages.toString()) : null;
             String sPage = (startPage != null) ? startPage.toString() : null;
             String ePage = (endPage != null) ? endPage.toString() : null;
-            if (numPages != null || sPage != null || ePage != null)
+            if ((numPages != null) || (sPage != null) || (ePage != null)) {
                 elem.getPart().addExtent(sPage, ePage, null, "pages", numPages);
+            }
         }
 
         private void addDocumentCreator(ModsElementContainer elem, ResourceCreator resourceCreator) {

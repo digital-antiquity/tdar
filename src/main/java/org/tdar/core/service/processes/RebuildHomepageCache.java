@@ -82,8 +82,6 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.deleteAll(BrowseYearCountCache.class);
         resourceService.deleteAll(WeeklyPopularResourceCache.class);
         resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
-        
-
 
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
@@ -92,7 +90,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
             hfic.add(new HomepageFeaturedItemCache((InformationResource) res));
         }
 
-        logger.debug("homepage featured item cache ({})",hfic.size());
+        logger.debug("homepage featured item cache ({})", hfic.size());
 
         List<WeeklyPopularResourceCache> wrc = new ArrayList<WeeklyPopularResourceCache>();
 
@@ -108,20 +106,20 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
                 if (seen.contains(resourceId)) {
                     continue;
                 }
-                
+
                 if (max == 0) {
                     break;
                 }
                 max--;
-                
+
                 seen.add(resourceId);
                 Resource resource = resourceService.find(resourceId);
-                if (resource != null && resource.isActive()) {
+                if ((resource != null) && resource.isActive()) {
                     wrc.add(new WeeklyPopularResourceCache(resource));
                 }
             }
         }
-        logger.debug("weekly popular stats ({})",wrc.size());
+        logger.debug("weekly popular stats ({})", wrc.size());
         resourceService.save(wrc);
         resourceService.save(hfic);
 

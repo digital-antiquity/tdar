@@ -36,7 +36,6 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
     public void delete(InformationResourceFileVersion file) {
         delete(file, false);
     }
-    
 
     public void delete(InformationResourceFileVersion file, boolean purge) {
         if (file.isUploadedOrArchival()) {
@@ -57,7 +56,7 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
         try {
             filestore.purge(ObjectType.RESOURCE, file);
         } catch (IOException e) {
-            getLogger().warn("Problems purging file with filestoreID of {} from the filestore.", file.getFilename() , e);
+            getLogger().warn("Problems purging file with filestoreID of {} from the filestore.", file.getFilename(), e);
         }
 
     }

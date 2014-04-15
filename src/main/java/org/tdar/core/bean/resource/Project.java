@@ -70,8 +70,8 @@ public class Project extends Resource implements Sortable {
             "resourceNotes",
             "resourceAnnotations",
             "resourceAnnotationKey",
-            "individualAndInstitutionalCredit","creator","dateUpdated",
-            "role","firstName","lastName","name","institution","email"
+            "individualAndInstitutionalCredit", "creator", "dateUpdated",
+            "role", "firstName", "lastName", "name", "institution", "email"
     };
 
     public static final Project NULL = new Project() {
@@ -152,7 +152,7 @@ public class Project extends Resource implements Sortable {
 
     @IndexedEmbedded(prefix = "informationResources.")
     @XmlTransient
-//    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    // @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }

@@ -29,30 +29,32 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      * Deletes this information resource file from the filestore, database. Also
      * removes the translated file if it exists.
      * 
-     * @throws NotImplementedException -- need to work through what should really happen here
+     * @throws NotImplementedException
+     *             -- need to work through what should really happen here
      * @param file
      */
     @Override
     public void delete(InformationResourceFile file) {
         throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
-        
-        //        purgeFromFilestore(file);
-        //        if (file.getInformationResource() != null) {
-        //            file.getInformationResource().getInformationResourceFiles().remove(file);
-        //        }
-        //        super.delete(file);
+
+        // purgeFromFilestore(file);
+        // if (file.getInformationResource() != null) {
+        // file.getInformationResource().getInformationResourceFiles().remove(file);
+        // }
+        // super.delete(file);
     }
-    
+
     /*
      * Find @link InformationResourceFile entries with the specified @link FileStatus
      */
     @Transactional
-    public List<InformationResourceFile> findFilesWithStatus(FileStatus ... statuses) {
+    public List<InformationResourceFile> findFilesWithStatus(FileStatus... statuses) {
         return getDao().findFilesWithStatus(statuses);
     }
 
     /*
      * Remove InformationResourceFile
+     * 
      * @throws NotImplementedException -- need to work through what should really happen here
      */
     public void purgeFromFilestore(InformationResourceFile file) {
@@ -62,9 +64,9 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
         }
     }
 
-    
     /**
      * Deletes the TranslatedFiles from the Filestore and database
+     * 
      * @param irVersion
      */
     @Transactional(readOnly = false)

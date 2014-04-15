@@ -13,27 +13,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.ResultMetadataWrapper;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
  * 
  */
 public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
-
 
     private static final int RESULTS_PER_PAGE = 2;
 
@@ -55,7 +53,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         DataTableBrowseController controller = generateNewInitializedController(DataTableBrowseController.class);
         controller.setId(dataTable.getId());
         controller.setRecordsPerPage(RESULTS_PER_PAGE);
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResults());
+        assertEquals(Action.SUCCESS, controller.getDataResults());
         ResultMetadataWrapper resultsWrapper = controller.getResultsWrapper();
         // DEFAULT CASE -- START @ 0
         assertEquals(new Integer(RESULTS_PER_PAGE), resultsWrapper.getRecordsPerPage());
@@ -70,7 +68,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataTable.getId());
         controller.setRecordsPerPage(RESULTS_PER_PAGE);
         controller.setStartRecord(5);
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResults());
+        assertEquals(Action.SUCCESS, controller.getDataResults());
         resultsWrapper = controller.getResultsWrapper();
         assertEquals(new Integer(RESULTS_PER_PAGE), resultsWrapper.getRecordsPerPage());
         assertEquals(new Integer(6), resultsWrapper.getTotalRecords());
@@ -84,7 +82,7 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataTable.getId());
         controller.setRecordsPerPage(RESULTS_PER_PAGE);
         controller.setStartRecord(500);
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResults());
+        assertEquals(Action.SUCCESS, controller.getDataResults());
         resultsWrapper = controller.getResultsWrapper();
         assertEquals(new Integer(RESULTS_PER_PAGE), resultsWrapper.getRecordsPerPage());
         assertEquals(new Integer(6), resultsWrapper.getTotalRecords());
@@ -119,10 +117,11 @@ public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
             assertTrue(row.contains(term));
         }
     }
-   
+
     @Test
     @Rollback
-    public void testTranslate() throws IOException, TdarActionException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+    public void testTranslate() throws IOException, TdarActionException, IllegalAccessException, InstantiationException, InvocationTargetException,
+            NoSuchMethodException {
         // load datasets
         Dataset dataset = setupAndLoadResource(SRC_TEST_RESOURCES_DATA_INTEGRATION_TESTS_EMPTY_ACCDB, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);

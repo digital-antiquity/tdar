@@ -24,7 +24,7 @@ import org.tdar.utils.HashQueue;
  * Service to help manage and handle the complexity of @link FileProxy objects
  * 
  * @author jtdevos
- *
+ * 
  */
 @Component
 public class FileProxyService {
@@ -46,8 +46,9 @@ public class FileProxyService {
     public HashQueue<String, FileProxy> buildProxyQueue(List<FileProxy> proxies) {
         HashQueue<String, FileProxy> hashQueue = new HashQueue<>();
         for (FileProxy proxy : proxies) {
-            if (proxy == null)
+            if (proxy == null) {
                 continue;
+            }
             if (proxy.getAction() == null) {
                 logger.error("null proxy action on '{}'", proxy);
                 proxy.setAction(FileAction.NONE);
@@ -98,8 +99,8 @@ public class FileProxyService {
     }
 
     /**
-     *  return a list of fileProxies, culling null and invalid instances
-     *  
+     * return a list of fileProxies, culling null and invalid instances
+     * 
      * @param proxies
      */
     public void cullInvalidProxies(List<FileProxy> proxies) {

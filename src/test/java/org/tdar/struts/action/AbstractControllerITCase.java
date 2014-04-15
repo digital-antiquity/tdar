@@ -52,6 +52,8 @@ import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.Action;
+
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
@@ -65,7 +67,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     protected abstract TdarActionSupport getController();
-
 
     public void bookmarkResource(Resource r) {
         bookmarkResource(r, false);
@@ -127,7 +128,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         }
         r = resourceService.find(r.getId());
         assertNotNull(r);
-        assertTrue(r.getBookmarks().isEmpty() || r.getBookmarks().size() == (size - 1));
+        assertTrue(r.getBookmarks().isEmpty() || (r.getBookmarks().size() == (size - 1)));
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
@@ -165,7 +166,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertTrue(save.equals(TdarActionSupport.SUCCESS));
+        assertTrue(save.equals(Action.SUCCESS));
         return resourceCollection;
     }
 
@@ -187,7 +188,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setUploadFileFileName(Arrays.asList(name_));
         controller.setTicketId(ticketId);
         String upload = controller.upload();
-        assertEquals(TdarActionSupport.SUCCESS, upload);
+        assertEquals(Action.SUCCESS, upload);
         return ticketId;
     }
 
@@ -261,8 +262,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         } else if (cls.equals(CodingSheet.class)) {
             controller = generateNewInitializedController(CodingSheetController.class);
         }
-        if (controller == null)
+        if (controller == null) {
             return null;
+        }
 
         if (Persistable.Base.isNotNullOrTransient(id)) {
             controller.setId(id);
@@ -286,7 +288,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
             if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?>)) {
                 AbstractSupportingInformationResourceController<?> asc = (AbstractSupportingInformationResourceController<?>) controller;
-                asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
+                asc.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
                 try {
                     asc.setFileTextInput(FileUtils.readFileToString(file));
                 } catch (Exception e) {
@@ -315,7 +317,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws FileNotFoundException {
         UploadController uploadController = generateNewInitializedController(UploadController.class);
-        assertEquals(TdarActionSupport.SUCCESS, uploadController.grabTicket());
+        assertEquals(Action.SUCCESS, uploadController.grabTicket());
         PersonalFilestoreTicket ticket = uploadController.getPersonalFilestoreTicket();
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
         uploadController = generateNewInitializedController(UploadController.class);
@@ -332,7 +334,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             toReturn.getSecond().add(fileProxy);
         }
 
-        assertEquals(TdarActionSupport.SUCCESS, uploadController.upload());
+        assertEquals(Action.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
         assertEquals("file count retrieved from personal filestore", uploadFiles.size(), files.size());
         // XXX: potentially assert that md5s and/or filenames are same across both file lists

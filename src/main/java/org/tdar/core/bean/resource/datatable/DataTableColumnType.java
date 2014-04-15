@@ -48,23 +48,31 @@ public enum DataTableColumnType implements HasLabel, Localizable {
     }
 
     public static DataTableColumnType fromString(String typeToCheck) {
-        if (typeToCheck.toLowerCase().contains("char"))
+        if (typeToCheck.toLowerCase().contains("char")) {
             return VARCHAR;
-        if (typeToCheck.toLowerCase().contains("text"))
+        }
+        if (typeToCheck.toLowerCase().contains("text")) {
             return TEXT;
-        if (typeToCheck.toLowerCase().contains("blob"))
+        }
+        if (typeToCheck.toLowerCase().contains("blob")) {
             return BLOB;
+        }
         if (typeToCheck.toLowerCase().contains("double")
-                || typeToCheck.contains("float"))
+                || typeToCheck.contains("float")) {
             return DOUBLE;
-        if (typeToCheck.toLowerCase().contains("bool"))
+        }
+        if (typeToCheck.toLowerCase().contains("bool")) {
             return BOOLEAN;
-        if (typeToCheck.toLowerCase().contains("int"))
+        }
+        if (typeToCheck.toLowerCase().contains("int")) {
             return BIGINT;
-        if (typeToCheck.toLowerCase().contains("time"))
+        }
+        if (typeToCheck.toLowerCase().contains("time")) {
             return DATETIME;
-        if (typeToCheck.toLowerCase().equals("date"))
+        }
+        if (typeToCheck.toLowerCase().equals("date")) {
             return DATE;
+        }
         return TEXT;
     }
 
@@ -127,8 +135,9 @@ public enum DataTableColumnType implements HasLabel, Localizable {
      * @return
      */
     public boolean isNumeric() {
-        if (this == DOUBLE || this == BIGINT)
+        if ((this == DOUBLE) || (this == BIGINT)) {
             return true;
+        }
 
         return false;
     }

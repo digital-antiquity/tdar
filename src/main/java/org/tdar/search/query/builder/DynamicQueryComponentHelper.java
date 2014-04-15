@@ -16,15 +16,15 @@ import org.tdar.core.service.ReflectionService;
 
 /**
  * Static class to help with @link DynamicQueryComponent beans and building their object graphs
+ * 
  * @author abrin
- *
+ * 
  */
 public class DynamicQueryComponentHelper {
 
     private static final String VOID = "void";
     protected static final transient Logger logger = LoggerFactory.getLogger(DynamicQueryComponentHelper.class);
 
-    
     /**
      * The default static method takes the class to be inspected and a string that can specify
      * a parent string if needed. The parent string is the "prefix" that shows up in the lucene
@@ -63,8 +63,9 @@ public class DynamicQueryComponentHelper {
         if (navigateClasspath) {
             Class<?> current = cls;
             while (true) {
-                if (current.getSuperclass() == null)
+                if (current.getSuperclass() == null) {
                     break;
+                }
                 logger.trace("superclass: " + current.getSuperclass().getCanonicalName());
                 current = current.getSuperclass();
                 cmpnts.addAll(createFields(current, parent_, false));
@@ -85,7 +86,7 @@ public class DynamicQueryComponentHelper {
         HashSet<DynamicQueryComponent> cmpts = new HashSet<>();
         logger.trace(String.format("\tProcessing annotations on:  %s.%s()", parent_, mthd.getName()));
         for (Annotation ann : mthd.getAnnotations()) {
-            if (ann instanceof Field || ann instanceof Fields || ann instanceof DocumentId || ann instanceof IndexedEmbedded) {
+            if ((ann instanceof Field) || (ann instanceof Fields) || (ann instanceof DocumentId) || (ann instanceof IndexedEmbedded)) {
                 String label_ = ReflectionService.cleanupMethodName(mthd);
                 if (ann instanceof Field) {
                     cmpts.add(createDynamicQueryComponent(parent_, ann, label_, null));
@@ -130,8 +131,9 @@ public class DynamicQueryComponentHelper {
     private static DynamicQueryComponent createDynamicQueryComponent(String parent_, Annotation ann, String label, Class<?> analyzerClass2) {
         Field annField = (Field) ann;
         String label_ = label;
-        if (StringUtils.isNotBlank(annField.name()))
+        if (StringUtils.isNotBlank(annField.name())) {
             label_ = annField.name();
+        }
         Class<?> analyzerClass = evaluateAnalyzerClass(analyzerClass2, annField.analyzer());
         logger.trace("creating annotation for: " + parent_ + "." + label_);
         return new DynamicQueryComponent(label_, analyzerClass, parent_);
@@ -139,6 +141,7 @@ public class DynamicQueryComponentHelper {
 
     /**
      * Processes a search Field passing the parent
+     * 
      * @see #createDynamicQueryComponent(String, Annotation, String, Class)
      * 
      * @param fld
@@ -163,12 +166,13 @@ public class DynamicQueryComponentHelper {
 
         for (Annotation ann : fld.getAnnotations()) {
             String label_ = fld.getName();
-            if (ann instanceof Field || ann instanceof DocumentId || ann instanceof IndexedEmbedded
-                    || ann instanceof Fields || ann instanceof Analyzer) {
+            if ((ann instanceof Field) || (ann instanceof DocumentId) || (ann instanceof IndexedEmbedded)
+                    || (ann instanceof Fields) || (ann instanceof Analyzer)) {
                 if (ann instanceof Field) {
                     Field annField = (Field) ann;
-                    if (StringUtils.isNotBlank(annField.name()))
+                    if (StringUtils.isNotBlank(annField.name())) {
                         label_ = annField.name();
+                    }
                     cmpts.add(createDynamicQueryComponent(parent_, ann, label_, analyzerClass));
                 }
 
@@ -230,8 +234,9 @@ public class DynamicQueryComponentHelper {
         if (annCls != null) {
             Class<?> impl = annCls.impl();
             // hibSearch defaults to "void" so removing it
-            if (!impl.getCanonicalName().equals(VOID))
+            if (!impl.getCanonicalName().equals(VOID)) {
                 return annCls.impl();
+            }
         }
         return analyzerClass;
     }

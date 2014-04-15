@@ -270,8 +270,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getActionName() {
-        if (ActionContext.getContext() == null)
+        if (ActionContext.getContext() == null) {
             return null;
+        }
         return ActionContext.getContext().getName();
     }
 
@@ -524,7 +525,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = ExceptionUtils.getFullStackTrace(exception);
 
-        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception),  exception, trace });
+        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception), exception, trace });
         if (exception instanceof TdarActionException) {
             setHideExceptionArea(true);
         }
@@ -536,7 +537,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
             StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
-            while (thrw.getCause() != null && maxDepth > -1) {
+            while ((thrw.getCause() != null) && (maxDepth > -1)) {
                 thrw = thrw.getCause();
                 if (StringUtils.isNotBlank(thrw.getMessage())) {
                     sb.append(": ").append(thrw.getMessage());
@@ -545,7 +546,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
 
             super.addActionError(sb.toString());
-        } else if (StringUtils.isNotBlank(message)){
+        } else if (StringUtils.isNotBlank(message)) {
             super.addActionError(message);
         }
         stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));
@@ -581,7 +582,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public FileSystemResourceService getFileSystemResourceService() {
         return filesystemResourceService;
     }
-    
+
     protected HttpServletRequest getServletRequest() {
         return servletRequest;
     }
@@ -648,20 +649,20 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getStaticHost() {
         if (!getTdarConfiguration().isStaticContentEnabled()) {
-            //expecting that default requests are relative to root; so / becomes //
+            // expecting that default requests are relative to root; so / becomes //
             return "";
         }
-        
-        String port ="";
-        if (isSecure() && getTdarConfiguration().getStaticContentSSLPort() != 443) {
+
+        String port = "";
+        if (isSecure() && (getTdarConfiguration().getStaticContentSSLPort() != 443)) {
             port = ":" + getTdarConfiguration().getStaticContentSSLPort();
         }
 
-        if (!isSecure() && getTdarConfiguration().getStaticContentPort() != 80) {
+        if (!isSecure() && (getTdarConfiguration().getStaticContentPort() != 80)) {
             port = ":" + getTdarConfiguration().getStaticContentPort();
         }
 
-        return String.format("%s//%s%s",getProtocol(), getTdarConfiguration().getStaticContentHost(),port);
+        return String.format("%s//%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port);
     }
 
     public boolean getShowJiraLink() {
@@ -674,7 +675,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isReindexing() {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (indexingTask != null && !indexingTask.hasEnded()) {
+        if ((indexingTask != null) && !indexingTask.hasEnded()) {
             return true;
         }
         return false;
@@ -709,7 +710,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     /**
-     * Check the js error log and js validation error log.  If we detect any js  errors, log them at ERROR.  Validation
+     * Check the js error log and js validation error log. If we detect any js errors, log them at ERROR. Validation
      * errors are an expected part of the workflow and are only logged at INFO.
      */
     public void reportAnyJavascriptErrors() {
@@ -717,18 +718,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             getLogger().trace("No javascript errors reported by the client");
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            if(getLogger().isErrorEnabled()) {
-                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
+            if (getLogger().isErrorEnabled()) {
+                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"),
+                        errors.length, StringUtils.join(errors, "\n\t - "));
             }
         }
 
-
         List<String> lines = new ArrayList<>(clientValidationInfo.size());
-        for(Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
-            String line = String.format("%s\t %s", entry.getKey(),  entry.getValue());
+        for (Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
+            String line = String.format("%s\t %s", entry.getKey(), entry.getValue());
             lines.add(line);
         }
-        if(!lines.isEmpty()) {
+        if (!lines.isEmpty()) {
             getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
@@ -744,7 +745,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isJSCSSMergeServletEnabled() {
         return getTdarConfiguration().isJSCSSMergeServletEnabled();
     }
-    
+
     /**
      * @see TdarConfiguration#isSwitchableMapObfuscation()
      * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
@@ -760,8 +761,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
         this.clientValidationInfo = clientValidationInfo;
     }
-    
-    public String getText(String aTextName, Object ... args) {
+
+    public String getText(String aTextName, Object... args) {
         return super.getText(aTextName, Arrays.asList(args));
     }
 
@@ -769,7 +770,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return filesystemResourceService.parseWroXML("js");
     }
 
-    public List<String> getCssFiles() throws TdarActionException  {
+    public List<String> getCssFiles() throws TdarActionException {
         return filesystemResourceService.parseWroXML("css");
     }
 
@@ -781,6 +782,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return moreInfoUrlKey;
     }
 
+    @Override
     public void setMoreInfoUrlKey(String moreInfoUrl) {
         this.moreInfoUrlKey = moreInfoUrl;
     }
@@ -792,12 +794,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setHideExceptionArea(boolean hideExceptionArea) {
         this.hideExceptionArea = hideExceptionArea;
     }
- 
+
     public boolean isErrorWarningSectionVisible() {
         if (hideExceptionArea) {
             return false;
         }
-        
+
         if (CollectionUtils.isNotEmpty(getActionErrors())) {
             return true;
         }
@@ -805,11 +807,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return true;
         }
         if (this instanceof AbstractInformationResourceController) {
-            AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>)this;
+            AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>) this;
             if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
                 return true;
-        }
-            
+            }
+
         }
         return false;
     }

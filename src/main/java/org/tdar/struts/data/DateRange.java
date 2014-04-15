@@ -43,10 +43,10 @@ public class DateRange extends Pair<Date, Date> implements Range<Date> {
 
     @Override
     public boolean isValid() {
-        if (getFirst() != null && getSecond() != null) {
+        if ((getFirst() != null) && (getSecond() != null)) {
             return getFirst().compareTo(getSecond()) <= 0;
         }
-        return getFirst() != null || getSecond() != null;
+        return (getFirst() != null) || (getSecond() != null);
     }
 
     @Override
@@ -56,8 +56,9 @@ public class DateRange extends Pair<Date, Date> implements Range<Date> {
 
     @Override
     public boolean isInitialized() {
-        if (getFirst() == null && getSecond() == null)
+        if ((getFirst() == null) && (getSecond() == null)) {
             return false;
+        }
 
         return true;
     }

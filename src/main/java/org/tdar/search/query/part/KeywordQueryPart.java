@@ -49,7 +49,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     }
 
     public void setLimit(Keyword obj) {
-        terms = new ArrayList<String>(Arrays.asList((String) obj.getLabel()));
+        terms = new ArrayList<String>(Arrays.asList(obj.getLabel()));
     }
 
     public KeywordQueryPart(String keywordType) {
@@ -70,8 +70,9 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public KeywordQueryPart(String keywordType, Collection terms_) {
         terms = new ArrayList<String>();
         for (Object term : terms_) {
-            if (term == null)
+            if (term == null) {
                 continue;
+            }
 
             if (term instanceof Keyword) {
                 Keyword kwd = (Keyword) term;
@@ -107,10 +108,12 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public String generateQueryString() {
         StringBuilder q = new StringBuilder();
         for (String term : terms) {
-            if (StringUtils.isEmpty(term))
+            if (StringUtils.isEmpty(term)) {
                 continue;
-            if (q.length() > 1)
+            }
+            if (q.length() > 1) {
                 q.append(" OR ");
+            }
 
             String field = "label";
             if (StringUtils.isNumeric(term)) {
@@ -133,13 +136,13 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         return keywordType;
     }
 
-//    public String getDescriptionLabel() {
-//        return descriptionLabel;
-//    }
-//
-//    public void setDescriptionLabel(String label) {
-//        descriptionLabel = label;
-//    }
+    // public String getDescriptionLabel() {
+    // return descriptionLabel;
+    // }
+    //
+    // public void setDescriptionLabel(String label) {
+    // descriptionLabel = label;
+    // }
 
     @Override
     public String getDescription(TextProvider provider) {

@@ -26,6 +26,8 @@ import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.Action;
+
 public class BillingAccountControllerITCase extends AbstractResourceControllerITCase {
 
     @Override
@@ -93,7 +95,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         init(controller, getAdminUser());
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
-        assertEquals(BillingAccountController.SUCCESS, controller.selectAccount());
+        assertEquals(Action.SUCCESS, controller.selectAccount());
         assertTrue(controller.getAccounts().contains(account));
 
     }
@@ -121,7 +123,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(BillingAccountController.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         Account account = genericService.find(Account.class, accountId);
         assertTrue(account.getInvoices().contains(invoice));
     }
@@ -161,7 +163,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         String save = controller.save();
         Long id = controller.getAccount().getId();
-        assertEquals(BillingAccountController.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         Long accountId = controller.getId();
         // assertFalse(genericService.find(Account.class, accountId).getInvoices().contains(invoice));
         assertTrue(genericService.find(Account.class, id).getInvoices().contains(invoice));
@@ -176,7 +178,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         Long id = controller.getAccount().getId();
-        assertEquals(BillingAccountController.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
 
         Account account = genericService.find(Account.class, id);
         assertEquals(1, account.getAuthorizedMembers().size());
@@ -246,6 +248,6 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         Coupon coupon = coupons.iterator().next();
         logger.info(coupon.getCode());
         assertNotNull(coupon.getCode());
-        assertEquals((long) files - 1l, controller.getAccount().getAvailableNumberOfFiles().longValue());
+        assertEquals(files - 1l, controller.getAccount().getAvailableNumberOfFiles().longValue());
     }
 }

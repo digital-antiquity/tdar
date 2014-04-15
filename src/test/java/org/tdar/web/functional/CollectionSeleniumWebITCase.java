@@ -1,6 +1,5 @@
 package org.tdar.web.functional;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,11 +33,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         reindexOnce();
     }
 
-   
     @Test
     public void testCollectionPermissionsAndVisible() {
         TestConfiguration config = TestConfiguration.getInstance();
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,TAG_FAUNAL_WORKSHOP,_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
         logout();
         // make sure basic user cannot see restricted page
@@ -50,7 +48,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         loginAdmin();
         gotoPage(url);
         assertPageViewable(titles);
-        addUserWithRights(config, url,GeneralPermissions.VIEW_ALL);
+        addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
         logout();
         // make sure unauthenticated user cannot see
         gotoPage(url);
@@ -71,12 +69,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(titles);
     }
 
-
     private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
         gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
-        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),"person-"+config.getUserId(),
+        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
+                "person-" + config.getUserId(),
                 permissions);
         submitForm();
     }
@@ -97,9 +95,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertFalse(getText().contains(TAG_FAUNAL_WORKSHOP));
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
-        
-    }
 
+    }
 
     @Test
     public void testCollectionRetain() {
@@ -115,7 +112,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         login();
         gotoEdit(url);
-//        removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
+        // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         submitForm();
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
@@ -129,7 +126,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
     }
 
-    
     @Test
     public void testCollectionOrientiationOptions() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
@@ -138,7 +134,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(titles, false);
         for (DisplayOrientation orient : DisplayOrientation.values()) {
             gotoEdit(url);
-            logger.debug("{} {}", url ,orient);
+            logger.debug("{} {}", url, orient);
             setFieldByName("resourceCollection.orientation", orient.name());
             submitForm();
             assertPageViewable(titles);
@@ -150,7 +146,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             submitForm();
             assertPageViewable(titles);
         }
-        
+
         List<String> urls = new ArrayList<>();
         for (WebElement el : find(".media-body a")) {
             urls.add(el.getAttribute("href"));
@@ -170,9 +166,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             Assert.assertTrue("Should see at least one title on page", seen > 0);
             Assert.assertNotEquals("should not see every title on each page", seen, titles.size());
         }
-}
-
-
+    }
 
     private String setupCollectionForTest(List<String> titles, Boolean visible) {
         gotoPage("/dashboard");
@@ -181,7 +175,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(By.linkText("Collection")).click();
         waitForPageload();
         TestConfiguration config = TestConfiguration.getInstance();
-        
+
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
         setFieldByName("resourceCollection.name", TITLE);
         setFieldByName("resourceCollection.description", DESCRIPTION);
@@ -190,9 +184,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.visible", visible.toString().toLowerCase());
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(),"person-"+config.getEditorUserId(),
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
+                + config.getEditorUserId(),
                 GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(),"person-"+config.getAdminUserId(),
+        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
+                + config.getAdminUserId(),
                 GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection(_139);
         for (String title : titles) {
@@ -204,13 +200,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         return url;
     }
 
-
     private void gotoEdit(String url) {
         gotoPage(url + "/edit");
-//        find(By.linkText(" edit")).click();
+        // find(By.linkText(" edit")).click();
         waitForPageload();
     }
-
 
     private void assertPageNotViewable(List<String> titles) {
         String text = getText();
@@ -219,7 +213,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         }
         Assert.assertFalse(text.contains(DESCRIPTION));
     }
-
 
     private void assertPageViewable(List<String> titles) {
         String text = getText();
@@ -230,11 +223,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(text.contains(TITLE));
         Assert.assertTrue(text.contains(DESCRIPTION));
     }
-    
+
     public void addResourceToCollection(String title) {
-        setFieldByName("_tdar.query",title);
+        setFieldByName("_tdar.query", title);
         waitFor(TestConfiguration.getInstance().getWaitInt());
-        for (int i=0;i<20;i++) {
+        for (int i = 0; i < 20; i++) {
             String text = find("#resource_datatable").getText();
             logger.debug(text);
             if (text.contains(title)) {

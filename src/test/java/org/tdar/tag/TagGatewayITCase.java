@@ -93,19 +93,19 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         query.setWhat(domestic);
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
-        String[] ids = {"262", "1268", "2420", "3805"};
+        String[] ids = { "262", "1268", "2420", "3805" };
         boolean ok = false;
         for (ResultType result : results.getResults().getResult()) {
             for (String id : ids) {
                 if (id.equals(result.getIdentifier())) {
-//                    logger.info("ok: {} ", id);
-                    ids = (String[])ArrayUtils.removeElement(ids, id);
+                    // logger.info("ok: {} ", id);
+                    ids = (String[]) ArrayUtils.removeElement(ids, id);
                     ok = true;
                 }
             }
-//            logger.info("saw: {}", result.identifier);
+            // logger.info("saw: {}", result.identifier);
         }
-        assertTrue("should see something, missed:" + ArrayUtils.toString(ids),ok);
+        assertTrue("should see something, missed:" + ArrayUtils.toString(ids), ok);
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM
@@ -139,8 +139,9 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
     private boolean titleInResults(List<ResultType> results, String title) {
         for (ResultType res : results) {
-            if (res.getTitle().equalsIgnoreCase(title))
+            if (res.getTitle().equalsIgnoreCase(title)) {
                 return true;
+            }
         }
         return false;
     }

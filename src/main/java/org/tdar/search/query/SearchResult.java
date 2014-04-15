@@ -11,7 +11,7 @@ import org.tdar.struts.data.FacetGroup;
 
 import com.opensymphony.xwork2.util.ValueStack;
 
-public class SearchResult implements SearchResultHandler<Indexable>,Serializable {
+public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
 
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
@@ -29,6 +29,7 @@ public class SearchResult implements SearchResultHandler<Indexable>,Serializable
     private String searchTitle;
     private String searchDescription;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+
     @Override
     public SortOption getSortField() {
         return sortField;

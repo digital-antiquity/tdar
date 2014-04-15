@@ -23,5 +23,4 @@ public class StartupHelper implements ApplicationListener<ContextRefreshedEvent>
         }
     }
 
- 
 }

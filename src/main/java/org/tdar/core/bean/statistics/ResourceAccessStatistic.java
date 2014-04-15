@@ -13,8 +13,8 @@ import org.tdar.core.bean.resource.Resource;
 
 @Entity
 @Table(name = "resource_access_statistics", indexes = {
-        @Index(name="resource_access_stats_count_id", columnList = "id, resource_id"),
-        @Index(name="resource_access_stats_id", columnList = "resource_id")
+        @Index(name = "resource_access_stats_count_id", columnList = "id, resource_id"),
+        @Index(name = "resource_access_stats_id", columnList = "resource_id")
 })
 /**
  * Tracks anonymous view statistics for tDAR

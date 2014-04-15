@@ -12,15 +12,15 @@ import org.tdar.search.query.SortOption;
 public interface DataTableResourceDisplay {
 
     public List<ResourceCollection> getAllResourceCollections();
-    
+
     public List<Status> getStatuses();
 
     public List<ResourceType> getResourceTypes();
 
     public List<SortOption> getResourceDatatableSortOptions();
-    
+
     public List<Resource> getFullUserProjects();
-    
+
     public List<Project> getAllSubmittedProjects();
 
 }

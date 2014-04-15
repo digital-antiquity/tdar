@@ -41,8 +41,9 @@ public class CachingServiceITCase extends AbstractControllerITCase {
     public Long countActive() {
         int count = 0;
         for (CodingSheet sheet : codingSheetService.findAll()) {
-            if (sheet.getStatus().equals(Status.ACTIVE))
+            if (sheet.getStatus().equals(Status.ACTIVE)) {
                 count++;
+            }
         }
         return new Long(count);
     }
@@ -92,7 +93,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         genericService.save(mgc);
         cs.getManagedGeographicKeywords().add(mgc);
         genericService.saveOrUpdate(cs);
-        genericService.synchronize();
+        evictCache();
         count_ = new Long(findAll.size());
         assertEquals(count, count_);
         logger.info("list: {} ", findAll);

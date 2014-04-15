@@ -66,10 +66,12 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o == this)
+        }
+        if (o == this) {
             return true;
+        }
         if (o instanceof DynamicQueryComponent) {
             return toString().equals(o.toString());
         }
@@ -88,8 +90,9 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
 
     @Override
     public String toString() {
-        if (this.getAnalyzer() == null)
+        if (this.getAnalyzer() == null) {
             return this.getLabel() + " - null";
+        }
         return this.getParent() + this.getLabel() + " - " + this.getAnalyzer().getCanonicalName();
     }
 }

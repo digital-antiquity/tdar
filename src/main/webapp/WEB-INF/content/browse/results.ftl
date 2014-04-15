@@ -32,9 +32,9 @@
 
     <@view.pageStatusCallout />
 
-<#if creator?? >
-    <#if  keywords?has_content || collaborators?has_content >
-            <div id="sidebar-right" parse="true">
+    <#if creator?? >
+        <#if  keywords?has_content || collaborators?has_content >
+        <div id="sidebar-right" parse="true">
             <div class="sidebar-spacer">
                 <#if collaborators?has_content>
                     <div id="related-creators">
@@ -69,14 +69,14 @@
                             </#list>
                         </ul>
                     </div>
-		        </#if>
+                </#if>
                 <div>
                     <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
                         associated with a Creator and highlighting the most commonly used.
                     </small>
                 </div>
             </div>
-            </div>
+        </div>
         </#if>
 
     <h1><#if creator.properName??>${creator.properName}</#if></h1>
@@ -104,44 +104,45 @@
         </#if>
         <br/>
         <#if creator.creatorType.person>
-				<#if creator.url?has_content || creator.orcidId?has_content>
+            <#if creator.url?has_content || creator.orcidId?has_content>
                 <table class='tableFormat table'>
                     <tr>
-                    	<td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.url}</a></#if></td>
-                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
+                        <td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.url}</a></#if></td>
+                        <td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if>
+                        </td>
                     </tr>
                 </table>
-                </#if>
-	        <#if showBasicInfo >
+            </#if>
+            <#if showBasicInfo >
                 <table class='tableFormat table'>
                     <#assign registered = false />
                     <#if creator.registered?has_content>
                         <#assign registered = creator.registered>
                     </#if>
-					<#if showAdminInfo>
-	            		<tr>
-	            			<td>
-	            				<B>Registered</b>: ${registered?string}
-            				</td>
-	            			<td>
-	            				<B>Username</b>: ${creator.username!"N/A"}
-	            			</td>
-	        			</tr>
-        			</#if>
+                    <#if showAdminInfo>
+                        <tr>
+                            <td>
+                                <B>Registered</b>: ${registered?string}
+                            </td>
+                            <td>
+                                <B>Username</b>: ${creator.username!"N/A"}
+                            </td>
+                        </tr>
+                    </#if>
                     <tr>
                         <td <#if !showAdminInfo>colspan=2</#if>>
                             <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
                         </td>
                         <td>
-                        <#if showAdminInfo>
+                            <#if showAdminInfo>
                             <#if creator.lastLogin?has_content>
                                 <@_datefield "Last Login"  creator.lastLogin />
                             <#else>
                                 <@_textfield "Last Login"  "No record" />
                             </#if>
                         <#else>
-                            <@_boolean "Registered User" registered />
-                        </#if>
+                                <@_boolean "Registered User" registered />
+                            </#if>
                         </td>
                     </tr>
                     <tr>
@@ -179,11 +180,11 @@
                         </td>
                         <td>
                             <#escape x as x?html>
-                    <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
-                    <br/>
-                    <@_textfield "Affiliation" creator.affilliation />
-                    
-                    </#escape>
+                                <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
+                                <br/>
+                                <@_textfield "Affiliation" creator.affilliation />
+
+                            </#escape>
                         </td>
                     </tr>
                 </table>
@@ -214,24 +215,24 @@
                             </div>
                         </div>
                     </#if>
-                <#if creator.addresses?has_content >
-                    <h3>Addresses</h3>
+                    <#if creator.addresses?has_content >
+                        <h3>Addresses</h3>
 
-                    <div class="row">
-                        <#list creator.addresses  as address>
-                            <div class="span3">
-                                <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-                            </div>
-                        </#list>
-                    </div>
-                </#if>
+                        <div class="row">
+                            <#list creator.addresses  as address>
+                                <div class="span3">
+                                    <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+                                </div>
+                            </#list>
+                        </div>
+                    </#if>
                 </#if>
             </#if>
             <br/>
         </#if>
     </div>
-    	</#if>
-    
+    </#if>
+
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">
         <div class="row">
@@ -262,29 +263,29 @@
         </#if>
     </#if>
     <#if editor>
-	<p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
-	</#if>
-	
-	<#macro _datefield _label _val="" _alwaysShow=true>
-    <#if _alwaysShow || _val?is_date>
-        <b>${_label}</b>
-        <#if _val?is_date>
-        <@view.shortDate _val true/>
-        </#if>
+    <p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
     </#if>
-	</#macro>
-	
-	<#macro _textfield _label _val="" _alwaysShow=true>
-		<#if _alwaysShow || _val?has_content >
-		    <b>${_label}:</b> ${_val}
-		</#if>
-	</#macro>
 
-	<#-- FIXME: jim: this is the worst thing you've ever written.  -->
-	<#macro _boolean _label _val _show=true trueString="Yes" falseString="No">
-	<#if _show>
-	    <b>${_label}:</b>
-	    <#if _val>${trueString}<#else>${falseString}</#if>
-	</#if>
-	</#macro>
+    <#macro _datefield _label _val="" _alwaysShow=true>
+        <#if _alwaysShow || _val?is_date>
+        <b>${_label}</b>
+            <#if _val?is_date>
+                <@view.shortDate _val true/>
+            </#if>
+        </#if>
+    </#macro>
+
+    <#macro _textfield _label _val="" _alwaysShow=true>
+        <#if _alwaysShow || _val?has_content >
+        <b>${_label}:</b> ${_val}
+        </#if>
+    </#macro>
+
+<#-- FIXME: jim: this is the worst thing you've ever written.  -->
+    <#macro _boolean _label _val _show=true trueString="Yes" falseString="No">
+        <#if _show>
+        <b>${_label}:</b>
+            <#if _val>${trueString}<#else>${falseString}</#if>
+        </#if>
+    </#macro>
 </#escape>

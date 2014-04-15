@@ -26,7 +26,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 
 /**
- * Represents a group of Accounts.  Each account may be associated with people who can charge. This "group of groups" allows for super-admins to manage lots of accounts. 
+ * Represents a group of Accounts. Each account may be associated with people who can charge. This "group of groups" allows for super-admins to manage lots of
+ * accounts.
+ * 
  * @author TDAR
  * @version $Rev$
  */

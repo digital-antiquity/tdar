@@ -23,21 +23,19 @@ import org.tdar.core.bean.FieldLength;
  * Proxy object for InformationResourceFileVersion difference from original is that it has no back-references
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Immutable
-@Subselect(value="select * from information_resource_file_version")
-public class InformationResourceFileVersionProxy  implements Serializable {
+@Subselect(value = "select * from information_resource_file_version")
+public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Id
     private Long id;
-    
 
     private static final long serialVersionUID = 8358699149214481070L;
-
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filename;
@@ -222,12 +220,10 @@ public class InformationResourceFileVersionProxy  implements Serializable {
         this.path = path;
     }
 
-
     @Override
     public String toString() {
         return String.format("%s (%s, #%d )", filename, fileVersionType, version);
     }
-
 
     public Long getId() {
         return id;

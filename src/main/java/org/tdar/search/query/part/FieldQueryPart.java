@@ -146,7 +146,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         String value = "";
         value = formatValueAsStringForQuery(index);
 
-        if (value == null || StringUtils.isBlank(value)) {
+        if ((value == null) || StringUtils.isBlank(value)) {
             return;
         }
         if (CollectionUtils.isNotEmpty(phraseFormatters)) {
@@ -272,8 +272,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     @Override
     public String getDescription(TextProvider provider) {
-        if (!descriptionVisible)
+        if (!descriptionVisible) {
             return "";
+        }
         List<Object> vals = new ArrayList<Object>();
         for (int i = 0; i < getFieldValues().size(); i++) {
             Object val = getFieldValues().get(i);
@@ -314,8 +315,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     protected String getInverse() {
-        if (isInverse())
+        if (isInverse()) {
             return NOT;
+        }
         return "";
     }
 
@@ -357,9 +359,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     // should a fieldValue be ignored when adding it to the value list? breaking out into separate method so that subclasses can make the call
     protected boolean validate(C value) {
-        if (value == null)
+        if (value == null) {
             return false;
-        if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
+        }
+        if ((value instanceof Validatable) && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
             throw new TdarValidationException("fieldQueryPart.is_not_valid", Arrays.asList(value.toString()));
         }
         return true;

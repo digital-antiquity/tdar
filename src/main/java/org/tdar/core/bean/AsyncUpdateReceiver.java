@@ -6,8 +6,8 @@ import java.util.List;
 import org.tdar.utils.Pair;
 
 /**
- * This interface governs the interactions between asynchronous tasks. It's designed to enable basic communication 
- * between the caller and the processor. It allows for status, completion, and errors to be passed back and forth, 
+ * This interface governs the interactions between asynchronous tasks. It's designed to enable basic communication
+ * between the caller and the processor. It allows for status, completion, and errors to be passed back and forth,
  * finally, the "details" can be used to pass record specific info to be shared.
  */
 public interface AsyncUpdateReceiver {
@@ -68,7 +68,7 @@ public interface AsyncUpdateReceiver {
 
         @Override
         public void addError(Throwable t) {
-        	setStatus("Error occurred");
+            setStatus("Error occurred");
             throwables.add(t);
         }
 
@@ -100,7 +100,7 @@ public interface AsyncUpdateReceiver {
         public List<String> getHtmlAsyncErrors() {
             List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                    messages.add("<li>" + throwable.getLocalizedMessage() +"</li>");
+                messages.add("<li>" + throwable.getLocalizedMessage() + "</li>");
             }
             return messages;
         }

@@ -59,7 +59,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private static final long ONE_MIN_MS = 60000;
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
-    
+
     @Autowired
     private SearchIndexService searchIndexService;
     @Autowired
@@ -86,7 +86,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     /**
-     * Check that our Authentication System  (Crowd /LDAP ) is actually running
+     * Check that our Authentication System (Crowd /LDAP ) is actually running
      */
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void checkAuthService() {
@@ -163,12 +163,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
         for (ScheduledProcess<?> process_ : processes) {
-            ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>)process_;
-//            if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
-//                scheduledProcessMap.clear();
-//                logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
-//                return;
-//            }
+            ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>) process_;
+            // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
+            // scheduledProcessMap.clear();
+            // logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
+            // return;
+            // }
             if (!process.isEnabled()) {
                 logger.warn("skipping disabled process {}", process);
                 continue;
@@ -263,7 +263,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         ignoreProperties.add("recordedDate");
         ignoreProperties.add("run");
         List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties, FindOptions.FIND_ALL);
-        if (tasks.size() > 0 && tasks.get(0) != null) {
+        if ((tasks.size() > 0) && (tasks.get(0) != null)) {
             return tasks.get(0);
         }
         else {
@@ -278,7 +278,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @return
      */
     public boolean queue(ScheduledProcess<Persistable> process) {
-        if (process == null || !TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
+        if ((process == null) || !TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
             return false;
         }
         return scheduledProcessQueue.add(process);
@@ -295,6 +295,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     /**
      * Return all ScheduledProcesses
+     * 
      * @return
      */
     public List<ScheduledProcess<Persistable>> getAllScheduledProcesses() {
@@ -335,11 +336,11 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     @Transactional
-	public void queueTask(Class<? extends ScheduledProcess> class1) {
-		ScheduledProcess<Persistable> process = scheduledProcessMap.get(class1);
-		if (process != null) {
-			scheduledProcessQueue.add(process);
-		}
-	}
+    public void queueTask(Class<? extends ScheduledProcess> class1) {
+        ScheduledProcess<Persistable> process = scheduledProcessMap.get(class1);
+        if (process != null) {
+            scheduledProcessQueue.add(process);
+        }
+    }
 
 }

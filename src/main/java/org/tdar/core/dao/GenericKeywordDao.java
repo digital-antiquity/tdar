@@ -42,8 +42,9 @@ public class GenericKeywordDao extends GenericDao {
     @Transactional
     public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls, K keyword) {
         String index = keyword.getIndex();
-        if (StringUtils.isBlank(index))
+        if (StringUtils.isBlank(index)) {
             return Collections.emptyList();
+        }
         index += ".%";
         DetachedCriteria criteria = getDetachedCriteria(cls);
         criteria.add(Restrictions.ilike("index", index));
@@ -153,7 +154,7 @@ public class GenericKeywordDao extends GenericDao {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
         Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

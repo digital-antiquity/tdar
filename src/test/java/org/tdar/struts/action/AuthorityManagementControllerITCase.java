@@ -51,8 +51,10 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.validate();
         controller.selectAuthority();
         assertEquals("should be only one action error.  contents:" + controller.getActionErrors(), 2, controller.getActionErrors().size());
-        assertTrue("Expecting no dupes error ", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_duplicates")));
-        assertTrue("Expecting 'select a type' error", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_entity_type")));
+        assertTrue("Expecting no dupes error ",
+                controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_duplicates")));
+        assertTrue("Expecting 'select a type' error",
+                controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_no_entity_type")));
     }
 
     @Test
@@ -62,7 +64,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.getSelectedDupeIds().add(1L);
         controller.validate();
         controller.selectAuthority();
-        assertTrue("expecting not enough dupes ", controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_not_enough_duplicates")));
+        assertTrue("expecting not enough dupes ",
+                controller.getActionErrors().contains(MessageHelper.getMessage("authorityManagementController.error_not_enough_duplicates")));
 
     }
 
@@ -99,7 +102,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
 
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
-        genericService.synchronize();
+        evictCache();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));

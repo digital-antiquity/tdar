@@ -30,7 +30,6 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
-
     @Test
     @Rollback
     public void testBlankExceedingRows() throws IOException {
@@ -60,7 +59,8 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testExtraColumnAtStartThrowsException() throws IOException {
-        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "no_first_column_name.xlsx"), "Sheet1 - row #1 has more columns (0) than this sheet has column names (1)");
+        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "no_first_column_name.xlsx"),
+                "Sheet1 - row #1 has more columns (0) than this sheet has column names (1)");
     }
 
     private void importSpreadsheetAndConfirmExceptionIsThrown(File spreadsheet, String expectedErrorMessage) throws IOException {
@@ -195,7 +195,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
                         rs.next();
                         final Date date = rs.getDate(2);
                         // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
-                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == 2003 - 1900);
+                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == (2003 - 1900));
                         assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1);
                         assertTrue("Day should be 1: " + date.getDate(), date.getDate() == 1);
                         return null;
@@ -264,7 +264,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testMalformedExcelDatasetFromScott() throws IOException {
-        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(), 
+        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),
                 "PFRAA_fake_Ferengi_trading_post_data_for tDAR test.xls"), 509);
         File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, datasetWithHiddenFields);
         assertTrue("text file exists", storedFile.exists());

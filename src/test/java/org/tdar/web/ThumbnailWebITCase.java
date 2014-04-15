@@ -141,14 +141,14 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
         logger.debug("statusCode: {} ", statusCode);
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), statusCode);
-        //FIXME: change from Gone->Forbidden changed how tDAR responds and thus
+        // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
         // redirects to a different page... current URL is null?
         assertTrue(getCurrentUrlPath().contains("unauthorized")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
         assertTextNotPresent("/img/sm");
-        
+
         Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileVersionIds);

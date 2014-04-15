@@ -101,7 +101,7 @@ public class BrowseController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private HashMap<String,HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
 
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
@@ -134,15 +134,16 @@ public class BrowseController extends AbstractLookupController {
 
         Long count = 10L;
         try {
-            int cacheCount =0;
+            int cacheCount = 0;
             for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof Resource) {
-                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag((Resource) key, null);
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
                 }
                 if (key.isActive()) {
-                    if (cacheCount == count)  
+                    if (cacheCount == count) {
                         break;
+                    }
                     cacheCount++;
                     getFeaturedResources().add(key);
                 }
@@ -150,7 +151,7 @@ public class BrowseController extends AbstractLookupController {
         } catch (IndexOutOfBoundsException ioe) {
             getLogger().debug("no featured resources found");
         }
-        
+
         try {
             getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
         } catch (ParseException pe) {
@@ -180,7 +181,7 @@ public class BrowseController extends AbstractLookupController {
                     Persistable.Base.extractIds(getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
-        
+
         return SUCCESS;
     }
 
@@ -197,8 +198,8 @@ public class BrowseController extends AbstractLookupController {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + FOAF_XML);
-            
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object );
+
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -215,7 +216,7 @@ public class BrowseController extends AbstractLookupController {
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
-                if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+                if ((creator instanceof Person) && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                     Person person = (Person) creator;
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
@@ -260,13 +261,13 @@ public class BrowseController extends AbstractLookupController {
             }
             FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
             try {
-                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo );
+                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
                 if (foafFile.exists()) {
                     dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
                     getKeywords();
                     getCollaborators();
                     NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
-//                    getLogger().info("attributes: {}", attributes);
+                    // getLogger().info("attributes: {}", attributes);
                     setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
                     setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
                     setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
@@ -448,12 +449,12 @@ public class BrowseController extends AbstractLookupController {
         return searchFieldLookup;
     }
 
-
     public List<NodeModel> getCollaborators() throws TdarActionException {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(), dom);
+        collaborators = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+                dom);
         return collaborators;
     }
 
@@ -464,7 +465,6 @@ public class BrowseController extends AbstractLookupController {
         keywords = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
         return keywords;
     }
-
 
     public float getKeywordMedian() {
         return keywordMedian;
@@ -508,16 +508,16 @@ public class BrowseController extends AbstractLookupController {
         if (num < 20) {
             num = 20;
         }
-        num = (int) Math.ceil((float) num / 2.0);
+        num = (int) Math.ceil(num / 2.0);
         return num;
     }
 
     public boolean isShowAdminInfo() {
-        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
     }
 
     public boolean isShowBasicInfo() {
-        return isAuthenticated() && (isEditor() ||  ObjectUtils.equals(getId(), getAuthenticatedUser().getId() ));
+        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
     }
 
     public List<Resource> getFeaturedResources() {
@@ -544,11 +544,11 @@ public class BrowseController extends AbstractLookupController {
         this.viewCount = viewCount;
     }
 
-    public HashMap<String,HomepageGeographicKeywordCache> getWorldMapData() {
+    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
         return worldMapData;
     }
 
-    public void setWorldMapData(HashMap<String,HomepageGeographicKeywordCache> worldMapData) {
+    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         this.worldMapData = worldMapData;
     }
 

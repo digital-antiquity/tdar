@@ -39,7 +39,7 @@ import org.tdar.core.bean.SupportsResource;
  */
 @Entity
 @Indexed
-@Table(name = "ontology", indexes = {@Index(name="ontology_catvar_id", columnList="category_variable_id")})
+@Table(name = "ontology", indexes = { @Index(name = "ontology_catvar_id", columnList = "category_variable_id") })
 @XmlRootElement(name = "ontology")
 public class Ontology extends InformationResource implements SupportsResource {
 
@@ -105,8 +105,9 @@ public class Ontology extends InformationResource implements SupportsResource {
             for (String indexId : StringUtils.split(index, '.')) {
                 Integer parentId = Integer.valueOf(indexId);
                 // don't include this node if the parent id is the same as this node's interval start
-                if (parentId.equals(intervalStart))
+                if (parentId.equals(intervalStart)) {
                     continue;
+                }
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
                     children = new ArrayList<OntologyNode>();
@@ -135,7 +136,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     private void initializeNameAndIriMaps() {
-        for (OntologyNode node: getOntologyNodes()) {
+        for (OntologyNode node : getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
             iriMap.put(node.getNormalizedIri(), node);
         }
@@ -144,7 +145,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {
-            if (StringUtils.equalsIgnoreCase(node.getDisplayName(),name)) {
+            if (StringUtils.equalsIgnoreCase(node.getDisplayName(), name)) {
                 return node;
             }
         }

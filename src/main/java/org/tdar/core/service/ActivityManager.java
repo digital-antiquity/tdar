@@ -32,6 +32,7 @@ public class ActivityManager {
 
     /**
      * Get the ActivityManager
+     * 
      * @return
      */
     public static ActivityManager getInstance() {
@@ -40,6 +41,7 @@ public class ActivityManager {
 
     /**
      * Add an @link Activity to the Queue
+     * 
      * @param activity
      * @return
      */
@@ -49,6 +51,7 @@ public class ActivityManager {
 
     /**
      * Expose a copy of the Queue to those that want to read it
+     * 
      * @return
      */
     public BlockingQueue<Activity> getActivityQueueClone() {
@@ -57,6 +60,7 @@ public class ActivityManager {
 
     /**
      * Find an @link Activity by name so it can be removed
+     * 
      * @param name
      * @return
      */
@@ -70,7 +74,7 @@ public class ActivityManager {
     }
 
     /**
-     * Based on the age, cleanup items that are older than the specified time. 
+     * Based on the age, cleanup items that are older than the specified time.
      * 
      * @param expirationTimeInMillis
      */
@@ -88,6 +92,7 @@ public class ActivityManager {
 
     /**
      * Search through the Queue to find a task created by the BulkReIndexer
+     * 
      * @return
      */
     public synchronized Activity getIndexingTask() {
@@ -99,8 +104,9 @@ public class ActivityManager {
         for (Activity activity : activityQueue) {
             if (activity.isIndexingActivity()) {
                 latest = activity;
-                if (!activity.hasEnded())
+                if (!activity.hasEnded()) {
                     active = activity;
+                }
             }
         }
         if (active != null) {

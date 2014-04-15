@@ -167,10 +167,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "file_created_date")
     private Date fileCreatedDate;
 
-    @Column(name = "part_of_composite", columnDefinition="boolean default false")
+    @Column(name = "part_of_composite", columnDefinition = "boolean default false")
     private Boolean partOfComposite = Boolean.FALSE;
 
-    @Column(name = "deleted", columnDefinition="boolean default false")
+    @Column(name = "deleted", columnDefinition = "boolean default false")
     private Boolean deleted = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
@@ -183,7 +183,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "number_of_parts")
     private Integer numberOfParts = 0;
 
-    @Column(name = "filename", length=FieldLength.FIELD_LENGTH_255)
+    @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
     // FIXME: cascade "delete" ?
@@ -301,8 +301,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public Collection<InformationResourceFileVersion> getVersions(int version) {
         ArrayList<InformationResourceFileVersion> files = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : getInformationResourceFileVersions()) {
-            if (irfv.getVersion().equals(version))
+            if (irfv.getVersion().equals(version)) {
                 files.add(irfv);
+            }
         }
         return files;
     }
@@ -322,8 +323,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @XmlTransient
     public InformationResourceFileVersion getLatestPDF() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf"))
+            if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf")) {
                 ;
+            }
             return version;
         }
         return null;
@@ -333,11 +335,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @XmlTransient
     public InformationResourceFileVersion getLatestThumbnail() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}=?={} {} {}", version.getVersion(), latestVersion, version.isThumbnail(), version);
-            }
-            if (version.getVersion().equals(latestVersion) && version.isThumbnail())
+            if (version.getVersion().equals(latestVersion) && version.isThumbnail()) {
                 return version;
+            }
         }
         return null;
     }
@@ -347,8 +347,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getLatestArchival() {
         logger.debug("looking for latest archival version in {} with version number {}", getInformationResourceFileVersions(), latestVersion);
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(latestVersion) && version.isArchival())
+            if (version.getVersion().equals(latestVersion) && version.isArchival()) {
                 return version;
+            }
         }
         return null;
     }
@@ -370,7 +371,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getVersion(Integer versionNumber, VersionType... types) {
         int currentVersionNumber = -1;
         Set<InformationResourceFileVersion> versions = getInformationResourceFileVersions();
-        if (versionNumber == null || versionNumber == -1) {
+        if ((versionNumber == null) || (versionNumber == -1)) {
             // FIXME: why not just set versionNumber = latestVersion?
             for (InformationResourceFileVersion file : versions) {
                 if (file.getVersion().intValue() > currentVersionNumber) {
@@ -600,7 +601,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isHasTranslatedVersion() {
         try {
-            if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
+            if ((getLatestTranslatedVersion() != null) && getInformationResource().getResourceType().isDataTableSupported()) {
                 return true;
             }
         } catch (Exception e) {

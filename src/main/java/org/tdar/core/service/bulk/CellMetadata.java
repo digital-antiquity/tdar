@@ -201,6 +201,7 @@ public class CellMetadata implements Serializable {
 
     /**
      * Get the actual name that should be used in Excel (add a * for required)
+     * 
      * @return
      */
     public String getOutputName() {
@@ -232,7 +233,7 @@ public class CellMetadata implements Serializable {
     }
 
     public String getPropertyName() {
-        if (name != null && name.indexOf(".") != -1) {
+        if ((name != null) && (name.indexOf(".") != -1)) {
             return name.substring(name.lastIndexOf(".") + 1);
         }
         return name;

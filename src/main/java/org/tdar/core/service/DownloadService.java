@@ -80,7 +80,8 @@ public class DownloadService {
     }
 
     @Transactional
-    public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) throws TdarActionException {
+    public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions)
+            throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
@@ -95,7 +96,7 @@ public class DownloadService {
             addFileToDownload(dh, files, authenticatedUser, irFileVersion, dh.isCoverPageIncluded());
             fileName = irFileVersion.getFilename();
             if (!irFileVersion.isDerivative()) {
-                logger.debug("User %s is trying to DOWNLOAD: %s (t%s: %s)", authenticatedUser, irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
+                logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", authenticatedUser, irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 // don't count download stats if you're downloading your own stuff
@@ -105,7 +106,7 @@ public class DownloadService {
                 }
                 if (irFileVersions.length > 1) {
                     initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
-                    fileName = String.format("files-%s.zip",informationResourceId);
+                    fileName = String.format("files-%s.zip", informationResourceId);
 
                     mimeType = "application/zip";
                 } else {
@@ -123,7 +124,7 @@ public class DownloadService {
                 generateZipArchive(files, resourceFile);
                 // although in temp, it might be quite large, so let's not leave it lying around
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
-            } else if(files.keySet().size() == 1){
+            } else if (files.keySet().size() == 1) {
                 resourceFile = (File) files.keySet().toArray()[0];
                 dh.setInputStream(new FileInputStream(resourceFile));
             } else {
@@ -143,7 +144,8 @@ public class DownloadService {
         }
     }
 
-    private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser, InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
+    private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser,
+            InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
             throws TdarActionException {
         File resourceFile = null;
         try {
@@ -151,7 +153,7 @@ public class DownloadService {
         } catch (FileNotFoundException e1) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
-        if (resourceFile == null || !resourceFile.exists()) {
+        if ((resourceFile == null) || !resourceFile.exists()) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
         }
 

@@ -39,8 +39,8 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  */
 @Entity
 @Indexed
-@Table(name = "document", indexes={
-        @Index(name = "document_type_index", columnList="document_type")
+@Table(name = "document", indexes = {
+        @Index(name = "document_type_index", columnList = "document_type")
 })
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
@@ -205,7 +205,7 @@ public class Document extends InformationResource {
         Integer count = 0;
         if (CollectionUtils.isNotEmpty(getInformationResourceFiles())) {
             for (InformationResourceFile file : getInformationResourceFiles()) {
-                if (!file.isDeleted() && file.getNumberOfParts() != null) {
+                if (!file.isDeleted() && (file.getNumberOfParts() != null)) {
                     count += file.getNumberOfParts();
                 }
             }
@@ -329,7 +329,7 @@ public class Document extends InformationResource {
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
         }
-        if (getDate() != null && getDate() != -1) {
+        if ((getDate() != null) && (getDate() != -1)) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
         return sb.toString();

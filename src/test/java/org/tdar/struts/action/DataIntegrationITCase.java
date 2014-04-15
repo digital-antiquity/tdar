@@ -202,16 +202,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.setIntegrationColumns(integrationColumns);
         controller.filterDataValues();
         for (IntegrationColumn column : controller.getIntegrationColumns()) {
-            if (column.isDisplayColumn())
+            if (column.isDisplayColumn()) {
                 continue;
+            }
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.info("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
                     logger.info("node: {} - {}", node, node.getColumnHasValueArray());
                     boolean oneTrue = false;
                     for (boolean val : node.getColumnHasValueArray()) {
-                        if (val)
+                        if (val) {
                             oneTrue = true;
+                        }
                     }
                     assertTrue(String.format("Mapped value for :%s should be true", node.getIri()), oneTrue);
                 }
@@ -223,8 +225,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(4, integrationColumns.size());
         int integ = 0;
         for (IntegrationColumn ic : integrationColumns) {
-            if (ic.isIntegrationColumn())
+            if (ic.isIntegrationColumn()) {
                 integ++;
+            }
         }
 
         assertEquals(2, integ);
@@ -248,10 +251,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             logger.debug("\n{}\n\trowdata: {}", result, result.getRowData());
             assertFalse("Should have integration results from each dataset", CollectionUtils.isEmpty(result.getRowData()));
             for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
+                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
-                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
+                }
+                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenSpeciesNull = true;
+                }
             }
         }
 
@@ -351,14 +356,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                 if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
-                if (rowData[2].equalsIgnoreCase("tarsal"))
+                if (rowData[2].equalsIgnoreCase("tarsal")) {
                     tarsal++;
-                if (rowData[2].equalsIgnoreCase("ulna"))
+                }
+                if (rowData[2].equalsIgnoreCase("ulna")) {
                     ulna++;
-                if (rowData[2].equalsIgnoreCase("astragalus"))
+                }
+                if (rowData[2].equalsIgnoreCase("astragalus")) {
                     astragalus++;
-                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value")))
+                }
+                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
                     empty++;
+                }
             }
         }
         logger.info("tarsal: {}", tarsal);

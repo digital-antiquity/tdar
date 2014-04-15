@@ -49,7 +49,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
  * 
  * With the context of these views, we've seen significant performance boosts using these hibernate proxy objects to back Hibernate Search's Lucene searches. We
  * also looked at removing the bi-directional relationships between InformationResource <=> InformationResourceFile and InformationResourceFile <=>
- * InformationResourceFileVersion. 
+ * InformationResourceFileVersion.
  * 
  * To document a bit of the difference a earch For 500 resources via normal web search (http://localhost:8080/search/results?recordsPerPage=500 ):
  * - HibernateSearch Native: 19507 ms
@@ -69,22 +69,21 @@ public class ResourceProxy implements Serializable {
 
     @Column(name = "date_created")
     private Integer date = -1;
-    
+
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     @Immutable
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @ManyToOne(optional = true)
-    @JoinColumn(name="project_id")
+    @JoinColumn(name = "project_id")
     private ResourceProxy projectProxy;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity=InformationResourceFileProxy.class)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
     @JoinColumn(name = "information_resource_id")
     @OrderBy("sequenceNumber asc")
     @Immutable
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
-
 
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
@@ -113,7 +112,7 @@ public class ResourceProxy implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     private Status status = Status.ACTIVE;
-    
+
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
@@ -129,14 +128,14 @@ public class ResourceProxy implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @ManyToMany( fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 1)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
-    @OneToMany(fetch=FetchType.EAGER, targetEntity=ResourceCreator.class)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable
     @Fetch(FetchMode.JOIN)
@@ -144,7 +143,8 @@ public class ResourceProxy implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(), getInformationResourceFileProxies(), submitter);
+        return String.format("%s %s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(),
+                getInformationResourceFileProxies(), submitter);
     }
 
     public String getDescription() {
@@ -267,9 +267,8 @@ public class ResourceProxy implements Serializable {
         this.status = status;
     }
 
-    
     @SuppressWarnings("unchecked")
-    public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException{
+    public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException {
         logger.trace("begin bean generation: {}", this.getId());
         T res = (T) getResourceType().getResourceClass().newInstance();
         res.getLatitudeLongitudeBoxes().addAll(this.getLatitudeLongitudeBoxes());
@@ -288,7 +287,7 @@ public class ResourceProxy implements Serializable {
         logger.trace("recursing down");
         res.setResourceCollections(getResourceCollections());
         if (res instanceof InformationResource) {
-            InformationResource ir = (InformationResource)res;
+            InformationResource ir = (InformationResource) res;
             ir.setDate(this.getDate());
             for (InformationResourceFileProxy prox : getInformationResourceFileProxies()) {
                 ir.getInformationResourceFiles().add(prox.generateInformationResourceFile());

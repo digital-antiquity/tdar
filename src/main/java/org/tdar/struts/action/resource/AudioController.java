@@ -51,8 +51,9 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     public Audio getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

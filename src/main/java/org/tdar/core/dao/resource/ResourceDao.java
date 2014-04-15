@@ -58,7 +58,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
     @Autowired
     private AuthenticationAndAuthorizationService authenticationService;
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ResourceDao(Class<E> resourceClass) {
@@ -104,7 +104,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     public List<ResourceRevisionLog> getLogEntriesForResource(Resource resource) {
         Query query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
         query.setParameter("resourceId", resource.getId());
-        return (List<ResourceRevisionLog>) query.list();
+        return query.list();
     }
 
     /*
@@ -159,8 +159,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     }
 
     public Number countActiveResourcesWithFiles(ResourceType type) {
-        if (type == ResourceType.PROJECT)
+        if (type == ResourceType.PROJECT) {
             return 0;
+        }
         Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES, type.name()));
         return (Number) query.uniqueResult();
     }
@@ -173,8 +174,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if (objs == null || objs[0] == null)
+                if ((objs == null) || (objs[0] == null)) {
                     continue;
+                }
                 cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2], (Long) objs[3]));
             } catch (Exception e) {
                 logger.debug("cannot get iso counts:", e);
@@ -197,8 +199,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if (objs == null || objs[0] == null)
+                if ((objs == null) || (objs[0] == null)) {
                     continue;
+                }
                 ResourceType resourceType = (ResourceType) objs[1];
                 Long count = (Long) objs[0];
                 if (count > 0) {
@@ -342,7 +345,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         ACCESS_OVERALL,
         DOWNLOAD_DAY;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long... irFileIds) {
         Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);

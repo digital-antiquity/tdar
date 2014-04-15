@@ -18,7 +18,7 @@
  */
 var FileuploadValidator;
 //FIXME: Jim, do we really need inheritance, or is this something you read in a blog and decided to throw into tDAR?  Sincerely, future-Jim
-(function(TDAR, $, console) {
+(function (TDAR, $, console) {
     "use strict";
 
     /**
@@ -28,11 +28,11 @@ var FileuploadValidator;
      *                      the files use an extension in the extension list.
      * @private
      */
-    var _hasFileWithExtension = function() {
+    var _hasFileWithExtension = function () {
         //copy current scope's arguments
         var varargs = Array.prototype.slice.call(arguments, 0);
-        return function(files) {
-            return $.grep(files, function(file) {
+        return function (files) {
+            return $.grep(files, function (file) {
                 return $.inArray(file.ext, varargs) > -1;
             }).length > 0;
         }
@@ -44,15 +44,15 @@ var FileuploadValidator;
      * @param files
      * @private
      */
-    var _updateHighlighting = function(validator, files) {
-        $.each(files, function(idx, file) {
+    var _updateHighlighting = function (validator, files) {
+        $.each(files, function (idx, file) {
             validator.unhighlight(file);
         });
 
-        $.each(validator.errors, function(idx, error){
-           if(error.file) {
-               validator.highlight(error.file);
-           }
+        $.each(validator.errors, function (idx, error) {
+            if (error.file) {
+                validator.highlight(error.file);
+            }
         });
     };
 
@@ -63,13 +63,15 @@ var FileuploadValidator;
      * @returns {*}
      * @private
      */
-    var _trimIgnoredFiles = function(files, settings) {
-        if(!settings.ignores) {return files}
-        var _files = $.grep(files, function(file) {
+    var _trimIgnoredFiles = function (files, settings) {
+        if (!settings.ignores) {
+            return files
+        }
+        var _files = $.grep(files, function (file) {
             var ignoreThisFile = false;
-            $.each(settings.ignores, function(idx, val) {
+            $.each(settings.ignores, function (idx, val) {
                 //an ignorefile 'rule' can be a callback or a string ( if callback is true, we should ignore file)
-                if(typeof val === "function") {
+                if (typeof val === "function") {
                     ignoreThisFile = val.call(settings, file);
                 } else {
                     ignoreThisFile = val.toLowerCase() === file.filename.toLowerCase();
@@ -101,7 +103,7 @@ var FileuploadValidator;
         errorClass: "validation-error",
 
         /** name of the css class added to a fileupload that had errors but was 'fixed' (i.e subsequent call to validate() yielded no errors)  */
-        okayClass:  "validation-okay",
+        okayClass: "validation-okay",
 
         /** implicitly execute validate() whenever the user updates the fileupload list. If false, handlers must call validate() explicitly */
         validateOnChange: true,
@@ -125,8 +127,8 @@ var FileuploadValidator;
              * @param files
              * @returns {boolean}
              */
-            "nodupes": function(file, files) {
-                var dupes = $.grep(files, function(_file){
+            "nodupes": function (file, files) {
+                var dupes = $.grep(files, function (_file) {
                     return file.filename.toLowerCase() === _file.filename.toLowerCase();
                 });
                 return dupes.length < 2;
@@ -140,8 +142,8 @@ var FileuploadValidator;
              * @param files
              * @returns {boolean}
              */
-            "nodupes-ext": function(file, files) {
-                var dupes = $.grep(files, function(_file) {
+            "nodupes-ext": function (file, files) {
+                var dupes = $.grep(files, function (_file) {
                     //already lowecase
                     return file.ext === _file.ext;
                 });
@@ -156,11 +158,11 @@ var FileuploadValidator;
              *          be an array of extension names)
              * @returns {boolean}
              */
-            "required": function(files, settings) {
+            "required": function (files, settings) {
                 var _files = files;
-                if(settings.extension) {
+                if (settings.extension) {
                     var exts = (typeof settings.extension === "string") ? [settings.extension] : settings.extension;
-                    _files = $.grep(files, function(file){
+                    _files = $.grep(files, function (file) {
                         return $.inArray(file.ext, exts) > -1;
                     });
                 }
@@ -176,9 +178,9 @@ var FileuploadValidator;
              * @param settings
              * @returns {boolean}
              */
-            "filecount": function(file, files, settings) {
-                var opts = $.extend({min:0, max:100, extension:[]}, settings);
-                var filecount = $.grep(files, function(file){
+            "filecount": function (file, files, settings) {
+                var opts = $.extend({min: 0, max: 100, extension: []}, settings);
+                var filecount = $.grep(files, function (file) {
                     return $.inArray(file.ext, opts.extension) > -1;
                 }).length;
                 return filecount >= opts.min && filecount <= opts.max;
@@ -191,7 +193,6 @@ var FileuploadValidator;
          * file in the file list,  the group-methods evaluate all of files as a whole and are called only once
          * per call to validate()  */
         groupMethods: ["required"],
-
 
         rules: [],
 
@@ -248,7 +249,7 @@ var FileuploadValidator;
          * @param settings constructor settings - see _default settings above (FIXME: how do I document a 'settings' object?)
          * @constructs FileValidator
          */
-        init: function(formId, settings) {
+        init: function (formId, settings) {
             var self = this;
             console.log("init");
             var errs = [];
@@ -259,26 +260,30 @@ var FileuploadValidator;
             $.extend(this, settings);
 
             this.helper = $(this.fileupload).data("fileuploadHelper");
-            if(!this.fileupload) errs.push("fileupload element not found");
-            if(!this.helper) errs.push("fileupload helper not found - did you call registerFileUpload yet?");
+            if (!this.fileupload) {
+                errs.push("fileupload element not found");
+            }
+            if (!this.helper) {
+                errs.push("fileupload helper not found - did you call registerFileUpload yet?");
+            }
             this.inputSelector = this.helper.inputSelector;
-            $.each(errs, function(idx, err){
+            $.each(errs, function (idx, err) {
                 console.error(err);
             });
 
-            if(this.validateOnChange) {
+            if (this.validateOnChange) {
                 //validate on the fileupload custom events
-                $(this.fileupload).bind("fileuploadstopped fileuploaddestroyed", function() {
+                $(this.fileupload).bind("fileuploadstopped fileuploaddestroyed", function () {
                     self.validate();
                 });
 
                 //revalidate when the user deletes or "undeletes" a file
-                $(this.fileupload).on("click", "button.delete-button", function() {
+                $(this.fileupload).on("click", "button.delete-button", function () {
                     self.validate();
                 });
             }
 
-            if(this.registerJqueryValidateMethod) {
+            if (this.registerJqueryValidateMethod) {
                 this.registerValidiatorMethod();
             }
         },
@@ -288,7 +293,7 @@ var FileuploadValidator;
          * errorContainer,  and highlight the invalid files in the Fileupload table.
          * @returns {boolean} true if all validation rules passed. Otherwise false.
          */
-        validate: function() {
+        validate: function () {
             console.log("validating %s   rulecount:%s", this.fileupload, this.rules.length);
             var self = this;
             this.suggestions = [];
@@ -296,52 +301,53 @@ var FileuploadValidator;
 
             var files = this.helper.validFiles();
 
-            for(var i = 0; i < this.rules.length; i++) {
+            for (var i = 0; i < this.rules.length; i++) {
                 var rule = this.rules[i];
 
                 //optionally only apply a rule if settings has a when-callback
-                var when = rule.settings.when || function() {return true;}
+                var when = rule.settings.when || function () {
+                    return true;
+                }
                 files = _trimIgnoredFiles(files, rule.settings);
-                if(when(files)) {
+                if (when(files)) {
 
                     var method = rule.method;
                     var message = rule.message;
 
                     //if this is a group method,  execute just once
-                    if($.inArray(rule.methodName, self.groupMethods) > -1) {
+                    if ($.inArray(rule.methodName, self.groupMethods) > -1) {
                         var valid = method(files, rule.settings);
                         //console.log("applying rule, method:%s   valid:%s", rule.methodName, valid);
-                        if(!valid) {
+                        if (!valid) {
                             var error = {
                                 "file": null,
                                 "message": message(0)
                             };
                             console.dir(error);
                             self.errors.push(error);
-                            if(rule.suggestion) {
+                            if (rule.suggestion) {
                                 self.suggestions.push(error);
                             }
                         }
 
-                    //otherwise execute the method once-per-file
+                        //otherwise execute the method once-per-file
                     } else {
-                        $.each(files, function(idx, file) {
+                        $.each(files, function (idx, file) {
                             var valid = method(file, files, rule.settings);
                             console.log("validate  rule:%s   method:%s   valid:%s", rule, typeof method, valid);
-                            if(!valid) {
+                            if (!valid) {
                                 var error = {
                                     "file": file,
                                     "message": message(file.filename, file.base, file.ext, idx)
                                 };
                                 console.dir(error);
                                 self.errors.push(error);
-                                if(rule.suggestion) {
+                                if (rule.suggestion) {
                                     self.suggestions.push(error);
                                 }
                             } else {
                             }
                         });
-
 
                     }
                 }
@@ -349,7 +355,7 @@ var FileuploadValidator;
             }
 
             this.clearErrorDisplay();
-            if(this.errors.length) {
+            if (this.errors.length) {
                 this.showErrors();
             }
             _updateHighlighting(self, files);
@@ -361,22 +367,20 @@ var FileuploadValidator;
         /**
          * Remove messages from the errorContainer.  This does not reset the errors list.
          */
-        clearErrorDisplay: function() {
-            $(this.errorContainer)
-                .find("ul").empty()
-                .end().hide();
+        clearErrorDisplay: function () {
+            $(this.errorContainer).find("ul").empty().end().hide();
         },
 
         /**
          * Display error messages
          */
-        showErrors: function() {
+        showErrors: function () {
             var self = this;
             var $container = $(this.errorContainer);
             var $ul = $container.find("ul");
-            $.each(this.errors, function(idx, error) {
+            $.each(this.errors, function (idx, error) {
                 var $error = $(self.errorWrapper);
-                if(error.file) {
+                if (error.file) {
                     $error.append("<b>" + error.file.filename + ": </b>");
                 }
                 $error.append("<span>" + error.message + "</span>");
@@ -384,7 +388,6 @@ var FileuploadValidator;
             });
             $container.show();
         },
-
 
         /**
          * Register Fileupload Validation method. The validator invokes method for each file in the table,
@@ -403,16 +406,15 @@ var FileuploadValidator;
          *                      "\{2\}": file.ext (file extension not including '.')
          *                      "\{3\}": idx, index of the row in the file table
          */
-        addMethod: function(name, method, message)  {
+        addMethod: function (name, method, message) {
             console.log("addMethod name:%s   method:%s    message:%s", name, typeof method, message);
             this.methods[name] = method;
-            if(message) {
+            if (message) {
                 this.messages[name] = $.validator.format(message);
             } else {
                 this.messages[name] = $.validator.format("This file is invalid");
             }
         },
-
 
         /**
          * Register Fileupload Validation "group" method.
@@ -426,7 +428,7 @@ var FileuploadValidator;
          *                      "{2\}": file.ext (file extension not including '.')
          *                      "{3\}": idx, index of the row in the file table
          */
-        addGroupMethod: function(name, method, message) {
+        addGroupMethod: function (name, method, message) {
             this.groupMethods.push(name);
             this.addMethod(name, method, message);
         },
@@ -439,13 +441,13 @@ var FileuploadValidator;
          * @param customMessage customized error message (overrides the method's default error message)
          * @returns {{methodName: *, method: *, settings: (*|{}), message: *, suggestion: boolean}}
          */
-        addRule: function(methodName, settings, customMessage){
+        addRule: function (methodName, settings, customMessage) {
             console.log("add rule: %s", methodName);
             var message = this.messages[methodName];
-            if(customMessage) {
+            if (customMessage) {
                 message = $.validator.format(customMessage);
             }
-            var rule  = {
+            var rule = {
                 "methodName": methodName,
                 "method": this.methods[methodName],
                 "settings": settings || {},
@@ -463,8 +465,8 @@ var FileuploadValidator;
          * @param settings
          * @param customMessage custom error message
          */
-        addSuggestion: function(methodName, settings, customMessage) {
-            var rule = this.addRule( methodName, settings, customMessage);
+        addSuggestion: function (methodName, settings, customMessage) {
+            var rule = this.addRule(methodName, settings, customMessage);
             rule.suggestion = true;
         },
 
@@ -473,7 +475,7 @@ var FileuploadValidator;
          * settings.errorClass.
          * @param file
          */
-        highlight: function(file) {
+        highlight: function (file) {
             console.log("highlighting: %s", file.filename);
             file.context.removeClass(this.okayClass).addClass(this.errorClass);
         },
@@ -483,58 +485,50 @@ var FileuploadValidator;
          *
          * @param file
          */
-        unhighlight: function(file) {
+        unhighlight: function (file) {
             console.log("unhighlighting: %s", file.filename);
             file.context.removeClass(this.errorClass).addClass(this.okayClass);
         },
 
         /**
          * Register this fileupload validator as a jQuery Validation Plugin (aka "$.validator") validation method.
-         * 
+         *
          * This method allows the fileupload validator to hook into the $.validator validation process.  It does this
          * by creating a  new $.validator method (named "valid-fileupload"), and then adding a new $.validator rule
          * that binds this method  to the file input form element used by the fileupload widget.
          */
         registerValidiatorMethod: function () {
-            var self = this,
-                methodName = "valid-fileupload";
-            $.validator.addMethod(
-                methodName,
-                function() {
-                    return self.validate();
-                },
-                "There was a problem with your uploaded files.  See details in the file upload section"
-            );
+            var self = this, methodName = "valid-fileupload";
+            $.validator.addMethod(methodName, function () {
+                        return self.validate();
+                    }, "There was a problem with your uploaded files.  See details in the file upload section");
 
             //we've added the method, now we need the specific rule that binds the fileinput element to the method
             $(self.inputSelector).addClass(methodName)
         }
     });
 
-
     //FIXME: move this function to tdar.dataintegration.js
     /**
      * Add validation dataset-specific validation rules to the specified validator.
      * @param FileuploadValidator the validator instance
      */
-    TDAR.fileupload.addDataTableValidation = function(validator) {
+    TDAR.fileupload.addDataTableValidation = function (validator) {
         //only one image metadata file
-        validator.addRule("filecount",
-            {max: 1, extension:["accdb", "mdb", "xls", "xlsx","gdb"]},
-            "You may only upload one spreadsheet or access database (MDB, ACCDB, XLS, GDB, XLSX)");
-   };
+        validator.addRule("filecount", {max: 1, extension: ["accdb", "mdb", "xls", "xlsx", "gdb"]}, "You may only upload one spreadsheet or access database (MDB, ACCDB, XLS, GDB, XLSX)");
+    };
 
     //FIXME: move this function to a gis-specific js file (also, create a gis-specific js file)
     /**
      * Add GIS-specific validation rules to the specified validator.
      * @param validator the validator instance
      */
-    TDAR.fileupload.addGisValidation = function(validator) {
+    TDAR.fileupload.addGisValidation = function (validator) {
         var fileinfo = {
             shapefile: ["shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg"],
-            jpeg:["jpg", "jpeg", "jpw","jgw"],
-            tiff:["tif", "tiff", "tfw"],
-            image: ["jpg", "jpeg", "jpw","jgw", "tfw", "aux", "ovr", "rrd", "aux.xml","mxd"]
+            jpeg: ["jpg", "jpeg", "jpw", "jgw"],
+            tiff: ["tif", "tiff", "tfw"],
+            image: ["jpg", "jpeg", "jpw", "jgw", "tfw", "aux", "ovr", "rrd", "aux.xml", "mxd"]
         };
 
         var requiredFiles = {
@@ -543,73 +537,63 @@ var FileuploadValidator;
 
         //require image files if image metadata file is present
         validator.addRule("required", {
-            extension: ["jpg", "jpeg"],
-            when: _hasFileWithExtension("jpw")
-        },
-        "A jpg file must accompany a jpw file"
-    );
+                    extension: ["jpg", "jpeg"],
+                    when: _hasFileWithExtension("jpw")
+                }, "A jpg file must accompany a jpw file");
         validator.addRule("required", {
-            extension: ["jpg", "jpeg"],
-            when: _hasFileWithExtension("jgw")
-        },
-        "A jpg file must accompany a jgw file"
-    );
+                    extension: ["jpg", "jpeg"],
+                    when: _hasFileWithExtension("jgw")
+                }, "A jpg file must accompany a jgw file");
         validator.addRule("required", {
-                extension: ["tif", "tiff"],
-                when: _hasFileWithExtension("tfw")
-            },
-            "A tiff file must accompany a tfw file"
-        );
+                    extension: ["tif", "tiff"],
+                    when: _hasFileWithExtension("tfw")
+                }, "A tiff file must accompany a tfw file");
 
         //aux and aux.xml files can apply to either jpg or tiff
         validator.addRule("required", {
-                extension: ["tif", "tiff", "jpg", "jpeg"],
-                when: function(files) {
-                    //if adf present, this is not a shape file, so ignore this rule
-                    //TODO: confirm this is actually true
-                    return _hasFileWithExtension("aux", "aux.xml","ovr","rrd")(files) && !_hasFileWithExtension("adf")(files);
-                }
-            },
-            "an image metadata file must be paired with a JPEG or TIFF file");
+                    extension: ["tif", "tiff", "jpg", "jpeg"],
+                    when: function (files) {
+                        //if adf present, this is not a shape file, so ignore this rule
+                        //TODO: confirm this is actually true
+                        return _hasFileWithExtension("aux", "aux.xml", "ovr", "rrd")(files) && !_hasFileWithExtension("adf")(files);
+                    }
+                }, "an image metadata file must be paired with a JPEG or TIFF file");
 
         //add suggestions for the image metadata files (unless user is uploading an image raster + mxd file)
         validator.addSuggestion("required", {
-                extension: ["jpw", "aux", "aux.xml","ovr","rrd"],
-                when: function(files) {
-                    return ( _hasFileWithExtension("jpg", "jpeg")(files)  && !_hasFileWithExtension("mxd")(files) );
-                }
-            },
-            "consider including an image metadata file such as .jpw, .aux, or .aux.xml"
-        );
+                    extension: ["jpw", "aux", "aux.xml", "ovr", "rrd"],
+                    when: function (files) {
+                        return ( _hasFileWithExtension("jpg", "jpeg")(files) && !_hasFileWithExtension("mxd")(files) );
+                    }
+                }, "consider including an image metadata file such as .jpw, .aux, or .aux.xml");
         validator.addSuggestion("required", {
-            extension: ["tfw", "aux", "aux.xml","ovr","rrd"],
-            when: function(files) {
+            extension: ["tfw", "aux", "aux.xml", "ovr", "rrd"],
+            when: function (files) {
                 return ( _hasFileWithExtension("tiff", "tif")(files) && !_hasFileWithExtension("mxd")(files) )
             }
         }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
 
         //require the mandatory shapefiles if any shapefiles are present
-        $.each(["shp", "shx", "dbf"], function(idx, ext) {
+        $.each(["shp", "shx", "dbf"], function (idx, ext) {
             validator.addRule("required", {
-                extension: ext,
-                when: function(files) {
-                    return $.map(files, function(file){
-                        if($.inArray(file.ext, fileinfo.shapefile) > -1) {
-                            return file;
-                        }
-                    }).length > 0
-                },
-                ignores: ["metadata.xml"]
-            },
-            "A " + ext + " file must be present when uploading shapefiles");
+                        extension: ext,
+                        when: function (files) {
+                            return $.map(files, function (file) {
+                                if ($.inArray(file.ext, fileinfo.shapefile) > -1) {
+                                    return file;
+                                }
+                            }).length > 0
+                        },
+                        ignores: ["metadata.xml"]
+                    }, "A " + ext + " file must be present when uploading shapefiles");
         });
 
         //all files must have the same base name
         //todo: move 'same-basename' to default group methods
-        validator.addGroupMethod("same-basename", function(files, settings) {
+        validator.addGroupMethod("same-basename", function (files, settings) {
             var basenames = [];
-            $.each(files, function(idx, file){
-                if($.inArray(file.base.toLowerCase(), basenames) === -1) {
+            $.each(files, function (idx, file) {
+                if ($.inArray(file.base.toLowerCase(), basenames) === -1) {
                     basenames.push(file.base.toLowerCase());
                 }
             });
@@ -618,14 +602,13 @@ var FileuploadValidator;
 
         validator.addRule("same-basename", {
             ignores: [
-                "metadata.xml",
-                function(file){return file.ext === "adf"}]
+                "metadata.xml", function (file) {
+                    return file.ext === "adf"
+                }]
         });
 
         //only one image metadata file
-        validator.addRule("filecount",
-            {max: 1, extension:["jpg", "jpeg", "tif", "tiff"]},
-            "You may only upload one image record (JPG or TIFF)");
+        validator.addRule("filecount", {max: 1, extension: ["jpg", "jpeg", "tif", "tiff"]}, "You may only upload one image record (JPG or TIFF)");
 
         TDAR.fileupload.addDataTableValidation(validator);
     };

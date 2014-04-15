@@ -63,7 +63,7 @@ public class AdminMapController extends AuthenticationAware.Base {
 
         for (HomepageGeographicKeywordCache cache : caches) {
             // <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
-            int percent = (int) (100 * cache.getLogCount() / max);
+            int percent = (int) ((100 * cache.getLogCount()) / max);
 
             String code = cache.getKey().toUpperCase();
             if (code.length() > 2) {

@@ -14,8 +14,9 @@ import org.tdar.core.bean.resource.SensoryData;
 
 /**
  * represents an image
+ * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "sensory_data_image")

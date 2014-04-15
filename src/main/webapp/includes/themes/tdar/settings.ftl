@@ -5,7 +5,7 @@
 
 
 <#assign helptext = {
-    "name":"mouse", 
-    "price":50
-    
-    }>
+"name":"mouse",
+"price":50
+
+}>

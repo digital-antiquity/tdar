@@ -9,7 +9,7 @@ public interface ActionMessageErrorSupport {
     void addActionMessage(String message);
 
     List<String> getStackTraces();
-    
+
     void setMoreInfoUrlKey(String url);
 
 }

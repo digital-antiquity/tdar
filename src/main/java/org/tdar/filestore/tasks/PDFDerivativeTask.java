@@ -105,9 +105,9 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 }
                 File outputFile = new File(outputFilename);
                 getLogger().debug("output file is: {} {}", outputFile, outputFile.length());
-//                if (outputFile.exists() && outputFile.length() < 50) {
-//                    
-//                }
+                // if (outputFile.exists() && outputFile.length() < 50) {
+                //
+                // }
             } catch (Throwable e) {
                 getLogger().debug("PDF image extraction failed", e);
             }

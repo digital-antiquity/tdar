@@ -55,6 +55,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -3538370664425794045L;
 
     private List<Resource> bookmarkedResources;
+    private Set<Ontology> sharedOntologies;
     private List<IntegrationColumn> integrationColumns;
     private List<Long> tableIds;
     private List<DataTable> selectedDataTables;
@@ -79,6 +80,9 @@ public class WorkspaceController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
+        Map<Ontology, List<DataTable>> suggestions = getDataIntegrationService().getIntegrationSuggestions(getBookmarkedDataTables(), false);
+        setSharedOntologies(suggestions.keySet());
+        // in the future we could use the Map to prompt the user with suggestions
         return SUCCESS;
     }
 
@@ -94,6 +98,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
             addActionError(getText("workspaceController.selectTables"));
             return INPUT;
         }
+        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getSelectedDataTables(), true).keySet());
         return SUCCESS;
     }
 
@@ -231,7 +236,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {
@@ -243,7 +249,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public List<Dataset> getBookmarkedDatasets() {
         List<Dataset> datasets = new ArrayList<Dataset>();
         for (Resource resource : getBookmarkedResources()) {
-            if (resource instanceof Dataset && resource.isActive()) {
+            if ((resource instanceof Dataset) && resource.isActive()) {
                 Dataset dataset = (Dataset) resource;
                 datasets.add(dataset);
             }
@@ -320,7 +326,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
         Iterator<IntegrationColumn> iterator = integrationColumns.iterator();
         while (iterator.hasNext()) {
             IntegrationColumn column = iterator.next();
-            if (column == null || column.getColumns().size() == 0) {
+            if ((column == null) || (column.getColumns().size() == 0)) {
                 getLogger().debug("removing null column");
                 iterator.remove();
             }
@@ -338,5 +344,13 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public Map<List<OntologyNode>, Map<DataTable, Integer>> getPivotData() {
         return pivotData;
+    }
+
+    public Set<Ontology> getSharedOntologies() {
+        return sharedOntologies;
+    }
+
+    public void setSharedOntologies(Set<Ontology> sharedOntologies) {
+        this.sharedOntologies = sharedOntologies;
     }
 }

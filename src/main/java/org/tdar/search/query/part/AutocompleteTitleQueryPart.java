@@ -28,8 +28,9 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     }
 
     protected QueryPart<?> getQueryPart(String value) {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setBoost(TITLE_BOOST).setPhraseFormatters(
                 PhraseFormatter.ESCAPE_QUOTED);

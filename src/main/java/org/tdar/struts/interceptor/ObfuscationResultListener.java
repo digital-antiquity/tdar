@@ -25,8 +25,8 @@ public class ObfuscationResultListener implements PreResultListener {
     private SessionSecurityInterceptor sessionSecurityInterceptor;
     Person user;
 
-
-    public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService, SessionSecurityInterceptor sessionSecurityInterceptor, Person user) {
+    public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService,
+            SessionSecurityInterceptor sessionSecurityInterceptor, Person user) {
         this.obfuscationService = obfuscationService;
         this.reflectionService = reflectionService;
         this.sessionSecurityInterceptor = sessionSecurityInterceptor;
@@ -65,15 +65,15 @@ public class ObfuscationResultListener implements PreResultListener {
         } catch (Exception e) {
             // if the session is already closed, then we don't want to actually worry about session closed errors
             // if the session is not closed, then we probably have a real error here
-            if (sessionSecurityInterceptor != null && !sessionSecurityInterceptor.isSessionClosed()) {
-                logger.error("error durring obfuscation",e);
+            if ((sessionSecurityInterceptor != null) && !sessionSecurityInterceptor.isSessionClosed()) {
+                logger.error("error durring obfuscation", e);
                 invocation.setResultCode("error");
-            } 
+            }
         }
     }
 
     private void obfuscateObject(Object obj) {
-        //because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
+        // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
         // returns type of List<I> but we can't figure out what
         if (Iterable.class.isAssignableFrom(obj.getClass())) {
             for (Object obj_ : (Iterable<?>) obj) {

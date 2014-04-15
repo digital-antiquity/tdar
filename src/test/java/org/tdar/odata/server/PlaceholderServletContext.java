@@ -168,19 +168,19 @@ public class PlaceholderServletContext implements ServletContext {
     @Override
     public void addListener(String arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public <T extends EventListener> void addListener(T arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void addListener(Class<? extends EventListener> arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -222,7 +222,7 @@ public class PlaceholderServletContext implements ServletContext {
     @Override
     public void declareRoles(String... arg0) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -306,8 +306,7 @@ public class PlaceholderServletContext implements ServletContext {
     @Override
     public void setSessionTrackingModes(Set<SessionTrackingMode> arg0) {
         // TODO Auto-generated method stub
-        
-    }
 
+    }
 
 }

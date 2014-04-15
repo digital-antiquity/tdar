@@ -64,7 +64,7 @@ public interface Persistable extends Serializable {
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "base")
     @SuppressWarnings({
-        "PMD.ShortVariable"  })
+            "PMD.ShortVariable" })
     public abstract static class Base extends JsonModel.Base implements Persistable {
 
         private static final long serialVersionUID = -458438238558572364L;
@@ -118,7 +118,7 @@ public interface Persistable extends Serializable {
             if (object == this) {
                 return true;
             }
-            if (object instanceof Persistable && getClass().isInstance(object)) {
+            if ((object instanceof Persistable) && getClass().isInstance(object)) {
                 return isEqual(this, getClass().cast(object));
             }
             return false;
@@ -210,8 +210,9 @@ public interface Persistable extends Serializable {
         public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
             Map<Long, P> map = new HashMap<>();
             for (P item : items) {
-                if (item == null)
+                if (item == null) {
                     continue;
+                }
                 map.put(item.getId(), item);
             }
             return map;
@@ -219,8 +220,9 @@ public interface Persistable extends Serializable {
 
         public static int toHashCode(Persistable persistable) {
             // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
-            if (persistable == null)
+            if (persistable == null) {
                 return 0;
+            }
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
 
             if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
@@ -282,15 +284,15 @@ public interface Persistable extends Serializable {
 
         public static boolean isTransient(Persistable persistable) {
             // object==primative only works for certain primative values (see http://stackoverflow.com/a/3815760/103814)
-            return persistable == null || isNullOrTransient(persistable.getId());
+            return (persistable == null) || isNullOrTransient(persistable.getId());
         }
 
         public static boolean isNullOrTransient(Persistable persistable) {
-            return persistable == null || isTransient(persistable);
+            return (persistable == null) || isTransient(persistable);
         }
 
         public static boolean isNullOrTransient(Number val) {
-            return val == null || val.longValue() == -1L;
+            return (val == null) || (val.longValue() == -1L);
         }
 
         @Override
@@ -320,8 +322,9 @@ public interface Persistable extends Serializable {
                     ids.add(null);
                 }
                 count++;
-                if (count == max)
+                if (count == max) {
                     break;
+                }
             }
             return ids;
         }
@@ -357,7 +360,7 @@ public interface Persistable extends Serializable {
 
         @Override
         public final int compareTo(E other) {
-            if (sequenceNumber == null || other.sequenceNumber == null) {
+            if ((sequenceNumber == null) || (other.sequenceNumber == null)) {
                 return 0;
             }
             return sequenceNumber.compareTo(other.sequenceNumber);

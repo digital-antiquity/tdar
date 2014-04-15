@@ -97,8 +97,9 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public List<SensoryDataImage> getSensoryDataImages() {
-        if (sensoryDataImages == null)
+        if (sensoryDataImages == null) {
             sensoryDataImages = new ArrayList<SensoryDataImage>();
+        }
         return sensoryDataImages;
     }
 
@@ -107,8 +108,9 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public List<SensoryDataScan> getSensoryDataScans() {
-        if (sensoryDataScans == null)
+        if (sensoryDataScans == null) {
             sensoryDataScans = new ArrayList<SensoryDataScan>();
+        }
         return sensoryDataScans;
     }
 
@@ -148,8 +150,9 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     @Override
     public SensoryData getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 
