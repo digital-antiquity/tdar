@@ -33,11 +33,18 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8094, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8095, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', NULL, 12088);
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', NULL, 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, true, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
+
+--DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
+--DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
+--DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8094, true); 
+--DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8095, true); 
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
@@ -49,7 +56,19 @@
 create temporary table test (id bigint);
 --- ADD RESOURCE IDs TO EXTRACT OUT FROM tdarmetadata.zip
 insert into test (id) VALUES(4),(3794),(191),(322),(140),(627),(626),(141),(142),(151),(165),(161),(155),(162),(148),(164),(144),(143),(163),(149),(153),(159),(160),(157),(146),(156),(154),(152),(147),(158),(150),(145),(636),(166),(167),(183),(184),(170),(4230),(4231),(4232),(1628),(262),(1656),(449),(2420),(139),(3738),(3805),(3479),(4287),(3088),(3074), (3029);
-
+create temporary table creatorids (id bigint);
+insert into creatorids select submitter_id from resource where id in (select id from test)
+    UNION select updater_id from resource where id in (select id from test)
+    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
+    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
+    UNION select publisher_id from information_resource
+    UNION select creator_id from resource_creator where resource_id in (select id from test)
+    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
+      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
+      UNION select creator_id from resource_creator where resource_id in (select id from test)
+      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
+    UNION select provider_institution_id from information_resource where id in (select id from test);
+    
 select * from category_variable where type = 'CATEGORY' order by id;
 select * from category_variable where type = 'SUBCATEGORY' order by id asc;
 select * from category_variable_synonyms;
@@ -59,40 +78,10 @@ select * from investigation_type;
 select * from material_keyword; 
 
 
-select * from creator where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-	UNION select publisher_id from information_resource
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test)) ;
-
-select * from institution where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-	UNION select publisher_id from information_resource
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test));
-
-select * from person where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test));
+select * from creator where id in (select id from creatorIds) ;
+select * from user_info where user_id in (select id from creatorIds);
+select * from institution where id in (select id from creatorIds);
+select * from person where id in (select id from creatorIds);
 
 
 

@@ -79,9 +79,9 @@ public class UserInfo extends Persistable.Base implements Obfuscatable {
     @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
     private Integer contributorAgreementVersion = 0;
 
-    private boolean obfuscated;
+    private transient boolean obfuscated;
 
-    private Boolean obfuscatedDifferent;
+    private transient Boolean obfuscatedDifferent;
 
     public Boolean getContributor() {
         return contributor;

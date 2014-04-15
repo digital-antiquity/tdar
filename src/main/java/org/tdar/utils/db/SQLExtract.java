@@ -183,7 +183,7 @@ public class SQLExtract {
      */
     private void writeOut(String substring) {
         try {
-            writer.write(substring + "\r\n");
+            writer.write(substring + "\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
