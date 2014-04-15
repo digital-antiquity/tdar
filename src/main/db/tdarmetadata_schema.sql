@@ -262,7 +262,8 @@ CREATE TABLE collection (
     date_updated timestamp without time zone DEFAULT now(),
     sort_order character varying(25),
     owner_id bigint,
-    secondary_sort_order character varying(25)
+    secondary_sort_order character varying(25),
+    description_admin text
 );
 
 
@@ -288,6 +289,18 @@ ALTER TABLE public.collection_id_seq OWNER TO tdar;
 
 ALTER SEQUENCE collection_id_seq OWNED BY collection.id;
 
+
+--
+-- Name: collection_parents; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE collection_parents (
+    collection_id bigint NOT NULL,
+    parent_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.collection_parents OWNER TO tdar;
 
 --
 -- Name: collection_resource; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
@@ -396,7 +409,7 @@ ALTER TABLE public.creator_id_seq OWNER TO tdar;
 
 CREATE TABLE creator (
     id bigint DEFAULT nextval('creator_id_seq'::regclass) NOT NULL,
-    date_created date,
+    date_created timestamp without time zone,
     last_updated timestamp without time zone,
     url character varying(255),
     description text,
@@ -459,6 +472,40 @@ CREATE TABLE creator_synonym (
 
 
 ALTER TABLE public.creator_synonym OWNER TO tdar;
+
+--
+-- Name: creator_view_statistics; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE creator_view_statistics (
+    id bigint NOT NULL,
+    date_accessed timestamp without time zone,
+    creator_id bigint
+);
+
+
+ALTER TABLE public.creator_view_statistics OWNER TO tdar;
+
+--
+-- Name: creator_view_statistics_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE creator_view_statistics_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.creator_view_statistics_id_seq OWNER TO tdar;
+
+--
+-- Name: creator_view_statistics_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE creator_view_statistics_id_seq OWNED BY creator_view_statistics.id;
+
 
 --
 -- Name: culture_keyword; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
@@ -991,7 +1038,8 @@ CREATE TABLE information_resource (
     inheriting_note_information boolean DEFAULT false,
     inheriting_collection_information boolean DEFAULT false,
     publisher_id bigint,
-    publisher_location character varying(255)
+    publisher_location character varying(255),
+    inheriting_individual_institutional_credit boolean DEFAULT false
 );
 
 
@@ -1029,7 +1077,8 @@ CREATE TABLE information_resource_file (
     part_of_composite boolean DEFAULT false,
     description text,
     file_created_date date,
-    date_uploaded date
+    filename character varying(255),
+    deleted boolean DEFAULT false
 );
 
 
@@ -1480,28 +1529,18 @@ SET default_with_oids = true;
 
 CREATE TABLE person (
     id bigint DEFAULT nextval('person_id_seq'::regclass) NOT NULL,
-    contributor boolean NOT NULL,
     email character varying(255),
     first_name character varying(255) NOT NULL,
     last_name character varying(255) NOT NULL,
     registered boolean NOT NULL,
     rpa_number character varying(255),
     phone character varying(255),
-    contributor_reason character varying(512),
     institution_id bigint,
-    total_login bigint DEFAULT 0,
-    last_login timestamp without time zone,
-    penultimate_login timestamp without time zone,
     phone_public boolean DEFAULT false NOT NULL,
     email_public boolean DEFAULT false NOT NULL,
     username character varying(255),
     merge_creator_id bigint,
-    proxy_note text,
-    proxyinstitution_id bigint,
-    tos_version integer DEFAULT 0 NOT NULL,
-    contributor_agreement_version integer DEFAULT 0 NOT NULL,
-    tos_level integer DEFAULT 0 NOT NULL,
-    creator_agreement_version integer DEFAULT 0 NOT NULL
+    orcid_id character varying(50) DEFAULT NULL::character varying
 );
 
 
@@ -2105,6 +2144,40 @@ ALTER TABLE public.resource_annotation_key_id_seq OWNER TO tdar;
 --
 
 ALTER SEQUENCE resource_annotation_key_id_seq OWNED BY resource_annotation_key.id;
+
+
+--
+-- Name: resource_collection_view_statistics; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE resource_collection_view_statistics (
+    id bigint NOT NULL,
+    date_accessed timestamp without time zone,
+    resource_collection_id bigint
+);
+
+
+ALTER TABLE public.resource_collection_view_statistics OWNER TO tdar;
+
+--
+-- Name: resource_collection_view_statistics_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE resource_collection_view_statistics_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.resource_collection_view_statistics_id_seq OWNER TO tdar;
+
+--
+-- Name: resource_collection_view_statistics_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE resource_collection_view_statistics_id_seq OWNED BY resource_collection_view_statistics.id;
 
 
 --
@@ -2777,6 +2850,49 @@ ALTER TABLE public.upgradetask_id_seq OWNER TO tdar;
 ALTER SEQUENCE upgradetask_id_seq OWNED BY upgrade_task.id;
 
 
+--
+-- Name: user_info; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE user_info (
+    id bigint NOT NULL,
+    affilliation character varying(255),
+    contributor boolean DEFAULT false NOT NULL,
+    contributor_agreement_version integer DEFAULT 0 NOT NULL,
+    contributor_reason character varying(512),
+    last_login timestamp without time zone,
+    penultimate_login timestamp without time zone,
+    proxy_note text,
+    tos_version integer DEFAULT 0 NOT NULL,
+    total_login bigint,
+    proxyinstitution_id bigint,
+    user_id bigint
+);
+
+
+ALTER TABLE public.user_info OWNER TO tdar;
+
+--
+-- Name: user_info_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE user_info_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_info_id_seq OWNER TO tdar;
+
+--
+-- Name: user_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE user_info_id_seq OWNED BY user_info.id;
+
+
 SET default_with_oids = true;
 
 --
@@ -2837,6 +2953,39 @@ CREATE TABLE video (
 ALTER TABLE public.video OWNER TO tdar;
 
 --
+-- Name: weekly_popular_resource_cache; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE weekly_popular_resource_cache (
+    id bigint NOT NULL,
+    resource_id bigint
+);
+
+
+ALTER TABLE public.weekly_popular_resource_cache OWNER TO tdar;
+
+--
+-- Name: weekly_popular_resource_cache_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE weekly_popular_resource_cache_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.weekly_popular_resource_cache_id_seq OWNER TO tdar;
+
+--
+-- Name: weekly_popular_resource_cache_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE weekly_popular_resource_cache_id_seq OWNED BY weekly_popular_resource_cache.id;
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
@@ -2869,6 +3018,13 @@ ALTER TABLE ONLY coverage_date ALTER COLUMN id SET DEFAULT nextval('coverage_dat
 --
 
 ALTER TABLE ONLY creator_address ALTER COLUMN id SET DEFAULT nextval('creator_address_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY creator_view_statistics ALTER COLUMN id SET DEFAULT nextval('creator_view_statistics_id_seq'::regclass);
 
 
 --
@@ -3071,6 +3227,13 @@ ALTER TABLE ONLY resource_annotation_key ALTER COLUMN id SET DEFAULT nextval('re
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
+ALTER TABLE ONLY resource_collection_view_statistics ALTER COLUMN id SET DEFAULT nextval('resource_collection_view_statistics_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
 ALTER TABLE ONLY resource_creator ALTER COLUMN id SET DEFAULT nextval('resource_creator_id_seq'::regclass);
 
 
@@ -3148,7 +3311,21 @@ ALTER TABLE ONLY upgrade_task ALTER COLUMN id SET DEFAULT nextval('upgradetask_i
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
+ALTER TABLE ONLY user_info ALTER COLUMN id SET DEFAULT nextval('user_info_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
 ALTER TABLE ONLY user_session ALTER COLUMN id SET DEFAULT nextval('user_session_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY weekly_popular_resource_cache ALTER COLUMN id SET DEFAULT nextval('weekly_popular_resource_cache_id_seq'::regclass);
 
 
 --
@@ -3261,6 +3438,14 @@ ALTER TABLE ONLY creator_address
 
 ALTER TABLE ONLY creator
     ADD CONSTRAINT creator_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: creator_view_statistics_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY creator_view_statistics
+    ADD CONSTRAINT creator_view_statistics_pkey PRIMARY KEY (id);
 
 
 --
@@ -3640,6 +3825,14 @@ ALTER TABLE ONLY resource_annotation
 
 
 --
+-- Name: resource_collection_view_statistics_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY resource_collection_view_statistics
+    ADD CONSTRAINT resource_collection_view_statistics_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: resource_creator_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -3848,6 +4041,14 @@ ALTER TABLE ONLY upgrade_task
 
 
 --
+-- Name: user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY user_info
+    ADD CONSTRAINT user_info_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: user_session_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -3878,6 +4079,34 @@ CREATE INDEX authorized_user_perm ON authorized_user USING btree (general_permis
 
 
 --
+-- Name: authorized_user_resource_collection_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX authorized_user_resource_collection_id_idx ON authorized_user USING btree (resource_collection_id);
+
+
+--
+-- Name: authorized_user_user_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX authorized_user_user_id_idx ON authorized_user USING btree (user_id);
+
+
+--
+-- Name: bookmarked_resource_person_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX bookmarked_resource_person_id_idx ON bookmarked_resource USING btree (person_id);
+
+
+--
+-- Name: bookmarked_resource_resource_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX bookmarked_resource_resource_id_idx ON bookmarked_resource USING btree (resource_id);
+
+
+--
 -- Name: cltkwd_appr; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -3892,10 +4121,45 @@ CREATE INDEX coding_catvar_id ON coding_sheet USING btree (category_variable_id)
 
 
 --
+-- Name: coding_rule_coding_sheet_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX coding_rule_coding_sheet_id_idx ON coding_rule USING btree (coding_sheet_id);
+
+
+--
+-- Name: coding_rule_ontology_node_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX coding_rule_ontology_node_id_idx ON coding_rule USING btree (ontology_node_id);
+
+
+--
 -- Name: coding_rule_term_index; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
 --
 
 CREATE INDEX coding_rule_term_index ON coding_rule USING btree (term);
+
+
+--
+-- Name: coding_sheet_default_ontology_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX coding_sheet_default_ontology_id_idx ON coding_sheet USING btree (default_ontology_id);
+
+
+--
+-- Name: collection_owner_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX collection_owner_id_idx ON collection USING btree (owner_id);
+
+
+--
+-- Name: collection_parent_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX collection_parent_id_idx ON collection USING btree (parent_id);
 
 
 --
@@ -3913,10 +4177,38 @@ CREATE INDEX creator_sequence ON resource_creator USING btree (resource_id, sequ
 
 
 --
+-- Name: creator_view_stats_count_id; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX creator_view_stats_count_id ON creator_view_statistics USING btree (creator_id, id);
+
+
+--
 -- Name: culture_keyword_label_lc; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
 --
 
 CREATE INDEX culture_keyword_label_lc ON culture_keyword USING btree (lower((label)::text));
+
+
+--
+-- Name: data_table_column_data_table_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX data_table_column_data_table_id_idx ON data_table_column USING btree (data_table_id);
+
+
+--
+-- Name: data_table_column_default_coding_sheet_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX data_table_column_default_coding_sheet_id_idx ON data_table_column USING btree (default_coding_sheet_id);
+
+
+--
+-- Name: data_table_column_default_ontology_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX data_table_column_default_ontology_id_idx ON data_table_column USING btree (default_ontology_id);
 
 
 --
@@ -4039,6 +4331,13 @@ CREATE INDEX rck_culture_keyword_id ON resource_culture_keyword USING btree (cul
 
 
 --
+-- Name: related_comparative_collection_resource_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX related_comparative_collection_resource_id_idx ON related_comparative_collection USING btree (resource_id);
+
+
+--
 -- Name: res_submitterid; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -4050,6 +4349,13 @@ CREATE INDEX res_submitterid ON resource USING btree (submitter_id);
 --
 
 CREATE INDEX res_updaterid ON resource USING btree (updater_id);
+
+
+--
+-- Name: res_uploader; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX res_uploader ON resource USING btree (uploader_id);
 
 
 --
@@ -4134,6 +4440,13 @@ CREATE INDEX resid_sitetypekwdid ON resource_site_type_keyword USING btree (reso
 --
 
 CREATE INDEX resid_temporalkwdid ON resource_temporal_keyword USING btree (resource_id, temporal_keyword_id);
+
+
+--
+-- Name: resource_collection_view_stats_count_id; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX resource_collection_view_stats_count_id ON resource_collection_view_statistics USING btree (resource_collection_id, id);
 
 
 --
@@ -4242,6 +4555,13 @@ CREATE INDEX sitetype_appr ON site_type_keyword USING btree (approved, id);
 
 
 --
+-- Name: source_collection_resource_id_idx; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE INDEX source_collection_resource_id_idx ON source_collection USING btree (resource_id);
+
+
+--
 -- Name: temporal_label_lc; Type: INDEX; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -4262,6 +4582,14 @@ ALTER TABLE ONLY archive
 
 ALTER TABLE ONLY audio
     ADD CONSTRAINT audio_fkey FOREIGN KEY (id) REFERENCES information_resource(id);
+
+
+--
+-- Name: authorized_user_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY authorized_user
+    ADD CONSTRAINT authorized_user_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
 
 
 --
@@ -4313,6 +4641,22 @@ ALTER TABLE ONLY collection
 
 
 --
+-- Name: collection_parents_collection_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY collection_parents
+    ADD CONSTRAINT collection_parents_collection_id_fkey FOREIGN KEY (collection_id) REFERENCES collection(id);
+
+
+--
+-- Name: collection_parents_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY collection_parents
+    ADD CONSTRAINT collection_parents_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES collection(id);
+
+
+--
 -- Name: contributor_request_applicant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4334,6 +4678,14 @@ ALTER TABLE ONLY contributor_request
 
 ALTER TABLE ONLY creator_address
     ADD CONSTRAINT creator_address_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES creator(id);
+
+
+--
+-- Name: creator_view_statistics_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY creator_view_statistics
+    ADD CONSTRAINT creator_view_statistics_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES creator(id);
 
 
 --
@@ -4617,6 +4969,14 @@ ALTER TABLE ONLY resource_annotation_key
 
 
 --
+-- Name: fk_bbetp1cmjicvtydwd0hfepab1; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY sensory_data_scan
+    ADD CONSTRAINT fk_bbetp1cmjicvtydwd0hfepab1 FOREIGN KEY (sensory_data_id) REFERENCES sensory_data(id);
+
+
+--
 -- Name: fk_category_variable_synonyms__category_variable; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4662,6 +5022,14 @@ ALTER TABLE ONLY data_table_column_relationship
 
 ALTER TABLE ONLY data_table_column_relationship
     ADD CONSTRAINT fk_data_table_column_relationship_relationship FOREIGN KEY (relationship_id) REFERENCES data_table_relationship(id);
+
+
+--
+-- Name: fk_l4o8gyxxc17q6w3g8ew9ivhlh; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY sensory_data_image
+    ADD CONSTRAINT fk_l4o8gyxxc17q6w3g8ew9ivhlh FOREIGN KEY (sensory_data_id) REFERENCES sensory_data(id);
 
 
 --
@@ -4950,22 +5318,6 @@ ALTER TABLE ONLY person
 
 ALTER TABLE ONLY person
     ADD CONSTRAINT person_merge_creator_id_fkey FOREIGN KEY (merge_creator_id) REFERENCES person(id);
-
-
---
--- Name: person_proxy_institution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
---
-
-ALTER TABLE ONLY person
-    ADD CONSTRAINT person_proxy_institution_id_fkey FOREIGN KEY (proxy_institution_id) REFERENCES institution(id);
-
-
---
--- Name: person_proxyinstitution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
---
-
-ALTER TABLE ONLY person
-    ADD CONSTRAINT person_proxyinstitution_id_fkey FOREIGN KEY (proxyinstitution_id) REFERENCES institution(id);
 
 
 --
@@ -5353,6 +5705,22 @@ ALTER TABLE ONLY temporal_keyword
 
 
 --
+-- Name: user_info_proxyinstitution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY user_info
+    ADD CONSTRAINT user_info_proxyinstitution_id_fkey FOREIGN KEY (proxyinstitution_id) REFERENCES institution(id);
+
+
+--
+-- Name: user_info_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY user_info
+    ADD CONSTRAINT user_info_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
 -- Name: user_session_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -5373,3 +5741,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+
