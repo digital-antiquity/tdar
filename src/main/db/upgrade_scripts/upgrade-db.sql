@@ -14,8 +14,8 @@ create table user_info (
     primary key (id)
 );
 
-insert into user_info (affiliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, user_id) 
-    select affiliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, id from person where username is not null;  
+insert into user_info (affilliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, user_id) 
+    select affilliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, id from person where username is not null;  
     
 alter table person drop column  affilliation;
 alter table person drop column  contributor;
