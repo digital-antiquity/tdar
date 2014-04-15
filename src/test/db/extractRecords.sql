@@ -36,10 +36,10 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8095, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, true, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8092, 'test@tdar.org', 'test', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8093, 'admin@tdar.org', 'admin', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
 
 --DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
 --DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
@@ -313,5 +313,5 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 --DONT-PROCESS-- update pos_billing_activity set activity_type='PRODUCTION';
 --DONT-PROCESS-- update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
---DONT-PROCESS-- -- update person set tos_version = 99, contributor_agreement_version = 99;
+--DONT-PROCESS-- update user_info set tos_version = 99, contributor_agreement_version = 99;
 
