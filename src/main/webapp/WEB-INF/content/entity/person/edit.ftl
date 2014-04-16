@@ -77,7 +77,7 @@
                     and visitors who are not logged in.</em></p>
             </#if>
 
-            <@s.checkbox label="${siteAcronym} Contributor?" name="person.contributor" id="contributor-id" />
+            <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
 
 
 
@@ -100,7 +100,7 @@
 
             <p>If there are specific instructions, such as a person or position within the organization to contact, please provide additional information
                 here</p>
-            <@s.textarea label="Proxy Note" rows=6 cols='50' name='person.proxyNote' cssClass="input-xxlarge"  />
+            <@s.textarea label="Proxy Note" rows=6 cols='50' name='proxyNote' cssClass="input-xxlarge"  />
         </div>
     </div>
 

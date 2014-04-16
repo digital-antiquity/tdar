@@ -16,6 +16,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -45,6 +46,8 @@ public class PersonController extends AbstractCreatorController<Person> {
     private String newUsername;
     private String password;
     private String confirmPassword;
+    private Boolean contributor;
+    private String proxyNote;
     private List<Account> accounts;
     private List<String> groups = new ArrayList<String>();
 
@@ -54,6 +57,10 @@ public class PersonController extends AbstractCreatorController<Person> {
     public String loadEditMetadata() throws TdarActionException {
         String ret = super.loadEditMetadata();
         email = getPersistable().getEmail();
+        UserInfo userInfo = getPersistable().getUserInfo();
+        setProxyNote(userInfo.getProxyNote());
+        setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+        setContributor(userInfo.getContributor());
         return ret;
     }
 
@@ -126,15 +133,17 @@ public class PersonController extends AbstractCreatorController<Person> {
             person.setInstitution(persistentInstitution);
         }
 
+        UserInfo userInfo = getPersistable().getUserInfo();
         if (StringUtils.isBlank(proxyInstitutionName)) {
-            person.getUserInfo().setProxyInstitution(null);
-        }
-        else {
+            userInfo.setProxyInstitution(null);
+        } else {
             // if the user changed the person's institution, find or create it
             Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
             getLogger().debug("setting institution to persistent: " + persistentInstitution);
-            person.getUserInfo().setProxyInstitution(persistentInstitution);
+            userInfo.setProxyInstitution(persistentInstitution);
         }
+        userInfo.setProxyNote(proxyNote);
+        userInfo.setContributor(contributor);
 
         getGenericService().saveOrUpdate(person);
         getXmlService().logRecordXmlToFilestore(getPersistable());
@@ -329,5 +338,21 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void setEmail(String personEmail) {
         this.email = personEmail;
+    }
+
+    public String getProxyNote() {
+        return proxyNote;
+    }
+
+    public void setProxyNote(String proxyNote) {
+        this.proxyNote = proxyNote;
+    }
+
+    public Boolean getContributor() {
+        return contributor;
+    }
+
+    public void setContributor(Boolean contributor) {
+        this.contributor = contributor;
     }
 }

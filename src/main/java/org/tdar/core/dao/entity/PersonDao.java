@@ -139,9 +139,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public List<Person> findRecentLogins() {
         Criteria criteria = getCriteria();
+        criteria.createAlias("userInfo","info");
         criteria.add(Restrictions.eq("registered", true));
-        criteria.add(Restrictions.isNotNull("lastLogin"));
-        criteria.addOrder(Property.forName("lastLogin").desc());
+        criteria.add(Restrictions.isNotNull("info.lastLogin"));
+        criteria.addOrder(Property.forName("info.lastLogin").desc());
         criteria.setMaxResults(25);
         return criteria.list();
     }

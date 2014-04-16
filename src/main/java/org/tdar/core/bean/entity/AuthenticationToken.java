@@ -44,6 +44,7 @@ public class AuthenticationToken extends Persistable.Base {
         }
         AuthenticationToken token = new AuthenticationToken();
         token.setPerson(person);
+        person.getUserInfo();
         token.setSessionStart(new Date());
         return token;
     }

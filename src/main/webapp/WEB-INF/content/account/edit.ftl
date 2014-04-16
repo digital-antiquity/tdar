@@ -103,7 +103,7 @@
     <div class="row">
         <div class="span5">
         <#-- listValueKey="localeKey"	       theme="tdar" -->
-		<@s.select list="userAffiliations" name="person.affilliation" label="Affiliation / Interest" listValue="label"
+		<@s.select list="userAffiliations" name="affilliation" label="Affiliation / Interest" listValue="label"
         headerKey="" headerValue="Select Affiliation"
         />
         </div>

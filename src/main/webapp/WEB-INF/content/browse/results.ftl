@@ -116,8 +116,9 @@
             <#if showBasicInfo >
                 <table class='tableFormat table'>
                     <#assign registered = false />
-                    <#if creator.registered?has_content>
-                        <#assign registered = creator.registered>
+                    <#assign userInfo=creator.userInfo />
+                    <#if (userInfo.registered)?has_content>
+                        <#assign registered = userInfo.registered>
                     </#if>
                     <#if showAdminInfo>
                         <tr>
@@ -135,8 +136,8 @@
                         </td>
                         <td>
                             <#if showAdminInfo>
-                            <#if creator.lastLogin?has_content>
-                                <@_datefield "Last Login"  creator.lastLogin />
+                            <#if (userInfo.lastLogin)?has_content>
+                                <@_datefield "Last Login"  userInfo.lastLogin />
                             <#else>
                                 <@_textfield "Last Login"  "No record" />
                             </#if>
@@ -168,21 +169,21 @@
                     <tr>
                         <td colspan=2>
                             <#escape x as x?html>
-                    <@_textfield "Contributor Reason" creator.contributorReason true />
+                    <@_textfield "Contributor Reason" userInfo.contributorReason true />
                     </#escape>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <#escape x as x?html>
-                    <@_textfield "TOS Version" creator.tosVersion true />
+                    <@_textfield "TOS Version" userInfo.tosVersion true />
                     </#escape>
                         </td>
                         <td>
                             <#escape x as x?html>
-                                <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
+                                <@_textfield "Agreement Version" userInfo.contributorAgreementVersion true />
                                 <br/>
-                                <@_textfield "Affiliation" creator.affilliation />
+                                <@_textfield "Affiliation" userInfo.affilliation />
 
                             </#escape>
                         </td>

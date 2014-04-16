@@ -48,7 +48,7 @@
             <tr>
                 <td><a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></td>
                 <td> ${user.email!""}</td>
-                <td> ${user.lastLogin!"never"} (${user.totalLogins!0})</td>
+                <td> ${user.userInfo.lastLogin!"never"} (${user.userInfo.totalLogins!0})</td>
             </tr>
         </#list>
     </table>
