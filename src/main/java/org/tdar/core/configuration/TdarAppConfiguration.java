@@ -16,7 +16,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -31,7 +30,7 @@ import org.tdar.web.SessionData;
 @ComponentScan(basePackages = {"org.tdar"})
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass=true)
-@PropertySource(value = { "classpath:/hibernate.properties", "classpath:/crowd.properties", "classpath:/tdar.properties" }, ignoreResourceNotFound = true)
+//@PropertySource(value = {  "classpath:/tdar.properties" }, ignoreResourceNotFound = true)
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
 public class TdarAppConfiguration implements Serializable {
 
@@ -60,6 +59,7 @@ public class TdarAppConfiguration implements Serializable {
     }
 
     @Bean
+    //@Value("#{'${my.list.of.strings}'.split(',')}") 
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
         FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
         List<String> templateLoaderPaths = new ArrayList<>();
