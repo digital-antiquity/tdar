@@ -35,6 +35,10 @@ INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, ph
 INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8093, 'admin@tdar.org', 'admin', 'user', true, NULL, '', 12088);
 INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
 INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
+INSERT INTO user_info(user_id, contributor) VALUES (8092, true);
+INSERT INTO user_info(user_id, contributor) VALUES (8093, true);
+INSERT INTO user_info(user_id, contributor) VALUES (8094, true);
+INSERT INTO user_info(user_id, contributor) VALUES (8095, true);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, 8092, NULL);
 INSERT INTO project (id) VALUES (1);
@@ -813,7 +817,7 @@ INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_vers
 INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id, user_id) VALUES (462, NULL,  true , 0,  N'SW US
 AD 600-1540', NULL, NULL, NULL, 0, 0, NULL, 8389);
 INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id, user_id) VALUES (467, NULL,  true , 0,  N'New Philadelphia Archaeology Project, 19th century, Illinois, historical archaeology', NULL, NULL, NULL, 0, 0, NULL, 8422);
-INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id, user_id) VALUES (471, NULL,  true , 0, NULL,  '2013-12-18 08:27:19.363', NULL, NULL, 0, 1, NULL, 8344);
+INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id, user_id) VALUES (471, NULL,  true , 0, NULL,  '2014-04-15 19:39:27.47',  '2014-04-15 19:27:02.662', NULL, 0, 8, NULL, 8344);
 INSERT INTO user_info (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id, user_id) VALUES (482, NULL,  true , 0,  N'n/a', NULL, NULL, NULL, 0, 0, NULL, 8608);
 --------------------------- site_type_keyword ---------------------------
 --------------------------- culture_keyword ---------------------------
@@ -2735,4 +2739,4 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 update pos_billing_activity set activity_type='PRODUCTION';
 update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
-update user_info set tos_version = 99, contributor_agreement_version = 99;
+--update user_info set tos_version = 99, contributor_agreement_version = 99;

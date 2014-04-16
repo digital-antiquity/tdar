@@ -41,10 +41,10 @@
 --DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
 --DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
 
---DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
---DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
---DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8094, true); 
---DONT-PROCESS--INSERT INTO user_info(user_id, contributor) VALUES (8095, true); 
+--DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
+--DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
+--DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8094, true); 
+--DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8095, true); 
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
@@ -310,5 +310,5 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 --DONT-PROCESS-- update pos_billing_activity set activity_type='PRODUCTION';
 --DONT-PROCESS-- update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
---DONT-PROCESS-- update user_info set tos_version = 99, contributor_agreement_version = 99;
+--DONT-PROCESS-- --update user_info set tos_version = 99, contributor_agreement_version = 99;
 

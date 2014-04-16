@@ -506,7 +506,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected void init(TdarActionSupport controller, Person user) {
         if (controller != null) {
             controller.setSessionData(getSessionData());
-
             if ((user != null) && Persistable.Base.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
