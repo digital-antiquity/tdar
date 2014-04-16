@@ -15,7 +15,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -27,6 +29,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name="user_info")
@@ -91,6 +94,8 @@ public class UserInfo extends Persistable.Base implements Obfuscatable {
         this.contributor = contributor;
     }
 
+    @XmlElement(name = "userRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Person getUser() {
         return user;
     }
