@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,14 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 import org.tdar.filestore.Filestore.ObjectType;
 
 @Component
-public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
+public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -32,7 +33,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
     private static final long serialVersionUID = -6196804675468219433L;
 
     @Autowired
-    private transient InformationResourceFileVersionService informationResourceFileVersionService;
+    private transient GenericService genericService;
 
     @Autowired
     private transient FreemarkerService freemarkerService;
@@ -57,7 +58,11 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int count = 0;
-        for (InformationResourceFileVersion version : informationResourceFileVersionService.findAll()) {
+        ScrollableResults scrollableResults = genericService.findAllScrollable(InformationResourceFileVersion.class);
+
+        while (scrollableResults.next()) {
+            Object item = scrollableResults.get(0);
+            InformationResourceFileVersion version = (InformationResourceFileVersion)item;
             try {
                 if (!filestore.verifyFile(ObjectType.RESOURCE, version)) {
                     count++;
@@ -83,6 +88,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
                 }
             }
         }
+        scrollableResults.close();
 
         if (count == 0) {
             subject.append(" [NONE]");
