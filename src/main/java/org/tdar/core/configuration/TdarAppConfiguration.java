@@ -1,6 +1,7 @@
 package org.tdar.core.configuration;
 
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,11 @@ import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
+import org.tdar.core.dao.external.auth.AuthenticationProvider;
+import org.tdar.core.dao.external.auth.CrowdRestDao;
+import org.tdar.core.dao.external.auth.SpringLdapDao;
+import org.tdar.core.dao.external.pid.EZIDDao;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.web.SessionData;
 
 @Configuration
@@ -85,5 +91,16 @@ public class TdarAppConfiguration implements Serializable {
     public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException {
         return new HibernateTransactionManager(getSessionFactory(dataSource));
     }
+
     
+    @Bean(name="AuthenticationProvider")
+    public AuthenticationProvider getAuthProvider() throws IOException {
+        return new CrowdRestDao();
+    }
+
+    @Bean(name="DoiProvider")
+    public ExternalIDProvider getIdProvider() throws IOException {
+        return new EZIDDao();
+    }
+
 }

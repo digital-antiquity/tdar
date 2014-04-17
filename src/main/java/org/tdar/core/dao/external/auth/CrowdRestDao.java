@@ -12,10 +12,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
@@ -54,7 +51,7 @@ import com.atlassian.crowd.service.client.CrowdClient;
  * @version $Revision$
  * @see <a href='http://confluence.atlassian.com/display/CROWD/Creating+a+Crowd+Client+for+your+Custom+Application'>Crowd documentation</a>
  */
-@Service
+//@Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

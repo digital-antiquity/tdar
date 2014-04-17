@@ -26,7 +26,6 @@ import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.utils.MessageHelper;
 
@@ -42,7 +41,7 @@ import org.tdar.utils.MessageHelper;
  * @see <a href='http://static.springsource.org/spring-ldap/site/reference/html/index.html'>Spring LDAP documentation</a>
  * 
  */
-@Service
+//@Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

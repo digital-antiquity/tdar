@@ -35,7 +35,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -50,7 +49,6 @@ import edu.asu.lib.dc.DublinCoreDocument;
  * @author Adam Brin
  * 
  */
-@Service
 public class EZIDDao implements ExternalIDProvider {
 
     // DOCUMENTATION: http://n2t.net/ezid/doc/apidoc.html#operation-get-identifier-metadata
