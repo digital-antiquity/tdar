@@ -82,7 +82,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String reCaptchaText;
 
     private String contributorReason;
-    private Boolean contributor;
+    private Boolean contributor = Boolean.FALSE;
     private UserAffiliation affiliation;
     
     // interceptorRefs = @InterceptorRef("basicStack"),

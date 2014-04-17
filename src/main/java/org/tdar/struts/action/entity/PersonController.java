@@ -59,7 +59,9 @@ public class PersonController extends AbstractCreatorController<Person> {
         email = getPersistable().getEmail();
         UserInfo userInfo = getPersistable().getUserInfo();
         setProxyNote(userInfo.getProxyNote());
-        setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+        if (userInfo.getProxyInstitution() != null) {
+            setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+        }
         setContributor(userInfo.getContributor());
         return ret;
     }
