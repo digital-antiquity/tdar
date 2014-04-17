@@ -163,6 +163,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
         for (ScheduledProcess<?> process_ : processes) {
+            @SuppressWarnings("unchecked")
             ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>) process_;
             // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
             // scheduledProcessMap.clear();
