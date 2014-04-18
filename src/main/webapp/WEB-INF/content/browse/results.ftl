@@ -116,7 +116,7 @@
             <#if showBasicInfo >
                 <table class='tableFormat table'>
                     <#assign registered = false />
-                    <#assign userInfo=creator.userInfo />
+                    <#assign userInfo = creator.userInfo!{} />
                     <#if (userInfo.registered)?has_content>
                         <#assign registered = userInfo.registered>
                     </#if>

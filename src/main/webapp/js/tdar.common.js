@@ -289,7 +289,7 @@ TDAR.common = function () {
                     minlength: 3,
                     equalTo: "#password"
                 },
-                'person.contributorReason': {
+                'contributorReason': {
                     maxlength: 512
                 }
             },

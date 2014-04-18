@@ -47,6 +47,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     private String password;
     private String confirmPassword;
     private Boolean contributor;
+    private String contributorReason;
     private String proxyNote;
     private List<Account> accounts;
     private List<String> groups = new ArrayList<String>();
@@ -58,11 +59,14 @@ public class PersonController extends AbstractCreatorController<Person> {
         String ret = super.loadEditMetadata();
         email = getPersistable().getEmail();
         UserInfo userInfo = getPersistable().getUserInfo();
-        setProxyNote(userInfo.getProxyNote());
-        if (userInfo.getProxyInstitution() != null) {
-            setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+        if (userInfo != null) {
+            setProxyNote(userInfo.getProxyNote());
+            if (userInfo.getProxyInstitution() != null) {
+                setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+            }
+            setContributorReason(userInfo.getContributorReason());
+            setContributor(userInfo.getContributor());
         }
-        setContributor(userInfo.getContributor());
         return ret;
     }
 
@@ -107,7 +111,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     @Validations(
             emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", key = "userAccountController.email_invalid") },
-            stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "person.contributorReason",
+            stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "contributorReason",
                     key = "userAccountController.contributorReason_invalid", maxLength = "512") }
             )
             protected String save(Person person) {
@@ -136,17 +140,19 @@ public class PersonController extends AbstractCreatorController<Person> {
         }
 
         UserInfo userInfo = getPersistable().getUserInfo();
-        if (StringUtils.isBlank(proxyInstitutionName)) {
-            userInfo.setProxyInstitution(null);
-        } else {
-            // if the user changed the person's institution, find or create it
-            Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
-            getLogger().debug("setting institution to persistent: " + persistentInstitution);
-            userInfo.setProxyInstitution(persistentInstitution);
+        if (userInfo != null) {
+            if (StringUtils.isBlank(proxyInstitutionName)) {
+                userInfo.setProxyInstitution(null);
+            } else {
+                // if the user changed the person's institution, find or create it
+                Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+                getLogger().debug("setting institution to persistent: " + persistentInstitution);
+                userInfo.setProxyInstitution(persistentInstitution);
+            }
+            userInfo.setContributorReason(contributorReason);
+            userInfo.setProxyNote(proxyNote);
+            userInfo.setContributor(contributor);
         }
-        userInfo.setProxyNote(proxyNote);
-        userInfo.setContributor(contributor);
-
         getGenericService().saveOrUpdate(person);
         getXmlService().logRecordXmlToFilestore(getPersistable());
 
@@ -356,5 +362,13 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void setContributor(Boolean contributor) {
         this.contributor = contributor;
+    }
+
+    public String getContributorReason() {
+        return contributorReason;
+    }
+
+    public void setContributorReason(String contributorReason) {
+        this.contributorReason = contributorReason;
     }
 }

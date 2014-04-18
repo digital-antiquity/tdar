@@ -47,6 +47,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
@@ -1258,7 +1259,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         personmap.put("confirmPassword", "secret");
         personmap.put("institutionName", "institution");
         personmap.put("person.phone", "1234567890");
-        personmap.put("person.contributorReason", "there is a reason");
+        personmap.put("contributorReason", "there is a reason");
+//        personmap.put("contributor", "true");
+        personmap.put("affilliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
     }

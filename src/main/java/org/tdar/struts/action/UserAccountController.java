@@ -82,8 +82,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String reCaptchaText;
 
     private String contributorReason;
-    private Boolean contributor = Boolean.FALSE;
-    private UserAffiliation affiliation;
+    private UserAffiliation affilliation;
     
     // interceptorRefs = @InterceptorRef("basicStack"),
     @Action(value = "new",
@@ -194,9 +193,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
         checkRecaptcha();
         UserInfo userInfo = new UserInfo();
-        userInfo.setContributor(contributor);
         userInfo.setContributorReason(contributorReason);
-        userInfo.setAffilliation(getAffiliation());
+        userInfo.setAffilliation(getAffilliation());
         person.setUserInfo(userInfo);
         try {
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
@@ -508,19 +506,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.contributorReason = contributorReason;
     }
 
-    public UserAffiliation getAffiliation() {
-        return affiliation;
+    public UserAffiliation getAffilliation() {
+        return affilliation;
     }
 
-    public void setAffiliation(UserAffiliation affiliation) {
-        this.affiliation = affiliation;
+    public void setAffilliation(UserAffiliation affiliation) {
+        this.affilliation = affiliation;
     }
 
-    public Boolean getContributor() {
-        return contributor;
-    }
-
-    public void setContributor(Boolean contributor) {
-        this.contributor = contributor;
-    }
 }

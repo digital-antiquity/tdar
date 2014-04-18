@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -151,7 +152,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         Person findByEmail = entityService.findByEmail(email);
         findByEmail.setStatus(status);
         findByEmail.setUsername(null);
-//        findByEmail.setRegistered(false);
+        UserInfo userInfo = findByEmail.getUserInfo();
+        if (userInfo != null) {
+            genericService.delete(userInfo);
+            findByEmail.setUserInfo(null);
+         }
+
         genericService.saveOrUpdate(findByEmail);
         evictCache();
         findByEmail = null;
@@ -457,7 +463,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setLastName("User");
         p.setPhone("212 000 0000");
         
-        controller.setContributor(true);
+        controller.setRequestingContributorAccess(true);
         controller.setContributorReason(REASON);
         p.setRpaNumber("234");
 

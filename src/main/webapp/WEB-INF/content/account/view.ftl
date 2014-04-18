@@ -38,9 +38,9 @@ vim:sts=2:sw=2:filetype=jsp
         <dt>Institution:</dt>
         <dd>${person.institution!"Not Provided"}</dd>
 
-    <#if person.contributorReason??>
+    <#if (person.userInfo.contributorReason)??>
         <dt>Requested contributor access for the following reason(s):</dt>
-        <dd>${person.contributorReason}</dd>
+        <dd>${person.userInfo.contributorReason}</dd>
     </#if>
 
     <#if RPAEnabled>

@@ -82,7 +82,7 @@
 
 
             <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information"
-            rows=6 cols='50' cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId'  maxlength=512 />
+            rows=6 cols='50' cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId'  maxlength=512 />
             <@s.textarea label="Please provide a brief description of yourself" rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
 
             <p><b>Proxy Contact Information</b></p>

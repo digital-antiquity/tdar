@@ -367,7 +367,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
-        controller.setContributor(true);
+        controller.setRequestingContributorAccess(true);
         controller.setContributorReason(REASON);
         p.setRpaNumber("214");
 

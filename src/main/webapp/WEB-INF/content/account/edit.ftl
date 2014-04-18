@@ -180,7 +180,7 @@
                     Please briefly describe the geographical areas, time periods, or other subjects for which you
                     would like to contribute information
                 </span>
-                <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId' />
+                <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId' />
             </div>
         </div>
 
