@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+
 
 /**
  * @author Adam Brin
@@ -138,6 +140,36 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest_simple.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
+    }
+    
+    @Test
+    @Ignore("dup")
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testValidBulkUploadWithDataset() throws MalformedURLException {
+        String accountId = "";
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage("/cart/add");
+            setInput("invoice.numberOfMb", "200");
+            setInput("invoice.numberOfFiles", "20");
+            submitForm();
+            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        }
+
+        Map<String, String> extra = new HashMap<String, String>();
+        extra.put("creditProxies[0].person.id", getUserId().toString());
+        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
+        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
+        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
+        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+        extra.put(PROJECT_ID_FIELDNAME, "3805");
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            extra.put("accountId", accountId);
+        }
+        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        assertTrue(file.exists());
+        testBulkUploadController("dataset_manifest.xlsx", Arrays.asList(file), extra, true);
     }
 
     @Test

@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.common.util.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -142,7 +144,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         bulkUploadController.checkStatus();
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
-
+        evictCache();
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         boolean manifest_gc = false;
         boolean manifest_book = false;
@@ -264,6 +266,24 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(bulkUploadController.getAsyncErrors().contains("resource creator is not valid"));
     }
 
+    
+    @Test
+    @Rollback
+    @Ignore
+    public void testDatasetBulkUpload() throws Exception {
+        List<File> files = new ArrayList<>();
+        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        files.add(file);
+        assertTrue(file.exists());
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("dataset_manifest.xlsx", TdarActionSupport.SUCCESS_ASYNC, files);
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+    }
+
     @Test
     @Rollback
     public void testBulkUploadWithFloat() throws Exception {
@@ -353,15 +373,13 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                                 + "<li>Filename \"Codes E12.txt\" was not found in the import batch</li>"));
     }
 
-    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {
-        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse, List<File> uploadFiles) throws Exception {
+        Person user = createAndSaveNewPerson();
+        BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
+        init(bulkUploadController, user);
+        logger.debug("HI");
         bulkUploadController.prepare();
 
-        // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        assertTrue(testImagesDirectory.isDirectory());
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -382,6 +400,16 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws Exception {
         return setupBasicBulkUploadTest(manifestName, TdarActionSupport.SUCCESS_ASYNC);
     }
+
+    
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String successAsync) throws Exception {
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        assertTrue(testImagesDirectory.isDirectory());
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
+        return setupBasicBulkUploadTest(manifestName, successAsync, uploadFiles);
+    }
+
 
     @Test
     @Rollback

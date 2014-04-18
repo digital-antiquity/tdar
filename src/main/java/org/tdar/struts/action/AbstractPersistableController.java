@@ -157,10 +157,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+    @Action(value = DELETE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
+        getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
@@ -186,6 +188,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             }
             return SUCCESS;
         }
+
         return CONFIRM;
     }
 
@@ -608,7 +611,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      */
     @Override
     public void prepare() {
-
+        P p = null;
         if (isPersistableIdSet()) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
@@ -616,13 +619,15 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             setPersistable(createPersistable());
         } else {
 
-            P p = loadFromId(getId());
+            p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            getLogger().info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
+        if( !ADD.equals(getActionName())) {
+            getLogger().info("id:{}, persistable:{}", getId(), p);
+        }
     }
 
     protected boolean isPersistableIdSet() {

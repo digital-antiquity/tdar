@@ -150,7 +150,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (irFiles.size() > 0) {
             addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
         }
-        processFiles(resource, filesToProcess);
+        processFiles(filesToProcess, resource.getResourceType().isCompositeFilesEnabled());
 
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
@@ -187,12 +187,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Process the files based on whether the @link ResourceType is a composite (like a @link Dataset where all of the files are necessary) or not where each
      * file is processed separately
      */
-    private void processFiles(T resource, List<InformationResourceFileVersion> filesToProcess) throws IOException {
+    private void processFiles(List<InformationResourceFileVersion> filesToProcess, boolean compositeFilesEnabled) throws IOException {
         if (CollectionUtils.isEmpty(filesToProcess)) {
             return;
         }
 
-        if (resource.getResourceType().isCompositeFilesEnabled()) {
+        if (compositeFilesEnabled) {
             analyzer.processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
         } else {
             for (InformationResourceFileVersion version : filesToProcess) {
@@ -359,7 +359,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 }
             }
         }
-        processFiles(ir, latestVersions);
+        processFiles(latestVersions, ir.getResourceType().isCompositeFilesEnabled());
         // this is a known case where we need to purge the session
         // getDao().synchronize();
 
