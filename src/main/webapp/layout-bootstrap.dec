@@ -28,7 +28,7 @@
 <head>
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
-        <!-- logged-in-as: ${sessionData.person.email} -->
+        <!-- logged-in-as: ${sessionData.person} ${(sessionData.person.email)!""} -->
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
