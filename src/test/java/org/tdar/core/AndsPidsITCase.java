@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
@@ -28,8 +29,12 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 // @Ignore("This test will only work when run from IP addresses registered with ANDS. For more see: https://jira.ands.org.au/browse/SD-4419")
 public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
-    @Autowired
     AndsPidsDao pidsDao;
+
+    @Before
+    public void setup() {
+        pidsDao = new AndsPidsDao();
+    }
 
     @Autowired
     UrlService urlService;
