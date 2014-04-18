@@ -1,6 +1,8 @@
 package org.tdar.struts.data;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Transient;
 
@@ -33,6 +35,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
+    private Set<String> seenImportFieldNames = new HashSet<>();
 
     // either person or institution will be updated by the view and then
     // conditionally placed in the resourceCreator
@@ -202,6 +205,14 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     public void setType(CreatorType type) {
         this.type = type;
+    }
+
+    public Set<String> getSeenImportFieldNames() {
+        return seenImportFieldNames;
+    }
+
+    public void setSeenImportFieldNames(Set<String> seenImportFieldNames) {
+        this.seenImportFieldNames = seenImportFieldNames;
     }
 
 }

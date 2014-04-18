@@ -329,8 +329,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
-
-        getDao().merge(dataset);
+        logger.debug("{} === {} ", ObjectUtils.identityToString(transientDatasetToPersist), ObjectUtils.identityToString(dataset));
+        transientDatasetToPersist = null;
+        dataset = getDao().merge(dataset);
         // getDao().synchronize();
     }
 

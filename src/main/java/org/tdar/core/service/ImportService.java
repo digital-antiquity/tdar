@@ -212,10 +212,11 @@ public class ImportService {
      * 
      * @param authorizedUser
      * @param incomingResource
+     * @return 
      * @throws APIException
      */
     @Transactional(readOnly = false)
-    public <R extends Resource> void reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
+    public <R extends Resource> R reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
@@ -245,6 +246,7 @@ public class ImportService {
                 reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
             }
         }
+        return incomingResource;
     }
 
     /**
