@@ -76,7 +76,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
     public boolean supportBulkUpload() {
         switch (this) {
             case DOCUMENT:
-            case DATASET:
+//            case DATASET:
             case IMAGE:
                 return true;
             default:
