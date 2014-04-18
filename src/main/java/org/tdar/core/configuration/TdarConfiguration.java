@@ -54,7 +54,6 @@ public class TdarConfiguration {
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
     private final transient static Logger logger = LoggerFactory.getLogger(TdarConfiguration.class);
-    private String wroTempDirName;
     private ConfigurationAssistant assistant;
 
     private Filestore filestore;

@@ -43,9 +43,15 @@ vim:sts=2:sw=2
 
     <!-- 	This filter is used to allow for Spring session-scoped objects (such
           as tDAR's SessionData object). -->
+     <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>
+    </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:applicationContext.xml</param-value>
+        <param-value>org.tdar.core.configuration.TdarAppConfiguration</param-value>
     </context-param>
 
     <!-- 	causing an error with missing dependency from xwork 2.1.3-snapshot

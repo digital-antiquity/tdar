@@ -85,6 +85,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -127,7 +128,7 @@ import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
-@ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
+@ContextConfiguration(classes=TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 

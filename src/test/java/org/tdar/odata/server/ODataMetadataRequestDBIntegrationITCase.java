@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 
