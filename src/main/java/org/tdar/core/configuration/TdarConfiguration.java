@@ -2,8 +2,6 @@ package org.tdar.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -86,7 +84,6 @@ public class TdarConfiguration {
     public void initialize() {
         logger.debug("initializing filestore and setup");
         // initPersonalFilestorePath();
-        testQueue();
         initializeStopWords();
         intializeCouponCodes();
 
@@ -108,6 +105,7 @@ public class TdarConfiguration {
             throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
         }
 
+        initPersonalFilestorePath();
     }
 
     public String getConfigurationFile() {
@@ -187,8 +185,7 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class",
-                PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
         File filestoreLoc = new File(getFileStoreLocation());
         try {
@@ -215,23 +212,18 @@ public class TdarConfiguration {
     private void initPersonalFilestorePath() {
         File personalFilestoreHome = new File(getPersonalFileStoreLocation());
         String msg = null;
-        boolean pathExists = true;
         try {
             logger.info("initializing personal filestore at {}", getPersonalFileStoreLocation());
             if (!personalFilestoreHome.exists()) {
-                pathExists = personalFilestoreHome.mkdirs();
+                boolean pathExists = personalFilestoreHome.mkdirs();
                 if (!pathExists) {
                     msg = "Could not create personal filestore at " + getPersonalFileStoreLocation();
                 }
             }
         } catch (SecurityException ex) {
             logger.error(SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY, ex);
-            pathExists = false;
-        }
-        if (!pathExists) {
             throw new IllegalStateException(msg);
         }
-
     }
 
     public static TdarConfiguration getInstance() {
@@ -362,49 +354,6 @@ public class TdarConfiguration {
     /**
      * @return
      */
-    public boolean useExternalMessageQueue() {
-        return assistant.getBooleanProperty("message.queue.enabled", false);
-    }
-
-    public String getMessageQueueURL() {
-        return assistant.getStringProperty("message.queue.server", "dev.tdar.org");
-    }
-
-    public String getMessageQueueUser() {
-        return assistant.getStringProperty("message.queue.user");
-    }
-
-    public String getMessageQueuePwd() {
-        return assistant.getStringProperty("message.queue.pwd");
-    }
-
-    public String getQueuePrefix() {
-        return assistant.getStringProperty("message.queue.prefix", getDefaultQueuePrefix());
-    }
-
-    /**
-     * @return
-     */
-    public String getDefaultQueuePrefix() {
-        String host = "";
-        try {
-            InetAddress localMachine = InetAddress.getLocalHost();
-            host = localMachine.getHostName();
-        } catch (UnknownHostException e) {
-            logger.debug("unknownhost: ", e);
-        }
-        return host + ".";
-    }
-
-    private void testQueue() {
-        if (useExternalMessageQueue() && (StringUtils.isEmpty(getMessageQueuePwd()) || StringUtils.isEmpty(getMessageQueueUser()))) {
-            throw new IllegalStateException(MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED);
-        }
-    }
-
-    /**
-     * @return
-     */
     public int getScrollableFetchSize() {
         return assistant.getIntProperty("scrollableResult.fetchSize", 100);
     }
@@ -478,14 +427,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("oai.repository.enableEntities", false);
     }
 
-    // TODO: remove feature toggle when feature complete
-    public boolean getLeftJoinDataIntegrationFeatureEnabled() {
-        return assistant.getBooleanProperty("featureEnabled.leftJoinDataIntegration", false);
-    }
-
     public String getSystemDescription() {
-        return assistant
-                .getStringProperty("oai.repository.description", DESCRIPTION);
+        return assistant.getStringProperty("oai.repository.description", DESCRIPTION);
     }
 
     public int getScheduledProcessStartId() {
@@ -717,10 +660,6 @@ public class TdarConfiguration {
 
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
-    }
-
-    public boolean isJSCSSMergeServletEnabled() {
-        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
 
     public boolean isJaiImageJenabled() {

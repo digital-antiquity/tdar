@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
-import org.tdar.core.dao.external.auth.SpringLdapDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.web.SessionData;
@@ -102,5 +101,8 @@ public class TdarAppConfiguration implements Serializable {
     public ExternalIDProvider getIdProvider() throws IOException {
         return new EZIDDao();
     }
+
+    
+
 
 }

@@ -102,11 +102,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    // TODO: remove feature toggle when feature complete
-    public boolean getLeftJoinDataIntegrationFeatureEnabled() {
-        return TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled();
-    }
-
     /*
      * figure out which data table columns were selected in the previous page as the integration condition, and then which columns were selected as display
      * attributes selectedDataTableColumnIds etc. should have integration_condition and display_attribute parameters each string in integration_condition is of

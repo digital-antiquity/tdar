@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +18,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -129,74 +126,6 @@ public class DataTable extends Persistable.Base {
         return sortedDataTableColumns;
     }
 
-    /**
-     * <p>
-     * List all the columns in this table and any left-joined tables (including recursively left-joined)
-     * <p>
-     * Consider the following very unlikely scenario:
-     * 
-     * <pre>
-     *   B
-     *  / \
-     * A   C-E-A
-     *  \ /
-     *   D
-     * Table A reference Table B & D, B & D reference the same column in C, and C references E, which in turn references A...
-     * </pre>
-     * <p>
-     * What still needs doing in this method is:
-     * <ol>
-     * <li>Adding a filter that excludes columns that are already in the result set (B-C and D-C). It would be nice if we could include them both using aliases
-     * but that's not possible at this moment in time.
-     * <li>to stop recursing if we detect tables that have already been visited (but if the columns referenced are not in the list of columns, to still add
-     * them)
-     * </ol>
-     * <p>
-     * There is an implicit assumption that the referenced foreign key's are in fact primary keys...
-     * 
-     * <p>
-     * What still needs doing to support this method is:
-     * <ol>
-     * <li>The screen that displays the resultant tables/columns might need to be enhanced to ensure that the user doesn't become confused by columns with the
-     * same name in multiple tables.
-     * <li>The code that generates the SQL queries needs to be updated to perform the required joins.
-     * </ol>
-     * 
-     * @return list of columns
-     */
-    @XmlTransient
-    public List<DataTableColumn> getLeftJoinColumns() {
-        ArrayList<DataTableColumn> leftJoinColumns = new ArrayList<DataTableColumn>(getSortedDataTableColumns());
-        for (DataTableRelationship r : getRelationships()) {
-            // Include fields from related tables unless they're on the "many" side of a one-to-many relationship
-            if (this.equals(r.getLocalTable()) && (r.getType() != DataTableColumnRelationshipType.ONE_TO_MANY)) {
-                // this is the "local" table in a many-to-one or one-to-one relationship,
-                // so including the "foreign" table's fields will not increase the cardinality of this query
-                leftJoinColumns.addAll(r.getForeignTable().getLeftJoinColumns());
-            } else if (this.equals(r.getForeignTable()) && (r.getType() != DataTableColumnRelationshipType.MANY_TO_ONE)) {
-                // this is the "foreign" table in a one-to-many or one-to-one relationship,
-                // so including the "local" table's fields will not increase the cardinality of this query
-                leftJoinColumns.addAll(r.getLocalTable().getLeftJoinColumns());
-            }
-        }
-        return leftJoinColumns;
-    }
-
-    /**
-     * The relationships in which this dataset is the local table
-     * 
-     * @return the set of relationships
-     */
-    private Set<DataTableRelationship> getRelationships() {
-        Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
-        for (DataTableRelationship r : dataset.getRelationships()) {
-            // return the relationship if this table is either the relationship's foreign or local table
-            if (this.equals(r.getLocalTable()) || this.equals(r.getForeignTable())) {
-                relationships.add(r);
-            }
-        }
-        return relationships;
-    }
 
     /**
      * @param description

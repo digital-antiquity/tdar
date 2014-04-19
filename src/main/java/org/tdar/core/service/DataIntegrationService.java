@@ -442,12 +442,8 @@ public class DataIntegrationService {
         for (DataTable table : selectedDataTables) {
             List<DataTableColumn> dataTableColumns;
 
-            // FIXME: not sure if this is correct
-            if (TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled()) {
-                dataTableColumns = table.getLeftJoinColumns();
-            } else {
-                dataTableColumns = table.getDataTableColumns();
-            }
+            dataTableColumns = table.getDataTableColumns();
+
             for (DataTableColumn column : dataTableColumns) {
                 if (column.getDefaultOntology() != null) {
                     if (!dataTableAutoMap.containsKey(column.getDefaultOntology())) {

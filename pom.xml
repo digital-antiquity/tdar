@@ -1640,9 +1640,6 @@
                     <testClassesDirectory>src/test/resources/</testClassesDirectory>
                     <useTestClasspath>${use.test.classpath}</useTestClasspath>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <scanTargets>
-                        <scanTarget>src/main/webapp/WEB-INF/web.xml</scanTarget>
-                    </scanTargets>
                     <contextXml>src/main/resources/jetty-context.xml</contextXml>
                     <connectors>
                         <connector
