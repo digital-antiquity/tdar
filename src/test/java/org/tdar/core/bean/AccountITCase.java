@@ -41,24 +41,12 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
-import org.tdar.core.service.processes.SetupBillingAccountsProcess;
 import org.tdar.struts.data.FileProxy;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     AccountService accountService;
-
-    @Autowired
-    SetupBillingAccountsProcess accountProcess;
-
-    @Test
-    @Rollback
-    public void testBillingAccountSetup() throws InstantiationException, IllegalAccessException {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
-        accountProcess.process(document.getSubmitter());
-        evictCache();
-    }
 
     @Test
     @Rollback
