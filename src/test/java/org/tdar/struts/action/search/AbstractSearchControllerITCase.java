@@ -23,6 +23,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -130,7 +131,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return setupImage(getUser());
     }
 
-    protected Long setupImage(Person user) {
+    protected Long setupImage(TdarUser user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");
@@ -263,7 +264,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return null;
     }
 

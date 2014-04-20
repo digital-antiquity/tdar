@@ -14,6 +14,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -47,7 +48,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         projectWithDifferentSubmitterAndFullUser.setDescription("test");
         projectWithDifferentSubmitterAndFullUser.setStatus(Status.ACTIVE);
         projectWithDifferentSubmitterAndFullUser.markUpdated(getBasicUser());
-        Person testPerson = createAndSaveNewPerson();
+        TdarUser testPerson = createAndSaveNewPerson();
 
         genericService.save(projectWithDifferentSubmitterAndFullUser);
 

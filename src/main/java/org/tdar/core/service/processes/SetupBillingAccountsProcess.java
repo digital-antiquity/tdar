@@ -18,7 +18,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
@@ -39,7 +39,7 @@ import org.tdar.struts.data.PricingOption;
  */
 
 @Component
-public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
+public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -66,8 +66,8 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     @Override
-    public Class<Person> getPersistentClass() {
-        return Person.class;
+    public Class<TdarUser> getPersistentClass() {
+        return TdarUser.class;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     @Override
-    public void process(Person person) {
+    public void process(TdarUser person) {
         List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;

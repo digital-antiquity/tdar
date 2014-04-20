@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -90,7 +91,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             else if (classLevelRequiresGroupAnnotation != null) {
                 group = classLevelRequiresGroupAnnotation.value();
             }
-            Person user = sessionData.getPerson();
+            TdarUser user = sessionData.getPerson();
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
                 // user is authenticated and authorized to perform requested action
                 return interceptPendingNotices(invocation, user);

@@ -27,3 +27,10 @@ alter table person drop column  proxy_note;
 alter table person drop column  tos_version;
 alter table person drop column  total_login;
 alter table person drop column  proxyInstitution_id;
+
+create table tdar_user(
+    id int8 references person,
+    username varchar(255),
+    primary key (id)
+);
+insert into tdar_user select id,username from person where username is not null;

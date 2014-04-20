@@ -8,6 +8,7 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
@@ -142,7 +143,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
 
     @Test
     public void willSelectUploaderEmailIfSet() {
-        Person updater = new Person();
+        TdarUser updater = new TdarUser();
         updater.setEmail(BOB_AT_CAT_COM);
         archive.setUpdatedBy(updater);
         assertTrue(task.getEmailToNotify(archive).equals(BOB_AT_CAT_COM));

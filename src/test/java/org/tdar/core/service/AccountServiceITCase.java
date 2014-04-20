@@ -21,6 +21,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.TdarActionException;
@@ -33,10 +34,10 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testAccountList() throws TdarActionException {
-        Person p = createAndSaveNewPerson();
+        TdarUser p = createAndSaveNewPerson();
         Account account = setupAccountForPerson(p);
         Account accountWithPermissions = new Account("my account");
-        Person p2 = createAndSaveNewPerson("a@aas", "bb");
+        TdarUser p2 = createAndSaveNewPerson("a@aas", "bb");
         accountWithPermissions.setOwner(p2);
         accountWithPermissions.markUpdated(getUser());
         accountWithPermissions.setStatus(Status.ACTIVE);
@@ -138,7 +139,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         Account accountForPerson = setupAccountForPerson(getBasicUser());
         Account accountForPerson2 = setupAccountForPerson(getBasicUser());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         group.getAuthorizedMembers().add(person);
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);

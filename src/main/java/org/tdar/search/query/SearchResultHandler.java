@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
@@ -107,7 +107,7 @@ public interface SearchResultHandler<I extends Indexable> extends TextProvider {
      */
     String getMode();
 
-    Person getAuthenticatedUser();
+    TdarUser getAuthenticatedUser();
 
     String getSearchTitle();
 

@@ -77,7 +77,7 @@ import org.tdar.search.query.QueryFieldNames;
 @Entity
 @Table(name = "creator")
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlSeeAlso({ Person.class, Institution.class })
+@XmlSeeAlso({ Person.class, Institution.class, TdarUser.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public abstract class Creator extends JsonModel.Base implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
         Obfuscatable, Validatable, Addressable {
@@ -322,7 +322,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         // setUpdatedBy(p);
         setDateUpdated(new Date());
     }

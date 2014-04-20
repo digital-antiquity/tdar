@@ -65,7 +65,7 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
-    private Person user;
+    private TdarUser user;
 
     private transient boolean enabled = false;
 
@@ -76,7 +76,7 @@ public class AuthorizedUser extends Base implements Persistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(Person person, GeneralPermissions permission) {
+    public AuthorizedUser(TdarUser person, GeneralPermissions permission) {
         this.user = person;
         setGeneralPermission(permission);
     }
@@ -91,11 +91,11 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @XmlElement(name = "personRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getUser() {
+    public TdarUser getUser() {
         return user;
     }
 
-    public void setUser(Person user) {
+    public void setUser(TdarUser user) {
         this.user = user;
     }
 

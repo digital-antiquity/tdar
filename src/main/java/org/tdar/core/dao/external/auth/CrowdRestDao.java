@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
 import com.atlassian.crowd.exception.ApplicationAccessDeniedException;
@@ -172,7 +173,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#addUser(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
         String login = person.getUsername();
         User user = null;
         try {
@@ -257,7 +258,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#deleteUser(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public boolean deleteUser(Person person) {
+    public boolean deleteUser(TdarUser person) {
         String login = person.getUsername();
         User principal = null;
         try {
@@ -288,7 +289,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#resetUserPassword(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void resetUserPassword(Person person) {
+    public void resetUserPassword(TdarUser person) {
         // TODO all manner of validation required here
         try {
             securityServerClient.requestPasswordReset(person.getUsername());
@@ -303,7 +304,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#updateUserPassword(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public void updateUserPassword(Person person, String password) {
+    public void updateUserPassword(TdarUser person, String password) {
         try {
             securityServerClient.updateUserCredential(person.getUsername().toLowerCase(), password);
         } catch (Exception e) {
@@ -313,7 +314,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     }
 
     @Override
-    public String[] findGroupMemberships(Person person) {
+    public String[] findGroupMemberships(TdarUser person) {
         String toFind = person.getUsername();
         if (StringUtils.isBlank(toFind)) {
             toFind = person.getEmail();

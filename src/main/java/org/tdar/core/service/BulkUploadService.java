@@ -38,6 +38,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -127,7 +128,7 @@ public class BulkUploadService {
     /**
      * Load the Excel manifest if it exists
      */
-    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, Person submitter, Collection<FileProxy> fileProxies,
+    public BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, TdarUser submitter, Collection<FileProxy> fileProxies,
             Long ticketId) {
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
@@ -166,7 +167,7 @@ public class BulkUploadService {
     @Transactional
     public void save(final InformationResource resourceTemplate_, final Long submitterId, final Long ticketId, final File excelManifest_, final Collection<FileProxy> fileProxies,
             final Long accountId) {
-        Person submitter = genericDao.find(Person.class, submitterId);
+        TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         // enforce that we're entirely on the session
         InformationResource resourceTemplate = resourceTemplate_;
         logger.debug("BEGIN ASYNC: " + resourceTemplate + fileProxies);
@@ -327,7 +328,7 @@ public class BulkUploadService {
         logger.info("bulk: setting final statuses and logging");
 
         ResourceCollection bulkUpload = new ResourceCollection(CollectionType.SHARED);
-        Person submitter = genericDao.find(Person.class, submitterId);
+        TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         bulkUpload.markUpdated(submitter);
         bulkUpload.setVisible(false);
         bulkUpload.setName(String.format("bulk upload for %s on %s", bulkUpload.getSubmitter().getProperName(), new Date()));
@@ -428,7 +429,7 @@ public class BulkUploadService {
      * @return
      */
     @Transactional(readOnly = true)
-    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, Person submitter, Collection<FileProxy> fileProxies, Long ticketId) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource image, TdarUser submitter, Collection<FileProxy> fileProxies, Long ticketId) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 

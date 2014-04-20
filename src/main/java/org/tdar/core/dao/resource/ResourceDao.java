@@ -26,6 +26,7 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -84,7 +85,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
      * @param submitter
      * @return
      */
-    public List<E> findBySubmitter(Person submitter) {
+    public List<E> findBySubmitter(TdarUser submitter) {
         DetachedCriteria criteria = getOrderedDetachedCriteria();
         if (submitter == null) {
             return Collections.emptyList();

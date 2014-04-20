@@ -57,7 +57,7 @@ import org.tdar.search.query.QueryFieldNames;
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
 
     @Transient
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", 
             "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
@@ -67,8 +67,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered",
-            "tempDisplayName" };
+    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "tempDisplayName" };
 
     @Transient
     private transient String tempDisplayName;
@@ -108,10 +107,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
-    @Column(unique = true, nullable = true)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
-    private String username;
-
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
@@ -123,12 +118,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
-
-    // did this user register with the system or were they entered by someone
-    // else?
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    private boolean registered = false;
 
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
@@ -385,14 +374,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Override
     public boolean isValid() {
         return isValidForController() && (getId() != null);
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override

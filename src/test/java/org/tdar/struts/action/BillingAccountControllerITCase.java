@@ -18,6 +18,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
@@ -56,7 +57,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesOkNewAccount() throws TdarActionException {
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
@@ -131,7 +132,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         Account invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);

@@ -32,6 +32,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -85,12 +86,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "modifier_id")
     @NotNull
-    private Person modifiedBy;
+    private TdarUser modifiedBy;
 
     @NotNull
     @Column(name = "date_expires")
@@ -107,7 +108,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "user_id") })
-    private Set<Person> authorizedMembers = new HashSet<Person>();
+    private Set<TdarUser> authorizedMembers = new HashSet<>();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
@@ -322,7 +323,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if (getOwner() == null) {
             setDateCreated(new Date());
             setOwner(p);
@@ -331,19 +332,19 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setModifiedBy(p);
     }
 
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
-    public Person getModifiedBy() {
+    public TdarUser getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(Person modifiedBy) {
+    public void setModifiedBy(TdarUser modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
@@ -374,11 +375,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.status = status;
     }
 
-    public Set<Person> getAuthorizedMembers() {
+    public Set<TdarUser> getAuthorizedMembers() {
         return authorizedMembers;
     }
 
-    public void setAuthorizedMembers(Set<Person> authorizedMembers) {
+    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
 

@@ -26,6 +26,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -63,7 +64,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testUnassignedInvoice() {
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(person)));
         Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()), person);
         setupInvoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);

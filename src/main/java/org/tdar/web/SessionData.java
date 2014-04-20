@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * $Id$
@@ -32,7 +33,7 @@ public class SessionData implements Serializable {
         super();
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         if (authenticationToken == null) {
             return null;
         }

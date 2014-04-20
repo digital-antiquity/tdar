@@ -25,6 +25,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -135,9 +136,9 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     }
 
     public void testDedupeManyToOne(DupeMode mode) throws Exception {
-        Person authority = new Person("John", "Doe", "authority_record@bar.com");
-        Person dupe1 = new Person("John", "Dough", "johndough@bar.com");
-        Person dupe2 = new Person("John", "D'oh", "johndoh@bar.com");
+        TdarUser authority = new TdarUser("John", "Doe", "authority_record@bar.com");
+        TdarUser dupe1 = new TdarUser("John", "Dough", "johndough@bar.com");
+        TdarUser dupe2 = new TdarUser("John", "D'oh", "johndoh@bar.com");
         genericService.save(authority);
         genericService.save(dupe1);
         genericService.save(dupe2);

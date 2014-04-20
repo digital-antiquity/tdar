@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -151,7 +152,7 @@ public abstract class AbstractFitTest {
     public static Dataset createTestDataset() {
         Dataset dataset = new Dataset();
         dataset.setTitle(Constant.GRECIAN_URNS_DATASET_NAME);
-        dataset.setUpdatedBy(new Person("Frankie", "Bloggs", null));
+        dataset.setUpdatedBy(new TdarUser("Frankie", "Bloggs", null));
         DataTable dataTable = new DataTable();
         dataset.getDataTables().add(dataTable);
         dataset.setDescription("Mycenae BC 1600 pot sherds");

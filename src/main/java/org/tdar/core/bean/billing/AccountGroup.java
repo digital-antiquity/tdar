@@ -22,7 +22,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 
 /**
@@ -63,24 +63,24 @@ public class AccountGroup extends Base implements Updatable {
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "modifier_id")
     @NotNull
-    private Person modifiedBy;
+    private TdarUser modifiedBy;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_group_members", joinColumns = { @JoinColumn(nullable = false, name = "user_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "account_id") })
-    private Set<Person> authorizedMembers = new HashSet<Person>();
+    private Set<TdarUser> authorizedMembers = new HashSet<>();
 
     public Set<Account> getAccounts() {
         return accounts;
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if (getOwner() == null) {
             setDateCreated(new Date());
             setOwner(p);
@@ -125,27 +125,27 @@ public class AccountGroup extends Base implements Updatable {
         this.lastModified = lastModified;
     }
 
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
-    public Person getModifiedBy() {
+    public TdarUser getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(Person modifiedBy) {
+    public void setModifiedBy(TdarUser modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
-    public Set<Person> getAuthorizedMembers() {
+    public Set<TdarUser> getAuthorizedMembers() {
         return authorizedMembers;
     }
 
-    public void setAuthorizedMembers(Set<Person> authorizedMembers) {
+    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
 

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -486,7 +487,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Takes a Coding Table within a larger data set and converts it to a tDAR CodingSheet
      */
     @Transactional
-    public CodingSheet convertTableToCodingSheet(Person user, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
+    public CodingSheet convertTableToCodingSheet(TdarUser user, final DataTableColumn keyColumn, final DataTableColumn valueColumn,
             final DataTableColumn descriptionColumn) {
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
@@ -721,8 +722,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     @Transactional
     public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
-            List<DataTableColumn> dataTableColumns,
-            Person authenticatedUser) {
+            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
         boolean hasOntologies = false;
         Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();

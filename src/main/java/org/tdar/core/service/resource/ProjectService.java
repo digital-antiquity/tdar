@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -54,7 +55,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Project> findBySubmitter(Person submitter) {
+    public List<Project> findBySubmitter(TdarUser submitter) {
         if (submitter == null) {
             getLogger().warn("Trying to find projects for a null Person submitter, ignoring.");
             return Collections.emptyList();
@@ -171,7 +172,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().containsIntegratableDatasets(projectIds);
     }
 
-    public String getProjectAsJson(Project project, Person user) {
+    public String getProjectAsJson(Project project, TdarUser user) {
         getLogger().trace("getprojectasjson called");
         String json = "{}";
         try {

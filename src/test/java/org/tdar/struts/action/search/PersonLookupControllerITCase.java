@@ -15,6 +15,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 
 import com.opensymphony.xwork2.Action;
@@ -165,7 +166,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     private void createUser(String string, String string2, String string3) {
-        Person person = new Person(string, string2, string3);
+        TdarUser person =new TdarUser(string, string2, string3);
         person.setUsername(string3);
         UserInfo userInfo = new UserInfo();
         userInfo.setUser(person);

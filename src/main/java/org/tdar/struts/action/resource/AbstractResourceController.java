@@ -37,6 +37,7 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -536,7 +537,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         if (Persistable.Base.isNotNullOrTransient(getSubmitter())) {
-            Person uploader = getEntityService().find(getSubmitter().getId());
+            TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
             // if (uploader.equals(getAuthenticatedUser())) {

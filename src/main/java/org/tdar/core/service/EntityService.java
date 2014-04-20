@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -61,7 +62,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> findAllRegisteredUsers(int maxResults) {
+    public List<TdarUser> findAllRegisteredUsers(int maxResults) {
         return getDao().findAllRegisteredUsers(maxResults);
     }
 
@@ -71,7 +72,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> findAllRegisteredUsers() {
+    public List<TdarUser> findAllRegisteredUsers() {
         return getDao().findAllRegisteredUsers(null);
     }
 
@@ -139,7 +140,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public Person findByUsername(String username) {
+    public TdarUser findByUsername(String username) {
         if ((username == null) || username.isEmpty()) {
             return null;
         }

@@ -30,6 +30,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Ontology;
@@ -76,7 +77,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void test() {
-        Person p = genericService.find(Person.class, getUser().getId());
+        TdarUser p = genericService.find(TdarUser.class, getUser().getId());
         Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
         dataset.setTitle("test");
         dataset.setSubmitter(p);

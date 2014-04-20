@@ -26,6 +26,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -164,10 +165,10 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
         ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
-        Person testModify = createAndSaveNewPerson("a@b", "1234");
-        Person testOwner = createAndSaveNewPerson("a@b1", "12341");
-        Person testView = createAndSaveNewPerson("a@b2", "12341");
-        Person testAdmin = createAndSaveNewPerson("a@b3", "12341");
+        TdarUser testModify = createAndSaveNewPerson("a@b", "1234");
+        TdarUser testOwner = createAndSaveNewPerson("a@b1", "12341");
+        TdarUser testView = createAndSaveNewPerson("a@b2", "12341");
+        TdarUser testAdmin = createAndSaveNewPerson("a@b3", "12341");
         testCollection.markUpdated(testOwner);
         testCollection.setName("test name");
         genericService.save(testCollection);
@@ -180,7 +181,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
                 new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, testCollection.getOwner());
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, (TdarUser)testCollection.getOwner());
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
@@ -339,7 +340,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
         Date date = new Date();
-        Person owner = new Person("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@mailinator.com");
         genericService.save(owner);
         rc.markUpdated(owner);
         rc.setName(name);

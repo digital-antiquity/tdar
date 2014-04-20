@@ -47,6 +47,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -1165,7 +1166,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             setInput("account.name", accountName);
             setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
         }
-        List<Person> users = entityService.findAllRegisteredUsers(3);
+        List<TdarUser> users = entityService.findAllRegisteredUsers(3);
         List<Long> userIds = Persistable.Base.extractIds(users);
         for (int i = 0; i < userIds.size(); i++) {
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
@@ -1179,7 +1180,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return id;
     }
 
-    protected void assertAccountPageCorrect(List<Person> users, List<Long> userIds, String title) {
+    protected void assertAccountPageCorrect(List<TdarUser> users, List<Long> userIds, String title) {
         assertTextPresent(title);
         assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
         for (int i = 0; i < userIds.size(); i++) {
@@ -1227,7 +1228,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         String username = values.get("person.username");
         if (deleteFirst) {
-            Person p = new Person();
+            TdarUser p = new TdarUser();
             p.setUsername(username);
             authService.getAuthenticationProvider().deleteUser(p);
         }

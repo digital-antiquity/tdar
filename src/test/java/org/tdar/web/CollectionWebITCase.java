@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -36,7 +37,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         // now go back to the edit page, add some users and remove some of the resources
-        List<Person> registeredUsers = getSomeUsers();
+        List<TdarUser> registeredUsers = getSomeUsers();
         clickLinkWithText("edit");
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {

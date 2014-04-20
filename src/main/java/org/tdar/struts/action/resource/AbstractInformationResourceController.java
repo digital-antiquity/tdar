@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
@@ -122,7 +123,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     /*
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
-    public void setTransientViewableStatus(InformationResource ir, Person p) {
+    public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         getAuthenticationAndAuthorizationService().applyTransientViewableFlag(ir, p);
         if (Persistable.Base.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {

@@ -97,10 +97,10 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -237,7 +237,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Resource(Long id, String title, ResourceType resourceType, Status status, Long submitterId) {
         this(id, title, resourceType);
         this.status = status;
-        Person submitter = new Person();
+        TdarUser submitter = new TdarUser();
         submitter.setId(submitterId);
         this.submitter = submitter;
     }
@@ -293,19 +293,19 @@ public class Resource extends JsonModel.Base implements Persistable,
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
-    private Person submitter;
+    private TdarUser submitter;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
-    private Person uploader;
+    private TdarUser uploader;
 
     // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
-    private Person updatedBy;
+    private TdarUser updatedBy;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
@@ -465,14 +465,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
                     GeneralPermissions.MODIFY_METADATA, true));
         }
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -495,14 +495,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getRightsBasedResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
                     GeneralPermissions.VIEW_ALL, true));
         }
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -736,11 +736,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlAttribute(name = "submitterRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @NotNull
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 
@@ -1060,11 +1060,11 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "updaterRef")
-    public Person getUpdatedBy() {
+    public TdarUser getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Person updatedBy) {
+    public void setUpdatedBy(TdarUser updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -1200,7 +1200,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         setUpdatedBy(p);
         setUpdated(true);
         setDateUpdated(new Date());
@@ -1725,11 +1725,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlAttribute(name = "uploaderRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @NotNull
-    public Person getUploader() {
+    public TdarUser getUploader() {
         return uploader;
     }
 
-    public void setUploader(Person uploader) {
+    public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
     }
 

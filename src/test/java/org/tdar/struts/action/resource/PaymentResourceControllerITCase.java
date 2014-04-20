@@ -21,6 +21,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -95,7 +96,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testResourceControllerWithoutValidAccount() throws Exception {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         ResourceController rc = generateNewController(ResourceController.class);
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         init(rc, user);
 
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));

@@ -29,6 +29,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
@@ -92,7 +93,7 @@ public class ImportService {
      * @throws APIException
      * @throws Exception
      */
-    public <R extends Resource> R bringObjectOntoSession(R incoming, Person authorizedUser) throws Exception {
+    public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser) throws Exception {
         return bringObjectOntoSession(incoming, authorizedUser, null, null);
     }
 
@@ -109,7 +110,7 @@ public class ImportService {
      * @throws IOException
      */
     @Transactional
-    public <R extends Resource> R bringObjectOntoSession(R incoming_, Person authorizedUser, Collection<FileProxy> proxies, Long projectId)
+    public <R extends Resource> R bringObjectOntoSession(R incoming_, TdarUser authorizedUser, Collection<FileProxy> proxies, Long projectId)
             throws APIException, IOException {
         R incomingResource = incoming_;
         boolean created = true;
@@ -124,7 +125,7 @@ public class ImportService {
 
         reconcilePersistableChildBeans(authorizedUser, incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
-        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
+        TdarUser blessedAuthorizedUser = genericService.merge(authorizedUser);
         logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser),
                 System.identityHashCode(blessedAuthorizedUser));
         incomingResource.markUpdated(blessedAuthorizedUser);
@@ -180,7 +181,7 @@ public class ImportService {
      * @return
      * @throws APIException
      */
-    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(Person authorizedUser, R incomingResource, boolean created) throws APIException {
+    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created) throws APIException {
         if (Persistable.Base.isNotTransient(incomingResource)) {
             @SuppressWarnings("unchecked")
             R existing = (R) genericService.find(incomingResource.getClass(), incomingResource.getId());
@@ -215,7 +216,7 @@ public class ImportService {
      * @throws APIException
      */
     @Transactional(readOnly = false)
-    public <R extends Resource> void reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
+    public <R extends Resource> void reconcilePersistableChildBeans(final TdarUser authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
@@ -313,7 +314,7 @@ public class ImportService {
      * @throws APIException
      */
     @SuppressWarnings("unchecked")
-    public <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
+    public <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
         P toReturn = property;
 
         // if we're not transient, find by id...

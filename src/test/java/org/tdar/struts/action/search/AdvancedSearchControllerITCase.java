@@ -35,6 +35,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -460,7 +461,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
-        Person p = new Person("a", "test", "anoter@test.user.com");
+        TdarUser p = new TdarUser("a", "test", "anoter@test.user.com");
         UserInfo userInfo = new UserInfo();
         userInfo.setUser(p);
         p.setUserInfo(userInfo);
@@ -525,7 +526,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(seen);
     }
 
-    private void testResourceCounts(Person user) {
+    private void testResourceCounts(TdarUser user) {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
@@ -541,7 +542,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     // compare the counts returned from searchController against the counts we get from the database
-    private void assertResultCount(ResourceType resourceType, Status status, Person user) {
+    private void assertResultCount(ResourceType resourceType, Status status, TdarUser user) {
         String stat = String.format("testing %s , %s for %s", resourceType, status, user);
         logger.info(stat);
         long expectedCount = resourceService.getResourceCount(resourceType, status);
@@ -768,10 +769,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
-        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
+        TdarUser submitter = new TdarUser("E", "deVos", "ecd@mailinator.com");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator(new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator(new Person("K", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
         // genericService.save(rc);
         doc.getResourceCreators().add(rc);
@@ -1169,7 +1170,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         return setupImage(getUser());
     }
 
-    protected Long setupImage(Person user) {
+    protected Long setupImage(TdarUser user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");

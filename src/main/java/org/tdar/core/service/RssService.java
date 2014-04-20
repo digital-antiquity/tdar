@@ -29,6 +29,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -325,7 +326,7 @@ public class RssService implements Serializable {
      * @param version
      */
     @SuppressWarnings("unchecked")
-    private void addEnclosure(Person user, SyndEntry entry, InformationResourceFileVersion version) {
+    private void addEnclosure(TdarUser user, SyndEntry entry, InformationResourceFileVersion version) {
         if (version == null) {
             return;
         }

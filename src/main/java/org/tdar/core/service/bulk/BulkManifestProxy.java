@@ -33,6 +33,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -69,7 +70,7 @@ public class BulkManifestProxy implements Serializable {
     private LinkedHashSet<CellMetadata> allValidFields = new LinkedHashSet<>();
     private Collection<FileProxy> fileProxies;
     private Sheet sheet;
-    private Person submitter;
+    private TdarUser submitter;
     private AsyncUpdateReceiver asyncUpdateReceiver = new DefaultReceiver();
     private transient ExcelService excelService;
     private Map<String, Resource> resourcesCreated = new HashMap<>();
@@ -486,11 +487,11 @@ public class BulkManifestProxy implements Serializable {
         this.fileProxies = fileProxies;
     }
 
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 

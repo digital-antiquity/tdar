@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.MessageHelper;
@@ -59,11 +60,11 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
         assertTrue(controller.getResults().contains(collection));
     }
 
-    private ResourceCollection setupCollection(boolean visible, Person user) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user) {
         return setupCollection(visible, user, false);
     }
 
-    private ResourceCollection setupCollection(boolean visible, Person user, boolean createAuthUser) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser) {
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         collection.setDescription("test");
@@ -95,7 +96,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getAdminUser();
     }
 }

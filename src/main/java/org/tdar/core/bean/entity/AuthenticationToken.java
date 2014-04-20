@@ -28,7 +28,7 @@ public class AuthenticationToken extends Persistable.Base {
     public final static AuthenticationToken INVALID = new AuthenticationToken();
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, name = "session_start")
@@ -38,7 +38,7 @@ public class AuthenticationToken extends Persistable.Base {
     @Column(name = "session_end")
     private Date sessionEnd;
 
-    public static AuthenticationToken create(Person person) {
+    public static AuthenticationToken create(TdarUser person) {
         if (person == null) {
             throw new NullPointerException(MessageHelper.getMessage("authenticationToken.undefined_person"));
         }
@@ -49,11 +49,11 @@ public class AuthenticationToken extends Persistable.Base {
         return token;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

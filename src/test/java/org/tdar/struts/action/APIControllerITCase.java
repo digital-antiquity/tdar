@@ -27,6 +27,7 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -309,7 +310,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testReplaceRecord() throws Exception {
         Document old = generateDocumentWithFileAndUser();
-        Person user = old.getSubmitter();
+        TdarUser user = (TdarUser)old.getSubmitter();
         Long oldIRId = old.getFirstInformationResourceFile().getId();
         Long oldId = old.getId();
         String originalXml = xmlService.convertToXML(old);

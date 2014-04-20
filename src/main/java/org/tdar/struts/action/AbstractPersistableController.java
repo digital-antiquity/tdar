@@ -23,6 +23,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -680,7 +681,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public AuthorizedUser getBlankAuthorizedUser() {
         AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new Person());
+        user.setUser(new TdarUser());
         return user;
     }
 

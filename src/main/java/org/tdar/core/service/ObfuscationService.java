@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
@@ -42,7 +43,7 @@ public class ObfuscationService {
      * @param user
      */
     @Transactional(readOnly = true)
-    public void obfuscate(Collection<? extends Obfuscatable> targets, Person user) {
+    public void obfuscate(Collection<? extends Obfuscatable> targets, TdarUser user) {
         for (Obfuscatable target : targets) {
             obfuscate(target, user);
         }
@@ -71,7 +72,7 @@ public class ObfuscationService {
      * @param user
      */
     @Transactional(readOnly = true)
-    public void obfuscate(Obfuscatable target, Person user) {
+    public void obfuscate(Obfuscatable target, TdarUser user) {
 
         if ((target == null) || target.isObfuscated()) {
             logger.trace("target is already obfuscated or null: {} ({}}", target, user);

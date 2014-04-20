@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
@@ -54,7 +55,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         doc.markUpdated(getAdminUser());
         genericService.save(doc);
         genericService.detachFromSession(doc);
-        Person admin = genericService.find(Person.class, getAdminUserId());
+        TdarUser admin = genericService.find(TdarUser.class, getAdminUserId());
         doc.setUploader(admin);
         doc = genericService.merge(doc);
     }

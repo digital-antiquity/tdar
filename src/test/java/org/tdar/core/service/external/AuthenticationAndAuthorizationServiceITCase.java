@@ -25,6 +25,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Status;
@@ -69,7 +70,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         List<Status> list = new ArrayList<>();
         list.add(Status.ACTIVE);
         list.add(Status.DRAFT);
-        Person user = getBillingUser();
+        TdarUser user = getBillingUser();
         logger.debug("groups: {} ", InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups());
         assertTrue(ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), TdarGroup.TDAR_BILLING_MANAGER));
 
@@ -126,7 +127,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     public void testSatisfyPrerequisiteWithSession() throws Exception {
         // a contributor that hasn't signed on since updated TOS and creator agreement
         UserAgreementController controller = generateNewController(UserAgreementController.class);
-        Person user = getBasicUser();
+        TdarUser user = getBasicUser();
         user.getUserInfo().setContributorAgreementVersion(0);
         init(controller, user);
         assertThat(authService.getUserRequirements(user), hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT));
@@ -156,7 +157,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     @Rollback
     public void testCrowdDisconnected() {
         // Create a user ... replace crowd witha "broken crowd" and then
-        Person person = new Person("Thomas", "Angell", "tangell@pvd.state.ri.us");
+        TdarUser person = new TdarUser("Thomas", "Angell", "tangell@pvd.state.ri.us");
         person.setUsername(person.getEmail());
         UserInfo userInfo = new UserInfo();
         userInfo.setUser(person);

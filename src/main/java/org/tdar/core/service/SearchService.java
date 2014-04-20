@@ -53,6 +53,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -216,10 +217,7 @@ public class SearchService {
         List list = ftq.list();
         logger.trace("completed hibernate hydration ");
 
-        // user may be null (e.g. user not logged in)
-        Person user = resultHandler.getAuthenticatedUser();
-
-        List<Indexable> toReturn = convertProjectedResultIntoObjects(resultHandler, projections, list, user);
+        List<Indexable> toReturn = convertProjectedResultIntoObjects(resultHandler, projections, list);
         Object searchMetadata[] = { resultHandler.getMode(), q.getQuery(), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                 lucene, (System.currentTimeMillis() - num),
                 ftq.getResultSize(),
@@ -272,7 +270,7 @@ public class SearchService {
      * @param user
      * @return
      */
-    private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
+    private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list) {
         List<Indexable> toReturn = new ArrayList<>();
         LinkedHashMap<Long, Object[]> ids = new LinkedHashMap<>();
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
@@ -320,10 +318,10 @@ public class SearchService {
                     Explanation ex = (Explanation) obj[projections.indexOf(ProjectionConstants.EXPLANATION)];
                     p.setExplanation(ex);
                 }
-                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(user)) {
-                    obfuscationService.obfuscate((Obfuscatable) p, user);
+                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
+                    obfuscationService.obfuscate((Obfuscatable) p, resultHandler.getAuthenticatedUser());
                 }
-                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, user);
+                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, resultHandler.getAuthenticatedUser());
                 p.setScore(score);
             }
         }
@@ -480,7 +478,7 @@ public class SearchService {
      * @param user
      * @return
      */
-    public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, Person user, TextProvider provider) {
+    public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, TextProvider provider) {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, user);
@@ -579,7 +577,7 @@ public class SearchService {
      * @param statusList
      * @param user
      */
-    public void filterStatusList(List<Status> statusList, Person user) {
+    public void filterStatusList(List<Status> statusList, TdarUser user) {
         getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user);
         getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user);
         getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
@@ -718,7 +716,7 @@ public class SearchService {
      * @param user
      * @return
      */
-    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user, TextProvider provider) {
+    public QueryBuilder generateQueryForRelatedResources(Creator creator, TdarUser user, TextProvider provider) {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
@@ -755,7 +753,7 @@ public class SearchService {
         }
     }
 
-    public Collection<? extends Resource> findMostRecentResources(long l, Person authenticatedUser) throws ParseException {
+    public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser) throws ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getStatuses().add(Status.ACTIVE);
         ResourceQueryBuilder qb = new ResourceQueryBuilder();

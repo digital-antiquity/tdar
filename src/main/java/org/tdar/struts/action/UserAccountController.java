@@ -20,6 +20,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -64,7 +65,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private Long timeCheck;
     private Long personId;
-    private Person person;
+    private TdarUser person;
     private String reminderEmail;
     private String confirmEmail;
     private String password;
@@ -165,7 +166,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @HttpsOnly
     public String sendNewPassword() {
         Person person = getEntityService().findByEmail(reminderEmail);
-        if (person == null) {
+        if (person == null || !(person instanceof TdarUser)) {
             addActionError("Sorry, we didn't find a user with this email.");
             return INPUT;
         }
@@ -344,11 +345,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return false;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 
@@ -377,10 +378,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public void prepare() {
         if (Persistable.Base.isNullOrTransient(personId)) {
             getLogger().debug("prepare: creating new person");
-            person = new Person();
+            person = new TdarUser();
         } else {
             getLogger().debug("prepare: loading new person with person id: " + personId);
-            person = getEntityService().find(personId);
+            person = getGenericService().find(TdarUser.class, personId);
             if (person == null) {
                 getLogger().error("Couldn't load person with id: " + personId);
             }

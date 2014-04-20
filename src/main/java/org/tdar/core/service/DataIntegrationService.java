@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
@@ -343,7 +344,7 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter) {
         return createGeneratedCodingSheet(provider, column, submitter, column.getDefaultOntology());
     }
 
@@ -358,7 +359,7 @@ public class DataIntegrationService {
      */
     @Transactional
     @SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "null check earlier in the method")
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter, Ontology ontology) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }

@@ -29,6 +29,7 @@ import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -191,7 +192,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     @Transactional
-    public boolean hasSpaceInAnAccount(Person user, ResourceType type, boolean createAccountIfNeeded) {
+    public boolean hasSpaceInAnAccount(TdarUser user, ResourceType type, boolean createAccountIfNeeded) {
         Set<Account> accounts = listAvailableAccountsForUser(user);
         for (Account account : accounts) {
             logger.trace("evaluating account {}", account.getName());

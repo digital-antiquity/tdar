@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
@@ -107,7 +108,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            Person authenticatedUser = getAuthenticatedUser();
+            TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);

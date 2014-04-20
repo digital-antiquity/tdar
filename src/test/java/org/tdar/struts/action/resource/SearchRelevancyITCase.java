@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
@@ -64,7 +65,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // fixme: generics pointless here?
     private <T extends InformationResource> T prepareResource(T iResource, String title, String description) {
         Project project = Project.NULL;
-        Person submitter = getUser();
+        TdarUser submitter = getUser();
 
         iResource.setTitle(title);
         iResource.setDescription(description);

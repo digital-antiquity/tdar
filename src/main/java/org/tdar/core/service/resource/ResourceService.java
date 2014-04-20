@@ -33,6 +33,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
@@ -442,7 +443,7 @@ public class ResourceService extends GenericService {
                     logger.info("cloning collection: {}", collection);
                     ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
                     newInternal.setName(collection.getName());
-                    Person owner = collection.getOwner();
+                    TdarUser owner = collection.getOwner();
                     refresh(owner);
                     newInternal.markUpdated(owner);
                     if (save) {

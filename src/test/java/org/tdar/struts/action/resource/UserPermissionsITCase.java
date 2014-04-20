@@ -22,6 +22,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.service.EntityService;
@@ -54,7 +55,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.setTitle("test image");
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
-        Person p = createAndSaveNewPerson();
+        TdarUser p = createAndSaveNewPerson();
         imageController.getAuthorizedUsers().add(new AuthorizedUser(p, GeneralPermissions.MODIFY_RECORD));
 
         // create the dataset
@@ -90,7 +91,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testUserRemovingCollectionWithTheirRights() throws Exception {
-        final Person p = createAndSaveNewPerson();
+        final TdarUser p = createAndSaveNewPerson();
 
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();

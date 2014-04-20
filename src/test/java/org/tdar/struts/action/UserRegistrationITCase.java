@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
@@ -51,11 +52,11 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Autowired
     AuthenticationAndAuthorizationService authService;
 
-    private List<Person> crowdPeople = new ArrayList<Person>();
+    private List<TdarUser> crowdPeople = new ArrayList<TdarUser>();
 
     @After
     public void deleteCreateUsersFromCrowd() {
-        for (Person person : crowdPeople) {
+        for (TdarUser person : crowdPeople) {
             if (StringUtils.isNotBlank(person.getEmail())) {
                 if (!authService.getAuthenticationProvider().deleteUser(person)) {
                     logger.warn("Could not remove user {} after running test {}.{}()",
@@ -69,7 +70,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDuplicateUser() {
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setUsername("allen.lee@asu.edu");
         p.setEmail("allen.lee1@asu.edu");
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
@@ -87,7 +88,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testDuplicateEmail() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setUsername("allen.lee");
         p.setEmail("allen.lee@asu.edu");
         controller.setPerson(p);
@@ -104,7 +105,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testExistingAuthorWithoutLogin() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setEmail("tiffany.clark@asu.edu");
         p.setUsername("tiffany.clark@asu.edu");
         p.setFirstName("Tiffany");
@@ -128,7 +129,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testExistingDraftUserWithoutLogin() {
         String email = "tiffany.clark@asu.edu";
-        Person p = testCreatePerson(email, Status.ACTIVE, Action.SUCCESS);
+        TdarUser p = testCreatePerson(email, Status.ACTIVE, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
 
         p = testCreatePerson(email, Status.DRAFT, Action.SUCCESS);
@@ -142,14 +143,14 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
     }
 
-    private Person testCreatePerson(String email, Status status, String success) {
-        Person p = new Person();
+    private TdarUser testCreatePerson(String email, Status status, String success) {
+        TdarUser p = new TdarUser();
         p.setEmail(email);
         p.setUsername(email);
         p.setFirstName("Tiffany");
         p.setLastName("Clark");
 
-        Person findByEmail = entityService.findByEmail(email);
+        TdarUser findByEmail = (TdarUser)entityService.findByEmail(email);
         findByEmail.setStatus(status);
         findByEmail.setUsername(null);
         UserInfo userInfo = findByEmail.getUserInfo();
@@ -172,7 +173,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals(success, execute);
 
-        findByEmail = entityService.findByEmail(email);
+        findByEmail = (TdarUser)entityService.findByEmail(email);
         genericService.refresh(findByEmail);
 
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
@@ -188,7 +189,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
-        Person p = controller.getPerson();
+        TdarUser p = controller.getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());
@@ -262,7 +263,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         }
         evictCache();
         String execute = setupValidUserInController(controller, email);
-        final Person p = controller.getPerson();
+        final TdarUser p = controller.getPerson();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
         assertEquals(p, token.getPerson());
         assertEquals("expecting result to be 'success'", "success", execute);
@@ -274,13 +275,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue("email should contain plus sign", p.getEmail().contains("+"));
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
-            public Person doInTransaction(TransactionStatus status) {
+            public TdarUser doInTransaction(TransactionStatus status) {
                 LoginController loginAction = generateNewInitializedController(LoginController.class);
                 loginAction.setLoginUsername(p.getEmail());
                 loginAction.setLoginPassword("password");
                 loginAction.setServletRequest(getServletPostRequest());
                 assertEquals(TdarActionSupport.AUTHENTICATED, loginAction.authenticate());
-                Person person = genericService.find(Person.class, p.getId());
+                TdarUser person = genericService.find(TdarUser.class, p.getId());
                 boolean deleteUser = authService.getAuthenticationProvider().deleteUser(person);
                 assertTrue("could not delete user", deleteUser);
                 genericService.delete(genericService.findAll(AuthenticationToken.class));
@@ -359,7 +360,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testPrepareValidate2() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
-        Person p = controller.getPerson();
+        TdarUser p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
         controller.setPerson(p);
         controller.validate();
@@ -373,7 +374,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        Person p = controller.getPerson();
+        TdarUser p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
         controller.setPassword("password");
@@ -421,7 +422,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        Person p = controller.getPerson();
+        TdarUser p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
         p.setFirstName("First");
@@ -443,7 +444,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return null;
     }
 
@@ -455,7 +456,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String username = "BobLoblaw";
         String password = "super.secret";
 
-        Person p = newPerson();
+        TdarUser p = newPerson();
 
         p.setEmail("foo.bar@mailinator.com");
         p.setUsername(username);
@@ -486,8 +487,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     }
 
     // return a new person reference. an @after method will try to delete this person from crowd
-    private Person newPerson() {
-        Person person = new Person();
+    private TdarUser newPerson() {
+        TdarUser person = new TdarUser();
         crowdPeople.add(person);
         return person;
     }

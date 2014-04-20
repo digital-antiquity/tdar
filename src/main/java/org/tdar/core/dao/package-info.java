@@ -252,7 +252,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
-                query = "select p from Person p inner join p.userInfo info  where status='ACTIVE' order by p.id desc"
+                query = "select p from TdarUser p where status='ACTIVE' order by p.id desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_USAGE_STATS,
@@ -368,7 +368,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LOGIN_STATS,
-                query = "select info.totalLogins, count(person.id) from Person person inner join person.userInfo info where info.totalLogins > 0 group by info.totalLogins order by info.totalLogins asc"
+                query = "select info.totalLogins, count(person.id) from TdarUser person inner join person.userInfo info where info.totalLogins > 0 group by info.totalLogins order by info.totalLogins asc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACTIVE_COUPON,

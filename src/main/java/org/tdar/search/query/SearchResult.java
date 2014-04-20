@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
@@ -25,7 +26,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private List<Indexable> results;
     private String mode;
     private boolean reindexing;
-    private Person authenticatedUser;
+    private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
@@ -135,11 +136,11 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public Person getAuthenticatedUser() {
+    public TdarUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
-    public void setAuthenticatedUser(Person authenticatedUser) {
+    public void setAuthenticatedUser(TdarUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
 

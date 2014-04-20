@@ -29,7 +29,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.utils.MessageHelper;
 
@@ -101,7 +101,7 @@ public class Invoice extends Base implements Updatable {
     public Invoice() {
     }
 
-    public Invoice(Person owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
+    public Invoice(TdarUser owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
         markUpdated(owner);
         setPaymentMethod(method);
         setNumberOfFiles(numberOfFiles);
@@ -135,7 +135,7 @@ public class Invoice extends Base implements Updatable {
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = true, name = "coupon_id")
@@ -147,7 +147,7 @@ public class Invoice extends Base implements Updatable {
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
-    private Person transactedBy;
+    private TdarUser transactedBy;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = true, name = "address_id", updatable = true)
@@ -213,11 +213,11 @@ public class Invoice extends Base implements Updatable {
         this.address = address;
     }
 
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person person) {
+    public void setOwner(TdarUser person) {
         this.owner = person;
     }
 
@@ -337,7 +337,7 @@ public class Invoice extends Base implements Updatable {
     private transient Float couponValue = 0f;
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if (getOwner() == null) {
             setOwner(p);
         }
@@ -382,11 +382,11 @@ public class Invoice extends Base implements Updatable {
         this.transactionStatus = transactionStatus;
     }
 
-    public Person getTransactedBy() {
+    public TdarUser getTransactedBy() {
         return transactedBy;
     }
 
-    public void setTransactedBy(Person transactedBy) {
+    public void setTransactedBy(TdarUser transactedBy) {
         this.transactedBy = transactedBy;
     }
 

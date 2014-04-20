@@ -16,6 +16,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
@@ -157,11 +158,11 @@ public class PersonController extends AbstractCreatorController<Person> {
         getXmlService().logRecordXmlToFilestore(getPersistable());
 
         // If the user is editing their own profile, refresh the session object if needed
-        if (getAuthenticatedUser().equals(person)) {
-            getSessionData().getAuthenticationToken().setPerson(person);
+        if (getAuthenticatedUser().equals((TdarUser)person)) {
+            getSessionData().getAuthenticationToken().setPerson((TdarUser)person);
         }
         if (passwordResetRequested) {
-            getAuthenticationAndAuthorizationService().getAuthenticationProvider().resetUserPassword(person);
+            getAuthenticationAndAuthorizationService().getAuthenticationProvider().resetUserPassword((TdarUser)person);
         }
         return SUCCESS;
     }
@@ -185,7 +186,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
+            getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword((TdarUser)getPerson(), password);
             addActionMessage(getText("personController.password_successfully_changed"));
         }
     }
@@ -206,7 +207,7 @@ public class PersonController extends AbstractCreatorController<Person> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);
+            getAuthenticationAndAuthorizationService().updateUsername((TdarUser)getPerson(), newUsername, password);
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
             addActionMessage(getText("userAccountController.username_successfully_changed"));
             return true;
@@ -236,7 +237,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
         try {
-            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPersistable()));
+            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((TdarUser)getPersistable()));
         } catch (Throwable e) {
             getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }

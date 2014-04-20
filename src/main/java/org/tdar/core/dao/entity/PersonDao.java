@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
@@ -43,7 +44,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Person> findAllRegisteredUsers(Integer num) {
+    public List<TdarUser> findAllRegisteredUsers(Integer num) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
         if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
@@ -61,8 +62,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (Person) getCriteria().add(Restrictions.eq("email", email.toLowerCase())).uniqueResult();
     }
 
-    public Person findByUsername(final String username) {
-        return (Person) getCriteria().add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
+    public TdarUser findByUsername(final String username) {
+        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -194,6 +195,17 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         query.setParameter("id", creator.getId());
         Number result = (Number) query.uniqueResult();
         return result.longValue();
+    }
+
+    public TdarUser findPersonAndConvertToUser(String email, String username) {
+        Person person  = findByEmail(email);
+        if (person != null) {
+            Long id = person.getId();
+            getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
+            person = null;
+            return find(TdarUser.class, id);
+        }
+        return null;
     }
 
 }

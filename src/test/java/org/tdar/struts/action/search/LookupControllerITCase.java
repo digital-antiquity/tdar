@@ -25,6 +25,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -171,7 +172,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         assertFalse(controller.getResults().contains(e));
     }
 
-    private ResourceCollection setupResourceCollectionForPermissionsTests(Person owner, boolean visible, Person user, GeneralPermissions permission) {
+    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission) {
         assertFalse(getSessionUser().equals(getAdminUser()));
         ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
         e.markUpdated(owner);

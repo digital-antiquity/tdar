@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.ResourceCreator;
 
 /**
@@ -94,16 +94,16 @@ public class ResourceProxy implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "submitter_id")
-    private Person submitter;
+    private TdarUser submitter;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "uploader_id")
-    private Person uploader;
+    private TdarUser uploader;
 
     @ManyToOne()
     @JoinColumn(name = "updater_id")
     @NotNull
-    private Person updatedBy;
+    private TdarUser updatedBy;
 
     @Column(name = "date_updated")
     @DateBridge(resolution = Resolution.MILLISECOND)
@@ -227,27 +227,27 @@ public class ResourceProxy implements Serializable {
         this.url = url;
     }
 
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 
-    public Person getUploader() {
+    public TdarUser getUploader() {
         return uploader;
     }
 
-    public void setUploader(Person uploader) {
+    public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
     }
 
-    public Person getUpdatedBy() {
+    public TdarUser getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Person updatedBy) {
+    public void setUpdatedBy(TdarUser updatedBy) {
         this.updatedBy = updatedBy;
     }
 

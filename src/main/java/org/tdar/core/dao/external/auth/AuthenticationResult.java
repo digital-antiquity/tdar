@@ -1,6 +1,7 @@
 package org.tdar.core.dao.external.auth;
 
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 public enum AuthenticationResult {
     VALID(""),
@@ -11,7 +12,7 @@ public enum AuthenticationResult {
     ACCOUNT_EXISTS("The account already exists");
 
     private final String message;
-    private Person person;
+    private TdarUser person;
     private transient ThreadLocal<Throwable> threadLocalThrowable = new ThreadLocal<>();
 
     AuthenticationResult(String message) {
@@ -40,11 +41,11 @@ public enum AuthenticationResult {
         return this == VALID;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

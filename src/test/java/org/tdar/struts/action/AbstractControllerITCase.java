@@ -29,6 +29,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -76,7 +77,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         removeBookmark(r, false);
     }
 
-    public Account createAccount(Person owner) {
+    public Account createAccount(TdarUser owner) {
         Account account = new Account("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
@@ -89,7 +90,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     // return createA
     // }
 
-    public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
+    public Invoice createInvoice(TdarUser person, TransactionStatus status, BillingItem... items) {
         Invoice invoice = new Invoice();
         invoice.setItems(new ArrayList<BillingItem>());
         for (BillingItem item : items) {
@@ -138,9 +139,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
-            Person owner,
-            List<? extends Resource> resources, Long parentId)
-            throws Exception {
+            TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
         controller.prepare();
@@ -352,7 +351,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getUser(getUserId());
     }
 
@@ -361,7 +360,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public String setupValidUserInController(UserAccountController controller, String email) {
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setEmail(email);
         p.setUsername(email);
         p.setFirstName("Testing auth");
@@ -374,11 +373,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return setupValidUserInController(controller, p);
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p) {
         return setupValidUserInController(controller, p, "password");
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p, String password) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p, String password) {
         // cleanup crowd if we need to...
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
         controller.setRequestingContributorAccess(true);

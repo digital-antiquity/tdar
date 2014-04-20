@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -78,7 +79,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<SiteTypeKeyword, Integer>> uncontrolledSiteTypeKeywordStats;
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
     private Map<String, Float> extensionStats;
-    private List<Person> recentUsers;
+    private List<TdarUser> recentUsers;
     private List<Pair<Long, Long>> userLoginStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
@@ -287,11 +288,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.recentlyUpdatedResources = recentlyUpdatedResources;
     }
 
-    public List<Person> getRecentUsers() {
+    public List<TdarUser> getRecentUsers() {
         return recentUsers;
     }
 
-    public void setRecentUsers(List<Person> recentUsers) {
+    public void setRecentUsers(List<TdarUser> recentUsers) {
         this.recentUsers = recentUsers;
     }
 

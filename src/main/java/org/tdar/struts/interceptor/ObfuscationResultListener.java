@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -23,10 +24,10 @@ public class ObfuscationResultListener implements PreResultListener {
     private ObfuscationService obfuscationService;
     private ReflectionService reflectionService;
     private SessionSecurityInterceptor sessionSecurityInterceptor;
-    Person user;
+    TdarUser user;
 
     public ObfuscationResultListener(ObfuscationService obfuscationService, ReflectionService reflectionService,
-            SessionSecurityInterceptor sessionSecurityInterceptor, Person user) {
+            SessionSecurityInterceptor sessionSecurityInterceptor, TdarUser user) {
         this.obfuscationService = obfuscationService;
         this.reflectionService = reflectionService;
         this.sessionSecurityInterceptor = sessionSecurityInterceptor;

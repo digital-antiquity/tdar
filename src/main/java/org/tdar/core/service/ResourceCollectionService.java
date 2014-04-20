@@ -31,6 +31,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -68,7 +69,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional
-    public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
+    public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
         List<Resource> toRemove = new ArrayList<Resource>(); // not in incoming but in existing collection
         List<Resource> toEvaluate = new ArrayList<Resource>(resources); // in incoming but not existing
@@ -120,7 +121,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSave
      */
     @Transactional
-    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave, Person actor) {
+    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave, TdarUser actor) {
         logger.info("saving authorized users...");
 
         // if the incoming set is empty and the current has nothing ... NO-OP
@@ -153,7 +154,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // }
     }
 
-    private ResourceCollection createInternalResourceCollectionWithResource(Person owner, Resource resource, boolean shouldSave) {
+    private ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
         ResourceCollection internalCollection;
         internalCollection = new ResourceCollection();
         internalCollection.setType(CollectionType.INTERNAL);
@@ -177,7 +178,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authenticatedUser
      * @return
      */
-    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, Person authenticatedUser) {
+    public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
 
         for (ResourceCollection collection : resource.getResourceCollections()) {
@@ -262,7 +263,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional
     public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers,
-            boolean shouldSaveResource, Person actor) {
+            boolean shouldSaveResource, TdarUser actor) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
@@ -297,10 +298,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param incomingUser
      * @param resourceCollection
      */
-    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, Person actor,
+    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, TdarUser actor,
             ResourceCollection resourceCollection, HasSubmitter source) {
         if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
-            Person user = getDao().find(Person.class, incomingUser.getUser().getId());
+            TdarUser user = getDao().find(TdarUser.class, incomingUser.getUser().getId());
             if (user != null) {
                 // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
                 // may evaluate fields that aren't set in the proxy object.
@@ -376,7 +377,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional
     public void saveSharedResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
-            Person authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
+            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
         Collection<ResourceCollection> incoming_ = incoming;
         logger.debug("incoming ResourceCollections: {} ({})", incoming, incoming.size());
         logger.debug("current ResourceCollections: {} ({})", current, current.size());
@@ -427,7 +428,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collection
      */
     @Transactional(readOnly = false)
-    public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, Person authenticatedUser, boolean shouldSave,
+    public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
             ErrorHandling errorHandling,
             ResourceCollection collection) {
         ResourceCollection collectionToAdd = null;
@@ -502,7 +503,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *         collection.
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, Person authenticatedUser, CollectionType collectionType) {
+    public List<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
         // List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         // List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
         // toEvaluate.add(collection);
@@ -570,7 +571,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, Person authenticatedUser) {
+    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, TdarUser authenticatedUser) {
         ResourceCollection root = getRootResourceCollection(anyNode);
         buildCollectionTreeForController(getRootResourceCollection(anyNode), authenticatedUser, CollectionType.SHARED);
         return root;
@@ -606,7 +607,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, Person authenticatedUser) {
+    public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, TdarUser authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
         applyTransientEnabledPermission(authenticatedUser, users, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
         return users;
@@ -621,7 +622,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collectionIds
      */
     @Transactional(readOnly = true)
-    public void reconcileCollectionTree(Collection<ResourceCollection> collection, Person authenticatedUser, List<Long> collectionIds) {
+    public void reconcileCollectionTree(Collection<ResourceCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds) {
         Iterator<ResourceCollection> iter = collection.iterator();
         while (iter.hasNext()) {
             ResourceCollection rc = iter.next();
@@ -661,7 +662,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void updateCollectionParentTo(Person authorizedUser, ResourceCollection persistable, ResourceCollection parent) {
+    public void updateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection parent) {
         // find all children with me as a parent
         if (!authenticationAndAuthorizationService.canEditCollection(authorizedUser, persistable) ||
                 parent != null && !authenticationAndAuthorizationService.canEditCollection(authorizedUser, parent)) {

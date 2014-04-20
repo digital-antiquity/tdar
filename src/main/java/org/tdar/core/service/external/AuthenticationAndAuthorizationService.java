@@ -32,6 +32,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -110,19 +111,19 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * TdarGroups are represented in the external auth systems, but enable global permissions in tDAR; Admins, Billing Administrators, etc.
      */
-    public boolean isMember(Person person, TdarGroup group) {
+    public boolean isMember(TdarUser person, TdarGroup group) {
         return checkAndUpdateCache(person, group);
     }
 
-    public boolean isAdministrator(Person person) {
+    public boolean isAdministrator(TdarUser person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_ADMIN);
     }
 
-    public boolean isBillingManager(Person person) {
+    public boolean isBillingManager(TdarUser person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_BILLING_MANAGER);
     }
 
-    public boolean isEditor(Person person) {
+    public boolean isEditor(TdarUser person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_EDITOR);
     }
 
@@ -130,7 +131,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * Group Permissions tend to be hierarchical, hence, you may want to know if a user is a member of any of the nested hierarchy. Eg. EDITOR is a subset of
      * ADMIN
      */
-    public boolean isMemberOfAny(Person person, TdarGroup... groups) {
+    public boolean isMemberOfAny(TdarUser person, TdarGroup... groups) {
         if ((person == null) || (groups == null)) {
             return false;
         }
@@ -146,7 +147,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * Not currently used; but would allow for the updating of a username in the external auth system by deleting the user and adding them again. In Crowd 2.8
      * this is builtin function; but it might not be for LDAP.
      */
-    public void updateUsername(Person person, String newUsername, String password) {
+    public void updateUsername(TdarUser person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
             throw new TdarRecoverableRuntimeException("auth.username_exists", Arrays.asList(newUsername));
         }
@@ -168,7 +169,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @link Person
      * and then updates the cache (HashMap)
      */
-    private synchronized boolean checkAndUpdateCache(Person person, TdarGroup requestedPermissionsGroup) {
+    private synchronized boolean checkAndUpdateCache(TdarUser person, TdarGroup requestedPermissionsGroup) {
         TdarGroup greatestPermissionGroup = groupMembershipCache.get(person);
         if (greatestPermissionGroup == null) {
             greatestPermissionGroup = findGroupWithGreatestPermissions(person);
@@ -191,7 +192,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * A user
      * should be able to see their own DRAFTs, but never DELETED statuss unless they're an admin, for example
      */
-    public Set<Status> getAllowedSearchStatuses(Person person) {
+    public Set<Status> getAllowedSearchStatuses(TdarUser person) {
         // assumption: ACTIVE always allowed.
         Set<Status> allowed = new HashSet<>(Arrays.asList(Status.ACTIVE));
         if (person == null) {
@@ -220,7 +221,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * parameters
      * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
      */
-    public void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, Person user) {
+    public void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
         reservedSearchParameters.setAuthenticatedUser(user);
         reservedSearchParameters.setTdarGroup(findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
@@ -241,7 +242,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * we find the one
      * with the greatest rights
      */
-    public TdarGroup findGroupWithGreatestPermissions(Person person) {
+    public TdarGroup findGroupWithGreatestPermissions(TdarUser person) {
         if (person == null) {
             return TdarGroup.UNAUTHORIZED;
         }
@@ -298,7 +299,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param resource
      * @return true if person has read permissions on resource according to the above policies, false otherwise.
      */
-    public boolean canViewResource(Person person, Resource resource) {
+    public boolean canViewResource(TdarUser person, Resource resource) {
         // is the request valid
         if (person == null) {
             return false;
@@ -330,7 +331,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param resource
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
-    public boolean canEditResource(Person person, Resource resource, GeneralPermissions basePermission) {
+    public boolean canEditResource(TdarUser person, Resource resource, GeneralPermissions basePermission) {
         // is the request valid
         if (person == null) {
             return false;
@@ -362,7 +363,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @return
      */
     @Transactional(readOnly = false)
-    public boolean canEditCollection(Person authenticatedUser, ResourceCollection persistable) {
+    public boolean canEditCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
         if (authenticatedUser == null) {
             logger.debug("person is null");
             return false;
@@ -381,7 +382,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * The @link InternalTdarRights enum associates global permissions with a @link TdarGroup or set of Groups. These global permissions allow
      * us to simplify permissions management by associating explicit rights with actions in the code, and managing permissions mappings in the enum(s).
      */
-    public boolean can(InternalTdarRights rights, Person person) {
+    public boolean can(InternalTdarRights rights, TdarUser person) {
         if ((person == null) || (rights == null)) {
             return false;
         }
@@ -394,7 +395,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * This method checks whether a person's group membership denies them to perform an associated right @see #can
      */
-    public boolean cannot(InternalTdarRights rights, Person person) {
+    public boolean cannot(InternalTdarRights rights, TdarUser person) {
         return !can(rights, person);
     }
 
@@ -402,7 +403,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * Evaluates an <E> (likely resource) in a list and removes it if the @link Person does not have the specified @link InternalTdarRights to perform the
      * action.
      */
-    public <E> void removeIfNotAllowed(Collection<E> list, E item, InternalTdarRights permission, Person person) {
+    public <E> void removeIfNotAllowed(Collection<E> list, E item, InternalTdarRights permission, TdarUser person) {
         // NOTE: this will FAIL if you use Arrays.asList because that collection is immutable
         if (CollectionUtils.isEmpty(list)) {
             return;
@@ -423,7 +424,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @see org.tdar.core.service.external.Accessible#canEdit(org.tdar.core.bean.entity.Person, org.tdar.core.bean.Persistable)
      */
     @Override
-    public boolean canEdit(Person authenticatedUser, Persistable item) {
+    public boolean canEdit(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
         } else if (item instanceof ResourceCollection) {
@@ -444,7 +445,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @see org.tdar.core.service.external.Accessible#canView(org.tdar.core.bean.entity.Person, org.tdar.core.bean.Persistable)
      */
     @Override
-    public boolean canView(Person authenticatedUser, Persistable item) {
+    public boolean canView(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
         } else if (item instanceof ResourceCollection) {
@@ -460,7 +461,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param person
      * @return
      */
-    public boolean canViewConfidentialInformation(Person person, Resource resource) {
+    public boolean canViewConfidentialInformation(TdarUser person, Resource resource) {
         if (resource instanceof InformationResource) {
             return ((InformationResource) resource).isPublicallyAccessible()
                     || canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
@@ -473,7 +474,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * 
      * @link GeneralPermissions.MODIFY_METADATA ))
      */
-    public boolean canUploadFiles(Person person, Resource resource) {
+    public boolean canUploadFiles(TdarUser person, Resource resource) {
         return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
     }
 
@@ -485,7 +486,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * (c) checks if user is allowed to perform action based on @link AuthorizedUser / @link ResourceCollection permissions
      * (d) check's iuf user was submitter
      */
-    public boolean canDo(Person person, HasSubmitter resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
+    public boolean canDo(TdarUser person, HasSubmitter resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null) {
             return false;
@@ -524,7 +525,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
-    public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
+    public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
         if (irFileVersion == null) {
             return false;
         }
@@ -534,7 +535,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFile
      */
-    public boolean canDownload(InformationResourceFile irFile, Person person) {
+    public boolean canDownload(InformationResourceFile irFile, TdarUser person) {
         if (irFile == null) {
             return false;
         }
@@ -568,7 +569,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * (c) if it's a collection, make sure it's public and shared
      * (d) otherwise, it's probably not
      */
-    public void applyTransientViewableFlag(Indexable p, Person authenticatedUser) {
+    public void applyTransientViewableFlag(Indexable p, TdarUser authenticatedUser) {
         /*
          * If the Persistable supports the "Viewable" interface, then inject the
          * permissions into the transient property
@@ -626,7 +627,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * sets the @link Viewable status on @link InformationResourceFile and @link InformationResourceFileVersion to simplify lookups on the view layer
      * (Freemarker)
      */
-    private void setTransientViewableStatus(InformationResource ir, Person p) {
+    private void setTransientViewableStatus(InformationResource ir, TdarUser p) {
         Boolean viewable = null;
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             // if (viewable == null) {
@@ -700,11 +701,11 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getMessage()));
         }
 
-        Person person = personDao.findByUsername(loginUsername);
+        TdarUser person = personDao.findByUsername(loginUsername);
         if (person == null) {
             // FIXME: person exists in Crowd but not in tDAR..
             logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
-            person = new Person();
+            person = new TdarUser();
             person.setUsername(loginUsername);
             // how to pass along authentication information..?
             // username was in Crowd but not in tDAR? Redirect them to the account creation page
@@ -732,7 +733,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /*
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
-    public void createAuthenticationToken(Person person, SessionData session) {
+    public void createAuthenticationToken(TdarUser person, SessionData session) {
         AuthenticationToken token = AuthenticationToken.create(person);
         personDao.save(token);
         session.setAuthenticationToken(token);
@@ -743,7 +744,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * with the
      * Invoive itself
      */
-    public boolean canAssignInvoice(Invoice invoice, Person authenticatedUser) {
+    public boolean canAssignInvoice(Invoice invoice, TdarUser authenticatedUser) {
         if (authenticatedUser.equals(invoice.getTransactedBy()) || authenticatedUser.equals(invoice.getOwner())) {
             return true;
         }
@@ -757,7 +758,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * exposes the groups the user is a member of from the external Provider; exposes groups as a String, as the external provider may include other permissions
      * beyond just tDAR groups
      */
-    public Collection<String> getGroupMembership(Person person) {
+    public Collection<String> getGroupMembership(TdarUser person) {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
 
@@ -857,11 +858,11 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @return
      */
     @Transactional(readOnly = false)
-    public synchronized AuthenticationResult addAnAuthenticateUser(Person person_, String password, String institutionName, HttpServletRequest request,
+    public synchronized AuthenticationResult addAnAuthenticateUser(TdarUser person_, String password, String institutionName, HttpServletRequest request,
             HttpServletResponse response, SessionData sessionData, boolean contributor) {
-        Person person = person_;
+        TdarUser person = person_;
         UserInfo userInfo = person.getUserInfo();
-        Person findByUsername = personDao.findByUsername(person.getUsername());
+        TdarUser findByUsername = personDao.findByUsername(person.getUsername());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
         if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
             try {
@@ -874,8 +875,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             }
         }
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
-        person = reconcilePersonWithTransient(person, personDao.findByEmail(person.getEmail()),
-                MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+        TdarUser user = personDao.findPersonAndConvertToUser(person.getEmail(), person.getUsername());
+        person = reconcilePersonWithTransient(person, user, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
         person.setUserInfo(userInfo);
         userInfo.setUser(person);
         Institution institution = institutionDao.findByName(institutionName);
@@ -932,12 +933,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
     }
 
-    private Person reconcilePersonWithTransient(Person person, Person person_, String error) {
+    private TdarUser reconcilePersonWithTransient(TdarUser person, TdarUser person_, String error) {
         if ((person_ != null) && Persistable.Base.isNullOrTransient(person)) {
-
-            if (person_.isRegistered()) {
-                throw new TdarRecoverableRuntimeException(error);
-            }
 
             if ((person_.getStatus() != Status.FLAGGED) && (person_.getStatus() != Status.DELETED) && (person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)) {
                 person.setStatus(Status.ACTIVE);

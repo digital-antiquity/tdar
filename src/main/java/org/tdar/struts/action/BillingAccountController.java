@@ -26,6 +26,7 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -55,7 +56,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private List<Resource> resources = new ArrayList<>();
 
     private AccountGroup accountGroup;
-    private List<Person> authorizedMembers = new ArrayList<>();
+    private List<TdarUser> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
     private String name;
     private Integer quantity = 1;
@@ -158,7 +159,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             updateQuotas();
         }
         getAccount().getAuthorizedMembers().clear();
-        getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
+        getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class));
 
         getLogger().info("authorized members: {}", getAccount().getAuthorizedMembers());
         return SUCCESS;
@@ -303,11 +304,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @DoNotObfuscate(reason = "needs access to Email Address on view page")
-    public List<Person> getAuthorizedMembers() {
+    public List<TdarUser> getAuthorizedMembers() {
         return authorizedMembers;
     }
 
-    public void setAuthorizedMembers(List<Person> authorizedMembers) {
+    public void setAuthorizedMembers(List<TdarUser> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
 

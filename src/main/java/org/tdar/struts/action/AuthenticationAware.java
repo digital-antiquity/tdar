@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
@@ -40,7 +40,7 @@ public interface AuthenticationAware extends SessionDataAware {
     AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
     @DoNotObfuscate(reason = "never obfuscate the session user")
-    Person getAuthenticatedUser();
+    TdarUser getAuthenticatedUser();
 
     boolean isAuthenticated();
 
@@ -55,12 +55,12 @@ public interface AuthenticationAware extends SessionDataAware {
 
         @Override
         @DoNotObfuscate(reason = "never obfuscate the session user")
-        public Person getAuthenticatedUser() {
+        public TdarUser getAuthenticatedUser() {
             if (getSessionData() == null) {
                 return null;
             }
             if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
-                return getGenericService().find(Person.class, getSessionData().getPerson().getId());
+                return getGenericService().find(TdarUser.class, getSessionData().getPerson().getId());
             } else {
                 return null;
             }

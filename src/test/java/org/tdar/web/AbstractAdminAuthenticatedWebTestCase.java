@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 
@@ -47,10 +48,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         return somedocs;
     }
 
-    protected List<Person> getSomeUsers() {
+    protected List<TdarUser> getSomeUsers() {
         // let's only get authorized users
-        List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers();
-        List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10, allRegisteredUsers.size()));
+        List<TdarUser> allRegisteredUsers = entityService.findAllRegisteredUsers();
+        List<TdarUser> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10, allRegisteredUsers.size()));
         return someRegisteredUsers;
     }
 

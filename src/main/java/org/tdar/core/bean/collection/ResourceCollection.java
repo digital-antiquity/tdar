@@ -72,7 +72,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
@@ -198,11 +198,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id", nullable = true)
-    private Person updater;
+    private TdarUser updater;
 
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
@@ -233,7 +233,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setId(id);
     }
 
-    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, Person creator) {
+    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, TdarUser creator) {
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
@@ -247,7 +247,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setDateCreated(new Date());
     }
 
-    public ResourceCollection(Resource resource, Person owner) {
+    public ResourceCollection(Resource resource, TdarUser owner) {
         this(CollectionType.SHARED);
         this.owner = owner;
         getResources().add(resource);
@@ -305,11 +305,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "ownerIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
@@ -345,8 +345,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /*
      * Convenience Method that provides a list of users that match the permission
      */
-    public Set<Person> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
-        Set<Person> people = new HashSet<Person>();
+    public Set<TdarUser> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
+        Set<TdarUser> people = new HashSet<>();
         for (AuthorizedUser user : authorizedUsers) {
             if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
                 people.add(user.getUser());
@@ -364,7 +364,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * @see org.tdar.core.bean.Updatable#markUpdated(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if ((getDateCreated() == null) || (getOwner() == null)) {
             setDateCreated(new Date());
             setOwner(p);
@@ -469,11 +469,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     private List<Long> toUserList(GeneralPermissions permission) {
-        ArrayList<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        ArrayList<Long> users = new ArrayList<>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -619,7 +619,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     @Transient
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return owner;
     }
 
@@ -657,11 +657,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "updaterIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getUpdater() {
+    public TdarUser getUpdater() {
         return updater;
     }
 
-    public void setUpdater(Person updater) {
+    public void setUpdater(TdarUser updater) {
         this.updater = updater;
     }
 

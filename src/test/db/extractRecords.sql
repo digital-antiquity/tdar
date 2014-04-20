@@ -36,15 +36,20 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8095, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8092, 'test@tdar.org', 'test', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8093, 'admin@tdar.org', 'admin', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', true, NULL, '', 12088);
---DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, registered, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', true, NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8092, 'test@tdar.org', 'test', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8093, 'admin@tdar.org', 'admin', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', NULL, '', 12088);
 
 --DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
 --DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
 --DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8094, true); 
 --DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8095, true); 
+
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8092, 'test@tdar.org'); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8093, 'admin@tdar.org'); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8094, 'editor@tdar.org'); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8095, 'billing@tdar.org'); 
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
@@ -78,6 +83,7 @@ select * from material_keyword;
 select * from creator where id in (select id from creatorIds) order by id asc;
 select * from institution where id in (select id from creatorIds) order by id asc;
 select * from person where id in (select id from creatorIds) order by id asc;
+select * from tdar_user where id in (select id from creatorIds) order by id asc;
 select * from user_info where user_id in (select id from creatorIds) order by id asc;
 
 
@@ -286,7 +292,6 @@ drop table test;
 --DONT-PROCESS-- update data_table_column set mappingcolumn=false where mappingcolumn is null;
 --DONT-PROCESS-- update data_table_column set visible=true where visible is null;
 --DONT-PROCESS-- update data_table_column set ignorefileextension=true where ignorefileextension is null;
---DONT-PROCESS-- update person set username=email where registered=true;
 --DONT-PROCESS-- update creator set status='ACTIVE';
 --DONT-PROCESS-- update culture_keyword set status='ACTIVE';
 --DONT-PROCESS-- update geographic_keyword set status='ACTIVE';

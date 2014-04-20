@@ -25,6 +25,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -178,7 +179,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testSubmitterChangeRights() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -594,7 +595,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testUserPermIssuesUsers() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -625,7 +626,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testUserPermIssUpload() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();

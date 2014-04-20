@@ -31,6 +31,7 @@ import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -216,8 +217,8 @@ public class BrowseController extends AbstractLookupController {
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
-                if ((creator instanceof Person) && StringUtils.isNotBlank(((Person) creator).getUsername())) {
-                    Person person = (Person) creator;
+                if ((creator instanceof Person) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
+                    TdarUser person = (TdarUser) creator;
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {

@@ -12,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -26,7 +27,7 @@ public class SensoryDataITCase extends AbstractIntegrationTestCase {
 
         sensoryData.setTitle("test sensory data");
         sensoryData.setDescription("test description");
-        Person submitter = genericService.find(Person.class, 1L);
+        TdarUser submitter = genericService.find(TdarUser.class, 1L);
         sensoryData.markUpdated(submitter);
         sensoryData.setDate(1234);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {

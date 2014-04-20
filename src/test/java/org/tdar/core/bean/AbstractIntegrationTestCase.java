@@ -72,6 +72,7 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
@@ -243,15 +244,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public Person createAndSaveNewPerson() {
+    public TdarUser createAndSaveNewPerson() {
         return createAndSaveNewPerson(null, "");
     }
 
-    public Person createAndSaveNewPerson(String email, String suffix) {
+    public TdarUser createAndSaveNewPerson(String email, String suffix) {
         if (StringUtils.isBlank(email)) {
             email = TestConstants.DEFAULT_EMAIL;
         }
-        Person testPerson = new Person();
+        TdarUser testPerson = new TdarUser();
         testPerson.setEmail(email);
         testPerson.setFirstName(TestConstants.DEFAULT_FIRST_NAME + suffix);
         testPerson.setLastName(TestConstants.DEFAULT_LAST_NAME + suffix);
@@ -365,18 +366,18 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) {
-        Person submitter = getUser();
+        TdarUser submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
         }
         return createAndSaveNewInformationResource(cls, submitter);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson) {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, TdarUser persistentPerson) {
         return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, TdarUser persistentPerson, String resourceTitle) {
         // Project project = new Project();
         // project.markUpdated(persistentPerson);
         // project.setTitle("PROJECT " + resourceTitle);
@@ -385,7 +386,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, null, persistentPerson, resourceTitle);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle) {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, TdarUser persistentPerson, String resourceTitle) {
         R iResource = createAndSaveNewResource(cls, persistentPerson, resourceTitle);
         iResource.setDescription("test description");
         iResource.setProject(project);
@@ -410,7 +411,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewResource(Project.class, getUser(), title);
     }
 
-    public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+    public <R extends Resource> R createAndSaveNewResource(Class<R> cls, TdarUser persistentPerson, String resourceTitle) {
         R resource = null;
         try {
             resource = cls.newInstance();
@@ -430,7 +431,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     public <R extends Resource> R createAndSaveNewResource(Class<R> cls) {
-        Person persistentPerson = entityService.findByEmail("test@user.com");
+        TdarUser persistentPerson = (TdarUser)entityService.findByEmail("test@user.com");
         if (persistentPerson == null) {
             persistentPerson = createAndSaveNewPerson("test@user.com", "");
         }
@@ -503,13 +504,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return controller;
     }
 
-    protected void init(TdarActionSupport controller, Person user) {
+    protected void init(TdarActionSupport controller, TdarUser user) {
         if (controller != null) {
             controller.setSessionData(getSessionData());
             if ((user != null) && Persistable.Base.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
-                Person user_ = genericService.find(Person.class, user.getId());
+                TdarUser user_ = genericService.find(TdarUser.class, user.getId());
                 AuthenticationToken token = AuthenticationToken.create(user_);
                 controller.getSessionData().setAuthenticationToken(token);
                 genericService.save(token);
@@ -524,7 +525,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return generateNewInitializedController(controllerClass, null);
     }
 
-    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user) {
+    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, TdarUser user) {
         T controller = generateNewController(controllerClass);
         if (controller instanceof TdarActionSupport) {
             if (user != null) {
@@ -558,7 +559,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return list;
     }
 
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getUser(getUserId());
     }
 
@@ -574,24 +575,24 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConfiguration.getInstance().getBillingAdminUserId();
     }
 
-    protected Person getBasicUser() {
+    protected TdarUser getBasicUser() {
         return getUser(getBasicUserId());
     }
 
-    protected Person getEditorUser() {
+    protected TdarUser getEditorUser() {
         return getUser(getEditorUserId());
     }
 
-    protected Person getBillingUser() {
+    protected TdarUser getBillingUser() {
         return getUser(getBillingAdminUserId());
     }
 
-    protected Person getAdminUser() {
+    protected TdarUser getAdminUser() {
         return getUser(getAdminUserId());
     }
 
-    protected Person getUser(Long id) {
-        Person p = genericService.find(Person.class, id);
+    protected TdarUser getUser(Long id) {
+        TdarUser p = genericService.find(TdarUser.class, id);
         if (Persistable.Base.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
@@ -655,7 +656,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return httpServletResponse;
     }
 
-    public void addAuthorizedUser(Resource resource, Person person, GeneralPermissions permission) {
+    public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
         AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
         ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
@@ -705,19 +706,19 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ignoreActionErrors;
     }
 
-    private Person sessionUser;
+    private TdarUser sessionUser;
 
     /**
      * @return
      */
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         if (sessionUser != null) {
             return sessionUser;
         }
         return getUser();
     }
 
-    public void setSessionUser(Person user) {
+    public void setSessionUser(TdarUser user) {
         this.sessionUser = user;
     }
 
@@ -897,7 +898,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
         Invoice invoice = initAccount(account, activity, getUser());
@@ -905,14 +906,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         Invoice invoice = initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         Invoice invoice = initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
@@ -921,7 +922,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         Invoice invoice = initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
@@ -930,7 +931,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         Invoice invoice = initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
@@ -939,7 +940,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, Person user) {
+    public Account setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
         Account account = new Account();
         Invoice invoice = initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
         /* add one resource */
@@ -948,14 +949,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
-    private Invoice initAccount(Account account, BillingActivity activity, Person user) {
+    private Invoice initAccount(Account account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
         return invoice;
     }
 
-    public Invoice setupInvoice(BillingActivity activity, Person user) {
+    public Invoice setupInvoice(BillingActivity activity, TdarUser user) {
         Invoice invoice = new Invoice();
         invoice.markUpdated(user);
         genericService.saveOrUpdate(activity.getModel());
@@ -970,7 +971,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return invoice;
     }
 
-    public Account setupAccountForPerson(Person p) {
+    public Account setupAccountForPerson(TdarUser p) {
         Account account = new Account("my account");
         account.setOwner(p);
         account.setStatus(Status.ACTIVE);
