@@ -58,7 +58,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int count = 0;
-        ScrollableResults scrollableResults = genericService.findAllScrollable(InformationResourceFileVersion.class);
+        ScrollableResults scrollableResults = genericService.findAllScrollable(InformationResourceFileVersion.class, 10000);
 
         while (scrollableResults.next()) {
             Object item = scrollableResults.get(0);

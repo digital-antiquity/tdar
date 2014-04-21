@@ -303,6 +303,10 @@ public class GenericDao {
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
+    public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
+        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> List<T> findByExampleLike(Class<T> persistentClass, T entity, MatchMode matchMode, List<String> ignoreProperties) {
         Example example = Example.create(entity);
