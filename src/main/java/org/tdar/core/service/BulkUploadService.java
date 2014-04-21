@@ -315,7 +315,7 @@ public class BulkUploadService {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-                final Account account = genericDao.find(Account.class, accountId);
+                Account account = genericDao.find(Account.class, accountId);
                 accountService.updateQuota(account, resources);
             }
         } catch (Throwable t) {

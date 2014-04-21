@@ -269,7 +269,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     
     @Test
     @Rollback
-    @Ignore
+//    @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
@@ -377,7 +377,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Person user = createAndSaveNewPerson();
         BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
         init(bulkUploadController, user);
-        logger.debug("HI");
         bulkUploadController.prepare();
 
 

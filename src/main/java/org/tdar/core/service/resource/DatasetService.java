@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +72,8 @@ import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;
+
+
 
 /**
  * $Id$
@@ -331,7 +334,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         datasetFile.setInformationResource(dataset);
         logger.debug("{} === {} ", ObjectUtils.identityToString(transientDatasetToPersist), ObjectUtils.identityToString(dataset));
         transientDatasetToPersist = null;
-        dataset = getDao().merge(dataset);
+        List<DataTable> dataTablesToAdd = new ArrayList<>();
+        Iterator<DataTable> iter = dataset.getDataTables().iterator();
+        while (iter.hasNext()) {
+            DataTable dataTable = iter.next();
+            if (!getDao().sessionContains(dataTable)) {
+                iter.remove();
+                dataTablesToAdd.add(getDao().merge(dataTable));
+            }
+        }
+        dataset.getDataTables().addAll(dataTablesToAdd);
+//        dataset = getDao().merge(dataset);
         // getDao().synchronize();
     }
 
