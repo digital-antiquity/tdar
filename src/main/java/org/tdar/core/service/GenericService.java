@@ -328,6 +328,11 @@ public class GenericService {
         return genericDao.findAllScrollable(persistentClass);
     }
 
+    @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllScrollable(Class<E> persistentClass, int batchSize) {
+        return genericDao.findAllScrollable(persistentClass, batchSize);
+    }
+
     /**
      * Find a specific @link Persistable by id, and class.
      * 
