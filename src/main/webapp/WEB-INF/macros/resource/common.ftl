@@ -4,6 +4,11 @@
 $Id:Exp$
 Common macros used in multiple contexts
 -->
+<#-- opting out of code formatting: begin -->
+<#--@formatter:off-->
+<#-- opting out of code formatting: end -->
+<#--@formatter:on-->
+
 
 <#-- emit specified number of bytes in human-readable form  -->
 <#-- @parm filesize:number? file size in bytes -->
