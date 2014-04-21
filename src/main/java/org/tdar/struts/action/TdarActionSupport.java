@@ -63,6 +63,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
@@ -220,6 +221,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private HttpServletResponse servletResponse;
 
     private Map<String, String> clientValidationInfo = new LinkedHashMap<>();
+
+    private ErrorListener errorListener;
 
     public ProjectService getProjectService() {
         return projectService;
@@ -545,16 +548,27 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 maxDepth--;
             }
 
-            super.addActionError(sb.toString());
+            addActionError(sb.toString());
         } else if (StringUtils.isNotBlank(message)) {
-            super.addActionError(message);
+            addActionError(message);
         }
         stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));
     }
 
     @Override
+    public void addFieldError(String fieldName, String errorMessage) {
+        if (errorListener != null) {
+            errorListener.addError(String.format("%s:%s", fieldName, errorMessage));
+        }
+        super.addFieldError(fieldName, errorMessage);
+    }
+    
+    @Override
     public void addActionError(String message) {
         getLogger().debug("ACTIONERROR:: {}", message);
+        if (errorListener != null) {
+            errorListener.addError(message);
+        }
         super.addActionError(message);
     }
 
@@ -828,5 +842,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getWroTempDirName() {
         return filesystemResourceService.getWroDir();
+    }
+
+    @Override
+    public void registerErrorListener(ErrorListener e) {
+        this.errorListener = e;
     }
 }

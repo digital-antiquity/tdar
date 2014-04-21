@@ -110,6 +110,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -129,7 +130,7 @@ import com.opensymphony.xwork2.util.ValueStack;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
-public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
+public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests implements ErrorListener {
 
     protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
@@ -181,7 +182,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected EmailService emailService;
 
-    private List<ActionSupport> controllers = new ArrayList<ActionSupport>();
+    private List<String> actionErrors = new ArrayList<>();
     private boolean ignoreActionErrors = false;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected MockMailSender mockMailSender = new MockMailSender();
@@ -212,7 +213,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
 
-        getControllers().clear();
         setIgnoreActionErrors(false);
     }
 
@@ -224,21 +224,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public void announceTestOver() {
 
         int errorCount = 0;
-        List<String> errors = new ArrayList<>();
-        if (!isIgnoreActionErrors()) {
-            for (ActionSupport controller : getControllers()) {
-                if ((controller != null) && !controller.getActionErrors().isEmpty()) {
-                    logger.error("action errors {}", controller.getActionErrors());
-                    errorCount += controller.getActionErrors().size();
-                    errors.addAll(controller.getActionErrors());
-                }
-            }
+        if (!isIgnoreActionErrors() && CollectionUtils.isNotEmpty(getActionErrors())) {
+                logger.error("action errors {}", getActionErrors());
+                errorCount = getActionErrors().size();
         }
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         if (errorCount > 0) {
-            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount, StringUtils.join(errors.toArray(new String[0]))));
+            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount, StringUtils.join(getActionErrors().toArray(new String[0]))));
         }
     }
 
@@ -530,8 +524,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             } else {
                 init((TdarActionSupport) controller);
             }
+            ((TdarActionSupport) controller).registerErrorListener(this);
         }
-        getControllers().add(controller);
         return controller;
     }
 
@@ -667,21 +661,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         genericService.saveOrUpdate(internalResourceCollection);
         genericService.saveOrUpdate(authorizedUser);
         genericService.saveOrUpdate(resource);
-    }
-
-    /**
-     * @param controllers
-     *            the controllers to set
-     */
-    public void setControllers(List<ActionSupport> controllers) {
-        this.controllers = controllers;
-    }
-
-    /**
-     * @return the controllers
-     */
-    public List<ActionSupport> getControllers() {
-        return controllers;
     }
 
     /**
@@ -993,4 +972,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(CollectionUtils.isNotEmpty(results));
     }
 
+    @Override
+    public void addError(String error) {
+        getActionErrors().add(error);
+    }
+
+    public List<String> getActionErrors() {
+        return actionErrors;
+    }
+
+    public void setActionErrors(List<String> actionErrors) {
+        this.actionErrors = actionErrors;
+    }
 }
