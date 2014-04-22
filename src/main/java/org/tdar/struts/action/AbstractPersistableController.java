@@ -163,29 +163,22 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @WriteableSession
     public String delete() throws TdarActionException {
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
+        checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
         if (isPostRequest() && DELETE.equals(getDelete())) {
-            try {
-                checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
-                checkForNonContributorCrud();
-                if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                    addActionError(getText("abstractPersistableController.cannot_delete"));
-                    return CONFIRM;
-                }
-                logAction("DELETING");
-                // FIXME: deleteCustom might as well just return a boolean in this current implementation
-                // should we return the result name specified by deleteCustom() instead?
-                if (deleteCustom() != SUCCESS) {
-                    return ERROR;
-                }
-
-                delete(persistable);
-                getGenericService().delete(persistable);
-            } catch (TdarActionException exception) {
-                throw exception;
-            } catch (Exception e) {
-                addActionErrorWithException(
-                        getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
+            checkForNonContributorCrud();
+            if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
+                addActionError(getText("abstractPersistableController.cannot_delete"));
+                return CONFIRM;
             }
+            logAction("DELETING");
+            // FIXME: deleteCustom might as well just return a boolean in this current implementation
+            // should we return the result name specified by deleteCustom() instead?
+            if (deleteCustom() != SUCCESS) {
+                return ERROR;
+            }
+
+            delete(persistable);
+            getGenericService().delete(persistable);
             return SUCCESS;
         }
 
