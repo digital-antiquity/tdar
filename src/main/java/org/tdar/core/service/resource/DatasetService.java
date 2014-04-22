@@ -334,17 +334,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         datasetFile.setInformationResource(dataset);
         logger.debug("{} === {} ", ObjectUtils.identityToString(transientDatasetToPersist), ObjectUtils.identityToString(dataset));
         transientDatasetToPersist = null;
-        List<DataTable> dataTablesToAdd = new ArrayList<>();
-        Iterator<DataTable> iter = dataset.getDataTables().iterator();
-        while (iter.hasNext()) {
-            DataTable dataTable = iter.next();
-            if (!getDao().sessionContains(dataTable)) {
-                iter.remove();
-                dataTablesToAdd.add(getDao().merge(dataTable));
-            }
-        }
-        dataset.getDataTables().addAll(dataTablesToAdd);
-//        dataset = getDao().merge(dataset);
+        dataset = getDao().merge(dataset);
         // getDao().synchronize();
     }
 
