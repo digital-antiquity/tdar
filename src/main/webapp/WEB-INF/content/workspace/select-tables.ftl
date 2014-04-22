@@ -50,7 +50,7 @@
                     </#list>
                 </td>
                 <td>
-                    &nbsp;(<a href="#" class="column_toggle"> show/hide columns</a>)
+                    &nbsp;(<a href="#" class="column_toggle"> show / hide columns</a>)
                     <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
                         <@listDataTableColumns table.getDataTableColumns() />
                     </div>
