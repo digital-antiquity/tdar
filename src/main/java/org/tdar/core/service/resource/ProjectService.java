@@ -179,7 +179,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 return json;
             }
-            obfuscationService.obfuscate(project, user);
+//            obfuscationService.obfuscate(project, user);
             json = project.toJSON().toString();
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
