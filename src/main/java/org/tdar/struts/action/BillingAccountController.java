@@ -99,7 +99,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             }
             getAccountService().updateQuota(getAccount());
         } catch (Throwable e) {
-            addActionMessage(e.getMessage());
+            addActionErrorWithException(e.getMessage(), e);
             return INPUT;
         }
         return SUCCESS;

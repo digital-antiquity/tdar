@@ -220,6 +220,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.validate();
         assertThat(controller.getFieldErrors(), hasKey("email"));
+        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -257,6 +258,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.validate();
         assertThat(controller.getFieldErrors(), hasKey("email"));
+        setIgnoreActionErrors(true);
     }
 
     private Long addAddressToNewPerson() throws TdarActionException {
