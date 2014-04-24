@@ -332,9 +332,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
-        logger.debug("{} === {} ", ObjectUtils.identityToString(transientDatasetToPersist), ObjectUtils.identityToString(dataset));
         transientDatasetToPersist = null;
+        logger.debug("before2: {} [{}]", ObjectUtils.identityToString(dataset), getDao().getCurrentSessionHashCode());
         dataset = getDao().merge(dataset);
+        logger.debug("after2: {}", ObjectUtils.identityToString(dataset));
         // getDao().synchronize();
     }
 

@@ -2,6 +2,7 @@ package org.tdar.core.service.workflow;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,7 @@ public class WorkflowContextService {
                 case GEOSPATIAL:
                 case DATASET:
                     Dataset dataset = (Dataset) resource;
+                    logger.debug("between: {} [{}]", ObjectUtils.identityToString(dataset), genericDao.getCurrentSessionHashCode());
                     if (ctx.getTransientResource() == null) {
                         break;
                     }

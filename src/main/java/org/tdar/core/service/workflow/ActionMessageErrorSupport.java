@@ -12,4 +12,8 @@ public interface ActionMessageErrorSupport {
 
     void setMoreInfoUrlKey(String url);
 
+    boolean isShouldDetach();
+
+    void setShouldDetach(boolean shouldDetach);
+
 }

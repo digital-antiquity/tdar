@@ -150,6 +150,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (irFiles.size() > 0) {
             addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
         }
+        if (listener.isShouldDetach()) {
+            datasetDao.detachFromSession(resource);
+        }
         processFiles(filesToProcess, resource.getResourceType().isCompositeFilesEnabled());
 
         /*

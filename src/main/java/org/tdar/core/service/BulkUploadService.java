@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -292,9 +293,16 @@ public class BulkUploadService {
                 importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
 
                 manifestProxy.setSubmitter(null);
+                listener.setShouldDetach(true);
+                genericDao.saveOrUpdate(informationResource);
+                genericDao.synchronize();
+                logger.debug("before: {} [{}]", ObjectUtils.identityToString(informationResource), genericDao.getCurrentSessionHashCode());
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
                         Arrays.asList(fileProxy));
-                genericDao.saveOrUpdate(informationResource);
+                logger.debug("middle: {}", ObjectUtils.identityToString(informationResource));
+                informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
+                logger.debug("after: {}", ObjectUtils.identityToString(informationResource));
+
                 manifestProxy.getResourcesCreated().put(fileName, informationResource);
                 manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                 if (listener.hasActionErrors()) {

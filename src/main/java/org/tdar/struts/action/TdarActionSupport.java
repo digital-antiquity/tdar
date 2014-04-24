@@ -94,7 +94,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String SM = "sm";
     public static final String MD = "md";
     public static final String LG = "lg";
-
+    private boolean shouldDetach = false;
     public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
@@ -814,6 +814,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         }
         return false;
+    }
+
+    @Override
+    public boolean isShouldDetach() {
+        return shouldDetach;
+    }
+
+    @Override
+    public void setShouldDetach(boolean shouldDetach) {
+        this.shouldDetach = shouldDetach;
     }
 
     public String getWroTempDirName() {
