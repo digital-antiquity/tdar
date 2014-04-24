@@ -36,7 +36,6 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
-import org.tdar.core.service.processes.UpgradeResourceCollectionPermissions;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -62,8 +61,6 @@ public class AdminController extends AuthenticationAware.Base {
     @Autowired
     private ScheduledProcessService scheduledProcessService;
 
-    @Autowired
-    private UpgradeResourceCollectionPermissions urcp;
 
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
