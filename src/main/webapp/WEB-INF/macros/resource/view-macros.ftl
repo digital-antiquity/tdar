@@ -267,7 +267,7 @@ View freemarker macros
                             <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                             <td><@createFileLink irfile false false false /></td>
                             <td><@common.convertFileSize version.fileLength /></td>
-                            <td><@_printCreatedDate irfile /></td>
+                            <td><#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if></td>
                             <td>${irfile.latestUploadedVersion.dateCreated} </td>
                             <td>${irfile.restriction.label}</td>
 
@@ -298,47 +298,6 @@ View freemarker macros
             </#if>
 
         </div>
-        </#if>
-    </#macro>
-<#-- FIXME: FTLREFACTOR remove: rarely used (if we want formatting consistency, consider constant stringformat instead)-->
-    <#macro _printCreatedDate irfile>
-        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
-    </#macro>
-
-<#-- FIXME: FTLREFACTOR move to common.ftl -->
-<#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
-    <#macro codingRules>
-        <#if codingSheet.id != -1>
-            <#nested>
-        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
-            <#if codingSheet.codingRules.isEmpty() >
-            <div>
-                No coding rules have been entered for this coding sheet yet.
-            </div>
-            <#else>
-            <div id='codingRulesDiv'>
-                <table width="60%" class="table table-striped tableFormat">
-                    <thead class='highlight'>
-                    <tr>
-                        <th>Code</th>
-                        <th>Term</th>
-                        <th>Description</th>
-                        <th>Mapped Ontology Node</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <#list codingSheet.sortedCodingRules as codeRule>
-                        <tr>
-                            <td>${codeRule.code}</td>
-                            <td>${codeRule.term}</td>
-                            <td>${codeRule.description!""}</td>
-                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName}</#if></td>
-                        </tr>
-                        </#list>
-                    </tbody>
-                </table>
-            </div>
-            </#if>
         </#if>
     </#macro>
 
@@ -618,7 +577,7 @@ View freemarker macros
     </#macro>
     <#macro _altText irfile>
     ${irfile.filename} <#if ( irfile.description?has_content && (irfile.filename)?has_content ) >- ${irfile.description}</#if>
-        <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if>
+        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
     </#macro>
 
 <#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->

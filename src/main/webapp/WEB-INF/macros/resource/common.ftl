@@ -1160,5 +1160,40 @@ search page associated with the datapoint -->
         <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
     </#macro>
 
+<#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
+    <#macro codingRules>
+        <#if codingSheet.id != -1>
+            <#nested>
+        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
+            <#if codingSheet.codingRules.isEmpty() >
+            <div>
+                No coding rules have been entered for this coding sheet yet.
+            </div>
+            <#else>
+            <div id='codingRulesDiv'>
+                <table width="60%" class="table table-striped tableFormat">
+                    <thead class='highlight'>
+                    <tr>
+                        <th>Code</th>
+                        <th>Term</th>
+                        <th>Description</th>
+                        <th>Mapped Ontology Node</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <#list codingSheet.sortedCodingRules as codeRule>
+                        <tr>
+                            <td>${codeRule.code}</td>
+                            <td>${codeRule.term}</td>
+                            <td>${codeRule.description!""}</td>
+                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName}</#if></td>
+                        </tr>
+                        </#list>
+                    </tbody>
+                </table>
+            </div>
+            </#if>
+        </#if>
+    </#macro>
 
 </#escape>

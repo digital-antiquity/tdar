@@ -178,9 +178,21 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
         <#list _coverageDates as coverageDate>
             <#if coverageDate??>
-                <@dateRow coverageDate coverageDate_index/>
+                <@_dateRow coverageDate coverageDate_index/>
             </#if>
         </#list>
+    </div>
+    </#macro>
+    <#macro _dateRow proxy=proxy proxy_index=0>
+    <div class="controls controls-row" id="DateRow_${proxy_index}_">
+    <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
+        <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
+    listValue='label'  headerValue="Date Type" headerKey="NONE"
+    list=allCoverageTypes />
+        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
+       <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
     </div>
     </#macro>
 
@@ -565,19 +577,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </#if>
     </#macro>
 
-    <#macro dateRow proxy=proxy proxy_index=0>
-    <div class="controls controls-row" id="DateRow_${proxy_index}_">
-    <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
-        <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
-    listValue='label'  headerValue="Date Type" headerKey="NONE"
-    list=allCoverageTypes />
-        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
-        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
-        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
-       <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
-    </div>
-    </#macro>
-
+    <#-- emit a section for entering a list of resource creators associated with a particular reslurce.  This macro renders this section as a 'repeat-row'
+     table of 'creaty proxy' controls (see @creatorProxyRow for more info)
+      @param sectionTitle:string name for this section (displayed in header text)
+      @param proxies:list<ResourceCreatorProxy> list of creator proxies
+      @pram  prefix:string prefix to append to form field 'name' attribute.  This gets passed to @creatorProxyRow
+    -->
     <#macro resourceCreators sectionTitle proxies prefix>
         <#local _proxies = proxies >
         <#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
@@ -594,6 +599,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div> <!-- section -->
     </#macro>
 
+    <#-- Emit a form "control"  representing a resource creator. Each control is form fields that allow the user to enter information about a single person
+     or a single institution (the user can toggle between one or the other). -->
     <#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE"
     required=false includeRole=true leadTitle="" showDeleteButton=true>
         <#assign relevantPersonRoles=personAuthorshipRoles />
@@ -751,7 +758,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </#if>
     </#macro>
 
-<#-- 
+<#--
 FIXME: this appears to only be used for Datasets.  Most of it has been extracted out
 to singleFileUpload, continue lifting useful logic here into singleFileUpload (e.g.,
 jquery validation hooks?)
@@ -1329,6 +1336,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
     </#macro>
 
+    <#-- emit a repeatrow table of @registeredUserRow controls -->
     <#macro listMemberUsers >
         <#local _authorizedUsers=account.authorizedMembers />
         <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
