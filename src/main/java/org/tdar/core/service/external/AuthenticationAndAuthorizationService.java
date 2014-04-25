@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
@@ -48,8 +49,6 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.AbstractConfigurableService;
-import org.tdar.core.service.ConfigurableService;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
@@ -86,6 +85,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     @Autowired
     private InstitutionDao institutionDao;
 
+    private AuthenticationProvider provider;
     // @Override
     // public boolean isServiceRequired() {
     // return true;
@@ -950,29 +950,19 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         return person;
     }
 
-    private ConfigurableService<AuthenticationProvider> providers = new AbstractConfigurableService<AuthenticationProvider>() {
-        @Override
-        public boolean isServiceRequired() {
-            return true;
-        }
-    };
-
-    /**
-     * Used in testing
-     * 
-     * @return the providers
-     */
-    protected ConfigurableService<AuthenticationProvider> getProviders() {
-        return providers;
-    }
-
     @Autowired
-    private void setAllServices(List<AuthenticationProvider> providers) {
-        ((AbstractConfigurableService<AuthenticationProvider>) this.providers).setAllServices(providers);
+    @Qualifier("AuthenticationProvider")
+    public void setProvider(AuthenticationProvider provider) {
+        this.provider = provider;
+        if (provider != null) {
+            logger.debug("Authentication Provider: {}", provider.getClass().getSimpleName());
+        } else {
+            logger.debug("Authentication Provider: NOT CONFIGURED");
+        }
     }
 
     public AuthenticationProvider getProvider() {
-        return providers.getProvider();
+        return provider;
     }
 
 }

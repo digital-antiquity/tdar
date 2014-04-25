@@ -1,5 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -11,10 +12,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
@@ -53,7 +51,7 @@ import com.atlassian.crowd.service.client.CrowdClient;
  * @version $Revision$
  * @see <a href='http://confluence.atlassian.com/display/CROWD/Creating+a+Crowd+Client+for+your+Custom+Application'>Crowd documentation</a>
  */
-@Service
+//@Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -63,12 +61,17 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private Properties crowdProperties;
     private String passwordResetURL;
 
-    @Autowired
-    public CrowdRestDao(@Qualifier("crowdProperties") Properties crowdProperties) {
+    public CrowdRestDao() throws IOException {
+        Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
+        properties.load(getClass().getClassLoader().getResourceAsStream("crowd.properties"));
+        init(properties);
+    }
+    
+    private void init(Properties properties) {
+        this.crowdProperties = properties;
         logger.info("initializing crowd rest dao: {}", crowdProperties);
-        this.crowdProperties = crowdProperties;
         try {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
@@ -79,6 +82,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
+    }
+
+    public CrowdRestDao(Properties properties) {
+        init(properties);
     }
 
     @Override

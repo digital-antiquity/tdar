@@ -30,7 +30,6 @@ import au.csiro.pidclient.business.AndsPidResponseProperty;
 /**
  * @author Nuwan Goonasekera
  */
-@Service
 public class AndsPidsDao implements ExternalIDProvider {
 
     // DOCUMENTATION: http://andspidclient.sourceforge.net/ and http://services.ands.org.au/documentation/pids/pids_text.pdf

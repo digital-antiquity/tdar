@@ -11,10 +11,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -392,7 +390,6 @@ public class ImportService {
         if (h == null) {
             throw new TdarRecoverableRuntimeException("error.object_does_not_exist");
         }
-        logger.debug(" {} {}", genericService.sessionContains(h),h );
         return h;
     }
 

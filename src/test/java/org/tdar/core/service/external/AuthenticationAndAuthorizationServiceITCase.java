@@ -155,18 +155,15 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         Person person = new Person("Thomas", "Angell", "tangell@pvd.state.ri.us");
         person.setUsername(person.getEmail());
         person.setContributor(true);
-        AbstractConfigurableService<AuthenticationProvider> prov = (AbstractConfigurableService<AuthenticationProvider>) authenticationAndAuthorizationService
-                .getProviders();
-        List<AuthenticationProvider> allServices = new ArrayList<>(prov.getAllServices());
+        AuthenticationProvider oldProvider = authenticationAndAuthorizationService.getProvider();
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
-        prov.getAllServices().clear();
         Properties crowdProperties = new Properties();
         crowdProperties.put("application.name", "tdar.test");
         crowdProperties.put("application.password", "tdar.test");
         crowdProperties.put("application.login.url", "http://localhost/crowd");
         crowdProperties.put("crowd.server.url", "http://localhost/crowd");
 
-        prov.getAllServices().add(new CrowdRestDao(crowdProperties));
+        authenticationAndAuthorizationService.setProvider(new CrowdRestDao(crowdProperties));
 
         String password = "super.secret";
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
@@ -189,8 +186,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
             logger.error("errors: {} ", controller.getActionErrors());
         }
 
-        prov.getAllServices().clear();
-        prov.getAllServices().addAll(allServices);
+        authenticationAndAuthorizationService.setProvider(oldProvider);
         logger.info("errors: {}", controller.getActionErrors());
         assertEquals("result is not input :" + execute, execute, Action.ERROR);
         logger.info("person:{}", person);

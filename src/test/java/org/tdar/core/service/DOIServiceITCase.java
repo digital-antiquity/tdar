@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;
@@ -36,9 +34,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
     public Map<String, List<Pair<Long, String>>> processDois() throws Exception {
         // using mock DAO instead of real service
-        List<ExternalIDProvider> providers = new ArrayList<>();
-        providers.add(new MockIdentifierDao());
-        ((AbstractConfigurableService<ExternalIDProvider>) doiProcess.getProviders()).setAllServices(providers);
+        doiProcess.setProvider(new MockIdentifierDao());
         // run it once, make sure all are "create", no deletes or updates
         doiProcess.execute();
         return doiProcess.getBatchResults();

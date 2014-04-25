@@ -756,10 +756,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return javascriptErrorLog;
     }
 
-    public boolean isJSCSSMergeServletEnabled() {
-        return getTdarConfiguration().isJSCSSMergeServletEnabled();
-    }
-
     /**
      * @see TdarConfiguration#isSwitchableMapObfuscation()
      * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
