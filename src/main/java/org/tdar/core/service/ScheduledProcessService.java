@@ -35,7 +35,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DoiProcess;
-import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
@@ -147,7 +147,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "5 0 0 * * SUN")
     @Async
     public void verifyTdarFiles() throws IOException {
-        queue(scheduledProcessMap.get(FilestoreWeeklyLoggingProcess.class));
+        queue(scheduledProcessMap.get(WeeklyFilestoreLoggingProcess.class));
     }
 
     private TdarConfiguration getTdarConfiguration() {
@@ -163,6 +163,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
         for (ScheduledProcess<?> process_ : processes) {
+            @SuppressWarnings("unchecked")
             ScheduledProcess<Persistable> process = (ScheduledProcess<Persistable>) process_;
             // if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
             // scheduledProcessMap.clear();

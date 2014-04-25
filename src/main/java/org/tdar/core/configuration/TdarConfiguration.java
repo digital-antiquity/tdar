@@ -2,14 +2,13 @@ package org.tdar.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.resources.image.ImageUtilities;
@@ -37,7 +36,6 @@ public class TdarConfiguration {
     private static final String JIRA_LINK = "dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String DESCRIPTION = "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
-    private static final String MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED = "Message Queue is enabled, but a username and password is not defined";
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
@@ -54,7 +52,6 @@ public class TdarConfiguration {
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
     private final transient static Logger logger = LoggerFactory.getLogger(TdarConfiguration.class);
-    private String wroTempDirName;
     private ConfigurationAssistant assistant;
 
     private Filestore filestore;
@@ -87,7 +84,6 @@ public class TdarConfiguration {
     public void initialize() {
         logger.debug("initializing filestore and setup");
         // initPersonalFilestorePath();
-        testQueue();
         initializeStopWords();
         intializeCouponCodes();
 
@@ -109,6 +105,7 @@ public class TdarConfiguration {
             throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
         }
 
+        initPersonalFilestorePath();
     }
 
     public String getConfigurationFile() {
@@ -188,8 +185,7 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class",
-                PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
         File filestoreLoc = new File(getFileStoreLocation());
         try {
@@ -216,23 +212,18 @@ public class TdarConfiguration {
     private void initPersonalFilestorePath() {
         File personalFilestoreHome = new File(getPersonalFileStoreLocation());
         String msg = null;
-        boolean pathExists = true;
         try {
             logger.info("initializing personal filestore at {}", getPersonalFileStoreLocation());
             if (!personalFilestoreHome.exists()) {
-                pathExists = personalFilestoreHome.mkdirs();
+                boolean pathExists = personalFilestoreHome.mkdirs();
                 if (!pathExists) {
                     msg = "Could not create personal filestore at " + getPersonalFileStoreLocation();
                 }
             }
         } catch (SecurityException ex) {
             logger.error(SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY, ex);
-            pathExists = false;
-        }
-        if (!pathExists) {
             throw new IllegalStateException(msg);
         }
-
     }
 
     public static TdarConfiguration getInstance() {
@@ -363,49 +354,6 @@ public class TdarConfiguration {
     /**
      * @return
      */
-    public boolean useExternalMessageQueue() {
-        return assistant.getBooleanProperty("message.queue.enabled", false);
-    }
-
-    public String getMessageQueueURL() {
-        return assistant.getStringProperty("message.queue.server", "dev.tdar.org");
-    }
-
-    public String getMessageQueueUser() {
-        return assistant.getStringProperty("message.queue.user");
-    }
-
-    public String getMessageQueuePwd() {
-        return assistant.getStringProperty("message.queue.pwd");
-    }
-
-    public String getQueuePrefix() {
-        return assistant.getStringProperty("message.queue.prefix", getDefaultQueuePrefix());
-    }
-
-    /**
-     * @return
-     */
-    public String getDefaultQueuePrefix() {
-        String host = "";
-        try {
-            InetAddress localMachine = InetAddress.getLocalHost();
-            host = localMachine.getHostName();
-        } catch (UnknownHostException e) {
-            logger.debug("unknownhost: ", e);
-        }
-        return host + ".";
-    }
-
-    private void testQueue() {
-        if (useExternalMessageQueue() && (StringUtils.isEmpty(getMessageQueuePwd()) || StringUtils.isEmpty(getMessageQueueUser()))) {
-            throw new IllegalStateException(MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED);
-        }
-    }
-
-    /**
-     * @return
-     */
     public int getScrollableFetchSize() {
         return assistant.getIntProperty("scrollableResult.fetchSize", 100);
     }
@@ -440,10 +388,16 @@ public class TdarConfiguration {
     }
 
     public Set<String> getStopWords() {
+        if (CollectionUtils.isEmpty(stopWords)) {
+            initializeStopWords();
+        }
         return stopWords;
     }
 
     public List<String> getCouponCodes() {
+        if (CollectionUtils.isEmpty(couponCodes)) {
+            intializeCouponCodes();
+        }
         return couponCodes;
     }
 
@@ -485,8 +439,7 @@ public class TdarConfiguration {
     }
 
     public String getSystemDescription() {
-        return assistant
-                .getStringProperty("oai.repository.description", DESCRIPTION);
+        return assistant.getStringProperty("oai.repository.description", DESCRIPTION);
     }
 
     public int getScheduledProcessStartId() {
@@ -718,10 +671,6 @@ public class TdarConfiguration {
 
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
-    }
-
-    public boolean isJSCSSMergeServletEnabled() {
-        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
 
     public boolean isJaiImageJenabled() {

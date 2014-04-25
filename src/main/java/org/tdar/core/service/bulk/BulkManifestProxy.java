@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -45,6 +46,10 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
+
+import thredds.catalog.CrawlableCatalog;
+
+import com.hp.hpl.jena.sparql.function.library.eval;
 
 /**
  * The BulkManifestProxy helps keep track of state throughout the @link BulkUploadService's run process. It tracks filenames, fields, the resources created and
@@ -78,12 +83,18 @@ public class BulkManifestProxy implements Serializable {
     private Row columnNamesRow;
 
     private Set<CellMetadata> required = new HashSet<>();
+    private ReflectionService reflectionService;
+    private EntityService entityService;
+    private BulkUploadTemplateService bulkUploadTemplateService;
 
-    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2, ExcelService excelService) {
+    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2, ExcelService excelService, BulkUploadTemplateService bulkUploadTemplateService, EntityService entityService, ReflectionService reflectionService) {
         this.sheet = sheet2;
         this.allValidFields = allValidFields2;
         this.cellLookupMap = cellLookupMap2;
         this.excelService  = excelService;
+        this.bulkUploadTemplateService = bulkUploadTemplateService;
+        this.entityService = entityService;
+        this.reflectionService = reflectionService;
     }
 
     /**
@@ -119,7 +130,7 @@ public class BulkManifestProxy implements Serializable {
      * 
      */
     @SuppressWarnings("unchecked")
-    public <R extends Resource> void readExcelFile(BulkUploadTemplateService bulkUploadTemplateService, EntityService entityService, ReflectionService reflectionService) throws InvalidFormatException, IOException {
+    public <R extends Resource> void readExcelFile() throws InvalidFormatException, IOException {
 
         AsyncUpdateReceiver asyncUpdateReceiver = getAsyncUpdateReceiver();
         FormulaEvaluator evaluator = getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
@@ -167,89 +178,11 @@ public class BulkManifestProxy implements Serializable {
             asyncUpdateReceiver.setStatus(MessageHelper.getMessage("bulkUploadService.processing_file",
                     Arrays.asList(filename)));
 
-            ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
-
-            // there has to be a smarter way to do this generically... iterate
-            // through valid field names for class
-            boolean seenCreatorFields = false;
-
             Set<CellMetadata> requiredFields = bulkUploadTemplateService.getRequiredFields(getAllValidFields());
             requiredFields.remove(cellLookupMap.get(BulkUploadTemplate.FILENAME));
             // iterate through the spreadsheet
             try {
-                for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
-                    String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
-                    String name = getColumnNames().get(columnIndex);
-                    CellMetadata cellMetadata = cellLookupMap.get(name);
-                    logger.trace("cell metadata: {}", cellMetadata);
-
-                    if (StringUtils.isBlank(name) || StringUtils.isBlank(value) || (cellMetadata == null)) {
-                        continue;
-                    }
-
-                    Class<?> mappedClass = cellMetadata.getMappedClass();
-                    boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
-                    boolean resourceSubtypeAssignableFrom = false;
-                    if ((mappedClass != null) && (resourceToProcess != null)) {
-                        resourceSubtypeAssignableFrom = mappedClass.isAssignableFrom(resourceToProcess.getClass());
-                    }
-                    boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
-                    boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
-                    if ((cellMetadata == null) || !((mappedClass != null) && (resourceSubtypeAssignableFrom
-                            || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
-                        if (mappedClass != null) {
-                            throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type",
-                                    (List<?>) Arrays.asList(filename, name, resourceToProcess.getResourceType()));
-                        }
-                    }
-                    requiredFields.remove(cellMetadata);
-                    if (resourceAssignableFrom) {
-                        try {
-                            reflectionService.validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
-                        } catch (RuntimeException re) {
-                            asyncUpdateReceiver.addError(re);
-                        }
-                    } else {
-                        if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
-
-                            logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
-                            if (resourceCreatorAssignableFrom) {
-                                seenCreatorFields = true;
-                                reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
-
-                                // FIXME: This is a big assumption that role is
-                                // the last field and then we repeat
-                                reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
-                                creatorProxy = new ResourceCreatorProxy();
-                                seenCreatorFields = false;
-                            }
-                            if (Person.class.isAssignableFrom(mappedClass)) {
-                                reflectionService.validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
-                            }
-                            if (Institution.class.isAssignableFrom(mappedClass)) {
-                                logger.trace("{} ", cellMetadata);
-                                Object bean = creatorProxy.getInstitution();
-                                if (cellMetadata.getName().contains("Person.Institution")) {
-                                    if (creatorProxy.getPerson().getInstitution() == null) {
-                                        creatorProxy.getPerson().setInstitution(new Institution());
-                                    }
-                                    bean = creatorProxy.getPerson().getInstitution();
-                                }
-                                reflectionService.validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
-                            }
-                        }
-                    }
-                }
-                if (seenCreatorFields) {
-                    reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
-                }
-                logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
-                if (requiredFields.size() > 0) {
-                    List<String> required = (List<String>) CollectionUtils.collect(requiredFields,
-                            new BeanToPropertyValueTransformer("displayName"));
-                    throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",
-                            Arrays.asList(filename, StringUtils.join(required, ", ")));
-                }
+                processRowContents(requiredFields, evaluator, row, resourceToProcess, filename, startColumnIndex, endColumnIndex);
             } catch (Throwable t) {
                 logger.debug("excel mapping error: {}", t.getMessage(), t);
                 resourceToProcess.setStatus(Status.DELETED);
@@ -272,17 +205,107 @@ public class BulkManifestProxy implements Serializable {
                     Arrays.asList(StringUtils.join(allFilenames.toArray(), ", "))));
         }
     }
+    
+    private void processRowContents( Set<CellMetadata> requiredFields, FormulaEvaluator evaluator, Row row, Resource resourceToProcess, String filename, int startColumnIndex, int endColumnIndex) {
+        // there has to be a smarter way to do this generically... iterate
+        // through valid field names for class
+//        boolean seenCreatorFields = false;
+        ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
+
+        for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
+            String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
+            String name = getColumnNames().get(columnIndex);
+            CellMetadata cellMetadata = cellLookupMap.get(name);
+            logger.trace("cell metadata: {}", cellMetadata);
+
+            if (StringUtils.isBlank(name) || StringUtils.isBlank(value) || (cellMetadata == null)) {
+                continue;
+            }
+
+            Class<?> mappedClass = cellMetadata.getMappedClass();
+            boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
+            boolean resourceSubtypeAssignableFrom = false;
+            if ((mappedClass != null) && (resourceToProcess != null)) {
+                resourceSubtypeAssignableFrom = mappedClass.isAssignableFrom(resourceToProcess.getClass());
+            }
+            boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
+            boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
+            if ((cellMetadata == null) || !((mappedClass != null) && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
+                if (mappedClass != null) {
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type",
+                            (List<?>) Arrays.asList(filename, name, resourceToProcess.getResourceType()));
+                }
+            }
+            requiredFields.remove(cellMetadata);
+            if (resourceAssignableFrom) {
+                try {
+                    reflectionService.validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
+                } catch (RuntimeException re) {
+                    asyncUpdateReceiver.addError(re);
+                }
+            } else {
+                if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
+                    creatorProxy = buildResourceCreator(resourceCreatorAssignableFrom, creatorAssignableFrom,resourceToProcess, creatorProxy, mappedClass, cellMetadata, value);
+                }
+            }
+        }
+        logger.debug("{}", creatorProxy);
+        if (creatorProxy.isValid()) {
+            reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
+        }
+        
+        logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
+        if (requiredFields.size() > 0) {
+            List<String> required = (List<String>) CollectionUtils.collect(requiredFields, new BeanToPropertyValueTransformer("displayName"));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",
+                    Arrays.asList(filename, StringUtils.join(required, ", ")));
+        }
+    }
     
 
+
+    private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess, ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
+
+        logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
+        
+        if (creatorProxy.getSeenImportFieldNames().contains(cellMetadata.getPropertyName())) {
+            creatorProxy = reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
+        }
+        creatorProxy.getSeenImportFieldNames().add(cellMetadata.getPropertyName());
+        
+        if (resourceCreatorAssignableFrom) {
+            reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
+        }
+        if (Person.class.isAssignableFrom(mappedClass)) {
+            if (!creatorProxy.getInstitution().hasNoPersistableValues()) {
+                creatorProxy = reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
+            }
+            reflectionService.validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
+        }
+        if (Institution.class.isAssignableFrom(mappedClass)) {
+            logger.trace("{} ", cellMetadata);
+            Institution bean = creatorProxy.getInstitution();
+            if (cellMetadata.getName().contains("Person.Institution")) {
+                if (creatorProxy.getPerson().getInstitution() == null) {
+                    creatorProxy.getPerson().setInstitution(new Institution());
+                }
+                bean = creatorProxy.getPerson().getInstitution();
+            } else if (!creatorProxy.getPerson().hasNoPersistableValues()) {
+                creatorProxy = reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
+            }
+            
+            reflectionService.validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
+        }
+        return creatorProxy;
+    }
 
     /**
      * Check whether this is one of the test file names, or is there something wrong with the
      * resource?
      */
     private boolean shouldSkipFilename(String filename, Resource resourceToProcess) {
-        if (filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
-                || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
+        if (filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)  || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
             logger.debug("skipping template sample filenames (example...)");
             return true;
         }
@@ -292,9 +315,10 @@ public class BulkManifestProxy implements Serializable {
     /**
      * Confirm that a @link ResourceCreator is valid, and then set it properly
      * on the @link Resource
+     * @return 
      * 
      */
-    private void reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy, EntityService entityService) {
+    private ResourceCreatorProxy reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy, EntityService entityService) {
         ResourceCreator creator = proxy.getResourceCreator();
         logger.info("reconciling creator... {}", creator);
         if (creator.isValidForResource(resource)) {
@@ -309,6 +333,7 @@ public class BulkManifestProxy implements Serializable {
                     Arrays.asList(creator.getCreator().getName(),
                             creator.getRole(), resource.getResourceType()));
         }
+        return new ResourceCreatorProxy();
     }
 
     

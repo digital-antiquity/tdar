@@ -21,10 +21,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
@@ -37,6 +40,7 @@ import org.tdar.utils.MessageHelper;
  * @author Adam Brin
  * 
  */
+@Component
 public class GeoSearchDao {
 
     private static boolean databaseEnabled;
@@ -223,8 +227,9 @@ public class GeoSearchDao {
     }
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings
-    @Qualifier("tdarGeoDataSource")
-    public void setDataSource(DataSource dataSource) {
+    @Autowired(required=false)
+    @Lazy(true)
+    public void setDataSource(@Qualifier("tdarGeoDataSource") DataSource dataSource) {
         try {
             setEnabled(true);
             setJdbcTemplate(new JdbcTemplate(dataSource));

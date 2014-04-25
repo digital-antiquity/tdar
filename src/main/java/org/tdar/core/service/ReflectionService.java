@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -46,7 +48,10 @@ import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.utils.Pair;
@@ -72,6 +77,9 @@ public class ReflectionService {
     private static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
     private Map<String, Class<Persistable>> persistableLookup;
 
+    @Autowired
+    GenericDao genericDao;
+    
     /**
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
@@ -747,6 +755,58 @@ public class ReflectionService {
             }
         }
         return result;
+    }
+
+    public void walkObject(Persistable p) {
+        logger.debug("{} {}", p.getClass().getCanonicalName(), p);
+        Set<String> seen = new HashSet<>();
+        walkObject(p,0,seen);
+    }
+    
+    private String makeKey(Persistable p) {
+        return String.format("%s-%s",p.getClass().getSimpleName(), p.getId());
+    }
+    
+    public void walkObject(Persistable p, int indent, Set<String> seen) {
+        List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields = findAllPersistableFields(p.getClass());
+        String key = makeKey(p);
+        if (seen.contains(key)) {
+            logger.debug("{}[{}] {}",StringUtils.repeat("| ", indent +1),"seen", p); 
+            return;
+        }
+        seen.add(key);
+        for (Pair<Field, Class<? extends Persistable>> pair : findAllPersistableFields) {
+            Object content = callFieldGetter(p, pair.getFirst());
+            if (content == null) {
+                logger.trace("{}{}", StringUtils.repeat("| ", indent+1), pair.getFirst());
+                continue;
+            }
+            logger.trace("{}, {}", content, pair.getFirst());
+            if (Collection.class.isAssignableFrom(content.getClass())) {
+                @SuppressWarnings("unchecked")
+                Collection<Persistable> originalList = (Collection<Persistable>) content;
+                Collection<Persistable> contents = new ArrayList<Persistable>(originalList);
+                // using a separate collection to avoid concurrent modification of bi-directional double-lists
+                if (CollectionUtils.isNotEmpty(contents)) {
+                    logger.debug("{}{}",StringUtils.repeat("| ", indent +1),pair.getFirst().getName()); 
+                }
+                Iterator<Persistable> iterator = contents.iterator();
+                while (iterator.hasNext()) {
+                    Persistable p_ = iterator.next();
+                    boolean sessionContains = genericDao.sessionContains(p_);
+                    logger.debug("{}[{}] {}",StringUtils.repeat("| ", indent +2),sessionContains, p_);
+                    if (sessionContains) {
+                        walkObject(p_, indent + 2, seen);
+                    }
+                }
+            } else {
+                boolean sessionContains = genericDao.sessionContains(content);
+                logger.debug("{}[{}] {} {}",StringUtils.repeat("| ", indent +1), sessionContains, pair.getFirst().getName(), content);
+                if (sessionContains) {
+                    walkObject((Persistable)content, indent + 1, seen);
+                }
+            }
+        }
     }
 
 }

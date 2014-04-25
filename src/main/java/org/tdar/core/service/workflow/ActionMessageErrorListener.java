@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.struts.ErrorListener;
 
 public class ActionMessageErrorListener implements Serializable, ActionMessageErrorSupport {
 
@@ -82,4 +83,10 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     public void setMoreInfoUrlKey(String url) {
         getMoreInfoUrlKeys().add(url);
     }
+
+    @Override
+    public void registerErrorListener(ErrorListener e) {
+        return;
+    }
+
 }

@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
     <#macro toolbarAdditions>
         <#if editable>
@@ -11,12 +12,12 @@
     </#macro>
 
     <#macro afterBasicInfo>
-        <@view.codingRules>
+        <@common.codingRules>
             <#if codingSheet.defaultOntology?has_content>
             <p><b>Ontology:</b> <a href='<@s.url value="/${codingSheet.defaultOntology.absoluteUrl}"/>'>${codingSheet.defaultOntology.title}</a></p>
             </#if>
             <@view.categoryVariables />
-        </@view.codingRules>
+        </@common.codingRules>
     </#macro>
 
     <#macro localJavascript>

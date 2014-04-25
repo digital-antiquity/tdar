@@ -281,4 +281,13 @@ public final class WorkflowContext implements Serializable {
         this.isErrorFatal = isErrorFatal;
     }
 
+    public void clear() {
+        transientResource = null;
+        versions = null;
+        originalFiles = null;
+        
+        // TODO Auto-generated method stub
+        
+    }
+
 }

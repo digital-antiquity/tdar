@@ -73,6 +73,8 @@ import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;
 
+
+
 /**
  * $Id$
  * 
@@ -330,9 +332,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
+        transientDatasetToPersist = null;
 
-        getDao().merge(dataset);
-        // getDao().synchronize();
+        dataset = getDao().merge(dataset);
     }
 
     /*

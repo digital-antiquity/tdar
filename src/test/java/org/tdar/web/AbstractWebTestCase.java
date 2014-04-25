@@ -216,7 +216,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertFalse("An error ocurred" + internalPage.getWebResponse().getContentAsString(), statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertFalse("An error ocurred @ " +path + " ==> " + internalPage.getWebResponse().getContentAsString(), statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         return statusCode;
@@ -899,6 +899,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @After
     public void cleanup() {
         webClient.closeAllWindows();
+        webClient.getCookieManager().clearCookies();
+        webClient.getCache().clear();
     }
 
     public Long extractTdarIdFromCurrentURL() {

@@ -28,11 +28,6 @@ public class SessionData implements Serializable {
     private String returnUrl;
     private String[] parameters;
 
-    public SessionData()
-    {
-        super();
-    }
-
     public TdarUser getPerson() {
         if (authenticationToken == null) {
             return null;

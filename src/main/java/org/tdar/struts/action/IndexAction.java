@@ -102,25 +102,30 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Actions({
-            @Action("about"),
-            @Action(results = {
-                    @Result(name = SUCCESS, location = "about.ftl")
-            }),
-            @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", params = { "contentType",
-                    "text/html" }) }),
-            @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
-    })
+    @Action(value="about", results = { @Result(name = SUCCESS, location = "about.ftl") })
     @HttpOnlyIfUnauthenticated
     public String about() {
-        getResourceService().setupWorldMap(worldMapData);
+        worldMap();
 
-        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         try {
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
         } catch (Exception e) {
             getLogger().warn("RssParsingException happened", e);
         }
+        featuredItems();
+        resourceStats();
+        return SUCCESS;
+    }
+
+    @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
+    public String worldMap() {
+        getResourceService().setupWorldMap(worldMapData);
+        return SUCCESS;
+    }
+
+    @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", 
+            params = { "contentType","text/html" }) })
+    public String featuredItems() {
         try {
             for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
@@ -135,6 +140,13 @@ public class IndexAction extends AuthenticationAware.Base {
         } catch (IndexOutOfBoundsException ioe) {
             getLogger().debug("no featured resources found");
         }
+        return SUCCESS;
+    }
+
+    @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = "freemarker", 
+            params = { "contentType", "text/html" }) })
+    public String resourceStats() {
+        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getResourceType().isSupporting()) {

@@ -158,35 +158,31 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+    @Action(value = DELETE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
+        getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
+        checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
         if (isPostRequest() && DELETE.equals(getDelete())) {
-            try {
-                checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
-                checkForNonContributorCrud();
-                if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                    addActionError(getText("abstractPersistableController.cannot_delete"));
-                    return CONFIRM;
-                }
-                logAction("DELETING");
-                // FIXME: deleteCustom might as well just return a boolean in this current implementation
-                // should we return the result name specified by deleteCustom() instead?
-                if (deleteCustom() != SUCCESS) {
-                    return ERROR;
-                }
-
-                delete(persistable);
-                getGenericService().delete(persistable);
-            } catch (TdarActionException exception) {
-                throw exception;
-            } catch (Exception e) {
-                addActionErrorWithException(
-                        getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
+            checkForNonContributorCrud();
+            if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
+                addActionError(getText("abstractPersistableController.cannot_delete"));
+                return CONFIRM;
             }
+            logAction("DELETING");
+            // FIXME: deleteCustom might as well just return a boolean in this current implementation
+            // should we return the result name specified by deleteCustom() instead?
+            if (deleteCustom() != SUCCESS) {
+                return ERROR;
+            }
+
+            delete(persistable);
+            getGenericService().delete(persistable);
             return SUCCESS;
         }
+
         return CONFIRM;
     }
 
@@ -609,7 +605,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      */
     @Override
     public void prepare() {
-
+        P p = null;
         if (isPersistableIdSet()) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
@@ -617,13 +613,15 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             setPersistable(createPersistable());
         } else {
 
-            P p = loadFromId(getId());
+            p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            getLogger().info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
+        if( !ADD.equals(getActionName())) {
+            getLogger().info("id:{}, persistable:{}", getId(), p);
+        }
     }
 
     protected boolean isPersistableIdSet() {

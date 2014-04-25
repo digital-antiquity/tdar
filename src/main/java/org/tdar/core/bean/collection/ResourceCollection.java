@@ -152,7 +152,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
-    // @Boost(1.5f)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -166,10 +165,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private String adminDescription;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY,
-            mappedBy = "resourceCollections", targetEntity = Resource.class)
-    // cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE },
-    // @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "collection_id") })
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)

@@ -249,7 +249,6 @@
      * @private
      */
     function _addColumn(strOntologyId) {
-        var colNum = $("#drplist tr").children().length + 1;
 
         var cols = $("#drplist tr td");
         console.log(cols);
@@ -260,6 +259,8 @@
         if ($(".drg", cols.last()).size() == 0 && parseInt(strOntologyId) > 0) {
             cols.last().remove();
         }
+
+        var colNum = $("#drplist td").size() + 1;
         var remove = "<button class='removeColumn'>X</button>";
         if (colNum == 1) {
             remove = "";

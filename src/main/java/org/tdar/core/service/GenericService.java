@@ -30,6 +30,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -326,6 +327,11 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <E> ScrollableResults findAllScrollable(Class<E> persistentClass) {
         return genericDao.findAllScrollable(persistentClass);
+    }
+
+    @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllScrollable(Class<E> persistentClass, int batchSize) {
+        return genericDao.findAllScrollable(persistentClass, batchSize);
     }
 
     /**
@@ -730,6 +736,10 @@ public class GenericService {
     @Transactional
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         return genericDao.findAllWithProfile(class1, ids, profileName);
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return genericDao.sessionContains(entity);
     }
 
 }

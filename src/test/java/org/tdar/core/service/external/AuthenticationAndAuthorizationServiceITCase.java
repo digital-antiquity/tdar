@@ -53,15 +53,14 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
     int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();
 
-    Person user(boolean contributor, int tosVersion, int creatorAgreementVersion) {
-        Person user = new Person("bob", "loblaw", "jim.devos@zombo.com");
+    TdarUser user(boolean contributor, int tosVersion, int creatorAgreementVersion) {
+        TdarUser user = new TdarUser("bob", "loblaw", "jim.devos@zombo.com");
         UserInfo userInfo  = new UserInfo();
         userInfo.setUser(user);
         user.setUserInfo(userInfo);
         userInfo.setContributor(contributor);
         userInfo.setTosVersion(tosVersion);
-        userInfo.setContributorAgreementVersion(creatorAgreementVersion);
-        return user;
+        userInfo.setContributorAgreementVersion(creatorAgreementVersion);        return user;
     }
 
     @Test
@@ -142,7 +141,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
-                Person user = getBasicUser();
+                TdarUser user = getBasicUser();
                 assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
                 user.getUserInfo().setContributorAgreementVersion(0);
                 genericService.saveOrUpdate(user);
@@ -163,18 +162,16 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         userInfo.setUser(person);
         person.setUserInfo(userInfo);
         person.getUserInfo().setContributor(true);
-        AbstractConfigurableService<AuthenticationProvider> prov = (AbstractConfigurableService<AuthenticationProvider>) authenticationAndAuthorizationService
-                .getProviders();
-        List<AuthenticationProvider> allServices = new ArrayList<>(prov.getAllServices());
+
+        AuthenticationProvider oldProvider = authenticationAndAuthorizationService.getProvider();
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
-        prov.getAllServices().clear();
         Properties crowdProperties = new Properties();
         crowdProperties.put("application.name", "tdar.test");
         crowdProperties.put("application.password", "tdar.test");
         crowdProperties.put("application.login.url", "http://localhost/crowd");
         crowdProperties.put("crowd.server.url", "http://localhost/crowd");
 
-        prov.getAllServices().add(new CrowdRestDao(crowdProperties));
+        authenticationAndAuthorizationService.setProvider(new CrowdRestDao(crowdProperties));
 
         String password = "super.secret";
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
@@ -197,8 +194,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
             logger.error("errors: {} ", controller.getActionErrors());
         }
 
-        prov.getAllServices().clear();
-        prov.getAllServices().addAll(allServices);
+        authenticationAndAuthorizationService.setProvider(oldProvider);
         logger.info("errors: {}", controller.getActionErrors());
         assertEquals("result is not input :" + execute, execute, Action.ERROR);
         logger.info("person:{}", person);

@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -33,7 +32,6 @@ import org.tdar.core.service.EntityService;
  * *As you might expect,  authentication-tests will probably fail
  * ** This class has failsafes to prevent use in production.  Don't rely on them.
  */
-@Service
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,7 +47,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public boolean isConfigured() {
-        return Boolean.parseBoolean(System.getProperty("enableMockAuth", "false"));
+        return true;
     }
 
     @Override

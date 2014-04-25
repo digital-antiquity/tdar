@@ -85,7 +85,6 @@ public class WorkflowContextService {
                     // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
                     // FIXME: look at removing
                     genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                    logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
                     datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                     genericDao.saveOrUpdate(dataset);

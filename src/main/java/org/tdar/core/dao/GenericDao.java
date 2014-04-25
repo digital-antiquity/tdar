@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -303,6 +304,10 @@ public class GenericDao {
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
+    public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
+        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> List<T> findByExampleLike(Class<T> persistentClass, T entity, MatchMode matchMode, List<String> ignoreProperties) {
         Example example = Example.create(entity);
@@ -346,21 +351,32 @@ public class GenericDao {
     }
 
     public <T> void persist(T entity) {
-        getCurrentSession().persist(entity);
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            getCurrentSession().persist(entity);
+        }
     }
 
     public <T> void save(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.save(entity);
     }
 
     public <T> void saveOrUpdate(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.saveOrUpdate(entity);
     }
 
     public <T> void update(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.update(entity);
     }
 
@@ -413,6 +429,10 @@ public class GenericDao {
         for (T entity : entities) {
             session.evict(entity);
         }
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return getCurrentSession().contains(entity);
     }
 
     public <T> void detachFromSessionAndWarn(T entity) {

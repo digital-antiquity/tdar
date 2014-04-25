@@ -42,7 +42,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
-import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -108,13 +108,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     OverdrawnAccountUpdate oau;
 
     @Autowired
-    FilestoreWeeklyLoggingProcess fsp;
+    WeeklyFilestoreLoggingProcess fsp;
 
     @Test
     public void testVerifyProcess() {
         fsp.execute();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        assertTrue(received.getSubject().contains(FilestoreWeeklyLoggingProcess.PROBLEM_FILES_REPORT));
+        assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());

@@ -32,6 +32,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,6 +46,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -72,6 +75,7 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
+@Component
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
@@ -324,6 +328,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return "42P01";
     }
 
+    @Qualifier("tdarDataImportDataSource")
+    @Autowired(required=false)
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }

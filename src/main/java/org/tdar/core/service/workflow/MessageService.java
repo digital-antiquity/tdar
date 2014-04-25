@@ -3,11 +3,14 @@ package org.tdar.core.service.workflow;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -110,6 +113,7 @@ public class MessageService {
     public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
         List<Long> irfIds = new ArrayList<>();
+        Set<InformationResource> resources = new HashSet<>();
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             InformationResourceFile irf = version.getInformationResourceFile();
             if (!irfIds.contains(irf.getId())) {
@@ -117,33 +121,28 @@ public class MessageService {
                 genericDao.saveOrUpdate(irf);
                 // FIXME: when we reimplement the message queue, this will need to be adjusted to do a flush here, otherwise, we cannot guarantee that the save
                 // will happen before the evict
-                // genericDao.detachFromSession(irf);
+                resources.add(irf.getInformationResource());
             }
         }
-        // w.setWorkflowContext(ctx);
-        // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
-        // RabbitTemplate template = getRabbitTemplate(getFilesToProcessQueue());
-        // template.setRequireAck(true);
-        // template.convertAndSend(ctx.toXML());
-        // } else {
-        boolean success = false;
+//        genericDao.detachFromSession(resources);
+        resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             ctx.setXmlService(xmlService);
-            success = workflow_.run(ctx);
+            boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.
             // Surely the plan is to immediately show the user a result page with "your request is being processed" and then
             // to use AJAX to poll the server for the result via a status bar? Or an email. And the following is to be moved to
             // be part of that call back process?
             workflowContextService.processContext(ctx);
+            ctx.clear();
+            return success;
         } catch (Exception e) {
             // trying to get a more useful debug message...
             logger.warn("Unhandled exception while processing file: " + Arrays.toString(informationResourceFileVersions), e);
             throw new TdarRecoverableRuntimeException("messageService.error_processing");
         }
 
-        // }
-        return success;
     }
 
     /**

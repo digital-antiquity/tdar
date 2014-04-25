@@ -404,12 +404,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         // Account localAccount = account;
         Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
-        // for (Resource r : account.getResources()) {
-        // for (ResourceCollection rc : r.getResourceCollections()) {
-        // rc.setUpdater(getDao().merge(rc.getUpdater()));
-        // rc.setOwner(getDao().merge(rc.getOwner()));
-        // }
-        // }
+
+        // try this without the merge
         getDao().merge(account);
 
         for (Resource resource : resourcesToEvaluate) {

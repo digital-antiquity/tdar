@@ -137,11 +137,10 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testDegenerateCodingSheetWithTabs() throws IOException {
-        getControllers().clear();
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
         setIgnoreActionErrors(true);
-        assertTrue(CollectionUtils.isNotEmpty(getControllers().get(0).getActionErrors()));
+        assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 
     @Test
