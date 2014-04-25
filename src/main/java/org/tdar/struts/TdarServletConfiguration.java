@@ -39,6 +39,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     private String failureMessage;
 
     public TdarServletConfiguration() {
+        logger.debug("Initializing tDAR Servlet");
         try {
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {

@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +48,7 @@ public class TdarAppConfiguration implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public TdarAppConfiguration() {
-        logger.debug("HI");
+        logger.debug("Initializing tDAR Application Context");
     }
     
     @Bean(name="sessionFactory")
@@ -90,7 +89,6 @@ public class TdarAppConfiguration implements Serializable {
     @Bean(name="sessionData")
     @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public SessionData getSessionData() {
-        logger.debug("new session");
         return new SessionData();
     }
 

@@ -111,7 +111,7 @@ public class EZIDDao implements ExternalIDProvider {
                 StringUtils.isNotBlank(getDOIProviderUsername()) && StringUtils.isNotBlank(getDOIProviderPassword())) {
             return true;
         }
-        logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);
+        logger.warn("a required parameter for the EzidDao was not provided. " + configIssue);
         return false;
     }
 
