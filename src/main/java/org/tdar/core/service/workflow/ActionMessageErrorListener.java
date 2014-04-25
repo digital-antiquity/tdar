@@ -17,7 +17,6 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     private List<String> stackTraces = new ArrayList<>();
     private List<String> errorCodes = new ArrayList<>();
     private List<String> moreInfoUrlKeys = new ArrayList<>();
-    private boolean shouldDetach = false;
     private Resource resource;
 
     @Override
@@ -83,16 +82,6 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     @Override
     public void setMoreInfoUrlKey(String url) {
         getMoreInfoUrlKeys().add(url);
-    }
-
-    @Override
-    public boolean isShouldDetach() {
-        return shouldDetach;
-    }
-
-    @Override
-    public void setShouldDetach(boolean shouldDetach) {
-        this.shouldDetach = shouldDetach;
     }
 
     @Override

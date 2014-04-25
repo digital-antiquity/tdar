@@ -634,7 +634,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
             collections.addAll(resourceCollections);
         }
-        assertEquals("we should have a total of 4 collections (2 internal +2 shared)", 4, collections.size());
+        assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
         for (ResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
             if (col.isInternal()) {
@@ -643,7 +643,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(2, col.getResources().size());
             }
         }
-        assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
+        assertEquals("we should have one new adhoc collection", 1, newSharedCount - origSharedCount);
         // ensure N internal collections created
         // String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
         // newInternalCount, origInternalCount);

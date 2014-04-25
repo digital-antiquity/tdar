@@ -16,8 +16,4 @@ public interface ActionMessageErrorSupport {
     
     void registerErrorListener(ErrorListener e);
 
-    boolean isShouldDetach();
-
-    void setShouldDetach(boolean shouldDetach);
-
 }
