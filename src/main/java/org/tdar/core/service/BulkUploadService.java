@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -17,7 +15,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -37,9 +34,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -47,7 +42,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.bulk.BulkFileProxy;
 import org.tdar.core.service.bulk.BulkManifestProxy;
@@ -253,13 +247,8 @@ public class BulkUploadService {
             if (collection.isInternal()) {
                 continue;
             }
-            try {
-                ResourceCollection in = importService.processIncoming(collection, null, authorizedUser);
-                shared.add(genericDao.merge(in));
-                iter.remove();
-            } catch (APIException e) {
-                e.printStackTrace();
-            }
+            iter.remove();
+            shared.add(genericDao.merge(collection));
         }
         resourceTemplate.getResourceCollections().addAll(shared);
 
