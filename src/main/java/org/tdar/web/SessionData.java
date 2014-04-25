@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.entity.AuthenticationToken;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**
@@ -91,7 +90,7 @@ public class SessionData implements Serializable {
     }
 
     public boolean isContributor() {
-        Person person = getPerson();
+        TdarUser person = getPerson();
         if (person == null) {
             return false;
         }

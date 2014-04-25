@@ -66,6 +66,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
     }
 
+    public TdarUser findUserByEmail(final String username) {
+        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("email", username.toLowerCase())).uniqueResult();
+    }
+
     @SuppressWarnings("unchecked")
     public Set<Person> findByLastName(String lastName) {
         Criteria criteria = getCriteria().add(Restrictions.eq("lastName", lastName));
@@ -138,10 +142,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Person> findRecentLogins() {
-        Criteria criteria = getCriteria();
+    public List<TdarUser> findRecentLogins() {
+        Criteria criteria = getCriteria(TdarUser.class);
         criteria.createAlias("userInfo","info");
-        criteria.add(Restrictions.eq("registered", true));
+//        criteria.add(Restrictions.eq("registered", true));
         criteria.add(Restrictions.isNotNull("info.lastLogin"));
         criteria.addOrder(Property.forName("info.lastLogin").desc());
         criteria.setMaxResults(25);
@@ -163,7 +167,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return ids;
     }
 
-    public void registerLogin(Person authenticatedUser) {
+    public void registerLogin(TdarUser authenticatedUser) {
         UserInfo info  = authenticatedUser.getUserInfo();
         info.setLastLogin(new Date());
         info.incrementLoginCount();

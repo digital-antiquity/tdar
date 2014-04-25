@@ -87,7 +87,7 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
     private List<InformationResourceFile> files;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
-    private List<Person> recentLogins;
+    private List<TdarUser> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
     private Map<String, Long> fileStats;
@@ -325,11 +325,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalCollectionStats = historicalCollectionStats;
     }
 
-    public List<Person> getRecentLogins() {
+    public List<TdarUser> getRecentLogins() {
         return recentLogins;
     }
 
-    public void setRecentLogins(List<Person> recentLogins) {
+    public void setRecentLogins(List<TdarUser> recentLogins) {
         this.recentLogins = recentLogins;
     }
 

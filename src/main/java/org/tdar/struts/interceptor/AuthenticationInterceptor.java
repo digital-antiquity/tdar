@@ -104,7 +104,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         return Action.LOGIN;
     }
 
-    private String interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
+    private String interceptPendingNotices(ActionInvocation invocation, TdarUser user) throws Exception {
 
         Object action = invocation.getAction();
         // user is authenticated and authorized to perform requested action.

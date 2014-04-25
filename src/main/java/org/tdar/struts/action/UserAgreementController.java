@@ -10,7 +10,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -27,7 +27,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     private List<AuthNotice> authNotices = new ArrayList<>();
     private List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
     private String userResponse = "";
-    private Person user;
+    private TdarUser user;
 
     @Override
     public void prepare() {

@@ -349,7 +349,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Person> showRecentLogins() {
+    public List<TdarUser> showRecentLogins() {
         return getDao().findRecentLogins();
     }
 
@@ -359,7 +359,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param authenticatedUser
      */
     @Transactional(readOnly = false)
-    public void registerLogin(Person authenticatedUser) {
+    public void registerLogin(TdarUser authenticatedUser) {
         getDao().registerLogin(authenticatedUser);
     }
 

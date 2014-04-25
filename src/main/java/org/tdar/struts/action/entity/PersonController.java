@@ -59,14 +59,16 @@ public class PersonController extends AbstractCreatorController<Person> {
     public String loadEditMetadata() throws TdarActionException {
         String ret = super.loadEditMetadata();
         email = getPersistable().getEmail();
-        UserInfo userInfo = getPersistable().getUserInfo();
-        if (userInfo != null) {
-            setProxyNote(userInfo.getProxyNote());
-            if (userInfo.getProxyInstitution() != null) {
-                setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+        if (getPersistable() instanceof TdarUser) {
+            UserInfo userInfo = ((TdarUser) getPersistable()).getUserInfo();
+            if (userInfo != null) {
+                setProxyNote(userInfo.getProxyNote());
+                if (userInfo.getProxyInstitution() != null) {
+                    setProxyInstitutionName(userInfo.getProxyInstitution().getName());
+                }
+                setContributorReason(userInfo.getContributorReason());
+                setContributor(userInfo.getContributor());
             }
-            setContributorReason(userInfo.getContributorReason());
-            setContributor(userInfo.getContributor());
         }
         return ret;
     }
@@ -83,7 +85,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     public void validateEmailRequiredForActiveUsers() {
-        if (getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(email)) {
+        if (getPersistable().isActive() && getPersistable() instanceof TdarUser && ((TdarUser)getPersistable()).isRegistered() && StringUtils.isBlank(email)) {
             addFieldError("email", getText("userAccountController.email_invalid"));
         }
     }
@@ -140,19 +142,21 @@ public class PersonController extends AbstractCreatorController<Person> {
             person.setInstitution(persistentInstitution);
         }
 
-        UserInfo userInfo = getPersistable().getUserInfo();
-        if (userInfo != null) {
-            if (StringUtils.isBlank(proxyInstitutionName)) {
-                userInfo.setProxyInstitution(null);
-            } else {
-                // if the user changed the person's institution, find or create it
-                Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
-                getLogger().debug("setting institution to persistent: " + persistentInstitution);
-                userInfo.setProxyInstitution(persistentInstitution);
+        if (getPersistable() instanceof TdarUser) {
+            UserInfo userInfo = ((TdarUser)getPersistable()).getUserInfo();
+            if (userInfo != null) {
+                if (StringUtils.isBlank(proxyInstitutionName)) {
+                    userInfo.setProxyInstitution(null);
+                } else {
+                    // if the user changed the person's institution, find or create it
+                    Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+                    getLogger().debug("setting institution to persistent: " + persistentInstitution);
+                    userInfo.setProxyInstitution(persistentInstitution);
+                }
+                userInfo.setContributorReason(contributorReason);
+                userInfo.setProxyNote(proxyNote);
+                userInfo.setContributor(contributor);
             }
-            userInfo.setContributorReason(contributorReason);
-            userInfo.setProxyNote(proxyNote);
-            userInfo.setContributor(contributor);
         }
         getGenericService().saveOrUpdate(person);
         getXmlService().logRecordXmlToFilestore(getPersistable());

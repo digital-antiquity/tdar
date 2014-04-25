@@ -110,10 +110,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="user")
-    private UserInfo userInfo;
-    
-    
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
@@ -272,10 +268,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return comparison;
     }
 
-    public boolean isRegistered() {
-        return userInfo != null;
-    }
-
     public String getRpaNumber() {
         return rpaNumber;
     }
@@ -332,7 +324,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public boolean isDedupable() {
-        return !isRegistered();
+        return true;
     }
 
     public static String[] getIgnorePropertiesForUniqueness() {
@@ -353,7 +345,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
             setPhone(null);
         }
         setRpaNumber(null);
-        return Arrays.asList((Obfuscatable) getInstitution(), getUserInfo());
+        return Arrays.asList((Obfuscatable) getInstitution());
     }
 
     @Override
@@ -437,14 +429,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setOrcidId(String orcidId) {
         this.orcidId = orcidId;
-    }
-
-    public UserInfo getUserInfo() {
-        return userInfo;
-    }
-
-    public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
     }
 
 }

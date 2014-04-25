@@ -70,9 +70,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDuplicateUser() {
-        TdarUser p = new TdarUser();
+        TdarUser p = new TdarUser("Allen","Lee","allen.lee1@asu.edu");
         p.setUsername("allen.lee@asu.edu");
-        p.setEmail("allen.lee1@asu.edu");
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());

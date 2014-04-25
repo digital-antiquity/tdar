@@ -132,7 +132,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             Person persistedPerson = personList.get(i);
 
             // person equality based on db identity. so the two person records should not be equal
-            Person person = new Person();
+            TdarUser person = new TdarUser();
             person.setEmail(persistedPerson.getEmail());
 //            person.setRegistered(persistedPerson.isRegistered());
             UserInfo userInfo  = new UserInfo();

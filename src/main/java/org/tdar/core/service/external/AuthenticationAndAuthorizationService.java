@@ -768,7 +768,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param user
      * @return true if user has pending requirements, otherwise false
      */
-    public boolean userHasPendingRequirements(Person user) {
+    public boolean userHasPendingRequirements(TdarUser user) {
         return !getUserRequirements(user).isEmpty();
     }
 
@@ -776,7 +776,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param user
      * @return List containing pending requirements for the specified user
      */
-    public List<AuthNotice> getUserRequirements(Person user) {
+    public List<AuthNotice> getUserRequirements(TdarUser user) {
         List<AuthNotice> notifications = new ArrayList<>();
         // not public static final because don't work in testing
         Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
@@ -799,7 +799,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param req
      */
     @Transactional(readOnly = false)
-    public void satisfyPrerequisite(Person user, AuthNotice req) {
+    public void satisfyPrerequisite(TdarUser user, AuthNotice req) {
         // not public static final because don't work in testing
         Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
         Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
@@ -819,7 +819,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @see #satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices)
      */
     @Transactional(readOnly = false)
-    void satisfyPrerequisites(Person user, Collection<AuthNotice> notices) {
+    void satisfyPrerequisites(TdarUser user, Collection<AuthNotice> notices) {
         for (AuthNotice notice : notices) {
             satisfyPrerequisite(user, notice);
         }
@@ -836,8 +836,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         // we actually need to update two person instances: the persisted user record, and the detached user
         // associated with the session. We hide this detail from the caller.
-        Person detachedUser = sessionData.getPerson();
-        Person persistedUser = personDao.find(detachedUser.getId());
+        TdarUser detachedUser = sessionData.getPerson();
+        TdarUser persistedUser = personDao.find(TdarUser.class, detachedUser.getId());
         satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
         personDao.saveOrUpdate(persistedUser);
@@ -863,6 +863,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         TdarUser person = person_;
         UserInfo userInfo = person.getUserInfo();
         TdarUser findByUsername = personDao.findByUsername(person.getUsername());
+        TdarUser findByEmail = personDao.findUserByEmail(person.getEmail());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
         if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
             try {
@@ -875,8 +876,13 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             }
         }
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
-        TdarUser user = personDao.findPersonAndConvertToUser(person.getEmail(), person.getUsername());
-        person = reconcilePersonWithTransient(person, user, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+        person = reconcilePersonWithTransient(person, findByEmail, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+        if (Persistable.Base.isTransient(person)) {
+            Person findByEmail2 = personDao.findByEmail(person.getEmail());
+            if (findByEmail2 != null) {
+                person = personDao.findPersonAndConvertToUser(person.getEmail(), person.getUsername());
+            }
+        }
         person.setUserInfo(userInfo);
         userInfo.setUser(person);
         Institution institution = institutionDao.findByName(institutionName);

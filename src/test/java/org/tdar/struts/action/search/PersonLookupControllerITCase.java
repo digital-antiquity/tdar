@@ -86,7 +86,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testRegisteredPersonLookupWithOneResult() {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
         controller.setFirstName("Keit");
         controller.setRegistered("true");
         String result = controller.lookupPerson();

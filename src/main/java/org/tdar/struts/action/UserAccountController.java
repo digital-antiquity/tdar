@@ -238,7 +238,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             addActionError(getText("userAccountController.error_missing_username"));
             return true;
         }
-        Person person = getEntityService().findByUsername(username);
+        TdarUser person = getEntityService().findByUsername(username);
         return ((person != null) && person.isRegistered());
     }
 
