@@ -976,6 +976,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Override
     public void addError(String error) {
         getActionErrors().add(error);
+        if (!ignoreActionErrors) {
+            fail(error);
+        }
     }
 
     public List<String> getActionErrors() {
