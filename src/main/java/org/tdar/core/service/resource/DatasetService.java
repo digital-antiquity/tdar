@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -333,10 +332,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
         transientDatasetToPersist = null;
-        logger.debug("before2: {} [{}]", ObjectUtils.identityToString(dataset), getDao().getCurrentSessionHashCode());
+
         dataset = getDao().merge(dataset);
-        logger.debug("after2: {}", ObjectUtils.identityToString(dataset));
-        // getDao().synchronize();
     }
 
     /*

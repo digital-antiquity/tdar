@@ -2,7 +2,6 @@ package org.tdar.core.service.workflow;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,14 +79,12 @@ public class WorkflowContextService {
                 case GEOSPATIAL:
                 case DATASET:
                     Dataset dataset = (Dataset) resource;
-                    logger.debug("between: {} [{}]", ObjectUtils.identityToString(dataset), genericDao.getCurrentSessionHashCode());
                     if (ctx.getTransientResource() == null) {
                         break;
                     }
                     // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
                     // FIXME: look at removing
                     genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                    logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
                     datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                     genericDao.saveOrUpdate(dataset);
