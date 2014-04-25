@@ -11,8 +11,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -121,14 +123,11 @@ public class ImportService {
         }
 
         validateInvalidImportFields(incomingResource);
+        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
+        incomingResource.markUpdated(blessedAuthorizedUser);
 
         reconcilePersistableChildBeans(authorizedUser, incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
-        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
-        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser),
-                System.identityHashCode(blessedAuthorizedUser));
-        incomingResource.markUpdated(blessedAuthorizedUser);
-        // genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
             ((InformationResource) incomingResource).setDate(((InformationResource) incomingResource).getDate());
@@ -206,6 +205,10 @@ public class ImportService {
         return created;
     }
 
+    private String makeKey(Persistable p) {
+        return String.format("%s-%s", p.getClass().getSimpleName(), p.getId());
+    }
+    
     /**
      * Find all of the @link Persistable children and look them up in the database, using the entries that have ids or equivalents in tDAR before using the ones
      * that are attached to the XML.
@@ -216,9 +219,11 @@ public class ImportService {
      * @throws APIException
      */
     @Transactional(readOnly = false)
-    public <R extends Resource> R reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
+    public <R extends Persistable> R reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
+        Map<String, Persistable> knownObjects = new HashMap<>();
+        knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
             Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
@@ -236,14 +241,15 @@ public class ImportService {
                 originalList.clear();
                 while (iterator.hasNext()) {
                     Persistable p = iterator.next();
-                    toAdd.add(processIncoming(p, incomingResource, authorizedUser));
+                    toAdd.add(processIncoming(p, incomingResource, authorizedUser, knownObjects));
                 }
                 if (toAdd.size() > 0) {
                     logger.info("{} adding ({})", contents, toAdd);
                 }
                 originalList.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
-                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
+                logger.trace("setter: {}", pair.getFirst());
+                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser, knownObjects));
             }
         }
         return incomingResource;
@@ -315,26 +321,25 @@ public class ImportService {
      * @throws APIException
      */
     @SuppressWarnings("unchecked")
-    public <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
+    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, Person authenticatedUser, Map<String,Persistable> knownObjects) throws APIException {
         P toReturn = property;
-
         // if we're not transient, find by id...
         if (Persistable.Base.isNotNullOrTransient(property)) {
-            // if (property instanceof HasResource<?> && toReturn instanceof Validatable && ((Validatable)toReturn).isValidForController()) {
-            // if (property instanceof ResourceCreator) {
-            // entityService.findOrSaveResourceCreator((ResourceCreator) property);
-            // ((ResourceCreator) property).isValidForResource(resource);
-            // }
-            //
-            // return toReturn;
-            // } else {
-            toReturn = (P) findById(property.getClass(), property.getId());
-            if (toReturn instanceof ResourceCollection) {
-                ResourceCollection collection = (ResourceCollection) toReturn;
-                collection.getResources().add(resource);
-                resource.getResourceCollections().add(collection);
+            logger.debug("processing: {}", property);
+            P obj = (P) knownObjects.get(makeKey(property));
+            if (obj != null) {
+                toReturn = obj;
+            } else {
+                logger.debug("finding: {} {}", property, genericService.sessionContains(property));
+                toReturn = (P) findById(property.getClass(), property.getId());
+                logger.debug("\t\t\t {}",  genericService.sessionContains(property));
+                knownObjects.put(makeKey(toReturn),toReturn);
             }
-            // }
+            if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
+                ResourceCollection collection = (ResourceCollection) toReturn;
+                collection.getResources().add((Resource)resource);
+                ((Resource)resource).getResourceCollections().add(collection);
+            }
         }
         else // otherwise, reconcile appropriately
         {
@@ -351,15 +356,21 @@ public class ImportService {
                 }
             }
             if (property instanceof ResourceCreator) {
-                entityService.findOrSaveResourceCreator((ResourceCreator) property);
-                ((ResourceCreator) property).isValidForResource(resource);
+                ResourceCreator creator = (ResourceCreator) property;
+                if (knownObjects.containsKey(makeKey(creator.getCreator()))) {
+                    creator.setCreator((Creator)knownObjects.get(makeKey(creator.getCreator())));
+                } else {
+                    entityService.findOrSaveResourceCreator(creator);
+                }
+                creator.isValidForResource((Resource)resource);
             }
 
-            if (property instanceof ResourceCollection) {
-                ResourceCollection collection = (ResourceCollection) property;
-                resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true,
+            if (property instanceof ResourceCollection && resource instanceof Resource) {
+                ResourceCollection collection = (ResourceCollection)property;
+                collection = reconcilePersistableChildBeans(authenticatedUser, collection);
+//                collection = genericService.merge(collection);
+                resourceCollectionService.addResourceCollectionToResource((Resource)resource, ((Resource)resource).getResourceCollections(), authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
-                ;
             }
 
             if (property instanceof ResourceAnnotation) {
@@ -369,7 +380,7 @@ public class ImportService {
                 ((ResourceAnnotation) property).setResourceAnnotationKey(resolvedKey);
             }
 
-            if (property instanceof Validatable) {
+            if (property instanceof Validatable && !(property instanceof Resource)) {
                 if (!((Validatable) property).isValidForController()) {
                     if (property instanceof Project) {
                         toReturn = (P) Project.NULL;
@@ -399,6 +410,7 @@ public class ImportService {
         if (h == null) {
             throw new TdarRecoverableRuntimeException("error.object_does_not_exist");
         }
+        logger.debug(" {} {}", genericService.sessionContains(h),h );
         return h;
     }
 
