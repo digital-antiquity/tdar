@@ -239,7 +239,9 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
 
         if (Persistable.Base.isNotNullOrTransient(transientPerson.getId())) {
-            getDao().detachFromSession(transientPerson);
+            if (getDao().sessionContains(transientPerson)) {
+                return transientPerson;
+            }
             return find(transientPerson.getId());
         }
 
