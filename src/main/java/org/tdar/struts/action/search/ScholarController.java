@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.DateRange;
@@ -51,6 +52,7 @@ public class ScholarController extends AbstractLookupController {
         statuses.add(Status.ACTIVE);
         param.setStatuses(statuses);
         setSortField(SortOption.DATE_UPDATED);
+        setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         setRecordsPerPage(250);
         DateTime dt = new DateTime();
         DateTime start = dt.withYear(getYear()).withDayOfYear(1);
@@ -72,4 +74,6 @@ public class ScholarController extends AbstractLookupController {
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
     }
+    
+
 }

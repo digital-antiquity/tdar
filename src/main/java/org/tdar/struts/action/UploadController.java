@@ -1,11 +1,10 @@
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,8 +67,12 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = { "contentType", "text/plain" }),
-            @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
+            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = {"contentType", "text/plain"}),
+            @Result(name = ERROR, type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    })
     })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
@@ -116,8 +119,8 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(getActionErrors())) {
             return SUCCESS;
         } else {
-            getLogger().error("{}", getActionErrors());
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            buildJsonError();
             return ERROR;
         }
     }
@@ -182,6 +185,21 @@ public class UploadController extends AuthenticationAware.Base {
         jsonContentLength = jsonBytes.length;
 
         return SUCCESS;
+    }
+
+    //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
+    private void buildJsonError()  {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        result.put("ticket", ticketId);
+        result.put("errors", getActionErrors());
+        String resultJson = "{}";
+        try {
+            resultJson = getXmlService().convertToJson(result);
+        } catch(IOException iox) {
+            getLogger().error("cannot convert actionErrors to xml", iox);
+        }
+        getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
+        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
     }
 
     public List<File> getUploadFile() {

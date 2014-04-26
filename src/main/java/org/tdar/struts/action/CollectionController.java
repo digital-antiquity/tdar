@@ -185,6 +185,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return options;
     }
 
+    @Override
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
@@ -351,6 +352,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return parentId;
     }
 
+    @Override
     public List<Project> getAllSubmittedProjects() {
         List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
@@ -358,6 +360,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     // @DoNotObfuscate
+    @Override
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
@@ -372,6 +375,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
+    @Override
     public List<ResourceType> getResourceTypes() {
         return getResourceService().getAllResourceTypes();
     }
@@ -556,6 +560,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.viewCount = viewCount;
     }
 
+    @Override
     public List<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
