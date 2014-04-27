@@ -201,15 +201,13 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return result.longValue();
     }
 
-    public TdarUser findPersonAndConvertToUser(String email, String username) {
-        Person person  = findByEmail(email);
-        if (person != null) {
-            Long id = person.getId();
-            getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
-            person = null;
-            return find(TdarUser.class, id);
-        }
-        return null;
+    public TdarUser findConvertPersonToUser(Person person, String username) {
+        Long id = person.getId();
+        getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
+        detachFromSession(person);
+        TdarUser toReturn = find(TdarUser.class, id);
+        logger.debug("toReturn: {}", toReturn);
+        return toReturn;
     }
 
 }

@@ -877,10 +877,13 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
         person = reconcilePersonWithTransient(person, findByEmail, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
+        logger.info("person: {}", person);
         if (Persistable.Base.isTransient(person)) {
             Person findByEmail2 = personDao.findByEmail(person.getEmail());
-            if (findByEmail2 != null) {
-                person = personDao.findPersonAndConvertToUser(person.getEmail(), person.getUsername());
+            logger.info("person: {}", findByEmail2);
+            if (Persistable.Base.isNotNullOrTransient(findByEmail2)) {
+                person = personDao.findConvertPersonToUser(findByEmail2, person.getUsername());
+                logger.info("person: {}", person);
             }
         }
         person.setUserInfo(userInfo);
@@ -939,21 +942,23 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
     }
 
-    private TdarUser reconcilePersonWithTransient(TdarUser person, TdarUser person_, String error) {
-        if ((person_ != null) && Persistable.Base.isNullOrTransient(person)) {
-
-            if ((person_.getStatus() != Status.FLAGGED) && (person_.getStatus() != Status.DELETED) && (person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)) {
-                person.setStatus(Status.ACTIVE);
-                person_.setStatus(Status.ACTIVE);
-            } else {
-                logger.debug("user is not valid");
-                throw new TdarRecoverableRuntimeException(error);
+    private TdarUser reconcilePersonWithTransient(TdarUser incoming, TdarUser resultOfLookup, String error) {
+        if ((resultOfLookup != null) && Persistable.Base.isNullOrTransient(incoming)) {
+            switch (resultOfLookup.getStatus()) {
+                default:
+                    logger.debug("user is not valid");
+                    throw new TdarRecoverableRuntimeException(error);
+                case DRAFT:
+                case DUPLICATE:
+                    incoming.setStatus(Status.ACTIVE);
+                    resultOfLookup.setStatus(Status.ACTIVE);
             }
 
-            person.setId(person_.getId());
-            return personDao.merge(person);
+            incoming.setId(resultOfLookup.getId());
+            logger.debug("existing user: {} ", incoming);
+            return personDao.merge(incoming);
         }
-        return person;
+        return incoming;
     }
 
     @Autowired

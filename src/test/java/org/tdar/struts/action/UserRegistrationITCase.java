@@ -89,6 +89,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         TdarUser p = new TdarUser();
         p.setUsername("allen.lee");
+        p.setFirstName("Allen");
+        p.setLastName("lee");
         p.setEmail("allen.lee@asu.edu");
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());
@@ -112,7 +114,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         // cleanup crowd if we need to...
         authService.getAuthenticationProvider().deleteUser(p);
-
+        genericService.synchronize();
         controller.setPassword("password");
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());
