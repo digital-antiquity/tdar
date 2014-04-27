@@ -65,8 +65,8 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     // non-curators should not be able to edit an institution
     public void testEditByNonAdmin() {
-        Institution inst = genericService.findAll(Institution.class).iterator().next();
         setIgnoreActionErrors(true);
+        Institution inst = genericService.findAll(Institution.class).iterator().next();
         final Long id = inst.getId();
         String oldName = inst.getName();
         final String newName = oldName.concat(" updated");

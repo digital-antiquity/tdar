@@ -74,6 +74,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Rollback(true)
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
+        setIgnoreActionErrors(true);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -90,7 +91,6 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         }
         assertNotNull(except);
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), except.getStatusCode());
-        setIgnoreActionErrors(true);
     }
 
     @Override

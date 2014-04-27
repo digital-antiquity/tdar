@@ -215,6 +215,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
 
         setIgnoreActionErrors(false);
+        getActionErrors().clear();
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".

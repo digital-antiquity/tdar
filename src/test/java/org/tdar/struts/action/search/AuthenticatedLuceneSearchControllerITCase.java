@@ -81,9 +81,9 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
+        setIgnoreActionErrors(true);
         doSearch("precambrian", true);
         assertFalse(resultsContainId(datasetId));
-        setIgnoreActionErrors(true);
         assertEquals(1, controller.getActionErrors().size());
     }
 

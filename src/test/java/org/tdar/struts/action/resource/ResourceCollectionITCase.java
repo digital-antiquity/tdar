@@ -913,6 +913,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     private void assertWeFailedToSave(AbstractPersistableController<?> cc) {
         cc.setServletRequest(getServletPostRequest());
         String result = Action.SUCCESS;
+        setIgnoreActionErrors(true);
         try {
             result = cc.save();
         } catch (Exception e) {
@@ -920,7 +921,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             result = null;
         }
         assertFalse(Action.SUCCESS.equals(result));
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -1357,6 +1357,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1364,7 +1365,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
@@ -1413,6 +1413,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1420,7 +1421,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
@@ -1462,6 +1462,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1469,7 +1470,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     private Map<Long, Resource> getIdmap(Set<Resource> resources) {

@@ -198,6 +198,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.setSubmitter(newUser);
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
+        setIgnoreActionErrors(true);
 
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
@@ -209,7 +210,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
         }
         assertNotEmpty(dc.getActionErrors());
-        setIgnoreActionErrors(true);
 
         // try to edit as new user, should work
         doc = null;

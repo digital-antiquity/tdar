@@ -188,6 +188,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testCreateCouponInvalid() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
@@ -196,12 +197,12 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         Long id = controller.getAccount().getId();
         logger.debug("messages: {}", controller.getActionErrors());
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testCreateCouponEmpty() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
@@ -209,12 +210,12 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testCreateCouponInvalidBoth() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
@@ -223,7 +224,6 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
