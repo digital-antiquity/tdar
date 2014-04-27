@@ -149,16 +149,18 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setFirstName("Tiffany");
         p.setLastName("Clark");
 
-        TdarUser findByEmail = (TdarUser)entityService.findByEmail(email);
-        findByEmail.setStatus(status);
-        findByEmail.setUsername(null);
-        UserInfo userInfo = findByEmail.getUserInfo();
-        if (userInfo != null) {
-            genericService.delete(userInfo);
-            findByEmail.setUserInfo(null);
-         }
-
-        genericService.saveOrUpdate(findByEmail);
+        TdarUser findByEmail = entityService.findUserByEmail(email);
+        if (findByEmail != null) {
+            findByEmail.setStatus(status);
+            findByEmail.setUsername(null);
+            UserInfo userInfo = findByEmail.getUserInfo();
+            if (userInfo != null) {
+                genericService.delete(userInfo);
+                findByEmail.setUserInfo(null);
+             }
+    
+            genericService.saveOrUpdate(findByEmail);
+        }
         evictCache();
         findByEmail = null;
         // cleanup crowd if we need to...
