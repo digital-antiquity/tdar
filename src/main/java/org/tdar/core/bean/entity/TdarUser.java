@@ -77,25 +77,4 @@ public class TdarUser extends Person {
         this.userInfo = userInfo;
     }
 
-    public void convertFrom(Person person) {
-        setAddresses(person.getAddresses());
-        setId(person.getId());
-        setBookmarkedResources(person.getBookmarkedResources());
-        setDateCreated(person.getDateCreated());
-        setDateUpdated(person.getDateUpdated());
-        setDescription(person.getDescription());
-        setEmail(person.getEmail());
-        setEmailPublic(person.getEmailPublic());
-        setFirstName(person.getFirstName());
-        setInstitution(person.getInstitution());
-        setLastName(person.getLastName());
-        setOrcidId(person.getOrcidId());
-        setPhone(person.getPhone());
-        setPhonePublic(person.getPhonePublic());
-        setRpaNumber(person.getRpaNumber());
-        setStatus(person.getStatus());
-        setSynonyms(person.getSynonyms());
-        setUrl(person.getUrl());
-    }
-
 }
