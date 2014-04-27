@@ -51,7 +51,7 @@
                     <!-- Mirror changes to the second entry below as well... -->
                     <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
                     <!-- As we don't have a property named '_' in our actions we get an error logged in development mode. Excluding '-' removes the error -->
-                    <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
+                  <param name="excludeParams">(.*\.|^|.*|\[('|"))(c|C)lass(\.|('|")]|\[).*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*,_tdar\..*</param>
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
@@ -60,7 +60,7 @@
                 <interceptor-ref name="actionMappingParams"/>
                 <interceptor-ref name="params">
                     <!-- See AbstractPersistableController.prepare() for more detail on why this entry occurs twice -->
-                    <param name="excludeParams">_,dojo\..*,^struts\..*,_tdar\..*</param>
+                  <param name="excludeParams">(.*\.|^|.*|\[('|"))(c|C)lass(\.|('|")]|\[).*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*,_tdar\..*</param>
                 </interceptor-ref>
                 <interceptor-ref name="conversionError"/>
                 <interceptor-ref name="validation">
