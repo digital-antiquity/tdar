@@ -233,6 +233,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
         ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        setIgnoreActionErrors(true);
         evictCache();
         assertNotNull(rc);
 
@@ -259,7 +260,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         evictCache();
-        setIgnoreActionErrors(true);
     }
 
     private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) {

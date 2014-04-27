@@ -115,6 +115,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Test
     @Rollback()
     public void testInitialSaveWithoutValidAccount() throws Exception {
+        setIgnoreActionErrors(true);
         controller = generateNewInitializedController(DocumentController.class);
         Pair<String, Exception> tdae = setupResource(setupDocument());
         assertEquals(Action.INPUT, tdae.getFirst());
@@ -124,7 +125,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // now reload the document and see if the institution was saved.
         // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse("resource id should be -1 after unpaid resource addition", newId == Long.valueOf(-1L));
-        setIgnoreActionErrors(true);
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
@@ -138,6 +138,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(d);
 
         logger.info("account: {}", d.getAccount());
+        setIgnoreActionErrors(true);
         Pair<String, Exception> tdae = setupResource(d);
         assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
         logger.info("errors {}", getController().getActionErrors());
@@ -151,7 +152,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertNull("controller should not be successful", null);
         // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
-        setIgnoreActionErrors(true);
     }
 
     @Test
