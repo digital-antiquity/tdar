@@ -33,12 +33,13 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name="user_info")
+
 public class UserInfo extends Persistable.Base implements Obfuscatable {
 
     private static final long serialVersionUID = 7278077914180784872L;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.EAGER)
-    private Person user;
+//    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.EAGER)
+//    private Person user;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     /* who to contact when owner is no longer 'reachable' */
@@ -97,11 +98,10 @@ public class UserInfo extends Persistable.Base implements Obfuscatable {
     @XmlElement(name = "userRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Person getUser() {
-        return user;
+        return null;
     }
 
     public void setUser(Person user) {
-        this.user = user;
     }
 
     @XmlTransient

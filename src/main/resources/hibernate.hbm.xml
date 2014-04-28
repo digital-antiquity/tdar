@@ -148,4 +148,9 @@
         <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
     </database-object>
 
+    <database-object>
+        <create>alter table user_info add column user_id bigint</create>
+        <drop>alter table user_info drop column user_id</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
 </hibernate-mapping>

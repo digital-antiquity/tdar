@@ -79,9 +79,9 @@ import freemarker.ext.dom.NodeModel;
 @HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
-    private static final String FOAF_XML = ".foaf.xml";
-    private static final String SLASH = "/";
-    private static final String XML = ".xml";
+    public static final String FOAF_XML = ".foaf.xml";
+    public static final String SLASH = "/";
+    public static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String COLLECTIONS = "collections";
     public static final String EXPLORE = "explore";

@@ -7,8 +7,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Analyzer;
@@ -31,7 +34,9 @@ public class TdarUser extends Person {
         // TODO Auto-generated constructor stub
     }
     
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="user")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn(name="user_id")
+    @NotNull
     private UserInfo userInfo;
     
     public TdarUser(String firstName, String lastName, String email) {
