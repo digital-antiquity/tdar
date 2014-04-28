@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -36,11 +37,11 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
      * @param person
      * @return
      */
-    public boolean isAlreadyBookmarked(Resource resource, Person person) {
+    public boolean isAlreadyBookmarked(Resource resource, TdarUser person) {
         return findBookmark(resource, person) != null;
     }
 
-    public BookmarkedResource findBookmark(Resource resource, Person person) {
+    public BookmarkedResource findBookmark(Resource resource, TdarUser person) {
         if ((resource == null) || (person == null)) {
             return null;
         }
@@ -50,7 +51,7 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
         return (BookmarkedResource) query.uniqueResult();
     }
 
-    public void removeBookmark(Resource resource, Person person) {
+    public void removeBookmark(Resource resource, TdarUser person) {
         if ((resource == null) || (person == null)) {
             return;
         }
@@ -61,7 +62,7 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
     }
 
     @SuppressWarnings("unchecked")
-    public List<Resource> findBookmarkedResourcesByPerson(Person person, List<Status> statuses) {
+    public List<Resource> findBookmarkedResourcesByPerson(TdarUser person, List<Status> statuses) {
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = Arrays.asList(Status.ACTIVE, Status.DRAFT);
         }

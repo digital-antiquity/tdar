@@ -2,17 +2,20 @@ package org.tdar.core.bean.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -20,6 +23,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
 @Entity
@@ -34,9 +38,10 @@ public class TdarUser extends Person {
         // TODO Auto-generated constructor stub
     }
     
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
+    private Set<BookmarkedResource> bookmarkedResources;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn(name="user_id")
-    @NotNull
     private UserInfo userInfo;
     
     public TdarUser(String firstName, String lastName, String email) {
@@ -80,6 +85,15 @@ public class TdarUser extends Person {
 
     public void setUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
+    }
+
+    @XmlTransient
+    public Set<BookmarkedResource> getBookmarkedResources() {
+        return bookmarkedResources;
+    }
+
+    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
+        this.bookmarkedResources = bookmarkedResources;
     }
 
 }

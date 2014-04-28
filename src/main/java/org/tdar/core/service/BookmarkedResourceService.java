@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -27,7 +28,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional(readOnly = true)
-    public boolean isAlreadyBookmarked(Resource resource, Person person) {
+    public boolean isAlreadyBookmarked(Resource resource, TdarUser person) {
         return getDao().isAlreadyBookmarked(resource, person);
     }
 
@@ -38,7 +39,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    public boolean bookmarkResource(Resource resource, Person person) {
+    public boolean bookmarkResource(Resource resource, TdarUser person) {
         if (isAlreadyBookmarked(resource, person)) {
             logger.trace(String.format("person %s already bookmarked resource %s", person, resource.getId()));
             return false;
@@ -63,7 +64,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    public boolean removeBookmark(Resource resource, Person person) {
+    public boolean removeBookmark(Resource resource, TdarUser person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
         if (bookmark == null) {
             return false;
@@ -84,7 +85,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Resource> findBookmarkedResourcesByPerson(Person person, List<Status> statuses) {
+    public List<Resource> findBookmarkedResourcesByPerson(TdarUser person, List<Status> statuses) {
         return getDao().findBookmarkedResourcesByPerson(person, statuses);
     }
 }

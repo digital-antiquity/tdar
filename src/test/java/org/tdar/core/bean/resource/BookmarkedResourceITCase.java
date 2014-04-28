@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
 
@@ -25,7 +26,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
 
     private Dataset dataset;
     // using arrays to avoid contamination with hashcode/equals
-    private Person[] savedPersons;
+    private TdarUser[] savedPersons;
 
     private Dataset getDataset() {
         if (dataset == null) {
@@ -39,10 +40,10 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         int numberOfBookmarks = 10;
         Dataset dataset = getDataset();
         BookmarkedResource[] array = new BookmarkedResource[numberOfBookmarks];
-        savedPersons = new Person[numberOfBookmarks];
+        savedPersons = new TdarUser[numberOfBookmarks];
         for (int i = 0; i < array.length; i++) {
             BookmarkedResource br = new BookmarkedResource();
-            Person newPerson = createAndSaveNewPerson("test" + i + "@example.com", "" + i);
+            TdarUser newPerson = createAndSaveNewPerson("test" + i + "@example.com", "" + i);
             savedPersons[i] = newPerson;
             br.setPerson(newPerson);
             br.setResource(dataset);
@@ -66,9 +67,9 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
 
     }
 
-    public Person[] getSavedPersons() {
+    public TdarUser[] getSavedPersons() {
         for (int i = 0; i < savedPersons.length; i++) {
-            savedPersons[i] = entityService.findByEmail(savedPersons[i].getEmail());
+            savedPersons[i] = entityService.findUserByEmail(savedPersons[i].getEmail());
         }
         return savedPersons;
     }
@@ -152,8 +153,8 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         saveAll(array);
         Dataset mergedDataset = genericService.merge(dataset);
-        for (Person person : savedPersons) {
-            Person mergedPerson = genericService.merge(person);
+        for (TdarUser person : savedPersons) {
+            TdarUser mergedPerson = genericService.merge(person);
             assertTrue(bookmarkedResourceService.removeBookmark(mergedDataset, mergedPerson));
         }
         assertTrue(mergedDataset.getBookmarks().isEmpty());

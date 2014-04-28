@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -82,7 +83,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
             getLogger().trace("no resource with id: " + resourceId);
             return false;
         }
-        Person person = getAuthenticatedUser();
+        TdarUser person = getAuthenticatedUser();
         getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
         return getBookmarkedResourceService().bookmarkResource(resource, person);
     }
@@ -94,7 +95,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
             return false;
         }
         getLogger().trace("removing bookmark for resource: " + resource.getId());
-        Person person = getAuthenticatedUser();
+        TdarUser person = getAuthenticatedUser();
         return getBookmarkedResourceService().removeBookmark(resource, person);
     }
 

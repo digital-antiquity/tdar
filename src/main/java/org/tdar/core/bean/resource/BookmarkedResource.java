@@ -16,6 +16,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * <p>
@@ -40,7 +41,7 @@ public class BookmarkedResource extends Persistable.Base {
     private static final long serialVersionUID = -5112227003063546552L;
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @ManyToOne(optional = false)
     private Resource resource;
@@ -52,11 +53,11 @@ public class BookmarkedResource extends Persistable.Base {
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

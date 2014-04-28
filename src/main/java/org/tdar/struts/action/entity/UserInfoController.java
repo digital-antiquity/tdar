@@ -302,4 +302,9 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     public void setContributorReason(String contributorReason) {
         this.contributorReason = contributorReason;
     }
+
+    @Override
+    protected void delete(TdarUser persistable) {
+        super.delete(persistable);
+    }
 }

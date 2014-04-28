@@ -9,12 +9,10 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,7 +34,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -126,9 +123,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
     private Boolean phonePublic = Boolean.FALSE;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<BookmarkedResource> bookmarkedResources;
 
     /**
      * Returns the person's name in [last name, first name] format.
@@ -291,15 +285,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setPhonePublic(Boolean toggle) {
         this.phonePublic = toggle;
-    }
-
-    @XmlTransient
-    public Set<BookmarkedResource> getBookmarkedResources() {
-        return bookmarkedResources;
-    }
-
-    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
-        this.bookmarkedResources = bookmarkedResources;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(true)
+    @Rollback(false)
     public void testCreatePerson() {
         TdarUser person = createAndSaveNewPerson();
         person.setUserInfo(new UserInfo());
@@ -43,8 +43,14 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         logger.debug("{}", person.getUserInfo());
         logger.debug("{}", person.getUserInfo().getId());
         assertNotNull(person);
-        assertNotNull(person.getId());
-        assertTrue(person.getId() > 0);
+        Long id = person.getId();
+        assertNotNull(id);
+        assertTrue(id > 0);
+        person = null;
+        TdarUser user = genericService.find(TdarUser.class, id);
+        logger.debug("user:{} ", user);
+        logger.debug("info: {} ", user.getUserInfo());
+        
     }
 
     @Test
