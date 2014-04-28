@@ -42,6 +42,12 @@
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.FIND_BY_TDAR_YEAR,
+                query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE' order by res.dateCreated "),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT,
+                query = "SELECT count(*) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE'"),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
