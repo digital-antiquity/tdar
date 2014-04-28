@@ -39,12 +39,23 @@
                 </div>
             </#if>
 
+            <#if person.username?has_content>
+                <div class="control-group">
+                    <label class="control-label">Username</label>
+
+                    <div class="controls">
+                        <span class="uneditable-input input-xlarge"> ${person.username}</span>
+                    </div>
+                </div>
+            </#if>
+
             <@s.hidden name="id" />
             <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
 
             <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
             <@s.textfield cssClass="institutionAutocomplete input-xlarge"  label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
-            <@s.textfield cssClass="input-xlarge"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
+            <#assign registered = "" />
+            <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
 
             <#if privacyControlsEnabled>
                 <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
@@ -96,8 +107,30 @@
     <h3>Address List</h3>
         <@common.listAddresses person />
 
+        <@common.billingAccountList accounts />
+
+        <#if editingSelf && person.registered >
+        <div class="glide" id="divChangePassword">
+            <h2>Change Your Password</h2>
+            <@s.password name="password" id="txtPassword" label="New password"  autocomplete="off" />
+            <@s.password name="confirmPassword" id="txtConfirmPassword" label="Confirm password"  autocomplete="off"  />
+        </div>
+        <#else>
+        <div class="glide" id="divResetPassword">
+            <h3>Reset User Password</h3>
+            <@s.checkbox  label='Reset Password?' name="passwordResetRequested" id="contributor-id"  />
+        </div>
+        </#if>
+
         <@edit.submit "Save" false />
 
+    <div class="callout">
+        <p>
+            <#assign commentEmail = commentUrl?replace("mailto:", "")>
+            <em><strong>Account cancellation:</strong>
+                If you would like to cancel your ${siteAcronym} account please send an email request to <@s.a href="${commentUrl}">${commentEmail}</@s.a></em>
+        </p>
+    </div>
     </@s.form>
 <div id="error"></div>
 <script type="text/javascript">

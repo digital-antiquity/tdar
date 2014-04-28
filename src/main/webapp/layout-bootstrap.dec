@@ -101,7 +101,7 @@ ${head}
                     </ul>
 
                     <ul>
-                        <li><a href="<@s.url value='/entity/person/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
+                        <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
                         <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
                         <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
                     </ul>

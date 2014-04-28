@@ -72,6 +72,9 @@ navigation freemarker macros
             <#else>
                 <#local creatorType = persistable.creatorType.toString().toLowerCase() />
             </#if>
+            <#if persistable.registered??>
+                <#local creatorType = "user" />
+            </#if>
 
             <#if sessionData?? && sessionData.authenticated>
             <div class="span12 resource-nav  screen" id="toolbars" parse="true">

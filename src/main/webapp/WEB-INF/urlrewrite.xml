@@ -337,11 +337,11 @@
 
 
     <rule>
-        <from>^/entity/(person|institution)/([0-9]+)/(edit|address)$</from>
+        <from>^/entity/(person|user|institution)/([0-9]+)/(edit|address)$</from>
         <to>/entity/$1/$3?id=$2</to>
     </rule>
     <outbound-rule>
-        <from>^/entity/(person|institution)/(edit|address)\?id=([0-9]+)$
+        <from>^/entity/(person|user|institution)/(edit|address)\?id=([0-9]+)$
         </from>
         <to>/entity/$1/$3/$2</to>
     </outbound-rule>

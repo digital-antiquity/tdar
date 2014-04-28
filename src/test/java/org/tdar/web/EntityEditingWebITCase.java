@@ -7,6 +7,7 @@ public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCa
     private static final String UNIVERSITY_OF_TEST = "University of TEST";
     private static final String ENTITY_VIEW = "/browse/creators/";
     private static final String ENTITY_PERSON_EDIT = "/entity/person/%s/edit";
+    private static final String ENTITY_USER_EDIT = "/entity/user/%s/edit";
     private static final String ENTITY_INSTITUTION_EDIT = "/entity/institution/%s/edit";
 
     @Test
@@ -24,7 +25,23 @@ public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCa
         assertTextNotPresent(phone);
     }
 
+
     @Test
+    public void testUserEdit() {
+        String url = String.format(ENTITY_USER_EDIT, 1);
+        gotoPage(url);
+        assertTextPresent("Editing:");
+        assertTextPresent("Lee");
+        String phone = "(123) 456-7890 ";
+        setInput("person.phone", phone);
+        submitForm();
+        assertTextPresent("Lee");
+        assertTextPresent(phone);
+        logout();
+        assertTextNotPresent(phone);
+    }
+
+@Test
     public void testInstitutionEdit() {
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12088);
         gotoPage(url);

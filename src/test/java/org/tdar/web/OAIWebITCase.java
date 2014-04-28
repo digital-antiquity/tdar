@@ -235,7 +235,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             // get a person in tDAR format
             getRecord("tdar", firstPersonIdentifier);
             logger.info(getPageCode());
-            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:person/@id");
+            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:user/@id");
 
             // get an institution in tDAR format
             getRecord("tdar", firstInstitutionIdentifier);

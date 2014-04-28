@@ -201,7 +201,7 @@
                 <@common.resourceUsageInfo />
                 <#if (editor || id == authenticatedUser.id) >
 
-                    <#if creator.registered >
+                    <#if creator.registered?? >
                         <div class="row">
                             <div class="span6">
                                 <@common.billingAccountList accounts />

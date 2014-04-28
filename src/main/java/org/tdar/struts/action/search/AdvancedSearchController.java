@@ -93,6 +93,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
+    private static final long serialVersionUID = -2615014247540428072L;
     private static final String SEARCH_RSS = "/search/rss";
     private boolean hideFacetsAndSort = false;
     private GeoRssMode geoMode = GeoRssMode.POINT;
@@ -109,7 +110,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
 
-    private static final long serialVersionUID = 1L;
 
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
     // basic searches go in "query"
