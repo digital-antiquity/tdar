@@ -32,7 +32,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(false)
+    @Rollback(true)
     public void testCreatePerson() {
         TdarUser person = createAndSaveNewPerson();
         person.setUserInfo(new UserInfo());
