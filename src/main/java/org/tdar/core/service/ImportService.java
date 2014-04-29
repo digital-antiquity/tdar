@@ -121,14 +121,11 @@ public class ImportService {
         }
 
         validateInvalidImportFields(incomingResource);
+        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
+        incomingResource.markUpdated(blessedAuthorizedUser);
 
         reconcilePersistableChildBeans(authorizedUser, incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
-        Person blessedAuthorizedUser = genericService.merge(authorizedUser);
-        logger.debug("comparing before/after merge:: before:{}        after:{}", System.identityHashCode(authorizedUser),
-                System.identityHashCode(blessedAuthorizedUser));
-        incomingResource.markUpdated(blessedAuthorizedUser);
-        // genericService.detachFromSession(authorizedUser);
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
             ((InformationResource) incomingResource).setDate(((InformationResource) incomingResource).getDate());
@@ -216,9 +213,11 @@ public class ImportService {
      * @throws APIException
      */
     @Transactional(readOnly = false)
-    public <R extends Resource> R reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
+    public <R extends Persistable> R reconcilePersistableChildBeans(final Person authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
+//        Map<String, Persistable> knownObjects = new HashMap<>();
+//        knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
             Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
@@ -243,6 +242,7 @@ public class ImportService {
                 }
                 originalList.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
+                logger.trace("setter: {}", pair.getFirst());
                 reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
             }
         }
@@ -315,26 +315,16 @@ public class ImportService {
      * @throws APIException
      */
     @SuppressWarnings("unchecked")
-    public <P extends Persistable, R extends Resource> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
+    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, Person authenticatedUser) throws APIException {
         P toReturn = property;
-
         // if we're not transient, find by id...
         if (Persistable.Base.isNotNullOrTransient(property)) {
-            // if (property instanceof HasResource<?> && toReturn instanceof Validatable && ((Validatable)toReturn).isValidForController()) {
-            // if (property instanceof ResourceCreator) {
-            // entityService.findOrSaveResourceCreator((ResourceCreator) property);
-            // ((ResourceCreator) property).isValidForResource(resource);
-            // }
-            //
-            // return toReturn;
-            // } else {
-            toReturn = (P) findById(property.getClass(), property.getId());
-            if (toReturn instanceof ResourceCollection) {
+                toReturn = (P) findById(property.getClass(), property.getId());
+            if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
-                collection.getResources().add(resource);
-                resource.getResourceCollections().add(collection);
+                collection.getResources().add((Resource)resource);
+                ((Resource)resource).getResourceCollections().add(collection);
             }
-            // }
         }
         else // otherwise, reconcile appropriately
         {
@@ -351,15 +341,16 @@ public class ImportService {
                 }
             }
             if (property instanceof ResourceCreator) {
-                entityService.findOrSaveResourceCreator((ResourceCreator) property);
-                ((ResourceCreator) property).isValidForResource(resource);
+                ResourceCreator creator = (ResourceCreator) property;
+                entityService.findOrSaveResourceCreator(creator);
+                creator.isValidForResource((Resource)resource);
             }
 
-            if (property instanceof ResourceCollection) {
-                ResourceCollection collection = (ResourceCollection) property;
-                resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), authenticatedUser, true,
+            if (property instanceof ResourceCollection && resource instanceof Resource) {
+                ResourceCollection collection = (ResourceCollection)property;
+                collection = reconcilePersistableChildBeans(authenticatedUser, collection);
+                resourceCollectionService.addResourceCollectionToResource((Resource)resource, ((Resource)resource).getResourceCollections(), authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
-                ;
             }
 
             if (property instanceof ResourceAnnotation) {
@@ -369,7 +360,7 @@ public class ImportService {
                 ((ResourceAnnotation) property).setResourceAnnotationKey(resolvedKey);
             }
 
-            if (property instanceof Validatable) {
+            if (property instanceof Validatable && !(property instanceof Resource)) {
                 if (!((Validatable) property).isValidForController()) {
                     if (property instanceof Project) {
                         toReturn = (P) Project.NULL;

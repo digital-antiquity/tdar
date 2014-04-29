@@ -431,6 +431,10 @@ public class GenericDao {
         }
     }
 
+    public <T> boolean sessionContains(T entity) {
+        return getCurrentSession().contains(entity);
+    }
+
     public <T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
         if (session.contains(entity)) {

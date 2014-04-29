@@ -23,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.common.util.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,7 +268,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     
     @Test
     @Rollback
-    @Ignore
+//    @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
@@ -377,7 +376,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Person user = createAndSaveNewPerson();
         BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
         init(bulkUploadController, user);
-        logger.debug("HI");
         bulkUploadController.prepare();
 
 
@@ -636,7 +634,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
             collections.addAll(resourceCollections);
         }
-        assertEquals("we should have a total of 4 collections (2 internal +2 shared)", 4, collections.size());
+        assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
         for (ResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
             if (col.isInternal()) {
@@ -645,7 +643,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
                 assertEquals(2, col.getResources().size());
             }
         }
-        assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
+        assertEquals("we should have one new adhoc collection", 1, newSharedCount - origSharedCount);
         // ensure N internal collections created
         // String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
         // newInternalCount, origInternalCount);

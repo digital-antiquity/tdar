@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
@@ -143,7 +144,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
     
     @Test
-    @Ignore("dup")
+//    @Ignore("dup")
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithDataset() throws MalformedURLException {
         String accountId = "";
@@ -331,5 +332,12 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         if (expectSuccess && !getPageCode().contains("errors\":\"\"")) {
             Assert.fail(getPageBodyCode());
         }
+    }
+    
+    @Override
+    public Person getUser() {
+        Person user = super.getUser();
+        genericService.detachFromSession(user);
+        return user;
     }
 }
