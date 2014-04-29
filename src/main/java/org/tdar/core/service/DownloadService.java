@@ -6,13 +6,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -79,16 +82,29 @@ public class DownloadService {
         IOUtils.closeQuietly(zout);
     }
 
-    @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions)
             throws TdarActionException {
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
+        List<FileDownloadStatistic> stats = handleActualDownload(authenticatedUser, dh, informationResourceId, irFileVersions);
+        registerDownload(stats);
+    }
 
+    @Transactional(readOnly=false)
+    public void registerDownload(List<FileDownloadStatistic> stats) {
+        if (CollectionUtils.isNotEmpty(stats)) {
+            genericService.saveOrUpdate(stats);
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) 
+            throws TdarActionException {
         Map<File, String> files = new HashMap<>();
         String mimeType = null;
         String fileName = null;
+        List<FileDownloadStatistic> stats = new ArrayList<>();
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
@@ -99,11 +115,13 @@ public class DownloadService {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", authenticatedUser, irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
+
                 // don't count download stats if you're downloading your own stuff
                 if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), authenticatedUser) && !dh.isEditor()) {
                     FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
-                    genericService.save(stat);
+                    stats.add(stat);
                 }
+
                 if (irFileVersions.length > 1) {
                     initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
                     fileName = String.format("files-%s.zip", informationResourceId);
@@ -142,6 +160,7 @@ public class DownloadService {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
         }
+        return stats;
     }
 
     private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser,
