@@ -126,7 +126,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public void removeBookmark(Resource r, boolean ajax, Person user) {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-        genericService.refresh(user);
         boolean seen = false;
         for (BookmarkedResource b : user.getBookmarkedResources()) {
             if (ObjectUtils.equals(b.getResource(), r)) {
@@ -143,6 +142,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             bookmarkController.removeBookmarkAction();
         }
         seen = false;
+        user = genericService.find(Person.class, user.getId());
         for (BookmarkedResource b : user.getBookmarkedResources()) {
             if (ObjectUtils.equals(b.getResource(), r)) {
                 seen = true;

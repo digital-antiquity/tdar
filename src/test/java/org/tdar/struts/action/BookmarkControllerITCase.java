@@ -39,9 +39,11 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testUnBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document, getUser());
-        removeBookmark(document, getUser());
-        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 0);
+        Person user = genericService.find(Person.class, getUserId());
+        bookmarkResource(document, user);
+        removeBookmark(document, user);
+        user = genericService.find(Person.class, getUserId());
+        assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
     }
 
     @Test
@@ -57,9 +59,11 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testAjaxRemoveBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document, true,getUser());
-        removeBookmark(document, getUser());
-        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 0);
+        Person user = genericService.find(Person.class, getUserId());
+        bookmarkResource(document, true, user);
+        removeBookmark(document, true, user);
+        user = genericService.find(Person.class, getUserId());
+        assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
     }
 
     public Document createNewDocument() {
