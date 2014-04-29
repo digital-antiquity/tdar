@@ -51,7 +51,6 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         bookmark.setName("Bookmark for " + TdarConfiguration.getInstance().getSiteAcronym() + " resource:" + resource.getId());
         bookmark.setTimestamp(new Date());
         bookmark.setPerson(person);
-        resource.getBookmarks().add(bookmark);
         getDao().save(bookmark);
         return true;
     }
@@ -68,10 +67,10 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         if (bookmark == null) {
             return false;
         }
-        resource = getDao().merge(resource);
-        boolean removed = resource.getBookmarks().remove(bookmark);
-        logger.debug("was bookmark removed? " + removed);
-        getDao().saveOrUpdate(resource);
+//        resource = getDao().merge(resource);
+//        boolean removed = resource.getBookmarks().remove(bookmark);
+//        logger.debug("was bookmark removed? " + removed);
+//        getDao().saveOrUpdate(resource);
         getDao().delete(bookmark);
         return true;
     }

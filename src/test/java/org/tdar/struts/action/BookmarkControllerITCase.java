@@ -6,8 +6,6 @@
  */
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -32,44 +30,36 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        bookmarkResource(document);
-        assertEquals("something wrong, cannot bookmark item twice", size, document.getBookmarks().size());
+        bookmarkResource(document,getUser());
+        bookmarkResource(document,getUser());
+        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 1);
     }
 
     @Test
     @Rollback
     public void testUnBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        removeBookmark(document);
-        assertFalse("something wrong, cannot bookmark item twice", size == document.getBookmarks().size());
+        bookmarkResource(document, getUser());
+        removeBookmark(document, getUser());
+        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 0);
     }
 
     @Test
     @Rollback
     public void testAjaxBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document, true);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        bookmarkResource(document);
-        assertEquals("something wrong, cannot bookmark item twice", size, document.getBookmarks().size());
-    }
+        bookmarkResource(document, true, getUser());
+        bookmarkResource(document, getUser());
+        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 1);
+   }
 
     @Test
     @Rollback
     public void testAjaxRemoveBookmarkedResource() {
         Document document = createNewDocument();
-        bookmarkResource(document, true);
-        int size = document.getBookmarks().size();
-        assertTrue(size > 0);
-        removeBookmark(document);
-        assertFalse("something wrong, cannot bookmark item twice", size == document.getBookmarks().size());
+        bookmarkResource(document, true,getUser());
+        removeBookmark(document, getUser());
+        assertTrue("something wrong, cannot bookmark item twice", getUser().getBookmarkedResources().size() == 0);
     }
 
     public Document createNewDocument() {

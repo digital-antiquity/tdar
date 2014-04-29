@@ -132,8 +132,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         DataTable spitalMainTable = spitalDb.getDataTableByGenericName("spital_abone_database_mdb_main_table");
 
         // bookmark datasets
-        bookmarkResource(alexandriaDb);
-        bookmarkResource(spitalDb);
+        bookmarkResource(alexandriaDb, getUser());
+        bookmarkResource(spitalDb, getUser());
 
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");
@@ -291,8 +291,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(alexandriaTable);
         logger.debug(spitalTable.getName());
         // bookmark datasets
-        bookmarkResource(alexandriaDb);
-        bookmarkResource(spitalDb);
+        bookmarkResource(alexandriaDb, getUser());
+        bookmarkResource(spitalDb, getUser());
 
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");

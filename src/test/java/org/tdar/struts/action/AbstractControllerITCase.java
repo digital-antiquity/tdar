@@ -14,6 +14,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.tdar.TestConstants;
@@ -29,6 +30,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -68,12 +70,12 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     protected abstract TdarActionSupport getController();
 
-    public void bookmarkResource(Resource r) {
-        bookmarkResource(r, false);
+    public void bookmarkResource(Resource r, Person user) {
+        bookmarkResource(r, false, user);
     }
 
-    public void removeBookmark(Resource r) {
-        removeBookmark(r, false);
+    public void removeBookmark(Resource r, Person user) {
+        removeBookmark(r, false, user);
     }
 
     public Account createAccount(Person owner) {
@@ -101,7 +103,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax) {
+    public void bookmarkResource(Resource r, boolean ajax, Person user) {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
@@ -112,23 +114,41 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         }
         r = resourceService.find(r.getId());
         assertNotNull(r);
-        assertTrue(r.getBookmarks().size() > 0);
+        genericService.refresh(user);
+        boolean seen = false;
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        Assert.assertTrue("should have seen resource in bookmark list",seen);
     }
 
-    public void removeBookmark(Resource r, boolean ajax) {
+    public void removeBookmark(Resource r, boolean ajax, Person user) {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-        int size = r.getBookmarks().size();
+        genericService.refresh(user);
+        boolean seen = false;
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        
+        Assert.assertTrue("should have seen resource in bookmark list",seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
-        logger.info("{}", r.getBookmarks());
         if (ajax) {
             bookmarkController.removeBookmarkAjaxAction();
         } else {
             bookmarkController.removeBookmarkAction();
         }
-        r = resourceService.find(r.getId());
-        assertNotNull(r);
-        assertTrue(r.getBookmarks().isEmpty() || (r.getBookmarks().size() == (size - 1)));
+        seen = false;
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        Assert.assertFalse("should not see resource", seen);
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
