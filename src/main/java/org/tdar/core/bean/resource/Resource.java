@@ -147,7 +147,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "res_submitterid", columnList = "submitter_id"),
         @Index(name = "res_uploaderid", columnList = "uploader_id"),
         @Index(name = "res_updaterid", columnList = "updater_id"),
-        @Index(name = "resource_type_index", columnList = "resource_type")
+        @Index(name = "resource_type_index", columnList = "resource_type"),
+        @Index(name = "idx_created", columnList= "date_registered")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)

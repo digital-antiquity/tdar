@@ -148,3 +148,6 @@ update information_resource_file set status='PROCESSED' where status='DELETED';
 -- abrin 3/29/2014
 -- no foreign key as collections are simply deleted
 alter table resource_collection_view_statistics drop constraint resource_collection_view_statistics_resource_collection_id_fkey
+
+-- abrin 04/28/2014
+create index idx_created on resource (date_registered);
