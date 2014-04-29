@@ -169,7 +169,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
-    protected void delete(Person persistable) {
+    protected void delete(TdarUser persistable) {
         getXmlService().logRecordXmlToFilestore(getPersistable());
 
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
@@ -303,8 +303,4 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
         this.contributorReason = contributorReason;
     }
 
-    @Override
-    protected void delete(TdarUser persistable) {
-        super.delete(persistable);
-    }
 }

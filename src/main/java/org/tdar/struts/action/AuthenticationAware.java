@@ -103,6 +103,7 @@ public interface AuthenticationAware extends SessionDataAware {
         }
 
         public boolean isContributor() {
+            getLogger().debug("{}", getAuthenticatedUser().getUserInfo());
             return isAuthenticated() && getAuthenticatedUser().isRegistered() && getAuthenticatedUser().getUserInfo().getContributor();
         }
 

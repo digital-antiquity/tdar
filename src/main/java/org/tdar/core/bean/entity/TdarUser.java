@@ -41,7 +41,7 @@ public class TdarUser extends Person {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="user")
     private UserInfo userInfo;
     
     public TdarUser(String firstName, String lastName, String email) {
