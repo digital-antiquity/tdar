@@ -22,6 +22,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,12 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
+import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.search.query.SearchResultHandler;
 
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
@@ -301,6 +304,30 @@ public class DatasetDao extends ResourceDao<Dataset> {
             return text;
         }
         return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
+        if (handler.getRecordsPerPage() < 0) {
+            handler.setRecordsPerPage(250);
+        }
+        query.setMaxResults(handler.getRecordsPerPage());
+        if (handler.getStartRecord() < 0) {
+            handler.setStartRecord(0);
+        }
+        query.setFirstResult(handler.getStartRecord());
+
+        DateTime dt = new DateTime(year, 1, 1, 0, 0, 0, 0);
+        query.setParameter("year_start", dt.toDate());
+        query.setParameter("year_end", dt.plusYears(1).toDate());
+        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT);
+        query2.setParameter("year_start", dt.toDate());
+        query2.setParameter("year_end", dt.plusYears(1).toDate());
+        Number max = (Number) query2.uniqueResult();
+        handler.setTotalRecords(max.intValue());
+        
+        return query.list();
     }
 
 }
