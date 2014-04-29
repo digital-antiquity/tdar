@@ -350,6 +350,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback(true)
     public void testInvalidFileType() throws Exception {
+        setIgnoreActionErrors(true);
         APIController controller = generateNewInitializedController(APIController.class);
         controller.setFileAccessRestriction(FileAccessRestriction.PUBLIC);
         Dataset doc = findAResource(Dataset.class);

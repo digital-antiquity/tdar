@@ -47,7 +47,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     private String callback;
     private String json;
-    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -113,7 +113,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
             getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
             try {
-                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
                 getSearchService().handleSearch(qb, this);
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);

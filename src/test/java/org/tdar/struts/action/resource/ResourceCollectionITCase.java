@@ -34,9 +34,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -913,6 +911,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     private void assertWeFailedToSave(AbstractPersistableController<?> cc) {
         cc.setServletRequest(getServletPostRequest());
         String result = Action.SUCCESS;
+        setIgnoreActionErrors(true);
         try {
             result = cc.save();
         } catch (Exception e) {
@@ -920,7 +919,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             result = null;
         }
         assertFalse(Action.SUCCESS.equals(result));
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -1357,6 +1355,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1364,7 +1363,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
@@ -1413,6 +1411,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1420,7 +1419,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
@@ -1462,6 +1460,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1469,7 +1468,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     private Map<Long, Resource> getIdmap(Set<Resource> resources) {

@@ -46,6 +46,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartBasicInvalid() throws TdarActionException {
+        setIgnoreActionErrors(true);
         CartController controller = generateNewInitializedController(CartController.class);
         controller.prepare();
         String result = controller.add();
@@ -57,7 +58,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
         assertTrue(controller.getActionErrors().contains(CartController.SPECIFY_SOMETHING));
         assertEquals(Action.INPUT, save);
-        setIgnoreActionErrors(true);
     }
 
     @Test

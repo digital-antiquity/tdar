@@ -62,7 +62,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertEquals("bill", p.getFirstName().toLowerCase());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testEditingPersonByNonAdmin() throws Exception {
@@ -116,6 +115,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void addNullAddressToPerson() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Person p = createAndSaveNewPerson();
         Long presonId = p.getId();
         p = null;
@@ -134,7 +134,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
         assertEquals(Action.INPUT, controller.saveAddress());
         assertEquals(MessageHelper.getMessage("address.street_required"), controller.getActionErrors().iterator().next());
-        setIgnoreActionErrors(true);
 
     }
 
@@ -213,6 +212,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void editEmailAlreadyInUse() throws TdarActionException {
+        setIgnoreActionErrors(true);
         String email1 = "email1@tdar.org";
         Person existingUser = createAndSaveNewPerson(email1, "user1");
         controller = generateNewInitializedController(PersonController.class, getUser());
@@ -222,7 +222,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.validate();
         assertThat(controller.getFieldErrors(), hasKey("email"));
-        setIgnoreActionErrors(true);
     }
 
     @Test

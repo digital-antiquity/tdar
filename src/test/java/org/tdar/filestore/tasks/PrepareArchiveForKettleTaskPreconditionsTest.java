@@ -7,7 +7,6 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Project;

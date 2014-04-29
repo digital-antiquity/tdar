@@ -15,7 +15,6 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 
 public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {

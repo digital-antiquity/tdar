@@ -88,6 +88,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
      * @throws TdarActionException
      */
     public void testInvalidCodingSheet() throws TdarActionException {
+        setIgnoreActionErrors(true);
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
         codingSheetController.prepare();
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
@@ -101,7 +102,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(codingId);
         assertTrue(codingSheet.getCodingRules().isEmpty());
         assertFalse(codingSheetController.getActionErrors().size() == 0);
-        setIgnoreActionErrors(true);
 
     }
 
@@ -137,9 +137,9 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testDegenerateCodingSheetWithTabs() throws IOException {
+        setIgnoreActionErrors(true);
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
-        setIgnoreActionErrors(true);
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 

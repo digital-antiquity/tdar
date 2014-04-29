@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;

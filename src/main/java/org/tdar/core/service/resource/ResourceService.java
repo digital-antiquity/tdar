@@ -51,6 +51,7 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
@@ -687,5 +688,10 @@ public class ResourceService extends GenericService {
             entrySet.getValue().setTotalCount(countryTotal);
             entrySet.getValue().setTotalLogCount(countryLogTotal);
         }
+    }
+
+    @Transactional(readOnly=true)
+    public List<Resource> findByTdarYear(SearchResultHandler resultHandler, int year) {
+        return datasetDao.findByTdarYear(resultHandler, year);
     }
 }

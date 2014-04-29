@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 
 //FIXME: can we eliminate the throwable here?  A boolean return is easy to understand but, for example, what are the circumstances that isViewable() should throw an exception instead of simply returning false?

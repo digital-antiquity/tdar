@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -46,10 +45,6 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
-
-import thredds.catalog.CrawlableCatalog;
-
-import com.hp.hpl.jena.sparql.function.library.eval;
 
 /**
  * The BulkManifestProxy helps keep track of state throughout the @link BulkUploadService's run process. It tracks filenames, fields, the resources created and

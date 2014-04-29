@@ -20,7 +20,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -71,7 +70,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testDuplicateUser() {
         TdarUser p = new TdarUser("Allen","Lee","allen.lee1@asu.edu");
-        p.setUsername("allen.lee@asu.edu");
+        p.setUsername(p.getEmail());
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setPerson(p);
         controller.setServletRequest(getServletPostRequest());
@@ -80,12 +80,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         logger.info(execute + " : " + controller.getActionMessages());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_username_already_registered"), controller
                 .getActionErrors().iterator().next());
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testDuplicateEmail() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         TdarUser p = new TdarUser();
         p.setUsername("allen.lee");
@@ -99,7 +99,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         logger.info(execute + " : " + controller.getActionMessages());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors()
                 .iterator().next());
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -129,6 +128,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testExistingDraftUserWithoutLogin() {
+        setIgnoreActionErrors(true);
         String email = "tiffany.clark@asu.edu";
         TdarUser p = testCreatePerson(email, Status.ACTIVE, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
@@ -141,7 +141,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         p = testCreatePerson(email, Status.FLAGGED, Action.ERROR);
         assertEquals(Status.FLAGGED, p.getStatus());
-        setIgnoreActionErrors(true);
     }
 
     private TdarUser testCreatePerson(String email, Status status, String success) {
@@ -201,6 +200,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testInvalidUsers() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
         List<String> emails = Arrays.asList("a", "a b", "adam brin", "abcd1234!", "http://", "!#####/bin/ls");
@@ -212,7 +212,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             logger.info("errors:{}", controller.getActionErrors());
             assertTrue(controller.getActionErrors().size() > 0);
         }
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -292,30 +291,31 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testUserCreatedTooFast() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 1000);
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testUserCreatedTooSlow() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() + (1000 * 61));
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testUserCreatedFallsIntoHoneypot() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         controller.setComment("could you help me?  I love your site");
@@ -323,7 +323,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
         assertTrue(firstError.equals(MessageHelper.getMessage("userAccountController.could_not_authenticate_at_this_time")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -337,6 +336,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testPrepareValidate() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
         Person p = controller.getPerson();
@@ -346,7 +346,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting user existing",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
-        setIgnoreActionErrors(true);
     }
 
     private String getFirstFieldError(UserAccountController controller) {
@@ -356,6 +355,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testPrepareValidate2() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
         TdarUser p = controller.getPerson();
@@ -363,12 +363,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPerson(p);
         controller.validate();
         assertTrue("expecting password", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testPrepareValidate25() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
@@ -378,12 +378,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.validate();
         assertTrue("expecting confirm email", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testPrepareValidate3() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
@@ -394,12 +394,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting confirm password", controller.getActionErrors()
                 .contains(MessageHelper.getMessage("userAccountController.error_confirm_password")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testPrepareValidate4() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
@@ -411,12 +411,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
-        setIgnoreActionErrors(true);
     }
 
     @Test
     @Rollback
     public void testPrepareValidateWithCaseDifferenceInEmail() {
+        setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
@@ -433,7 +433,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
         assertEquals(1, controller.getActionErrors().size());
-        setIgnoreActionErrors(true);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.tdar.odata.server;
 
 import org.springframework.test.context.ContextConfiguration;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 
 @ContextConfiguration(locations = { "classpath:/org/tdar/odata/server/AbstractLightFitTest-context.xml" })

@@ -20,7 +20,6 @@ public class UploadControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void listUploadedFiles() throws Exception {
         controller.setInformationResourceId(4230L);
-        controller.listUploadedFiles();
     }
 
 }

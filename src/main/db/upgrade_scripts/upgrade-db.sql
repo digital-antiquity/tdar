@@ -1,3 +1,9 @@
+-- abrin 04/28/2014
+create index idx_created on resource (date_registered);
+
+
+-- abrin 04/29/2014
+-- separate TdarUser table
 create table tdar_user (
     affilliation varchar(255),
     contributor boolean default FALSE not null,
@@ -13,9 +19,10 @@ create table tdar_user (
     proxyInstitution_id int8,
     primary key (id)
 );
-     
+ 
 insert into tdar_user (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select user_id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from user_info;
 update tdar_user set username=person.username from tdar_user u, person where u.id=person.id and tdar_user.id=u.id;
+
 
 --update person drop column registered;
 --update person drop column username;

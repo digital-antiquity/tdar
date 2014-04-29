@@ -71,9 +71,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -217,6 +215,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
 
         setIgnoreActionErrors(false);
+        getActionErrors().clear();
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".
@@ -976,6 +975,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Override
     public void addError(String error) {
         getActionErrors().add(error);
+        if (!ignoreActionErrors) {
+            fail(error);
+        }
     }
 
     public List<String> getActionErrors() {

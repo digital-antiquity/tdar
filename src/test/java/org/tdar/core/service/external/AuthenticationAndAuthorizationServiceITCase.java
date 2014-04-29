@@ -24,9 +24,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -34,7 +32,6 @@ import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
-import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.UserAccountController;
@@ -42,8 +39,6 @@ import org.tdar.struts.action.UserAgreementController;
 
 import com.opensymphony.xwork2.Action;
 
-// jtd 9/5:  this doesn't need to be an integration test atm, but I figure we'll eventually want to add tests that
-// need a non-mocked service.
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
 public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegrationTestCase {
@@ -182,6 +177,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         controller.setServletResponse(getServletResponse());
         controller.validate();
         String execute = null;
+        setIgnoreActionErrors(true);
         // technically this is more appropriate -- only call create if validate passes
         if (CollectionUtils.isEmpty(controller.getActionErrors())) {
             execute = controller.create();
@@ -194,7 +190,6 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         assertEquals("result is not input :" + execute, execute, Action.ERROR);
         logger.info("person:{}", person);
         assertTrue("person should not have an id", Persistable.Base.isTransient(person));
-        setIgnoreActionErrors(true);
     }
 
 }

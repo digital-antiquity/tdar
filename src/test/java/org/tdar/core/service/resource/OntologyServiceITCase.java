@@ -48,6 +48,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDegenerateOntologyDuplicates() throws Exception {
+        setIgnoreActionErrors(true);
         OntologyController controller = generateNewInitializedController(OntologyController.class);
         controller.prepare();
         controller.getOntology().setTitle("test");
@@ -66,7 +67,6 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         }
         assertTrue(e instanceof TdarRecoverableRuntimeException);
         assertTrue(e.getMessage().contains("unique"));
-        setIgnoreActionErrors(true);
     }
 
     @Test

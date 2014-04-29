@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * This ResourceProxy class is designed to handle one of the major performance issues with Hibernate, that being the insane lookup queries that Hibernate

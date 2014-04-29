@@ -2,10 +2,12 @@ package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,12 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -50,9 +48,6 @@ public class UploadController extends AuthenticationAware.Base {
     private InputStream jsonInputStream;
     private int jsonContentLength;
 
-    // on the receiving end
-    private List<String> processedFileNames;
-
     // this is the groupId that comes back to us from the the various upload requests
     private Long ticketId;
 
@@ -68,8 +63,12 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = { "contentType", "text/plain" }),
-            @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
+            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = {"contentType", "text/plain"}),
+            @Result(name = ERROR, type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    })
     })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
@@ -116,22 +115,10 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(getActionErrors())) {
             return SUCCESS;
         } else {
-            getLogger().error("{}", getActionErrors());
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            buildJsonError();
             return ERROR;
         }
-    }
-
-    @Action(value = "list", results = { @Result(name = "success", type = "freemarker", location = "list.ftl") })
-    public String list() {
-        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
-        PersonalFilestoreTicket formGroup = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-        List<PersonalFilestoreFile> processedFiles = filestore.retrieveAll(formGroup);
-        processedFileNames = new ArrayList<String>();
-        for (PersonalFilestoreFile pf : processedFiles) {
-            processedFileNames.add(pf.getFile().getName());
-        }
-        return "success";
     }
 
     // FIXME: generate a JsonResult rather than put these in an ftl
@@ -143,45 +130,20 @@ public class UploadController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action
-    public long getTotalUploadFileSize() {
-        long totalBytes = 0;
-        for (File file : uploadFile) {
-            totalBytes += file.length();
-        }
-        return totalBytes;
-    }
 
-    @Action(value = "list-resource-files", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonInputStream"
-                    })
-    })
-    /**
-     * return json representation of the file proxies associated with the specified informationResource
-     * @return
-     * @throws Exception
-     */
-    // FIXME: don't throw everything; don't always return success
-    public String listUploadedFiles() throws Exception {
-        InformationResource informationResource = getGenericService().find(InformationResource.class, getInformationResourceId());
-        List<FileProxy> fileProxies = new ArrayList<FileProxy>();
-        for (InformationResourceFile informationResourceFile : informationResource.getInformationResourceFiles()) {
-            if (!informationResourceFile.isDeleted()) {
-                fileProxies.add(new FileProxy(informationResourceFile));
-            }
+    //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
+    private void buildJsonError()  {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        result.put("ticket", ticketId);
+        result.put("errors", getActionErrors());
+        String resultJson = "{}";
+        try {
+            resultJson = getXmlService().convertToJson(result);
+        } catch(IOException iox) {
+            getLogger().error("cannot convert actionErrors to xml", iox);
         }
-        StringWriter sw = new StringWriter();
-        getXmlService().convertToJson(fileProxies, sw);
-        String json = sw.toString();
-        getLogger().trace("file list as json: {}", json);
-        byte[] jsonBytes = json.getBytes();
-        jsonInputStream = new ByteArrayInputStream(jsonBytes);
-        jsonContentLength = jsonBytes.length;
-
-        return SUCCESS;
+        getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
+        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
     }
 
     public List<File> getUploadFile() {
@@ -218,14 +180,6 @@ public class UploadController extends AuthenticationAware.Base {
 
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
-    }
-
-    public List<String> getProcessedFileNames() {
-        return processedFileNames;
-    }
-
-    public void setProcessedFileNames(List<String> processedFileNames) {
-        this.processedFileNames = processedFileNames;
     }
 
     public String getCallback() {

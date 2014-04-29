@@ -12,7 +12,6 @@ import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.AuthenticationToken;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.web.SessionData;
 

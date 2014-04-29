@@ -8,7 +8,7 @@ import org.tdar.utils.TestConfiguration;
 public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private static final String ENTITY_VIEW = "/browse/creators/";
-    private static final String ENTITY_PERSON_EDIT = "/entity/person/%s/edit";
+    private static final String ENTITY_PERSON_EDIT = "/entity/user/%s/edit";
     String personEditUrl;
     String personViewUrl;
 
@@ -29,7 +29,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
 
     @Test
     public void testViewMyProfilePage() {
-        gotoPage("/entity/person/myprofile");
+        gotoPage("/entity/user/myprofile");
         assertTextPresent(getUser().getProperName());
     }
 

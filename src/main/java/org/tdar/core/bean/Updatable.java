@@ -8,7 +8,6 @@ package org.tdar.core.bean;
 
 import java.util.Date;
 
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**
