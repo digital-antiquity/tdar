@@ -1,5 +1,4 @@
-create table user_info (
-    id  bigserial not null,
+create table tdar_user (
     affilliation varchar(255),
     contributor boolean default FALSE not null,
     contributor_agreement_version int default 0 not null,
@@ -9,28 +8,14 @@ create table user_info (
     proxy_note text,
     tos_version int default 0 not null,
     total_login int8,
-    proxyInstitution_id int8 references institution,
-    user_id int8 references person,
-    primary key (id)
-);
-
-insert into user_info (affilliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, user_id) 
-    select affilliation, contributor, contributor_reason, contributor_agreement_version,last_login, penultimate_login, proxy_note, tos_version, total_login, proxyInstitution_id, id from person where username is not null;  
-    
-alter table person drop column  affilliation;
-alter table person drop column  contributor;
-alter table person drop column  contributor_agreement_version;
-alter table person drop column  contributor_reason;
-alter table person drop column  last_login;
-alter table person drop column  penultimate_login;
-alter table person drop column  proxy_note;
-alter table person drop column  tos_version;
-alter table person drop column  total_login;
-alter table person drop column  proxyInstitution_id;
-
-create table tdar_user(
-    id int8 references person,
     username varchar(255),
+    id int8 not null,
+    proxyInstitution_id int8,
     primary key (id)
 );
-insert into tdar_user select id,username from person where username is not null;
+     
+insert into tdar_user (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select user_id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from user_info;
+update tdar_user set username=person.username from tdar_user u, person where u.id=person.id and tdar_user.id=u.id;
+
+--update person drop column registered;
+--update person drop column username;

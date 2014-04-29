@@ -168,10 +168,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     private void createUser(String string, String string2, String string3) {
         TdarUser person =new TdarUser(string, string2, string3);
         person.setUsername(string3);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(person);
-        person.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        person.setContributor(true);
         genericService.saveOrUpdate(person);
     }
 }

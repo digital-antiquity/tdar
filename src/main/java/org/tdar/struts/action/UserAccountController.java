@@ -193,10 +193,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
 
         checkRecaptcha();
-        UserInfo userInfo = new UserInfo();
-        userInfo.setContributorReason(contributorReason);
-        userInfo.setAffilliation(getAffilliation());
-        person.setUserInfo(userInfo);
+        person.setContributorReason(contributorReason);
+        person.setAffilliation(getAffilliation());
         try {
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
                     getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());

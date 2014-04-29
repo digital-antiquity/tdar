@@ -368,7 +368,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LOGIN_STATS,
-                query = "select info.totalLogins, count(person.id) from TdarUser person inner join person.userInfo info where info.totalLogins > 0 group by info.totalLogins order by info.totalLogins asc"
+                query = "select totalLogins, count(person.id) from TdarUser person where totalLogins > 0 group by totalLogins order by totalLogins asc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_ACTIVE_COUPON,

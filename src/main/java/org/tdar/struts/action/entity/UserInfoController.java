@@ -92,20 +92,17 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
             return INPUT;
         }
 
-        UserInfo userInfo = getPersistable().getUserInfo();
-        if (userInfo != null) {
-            if (StringUtils.isBlank(proxyInstitutionName)) {
-                userInfo.setProxyInstitution(null);
-            } else {
-                // if the user changed the person's institution, find or create it
-                Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
-                getLogger().debug("setting institution to persistent: " + persistentInstitution);
-                userInfo.setProxyInstitution(persistentInstitution);
-            }
-            userInfo.setContributorReason(contributorReason);
-            userInfo.setProxyNote(proxyNote);
-            userInfo.setContributor(contributor);
+        if (StringUtils.isBlank(proxyInstitutionName)) {
+            getPersistable().setProxyInstitution(null);
+        } else {
+            // if the user changed the person's institution, find or create it
+            Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+            getLogger().debug("setting institution to persistent: " + persistentInstitution);
+            getPersistable().setProxyInstitution(persistentInstitution);
         }
+        getPersistable().setContributorReason(contributorReason);
+        getPersistable().setProxyNote(proxyNote);
+        getPersistable().setContributor(contributor);
 
         savePersonInfo(person);
         getGenericService().saveOrUpdate(person);

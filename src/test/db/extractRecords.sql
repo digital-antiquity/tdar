@@ -41,15 +41,11 @@
 --DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', NULL, '', 12088);
 --DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', NULL, '', 12088);
 
---DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8092, true); 
---DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8093, true); 
---DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8094, true); 
---DONT-PROCESS-- INSERT INTO user_info(user_id, contributor) VALUES (8095, true); 
 
---DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8092, 'test@tdar.org'); 
---DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8093, 'admin@tdar.org'); 
---DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8094, 'editor@tdar.org'); 
---DONT-PROCESS-- INSERT INTO tdar_user(id, username) VALUES (8095, 'billing@tdar.org'); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8092, 'test@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8093, 'admin@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8094, 'editor@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8095, 'billing@tdar.org', true); 
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
@@ -84,7 +80,7 @@ select * from creator where id in (select id from creatorIds) order by id asc;
 select * from institution where id in (select id from creatorIds) order by id asc;
 select * from person where id in (select id from creatorIds) order by id asc;
 select * from tdar_user where id in (select id from creatorIds) order by id asc;
-select * from user_info where user_id in (select id from creatorIds) order by id asc;
+--select * from user_info where user_id in (select id from creatorIds) order by id asc;
 
 
 

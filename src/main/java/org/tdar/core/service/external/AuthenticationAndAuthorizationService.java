@@ -34,7 +34,6 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -781,12 +780,11 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // not public static final because don't work in testing
         Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
         Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
-        UserInfo info = user.getUserInfo();
-        if (info.getTosVersion() < tosLatestVersion) {
+        if (user.getTosVersion() < tosLatestVersion) {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
 
-        if (info.getContributor() && (info.getContributorAgreementVersion() < contributorAgreementLatestVersion)) {
+        if (user.getContributor() && (user.getContributorAgreementVersion() < contributorAgreementLatestVersion)) {
             notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         return notifications;
@@ -805,10 +803,10 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
         switch (req) {
             case CONTRIBUTOR_AGREEMENT:
-                user.getUserInfo().setContributorAgreementVersion(contributorAgreementLatestVersion);
+                user.setContributorAgreementVersion(contributorAgreementLatestVersion);
                 break;
             case TOS_AGREEMENT:
-                user.getUserInfo().setTosVersion(tosLatestVersion);
+                user.setTosVersion(tosLatestVersion);
                 break;
             case GUEST_ACCOUNT:
                 break;
@@ -841,8 +839,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
         personDao.saveOrUpdate(persistedUser);
-        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getUserInfo().getTosVersion(), detachedUser.getUserInfo().getContributorAgreementVersion());
-        logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getUserInfo().getTosVersion(), persistedUser.getUserInfo().getContributorAgreementVersion());
+        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+        logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
     /**
@@ -861,7 +859,6 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     public synchronized AuthenticationResult addAnAuthenticateUser(TdarUser person_, String password, String institutionName, HttpServletRequest request,
             HttpServletResponse response, SessionData sessionData, boolean contributor) {
         TdarUser person = person_;
-        UserInfo userInfo = person.getUserInfo();
         TdarUser findByUsername = personDao.findByUsername(person.getUsername());
         TdarUser findByEmail = personDao.findUserByEmail(person.getEmail());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
@@ -886,8 +883,6 @@ public class AuthenticationAndAuthorizationService implements Accessible {
                 logger.info("person: {}", person);
             }
         }
-        person.setUserInfo(userInfo);
-        userInfo.setUser(person);
         Institution institution = institutionDao.findByName(institutionName);
         if ((institution == null) && !StringUtils.isBlank(institutionName)) {
             institution = new Institution();
@@ -904,7 +899,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // after the person has been saved, create a contributor request for
         // them as needed.
         if (contributor) {
-            userInfo.setContributor(true);
+            person.setContributor(true);
             satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);

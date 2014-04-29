@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserInfo;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -144,10 +143,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public List<TdarUser> findRecentLogins() {
         Criteria criteria = getCriteria(TdarUser.class);
-        criteria.createAlias("userInfo","info");
-//        criteria.add(Restrictions.eq("registered", true));
-        criteria.add(Restrictions.isNotNull("info.lastLogin"));
-        criteria.addOrder(Property.forName("info.lastLogin").desc());
+        criteria.add(Restrictions.isNotNull("lastLogin"));
+        criteria.addOrder(Property.forName("lastLogin").desc());
         criteria.setMaxResults(25);
         return criteria.list();
     }
@@ -168,11 +165,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public void registerLogin(TdarUser authenticatedUser) {
-        UserInfo info  = authenticatedUser.getUserInfo();
-        info.setLastLogin(new Date());
-        info.incrementLoginCount();
-        logger.trace("login {} {}", info.getLastLogin(), info.getTotalLogins());
-        saveOrUpdate(info);
+        authenticatedUser.setLastLogin(new Date());
+        authenticatedUser.incrementLoginCount();
+        logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
+        saveOrUpdate(authenticatedUser);
     }
 
     public void updateOccuranceValues() {

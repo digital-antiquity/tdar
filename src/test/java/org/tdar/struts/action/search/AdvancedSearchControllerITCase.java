@@ -462,10 +462,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
         TdarUser p = new TdarUser("a", "test", "anoter@test.user.com");
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(p);
-        p.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        p.setContributor(true);
         genericService.saveOrUpdate(p);
         testResourceCounts(p);
     }

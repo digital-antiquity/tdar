@@ -3,6 +3,7 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -1532,13 +1533,11 @@ CREATE TABLE person (
     email character varying(255),
     first_name character varying(255) NOT NULL,
     last_name character varying(255) NOT NULL,
-    registered boolean NOT NULL,
     rpa_number character varying(255),
     phone character varying(255),
     institution_id bigint,
     phone_public boolean DEFAULT false NOT NULL,
     email_public boolean DEFAULT false NOT NULL,
-    username character varying(255),
     merge_creator_id bigint,
     orcid_id character varying(50) DEFAULT NULL::character varying
 );
@@ -2329,7 +2328,27 @@ ALTER TABLE public.resource_other_keyword OWNER TO tdar;
 --
 
 CREATE VIEW resource_proxy AS
-    SELECT rp.id, rp.date_registered, rp.description, rp.resource_type, rp.title, rp.submitter_id, rp.url, rp.updater_id, rp.date_updated, rp.status, rp.external_id, rp.uploader_id, rp.account_id, rp.previous_status, rp.total_files, rp.total_space_in_bytes, ir.date_created, ir.project_id, ir.inheriting_spatial_information FROM (resource rp LEFT JOIN information_resource ir ON ((rp.id = ir.id)));
+ SELECT rp.id,
+    rp.date_registered,
+    rp.description,
+    rp.resource_type,
+    rp.title,
+    rp.submitter_id,
+    rp.url,
+    rp.updater_id,
+    rp.date_updated,
+    rp.status,
+    rp.external_id,
+    rp.uploader_id,
+    rp.account_id,
+    rp.previous_status,
+    rp.total_files,
+    rp.total_space_in_bytes,
+    ir.date_created,
+    ir.project_id,
+    ir.inheriting_spatial_information
+   FROM (resource rp
+   LEFT JOIN information_resource ir ON ((rp.id = ir.id)));
 
 
 ALTER TABLE public.resource_proxy OWNER TO tdar;
@@ -2766,6 +2785,28 @@ ALTER SEQUENCE stats_id_seq OWNED BY stats.id;
 
 
 --
+-- Name: tdar_user; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE tdar_user (
+    affilliation character varying(255),
+    contributor boolean DEFAULT false NOT NULL,
+    contributor_agreement_version integer DEFAULT 0 NOT NULL,
+    contributor_reason character varying(512),
+    last_login timestamp without time zone,
+    penultimate_login timestamp without time zone,
+    proxy_note text,
+    tos_version integer DEFAULT 0 NOT NULL,
+    total_login bigint,
+    username character varying(255),
+    id bigint NOT NULL,
+    proxyinstitution_id bigint
+);
+
+
+ALTER TABLE public.tdar_user OWNER TO tdar;
+
+--
 -- Name: temporal_keyword; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -2848,49 +2889,6 @@ ALTER TABLE public.upgradetask_id_seq OWNER TO tdar;
 --
 
 ALTER SEQUENCE upgradetask_id_seq OWNED BY upgrade_task.id;
-
-
---
--- Name: user_info; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
---
-
-CREATE TABLE user_info (
-    id bigint NOT NULL,
-    affilliation character varying(255),
-    contributor boolean DEFAULT false NOT NULL,
-    contributor_agreement_version integer DEFAULT 0 NOT NULL,
-    contributor_reason character varying(512),
-    last_login timestamp without time zone,
-    penultimate_login timestamp without time zone,
-    proxy_note text,
-    tos_version integer DEFAULT 0 NOT NULL,
-    total_login bigint,
-    proxyinstitution_id bigint,
-    user_id bigint
-);
-
-
-ALTER TABLE public.user_info OWNER TO tdar;
-
---
--- Name: user_info_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
---
-
-CREATE SEQUENCE user_info_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.user_info_id_seq OWNER TO tdar;
-
---
--- Name: user_info_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
---
-
-ALTER SEQUENCE user_info_id_seq OWNED BY user_info.id;
 
 
 SET default_with_oids = true;
@@ -3311,13 +3309,6 @@ ALTER TABLE ONLY upgrade_task ALTER COLUMN id SET DEFAULT nextval('upgradetask_i
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
-ALTER TABLE ONLY user_info ALTER COLUMN id SET DEFAULT nextval('user_info_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
---
-
 ALTER TABLE ONLY user_session ALTER COLUMN id SET DEFAULT nextval('user_session_id_seq'::regclass);
 
 
@@ -3689,14 +3680,6 @@ ALTER TABLE ONLY person
 
 
 --
--- Name: person_username_key; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
---
-
-ALTER TABLE ONLY person
-    ADD CONSTRAINT person_username_key UNIQUE (username);
-
-
---
 -- Name: personal_filestore_ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -3985,11 +3968,27 @@ ALTER TABLE ONLY site_type_keyword
 
 
 --
+-- Name: tdar_user_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY tdar_user
+    ADD CONSTRAINT tdar_user_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: temporal_keyword_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
 ALTER TABLE ONLY temporal_keyword
     ADD CONSTRAINT temporal_keyword_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: uk_7wvw2hmy3n1iw43ksih04y1fx; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY tdar_user
+    ADD CONSTRAINT uk_7wvw2hmy3n1iw43ksih04y1fx UNIQUE (username);
 
 
 --
@@ -4038,14 +4037,6 @@ ALTER TABLE ONLY temporal_keyword
 
 ALTER TABLE ONLY upgrade_task
     ADD CONSTRAINT upgradetask_pkey PRIMARY KEY (id);
-
-
---
--- Name: user_info_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
---
-
-ALTER TABLE ONLY user_info
-    ADD CONSTRAINT user_info_pkey PRIMARY KEY (id);
 
 
 --
@@ -4969,6 +4960,38 @@ ALTER TABLE ONLY resource_annotation_key
 
 
 --
+-- Name: fk_5ame3enbx589sg0x2te7j64yo; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY tdar_user
+    ADD CONSTRAINT fk_5ame3enbx589sg0x2te7j64yo FOREIGN KEY (proxyinstitution_id) REFERENCES institution(id);
+
+
+--
+-- Name: fk_5i1yn0qua0ce19prjb5wpu7g7; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT fk_5i1yn0qua0ce19prjb5wpu7g7 FOREIGN KEY (owner_id) REFERENCES tdar_user(id);
+
+
+--
+-- Name: fk_akohu4sx3uyy8cct296imngbi; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY tdar_user
+    ADD CONSTRAINT fk_akohu4sx3uyy8cct296imngbi FOREIGN KEY (id) REFERENCES person(id);
+
+
+--
+-- Name: fk_bb9sdg1ham2rf5jouya8qul99; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT fk_bb9sdg1ham2rf5jouya8qul99 FOREIGN KEY (executor_id) REFERENCES tdar_user(id);
+
+
+--
 -- Name: fk_bbetp1cmjicvtydwd0hfepab1; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -5025,6 +5048,30 @@ ALTER TABLE ONLY data_table_column_relationship
 
 
 --
+-- Name: fk_dnpwc29c5pyfg7nsgrwlvrycs; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT fk_dnpwc29c5pyfg7nsgrwlvrycs FOREIGN KEY (owner_id) REFERENCES tdar_user(id);
+
+
+--
+-- Name: fk_gctmihk7ir6ygqdnyqaodptd0; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_group_members
+    ADD CONSTRAINT fk_gctmihk7ir6ygqdnyqaodptd0 FOREIGN KEY (account_id) REFERENCES tdar_user(id);
+
+
+--
+-- Name: fk_hx05eav379m0v3xlgvt59p1yn; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_members
+    ADD CONSTRAINT fk_hx05eav379m0v3xlgvt59p1yn FOREIGN KEY (user_id) REFERENCES tdar_user(id);
+
+
+--
 -- Name: fk_l4o8gyxxc17q6w3g8ew9ivhlh; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -5038,6 +5085,30 @@ ALTER TABLE ONLY sensory_data_image
 
 ALTER TABLE ONLY ontology
     ADD CONSTRAINT fk_ontology__category_variable FOREIGN KEY (category_variable_id) REFERENCES category_variable(id);
+
+
+--
+-- Name: fk_pcy3mv8bsq5emr8s9bj5wh5bl; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account_group
+    ADD CONSTRAINT fk_pcy3mv8bsq5emr8s9bj5wh5bl FOREIGN KEY (modifier_id) REFERENCES tdar_user(id);
+
+
+--
+-- Name: fk_quu01mo3rfnnly6ln305fv92; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT fk_quu01mo3rfnnly6ln305fv92 FOREIGN KEY (modifier_id) REFERENCES tdar_user(id);
+
+
+--
+-- Name: fk_sgxxfexid6vcd0i3uw6i65bka; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account_group
+    ADD CONSTRAINT fk_sgxxfexid6vcd0i3uw6i65bka FOREIGN KEY (owner_id) REFERENCES tdar_user(id);
 
 
 --
@@ -5705,22 +5776,6 @@ ALTER TABLE ONLY temporal_keyword
 
 
 --
--- Name: user_info_proxyinstitution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
---
-
-ALTER TABLE ONLY user_info
-    ADD CONSTRAINT user_info_proxyinstitution_id_fkey FOREIGN KEY (proxyinstitution_id) REFERENCES institution(id);
-
-
---
--- Name: user_info_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
---
-
-ALTER TABLE ONLY user_info
-    ADD CONSTRAINT user_info_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
-
-
---
 -- Name: user_session_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -5729,11 +5784,12 @@ ALTER TABLE ONLY user_session
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: postgres
+-- Name: public; Type: ACL; Schema: -; Owner: abrin
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM postgres;
+REVOKE ALL ON SCHEMA public FROM abrin;
+GRANT ALL ON SCHEMA public TO abrin;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

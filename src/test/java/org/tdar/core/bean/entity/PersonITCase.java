@@ -15,12 +15,16 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.service.GenericService;
 
 public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private PersonDao personDao;
 
     private static String NEW_NAME = "first name";
     private static String NEW_NAME2 = "first";
@@ -30,18 +34,32 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person p = genericService.find(Person.class, (Long) null);
         assertNull(p);
     }
+    
+    @Test
+    @Rollback
+    public void testFindByExample() {
+        TdarUser user1 = createAndSaveNewPerson();
+        user1.setDescription("this sia tst");
+        user1.setUsername("1234");
+        genericService.saveOrUpdate(user1);
+        genericService.detachFromSession(user1);
+        user1.setEmail(null);
+        user1.setUsername(null);
+        user1.setId(null);
+        TdarUser user2 = genericService.merge(user1);
+        genericService.synchronize();
+        for (Person p : personDao.findByPerson(user1)) {
+            logger.debug(" : {}", p);
+        }
+        
+    }
 
     @Test
     @Rollback(true)
     public void testCreatePerson() {
         TdarUser person = createAndSaveNewPerson();
-        person.setUserInfo(new UserInfo());
-        person.getUserInfo().setUser(person);
         genericService.saveOrUpdate(person);
-        genericService.saveOrUpdate(person.getUserInfo());
         logger.debug("{}", person);
-        logger.debug("{}", person.getUserInfo());
-        logger.debug("{}", person.getUserInfo().getId());
         assertNotNull(person);
         Long id = person.getId();
         assertNotNull(id);
@@ -49,7 +67,6 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         person = null;
         TdarUser user = genericService.find(TdarUser.class, id);
         logger.debug("user:{} ", user);
-        logger.debug("info: {} ", user.getUserInfo());
         
     }
 

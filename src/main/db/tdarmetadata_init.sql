@@ -3,47 +3,13 @@
 --
 
 SET statement_timeout = 0;
+SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
-
---
--- Name: category_variable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
---
-
-SELECT pg_catalog.setval('category_variable_id_seq', 259, true);
-
-
---
--- Name: culture_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
---
-
-SELECT pg_catalog.setval('culture_keyword_id_seq', 154, true);
-
-
---
--- Name: investigation_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
---
-
-SELECT pg_catalog.setval('investigation_type_id_seq', 12, true);
-
-
---
--- Name: material_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
---
-
-SELECT pg_catalog.setval('material_keyword_id_seq', 15, true);
-
-
---
--- Name: site_type_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
---
-
-SELECT pg_catalog.setval('site_type_keyword_id_seq', 394, true);
-
 
 --
 -- Data for Name: category_variable; Type: TABLE DATA; Schema: public; Owner: tdar
@@ -317,6 +283,13 @@ INSERT INTO category_variable (id, description, name, type, parent_id, label) VA
 ALTER TABLE category_variable ENABLE TRIGGER ALL;
 
 --
+-- Name: category_variable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
+--
+
+SELECT pg_catalog.setval('category_variable_id_seq', 259, true);
+
+
+--
 -- Data for Name: category_variable_synonyms; Type: TABLE DATA; Schema: public; Owner: tdar
 --
 
@@ -513,6 +486,13 @@ INSERT INTO culture_keyword (id, definition, label, approved, index, selectable,
 ALTER TABLE culture_keyword ENABLE TRIGGER ALL;
 
 --
+-- Name: culture_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
+--
+
+SELECT pg_catalog.setval('culture_keyword_id_seq', 154, true);
+
+
+--
 -- Data for Name: culture_keyword_synonym; Type: TABLE DATA; Schema: public; Owner: tdar
 --
 
@@ -553,6 +533,13 @@ INSERT INTO investigation_type (id, definition, label, status, merge_keyword_id,
 ALTER TABLE investigation_type ENABLE TRIGGER ALL;
 
 --
+-- Name: investigation_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
+--
+
+SELECT pg_catalog.setval('investigation_type_id_seq', 12, true);
+
+
+--
 -- Data for Name: investigation_type_synonym; Type: TABLE DATA; Schema: public; Owner: tdar
 --
 
@@ -586,6 +573,13 @@ INSERT INTO material_keyword (id, definition, label, status, merge_keyword_id, o
 
 
 ALTER TABLE material_keyword ENABLE TRIGGER ALL;
+
+--
+-- Name: material_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
+--
+
+SELECT pg_catalog.setval('material_keyword_id_seq', 15, true);
+
 
 --
 -- Data for Name: material_keyword_synonym; Type: TABLE DATA; Schema: public; Owner: tdar
@@ -748,6 +742,13 @@ INSERT INTO site_type_keyword (id, definition, label, approved, index, selectabl
 
 
 ALTER TABLE site_type_keyword ENABLE TRIGGER ALL;
+
+--
+-- Name: site_type_keyword_id_seq; Type: SEQUENCE SET; Schema: public; Owner: tdar
+--
+
+SELECT pg_catalog.setval('site_type_keyword_id_seq', 394, true);
+
 
 --
 -- Data for Name: site_type_keyword_synonym; Type: TABLE DATA; Schema: public; Owner: tdar

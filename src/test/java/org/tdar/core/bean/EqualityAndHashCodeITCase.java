@@ -135,10 +135,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             TdarUser person = new TdarUser();
             person.setEmail(persistedPerson.getEmail());
 //            person.setRegistered(persistedPerson.isRegistered());
-            UserInfo userInfo  = new UserInfo();
-            userInfo.setUser(person);
-            userInfo.setContributor(true);
-            person.setUserInfo(userInfo);
+            person.setContributor(true);
             person.setLastName(persistedPerson.getLastName());
             person.setFirstName(persistedPerson.getFirstName());
             person.setPhone(persistedPerson.getPhone());

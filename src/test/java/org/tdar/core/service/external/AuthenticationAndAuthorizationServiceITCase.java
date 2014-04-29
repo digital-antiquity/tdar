@@ -55,12 +55,10 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
 
     TdarUser user(boolean contributor, int tosVersion, int creatorAgreementVersion) {
         TdarUser user = new TdarUser("bob", "loblaw", "jim.devos@zombo.com");
-        UserInfo userInfo  = new UserInfo();
-        userInfo.setUser(user);
-        user.setUserInfo(userInfo);
-        userInfo.setContributor(contributor);
-        userInfo.setTosVersion(tosVersion);
-        userInfo.setContributorAgreementVersion(creatorAgreementVersion);        return user;
+        user.setContributor(contributor);
+        user.setTosVersion(tosVersion);
+        user.setContributorAgreementVersion(creatorAgreementVersion);
+        return user;
     }
 
     @Test
@@ -127,7 +125,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         // a contributor that hasn't signed on since updated TOS and creator agreement
         UserAgreementController controller = generateNewController(UserAgreementController.class);
         TdarUser user = getBasicUser();
-        user.getUserInfo().setContributorAgreementVersion(0);
+        user.setContributorAgreementVersion(0);
         init(controller, user);
         assertThat(authService.getUserRequirements(user), hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT));
         List<AuthNotice> list = new ArrayList<>();
@@ -143,7 +141,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
             public Image doInTransaction(TransactionStatus status) {
                 TdarUser user = getBasicUser();
                 assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
-                user.getUserInfo().setContributorAgreementVersion(0);
+                user.setContributorAgreementVersion(0);
                 genericService.saveOrUpdate(user);
                 return null;
 
@@ -158,10 +156,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         // Create a user ... replace crowd witha "broken crowd" and then
         TdarUser person = new TdarUser("Thomas", "Angell", "tangell@pvd.state.ri.us");
         person.setUsername(person.getEmail());
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(person);
-        person.setUserInfo(userInfo);
-        person.getUserInfo().setContributor(true);
+        person.setContributor(true);
 
         AuthenticationProvider oldProvider = authenticationAndAuthorizationService.getProvider();
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);

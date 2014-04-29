@@ -258,10 +258,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             genericService.saveOrUpdate(institution);
         }
         testPerson.setInstitution(institution);
-        UserInfo userInfo = new UserInfo();
-        testPerson.setUserInfo(userInfo);
-        userInfo.setContributor(false);
-        userInfo.setUser(testPerson);
+        testPerson.setContributor(false);
         genericService.save(testPerson);
         return testPerson;
     }
@@ -506,7 +503,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 TdarUser user_ = genericService.find(TdarUser.class, user.getId());
-                logger.debug("{}", user_.getUserInfo());
                 AuthenticationToken token = AuthenticationToken.create(user_);
                 controller.getSessionData().setAuthenticationToken(token);
                 genericService.save(token);

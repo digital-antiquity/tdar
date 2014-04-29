@@ -333,10 +333,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(owner);
-        owner.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        owner.setContributor(true);
 
         genericService.saveOrUpdate(owner);
         resourceCollection.setOwner(owner);
@@ -392,10 +389,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(owner);
-        owner.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         resourceCollectionParent.markUpdated(owner);
@@ -480,10 +474,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(owner);
-        owner.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
@@ -593,10 +584,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
         String string = UUID.randomUUID().toString();
         TdarUser person = new TdarUser(string, string, string + "@mailinator.com");
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUser(person);
-        person.setUserInfo(userInfo);
-        userInfo.setContributor(true);
+        person.setContributor(true);
         genericService.saveOrUpdate(person);
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);
         return authuser;
@@ -1328,7 +1316,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue("resource should be viewable", ((Viewable) (controller.getResults().get(0))).isViewable());
 
         // now make the registeredUser a non-contributor. make sure they can see the resource (TDAR-2028)
-        registeredUser.getUserInfo().setContributor(false);
+        registeredUser.setContributor(false);
         genericService.saveOrUpdate(registeredUser);
         searchIndexService.index(registeredUser);
         controller = generateNewInitializedController(CollectionController.class, registeredUser);

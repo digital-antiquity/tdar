@@ -155,11 +155,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         if (findByEmail != null) {
             findByEmail.setStatus(status);
             findByEmail.setUsername(null);
-            UserInfo userInfo = findByEmail.getUserInfo();
-            if (userInfo != null) {
-                genericService.delete(userInfo);
-                findByEmail.setUserInfo(null);
-             }
     
             genericService.saveOrUpdate(findByEmail);
         }
