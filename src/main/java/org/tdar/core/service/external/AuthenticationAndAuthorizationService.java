@@ -874,10 +874,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
         person = reconcilePersonWithTransient(person, findByEmail, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
-        logger.info("person: {}", person);
         if (Persistable.Base.isTransient(person)) {
             Person findByEmail2 = personDao.findByEmail(person.getEmail());
-            logger.info("person: {}", findByEmail2);
             if (Persistable.Base.isNotNullOrTransient(findByEmail2)) {
                 person = personDao.findConvertPersonToUser(findByEmail2, person.getUsername());
                 logger.info("person: {}", person);

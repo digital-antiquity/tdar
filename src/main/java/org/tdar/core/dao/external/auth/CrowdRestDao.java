@@ -217,7 +217,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
         if (user == null) {
             userNew = true;
-            logger.debug("Adding user : " + person);
+            logger.debug("Adding user : {} {} {} {} {} {} {} ",  person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), person.getId());
             user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
                     true);
         }
