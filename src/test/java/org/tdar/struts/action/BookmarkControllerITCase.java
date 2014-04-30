@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -39,10 +39,10 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testUnBookmarkedResource() {
         Document document = createNewDocument();
-        Person user = genericService.find(Person.class, getUserId());
+        TdarUser user = genericService.find(TdarUser.class, getUserId());
         bookmarkResource(document, user);
         removeBookmark(document, user);
-        user = genericService.find(Person.class, getUserId());
+        user = genericService.find(TdarUser.class, getUserId());
         assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
     }
 
@@ -59,10 +59,10 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testAjaxRemoveBookmarkedResource() {
         Document document = createNewDocument();
-        Person user = genericService.find(Person.class, getUserId());
+        TdarUser user = genericService.find(TdarUser.class, getUserId());
         bookmarkResource(document, true, user);
         removeBookmark(document, true, user);
-        user = genericService.find(Person.class, getUserId());
+        user = genericService.find(TdarUser.class, getUserId());
         assertTrue("something wrong, cannot bookmark item twice", user.getBookmarkedResources().size() == 0);
     }
 
@@ -72,7 +72,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         document.setTitle("test");
         document.setDescription("bacd");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            Creator copyrightHolder = genericService.find(TdarUser.class, 1L);
             document.setCopyrightHolder(copyrightHolder);
         }
         genericService.save(document);

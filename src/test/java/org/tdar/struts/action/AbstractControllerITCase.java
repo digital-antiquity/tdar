@@ -30,6 +30,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -70,15 +71,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     protected abstract TdarActionSupport getController();
 
-    public void bookmarkResource(Resource r, Person user) {
+    public void bookmarkResource(Resource r, TdarUser user) {
         bookmarkResource(r, false, user);
     }
 
-    public void removeBookmark(Resource r, Person user) {
+    public void removeBookmark(Resource r, TdarUser user) {
         removeBookmark(r, false, user);
     }
 
-    public Account createAccount(Person owner) {
+    public Account createAccount(TdarUser owner) {
         Account account = new Account("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
@@ -91,7 +92,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     // return createA
     // }
 
-    public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
+    public Invoice createInvoice(TdarUser person, TransactionStatus status, BillingItem... items) {
         Invoice invoice = new Invoice();
         invoice.setItems(new ArrayList<BillingItem>());
         for (BillingItem item : items) {
@@ -103,7 +104,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax, Person user) {
+    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
@@ -124,7 +125,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         Assert.assertTrue("should have seen resource in bookmark list",seen);
     }
 
-    public void removeBookmark(Resource r, boolean ajax, Person user) {
+    public void removeBookmark(Resource r, boolean ajax, TdarUser user) {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : user.getBookmarkedResources()) {
@@ -142,7 +143,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             bookmarkController.removeBookmarkAction();
         }
         seen = false;
-        user = genericService.find(Person.class, user.getId());
+        user = genericService.find(TdarUser.class, user.getId());
         for (BookmarkedResource b : user.getBookmarkedResources()) {
             if (ObjectUtils.equals(b.getResource(), r)) {
                 seen = true;
@@ -158,9 +159,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
-            Person owner,
-            List<? extends Resource> resources, Long parentId)
-            throws Exception {
+            TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
         controller.prepare();
@@ -372,7 +371,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getUser(getUserId());
     }
 
@@ -381,24 +380,24 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public String setupValidUserInController(UserAccountController controller, String email) {
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setEmail(email);
         p.setUsername(email);
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
-        p.setContributor(true);
-        p.setContributorReason(REASON);
+        controller.setRequestingContributorAccess(true);
+        controller.setContributorReason(REASON);
         p.setRpaNumber("214");
 
         return setupValidUserInController(controller, p);
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p) {
         return setupValidUserInController(controller, p, "password");
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p, String password) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p, String password) {
         // cleanup crowd if we need to...
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
         controller.setRequestingContributorAccess(true);
