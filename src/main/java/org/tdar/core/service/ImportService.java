@@ -148,7 +148,7 @@ public class ImportService {
      * @throws APIException
      * @throws IOException
      */
-    private <R extends Resource> void processFiles(Person authorizedUser, Collection<FileProxy> proxies, R incomingResource) throws APIException, IOException {
+    private <R extends Resource> void processFiles(TdarUser authorizedUser, Collection<FileProxy> proxies, R incomingResource) throws APIException, IOException {
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {

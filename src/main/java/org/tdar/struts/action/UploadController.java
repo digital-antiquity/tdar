@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.personal.PersonalFilestore;
 
@@ -90,7 +90,7 @@ public class UploadController extends AuthenticationAware.Base {
             addActionError(getText("uploadController.no_files"));
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
-            Person submitter = getAuthenticatedUser();
+            TdarUser submitter = getAuthenticatedUser();
             for (int i = 0; i < uploadFile.size(); i++) {
                 File file = uploadFile.get(i);
                 String fileName = uploadFileFileName.get(i);

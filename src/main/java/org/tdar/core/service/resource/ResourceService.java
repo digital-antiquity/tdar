@@ -146,7 +146,7 @@ public class ResourceService extends GenericService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, Person person, String message) {
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message) {
         logResourceModification(modifiedResource, person, message, null);
     }
 
@@ -159,7 +159,7 @@ public class ResourceService extends GenericService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, Person person, String message, String payload) {
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload) {
         ResourceRevisionLog log = new ResourceRevisionLog();
         log.setLogMessage(message);
         log.setResource(modifiedResource);

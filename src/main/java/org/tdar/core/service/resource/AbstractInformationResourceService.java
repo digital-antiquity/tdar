@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -110,7 +110,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * which is likely a controller.
      */
     @Transactional
-    public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
+    public void importFileProxiesAndProcessThroughWorkflow(T resource, TdarUser user, Long ticketId, ActionMessageErrorSupport listener,
             List<FileProxy> fileProxiesToProcess) throws IOException {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
             logger.debug("Nothing to process, returning.");

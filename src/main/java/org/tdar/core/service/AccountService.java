@@ -843,7 +843,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param code
      */
     @Transactional
-    public void redeemCode(Invoice invoice, Person user, String code) {
+    public void redeemCode(Invoice invoice, TdarUser user, String code) {
         if (StringUtils.isEmpty(code)) {
             return;
         }

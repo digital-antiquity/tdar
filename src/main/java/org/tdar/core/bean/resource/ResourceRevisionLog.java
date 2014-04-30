@@ -17,7 +17,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * Tracks administrative changes. When the UI changes a resource, a log entry should be added.
@@ -47,7 +47,7 @@ public class ResourceRevisionLog extends Persistable.Base {
     private String logMessage;
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
@@ -78,11 +78,11 @@ public class ResourceRevisionLog extends Persistable.Base {
         this.logMessage = action;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person actor) {
+    public void setPerson(TdarUser actor) {
         this.person = actor;
     }
 

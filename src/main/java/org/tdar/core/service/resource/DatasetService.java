@@ -474,7 +474,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     /*
      * Log the DataTableColumn Information to XML to be stored in the ResourceRevisionLog
      */
-    public void logDataTableColumns(DataTable dataTable, String message, Person authenticatedUser) {
+    public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser) {
         try {
             StringWriter writer = new StringWriter();
             xmlService.convertToXML(dataTable, writer);

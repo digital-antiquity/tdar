@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -58,13 +59,13 @@ public class DataIntegrationWorkbook implements Serializable {
     private List<IntegrationDataResult> integrationDataResults;
     private StringBuilder description;
     private Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationResults;
-    private Person person;
+    private TdarUser person;
     private List<String> names;
     private PersonalFilestoreTicket ticket;
     private TextProvider provider;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person,
+    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, TdarUser person,
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
         this.setExcelService(excelService);
         this.person = person;
@@ -181,7 +182,7 @@ public class DataIntegrationWorkbook implements Serializable {
      * @param summaryStyle
      * @param tableList
      */
-    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, Person person, Workbook workbook,
+    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, TdarUser person, Workbook workbook,
             CellStyle summaryStyle,
             List<DataTable> tableList) {
         Sheet summarySheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.description_worksheet"));
@@ -338,11 +339,11 @@ public class DataIntegrationWorkbook implements Serializable {
         this.generatedIntegrationResults = generatedIntegrationResults;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

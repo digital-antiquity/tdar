@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.filestore.personal.PersonalFileType;
 
 /**
@@ -39,16 +39,16 @@ public class PersonalFilestoreTicket extends Persistable.Base {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "submitter_id")
-    private Person submitter;
+    private TdarUser submitter;
 
     @Column(length = FieldLength.FIELD_LENGTH_500)
     private String description;
 
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 

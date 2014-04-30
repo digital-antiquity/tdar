@@ -14,7 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.personal.PersonalFileType;
@@ -36,7 +36,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     public void testNewFileGroup() {
         // make sure hibernate is serving up a new id
         PersonalFilestoreTicket fileGroup = new PersonalFilestoreTicket();
-        fileGroup.setSubmitter(getPerson());
+        fileGroup.setSubmitter(getUser());
         fileGroup.setPersonalFileType(PersonalFileType.UPLOAD);
         Long originalId = fileGroup.getId();
         genericService.save(fileGroup);
@@ -50,7 +50,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     public void testNewFileGroupFromService() {
         PersonalFilestoreTicket fileGroup = new PersonalFilestoreTicket();
 
-        Person person = getPerson();
+        TdarUser person = getUser();
         fileGroup.setPersonalFileType(PersonalFileType.UPLOAD);
         fileGroup.setSubmitter(person);
         genericService.save(fileGroup);
@@ -63,8 +63,8 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testStore() throws IOException {
 
-        PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getPerson());
-        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getPerson());
+        PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getUser());
+        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getUser());
         File storedFile = filestore.store(ticket, new File(PATH + "images/handbook_of_archaeology.jpg"), "handbook_of_archaeology.jpg");
         Assert.assertTrue("filestore exists", storedFile.exists());
         storedFile = filestore.store(ticket, new File(PATH + "documents/schoenwetter1963a with space.pdf"), "schoenwetter1963a with space.pdf");
@@ -85,8 +85,8 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
         names.add("evmpp-fauna.xls");
         names.add("documentImport.xml");
 
-        PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getPerson());
-        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getPerson());
+        PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getUser());
+        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getUser());
         filestore.store(ticket, filesToAdd, names);
 
         // confirm that we have actually stored the items we wanted to store
@@ -117,19 +117,11 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testPurge() throws Exception {
         PersonalFilestoreTicket ticket = saveFiles();
-        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getPerson());
+        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getUser());
         // get the parent path of the stored files, confirm that it doesn't exist
         File parent = filestore.retrieveAll(ticket).iterator().next().getFile().getParentFile();
         filestore.purge(ticket);
         Assert.assertFalse("bag should be gone after purge", parent.exists());
-    }
-
-    private Person getPerson() {
-        Person person = new Person();
-        person.setFirstName("Bob");
-        person.setLastName("Loblaw");
-        genericService.save(person);
-        return person;
     }
 
 }

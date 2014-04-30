@@ -284,7 +284,7 @@ public class DataIntegrationService {
      */
     public PersonalFilestoreTicket toExcel(TextProvider provider, List<IntegrationColumn> integrationColumns,
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData,
-            Person person) {
+            TdarUser person) {
         List<IntegrationDataResult> integrationDataResults = generatedIntegrationData.getFirst();
         if (CollectionUtils.isEmpty(integrationDataResults)) {
             return null;

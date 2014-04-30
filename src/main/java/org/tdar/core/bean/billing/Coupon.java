@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.tdar.core.bean.Persistable.Base;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * A coupon or 'credit' for space or files in tDAR.
@@ -44,7 +44,7 @@ public class Coupon extends Base {
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = true, name = "user_id")
-    private Person user;
+    private TdarUser user;
 
     public Long getNumberOfMb() {
         return numberOfMb;
@@ -91,11 +91,11 @@ public class Coupon extends Base {
         return String.format("coupon[f=%s s=%s c=%s]", numberOfFiles, numberOfMb, code);
     }
 
-    public Person getUser() {
+    public TdarUser getUser() {
         return user;
     }
 
-    public void setUser(Person user) {
+    public void setUser(TdarUser user) {
         this.user = user;
     }
 
