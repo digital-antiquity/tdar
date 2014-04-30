@@ -185,7 +185,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         doc.setId(null);
         doc.getInformationResourceFiles().clear();
         doc.setMappedDataKeyColumn(null);
-        doc.getBookmarks().clear();
         removeInvalidFields(doc);
         String docXml = xmlService.convertToXML(doc);
         logger.info(docXml);

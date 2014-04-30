@@ -264,10 +264,6 @@ public class ImportService {
             }
         }
 
-        if (CollectionUtils.isNotEmpty(incomingResource.getBookmarks())) {
-            throw new APIException(MessageHelper.getMessage("importService.bookmark_not_supported"), StatusCode.UNKNOWN_ERROR);
-        }
-
         if (incomingResource instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) incomingResource;
             if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) ||

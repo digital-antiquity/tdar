@@ -321,8 +321,8 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
-    private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+//    private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
@@ -955,15 +955,15 @@ public class Resource extends JsonModel.Base implements Persistable,
         return resourceNotes;
     }
 
-    @XmlTransient
-    public Set<BookmarkedResource> getBookmarks() {
-        return bookmarks;
-    }
-
-    public void setBookmarks(Set<BookmarkedResource> bookmarks) {
-        this.bookmarks = bookmarks;
-    }
-
+//    @XmlTransient
+//    public Set<BookmarkedResource> getBookmarks() {
+//        return bookmarks;
+//    }
+//
+//    public void setBookmarks(Set<BookmarkedResource> bookmarks) {
+//        this.bookmarks = bookmarks;
+//    }
+//
     public void setSourceCollections(Set<SourceCollection> sourceCollections) {
         this.sourceCollections = sourceCollections;
     }
