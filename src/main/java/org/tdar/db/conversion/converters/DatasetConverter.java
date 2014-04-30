@@ -155,6 +155,9 @@ public interface DatasetConverter {
 
         public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
             DataTableColumn dataTableColumn = new DataTableColumn();
+            if (StringUtils.length(name) > 250) {
+                name = name.substring(0, 250);
+            }
             dataTableColumn.setDisplayName(name);
             String internalName = targetDatabase.normalizeTableOrColumnNames(name);
             if (dataTableColumnNames.contains(internalName)) {
