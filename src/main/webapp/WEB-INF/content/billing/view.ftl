@@ -149,13 +149,11 @@
 <table class="tableFormat table">
     <tr>
         <th>name</th>
-        <th>email</th>
     </tr>
     <tr>
         <td>
             <a href="<@s.url value="/browse/creator/${account.owner.id?c}"/>">${account.owner.properName}</a> (owner)
         </td>
-        <td>${account.owner.email}</td>
     </tr>
     <#list account.authorizedMembers as member>
         <tr>
