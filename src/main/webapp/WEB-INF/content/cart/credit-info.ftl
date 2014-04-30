@@ -5,7 +5,7 @@
     <#import "common-invoice.ftl" as invoicecommon >
 
 <head>
-    <title>Your cart -- choose payment method</title>
+    <title>Your Cart -- Choose Payment Method</title>
 </head>
 <body>
 

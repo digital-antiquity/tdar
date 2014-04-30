@@ -494,7 +494,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
         <#elseif resource??>
             <div id="${checkboxId}hint" class="inherit-tips">
-                <em>Note: This section supports <strong>inheritance</strong>: values can be re-used by resources associated with your project.</em>
+                <em>Note: This section supports <strong>inheritance</strong>: values can be re-used by resources associated with a project.</em>
             </div>
         </#if>
     </div>
@@ -825,7 +825,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <b>note:</b> you have not been granted permission to upload or modify files<br/>
         <#else>
         <div class="control-group"
-             data-tiplabel="Upload your ${typeLabel}"
+             data-tiplabel="Upload ${typeLabel}"
              data-tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats:
                         <@join sequence=validFileExtensions delimiter=", "/>">
             <label for="fileUploadField" class="control-label">${typeLabel}</label>
@@ -856,7 +856,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
         <div id="fileuploadErrors" class="fileupload-error-container" style="display:none">
             <div class="alert alert-block">
-                <h4>We found the folllowing problems with your uploads</h4>
+                <h4>We found the folllowing problems with these uploads</h4>
                 <ul class="error-list"></ul>
             </div>
         </div>
@@ -994,7 +994,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <select id="project-selector" name="_tdar.project" class="input-block-level">
                     <option value="" selected='selected'>All Editable Projects</option>
                     <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-                        <optgroup label="Your Projects">
+                        <optgroup label="Projects">
                             <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
                                 <option value="${submittedProject.id?c}"
                                         title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>

@@ -346,9 +346,9 @@
             <p>
                 Metadata collected for 3D scan data will vary based on differences in scan technology and
                 instrumentation. Individualized templates are provided below, please select and download the
-                template that is appropriate to your scan project. Complete the metadata for the original scan
-                files in your project and any additional products that will be archived (only registered point clouds
-                and polygonal mesh datasets can be accepted at this time). Include the completed template in your zip
+                template that is appropriate to the scan project. Complete the metadata for the original scan
+                files in the project and any additional products that will be archived (only registered point clouds
+                and polygonal mesh datasets can be accepted at this time). Include the completed template in the zip
                 file upload (See instructions below for suggested upload file structure).
             </p>
             <h5>Available Templates</h5>
@@ -386,7 +386,7 @@
         <p>
             All 3D data and the associated metadata template should be zipped into a single zip file prior to upload.
             Additional images should be uploaded individually and image metadata should be
-            completed for each image. The suggested folder structure for your zip
+            completed for each image. The suggested folder structure for the zip
             file is as follows:
         </p>
 

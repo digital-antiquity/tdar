@@ -72,7 +72,7 @@
         manualEntryText="Manually enter coding rules into a textarea"; _divid>
             <#if _divid=="upload">
             <p class="help-block">
-                To be parsed properly your coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order. For example:
+                To be parsed properly a coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order. For example:
             </p>
 
             <table class="table">

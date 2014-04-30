@@ -29,19 +29,19 @@
         typeLabel="Ontology"
         type="ontology"
         uploadOptionText="Upload an OWL file"
-        manualEntryText="Manually enter your ontology into a textarea"; _divid>
+        manualEntryText="Manually enter ontology into a textarea"; _divid>
 
             <#if _divid=="upload">
             <p class="help-block">
-                We currently support uploads of <a class='external' href='http://www.w3.org/TR/owl2-overview/'>OWL XML/RDF files</a>.
+                ${siteAcronym} currently supports uploads of <a class='external' href='http://www.w3.org/TR/owl2-overview/'>OWL XML/RDF files</a>.
                 You can create OWL files by hand (difficult) or with a tool like <a class='external' href='http://protege.stanford.edu/'>the
                 Prot&eacute;g&eacute; ontology editor</a>. Alternatively, choose the <em>Submit as: Manually enter your ontology</em> option above and
                 enter your ontology into a text area.
             </p>
             <#elseif _divid=="manualEntry">
             <p class="help-block">
-                You can enter your ontology in the text area below. Separate each concept in
-                your ontology with newlines (hit enter), and indicate parent-child relationships
+                Enter the ontology in the text area below. Separate each concept in
+                the ontology with newlines (hit enter), and indicate parent-child relationships
                 with tabs (make sure you use the tab key on your keyboard - spaces do not work).
                 To specify synonyms for a given term use comma-separated parentheses, e.g.,
             </p>

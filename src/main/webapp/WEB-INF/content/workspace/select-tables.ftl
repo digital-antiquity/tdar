@@ -133,7 +133,7 @@
                 states from separate data sets. For example, an ontology might reconcile the values "chair" and "seat" as similar values, or it could even
                 associate both values under the broader category "Furniture." </p>
 
-            <p>After you have mapped your data sets to ontologies, you can then filter the results to create the integrated data set. You simply select the
+            <p>After you have mapped data sets to ontologies, you can then filter the results to create the integrated data set. You simply select the
                 columns you want to appear in the final set. You can read more about data integration <a
                         href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
             <ul>

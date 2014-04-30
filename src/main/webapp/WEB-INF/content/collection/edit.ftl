@@ -131,7 +131,7 @@
         </div>
             <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection"/>
 
-        <div class="glide" id="divResourcesSesction" data-tiplabel="Add/Remove Resources" data-tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
+        <div class="glide" id="divResourcesSesction" data-tiplabel="Add/Remove Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
             <h2>Add/Remove Resources</h2>

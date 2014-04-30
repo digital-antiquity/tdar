@@ -17,11 +17,11 @@ vim:sts=2:sw=2:filetype=jsp
 
 </head>
 <body>
-Enter the email address you used to register with ${siteAcronym} and we will email a new
-password to you. If you still encounter problems, <a href="<@s.url value='/contact'/>">contact us</a>.
+Enter the email address you used to register with ${siteAcronym} and we will send an email containing instructions on how
+to reset your password. If you still encounter problems, <a href="<@s.url value='/contact'/>">contact us</a>.
 <@s.form id="recoverForm" method="post" action="reminder">
     <@s.textfield label='Email' size='35' id='emailAddress' label="Email" name="reminderEmail" cssClass="required email"/>
-    <@s.submit value="Mail me a new password"/>
+    <@s.submit value="Send password reset instructions"/>
 </@s.form>
 </body> 
 
