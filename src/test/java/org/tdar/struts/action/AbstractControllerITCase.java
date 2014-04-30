@@ -143,6 +143,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             bookmarkController.removeBookmarkAction();
         }
         seen = false;
+        genericService.synchronize();
         user = genericService.find(TdarUser.class, user.getId());
         for (BookmarkedResource b : user.getBookmarkedResources()) {
             if (ObjectUtils.equals(b.getResource(), r)) {
