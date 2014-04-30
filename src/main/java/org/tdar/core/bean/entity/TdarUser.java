@@ -2,6 +2,7 @@ package org.tdar.core.bean.entity;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class TdarUser extends Person {
     public TdarUser() {}
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<BookmarkedResource> bookmarkedResources;
+    private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="user")
 //    private UserInfo userInfo;

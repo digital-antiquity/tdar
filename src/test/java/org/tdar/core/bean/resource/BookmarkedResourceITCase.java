@@ -5,12 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -151,10 +149,10 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
     public void testBookmarkedResourceService() {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         saveAll(array);
-        Dataset mergedDataset = genericService.merge(dataset);
+        Dataset mergedDataset = dataset;
         for (TdarUser person : savedPersons) {
-            TdarUser mergedPerson = genericService.merge(person);
-            assertTrue(bookmarkedResourceService.removeBookmark(mergedDataset, mergedPerson));
+            logger.debug("person:{} ds: {}", person, dataset);
+            assertTrue(bookmarkedResourceService.removeBookmark(mergedDataset, person));
         }
 //        assertTrue(mergedDataset.getBookmarks().isEmpty());
     }
