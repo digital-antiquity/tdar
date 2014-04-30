@@ -18,7 +18,7 @@ import org.tdar.struts.action.AbstractPersistableController;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/institution")
-public class InstitutionController extends AbstractPersistableController<Institution> {
+public class InstitutionController extends AbstractCreatorController<Institution> {
 
     private static final long serialVersionUID = 2051510910128780834L;
 

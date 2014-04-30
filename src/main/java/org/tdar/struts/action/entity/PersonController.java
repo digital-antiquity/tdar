@@ -37,7 +37,7 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public static final String MYPROFILE = "myprofile";
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -2125910954088505227L;
 
     private String institutionName;
     private String proxyInstitutionName;
