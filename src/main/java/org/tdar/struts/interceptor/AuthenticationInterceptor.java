@@ -38,7 +38,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     private static final long serialVersionUID = -3147151913316273258L;
 
-    public static final String SKIP_REDIRECT = "(.*)/(lookup|datatable\\/browse)/(.*)";
+    public static final String SKIP_REDIRECT = "(.*)/(lookup|page-not-found|datatable\\/browse)/(.*)";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
