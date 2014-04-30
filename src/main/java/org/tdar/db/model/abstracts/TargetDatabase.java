@@ -83,4 +83,6 @@ public interface TargetDatabase extends Database {
 
     String selectTableAsXml(DataTable dataTable);
 
+    int getMaxColumnNameLength();
+
 }

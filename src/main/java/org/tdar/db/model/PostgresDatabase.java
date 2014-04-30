@@ -75,6 +75,7 @@ import org.tdar.utils.Pair;
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
+    public static final int MAX_COLUMN_NAME_SIZE = 63;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
@@ -129,6 +130,11 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     @Override
     public int getMaxTableLength() {
         return MAX_NAME_SIZE;
+    }
+
+    @Override
+    public int getMaxColumnNameLength() {
+        return MAX_COLUMN_NAME_SIZE;
     }
 
     @Override
