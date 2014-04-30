@@ -202,8 +202,11 @@ public class BulkUploadService {
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
         BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, resourceTemplate, submitter, fileProxies, ticketId);
+
         // we're done with the template; get rid of it and its references off the session
         resourceTemplate = null;
+
+        // the manifest proxy might be null if no excel file was provided.
         if (manifestProxy == null) {
             manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
         }
@@ -211,6 +214,8 @@ public class BulkUploadService {
         // If there are errors, then stop...
         AsyncUpdateReceiver updateReciever = manifestProxy.getAsyncUpdateReceiver();
         List<String> asyncErrors = updateReciever.getAsyncErrors();
+
+        // fail if there are already errors in the validation of the excel template
         if (CollectionUtils.isNotEmpty(asyncErrors)) {
             logger.debug("not moving further because of async validation errors: {}", asyncErrors);
             completeBulkUpload(accountId, updateReciever, excelManifest, ticketId);
@@ -222,7 +227,7 @@ public class BulkUploadService {
 
         Collection<Resource> remainingResources =  manifestProxy.getResourcesCreated().values();
         logger.info("bulk: applying manifest file data to resources");
-        updateAccountQuotas(accountId, manifestProxy.getResourcesCreated().values(), updateReciever);
+        updateAccountQuotas(accountId, remainingResources, updateReciever);
 
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
         completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
@@ -232,10 +237,15 @@ public class BulkUploadService {
     }
     
     
+    /**
+     * The account will be set by controller, but future calls to "merge" will not pass through and thus cause issues
+     *  because account is a transient object on Resource. Same with shared collections, submitter, and projects. 
+     *  calling merge now so we can only call it once. 
+     * @param authorizedUser
+     * @param resourceTemplate
+     * @return
+     */
     private Long prepareTemplateAndBringSharedObjectsOnSession(TdarUser authorizedUser, InformationResource resourceTemplate) {;
-        // account will be set by controller, but future calls to "merge" will not pass through and thus cause issues
-        // because account is a transient object on Resource. Same with shared collections, submitter, and projects. 
-        // calling merge now so we can only call it once. 
         resourceTemplate.setAccount(null);
 
         resourceTemplate.setDescription("");
@@ -300,16 +310,24 @@ public class BulkUploadService {
                 }
 
                 ActionMessageErrorListener listener = new ActionMessageErrorListener();
+                
+                // get the resource we're working with
                 InformationResource informationResource = (InformationResource) manifestProxy.getResourcesCreated().get(fileName);
-                manifestProxy.getResourcesCreated().put(fileName, null);
-                informationResource = importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
-                informationResource = genericDao.merge(informationResource);
 
+                // remove it from the working map (so that we don't have to manage the reference (needed for thread issues)
+                manifestProxy.getResourcesCreated().put(fileName, null);
+                // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
+                informationResource = importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
+                // merge everything onto session and persist  (needed for thread issues)
+                informationResource = genericDao.merge(informationResource);
                 genericDao.saveOrUpdate(informationResource);
+                
+                // process files
                 informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
                         Arrays.asList(fileProxy));
+                
+                // make sure we're up-to-date  (needed for thread issues)
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
-
                 manifestProxy.getResourcesCreated().put(fileName, informationResource);
                 manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                 if (listener.hasActionErrors()) {

@@ -120,11 +120,7 @@ public class BulkManifestProxy implements Serializable {
     /**
      * Read the entire excel file in row-by-row. Process the row by looking at
      * the fields and reflecting the values into their appropriate beans.
-     * 
-     * FIXME: This method needs refactoring and is overly complex
-     * 
      */
-    @SuppressWarnings("unchecked")
     public <R extends Resource> void readExcelFile() throws InvalidFormatException, IOException {
 
         AsyncUpdateReceiver asyncUpdateReceiver = getAsyncUpdateReceiver();
@@ -149,6 +145,7 @@ public class BulkManifestProxy implements Serializable {
             int startColumnIndex = getFirstCellNum();
             int endColumnIndex = getLastCellNum();
 
+            // find filename and matching resource
             String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
 
             // look in the hashmap for the filename, skip the examples
@@ -173,10 +170,12 @@ public class BulkManifestProxy implements Serializable {
             asyncUpdateReceiver.setStatus(MessageHelper.getMessage("bulkUploadService.processing_file",
                     Arrays.asList(filename)));
 
+            // get all of the required fields for the file-type
             Set<CellMetadata> requiredFields = bulkUploadTemplateService.getRequiredFields(getAllValidFields());
             requiredFields.remove(cellLookupMap.get(BulkUploadTemplate.FILENAME));
             // iterate through the spreadsheet
             try {
+                // reflect the values onto the bean for the resource
                 processRowContents(requiredFields, evaluator, row, resourceToProcess, filename, startColumnIndex, endColumnIndex);
             } catch (Throwable t) {
                 logger.debug("excel mapping error: {}", t.getMessage(), t);
@@ -185,6 +184,7 @@ public class BulkManifestProxy implements Serializable {
             }
         }
 
+        // report on missing files that are not in the excel template, or missing files that are not being uploaded 
         for (String filename : getResourcesCreated().keySet()) {
             if (isCaseSensitive()) {
                 allFilenames.remove(filename);
@@ -201,13 +201,14 @@ public class BulkManifestProxy implements Serializable {
         }
     }
     
+    /**
+     * Convert an excel Row into a resource
+     */
     private void processRowContents( Set<CellMetadata> requiredFields, FormulaEvaluator evaluator, Row row, Resource resourceToProcess, String filename, int startColumnIndex, int endColumnIndex) {
-        // there has to be a smarter way to do this generically... iterate
-        // through valid field names for class
-//        boolean seenCreatorFields = false;
         ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
-
+        // for each columnm get the value, validate it and set it. For more complex beans like the ResourceCreatorProxy, set the values on the bean and validate
+        // when the bean is done
         for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
             String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
             String name = getColumnNames().get(columnIndex);
@@ -219,6 +220,7 @@ public class BulkManifestProxy implements Serializable {
             }
 
             Class<?> mappedClass = cellMetadata.getMappedClass();
+            // figure out what sort of class/field we're dealing with
             boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
             boolean resourceSubtypeAssignableFrom = false;
             if ((mappedClass != null) && (resourceToProcess != null)) {
@@ -226,6 +228,8 @@ public class BulkManifestProxy implements Serializable {
             }
             boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
             boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
+
+            // if we can't figure out what it is, die...
             if ((cellMetadata == null) || !((mappedClass != null) && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                 if (mappedClass != null) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type",
@@ -251,6 +255,8 @@ public class BulkManifestProxy implements Serializable {
         }
         
         logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
+        
+        // die at the end of the process if we still have required fields that haven't been set
         if (requiredFields.size() > 0) {
             List<String> required = (List<String>) CollectionUtils.collect(requiredFields, new BeanToPropertyValueTransformer("displayName"));
             throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",
@@ -259,7 +265,19 @@ public class BulkManifestProxy implements Serializable {
     }
     
 
-
+    /**
+     * Take a field and add it to the ResourceCreatorProxy. If that field is already set, or part of a different creator type, then complete and start a new
+     * resource creator
+     * 
+     * @param resourceCreatorAssignableFrom
+     * @param creatorAssignableFrom
+     * @param resourceToProcess
+     * @param creatorProxy
+     * @param mappedClass
+     * @param cellMetadata
+     * @param value
+     * @return
+     */
     private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess, ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
 
         logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
