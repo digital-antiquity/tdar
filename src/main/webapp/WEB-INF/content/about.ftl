@@ -56,34 +56,40 @@
         <#include "featured.ftl" />
 </div>
 <hr>
-<div class="row">
-    <div class="span6 map">
-        <h3>${siteAcronym} Worldwide</h3>
-        <@common.worldMap />
-    </div>
-    <div class="span6 news">
+<#-- FAIMS want this row disabled as they are unhappy with the map quality 
+     and the RSS feed is broken on their side. I'm sure that its just a temporary state of affairs
+     until they find someone to bring it up to their standards, and they fix their RSS feed. -->
+<#-- But beware: archiveFileEnabled is in danger of becoming "is FAIMS" -->
+<#if !archiveFileEnabled>
+    <div class="row">
+        <div class="span6 map">
+            <h3>${siteAcronym} Worldwide</h3>
+            <@common.worldMap />
+        </div>
+        <div class="span6 news">
 
-        <h3>What&rsquo;s New at ${siteAcronym}?</h3>
+            <h3>What&rsquo;s New at ${siteAcronym}?</h3>
 
-        <#if rssEntries?has_content>
-        <ul>
-            <#assign maxEntries =5 />
-            <#list rssEntries as entry>
-            <#assign maxEntries = maxEntries -1 />
-            <#if maxEntries == 0>
-                <#break>
+            <#if rssEntries?has_content>
+            <ul>
+                <#assign maxEntries =5 />
+                <#list rssEntries as entry>
+                <#assign maxEntries = maxEntries -1 />
+                <#if maxEntries == 0>
+                    <#break>
+                </#if>
+                <li>
+                    <span>${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
+                    <a href="${entry.link}" class="title">${entry.title}</a>
+                    Posted by ${entry.author}
+                </li>
+                </#list>
+            </ul>
+            <p class="pull-right"><a href="${newsUrl}">Older News &raquo;</a></p>
             </#if>
-            <li>
-                <span>${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
-                <a href="${entry.link}" class="title">${entry.title}</a>
-                Posted by ${entry.author}
-            </li>
-            </#list>
-        </ul>
-        <p class="pull-right"><a href="${newsUrl}">Older News &raquo;</a></p>
-        </#if>
+        </div>
     </div>
-</div>
+</#if>
 <br/>
 <div class="row">
     <div class="span6">
