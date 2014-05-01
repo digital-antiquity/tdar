@@ -101,6 +101,7 @@
 </table>
 
 
+<#if (account.coupons?has_content && account.coupons?size > 0)>
 <h3>Voucher Codes</h3>
 <table class="tableFormat table">
     <tr>
@@ -127,8 +128,10 @@
         </tr>
     </#list>
 </table>
+</#if>
 <div class="well">
     <h3> Create Voucher</h3>
+	<p>Voucher codes can be used to allow someone else to use files or space without providing them full access to your account. <b> To redeem a coupon, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
             <div class="span4">
