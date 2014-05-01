@@ -137,8 +137,8 @@
                                         <#if !disabled></b></#if>
                                     </label>
                                     <#if ontologyNode.parent ><span class="right">
-        &nbsp;(<span class="link" onclick='selectChildren("${node_id}", true);'>all</span>
-        | <span class="link" onclick='selectChildren("${node_id}", false);'>clear</span>)</span>
+        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>all</span>
+        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
                                     </#if>
 
                                 </td>
