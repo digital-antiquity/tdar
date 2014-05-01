@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public interface DatasetConverter {
         protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
         private File indexedContentsFile;
         private Set<String> dataTableNames = new HashSet<String>();
-        private List<String> dataTableColumnNames = new ArrayList<>();
+        private Map<String,List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
 
@@ -160,11 +161,17 @@ public interface DatasetConverter {
             }
             dataTableColumn.setDisplayName(name);
             String internalName = targetDatabase.normalizeTableOrColumnNames(name);
-            if (dataTableColumnNames.contains(internalName)) {
-                internalName = extractAndIncrementIfDuplicate(internalName, dataTableColumnNames, targetDatabase.getMaxColumnNameLength() - 20);
+            String tableName = dataTable.getInternalName();
+            List<String> columnNames = dataTableColumnNames.get(tableName);
+            if (columnNames == null) {
+                columnNames = new ArrayList<>();
+                dataTableColumnNames.put(tableName, columnNames);
+            }
+            if (columnNames.contains(internalName)) {
+                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
             }
             dataTableColumn.setName(internalName);
-            dataTableColumnNames .add(internalName);
+            columnNames.add(internalName);
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             dataTableColumn.setDataTable(dataTable);
