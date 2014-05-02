@@ -78,7 +78,7 @@
     </div>
 
     <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
-        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield"  maxlength=255 />
+        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
     </div>
 
     <div id="t-isbn" placeholder="XXXX-XXXX" data-tiplabel="ISBN" data-tooltipcontent="International Standard Book Number."
