@@ -214,6 +214,10 @@ public class GenericDao {
         return persistentClass.cast(getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue)).uniqueResult());
     }
 
+    public <T> T findByPropertyIgnoreCase(Class<T> persistentClass, String propertyName, Object propertyValue) {
+        return persistentClass.cast(getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue).ignoreCase()).uniqueResult());
+    }
+
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllByProperty(Class<T> persistentClass, String propertyName, Object propertyValue) {
         return getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue)).list();

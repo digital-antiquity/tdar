@@ -144,7 +144,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      * @throws IOException
      */
-    @Scheduled(cron = "5 0 0 * * SUN")
+    @Scheduled(cron = "50 0 0 * * SUN")
     @Async
     public void verifyTdarFiles() throws IOException {
         queue(scheduledProcessMap.get(WeeklyFilestoreLoggingProcess.class));

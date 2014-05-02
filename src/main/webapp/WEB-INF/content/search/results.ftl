@@ -109,7 +109,7 @@
                 <li>Bookmark datasets you'd like to integrate</li>
                 <li>Visit your workspace to begin the integration process</li>
             </ol>
-            <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
+            <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit ${siteAcronym} documentation for more details</a>
         </div>
         </#if>
 

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 public @interface BulkImportField {
     String FILENAME_DESCRIPTION = "List each file you would like to upload individually.  A new metadata record will be created for every file listed.  Note:  the filenames MUST match the actual file names you uploaded on the \"New Batch Upload\" screen.";
     String TITLE_DESCRIPTION = "Title - is the Main title of the Resource. This may or may not be the actual title of the document, image, database, etc. Note: The title is preference when searching for a file. ";
-    String DESCRIPTION_DESCRIPTION = "The description may include an abstract, outline of contents, and or additional information that is not addressed in the other metadata will be a valuable took for others to find the files in your projects.";
+    String DESCRIPTION_DESCRIPTION = "The description may include an abstract, outline of contents, and or additional information that is not addressed in the other metadata will be a valuable tool for others to find the files in these projects.";
     String YEAR_DESCRIPTION = "The year the physical resource was created";
     String DOCUMENT_TITLE = "Gray items - used for Documents only";
     String COPY_LOCATION_DESCRIPTION = "Copy Location - can be a physical location (name of organization/company/etc. with address if possible) or could be a digital location (physical server location and/or web address).  Idea is to allow user to relocate original physical/digital item(s).";

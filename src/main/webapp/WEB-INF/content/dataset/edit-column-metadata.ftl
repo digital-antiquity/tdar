@@ -67,8 +67,8 @@
 
         <div class="">
             <p>
-                There are multiple tables in your dataset. You can switch between them by clicking
-                on one of the links below. Please remember to save any changes before you switch.
+                There are multiple tables in this dataset. To switch between, click
+                on one of the links below. Please remember to save any changes before switching tables.
             </p>
 
             <label for="table_select">Choose Table:</label>

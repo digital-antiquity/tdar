@@ -7,7 +7,7 @@
     <#import "common-invoice.ftl" as invoicecommon >
 
 <head>
-    <title>Your cart</title>
+    <title>Your Cart</title>
 
 </head>
 <body>

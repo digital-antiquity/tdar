@@ -53,7 +53,6 @@ vim:sts=2:sw=2:filetype=jsp
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
-    <@s.checkbox name="userCookieSet" label="Stay logged-in the next time I visit this page" />
 
     <div class="form-actions">
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>

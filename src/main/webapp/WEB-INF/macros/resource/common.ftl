@@ -1080,7 +1080,7 @@ search page associated with the datapoint -->
 <#-- @param accountList:List<Account> list of accounts to render -->
     <#macro billingAccountList accountList>
         <#if (payPerIngestEnabled!false)>
-        <h2>Your Billing Accounts</h2>
+        <h2>Billing Accounts</h2>
         <ul>
             <#list accountList as account>
                 <li>

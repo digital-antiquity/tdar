@@ -17,7 +17,6 @@
             <li class="tab-pane"><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
 

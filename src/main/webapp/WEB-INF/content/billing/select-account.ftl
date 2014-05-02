@@ -5,7 +5,7 @@
     <#import "common-account.ftl" as accountcommon>
 
 <head>
-    <title>Your cart</title>
+    <title>Your Cart</title>
 </head>
 <body>
 

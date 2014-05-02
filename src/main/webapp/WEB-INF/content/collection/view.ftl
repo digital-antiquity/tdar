@@ -103,7 +103,7 @@
                 <#if selectedResourceTypes?has_content>
                 ${resourceTypeFacets[0].plural}
 
-                <#else>Resources</#if> within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
+                <#else>Resources</#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
                                                                                                                           href="<@s.url includeParams="all">
 			            <@s.param name="selectedResourceTypes"value="" />
 			            <@s.param name="startRecord" value=""/>

@@ -270,11 +270,12 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void loadExtraViewMetadata() {
-        if (Persistable.Base.isNullOrTransient(getId())) {
+        if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return;
         }
+        getLogger().debug("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
-        // FIXME: reconcile
+
         if (isAuthenticated()) {
             getResourceCollectionService().buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
@@ -291,34 +292,33 @@ public class CollectionController extends AbstractPersistableController<Resource
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
+        getLogger().debug("child collections: sort");
         Collections.sort(collections);
+        getLogger().debug("child collections: end");
 
-        if (getPersistable() != null) {
-            // FIXME: logic is right here, but this feels "wrong"
+        // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
+        // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
+        // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
-            // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
-            // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
-            // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+        // the visibilty fence should take care of visible vs. shared above
+        ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                getResourceCollection(), getAuthenticatedUser(), this);
+        getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
-            // the visibilty fence should take care of visible vs. shared above
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                    getResourceCollection(), getAuthenticatedUser(), this);
-            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
-            setSortField(getPersistable().getSortBy());
-            if (getSortField() != SortOption.RELEVANCE) {
-                setSecondarySortField(SortOption.TITLE);
-                if (getPersistable().getSecondarySortBy() != null) {
-                    setSecondarySortField(getPersistable().getSecondarySortBy());
-                }
-            }
-
-            try {
-                getSearchService().handleSearch(qb, this);
-            } catch (Exception e) {
-                addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+        setSortField(getPersistable().getSortBy());
+        if (getSortField() != SortOption.RELEVANCE) {
+            setSecondarySortField(SortOption.TITLE);
+            if (getPersistable().getSecondarySortBy() != null) {
+                setSecondarySortField(getPersistable().getSecondarySortBy());
             }
         }
+
+        try {
+            getSearchService().handleSearch(qb, this);
+        } catch (Exception e) {
+            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+        }
+        getLogger().debug("lucene: end");
     }
 
     /**

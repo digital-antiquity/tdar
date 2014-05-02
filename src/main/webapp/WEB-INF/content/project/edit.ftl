@@ -16,7 +16,7 @@
     </#macro>
 
     <#macro localSection>
-    <h4>Organize the Resources Within your Project</h4>
+    <h4>Organize the Resources Within a Project</h4>
 
         <@s.select labelposition='top' label='When Browsing Sort Resource By' name='project.sortBy'
         listValue='label' list='%{sortOptions}' title="Sort resource by" />

@@ -15,7 +15,7 @@
 <@s.form id="accountForm" method="post" action="${action_}" cssClass="">
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
-    <h4>Please correct the following issues with your submission</h4>
+    <h4>Please correct the following issues with this submission</h4>
     <ul id="errorList"></ul>
 </div>
 

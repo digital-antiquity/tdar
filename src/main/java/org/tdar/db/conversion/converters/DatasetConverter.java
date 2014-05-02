@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -86,7 +88,9 @@ public interface DatasetConverter {
         protected Connection connection;
         protected Set<DataTable> dataTables = new HashSet<DataTable>();
         protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
+        private File indexedContentsFile;
         private Set<String> dataTableNames = new HashSet<String>();
+        private Map<String,List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
 
@@ -118,8 +122,6 @@ public interface DatasetConverter {
             return dataTables;
         }
 
-        private File indexedContentsFile;
-
         public DataTable createDataTable(String name) {
             DataTable dataTable = new DataTable();
             dataTable.setDisplayName(name);
@@ -127,18 +129,7 @@ public interface DatasetConverter {
             logger.info(name_);
 
             if (dataTableNames.contains(name_)) {
-                int add = 1;
-
-                if ((name_.length() + 1) > targetDatabase.getMaxTableLength()) {
-                    name_ = name_.substring(0, targetDatabase.getMaxTableLength() - 2);
-                }
-
-                while (dataTableNames.contains(name_ + add)) {
-                    add++;
-                }
-                String tmpName = name_ + add;
-                logger.debug("renaming table from " + name_ + " to " + tmpName);
-                name_ = tmpName;
+                name_ = extractAndIncrementIfDuplicate(name_, dataTableNames, targetDatabase.getMaxTableLength());
             }
             dataTableNames.add(name_);
             dataTable.setName(name_);
@@ -147,10 +138,40 @@ public interface DatasetConverter {
             return dataTable;
         }
 
+        private String extractAndIncrementIfDuplicate(String name_, Collection<String> existingNames, int maxTableLength) {
+            int add = 1;
+
+            if ((name_.length() + 1) > maxTableLength) {
+                name_ = name_.substring(0, maxTableLength - 2);
+            }
+
+            while (existingNames.contains(name_ + add)) {
+                add++;
+            }
+            String tmpName = name_ + add;
+            logger.debug("renaming from " + name_ + " to " + tmpName);
+            name_ = tmpName;
+            return name_;
+        }
+
         public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
             DataTableColumn dataTableColumn = new DataTableColumn();
+            if (StringUtils.length(name) > 250) {
+                name = name.substring(0, 250);
+            }
             dataTableColumn.setDisplayName(name);
-            dataTableColumn.setName(targetDatabase.normalizeTableOrColumnNames(name));
+            String internalName = targetDatabase.normalizeTableOrColumnNames(name);
+            String tableName = dataTable.getInternalName();
+            List<String> columnNames = dataTableColumnNames.get(tableName);
+            if (columnNames == null) {
+                columnNames = new ArrayList<>();
+                dataTableColumnNames.put(tableName, columnNames);
+            }
+            if (columnNames.contains(internalName)) {
+                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
+            }
+            dataTableColumn.setName(internalName);
+            columnNames.add(internalName);
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             dataTableColumn.setDataTable(dataTable);

@@ -4,7 +4,7 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
-    <title>Your cart</title>
+    <title>Your Cart</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <style>
         #convert {

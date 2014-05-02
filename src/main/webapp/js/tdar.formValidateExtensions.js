@@ -59,6 +59,14 @@
         return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
     }, "you must include a valid 8 Digit ISSN");
 
+    $.validator.addMethod("doi", function (value, element) {
+        if ($(element).is(':hidden')) {
+            return true;
+        }// skip validation if not showing
+        // from : http://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
+        return value.match(/^\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/);
+    }, "you must include a valid DOI");
+
     //FIXME: already implemented in additional-methods.js
     $.validator.addMethod("phoneUS", function (phone_number, element) {
         phone_number = phone_number.replace(/\s+/g, "");

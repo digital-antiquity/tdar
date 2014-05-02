@@ -81,7 +81,6 @@ public class ResourceProxy implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
     @JoinColumn(name = "information_resource_id")
-    @OrderBy("sequenceNumber asc")
     @Immutable
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 

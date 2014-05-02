@@ -17,7 +17,7 @@
         automatically,
         or if you would like to download the file again, please click on the link above.
     </p>
-    <a class="btn btn-large btn-primary" href="<@s.url value="/dashboard" />">Take me to my dashboard</a>
+    <a class="btn btn-large btn-primary" href="<@s.url value="/dashboard" />">Return to dashboard</a>
 </div>
 <div class="row">
 </div>

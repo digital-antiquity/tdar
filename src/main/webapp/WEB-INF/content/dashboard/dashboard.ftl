@@ -20,7 +20,7 @@
         <div class="news alert" id="alert-charging">
             <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
             <B>${siteAcronym} Update:</B>
-            Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for
+            Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing">the website</a> for
             more information.
             <br/>
             <br/>
@@ -30,14 +30,6 @@
             <br/>
         </div>
     </#if>
-<#--
-    <div class="news alert" id="alert-jar">
-		<button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-knap">&times;</button>
-        <B>${siteAcronym} Update:</B>
-        Welcome to Knap! Learn all about what has changed <a href="http://www.tdar.org/news/2014/04/tdar-software-update-knap/">here</a>.
-        <br/>
-    </div>
-    -->
 </div>
 
 
@@ -249,7 +241,7 @@
     <#macro collectionsSection>
 
     <div class="" id="collection-section">
-        <h2>Collections You Created </h2>
+        <h2>Collections</h2>
         <@common.listCollections collections=allResourceCollections>
             <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
         </@common.listCollections>

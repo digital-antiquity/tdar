@@ -886,7 +886,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     @Transactional(readOnly = true)
     public Coupon locateRedeemableCoupon(String code, Person user) {
-        if (org.apache.commons.lang.StringUtils.isBlank(code) || Persistable.Base.isNullOrTransient(user)) {
+        if (StringUtils.isBlank(code) || Persistable.Base.isNullOrTransient(user)) {
             return null;
         }
         return getDao().findCoupon(code, user);

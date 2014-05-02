@@ -215,6 +215,7 @@
                             </div>
                         </div>
                     </#if>
+                    <#-- Person addresses should only be viewable/editable by tdar-editor and above -->
                     <#if creator.addresses?has_content >
                         <h3>Addresses</h3>
 
@@ -228,7 +229,19 @@
                     </#if>
                 </#if>
             </#if>
-            <br/>
+        <#else>
+            <#-- Institution addresses can be shown to anybody (but can only be edited by tdar-editor and above) -->
+            <#if creator.addresses?has_content >
+                <h3>Addresses</h3>
+
+                <div class="row">
+                    <#list creator.addresses  as address>
+                        <div class="span3">
+                            <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+                        </div>
+                    </#list>
+                </div>
+            </#if>
         </#if>
     </div>
     </#if>

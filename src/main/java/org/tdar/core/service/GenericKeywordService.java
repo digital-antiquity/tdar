@@ -132,8 +132,13 @@ public class GenericKeywordService extends GenericService {
      */
     @Transactional(readOnly = false)
     public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label) {
-        if (label == null) {
+        if (StringUtils.isBlank(label)) {
             return null;
+        }
+        // trim and strip quotes
+        label = label.trim();
+        if (label.startsWith("\"") && label.endsWith("\"") ) {
+          label = label.substring(1,label.length() - 1);
         }
         K keyword = genericKeywordDao.findByLabel(cls, label);
         if (keyword == null) {
