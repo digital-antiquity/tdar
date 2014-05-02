@@ -6,7 +6,7 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <head>
-    <title>Your account ${account.name!"Your Account"}</title>
+    <title>${account.name!"Your Account"}</title>
     <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
@@ -131,7 +131,7 @@
 </#if>
 <div class="well">
     <h3> Create Voucher</h3>
-	<p>Voucher codes can be used to allow someone else to use files or space without providing them full access to your account. <b> To redeem a coupon, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
+	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
             <div class="span4">
