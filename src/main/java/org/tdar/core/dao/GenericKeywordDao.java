@@ -35,6 +35,8 @@ import org.tdar.utils.Pair;
 @Component("genericKeywordDao")
 public class GenericKeywordDao extends GenericDao {
 
+    private static final String LABEL = "label";
+    private static final String INDEX = "index";
     public static final String NAME = "name";
     public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -47,19 +49,14 @@ public class GenericKeywordDao extends GenericDao {
         }
         index += ".%";
         DetachedCriteria criteria = getDetachedCriteria(cls);
-        criteria.add(Restrictions.ilike("index", index));
+        criteria.add(Restrictions.ilike(INDEX, index));
         return findByCriteria(cls, criteria);
     }
 
     @Transactional
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
         // FIXME: turn this into a generic named query?
-        return findByProperty(cls, "label", label);
-    }
-
-    @Transactional
-    public <K extends Keyword> List<K> findAllByLabels(Class<K> cls, List<String> labels) {
-        return findAllFromList(cls, "label", labels);
+        return findByPropertyIgnoreCase(cls, LABEL, label);
     }
 
     @Transactional
