@@ -65,7 +65,7 @@
         }// skip validation if not showing
         // from : http://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
         return value.match(/^\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/);
-    }, "you must include a valid DOI");
+    }, "you must include a valid DOI e.g.: 10.1000/182");
 
     //FIXME: already implemented in additional-methods.js
     $.validator.addMethod("phoneUS", function (phone_number, element) {

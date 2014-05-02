@@ -414,14 +414,14 @@
     function _selectChildren(id, value) {
         var index = id.substr(0, id.lastIndexOf("_"));
         $("input:enabled[id$='" + index + "']").prop('checked', value);
-        $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
+        $("input:enabled[id*='" + index + "_']").prop('checked', value);
         return false;
     }
 
     //return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
     function cb2str() {
         var elems = $.map($("[id]:checkbox:checked").get(), function (el) {
-            return el.id
+            return el.id;
         });
         if (elems.length) {
             return JSON.stringify(elems);
@@ -434,7 +434,7 @@
     function str2cb(str) {
         if (str) {
             $.each(JSON.parse(str), function (i, cbid) {
-                $("#" + cbid).prop('checked', true)
+                $("#" + cbid).prop('checked', true);
             });
         }
     }

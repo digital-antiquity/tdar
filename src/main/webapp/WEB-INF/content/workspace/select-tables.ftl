@@ -33,6 +33,7 @@
                 </td>
                 <td>
                     <#local comma = false />
+                    <#if sharedOntologies??>
                     <#list sharedOntologies as ontology>
                         <#local seen  = false>
                         <#list table.dataTableColumns as column>
@@ -48,6 +49,7 @@
                         ${ontology.name}
                         </#if>
                     </#list>
+                    </#if>
                 </td>
                 <td>
                     &nbsp;(<a href="#" class="column_toggle"> show / hide columns</a>)
