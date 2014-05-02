@@ -414,7 +414,7 @@
     function _selectChildren(id, value) {
         var index = id.substr(0, id.lastIndexOf("_"));
         $("input:enabled[id$='" + index + "']").prop('checked', value);
-        $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
+        $("input:enabled[id*='" + index + "_']").prop('checked', value);
         return false;
     }
 
