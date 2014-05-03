@@ -60,7 +60,8 @@
     }, "you must include a valid 8 Digit ISSN");
 
     $.validator.addMethod("doi", function (value, element) {
-        if ($(element).is(':hidden')) {
+    	var $e = $(element);
+        if ($e.is(':hidden') || $e.val() == '') {
             return true;
         }// skip validation if not showing
         // from : http://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
