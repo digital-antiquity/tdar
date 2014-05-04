@@ -1394,7 +1394,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
             <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
-            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} authuserNotSubmitter" placeholder="Name"  readonly=isDisabled autocomplete="off"
             name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"

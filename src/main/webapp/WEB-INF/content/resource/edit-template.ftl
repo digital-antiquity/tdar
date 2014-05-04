@@ -51,8 +51,17 @@
     <#assign fileReminder=true />
     <#assign prefix="${resource.resourceType.label?lower_case}" />
 
-    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
+    <#-- if new resource, submitter is current user; otherwise, submitter is resource.submitter -->
+    <#if (resource.id == -1)>
+        <#assign submitterId = authenticatedUser.id>
+    <#else>
+        <#assign submitterId = resource.submitter.id>
+    </#if>
+    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'
+            dynamicAttributes={"data-submitterid":"${submitterId?c}"}
+            >
         <@common.jsErrorLog />
+
 
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>

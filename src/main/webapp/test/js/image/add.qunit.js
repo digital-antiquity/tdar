@@ -1,7 +1,7 @@
 (function (common, fileupload, $) {
     "use strict";
 
-    var basic = {
+    var fileuploadModule = {
         helper: {},
         fileuploadSelector: "#divFileUpload",
         formSelector: "#metadataForm",
@@ -10,17 +10,16 @@
         setup: function () {
             _pageinit();
 
-            var helper = basic.helper = $(basic.fileuploadSelector).data("fileuploadHelper");
-            basic.form = $(basic.formSelector);
-            ok(basic.form.length, "form exists");
+            var helper = fileuploadModule.helper = $(fileuploadModule.fileuploadSelector).data("fileuploadHelper");
+            fileuploadModule.form = $(fileuploadModule.formSelector);
+            ok(fileuploadModule.form.length, "form exists");
 
             //dont show modal when validation fails
-            basic.form.validate().showErrors = function (errorMap, errorList) {
+            fileuploadModule.form.validate().showErrors = function (errorMap, errorList) {
             };
         },
 
         teardown: function () {
-            //$("#metadataForm").fileupload("destroy");
         },
 
         fillOutRequiredFields: function () {
@@ -34,9 +33,10 @@
         }
     };
 
+
     //HACK: kill any initial fileupload registration.  we will do this in our test.
     try {
-        $(basic.fileuploadSelector).fileupload("destroy");
+        $(fileuploadModule.fileuploadSelector).fileupload("destroy");
     } catch (err) {
         console.log("tried to destroy fileupload:: %s", err);
     }
@@ -44,13 +44,13 @@
     function _pageinit() {
         //hack:  mimic the one-time initialization that happens on the edit page.
         console.log("running initEditPage");
-        common.initEditPage($(basic.formSelector)[0]);
+        common.initEditPage($(fileuploadModule.formSelector)[0]);
 
         var helper = TDAR.fileupload.registerUpload({
             informationResourceId: -1,
             acceptFileTypes: /\.(aaa|bbb|ccc|jpg|jpeg|tif|tiff)$/i,
-            formSelector: basic.fileuploadSelector,
-            inputSelector: basic.inputSelector
+            formSelector: fileuploadModule.fileuploadSelector,
+            inputSelector: fileuploadModule.inputSelector
         });
 
         console.log("initEditPage done");
@@ -64,7 +64,7 @@
         var fnDone = $(ctx).fileupload('option', 'done');
         var data = {result: $.extend({files: [mockFile]}, options)};
         fnDone.call(ctx, null, data);
-        var $filesContainer = $($(basic.helper.context).fileupload("option", "filesContainer"));
+        var $filesContainer = $($(fileuploadModule.helper.context).fileupload("option", "filesContainer"));
         data.result.context = $filesContainer.find("tr").last();
         $(ctx).trigger("fileuploadcompleted", data.result);
     };
@@ -103,7 +103,7 @@
     }
 
     function _upload(filename) {
-        _mockUpload(basic.helper, filename);
+        _mockUpload(fileuploadModule.helper, filename);
     }
 
     function _fillout(map) {
@@ -113,29 +113,30 @@
     }
 
     $(function () {
-        module("basic", basic);
+        TDAR.maxUploadFiles = 2;
+        module("FILE UPLOAD", fileuploadModule);
         test("sanity check", function () {
-            basic.fillOutRequiredFields();
-            ok(basic.form.valid(), "form should have zero validation errors");
+            fileuploadModule.fillOutRequiredFields();
+            ok(fileuploadModule.form.valid(), "form should have zero validation errors");
         });
 
         test("confidential file should not submit unless we have a contact", function () {
-            basic.fillOutRequiredFields();
+            fileuploadModule.fillOutRequiredFields();
             _upload("foo.jpg");
             equal($('.fileProxyConfidential').length, 1, "should only be one file row");
 
             $('.fileProxyConfidential').val("CONFIDENTIAL");
-            ok(!basic.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
+            ok(!fileuploadModule.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
 
             $('.fileProxyConfidential').val("EMBARGOED");
-            ok(!basic.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
+            ok(!fileuploadModule.form.valid(), "form validation should return false, because we have at least one confidential file but zero contacts");
 
             $('.fileProxyConfidential').val("PUBLIC");
-            ok(basic.form.valid(), 'form should be valid now because file is public');
+            ok(fileuploadModule.form.valid(), 'form should be valid now because file is public');
         });
 
         test("confidential file should be allowed because we have a contact", function () {
-            basic.fillOutRequiredFields();
+            fileuploadModule.fillOutRequiredFields();
             _upload("foo.jpg");
 
         });
@@ -143,45 +144,65 @@
         test("replace file should work", function () {
             _upload("one.jpg");
             _upload("two.jpg");
-            var $filesContainer = $($(basic.helper.context).fileupload("option", "filesContainer"));
+            var $filesContainer = $($(fileuploadModule.helper.context).fileupload("option", "filesContainer"));
             var $replaceTarget = $filesContainer.find("tr").last();
-            _mockReplace(basic.helper, $replaceTarget, "two-replaced.jpg");
+            _mockReplace(fileuploadModule.helper, $replaceTarget, "two-replaced.jpg");
             console.log("next object is last row");
             console.dir($filesContainer.find("tr").last().html());
             equal($filesContainer.find("tr").length, 2, "we should still only have two files after replace operation");
         });
 
-        TDAR.maxUploadFiles = 2;
 
-        //FIXME:  mock upload does not trigger widget's internal validation logic, so we can't test stuff like upload max
-//    test("file upload should fail after reaching cap", function() {
-//        _upload("one.jpg");
-//        _upload("two.jpg");
-//        _upload("three.jpg");
-//        _upload("four.jpg");
-//        _upload("five.jpg");
-//        var $fileupload = $(basic.helper.context);
-//        var $filesContainer = $($fileupload.fileupload("option","filesContainer"));
-//        equal(2, $fileupload.fileupload("option", "maxNumberOfFiles"), "file max should be 2");
-//        equal($filesContainer.find("tr").not(".deleted-file, .hidden, .replace-target").length, 5);
-//        var $lastRow = $filesContainer.find("tr").last();
-//        notEqual($lastRow.html().toLowerCase().indexOf("error"), -1, "the last row should contain an error message");
-//        console.log("\n---------------\n%s\n-------------------", $fileupload.fileupload("option", "getNumberOfFiles"));
-//    });
-//
-//    test("replace file works even if already at file cap", function() {
-//        _upload("one.jpg");
-//        _upload("two.jpg");
-//
-//
-//        var $filesContainer = $($(basic.helper.context).fileupload("option","filesContainer"));
-//        var $replaceTarget = $filesContainer.find("tr").last();
-//        _mockReplace(basic.helper, $replaceTarget, "two-replaced.jpg");
-//        equal($filesContainer.find("tr").length, 2, "we should still only have two files after replace operation");
-//        equal($replaceTarget.html().toLowerCase().indexOf("error"), -1, "there should be no error text in the last row");
-//
-//    });
+        module("JQUERY-VALIDATION");
+
+        test("submitter info", function() {
+           equal(typeof $("#metadataForm").data("submitterid"), "number",  "data-submitterid attribute set");
+        });
+
+       //these tests need to run after onload
+        $(function() {
+
+            //supress the modal error dialog, form submit
+            var _disableFormSubmit = function() {
+                var $form = $("#metadataForm"),
+                    validator = $form.data("validator");
+                    validator.settings.submitHandler = function(){};
+                    validator.settings.showErrors = function() {};
+            }
+
+
+            test("submitter can't be authuser",  function() {
+                var validator = $("#metadataForm").data("validator");
+                var $form = $("#metadataForm");
+                var submitterid = $form.data("submitterid");
+
+                //disable successful form submission
+                validator.settings.submitHandler = function(){};
+                validator.settings.showErrors = function() {};
+
+                $form.populate({
+                    'image.title': "sample title",
+                    'image.date': 2014,
+                    'image.description': "sample description",
+                    'projectId': -1,
+                    'authorizedUsers[0].user.tempDisplayName': "Bobby Tables",
+                    'authorizedUsers[0].user.id': submitterid
+                });
+
+
+                $form.valid();
+                equal(validator.errorList.length, 1, "should have only one error");
+                if(validator.errorList.length) {
+                    equal(validator.errorList[0].message, $.validator.messages["authuserNotSubmitter"]);
+                }
+            })
+        });
+
 
     });
+
+
+
+
 
 })(TDAR.common, TDAR.fileupload, jQuery);

@@ -257,6 +257,11 @@ TDAR.common = function () {
                 $('#error').hide();
                 $(f).FormNavigate("clean");
                 f.submit();
+            },
+            //by default, title attribute overrides default error message.  We can't turn it off (ignoreTitle:true) because
+            //some of our validators rely on this behavior.
+            messages: {
+                authuserNotSubmitter: $.validator.messages.authuserNotSubmitter
             }
         };
 
