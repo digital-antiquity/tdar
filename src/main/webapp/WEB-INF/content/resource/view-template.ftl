@@ -253,7 +253,6 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 <#noescape>
 <li><a href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}">Email a link to a Friend</a></li>
 </#noescape>
-<p></p>
 </ul></div>
 </div>
 <hr/>
