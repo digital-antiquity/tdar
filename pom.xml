@@ -7,7 +7,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- managed versions -->
-        <struts2.version>2.3.16.2</struts2.version>
+        <struts2.version>2.3.16.3</struts2.version>
         <hibernate.version>4.3.4.Final</hibernate.version>
         <hibernate.search.version>4.5.1.Final</hibernate.search.version>
         <spring.framework.version>4.0.3.RELEASE</spring.framework.version>
