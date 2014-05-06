@@ -177,7 +177,7 @@ public class BulkUploadService {
             final Long accountId) {
         genericDao.clearCurrentSession();
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
-        // enforce that we're entirely on the session
+
         InformationResource resourceTemplate = resourceTemplate_;
         logger.debug("BEGIN ASYNC: " + resourceTemplate + fileProxies);
         // in an async method the image's persistent associations will have
@@ -246,6 +246,7 @@ public class BulkUploadService {
      * @return
      */
     private Long prepareTemplateAndBringSharedObjectsOnSession(TdarUser authorizedUser, InformationResource resourceTemplate) {;
+        // set the account to null as it is transient and not hibernate managed and thus, will not respond to merges.   
         resourceTemplate.setAccount(null);
 
         resourceTemplate.setDescription("");
