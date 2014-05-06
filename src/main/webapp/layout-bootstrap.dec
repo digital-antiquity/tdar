@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en"> <!--<![endif]-->
+
+<#global jquery_version="1.10.2">
+<#global jquery_ui_version="1.8.23">
+<#global jquery_ui_css_version="1.9.2">
+
+<!-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error. 
+	 This is a less-than ideal solution, but seems to be the best that we have. -->
+<#if !(protocol?has_content)>
+    <#include "500.html" />
+<#else>
+    <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+    <#import "/WEB-INF/macros/header.ftl" as header>
+    <#global qunit = (Parameters.qunit)??  && !production>
+    <#global schemaScope = ""/>
+    <#if (resource.resourceType)?has_content>
+        <#global schemaScope>itemscope itemtype="http://schema.org/${resource.resourceType.schema}"</#global>
+        <#if resource.documentType?has_content>
+            <#global schemaScope>itemscope itemtype="http://schema.org/${resource.documentType.schema}"</#global>
+        </#if>
+    </#if>
+
+<head>
+    <title>${title!siteName}</title>
+    <#if authenticatedUser??>
+        <!-- logged-in-as: ${sessionData.person.email} -->
+    </#if>
+    <!-- BEGIN-PAGE-HEADER -->
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
+    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
+    <script>        TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
+    <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
+<#-- dev only
+<script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+-->
+    <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
+
+    <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+<#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
+    <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+
+    <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
+    <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
+    <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
+    <#if qunit>
+        <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
+    </#if>
+
+    <script src="${staticHost}<@s.url value="/js/tdar.core.js"/>"></script>
+    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
+    <#include "${themeDir}/head.dec" />
+
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+    <#if (uri != '' && uri != '/about')>
+        <#assign bodyid = "alt" />
+    </#if>
+    <@header.css (webFilePreprocessingEnabled ) />
+
+${head}
+
+    <@common.globalJavascript />
+
+</head>
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>">
+    <#if qunit>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+    </#if>
+<div class="container">
+    <div class="row">
+        <header class="span12">
+            <#include "${themeDir}/header.dec" />
+            <#if (authenticatedUser??) >
+
+                <p id="welcome-menu" class="welcome  screen ">
+                    <@s.text name="menu.welcome_back"/> <a href="">${authenticatedUser.properName}
+                    <i class="caret drop-down"></i>
+                </a>
+                </p>
+
+                <div class="welcome-drop  screen ">
+
+                    <p>${authenticatedUser.properName}</p>
+
+                    <ul>
+                        <li><a href="<@s.url value="/resource/add"/>"><@s.text name="menu.create_a_resource"/></a></li>
+                        <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
+                        <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
+                        <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+                        <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
+                    </ul>
+
+                    <ul>
+                        <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
+                        <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
+                        <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
+                    </ul>
+
+                    <#if administrator>
+                        <ul>
+                            <li><@s.text name="menu.admin_header"/></li>
+                            <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
+                            <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
+                            <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>
+                        </ul>
+                    </#if>
+
+                </div>
+            </#if>
+
+            <nav>
+                <ul class="hidden-phone-portrait">
+                    <#include "${themeDir}/nav-items.dec" />
+                    <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+                    <#if ((authenticatedUser.contributor)!true)>
+                        <li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li></#if>
+                    <li>
+                        <#if bodyid != 'home'>
+                            <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
+                                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
+                            <#--<input type="hidden" name="_tdar.searchType" value="simple">-->
+                            ${(page.properties["div.divSearchContext"])!""}
+                            </form>
+                        </#if>
+                    </li>
+                </ul>
+
+            </nav>
+        </header>
+    </div>
+    <#if bodyid == 'home'>
+        <div class="row">
+            <div class="hero">
+                <#include "${themeDir}/homepage-banner.dec" />
+                <@common.loginMenu true/>
+            </div>
+            <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
+        </div>
+
+
+        <#include "${themeDir}/homepage-column-one.dec" />
+
+    <#else>
+        <div class="row">
+            <div class="span12 subnav">
+                <ul class="subnav-lft">
+                    <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
+                    <li><a href="<@s.url value="/search/results"/>"><@s.text name="menu.browse"/></a></li>
+                    <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
+                    <#if sessionData?? && sessionData.authenticated>
+                        <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+                        <li><a href="<@s.url value="/workspace/select-tables"/>"><@s.text name="menu.integrate"/></a></li>
+                        <#if editor>
+                            <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>
+                        </#if>
+                    </#if>
+                </ul>
+                <#if actionName!='login' && actionName!='register'>
+                    <@common.loginMenu true />
+                </#if>
+            </div>
+        </div>
+        <!-- BEGIN-TDAR-CONTENT -->
+
+
+
+    </#if>
+    <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+        <!-- toolbar -->
+        <div class="row">
+        ${page.properties["div.toolbars"]}
+        </div>
+    </#if>
+
+
+    <#if errorWarningSectionVisible >
+        <div class="alert alert-error error-banner">
+            <#if stackTraces?has_content>
+                <div class="error-codes pull-right">
+                    <strong><@s.text name="error.action_error_codes"/></strong>
+                    <#list stackTraces as code>
+                        <span class="error-code">${code}</span>
+                    </#list>
+                </div>
+            </#if>
+            <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
+
+            <div>
+                <@s.actionerror cssClass="action-errors" theme="simple" />
+                <#if historicalFileErrors?has_content>
+                    <b><@s.text name="error.action_resource_edit_historical"/></b>
+                    <ul>
+                        <#list historicalFileErrors as fileError>
+                            <li>${fileError.first.filename} ${(fileError.second.message)!"Unknown Error"}
+                                <#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
+                        </#list>
+                    </ul>
+                </#if>
+
+                <@s.fielderror  cssClass="field-errors"  theme="simple"/>
+                <br/>
+                <#if moreInfoUrlKey?has_content>
+                    <@s.text name="error.action_more_info_url" />
+                    <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
+                </#if>
+            </div>
+        </div>
+    </#if>
+
+    <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
+        <div class="row">
+            <div class="span12">
+                <@s.actionmessage />
+        ${(page.properties["div.messages"])!}
+            </div>
+        </div>
+    </#if>
+
+
+    <#assign part="" />
+    <#assign spanSize = 12/>
+    <#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+        <#assign part="cols" />
+        <#assign spanSize = 9/>
+    <#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+        <#assign part="cols" />
+        <#assign spanSize = 6/>
+    </#if>
+
+<#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
+    <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
+
+    <#if page.properties["div.titlebar"]?has_content>
+    ${page.properties["div.titlebar"]}
+    </#if>
+
+    <section ${schemaScope} class="row ${part}">
+
+        <#if page.properties["div.sidebar-left"]?has_content>
+            <aside class="span3">
+            ${page.properties["div.sidebar-left"]}
+            </aside>
+        </#if>
+
+        <article class="span${spanSize} results" id="articleBody">
+        <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
+            <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
+            ${body}
+        </article>
+
+        <#if page.properties["div.sidebar-right"]?has_content>
+            <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+            ${page.properties["div.sidebar-right"]}
+            </aside>
+        </#if>
+    </section>
+
+
+</div>
+<!-- BEGIN-TDAR-FOOTER -->
+<footer>
+    <div class="container">
+        <#include "${themeDir}/footer.dec" />
+        <div>
+            <p>
+                <small>
+                    <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
+                    <#if authenticatedUser??>
+                        - <@s.text name="footer.logged_in_as"/>: <a
+                            href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
+                    </#if>
+                </small>
+            </p>
+        </div>
+    </div>
+
+</footer>
+    <#if production>
+    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.min.js"></script>
+    <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <#else>
+    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
+    <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.js"></script>
+    </#if>
+
+
+<script type="text/javascript">
+    //functionality for "welcome back, so-and-so!" (pulled from main.js)
+    //FIXME: needs refactoring
+    $(function () {
+        $("#welcome-menu a").click(function () {
+            $(".welcome-drop").toggle();
+            return false;
+        });
+
+        // for the last 60 pixels of the searchboxes, make it submit the parent form
+        $(".searchbox").click(function (e) {
+            var $t = $(e.target);
+            var ar = $(e.target).offset().left + $t.width() - 60;
+            if (e.pageX > ar) {
+                $t.parents("form").submit();
+            }
+        });
+        $(document).click(function () {
+            $('.welcome-drop').hide();
+        });
+
+        TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
+    });
+</script>
+    <@header.scripts ( webFilePreprocessingEnabled) />
+<script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey!''}";
+    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
+    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    TDAR.maps.defaults.isGeoLocationToBeUsed = ${geoLocationToBeUsed?string("true", "false")};
+    TDAR.maxUploadFiles = ${maxUploadFilesPerRecord?c};
+    TDAR.common.sessionTimeout = ${sessionTimeout?c};
+        <#if authenticatedUser?has_content>
+        TDAR.common.currentTime = 1;
+        </#if>
+</script>
+<div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
+    <#if qunit>
+    <script src="/includes/qunit-1.11.0.js"></script>
+    </#if>
+
+    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) && !qunit>
+    <script type="text/javascript">
+        TDAR.loadScript('${protocol}//${jiraScriptLink}');
+    </script>
+    </#if>
+
+    <#if qunit>
+    <#-- close the test fixture div -->
+    </div>
+    <script src="/test/js/tdar.commontest.js"></script>
+    <script src="/test/js${namespace}/${actionName}.qunit.js"></script>
+    </#if>
+</#if>
+
+</body>
+</html>

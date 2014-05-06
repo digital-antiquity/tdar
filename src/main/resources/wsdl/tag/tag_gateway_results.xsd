@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+	xmlns:tag="http://archaeologydataservice.ac.uk/tag/schema" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://archaeologydataservice.ac.uk/tag/schema" 
+	elementFormDefault="unqualified" 
+	attributeFormDefault="unqualified">
+	<xs:element name="SearchResults">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="meta">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="sessionID" type="xs:string"/>
+							<xs:element name="providerName" type="xs:string"/>
+							<xs:element name="totalRecords" type="xs:int"/>
+							<xs:element name="recordsReturned" type="xs:int"/>
+							<xs:element name="firstRecord" type="xs:int"/>
+							<xs:element name="lastRecord" type="xs:int"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+
+				<xs:element name="results">
+			        <xs:complexType>
+					    <xs:sequence>
+					    	<xs:element name="containsIntegratableData" type="xs:boolean" />
+					    	<xs:element name="integratableDatasetUrl" type="xs:string" />
+							<xs:element name="result" type="tag:resultType" maxOccurs="unbounded"/>
+						</xs:sequence>
+				    </xs:complexType>
+			        </xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="resultType">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="identifier" type="xs:string"/>
+			<xs:element name="summary" type="xs:string"/>
+			<xs:element name="url" type="xs:string"/>
+			<xs:element name="publisher" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
+
