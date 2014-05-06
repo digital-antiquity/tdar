@@ -151,58 +151,53 @@
             console.dir($filesContainer.find("tr").last().html());
             equal($filesContainer.find("tr").length, 2, "we should still only have two files after replace operation");
         });
-
-
-        module("JQUERY-VALIDATION");
-
-        test("submitter info", function() {
-           equal(typeof $("#metadataForm").data("submitterid"), "number",  "data-submitterid attribute set");
-        });
-
-       //these tests need to run after onload
-        $(function() {
-
-            //supress the modal error dialog, form submit
-            var _disableFormSubmit = function() {
-                var $form = $("#metadataForm"),
-                    validator = $form.data("validator");
-                    validator.settings.submitHandler = function(){};
-                    validator.settings.showErrors = function() {};
-            }
-
-
-            test("submitter can't be authuser",  function() {
-                var validator = $("#metadataForm").data("validator");
-                var $form = $("#metadataForm");
-                var submitterid = $form.data("submitterid");
-
-                //disable successful form submission
-                validator.settings.submitHandler = function(){};
-                validator.settings.showErrors = function() {};
-
-                $form.populate({
-                    'image.title': "sample title",
-                    'image.date': 2014,
-                    'image.description': "sample description",
-                    'projectId': -1,
-                    'authorizedUsers[0].user.tempDisplayName': "Bobby Tables",
-                    'authorizedUsers[0].user.id': submitterid
-                });
-
-
-                $form.valid();
-                equal(validator.errorList.length, 1, "should have only one error");
-                if(validator.errorList.length) {
-                    equal(validator.errorList[0].message, $.validator.messages["authuserNotSubmitter"]);
-                }
-            })
-        });
-
-
     });
 
+    module("JQUERY-VALIDATION", {setup: function(){
+        common.initEditPage(document.metadataForm);
+        //supress the modal error dialog, form submit
+        var validator = $("#metadataForm").data("validator");
+        var $form = $("#metadataForm");
 
+        //disable actual form submit
+        validator.settings.submitHandler = function(){};
+        //don't show error messages in a modal window
+        validator.settings.showErrors = function() {};
+    }});
 
+    test("submitter info", function() {
+        equal(typeof $("#metadataForm").data("submitterid"), "number",  "data-submitterid attribute set");
+    });
+
+    test("submitter same as authuser ",
+            function() {
+                expect(2);
+
+                //make sure that this section runs after body.onready() and $form.validate()
+                $(function() {
+                    //supress the modal error dialog, form submit
+                    var validator = $("#metadataForm").data("validator");
+                    var $form = $("#metadataForm");
+                    var submitterid = $form.data("submitterid");
+
+                    $form.populate({
+                        'image.title': "sample title",
+                        'image.date': 2014,
+                        'image.description': "sample description",
+                        'projectId': -1,
+                        'authorizedUsers[0].user.tempDisplayName': "Bobby Tables",
+                        'authorizedUsers[0].user.id': submitterid
+                    });
+
+                    $form.valid();
+                    equal(validator.errorList.length, 1, "should have only one error");
+                    if(validator.errorList.length) {
+                        equal(validator.errorList[0].message, $.validator.messages["authuserNotSubmitter"], "expecting a specific error message");
+                    }
+
+                })
+            }
+    );
 
 
 })(TDAR.common, TDAR.fileupload, jQuery);

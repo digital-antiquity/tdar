@@ -307,7 +307,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             <div class="controls-row repeat-row" id="authorizedUsersRow_${authorizedUser_index}_">
                                 <div class="span6">
                                     <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user"
-                                    prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
+                                    prefix="authorizedUsers" includeRights=true includeRepeatRow=false textfieldCssClass="authuserNotSubmitter" />
                                 </div>
                                 <div class="span1">
                                     <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=!authorizedUser.enabled />
@@ -1377,7 +1377,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     with the jquery-ui autocomplete plugin
 -->
     <#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix=""
-    includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
+    includeRepeatRow=false includeRights=false  hidden=false leadTitle="" textfieldCssClass="">
         <#local disabled =  isDisabled?string("disabled", "") />
         <#local readonly = isDisabled?string("readonly", "") />
         <#local lookupType="userAutoComplete notValidIfIdEmpty"/>
@@ -1394,11 +1394,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
             <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
-            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} authuserNotSubmitter" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} ${textfieldCssClass!}" placeholder="Name"  readonly=isDisabled autocomplete="off"
             name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
-            title="${nameTitle}"
+
             dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
 
             />
