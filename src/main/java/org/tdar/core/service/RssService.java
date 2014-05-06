@@ -330,7 +330,7 @@ public class RssService implements Serializable {
             return;
         }
         if ((user != null) && authenticationAndAuthorizationService.canDownload(version, user)) {
-            logger.info("allowed:" + version);
+            logger.trace("allowed: {}" ,  version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());

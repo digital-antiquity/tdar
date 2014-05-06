@@ -524,6 +524,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
     public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
+        logger.trace("can download: {} {}", person, irFileVersion);
         if (irFileVersion == null) {
             return false;
         }
@@ -535,12 +536,21 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      */
     public boolean canDownload(InformationResourceFile irFile, Person person) {
         if (irFile == null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("returning false -- attached IRFile is null");
+            }
             return false;
         }
         if (irFile.isDeleted() && Persistable.Base.isNullOrTransient(person)) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("returning false -- file was deleted");
+            }
             return false;
         }
         if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("returning false -- permission denied");
+            }
             return false;
         }
         return true;
