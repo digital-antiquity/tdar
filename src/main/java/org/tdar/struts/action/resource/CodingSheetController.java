@@ -12,6 +12,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -50,6 +52,9 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private static final long serialVersionUID = 377533801938016848L;
 
+    @Autowired
+    private transient CodingSheetService codingSheetService;
+    
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
     private Ontology ontology;
@@ -75,7 +80,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
 
-        getCodingSheetService().reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
+        codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
 
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();

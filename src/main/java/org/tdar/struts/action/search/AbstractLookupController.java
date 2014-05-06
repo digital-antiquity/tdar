@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -23,6 +24,8 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -72,8 +75,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     private PaginationHelper paginationHelper;
 
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient SearchService searchService;
+
     protected void handleSearch(QueryBuilder q) throws ParseException {
-        getSearchService().handleSearch(q, this);
+        searchService.handleSearch(q, this);
     }
 
     public String getCallback() {
@@ -373,7 +382,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public List<ResourceType> getAllResourceTypes() {
-        return getResourceService().getAllResourceTypes();
+        return resourceService.getAllResourceTypes();
     }
 
     public List<IntegratableOptions> getIntegratableOptions() {

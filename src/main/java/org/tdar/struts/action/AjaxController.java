@@ -38,7 +38,7 @@ public class AjaxController extends TdarActionSupport {
     }
 
     public CategoryVariable getCategoryVariable() {
-        return getCategoryVariableService().find(categoryVariableId);
+        return getGenericService().find(CategoryVariable.class, categoryVariableId);
     }
 
     /**

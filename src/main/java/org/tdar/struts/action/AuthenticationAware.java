@@ -10,9 +10,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -111,16 +109,6 @@ public interface AuthenticationAware extends SessionDataAware {
             return getSessionData().isAuthenticated();
         }
 
-        /**
-         * @param <T>
-         * @param modifiedResource
-         * @param message
-         * @param payload
-         */
-        protected <T extends Resource> void logResourceModification(T modifiedResource, String message, String payload) {
-            getResourceService().logResourceModification(modifiedResource, getAuthenticatedUser(), message, payload);
-        }
-
         protected <T> List<T> createListWithSingleNull() {
             ArrayList<T> list = new ArrayList<T>();
             list.add(null);
@@ -147,12 +135,6 @@ public interface AuthenticationAware extends SessionDataAware {
                 }
             }
             return validIds;
-        }
-
-        public void updateQuota(Account account, Resource resource) {
-            if (getTdarConfiguration().isPayPerIngestEnabled()) {
-                getAccountService().updateQuota(account, resource);
-            }
         }
 
         public int getSessionTimeout() {

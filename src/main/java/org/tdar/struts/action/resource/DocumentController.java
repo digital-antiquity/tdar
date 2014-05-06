@@ -95,7 +95,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
         if (informationResourceId == null) {
             return;
         }
-        linkedInformationResource = getInformationResourceService().find(informationResourceId);
+        linkedInformationResource = getGenericService().find(InformationResource.class, informationResourceId);
     }
 
     public DocumentType getDocumentType() {

@@ -3,6 +3,7 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -967,6 +968,15 @@ public class AuthenticationAndAuthorizationService implements Accessible {
 
     public AuthenticationProvider getProvider() {
         return provider;
+    }
+
+    @Transactional(readOnly=true)
+    public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+      AuthenticationToken token = sessionData.getAuthenticationToken();
+      token.setSessionEnd(new Date());
+      personDao.update(token);
+      sessionData.clearAuthenticationToken();
+      getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
 
 }

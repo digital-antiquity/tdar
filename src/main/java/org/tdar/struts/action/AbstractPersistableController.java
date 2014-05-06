@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
@@ -27,6 +28,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -52,6 +54,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
 
+    @Autowired
+    private transient SearchIndexService searchIndexService;
+    
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -282,7 +287,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     protected void indexPersistable() {
         if (persistable instanceof Indexable) {
             ((Indexable) persistable).setReadyToIndex(true);
-            getSearchIndexService().index((Indexable) persistable);
+            searchIndexService.index((Indexable) persistable);
         }
     }
 

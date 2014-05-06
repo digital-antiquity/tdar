@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -20,6 +21,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -33,6 +38,13 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @ParentPackage("secured")
 @Namespace("/entity/user")
 public class UserInfoController extends AbstractPersonController<TdarUser> {
+
+    @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
+    private transient AccountService accountService;
+    @Autowired
+    private transient XmlService xmlService;
 
     private static final long serialVersionUID = -2666270784609372369L;
     private String proxyInstitutionName;
@@ -48,6 +60,8 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
     public static final String MYPROFILE = "myprofile";
 
+    @Autowired
+    private transient EntityService entityService;
 
     @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
@@ -94,7 +108,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
             getPersistable().setProxyInstitution(null);
         } else {
             // if the user changed the person's institution, find or create it
-            Institution persistentInstitution = getEntityService().findOrSaveCreator(new Institution(proxyInstitutionName));
+            Institution persistentInstitution = entityService.findOrSaveCreator(new Institution(proxyInstitutionName));
             getLogger().debug("setting institution to persistent: " + persistentInstitution);
             getPersistable().setProxyInstitution(persistentInstitution);
         }
@@ -104,7 +118,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
         savePersonInfo(person);
         getGenericService().saveOrUpdate(person);
-        getXmlService().logRecordXmlToFilestore(getPersistable());
+        xmlService.logRecordXmlToFilestore(getPersistable());
 
         // If the user is editing their own profile, refresh the session object if needed
         if (getAuthenticatedUser().equals(person)) {
@@ -165,7 +179,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
     @Override
     protected void delete(TdarUser persistable) {
-        getXmlService().logRecordXmlToFilestore(getPersistable());
+        xmlService.logRecordXmlToFilestore(getPersistable());
 
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
     }
@@ -196,7 +210,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
         TdarUser p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
             if (!isEditable()) {
-                getObfuscationService().obfuscate(p, getAuthenticatedUser());
+                obfuscationService.obfuscate(p, getAuthenticatedUser());
             }
         }
         return p;
@@ -253,7 +267,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     public List<Account> getAccounts() {
         if (accounts == null) {
             accounts = new ArrayList<Account>();
-            accounts.addAll(getAccountService().listAvailableAccountsForUser(getPersistable(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+            accounts.addAll(accountService.listAvailableAccountsForUser(getPersistable(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         }
         return accounts;
     }

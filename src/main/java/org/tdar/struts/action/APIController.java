@@ -24,7 +24,11 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ImportService;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -47,7 +51,15 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     @Autowired
-    private ImportService importService;
+    private transient XmlService xmlService;
+    @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
+    private transient ResourceService resourceService;
+    @Autowired
+    private transient ImportService importService;
+    @Autowired
+    private transient AccountService accountService;
 
     private Resource importedRecord;
     private String message;
@@ -70,12 +82,12 @@ public class APIController extends AuthenticationAware.Base {
     })
     public String view() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
-            Resource resource = getResourceService().find(getId());
+            Resource resource = resourceService.find(getId());
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                getObfuscationService().obfuscate(resource, getAuthenticatedUser());
+                obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            String xml = getXmlService().convertToXML(resource);
+            String xml = xmlService.convertToXML(resource);
             setInputStream(new ByteArrayInputStream(xml.getBytes()));
             return SUCCESS;
         }
@@ -105,7 +117,7 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
@@ -130,7 +142,7 @@ public class APIController extends AuthenticationAware.Base {
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             getServletResponse().setStatus(statuscode);
-            getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             return SUCCESS;
         } catch (Exception e) {
             message = "";
@@ -301,4 +313,11 @@ public class APIController extends AuthenticationAware.Base {
     public void setUploadFileContentType(String type) {
         getLogger().debug("Contenty type of uploaded item is: " + type);
     }
+
+    public void updateQuota(Account account, Resource resource) {
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            accountService.updateQuota(account, resource);
+        }
+    }
+
 }

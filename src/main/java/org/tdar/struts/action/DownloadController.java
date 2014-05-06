@@ -19,7 +19,11 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.InformationResourceFileVersionService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.DownloadHandler;
 
 @ParentPackage("secured")
@@ -40,6 +44,12 @@ import org.tdar.struts.data.DownloadHandler;
 @Component
 @Scope("prototype")
 public class DownloadController extends AuthenticationAware.Base implements DownloadHandler {
+
+    @Autowired
+    private transient DownloadService downloadService;
+
+    @Autowired
+    private transient ResourceService resourceService;
 
     public static final String GET = "get";
     private static final long serialVersionUID = 7548544212676661097L;
@@ -62,6 +72,9 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     @Autowired
     private transient PdfService pdfService;
 
+    @Autowired
+    private transient InformationResourceFileVersionService informationResourceFileVersionService;
+
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
     public String confirm() throws TdarActionException {
         // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
@@ -80,7 +93,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         if (informationResourceFileId == null) {
             return ERROR;
         }
-        irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
+        irFileVersion = informationResourceFileVersionService.find(informationResourceFileId);
         if (irFileVersion == null) {
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
@@ -92,7 +105,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
         getLogger().info("user {} downloaded {}", getSessionData().getPerson(), irFileVersion);
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
 
@@ -105,7 +118,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         if (informationResourceFileId == null) {
             return ERROR;
         }
-        irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
+        irFileVersion = informationResourceFileVersionService.find(informationResourceFileId);
         if (irFileVersion == null) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
@@ -122,7 +135,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return FORBIDDEN;
         }
 
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
 
@@ -132,7 +145,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return ERROR;
         }
 
-        InformationResource ir = (InformationResource) getResourceService().find(getInformationResourceId());
+        InformationResource ir = (InformationResource) resourceService.find(getInformationResourceId());
         List<InformationResourceFileVersion> versions = new ArrayList<>();
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             if (irf.isDeleted()) {
@@ -149,7 +162,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return ERROR;
         }
 
-        getDownloadService().handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
         return SUCCESS;
     }
 

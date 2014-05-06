@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
@@ -21,6 +22,9 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -45,6 +49,15 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     private static final long serialVersionUID = -5625084702553576277L;
 
+    @Autowired
+    private transient ProjectService projectService;
+
+    @Autowired
+    private transient SearchIndexService searchIndexService;
+
+    @Autowired
+    private transient SearchService searchService;
+    
     private String callback;
     private String json;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
@@ -67,7 +80,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         getLogger().trace("saving a project");
         saveBasicResourceMetadata();
         getLogger().trace("saved metadata -- about to call saveOrUPdate");
-        getProjectService().saveOrUpdate(resource);
+        projectService.saveOrUpdate(resource);
         getLogger().trace("finished calling saveorupdate");
         return SUCCESS;
     }
@@ -75,9 +88,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Override
     public void indexPersistable() {
         if (isAsync()) {
-            getSearchIndexService().indexProjectAsync(getPersistable());
+            searchIndexService.indexProjectAsync(getPersistable());
         } else {
-            getSearchIndexService().indexProject(getPersistable());
+            searchIndexService.indexProject(getPersistable());
         }
     }
 
@@ -98,22 +111,22 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public Collection<? extends Persistable> getDeleteIssues() {
-        return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
+        return projectService.findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
+            ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
                 setSecondarySortField(getProject().getSecondarySortBy());
             }
-            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+            searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
             try {
-                getSearchService().handleSearch(qb, this);
+                searchService.handleSearch(qb, this);
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
@@ -124,7 +137,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @SkipValidation
     public String getProjectAsJson() {
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
         return json;
     }
 

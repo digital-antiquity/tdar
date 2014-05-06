@@ -22,7 +22,9 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -49,6 +51,7 @@ public class IndexAction extends AuthenticationAware.Base {
     private static final long serialVersionUID = -9216882130992021384L;
 
     private Project featuredProject;
+    
 
     // private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
@@ -56,7 +59,13 @@ public class IndexAction extends AuthenticationAware.Base {
     private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
 
     @Autowired
-    private RssService rssService;
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient ObfuscationService obfuscationService;
+
+    @Autowired
+    private transient RssService rssService;
 
     private List<SyndEntry> rssEntries;
 
@@ -119,7 +128,7 @@ public class IndexAction extends AuthenticationAware.Base {
 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
     public String worldMap() {
-        getResourceService().setupWorldMap(worldMapData);
+        resourceService.setupWorldMap(worldMapData);
         return SUCCESS;
     }
 
@@ -133,7 +142,7 @@ public class IndexAction extends AuthenticationAware.Base {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
                 }
                 if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-                    getObfuscationService().obfuscate(key, getAuthenticatedUser());
+                    obfuscationService.obfuscate(key, getAuthenticatedUser());
                 }
                 getFeaturedResources().add(key);
             }
@@ -172,8 +181,7 @@ public class IndexAction extends AuthenticationAware.Base {
             })
     public String logout() {
         if (getSessionData().isAuthenticated()) {
-            clearAuthenticationToken();
-            getAuthenticationAndAuthorizationService().getAuthenticationProvider().logout(getServletRequest(), getServletResponse());
+            getAuthenticationAndAuthorizationService().logout(getSessionData(), getServletRequest(), getServletResponse());
         }
         return SUCCESS;
     }

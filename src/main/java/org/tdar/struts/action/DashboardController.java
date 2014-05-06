@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -28,6 +29,13 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.AccountService;
+import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
@@ -61,6 +69,22 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
     private List<InformationResource> resourcesWithErrors;
+    
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ProjectService projectService;
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+    @Autowired
+    private transient AccountService accountService;
+    @Autowired
+    private transient EntityService entityService;
+    @Autowired
+    private transient ResourceService resourceService;
+
 
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
@@ -69,15 +93,15 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     @Action("dashboard")
     public String execute() {
         getLogger().trace("find recently edited resources");
-        setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
+        setRecentlyEditedResources(projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         getLogger().trace("find empty projects");
-        setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
+        setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
         getLogger().trace("counts for graphs");
-        setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+        setResourceCountAndStatusForUser(resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
         setupResourceCollectionTreesForDashboard();
-        setResourcesWithErrors(getInformationResourceFileService().findInformationResourcesWithFileStatus(getAuthenticatedUser(),
+        setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(getAuthenticatedUser(),
                 Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
-        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         for (Account account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
@@ -91,15 +115,15 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
+        getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
         getLogger().trace("accessible collections");
-        getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
+        getSharedResourceCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
         List<Long> collectionIds = Persistable.Base.extractIds(getAllResourceCollections());
         collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
         getLogger().trace("reconcile tree1");
-        getResourceCollectionService().reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
+        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
         getLogger().trace("reconcile tree2");
-        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
 
         getLogger().trace("removing duplicates");
         getSharedResourceCollections().removeAll(getAllResourceCollections());
@@ -160,7 +184,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
                     Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
@@ -171,7 +195,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
+        List<Project> allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
@@ -179,7 +203,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             Collections.sort(fullUserProjects);
             fullUserProjects.removeAll(getAllSubmittedProjects());
         }
@@ -196,7 +220,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     public Set<Resource> getEditableProjects() {
         boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(
+        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
         return findSparseTitleIdProjectListByPerson;
     }
@@ -268,7 +292,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     public List<ResourceType> getResourceTypes() {
-        return getResourceService().getAllResourceTypes();
+        return resourceService.getAllResourceTypes();
     }
 
     public List<SortOption> getResourceDatatableSortOptions() {

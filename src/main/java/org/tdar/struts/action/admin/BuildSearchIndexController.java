@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -54,6 +55,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Autowired
     private transient SearchIndexService searchIndexService;
 
+    @Autowired
+    private transient EmailService emailService;
+    
     public void setSearchIndexService(SearchIndexService searchIndexService) {
         this.searchIndexService = searchIndexService;
     }
@@ -115,7 +119,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         getLogger().info("to reindex: {}", toReindex);
         Person person = null;
         if (Persistable.Base.isNotNullOrTransient(getUserId())) {
-            person = getEntityService().find(getUserId());
+            person = getGenericService().find(Person.class, getUserId());
         }
 
         if (CollectionUtils.isEmpty(toReindex)) {
@@ -124,7 +128,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             searchIndexService.indexAll(this, toReindex, person);
         }
         if (isProduction()) {
-            getEmailService().send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");
+            emailService.send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");
         }
         percentDone = 100;
     }

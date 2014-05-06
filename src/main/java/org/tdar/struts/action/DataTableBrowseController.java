@@ -7,12 +7,14 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
 @ParentPackage("secured")
@@ -31,18 +33,21 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private int totalRecords;
     private ResultMetadataWrapper resultsWrapper;
 
+    @Autowired
+    private transient DatasetService datasetService;
+    
     @Action(value = "browse",
             results = { @Result(name = "success", location = "browse.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(getId());
+        DataTable dataTable = getGenericService().find(DataTable.class, getId());
         Dataset dataset = dataTable.getDataset();
         if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
-                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
+                selectAllFromDataTable = datasetService.selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
                         isViewRowSupported());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());

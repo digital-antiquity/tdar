@@ -36,6 +36,8 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -68,7 +70,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private String code;
 
     @Autowired
-    PaymentTransactionProcessor paymentTransactionProcessor;
+    private transient PaymentTransactionProcessor paymentTransactionProcessor;
+
+    @Autowired
+    private transient AccountService accountService;
+
+    @Autowired
+    private transient EmailService emailService;
 
     @Override
     protected String save(Invoice persistable) {
@@ -84,7 +92,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         persistable.getItems().clear();
-        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getAccountService().getActiveBillingActivities());
+        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(accountService.getActiveBillingActivities());
         for (int i = 0; i < getExtraItemIds().size(); i++) {
             BillingActivity act = actIdMap.get(getExtraItemIds().get(i));
             Integer quantity = getExtraItemQuantities().get(i);
@@ -96,12 +104,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             getInvoice().getItems().add(new BillingItem(act, quantity));
         }
 
-        getAccountService().redeemCode(persistable, persistable.getOwner(), code);
+        accountService.redeemCode(persistable, persistable.getOwner(), code);
         List<BillingItem> items = new ArrayList<BillingItem>();
         if (getPricingType() != null) {
-            items = getAccountService().calculateActivities(getInvoice(), getPricingType()).getItems();
+            items = accountService.calculateActivities(getInvoice(), getPricingType()).getItems();
         } else {
-            PricingOption activities2 = getAccountService().calculateCheapestActivities(getInvoice());
+            PricingOption activities2 = accountService.calculateCheapestActivities(getInvoice());
             if (activities2 != null) {
                 items = activities2.getItems();
             }
@@ -148,9 +156,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-            addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-            addPricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+            addPricingOption(accountService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
         return SUCCESS;
     }
@@ -311,8 +319,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // if the discount brings the total cost down to 0, then skip the credit card process
         if ((invoice.getTotal() <= 0) && CollectionUtils.isNotEmpty(invoice.getItems())) {
             if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
-                // getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
-                getAccountService().checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
+                // accountService.redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+                accountService.checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             getGenericService().saveOrUpdate(invoice);
@@ -398,7 +406,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                             getGenericService().markReadOnly(person);
                             people.add(person);
                         }
-                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map,
+                        emailService.sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map,
                                 getSiteAcronym() + getText("cartController.subject"), people.toArray(new Person[0]));
                     } catch (Exception e) {
                         getLogger().error("could not send email: {} ", e);
@@ -419,7 +427,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public String loadAddMetadata() {
-        setActivities(getAccountService().getActiveBillingActivities());
+        setActivities(accountService.getActiveBillingActivities());
         return SUCCESS;
     }
 
@@ -430,7 +438,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public String loadViewMetadata() {
-        setAccount(getAccountService().getAccountForInvoice(getInvoice()));
+        setAccount(accountService.getAccountForInvoice(getInvoice()));
         return SUCCESS;
     }
 

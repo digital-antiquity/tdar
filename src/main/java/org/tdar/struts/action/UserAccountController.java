@@ -26,6 +26,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -78,7 +80,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String recaptcha_response_field;
 
     @Autowired
-    private RecaptchaService reCaptchaService;
+    private transient RecaptchaService reCaptchaService;
+
+    @Autowired
+    private transient XmlService xmlService;
+    
+    @Autowired
+    private transient EntityService entityService;
+
     private String reCaptchaText;
 
     private String contributorReason;
@@ -164,7 +173,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @HttpsOnly
     public String sendNewPassword() {
-        Person person = getEntityService().findByEmail(reminderEmail);
+        Person person = entityService.findByEmail(reminderEmail);
         if (person == null || !(person instanceof TdarUser)) {
             addActionError("Sorry, we didn't find a user with this email.");
             return INPUT;
@@ -200,8 +209,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             if (result.isValid()) {
                 setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
-                getEntityService().registerLogin(person);
-                getXmlService().logRecordXmlToFilestore(person);
+                entityService.registerLogin(person);
+                xmlService.logRecordXmlToFilestore(person);
 
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
@@ -235,7 +244,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             addActionError(getText("userAccountController.error_missing_username"));
             return true;
         }
-        TdarUser person = getEntityService().findByUsername(username);
+        TdarUser person = entityService.findByUsername(username);
         return ((person != null) && person.isRegistered());
     }
 

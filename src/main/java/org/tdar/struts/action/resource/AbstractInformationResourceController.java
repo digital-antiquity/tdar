@@ -31,7 +31,14 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileProxyService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.resource.CategoryVariableService;
+import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -59,9 +66,31 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private static final long serialVersionUID = -200666002871956655L;
 
-    @Autowired
-    private FileProxyService fileProxyService;
 
+    @Autowired
+    private transient XmlService xmlService;
+
+    @Autowired
+    private transient FileProxyService fileProxyService;
+
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+    
+    @Autowired
+    private transient CategoryVariableService categoryVariableService;
+
+    @Autowired
+    private transient InformationResourceService informationResourceService;
+    
+    @Autowired
+    private transient EntityService entityService;
+    
+    @Autowired
+    private transient DatasetService datasetService;
+
+    @Autowired
+    private transient ProjectService projectService;
+    
     private List<CategoryVariable> allDomainCategories;
 
     private Project project = Project.NULL;
@@ -127,7 +156,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         getAuthenticationAndAuthorizationService().applyTransientViewableFlag(ir, p);
         if (Persistable.Base.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
-                getInformationResourceFileService().updateTransientDownloadCount(irf);
+                informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {
                     setHasDeletedFiles(true);
                 }
@@ -183,11 +212,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // abstractInformationResourceController.didnt_override=%s didn't override properly
 
         try {
-            getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
+            informationResourceService.importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
             addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
         }
-        getInformationResourceService().saveOrUpdate(getPersistable());
+        getGenericService().saveOrUpdate(getPersistable());
         getLogger().trace("done processing upload files");
     }
 
@@ -259,11 +288,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // save resource provider institution and contact information
         // TODO: use findOrSaveInstitution()
         if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
-            getResource().setResourceProviderInstitution(getEntityService().findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
+            getResource().setResourceProviderInstitution(entityService.findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
         }
 
         if (StringUtils.isNotBlank(publisherName)) {
-            getResource().setPublisher(getEntityService().findOrSaveCreator(new Institution(publisherName)));
+            getResource().setPublisher(entityService.findOrSaveCreator(new Institution(publisherName)));
         } else {
             getResource().setPublisher(null);
         }
@@ -271,7 +300,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (isCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             getLogger().debug("setting copyright holder to:  {} ", transientCreator);
-            getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
+            getResource().setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
         }
     }
 
@@ -310,7 +339,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public List<CategoryVariable> getAllDomainCategories() {
         if (allDomainCategories == null) {
-            allDomainCategories = getCategoryVariableService().findAllCategoriesSorted();
+            allDomainCategories = categoryVariableService.findAllCategoriesSorted();
         }
         return allDomainCategories;
     }
@@ -359,7 +388,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         try {
-            filesJson = getXmlService().convertToJson(fileProxies);
+            filesJson = xmlService.convertToJson(fileProxies);
             getLogger().debug(filesJson);
         } catch (IOException e) {
             getLogger().error("could not convert file list to json", e);
@@ -371,7 +400,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
@@ -392,7 +421,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setAllowedToViewConfidentialFiles(getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
         initializeFileProxies();
         try {
-            getDatasetService().assignMappedDataForInformationResource(getResource());
+            datasetService.assignMappedDataForInformationResource(getResource());
         } catch (Exception e) {
             getLogger().error("could not attach additional dataset data to resource", e);
         }
@@ -432,7 +461,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     protected void setProject(Project project) {
@@ -470,7 +499,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             Person submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            potentialParents.addAll(getProjectService().findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
+            potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
@@ -576,7 +605,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public List<Language> getLanguages() {
         if (languages == null)
-            languages = getInformationResourceService().findAllLanguages();
+            languages = informationResourceService.findAllLanguages();
         return languages;
     }
 

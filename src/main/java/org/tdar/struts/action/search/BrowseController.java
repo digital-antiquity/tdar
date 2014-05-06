@@ -19,6 +19,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -43,6 +44,13 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.FileSystemResourceService;
+import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -121,16 +129,37 @@ public class BrowseController extends AbstractLookupController {
     private List<NodeModel> keywords;
     private List<NodeModel> collaborators;
 
+    @Autowired
+    private transient AccountService accountService;
+
+    @Autowired
+    private transient EntityService entityService;
+
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+
+    @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private transient SearchService searchService;
+
+    @Autowired
+    private transient FileSystemResourceService fileSystemResourceService;
+
+    @Autowired
+    private transient ResourceService resourceService;
+
     @Action(EXPLORE)
     public String explore() {
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
-        setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
-        setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
-        setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
-        setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
+        setMaterialTypes(genericKeywordService.findAllWithCache(MaterialKeyword.class));
+        setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
+        setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
+        setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
-        getResourceService().setupWorldMap(worldMapData);
+        resourceService.setupWorldMap(worldMapData);
 
         Long count = 10L;
         try {
@@ -153,7 +182,7 @@ public class BrowseController extends AbstractLookupController {
         }
 
         try {
-            getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
+            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser()));
         } catch (ParseException pe) {
             getLogger().debug("error", pe);
         }
@@ -161,7 +190,7 @@ public class BrowseController extends AbstractLookupController {
     }
 
     public Creator getAuthorityForDup() {
-        return getEntityService().findAuthorityFromDuplicate(creator);
+        return entityService.findAuthorityFromDuplicate(creator);
     }
 
     @Action(COLLECTIONS)
@@ -177,8 +206,8 @@ public class BrowseController extends AbstractLookupController {
         setSearchTitle(getText("browseController.all_tdar_collections"));
 
         if (isEditor()) {
-            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+            setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null,
+                    Persistable.Base.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
@@ -213,7 +242,7 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+            QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
                 if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
@@ -224,14 +253,14 @@ public class BrowseController extends AbstractLookupController {
                         getLogger().error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
                     getAccounts().addAll(
-                            getAccountService().listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+                            accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
                 }
                 try {
-                    setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
+                    setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
                 } catch (Exception e) {
                     getLogger().error("error: {}", e);
                 }
-                setViewCount(getEntityService().getCreatorViewCount(creator));
+                setViewCount(entityService.getCreatorViewCount(creator));
             }
 
             if (!isEditor() && !Persistable.Base.isEqual(creator, getAuthenticatedUser())) {
@@ -263,7 +292,7 @@ public class BrowseController extends AbstractLookupController {
             try {
                 File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
                 if (foafFile.exists()) {
-                    dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
+                    dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
                     getKeywords();
                     getCollaborators();
                     NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
@@ -284,18 +313,6 @@ public class BrowseController extends AbstractLookupController {
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
-
-    // @Action(value = "materials", results = { @Result(location = "results.ftl") })
-    // public String browseMaterialTypes() {
-    // setResults(getResourceService().findResourceLinkedValues(MaterialKeyword.class));
-    // return SUCCESS;
-    // }
-    //
-    // @Action(value = "places", results = { @Result(location = "results.ftl") })
-    // public String browseInvestigationTypes() {
-    // setResults(getResourceService().findResourceLinkedValues(InvestigationType.class));
-    // return SUCCESS;
-    // }
 
     public Creator getCreator() {
         return creator;
@@ -453,7 +470,7 @@ public class BrowseController extends AbstractLookupController {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+        collaborators = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
                 dom);
         return collaborators;
     }
@@ -462,7 +479,7 @@ public class BrowseController extends AbstractLookupController {
         if (keywords != null) {
             return keywords;
         }
-        keywords = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+        keywords = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
         return keywords;
     }
 

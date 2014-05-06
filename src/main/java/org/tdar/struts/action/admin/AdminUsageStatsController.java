@@ -8,10 +8,12 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
@@ -40,6 +42,9 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     private List<AggregateDownloadStatistic> downloadStats;
     private List<AggregateViewStatistic> usageStats;
 
+    @Autowired
+    private transient ResourceService resourceService;
+
     @Actions({
             @Action("stats")
     })
@@ -53,8 +58,8 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
         if (StringUtils.isNotBlank(dateStart)) {
             DateTime.parse(dateStart);
         }
-        setUsageStats(getResourceService().getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
-        setDownloadStats(getResourceService().getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
+        setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         for (AggregateDownloadStatistic download : getDownloadStats()) {
             InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());
             download.setInformationResource(irf.getInformationResource());

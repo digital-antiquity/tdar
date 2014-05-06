@@ -5,9 +5,12 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.UrlService;
+import org.tdar.core.service.resource.ResourceService;
 
 /**
  * Implementation of <a href="http://unapi.info/specs/">Unapi</a> for tDAR
@@ -32,6 +35,12 @@ public class UnapiController extends TdarActionSupport {
 
     private static final long serialVersionUID = -5455659179508107902L;
 
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient UrlService urlService;
+    
     private String formatUrl;
     private Long id;
     private String format;
@@ -50,7 +59,7 @@ public class UnapiController extends TdarActionSupport {
             )
             public String execute() {
         if (StringUtils.isNotBlank(format) && (id != null)) {
-            Resource r = getResourceService().find(id);
+            Resource r = resourceService.find(id);
             if (r == null) {
                 return TdarActionSupport.NOT_FOUND;
             }
@@ -64,7 +73,7 @@ public class UnapiController extends TdarActionSupport {
     }
 
     private String constructFormatUrl(Resource r) {
-        String resUrl = getUrlService().relativeUrl(r);
+        String resUrl = urlService.relativeUrl(r);
         String formUrl = null;
 
         // abrin: adding for personal readability, this forwards to eg:

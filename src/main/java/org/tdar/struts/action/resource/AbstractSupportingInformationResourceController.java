@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -20,6 +21,8 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.resource.CategoryVariableService;
+import org.tdar.core.service.resource.DataTableService;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -29,6 +32,12 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     private static final String TXT = ".txt";
 
     private static final long serialVersionUID = -3261759402735229520L;
+
+    @Autowired
+    private transient CategoryVariableService categoryVariableService;
+
+    @Autowired
+    private transient DataTableService dataTableService;
 
     private Long categoryId;
     private String fileInputMethod;
@@ -133,9 +142,9 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             SupportsResource supporting = (SupportsResource) getPersistable();
             getLogger().info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
             if (Persistable.Base.isNullOrTransient(subcategoryId)) {
-                supporting.setCategoryVariable(getCategoryVariableService().find(categoryId));
+                supporting.setCategoryVariable(categoryVariableService.find(categoryId));
             } else {
-                supporting.setCategoryVariable(getCategoryVariableService().find(subcategoryId));
+                supporting.setCategoryVariable(categoryVariableService.find(subcategoryId));
             }
         }
     }
@@ -151,7 +160,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         if (categoryId == null) {
             subcategories = Collections.emptyList();
         }
-        subcategories = new ArrayList<CategoryVariable>(getCategoryVariableService().find(categoryId).getSortedChildren());
+        subcategories = new ArrayList<CategoryVariable>(categoryVariableService.find(categoryId).getSortedChildren());
     }
 
     @Override
@@ -162,7 +171,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     public List<Resource> getRelatedResources() {
         if (relatedResources == null) {
             relatedResources = new ArrayList<Resource>();
-            for (DataTable table : getDataTableService().findDataTablesUsingResource(getPersistable())) {
+            for (DataTable table : dataTableService.findDataTablesUsingResource(getPersistable())) {
                 if (!table.getDataset().isDeleted()) {
                     relatedResources.add(table.getDataset());
                 }

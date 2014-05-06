@@ -19,6 +19,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
@@ -35,6 +36,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -53,7 +58,17 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private static final String INPUT_COLUMNS = "INPUT_COLUMNS";
 
-    // public static final String SAVE_MAP_NEXT = "SAVE_MAP_NEXT";
+    @Autowired
+    private transient DatasetService datasetService;
+
+    @Autowired
+    private transient XmlService xmlService;
+    
+    @Autowired
+    private transient DataTableService dataTableService;
+
+    @Autowired
+    private transient OntologyService ontologyService;
 
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
@@ -143,7 +158,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         // note this ignores the quota changes -- it's on us
-        getDatasetService().reprocess(getDataResource());
+        datasetService.reprocess(getDataResource());
         return SUCCESS;
     }
 
@@ -157,9 +172,9 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         // note this ignores the quota changes -- it's on us
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         for (DataTable table : getDataResource().getDataTables()) {
-            getDatasetService().retranslate(table.getDataTableColumns());
+            datasetService.retranslate(table.getDataTableColumns());
         }
-        getDatasetService().createTranslatedFile(getDataResource());
+        datasetService.createTranslatedFile(getDataResource());
         return SUCCESS;
     }
 
@@ -231,14 +246,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         initializePaginationHelper();
 
         try {
-            updateResults = getDatasetService().updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            updateResults = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        getXmlService().logRecordXmlToFilestore(getDataResource());
+        xmlService.logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }
@@ -271,10 +286,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (Persistable.Base.isNullOrTransient(dataTableId) || Persistable.Base.isNullOrTransient(rowId)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(dataTableId);
+        DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
             if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
-                dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
+                dataTableRowAsMap = datasetService.selectRowFromDataTable(dataTable, rowId, true);
                 if (MapUtils.isEmpty(dataTableRowAsMap)) {
                     return ERROR;
                 }
@@ -317,10 +332,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (Persistable.Base.isNullOrTransient(dataTableId)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(dataTableId);
+        DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
             if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
-                String dataTableAsXml = getDatasetService().selectTableAsXml(dataTable);
+                String dataTableAsXml = datasetService.selectTableAsXml(dataTable);
                 xmlStream = new ByteArrayInputStream(dataTableAsXml.getBytes(StandardCharsets.UTF_8));
                 return SUCCESS;
             }
@@ -331,16 +346,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
-                getDatasetService().remapColumnsAsync(columnsToRemap, getDataResource().getProject());
+                datasetService.remapColumnsAsync(columnsToRemap, getDataResource().getProject());
             } else {
-                getDatasetService().remapColumns(columnsToRemap, getDataResource().getProject());
+                datasetService.remapColumns(columnsToRemap, getDataResource().getProject());
             }
         }
     };
 
     public List<DataTableColumn> getOntologyMappedColumns() {
         if (ontologyMappedColumns == null) {
-            ontologyMappedColumns = getDataTableService().findOntologyMappedColumns(getDataResource());
+            ontologyMappedColumns = dataTableService.findOntologyMappedColumns(getDataResource());
         }
         return ontologyMappedColumns;
     }
@@ -357,7 +372,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         getLogger().trace(dataTable + " dtID:" + dataTableId);
         if (dataTable == null) {
             if (dataTableId != null) {
-                this.dataTable = getDataTableService().find(dataTableId);
+                this.dataTable = dataTableService.find(dataTableId);
             } else {
                 Set<DataTable> dataTables = getDataResource().getDataTables();
                 if (!CollectionUtils.isEmpty(dataTables)) {
@@ -374,14 +389,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return;
         }
         this.dataTableId = dataTableId;
-        // this.dataTable = getDataTableService().find(dataTableId);
+        // this.dataTable = dataTableService.find(dataTableId);
     }
 
     public Map<String, Long> getDistinctColumnValuesWithCounts() {
         if (getDataTableColumn() == null) {
             return Collections.emptyMap();
         }
-        return getDataTableService().findAllDistinctValuesWithCounts(dataTableColumn);
+        return dataTableService.findAllDistinctValuesWithCounts(dataTableColumn);
     }
 
     public DataTableColumn getDataTableColumn() {
@@ -399,7 +414,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }
-        this.dataTableColumn = getDataTableService().findDataTableColumn(columnId);
+        this.dataTableColumn = dataTableService.findDataTableColumn(columnId);
         if ((dataTableColumn != null) && (getResource() == null)) {
             setId(dataTableColumn.getDataTable().getDataset().getId());
         }
@@ -418,7 +433,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public boolean isOntologyLinked() {
-        return getDatasetService().canLinkDataToOntology(getDataResource());
+        return datasetService.canLinkDataToOntology(getDataResource());
     }
 
     private Dataset getDataResource() {
@@ -448,7 +463,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public List<String> getOntologyMappedColumnStatus() {
         ontologyMappedColumnStatus = new ArrayList<String>();
         for (DataTableColumn column : getOntologyMappedColumns()) {
-            String status = getOntologyService().isOntologyMapped(column) ? "" : "unmapped";
+            String status = ontologyService.isOntologyMapped(column) ? "" : "unmapped";
             ontologyMappedColumnStatus.add(status);
         }
         getLogger().trace("{}", ontologyMappedColumnStatus);

@@ -7,10 +7,12 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AuthenticationAware;
 
 /**
@@ -33,6 +35,9 @@ public class ResourceController extends AuthenticationAware.Base {
     public static final String BILLING = "billing";
 
     private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
+
+    @Autowired
+    private transient AccountService accountService;
 
     // incoming data from /resource/add
     private ResourceType resourceType;
@@ -73,7 +78,7 @@ public class ResourceController extends AuthenticationAware.Base {
                     @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/edit?resourceId=${resource.id}")
             })
     public String edit() {
-        InformationResource informationResource = getInformationResourceService().find(resourceId);
+        InformationResource informationResource = getGenericService().find(InformationResource.class, resourceId);
         if (informationResource == null) {
             getLogger().error("trying to edit information resource but it was null.");
             addActionError("Information resource wasn't loaded properly, please file a bug report.  Thanks!");
@@ -89,7 +94,7 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public boolean isAllowedToCreateResource() {
         // getLogger().info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if ((getTdarConfiguration().isPayPerIngestEnabled() == false) || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
+        if ((getTdarConfiguration().isPayPerIngestEnabled() == false) || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
             return true;
         }
         return false;
@@ -110,7 +115,7 @@ public class ResourceController extends AuthenticationAware.Base {
                     @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/view?id=${resourceId}")
             })
     public String view() {
-        InformationResource informationResource = getInformationResourceService().find(resourceId);
+        InformationResource informationResource = getGenericService().find(InformationResource.class, resourceId);
         if (informationResource == null) {
             getLogger().error("trying to edit information resource but it was null.");
             addActionError(getText("resourceController.not_found"));

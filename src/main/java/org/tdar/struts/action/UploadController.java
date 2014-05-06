@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 
 @SuppressWarnings("serial")
@@ -37,7 +38,10 @@ import org.tdar.filestore.personal.PersonalFilestore;
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
-    private PersonalFilestoreService filestoreService;
+    private transient PersonalFilestoreService filestoreService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
@@ -138,7 +142,7 @@ public class UploadController extends AuthenticationAware.Base {
         result.put("errors", getActionErrors());
         String resultJson = "{}";
         try {
-            resultJson = getXmlService().convertToJson(result);
+            resultJson = xmlService.convertToJson(result);
         } catch(IOException iox) {
             getLogger().error("cannot convert actionErrors to xml", iox);
         }

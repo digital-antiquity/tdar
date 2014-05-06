@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import net.fortuna.ical4j.model.property.Url;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -61,7 +63,10 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
@@ -99,10 +104,20 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private GeoRssMode geoMode = GeoRssMode.POINT;
 
     @Autowired
-    private RssService rssService;
-    @Autowired
-    private ExcelService excelService;
+    private transient RssService rssService;
 
+    @Autowired
+    private transient SearchService searchService;
+
+    @Autowired
+    private transient ExcelService excelService;
+
+    @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private transient UrlService urlService;
+    
     private InputStream inputStream;
 
     private DisplayOrientation orientation;
@@ -254,7 +269,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            getSearchService().handleSearch(queryBuilder, this);
+            searchService.handleSearch(queryBuilder, this);
 
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
@@ -400,7 +415,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         for (SearchParameters group : groups) {
             group.setExplore(explore);
             try {
-                getSearchService().updateResourceCreators(group, 20);
+                searchService.updateResourceCreators(group, 20);
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -414,7 +429,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            getSearchService().handleSearch(queryBuilder, this);
+            searchService.handleSearch(queryBuilder, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
@@ -504,7 +519,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
             getLogger().debug("inflating parameters for group {}", sp);
-            getSearchService().inflateSearchParameters(sp);
+            searchService.inflateSearchParameters(sp);
         }
 
         return SUCCESS;
@@ -552,15 +567,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
-        return getGenericKeywordService().findAllWithCache(InvestigationType.class);
+        return genericKeywordService.findAllWithCache(InvestigationType.class);
     }
 
     public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
     }
 
     public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
     }
 
     List<MaterialKeyword> allMaterialKeywords;
@@ -571,7 +586,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = getGenericKeywordService().findAllWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -588,7 +603,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String getRssUrl() {
         StringBuilder urlBuilder = new StringBuilder();
         if (getServletRequest() != null) {
-            urlBuilder.append(getUrlService().getBaseUrl())
+            urlBuilder.append(urlService.getBaseUrl())
                     .append(getServletRequest().getContextPath())
                     .append(SEARCH_RSS).append("?")
                     .append(getServletRequest().getQueryString());
@@ -900,7 +915,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(),
                                 getSearchPhrase())));
                 rowNum++;
-                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), getUrlService().getBaseUrl()
+                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), urlService.getBaseUrl()
                         + getServletRequest().getRequestURI()
                                 .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
@@ -953,7 +968,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         ArrayList<Object> data = new ArrayList<Object>(
                                 Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
                                         projectName, r.getShortenedDescription(), numFiles,
-                                        getUrlService().absoluteUrl(r), location));
+                                        urlService.absoluteUrl(r), location));
 
                         if (isEditor()) {
                             data.add(r.getStatus());

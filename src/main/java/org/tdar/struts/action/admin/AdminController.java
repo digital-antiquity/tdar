@@ -32,11 +32,16 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
@@ -59,8 +64,22 @@ public class AdminController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 4385039298623767568L;
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+    private transient ScheduledProcessService scheduledProcessService;
 
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+
+    @Autowired
+    private transient StatisticService statisticService;
+
+    @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private transient EntityService entityService;
 
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
@@ -100,29 +119,29 @@ public class AdminController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-        setCurrentResourceStats(getStatisticService().getCurrentResourceStats());
-        setHistoricalRepositorySizes(getStatisticService().getRepositorySizes());
-        setRecentlyUpdatedResources(getResourceService().findRecentlyUpdatedItemsInLastXDays(7));
-        setRecentLogins(getEntityService().showRecentLogins());
+        setCurrentResourceStats(statisticService.getCurrentResourceStats());
+        setHistoricalRepositorySizes(statisticService.getRepositorySizes());
+        setRecentlyUpdatedResources(resourceService.findRecentlyUpdatedItemsInLastXDays(7));
+        setRecentLogins(entityService.showRecentLogins());
         return SUCCESS;
     }
 
     @Action("resource")
     public String resourceInfo() {
-        setHistoricalResourceStats(getStatisticService().getResourceStatistics());
-        setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
-        setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
+        setHistoricalResourceStats(statisticService.getResourceStatistics());
+        setHistoricalResourceStatsWithFiles(statisticService.getResourceStatisticsWithFiles());
+        setHistoricalCollectionStats(statisticService.getCollectionStatistics());
         return SUCCESS;
     }
 
     @Action("file-info")
     public String fileInfo() {
-        setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileStats(getStatisticService().getFileStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(
+        setFileAverageStats(statisticService.getFileAverageStats(Arrays.asList(VersionType.values())));
+        setFileStats(statisticService.getFileStats(Arrays.asList(VersionType.values())));
+        setFileUploadedAverageStats(statisticService.getFileAverageStats(
                 Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
-        setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
-        setFiles(getInformationResourceFileService().findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
+        setExtensionStats(informationResourceFileService.getAdminFileExtensionStats());
+        setFiles(informationResourceFileService.findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
     }
 
@@ -174,15 +193,15 @@ public class AdminController extends AuthenticationAware.Base {
 
     @Action("user")
     public String userInfo() {
-        setHistoricalUserStats(getStatisticService().getUserStatistics());
-        setRecentUsers(getEntityService().findAllRegisteredUsers(10));
-        setUserLoginStats(getStatisticService().getUserLoginStats());
+        setHistoricalUserStats(statisticService.getUserStatistics());
+        setRecentUsers(entityService.findAllRegisteredUsers(10));
+        setUserLoginStats(statisticService.getUserLoginStats());
         return SUCCESS;
     }
 
     @Action("user-mailchimp")
     public String userMailchipInfo() {
-        setRecentUsers(getEntityService().findAllRegisteredUsers());
+        setRecentUsers(entityService.findAllRegisteredUsers());
         return SUCCESS;
     }
 
@@ -200,70 +219,70 @@ public class AdminController extends AuthenticationAware.Base {
 
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         if (uncontrolledCultureKeywordStats == null) {
-            uncontrolledCultureKeywordStats = getGenericKeywordService().getUncontrolledCultureKeywordStats();
+            uncontrolledCultureKeywordStats = genericKeywordService.getUncontrolledCultureKeywordStats();
         }
         return uncontrolledCultureKeywordStats;
     }
 
     public List<Pair<CultureKeyword, Integer>> getControlledCultureKeywordStats() {
         if (controlledCultureKeywordStats == null) {
-            controlledCultureKeywordStats = getGenericKeywordService().getControlledCultureKeywordStats();
+            controlledCultureKeywordStats = genericKeywordService.getControlledCultureKeywordStats();
         }
         return controlledCultureKeywordStats;
     }
 
     public List<Pair<GeographicKeyword, Integer>> getGeographicKeywordStats() {
         if (geographicKeywordStats == null) {
-            geographicKeywordStats = getGenericKeywordService().getGeographicKeywordStats();
+            geographicKeywordStats = genericKeywordService.getGeographicKeywordStats();
         }
         return geographicKeywordStats;
     }
 
     public List<Pair<InvestigationType, Integer>> getInvestigationTypeStats() {
         if (investigationTypeStats == null) {
-            investigationTypeStats = getGenericKeywordService().getInvestigationTypeStats();
+            investigationTypeStats = genericKeywordService.getInvestigationTypeStats();
         }
         return investigationTypeStats;
     }
 
     public List<Pair<MaterialKeyword, Integer>> getMaterialKeywordStats() {
         if (materialKeywordStats == null) {
-            materialKeywordStats = getGenericKeywordService().getMaterialKeywordStats();
+            materialKeywordStats = genericKeywordService.getMaterialKeywordStats();
         }
         return materialKeywordStats;
     }
 
     public List<Pair<OtherKeyword, Integer>> getOtherKeywordStats() {
         if (otherKeywordStats == null) {
-            otherKeywordStats = getGenericKeywordService().getOtherKeywordStats();
+            otherKeywordStats = genericKeywordService.getOtherKeywordStats();
         }
         return otherKeywordStats;
     }
 
     public List<Pair<SiteNameKeyword, Integer>> getSiteNameKeywordStats() {
         if (siteNameKeywordStats == null) {
-            siteNameKeywordStats = getGenericKeywordService().getSiteNameKeywordStats();
+            siteNameKeywordStats = genericKeywordService.getSiteNameKeywordStats();
         }
         return siteNameKeywordStats;
     }
 
     public List<Pair<SiteTypeKeyword, Integer>> getControlledSiteTypeKeywordStats() {
         if (controlledSiteTypeKeywordStats == null) {
-            controlledSiteTypeKeywordStats = getGenericKeywordService().getControlledSiteTypeKeywordStats();
+            controlledSiteTypeKeywordStats = genericKeywordService.getControlledSiteTypeKeywordStats();
         }
         return controlledSiteTypeKeywordStats;
     }
 
     public List<Pair<SiteTypeKeyword, Integer>> getUncontrolledSiteTypeKeywordStats() {
         if (uncontrolledSiteTypeKeywordStats == null) {
-            uncontrolledSiteTypeKeywordStats = getGenericKeywordService().getUncontrolledSiteTypeKeywordStats();
+            uncontrolledSiteTypeKeywordStats = genericKeywordService.getUncontrolledSiteTypeKeywordStats();
         }
         return uncontrolledSiteTypeKeywordStats;
     }
 
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         if (temporalKeywordStats == null) {
-            temporalKeywordStats = getGenericKeywordService().getTemporalKeywordStats();
+            temporalKeywordStats = genericKeywordService.getTemporalKeywordStats();
         }
         return temporalKeywordStats;
     }
