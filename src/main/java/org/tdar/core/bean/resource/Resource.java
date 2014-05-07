@@ -173,10 +173,12 @@ public class Resource extends JsonModel.Base implements Persistable,
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
-    private transient boolean obfuscated;
+    private transient boolean obfuscated =  false;
+    @Transient
+    private transient boolean bookmarked = false;
 
     @Transient
-    private transient Boolean obfuscatedObjectDifferent;
+    private transient Boolean obfuscatedObjectDifferent = false;
 
     @Transient
     private transient boolean viewable;
@@ -1916,5 +1918,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return getIndividualAndInstitutionalCredit();
+    }
+
+    public boolean isBookmarked() {
+        return bookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
     }
 }

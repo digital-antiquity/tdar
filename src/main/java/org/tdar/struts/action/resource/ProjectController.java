@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.ProjectService;
@@ -51,6 +52,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Autowired
     private transient ProjectService projectService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -127,6 +131,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
             try {
                 searchService.handleSearch(qb, this);
+                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {

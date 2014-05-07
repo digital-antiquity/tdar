@@ -593,8 +593,4 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void registerErrorListener(ErrorListener e) {
         this.errorListener = e;
     }
-    
-    public boolean isAlreadyBookmarked(Resource resource, TdarUser authorizedUser) {
-    	return bookmarkedResourceService.isAlreadyBookmarked(resource, authorizedUser);
-    }
 }
