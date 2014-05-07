@@ -957,15 +957,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         return resourceNotes;
     }
 
-//    @XmlTransient
-//    public Set<BookmarkedResource> getBookmarks() {
-//        return bookmarks;
-//    }
-//
-//    public void setBookmarks(Set<BookmarkedResource> bookmarks) {
-//        this.bookmarks = bookmarks;
-//    }
-//
     public void setSourceCollections(Set<SourceCollection> sourceCollections) {
         this.sourceCollections = sourceCollections;
     }
@@ -1920,6 +1911,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return getIndividualAndInstitutionalCredit();
     }
 
+    @XmlTransient
     public boolean isBookmarked() {
         return bookmarked;
     }
