@@ -225,7 +225,12 @@
             var authuserId = $($(element).attr("autocompleteidelement")).val();
             if(authuserId === "-1") {return true;}
             var submitterId = $(element.form).data("submitterid");
-            return submitterId.toString() !==  authuserId;
+            if(submitterId) {
+                return submitterId.toString() !==  authuserId;
+            }
+            else {
+                return true;
+            }
         },
         "Resource submitters always have full access rights. This entry is unnecessary."
     )

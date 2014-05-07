@@ -267,13 +267,6 @@ TDAR.common = function () {
 
         var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
         $(form).validate(allValidateOptions);
-
-        console.log("***************************************************");
-        console.log("***************************************************");
-        console.log("***************************************************");
-        console.log("***************************************************");
-        console.log("***************************************************");
-        console.warn($("#metadataForm").data("validator"));
     };
 
     /**
