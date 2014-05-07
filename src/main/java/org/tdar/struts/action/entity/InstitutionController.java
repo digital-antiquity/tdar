@@ -28,9 +28,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
     @Autowired
     private transient EntityService entityService;
 
-    @Autowired
-    private transient XmlService xmlService;
-
     private String name;
 
     @Override
@@ -46,8 +43,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
         } else {
             getGenericService().update(persistable);
         }
-        xmlService.logRecordXmlToFilestore(getPersistable());
-
         return SUCCESS;
     }
 
@@ -63,7 +58,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
 
     @Override
     protected void delete(Institution persistable) {
-        xmlService.logRecordXmlToFilestore(getPersistable());
     }
 
     @Override

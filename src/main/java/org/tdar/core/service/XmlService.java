@@ -15,13 +15,10 @@ import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
@@ -29,21 +26,16 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.filters.StringInputStream;
-import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
@@ -51,10 +43,10 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.w3c.dom.Document;
 
@@ -100,6 +92,11 @@ public class XmlService {
     @Autowired
     private ObfuscationService obfuscationService;
 
+    XMLFilestoreLogger xmlFilestoreLogger;
+    
+    public XmlService() throws ClassNotFoundException {
+        xmlFilestoreLogger = new XMLFilestoreLogger();
+    }
     /**
      * Convert the existing object to an XML representation using JAXB
      * 
@@ -109,9 +106,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
-        StringWriter sw = new StringWriter();
-        convertToXML(object, sw);
-        return sw.toString();
+        return xmlFilestoreLogger.convertToXML(object);
     }
 
     /**
@@ -137,38 +132,6 @@ public class XmlService {
         return tempFile;
     }
 
-    /**
-     * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
-     * 
-     * @param resource
-     */
-    @Transactional(readOnly = true)
-    public <T extends Persistable> void logRecordXmlToFilestore(T resource) {
-        @SuppressWarnings("deprecation")
-        InformationResourceFileVersion version = new InformationResourceFileVersion();
-        version.setFilename("record.xml");
-        version.setExtension("xml");
-        version.setFileVersionType(VersionType.RECORD);
-        version.setInformationResourceId(resource.getId());
-        try {
-            StorageMethod rotate = StorageMethod.DATE;
-            // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore()
-                    .storeAndRotate(ObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
-        } catch (Exception e) {
-            logger.error("something happend when converting record to XML:" + resource, e);
-            throw new TdarRecoverableRuntimeException("xmlService.could_not_save");
-        }
-        if (resource instanceof Resource) {
-            for (ResourceCollection rc : ((Resource) resource).getResourceCollections()) {
-                if (rc.isChangesNeedToBeLogged()) {
-                    logRecordXmlToFilestore(rc);
-                }
-            }
-        }
-
-        logger.trace("done saving");
-    }
 
     /**
      * Convert an Object to XML via JAXB, but use the writer instead of a String (For writing directly to a file or Stream)
@@ -180,23 +143,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
-        if (jaxbClasses == null) {
-            jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
-        }
-
-        // get rid of proxies
-        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
-            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
-        }
-
-        JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getPairedSchemaUrl());
-        // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
-        logger.trace("converting: {}", object);
-        marshaller.marshal(object, writer);
-        return writer;
+        return xmlFilestoreLogger.convertToXML(object, writer);
     }
 
     /**
@@ -244,15 +191,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
-        // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
-        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
-            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
-        }
-        JAXBContext jc = JAXBContext.newInstance(object.getClass());
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.marshal(object, document);
-
-        return document;
+        return xmlFilestoreLogger.convertToXML(object, document);
     }
 
     /**

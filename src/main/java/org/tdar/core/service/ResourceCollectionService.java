@@ -57,9 +57,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     private SearchService searchService;
 
-    @Autowired
-    private XmlService xmlService;
-
     /**
      * Reconcile an existing set of @link Resource entities on a @link ResourceCollection with a set of incomming @link Resource entities, remove unmatching
      * 
@@ -407,7 +404,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             current.remove(collection);
             collection.getResources().remove(resource);
             resource.getResourceCollections().remove(collection);
-            xmlService.logRecordXmlToFilestore(collection);
         }
 
         for (ResourceCollection collection : incoming_) {
@@ -686,7 +682,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             child.getParentIds().removeAll(oldParentIds);
             child.getParentIds().addAll(parentIds);
             saveOrUpdate(child);
-            xmlService.logRecordXmlToFilestore(child);
         }
         saveOrUpdate(persistable);
 

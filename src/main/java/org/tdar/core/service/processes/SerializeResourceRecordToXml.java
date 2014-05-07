@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.XmlService;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 /**
  * $Id$
@@ -21,8 +22,10 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
 
     private static final long serialVersionUID = 7024941986161148001L;
 
-    @Autowired
-    private transient XmlService xmlService;
+    private XMLFilestoreLogger xmlFilestoreLogger;
+    public SerializeResourceRecordToXml() throws ClassNotFoundException {
+        xmlFilestoreLogger = new XMLFilestoreLogger();
+    }
 
     @Override
     public String getDisplayName() {
@@ -41,7 +44,7 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
 
     @Override
     public void process(Resource resource) {
-        xmlService.logRecordXmlToFilestore(resource);
+        xmlFilestoreLogger.logRecordXmlToFilestore(resource);
     }
 
     @Override

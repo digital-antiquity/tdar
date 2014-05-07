@@ -24,7 +24,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -43,8 +42,6 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     private transient ObfuscationService obfuscationService;
     @Autowired
     private transient AccountService accountService;
-    @Autowired
-    private transient XmlService xmlService;
 
     private static final long serialVersionUID = -2666270784609372369L;
     private String proxyInstitutionName;
@@ -118,7 +115,6 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
         savePersonInfo(person);
         getGenericService().saveOrUpdate(person);
-        xmlService.logRecordXmlToFilestore(getPersistable());
 
         // If the user is editing their own profile, refresh the session object if needed
         if (getAuthenticatedUser().equals(person)) {
@@ -179,7 +175,6 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
     @Override
     protected void delete(TdarUser persistable) {
-        xmlService.logRecordXmlToFilestore(getPersistable());
 
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
     }

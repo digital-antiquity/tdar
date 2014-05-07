@@ -114,7 +114,7 @@ public class UrlService {
      * 
      * @return
      */
-    public String getPairedSchemaUrl() {
+    public static String getPairedSchemaUrl() {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 

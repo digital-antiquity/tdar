@@ -24,12 +24,12 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -42,21 +42,19 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Autowired
     ResourceService resourceService;
 
-    @Autowired
-    XmlService xmlService;
-
     @Test
-    public void testXMLSave() {
+    public void testXMLSave() throws ClassNotFoundException {
+        XMLFilestoreLogger xmlFilestoreLogger = new XMLFilestoreLogger();
         for (Document resource : resourceService.findAll(Document.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
         for (ResourceCollection resource : resourceService.findAll(ResourceCollection.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
         for (Creator resource : resourceService.findAll(Creator.class)) {
-            xmlService.logRecordXmlToFilestore(resource);
+            xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
     }
 
