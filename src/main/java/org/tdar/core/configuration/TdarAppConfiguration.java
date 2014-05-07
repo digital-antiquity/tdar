@@ -94,7 +94,8 @@ public class TdarAppConfiguration implements Serializable {
 
     @Bean
     public HibernateTransactionManager transactionManager(@Qualifier("tdarMetadataDataSource") DataSource dataSource) throws PropertyVetoException {
-        return new HibernateTransactionManager(getSessionFactory(dataSource));
+        HibernateTransactionManager hibernateTransactionManager = new HibernateTransactionManager(getSessionFactory(dataSource));
+        return hibernateTransactionManager;
     }
 
     

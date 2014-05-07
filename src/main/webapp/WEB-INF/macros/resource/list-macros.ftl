@@ -305,7 +305,7 @@ bookmark indicator, etc..
             <#if _resource.resourceType?has_content>
                 <#assign status = "disabled-bookmark" />
 
-                <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                <#if isAlreadyBookmarked(_resource, authenticatedUser)>
                     <#assign status = "un-bookmark" />
                 <#else>
                     <#assign status = "bookmark" />
@@ -321,7 +321,7 @@ bookmark indicator, etc..
             	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
                 bookmark</span><#t>
                     </#if>
-                <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                <#elseif isAlreadyBookmarked(_resource, authenticatedUser)>
                     <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
                        bookmark-state="bookmarked">
                         <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
