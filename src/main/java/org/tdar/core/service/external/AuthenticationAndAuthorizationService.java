@@ -498,27 +498,27 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
 
         if (ObjectUtils.equals(resource.getSubmitter(), person)) {
-            logger.debug("person was submitter");
+            logger.trace("person was submitter");
             return true;
         }
 
         if (can(equivalentAdminRight, person)) {
-            logger.debug("person is admin");
+            logger.trace("person is admin");
             return true;
         }
 
         if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
-            logger.debug("person is an authorized user");
+            logger.trace("person is an authorized user");
             return true;
         }
 
         // ab added:12/11/12
         if (Persistable.Base.isTransient(resource) && (resource.getSubmitter() == null)) {
-            logger.debug("resource is transient");
+            logger.trace("resource is transient");
             return true;
         }
 
-        logger.debug("returning false... access denied");
+        logger.trace("returning false... access denied");
         return false;
     }
 

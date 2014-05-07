@@ -32,7 +32,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.QueryFieldNames;
@@ -56,8 +55,6 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
-    @Autowired
-    private transient XmlService xmlService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -141,7 +138,6 @@ public class CollectionController extends AbstractPersistableController<Resource
                 getAuthenticatedUser(), resources);
         getLogger().trace("{}", rehydratedIncomingResources);
         getLogger().debug("RESOURCES {}", persistable.getResources());
-        xmlService.logRecordXmlToFilestore(getPersistable());
         return SUCCESS;
     }
 
@@ -175,8 +171,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         getGenericService().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
-        xmlService.logRecordXmlToFilestore(getPersistable());
-
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
     }
 

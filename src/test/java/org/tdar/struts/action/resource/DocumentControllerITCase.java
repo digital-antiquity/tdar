@@ -60,6 +60,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     public void initControllerFields() {
+        controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
     }

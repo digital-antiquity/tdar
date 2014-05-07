@@ -61,8 +61,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     @Autowired
     private transient DatasetService datasetService;
 
-    @Autowired
-    private transient XmlService xmlService;
     
     @Autowired
     private transient DataTableService dataTableService;
@@ -253,7 +251,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        xmlService.logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }

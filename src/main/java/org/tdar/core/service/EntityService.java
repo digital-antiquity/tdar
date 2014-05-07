@@ -41,8 +41,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private InstitutionDao institutionDao;
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
-    @Autowired
-    private XmlService xmlService;
 
     /**
      * Find a @link Person by ID
@@ -229,7 +227,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 getDao().saveOrUpdate(transientPerson.getInstitution());
             }
             blessedPerson = transientPerson;
-            xmlService.logRecordXmlToFilestore(transientPerson);
         }
         return blessedPerson;
     }
@@ -323,10 +320,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             }
             institutionDao.save(transientInstitution);
             blessedInstitution = transientInstitution;
-            xmlService.logRecordXmlToFilestore(transientInstitution);
         } else if (!blessedInstitution.isDeleted()) {
             blessedInstitution.setStatus(Status.ACTIVE);
-            xmlService.logRecordXmlToFilestore(blessedInstitution);
         }
         return blessedInstitution;
     }

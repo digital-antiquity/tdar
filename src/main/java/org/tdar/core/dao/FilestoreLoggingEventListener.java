@@ -9,13 +9,8 @@ import org.hibernate.event.spi.PostUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.XmlService;
+import org.tdar.core.bean.Persistable;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class FilestoreLoggingEventListener implements PostInsertEventListener,
 		PostUpdateEventListener, PostDeleteEventListener {
@@ -23,16 +18,20 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
 	private static final long serialVersionUID = -2773973927518207238L;
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+	XMLFilestoreLogger xmlLogger;
+	
+	public FilestoreLoggingEventListener() throws ClassNotFoundException {
+	    xmlLogger = new XMLFilestoreLogger();
+	}
+	
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
 		logToXml(event.getEntity());
 	}
 
 	private void logToXml(Object obj) {
-		if (obj instanceof Resource) {
-			logger.debug("serializing record to XML: {}", obj);
-//			getXmlService().logRecordXmlToFilestore((Resource) obj);
+		if (obj instanceof Persistable) {
+			xmlLogger.logRecordXmlToFilestore((Persistable)obj);
 		}
 	}
 

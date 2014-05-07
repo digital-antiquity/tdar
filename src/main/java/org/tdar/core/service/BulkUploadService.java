@@ -98,9 +98,6 @@ public class BulkUploadService {
     private FileAnalyzer analyzer;
 
     @Autowired
-    private XmlService xmlService;
-
-    @Autowired
     private ExcelService excelService;
 
     @Autowired
@@ -385,8 +382,6 @@ public class BulkUploadService {
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
     
                 try {
-                    xmlService.logRecordXmlToFilestore(resource);
-                    logger.debug("resource: {} {}", resource, resource.getResourceCollections());
                     cols.addAll(resource.getResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
                     resource.setReadyToIndex(true);

@@ -71,6 +71,10 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_FIND_RESOURCE_BY_PERSON);
         query.setParameterList("statuses", statuses);
         query.setLong("personId", person.getId());
-        return query.list();
+        List<Resource> resources = query.list();
+        for (Resource res : resources) {
+            res.setBookmarked(true);
+        }
+        return resources;
     }
 }

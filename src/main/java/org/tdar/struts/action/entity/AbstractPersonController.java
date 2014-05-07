@@ -12,7 +12,6 @@ import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
@@ -28,9 +27,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     private String institutionName;
 
     private String email;
-
-    @Autowired
-    private transient XmlService xmlService;
 
     @Autowired
     private transient EntityService entityService;
@@ -95,7 +91,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         }
 
         getGenericService().saveOrUpdate(person);
-        xmlService.logRecordXmlToFilestore(getPersistable());
 
         // If the user is editing their own profile, refresh the session object if needed
         return SUCCESS;
@@ -118,8 +113,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
     @Override
     protected void delete(Person persistable) {
-        xmlService.logRecordXmlToFilestore(getPersistable());
-
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
     }
 

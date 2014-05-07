@@ -27,7 +27,6 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -82,9 +81,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Autowired
     private transient RecaptchaService reCaptchaService;
 
-    @Autowired
-    private transient XmlService xmlService;
-    
     @Autowired
     private transient EntityService entityService;
 
@@ -210,7 +206,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                 setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
                 entityService.registerLogin(person);
-                xmlService.logRecordXmlToFilestore(person);
 
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
