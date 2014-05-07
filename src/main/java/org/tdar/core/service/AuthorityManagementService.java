@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -20,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.atteo.evo.inflector.English;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -527,6 +531,29 @@ public class AuthorityManagementService {
             return fieldToDupeIds.toString();
         }
 
+    }
+
+    public void findPluralDups(Class<? extends Keyword> cls) {
+        Map<String, Keyword> map = new HashMap<>();
+        Map<Keyword,List<Keyword>> dups = new HashMap<>();
+        for (Keyword kwd : genericDao.findAll(cls)) {
+            map.put(kwd.getLabel(), kwd);
+        }
+        for (String label : map.keySet()) {
+            String plural = English.plural(label);
+            Keyword dup = map.get(plural);
+            Keyword key = map.get(label);
+            if (dup != null && ObjectUtils.notEqual(dup, key)) {
+                logger.debug("should set plural: {} to singular: {}", plural, label);
+                List<Keyword> list = dups.get(key);
+                if (list == null) {
+                    list = new ArrayList<>();
+                }
+                list.add(dup);
+                dups.put(key, list);
+            }
+        }
+        
     }
 
 }
