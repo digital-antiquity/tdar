@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.AuthenticationAware;
@@ -45,16 +46,21 @@ public class ResourceController extends AuthenticationAware.Base {
      */
     @Action(value = "add",
             results = {
-                    @Result(name = BILLING, type = TYPE_REDIRECT, location = "/cart/add"),
+                    @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
+        			@Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
                     @Result(name = SUCCESS, location = "add.ftl")
             })
     @Override
     public String execute() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || ((getAuthenticatedUser().getContributor() == true)
-                && isAllowedToCreateResource())) {
-            return SUCCESS;
-        }
-        return BILLING;
+		if (!isContributor()) {
+			addActionMessage(getText("resourceController.must_be_contributor"));
+			return CONTRIBUTOR;
+		}
+		if (!getTdarConfiguration().isPayPerIngestEnabled() || isAllowedToCreateResource()) {
+			return SUCCESS;
+		}
+		addActionMessage(getText("resourceController.requires_funds"));
+		return BILLING;
     }
 
     /**

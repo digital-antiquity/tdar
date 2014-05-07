@@ -333,14 +333,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @Action(value = ADD, results = {
-            @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly
     public String add() throws TdarActionException {
-        if (!isAbleToCreateBillableItem()) {
-            return BILLING;
-        }
 
         // FIXME:make this a preference...
         if ((getPersistable() instanceof HasStatus) && isEditor() && !isAdministrator()) {

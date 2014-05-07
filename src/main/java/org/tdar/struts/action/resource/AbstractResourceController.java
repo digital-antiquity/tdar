@@ -253,12 +253,20 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
+			@Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
             @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     @Override
     public String add() throws TdarActionException {
-        return super.add();
+        if (!isAbleToCreateBillableItem()) {
+            return BILLING;
+        }
+		if (!isContributor()) {
+			addActionMessage(getText("resourceController.must_be_contributor"));
+			return CONTRIBUTOR;
+		}
+		return super.add();
     }
 
     @SkipValidation

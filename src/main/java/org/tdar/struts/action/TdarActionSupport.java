@@ -121,7 +121,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String VIEW = "view";
     public static final String EDIT = "edit";
     public static final String JSON = "json";
-    public static final String BILLING = "BILLING";
+	public static final String BILLING = "billing";
+	public static final String CONTRIBUTOR = "contributor";
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
