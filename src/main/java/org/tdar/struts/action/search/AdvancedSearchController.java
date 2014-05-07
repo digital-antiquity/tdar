@@ -8,11 +8,10 @@ import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import net.fortuna.ical4j.model.property.Url;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -62,12 +61,13 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -108,6 +108,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     @Autowired
     private transient SearchService searchService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
     private transient ExcelService excelService;
@@ -270,7 +273,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
             searchService.handleSearch(queryBuilder, this);
-
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -439,6 +441,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             getLogger().warn("search parse exception: {}", e.getMessage());
             addActionError(getText("advancedSearchController.error_parsing_failed"));
         }
+        bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
         if (getActionErrors().isEmpty()) {
             return SUCCESS;

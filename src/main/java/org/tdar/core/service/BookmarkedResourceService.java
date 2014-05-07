@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,15 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Transactional(readOnly = true)
+    public <R extends Resource> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
+        for (Resource resource : resources) {
+            if (isAlreadyBookmarked(resource, person)) {
+                resource.setBookmarked(true);
+            }
+        }
+    }
+    
     @Transactional(readOnly = true)
     public boolean isAlreadyBookmarked(Resource resource, TdarUser person) {
         return getDao().isAlreadyBookmarked(resource, person);

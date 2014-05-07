@@ -63,6 +63,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
@@ -115,6 +116,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Autowired
     private transient XmlService xmlService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
     private transient ObfuscationService obfuscationService;
@@ -318,6 +322,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() == null) {
             return ERROR;
         }
+        
         // loadBasicMetadata();
         initializeResourceCreatorProxyLists(true);
         loadCustomMetadata();
@@ -328,7 +333,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         loadEffectiveResourceCollections();
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
-
+        bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null));

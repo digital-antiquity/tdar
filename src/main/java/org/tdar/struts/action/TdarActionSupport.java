@@ -22,10 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
@@ -123,6 +126,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient FileSystemResourceService filesystemResourceService;
 
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+    
     @Autowired
     private transient GenericService genericService;
 

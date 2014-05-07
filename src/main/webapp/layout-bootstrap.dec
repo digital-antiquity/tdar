@@ -49,7 +49,7 @@
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
     <#if qunit>
-        <link rel="stylesheet" href="/css/qunit-1.11.0.css" type="text/css">
+        <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css">
     </#if>
 
     <script src="${staticHost}<@s.url value="/js/tdar.core.js"/>"></script>

@@ -45,6 +45,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
@@ -132,6 +133,9 @@ public class BrowseController extends AbstractLookupController {
     @Autowired
     private transient AccountService accountService;
 
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+    
     @Autowired
     private transient EntityService entityService;
 
@@ -279,6 +283,8 @@ public class BrowseController extends AbstractLookupController {
                 try {
                     setProjectionModel(ProjectionModel.RESOURCE_PROXY);
                     handleSearch(queryBuilder);
+                    bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {
