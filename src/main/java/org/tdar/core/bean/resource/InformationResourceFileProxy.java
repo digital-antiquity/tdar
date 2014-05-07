@@ -174,7 +174,10 @@ public class InformationResourceFileProxy implements Serializable {
         file.setDateMadePublic(getDateMadePublic());
 
         for (InformationResourceFileVersionProxy prox : getInformationResourceFileVersionProxies()) {
-            file.getInformationResourceFileVersions().add(prox.generateInformationResourceFileVersion());
+            InformationResourceFileVersion version = prox.generateInformationResourceFileVersion();
+            file.getInformationResourceFileVersions().add(version);
+            version.setInformationResourceFile(file);
+            
         }
         return file;
     }
