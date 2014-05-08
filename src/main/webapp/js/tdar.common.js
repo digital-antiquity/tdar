@@ -982,6 +982,20 @@ TDAR.common = function () {
     }
 
     /**
+     * emit "file downloaded" google analytics event
+     * @param url
+     * @param tdarId
+     * @private
+     */
+    var _registerShare = function (service, url, tdarId) {
+        if (tdarId) {
+            _gaevent(service, url, tdarId);
+        } else {
+            _gaevent(service, url);
+        }
+    }
+
+    /**
      * emit "outbound link clicked" event.
      * @param elem
      * @private
@@ -1090,6 +1104,7 @@ TDAR.common = function () {
         "setAdhocTarget": _setAdhocTarget,
         "changeSubcategory": _changeSubcategory,
         "registerDownload": _registerDownload,
+        "registerShare": _registerShare,
         "gaevent": _gaevent,
         "outboundLink": _outboundLink,
         "setupSupportingResourceForm": _setupSupportingResourceForm,

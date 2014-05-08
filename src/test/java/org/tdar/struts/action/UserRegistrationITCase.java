@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -22,10 +23,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.action.resource.DocumentController;
+import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.Action;
+import com.sun.jersey.api.core.ResourceConfig;
+import com.vividsolutions.jts.util.Assert;
 
 import freemarker.template.Configuration;
 
@@ -82,6 +87,23 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
     }
 
+    
+    @Test
+    @Rollback
+    public void testUnContributorStatus() throws TdarActionException {
+        Person person = createAndSaveNewPerson();
+        person.setContributor(false);
+        ResourceController controller = generateNewInitializedController(ResourceController.class, person);
+        Assert.equals(ResourceController.CONTRIBUTOR, controller.execute());
+        
+        DocumentController controller2 = generateNewInitializedController(DocumentController.class, person);
+        controller2.prepare();
+        Assert.equals(ResourceController.CONTRIBUTOR, controller2.add());
+        person.setContributor(true);
+        Assert.equals(ResourceController.SUCCESS, controller2.add());
+
+    }
+    
     @Test
     @Rollback
     public void testDuplicateEmail() {
