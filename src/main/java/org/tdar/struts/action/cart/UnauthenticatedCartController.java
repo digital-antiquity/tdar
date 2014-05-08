@@ -1,9 +1,11 @@
 package org.tdar.struts.action.cart;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -17,7 +19,9 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
@@ -32,7 +36,7 @@ import com.opensymphony.xwork2.Preparable;
 
 @Component
 @Scope("prototype")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Namespace("/cart")
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable {
 
@@ -51,7 +55,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     public static final String SUCCESS_ADD_PAY = "add-payment";
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
-    public static final String SPECIFY_SOMETHING = "please choose something";
     private List<Long> extraItemIds = new ArrayList<Long>();
     private List<Integer> extraItemQuantities = new ArrayList<Integer>();
     private TdarUser owner;
@@ -68,35 +71,56 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     @Autowired
     private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
-
     private Long lookupMBCount = 0L;
     private Long lookupFileCount = 0L;
     private List<PricingOption> pricingOptions = new ArrayList<PricingOption>();
 
-    @Action(value = "new",
+    @Actions(value = { @Action(value = "new",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") })
-    public String execute() {
+                    @Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") }),
+            @Action(value = "modify",
+                    interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+                    results = {
+                            @Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") }),
+                    }
+            )
+            public String execute() {
         setActivities(cartService.getActiveBillingActivities());
         return SUCCESS;
     }
 
-    @Action(value = "save",
+    @Action(value = "preview",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-                    @Result(name=INPUT, type="freemarker", location="edit.ftl"),
-                    @Result(name = SUCCESS, type = "freemarker", location = "simple.ftl") })
+                    @Result(name = INPUT, type = "freemarker", location = "edit.ftl"),
+                    @Result(name = SUCCESS, type=TYPE_REDIRECT, location = "review?id=${invoice.id}") })
     @WriteableSession
-    public String save() {
+    public String preview() {
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         setActivities(cartService.getActiveBillingActivities());
-        cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType);
+        try {
+            cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType);
+        } catch (Exception e) {
+            addActionErrorWithException(e.getMessage(), e);
+        }
 
-        
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
+    }
+
+    @Action(value = "review",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = "freemarker", location = "simple.ftl") })
+    @WriteableSession
+    public String modify() {
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
+        }
+        setActivities(cartService.getActiveBillingActivities());
+        return SUCCESS;
     }
 
     @SkipValidation
@@ -149,9 +173,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         return SUCCESS;
     }
 
-
-
-
     private String loadViewMetadata() {
         setAccount(cartService.getAccountForInvoice(getInvoice()));
         return SUCCESS;
@@ -164,19 +185,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
         return invoice;
     }
-
-//    public boolean isViewable() throws TdarActionException {
-//        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-//            return false;
-//        }
-//        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
-//            return true;
-//        }
-//        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
-//            return true;
-//        }
-//        return false;
-//    }
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
@@ -270,7 +278,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         this.account = account;
     }
 
-    
     /**
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
@@ -294,7 +301,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             setInvoice(p);
         }
 
-        if( !ADD.equals(getActionName())) {
+        if (!ADD.equals(getActionName())) {
             getLogger().info("id:{}, persistable:{}", getId(), p);
         }
     }
@@ -305,6 +312,20 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public AuthorizedUser getBlankAuthorizedUser() {
+        AuthorizedUser user = new AuthorizedUser();
+        user.setUser(new TdarUser());
+        return user;
+    }
+
+    public List<PaymentMethod> getAllPaymentMethods() {
+        if (isBillingManager()) {
+            return Arrays.asList(PaymentMethod.values());
+        } else {
+            return Arrays.asList(PaymentMethod.CREDIT_CARD);
+        }
     }
 
 }

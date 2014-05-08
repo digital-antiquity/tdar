@@ -29,7 +29,7 @@
     </div>
     </#macro>
 <body>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='save'>
+    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='preview'>
         <@common.jsErrorLog />
     <h1>What would you like to put into tDAR?</h1>
 
@@ -42,16 +42,18 @@
 
     <h2>Rates &amp; Calculator</h2>
 
+    <#assign showSuggested=!administrator && actionName != 'modify'/>
+
     <div class="row">
         <div class="span12">
             <ul class="nav nav-tabs">
-                <li class="<#if !administrator>active</#if>">
+                <li class="<#if showSuggested>active</#if>">
                     <a href="#suggested" data-toggle="tab">Suggested</a>
                 </li>
-                <li class="<#if administrator>active</#if>"><a href="#custom" data-toggle="tab">Rate Calculator (Customize) &amp; All Rates</a></li>
+                <li class="<#if !showSuggested>active</#if>"><a href="#custom" data-toggle="tab">Rate Calculator (Customize) &amp; All Rates</a></li>
             </ul>
             <div class="tab-content row">
-                <div id="suggested" class="tab-pane <#if !administrator>active</#if> span12">
+                <div id="suggested" class="tab-pane <#if showSuggested>active</#if> span12">
                     <div class="row">
                         <@rates />
                         <div class="span8">
@@ -65,7 +67,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="custom" class="tab-pane <#if administrator>active</#if> span12">
+                <div id="custom" class="tab-pane <#if !showSuggested>active</#if> span12">
                     <div class="row">
                         <@rates />
                         <div class="span8">

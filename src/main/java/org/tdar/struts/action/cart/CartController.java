@@ -61,7 +61,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_ADD_PAY = "add-payment";
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
-    public static final String SPECIFY_SOMETHING = "please choose something";
     private List<Long> extraItemIds = new ArrayList<Long>();
     private List<Integer> extraItemQuantities = new ArrayList<Integer>();
     private Person owner;
@@ -125,11 +124,20 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") })
+    @Actions(
+            {@Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") }),
+            @Action(value = "finalreview", results = { @Result(name = SUCCESS, location = "simple.ftl") })
+            }
+            )
+    @WriteableSession
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
+        }
+        if (getInvoice().getOwner() == null) {
+            //FIXME: confirm that owner can still be set by billing-admin as someone else
+            cartService.updateOwner(getInvoice(), getAuthenticatedUser());
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
@@ -387,6 +395,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
             return true;
         }
+        if (Persistable.Base.isNullOrTransient(getInvoice().getOwner()) && getInvoice().isModifiable()) {
+            return true;
+        }
+
         return false;
     }
 

@@ -56,10 +56,15 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(UnauthenticatedCartController.class);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
-        String save = controller.save();
+        String message = MessageHelper.getMessage("invoiceService.specify_something");
+        try {
+            String save = controller.preview();
+            assertEquals(Action.INPUT, save);
+        } catch (Exception e) {
+            assertEquals(message, e.getMessage());
+        }
 
-        assertTrue(controller.getActionErrors().contains(CartController.SPECIFY_SOMETHING));
-        assertEquals(Action.INPUT, save);
+        assertTrue(controller.getActionErrors().contains(message));
     }
 
     @Test
@@ -441,7 +446,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
-        String save = controller.save();
+        String save = controller.preview();
 
         assertEquals(Action.SUCCESS, save);
 //        assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());

@@ -133,7 +133,7 @@ public class Invoice extends Base implements Updatable {
     private Date transactionDate;
 
     @ManyToOne(optional = true , cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @JoinColumn(nullable = false, name = "owner_id")
+    @JoinColumn(nullable = true, name = "owner_id")
     private TdarUser owner;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
@@ -144,7 +144,7 @@ public class Invoice extends Base implements Updatable {
     private BillingTransactionLog response;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @JoinColumn(nullable = false, name = "executor_id")
+    @JoinColumn(nullable = true, name = "executor_id")
     private TdarUser transactedBy;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })

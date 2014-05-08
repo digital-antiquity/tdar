@@ -65,6 +65,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private Long timeCheck;
     private Long personId;
+    private String url;
     private TdarUser person;
     private String reminderEmail;
     private String confirmEmail;
@@ -186,7 +187,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
                     @Result(name = ADD, type = "redirect", location = "/account/add"),
-                    @Result(name = INPUT, location = "edit.ftl") })
+                    @Result(name = INPUT, location = "edit.ftl"),
+                    @Result(name = REDIRECT, type = REDIRECT, location = "${url}")
+            })
     @HttpsOnly
     @PostOnly
     @WriteableSession
@@ -209,6 +212,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
+                if (StringUtils.isNotBlank(url)) {
+                    return REDIRECT;
+                }
                 return SUCCESS;
             }
 
@@ -514,6 +520,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     public void setAffilliation(UserAffiliation affiliation) {
         this.affilliation = affiliation;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

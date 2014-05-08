@@ -165,7 +165,7 @@ ${head}
                         </#if>
                     </#if>
                 </ul>
-                <#if actionName!='login' && actionName!='register'>
+                <#if actionName!='login' && actionName!='register' && actionName!='review'>
                     <@common.loginMenu true />
                 </#if>
             </div>

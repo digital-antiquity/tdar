@@ -410,8 +410,9 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     @Transactional(readOnly = true)
-    public Coupon locateRedeemableCoupon(String code, Person user) {
-        if (StringUtils.isBlank(code) || Persistable.Base.isNullOrTransient(user)) {
+    public Coupon locateRedeemableCoupon(String code, TdarUser user) {
+        logger.debug("locate coupon: {} for: {} ",code, user);
+        if (StringUtils.isBlank(code)) {
             return null;
         }
         return getDao().findCoupon(code, user);
@@ -462,5 +463,16 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         invoice.markUpdated(authenticatedUser);
         getDao().saveOrUpdate(invoice);
         return invoice;
+    }
+
+    @Transactional(readOnly=false)
+    public void updateOwner(Invoice invoice, TdarUser authenticatedUser) {
+        if (invoice.getOwner() == null) {
+        invoice.setOwner(authenticatedUser);
+        }
+        if (invoice.getTransactedBy() == null) {
+        invoice.setTransactedBy(authenticatedUser);
+        }
+        getDao().saveOrUpdate(invoice);
     }
 }

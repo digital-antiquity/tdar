@@ -133,8 +133,9 @@ Common macros used in multiple contexts
     If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
     querystring (in parameter named 'url).
 -->
-    <#macro loginButton class="">
+    <#macro loginButton class="" returnUrl="">
         <#local _current = (currentUrl!'/') >
+        <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
         <a class="${class}" href="/login" rel="nofollow">Log In</a>
         <#else>

@@ -33,7 +33,10 @@
         <h3>Choose Payment Method</h3>
             <@invoicecommon.paymentMethod includePhone=false />
         <#else>
-            Login / Register ...
+            <#assign return="/cart/finalreview?id=${invoice.id?c}">
+            <a href="<@s.url value="/account/new?url=${return?url}" />" class="button" rel="nofollow">Sign Up</a>
+            <@common.loginButton class="button" returnUrl=return />
+            
         </#if>
     </@s.form>
 </body>

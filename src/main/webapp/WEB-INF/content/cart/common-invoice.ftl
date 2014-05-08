@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
     <#macro printInvoice>
-    <h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></#if></h3>
+    <h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/modify" />" class="small">(modify)</a></#if></h3>
     <table class="tableFormat">
         <tr>
             <th>Item</th>

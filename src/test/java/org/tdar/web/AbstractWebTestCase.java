@@ -90,6 +90,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
+import com.ibm.icu.util.Currency;
 
 /**
  * @author Adam Brin
@@ -1125,7 +1126,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
-        assertCurrentUrlContains("/simple");
+//        assertCurrentUrlContains("/simple");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
 
         String invoiceid = getInput("id").getAttribute("value");
@@ -1198,6 +1199,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public int login(String user, String pass, boolean expectingErrors) {
         gotoPage("/");
         clickLinkOnPage("Log In");
+        completeLoginForm(user, pass, expectingErrors);
+        return internalPage.getWebResponse().getStatusCode();
+    }
+
+    public void completeLoginForm(String user, String pass, boolean expectingErrors) {
         setMainForm("loginForm");
         user = CONFIG.getUsername(user);
         pass = CONFIG.getPassword(pass);
@@ -1211,7 +1217,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } else {
             clickElementWithId("btnLogin");
         }
-        return internalPage.getWebResponse().getStatusCode();
     }
 
     public void logout() {

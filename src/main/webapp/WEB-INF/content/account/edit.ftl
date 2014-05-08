@@ -18,8 +18,8 @@
     <h4>Please correct the following issues with this submission</h4>
     <ul id="errorList"></ul>
 </div>
-
-<div class="well">
+    <input type="hidden" name="url" value="${Parameters.url!''}"/>
+    <div class="well">
     <div class="pull-right">
         <b>Already Registered?</b><br/><a href="<@s.url value="/login" />">Login</a>
     </div>
