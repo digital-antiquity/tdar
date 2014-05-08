@@ -17,6 +17,8 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.utils.Pair;
@@ -29,6 +31,9 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     @Autowired
     private GenericKeywordService genericKeywordService;
 
+    @Autowired
+    private AuthorityManagementService authorityManagementService;
+    
     @Test
     public void testFindAllDescendants() {
         CultureKeyword historicKeyword = genericKeywordService.findByLabel(CultureKeyword.class, "Historic");
@@ -41,6 +46,17 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         }
         assertTrue(map.containsKey("Spanish"));
 
+    }
+
+    @Test
+    public void testFindAndReconcilePlurals() {
+        TemporalKeyword tk = new TemporalKeyword();
+        tk.setLabel("Rock");
+        genericKeywordService.saveOrUpdate(tk);
+        TemporalKeyword tk2 = new TemporalKeyword();
+        tk2.setLabel("Rocks");
+        genericKeywordService.saveOrUpdate(tk2);
+        authorityManagementService.findPluralDups(TemporalKeyword.class);
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.
