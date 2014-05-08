@@ -64,6 +64,9 @@ TDAR.datatable = function () {
                     traditional: true, // please don't convert my arrays to php arrays. php is dumb.
                     dataType: 'jsonp',
                     url: sSource,
+                    xhrFields: {
+                        withCredentials: true
+                    },
                     data: _convertRequest(aoData, options.aoColumns, options.requestCallback),
                     success: function (_data) {
                         // intercept data returned by server, translate to client format

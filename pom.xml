@@ -310,6 +310,11 @@
             <version>1.2</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>org.atteo</groupId>
+            <artifactId>evo-inflector</artifactId>
+            <version>1.1</version>
+        </dependency>
         <!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
         <dependency>
             <groupId>fi.reaktor.log4j</groupId>
@@ -951,6 +956,11 @@
             <type>jar</type>
             <!-- LICENSE: BSD -->
         </dependency>
+         <dependency>
+            <groupId>org.ebaysf.web</groupId>
+            <artifactId>cors-filter</artifactId>
+            <version>1.0.0</version>
+          </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -1732,8 +1742,7 @@
                     </systemProperties>
                     <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
                         </includes> -->
-                    <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
                     <junitArtifactName>junit:junit-dep</junitArtifactName>
                 </configuration>
             </plugin>
@@ -1769,8 +1778,7 @@
                     <systemPropertyVariables>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
-                    <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
                     </excludes>

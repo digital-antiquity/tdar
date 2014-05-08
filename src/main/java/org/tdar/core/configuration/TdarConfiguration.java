@@ -208,8 +208,13 @@ public class TdarConfiguration {
         return filestore;
     }
 
+    boolean personalFilestorePathInitialized = false;
     // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
     private void initPersonalFilestorePath() {
+        if (personalFilestorePathInitialized) {
+            return;
+        }
+        personalFilestorePathInitialized = true;
         File personalFilestoreHome = new File(getPersonalFileStoreLocation());
         String msg = null;
         try {
@@ -703,6 +708,36 @@ public class TdarConfiguration {
 
     public boolean ignoreMissingFilesInFilestore() {
         return assistant.getBooleanProperty("filestore.ignoreMissing", false);
+    }
+
+    public String getAllAllowedDomains() {
+        List<String> baseUrls = new ArrayList<>();
+        baseUrls.add(getBaseSecureUrl());
+        baseUrls.add(getBaseUrl());
+        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com","netda.bootstrapcdn.com","ajax.aspnetcdn.com","typekit.com"));
+        for (String term : StringUtils.split(getContentSecurityPolicyAdditions(), " ") ) {
+            term = StringUtils.trim(term);
+            if (StringUtils.isBlank(term)) {
+                continue;
+            }
+
+            if (term.startsWith("http")) {
+                baseUrls.add(term);
+            } else {
+                hosts.add(term);
+            }
+        }
+        for (String url : hosts) {
+            url = StringUtils.trim(url);
+            if (StringUtils.isBlank(url) || url.equals("\"\"")) {
+                continue;
+            }
+            baseUrls.add("http://" + url);
+            baseUrls.add("https://" + url);
+        }
+        String result = StringUtils.join(baseUrls, ",");
+        logger.debug(result);
+        return result;
     }
 
 }

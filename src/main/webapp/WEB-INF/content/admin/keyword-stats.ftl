@@ -28,7 +28,6 @@
     </#macro>
 
 
-
 <head>
     <title>Administrator Dashboard: Keyword stats</title>
 </head>

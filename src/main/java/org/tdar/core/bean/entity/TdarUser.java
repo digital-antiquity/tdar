@@ -46,9 +46,6 @@ public class TdarUser extends Person {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="user")
-//    private UserInfo userInfo;
-    
     public TdarUser(String firstName, String lastName, String email) {
         super(firstName, lastName, email);
     }
@@ -182,14 +179,6 @@ public class TdarUser extends Person {
     public boolean isDedupable() {
         return false;
     }
-    
-//    public UserInfo getUserInfo() {
-//        return userInfo;
-//    }
-//
-//    public void setUserInfo(UserInfo userInfo) {
-//        this.userInfo = userInfo;
-//    }
 
     @XmlTransient
     public Set<BookmarkedResource> getBookmarkedResources() {

@@ -16,6 +16,7 @@ import org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter;
 import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
+import org.ebaysf.web.cors.CORSFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
@@ -30,6 +31,8 @@ import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 public class TdarServletConfiguration implements Serializable, WebApplicationInitializer {
+
+    private static final String ALL_PATHS = "/*";
 
     private static final long serialVersionUID = -6063648713073283277L;
 
@@ -53,7 +56,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         if (StringUtils.isNotBlank(failureMessage)) {
             throw new ServletException(failureMessage);
         }
-        @SuppressWarnings("resource")
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
@@ -68,7 +70,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         container.addListener(RequestContextListener.class);
         container.addListener(StrutsListener.class);
 
-        if (!TdarConfiguration.getInstance().isOdataEnabled()) {
+        TdarConfiguration configuration = TdarConfiguration.getInstance();
+        if (configuration.isOdataEnabled()) {
             ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
             oData.setLoadOnStartup(1);
             oData.addMapping("/odata.svc/*");
@@ -77,18 +80,33 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
         FilterRegistration urlRewrite = container.getFilterRegistration("UrlRewriteFilter");
-        urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, "/*");
+        configureCorsFilter(container, configuration);
+        urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
-        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, "/*");
+        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, ALL_PATHS);
 
-        Dynamic strutsPrepare = container.addFilter("struts-prepare", StrutsPrepareFilter.class);
-        strutsPrepare.addMappingForUrlPatterns(allDispacherTypes, true, "/*");
-        Dynamic sitemesh = container.addFilter("sitemesh", SiteMeshFilter.class);
-        sitemesh.addMappingForUrlPatterns(allDispacherTypes, true, "/*");
-        Dynamic strutsExecute = container.addFilter("struts-execute", StrutsExecuteFilter.class);
-        strutsExecute.addMappingForUrlPatterns(allDispacherTypes, true, "/*");
+        configureStrutsAndSiteMeshFilters(container);
         
+    }
+
+    private void configureStrutsAndSiteMeshFilters(ServletContext container) {
+        Dynamic strutsPrepare = container.addFilter("struts-prepare", StrutsPrepareFilter.class);
+        strutsPrepare.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        Dynamic sitemesh = container.addFilter("sitemesh", SiteMeshFilter.class);
+        sitemesh.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        Dynamic strutsExecute = container.addFilter("struts-execute", StrutsExecuteFilter.class);
+        strutsExecute.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+    }
+
+    private void configureCorsFilter(ServletContext container, TdarConfiguration configuration) {
+        //http://software.dzhuvinov.com/cors-filter-configuration.html
+        Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
+        corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
+        corsFilter.setInitParameter("cors.preflight.maxage", "3600");
+        corsFilter.setInitParameter("cors.allowed.methods", "GET,POST,HEAD,PUT,DELETE,OPTIONS");
+        corsFilter.setInitParameter("cors.logging.enabled", "true");
+        corsFilter.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
     }
 
 }
