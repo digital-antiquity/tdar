@@ -10,12 +10,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * <p>
@@ -60,6 +63,8 @@ public class BookmarkedResource extends Persistable.Base {
         this.person = person;
     }
 
+    @XmlAttribute(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Resource getResource() {
         return resource;
     }
