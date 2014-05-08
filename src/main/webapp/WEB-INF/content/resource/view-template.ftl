@@ -250,9 +250,11 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 <#assign url>http://${hostName}<#if hostPort != 80>:${hostPort}</#if>/${currentUrl?url}</#assign>
 <li><a href="https://twitter.com/share" onClick="TDAR.common.registerShare('twitter','${currentUrl}','${id?c}')" >Tweet this</a></li>
 <li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${id?c}')">Share on Facebook</a></li>
-<#noescape>
-<li><a href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}" onClick="TDAR.common.registerShare('email','${currentUrl}','${id?c}')">Email a link to a Friend</a></li>
-</#noescape>
+
+<li><a 
+    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}"</#noescape>
+     onClick="TDAR.common.registerShare('email','${currentUrl}','${id?c}')">Email a link to a Friend</a></li>
+
 </ul></div>
 </div>
 <hr/>
