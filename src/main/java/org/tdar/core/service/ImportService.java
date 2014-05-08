@@ -343,6 +343,11 @@ public class ImportService {
                 creator.isValidForResource((Resource)resource);
             }
 
+            if (property instanceof Creator) {
+                Creator creator = (Creator) property;
+                entityService.findOrSaveCreator(creator);
+            }
+
             if (property instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection)property;
                 collection = reconcilePersistableChildBeans(authenticatedUser, collection);

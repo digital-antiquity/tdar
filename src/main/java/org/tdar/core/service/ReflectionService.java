@@ -765,7 +765,7 @@ public class ReflectionService {
         return String.format("%s-%s",p.getClass().getSimpleName(), p.getId());
     }
     
-    public void walkObject(Persistable p, int indent, Set<String> seen) {
+    private void walkObject(Persistable p, int indent, Set<String> seen) {
         List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields = findAllPersistableFields(p.getClass());
         String key = makeKey(p);
         if (seen.contains(key)) {

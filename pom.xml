@@ -1732,8 +1732,7 @@
                     </systemProperties>
                     <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
                         </includes> -->
-                    <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
                     <junitArtifactName>junit:junit-dep</junitArtifactName>
                 </configuration>
             </plugin>
@@ -1769,8 +1768,7 @@
                     <systemPropertyVariables>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
-                    <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
                     </excludes>
