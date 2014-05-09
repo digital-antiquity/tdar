@@ -491,6 +491,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             final DataTableColumn descriptionColumn) {
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
+        codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
         codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
         codingSheet.setDescription(codingSheet.getTitle());
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
