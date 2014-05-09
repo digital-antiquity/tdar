@@ -22,6 +22,7 @@ import org.tdar.utils.TestConfiguration;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class AccountUsageWebITCase extends AbstractWebTestCase {
 
+    private static final String CART_ADD = "/cart/new";
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static float BYTES_PER_MEGABYTE = 1048576F;
 
@@ -32,7 +33,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
 
-        gotoPage("/cart/add");
+        gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -58,7 +59,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
 
-        gotoPage("/cart/add");
+        gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -72,7 +73,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         submitForm("Create Voucher");
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
         logger.info("=======================================================\n" + code);
-        gotoPage("/cart/add");
+        gotoPage(CART_ADD);
         setInput("invoice.numberOfFiles", "1");
         setInput("code", code);
         submitForm();
@@ -87,7 +88,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setupBasicUser(personmap, "bobloblaw123");
         testLogin(personmap, true);
 
-        gotoPage("/cart/add");
+        gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -137,7 +138,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     }
 
     public int createNewAccountWithInvoice(String accountName, int files, int mb) throws Exception {
-        gotoPage("/cart/add");
+        gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
         submitForm();

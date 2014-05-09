@@ -44,6 +44,8 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
+    private static final String CART_NEW = "/cart/new";
+
     @Test
     public void testInvalidBulkUpload() {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
@@ -73,7 +75,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUpload() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage("/cart/add");
+            gotoPage(CART_NEW);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -118,7 +120,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage("/cart/add");
+            gotoPage(CART_NEW);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -149,7 +151,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithDataset() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage("/cart/add");
+            gotoPage(CART_NEW);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -178,7 +180,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage("/cart/add");
+            gotoPage(CART_NEW);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -219,7 +221,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         String accountId = "";
         Map<String, String> extra = new HashMap<String, String>();
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage("/cart/add");
+            gotoPage(CART_NEW);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();

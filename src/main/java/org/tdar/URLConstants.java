@@ -19,7 +19,7 @@ public interface URLConstants {
     String PAGE_NOT_FOUND = "/page-not-found";
     String BOOKMARKS = DASHBOARD + "#bookmarks";
     String ENTITY_NAMESPACE = "browse/creators";
-    String CART_ADD = "/cart/add";
+    String CART_ADD = "/cart/new";
     String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}&startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "view?id=${resource.id}";
 	String MY_PROFILE = "/entity/person/myprofile";

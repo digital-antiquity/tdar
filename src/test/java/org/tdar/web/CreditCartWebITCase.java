@@ -124,7 +124,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        loginAndSpecifyCC();
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String account = addInvoiceToNewAccount(invoiceId2, accountId, null);
         assertEquals(account, accountId);
@@ -153,7 +152,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        loginAndSpecifyCC();
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountName2 = "test account 2";
         String account = addInvoiceToNewAccount(invoiceId2, null, accountName2);
