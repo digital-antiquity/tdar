@@ -38,6 +38,18 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/cart")
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable {
 
+    /*
+     * Workflow:
+     * 
+     *  - add
+     *  - api -- AJAX call for calculations
+     *  - preview (save / POST) ==> review
+     *  - login
+     *  - CartController:
+     *  - finalreview
+     *  - payment processing ...
+     */
+    
     private static final long serialVersionUID = -9156927670405819626L;
 
     public static final String SIMPLE = "simple";
