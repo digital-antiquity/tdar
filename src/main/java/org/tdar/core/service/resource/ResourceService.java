@@ -691,7 +691,7 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly=true)
-    public List<Resource> findByTdarYear(SearchResultHandler resultHandler, int year) {
+    public List<Resource> findByTdarYear(SearchResultHandler<Resource> resultHandler, int year) {
         return datasetDao.findByTdarYear(resultHandler, year);
     }
 }

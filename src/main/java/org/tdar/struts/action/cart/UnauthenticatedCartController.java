@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
@@ -30,7 +29,6 @@ import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -47,14 +45,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long id;
 
-    public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
-    public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private Invoice invoice;
-    private Account account;
-    public static final String SUCCESS_ADD_ADDRESS = "add-address";
-    public static final String SUCCESS_ADD_PAY = "add-payment";
-    public static final String INVOICE = "invoice";
-    public static final String POLLING = "polling";
     private List<Long> extraItemIds = new ArrayList<Long>();
     private List<Integer> extraItemQuantities = new ArrayList<Integer>();
     private TdarUser owner;
@@ -95,7 +86,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             results = {
                     @Result(name = INPUT, type = "freemarker", location = "edit.ftl"),
                     @Result(name = SUCCESS, type=TYPE_REDIRECT, location = "review?id=${invoice.id}") })
-    @WriteableSession
     public String preview() {
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
@@ -114,7 +104,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = "freemarker", location = "simple.ftl") })
-    @WriteableSession
     public String modify() {
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
@@ -170,11 +159,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             return ERROR;
         }
 
-        return SUCCESS;
-    }
-
-    private String loadViewMetadata() {
-        setAccount(cartService.getAccountForInvoice(getInvoice()));
         return SUCCESS;
     }
 
@@ -270,14 +254,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         this.code = code;
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
     /**
      * This method is invoked when the paramsPrepareParamsInterceptor stack is
      * applied. It allows us to fetch an entity from the database based on the
@@ -296,8 +272,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         } else {
 
             p = getGenericService().find(Invoice.class, getId());
-            // from a permissions standpoint... being really strict, we should mark this as read-only
-            // getGenericService().markReadOnly(p);
             setInvoice(p);
         }
 
