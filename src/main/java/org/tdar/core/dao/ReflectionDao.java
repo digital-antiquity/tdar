@@ -2,9 +2,9 @@ package org.tdar.core.dao;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -37,7 +37,7 @@ public class ReflectionDao {
     }
 
     // find all the instances of the specified type that refer to instances of the target specified type
-    public ScrollableResults findReferrers(Field field, Set<Long> idlist) {
+    public ScrollableResults findReferrers(Field field, Collection<Long> idlist) {
         String hql, fmt;
         String targetClass = field.getDeclaringClass().getSimpleName();
         if (field.getAnnotation(ManyToMany.class) != null) {

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -118,7 +118,7 @@ public class AuthorityManagementService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, Set<Long> dupeIds) {
+    public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, Collection<Long> dupeIds) {
         Map<Field, ScrollableResults> referrers = new HashMap<Field, ScrollableResults>();
         for (Class<?> targetClass : hostClasses) {
             Set<Field> fields = reflectionService.findAssignableFieldsRefererencingClass(targetClass, referredClass);
@@ -227,7 +227,7 @@ public class AuthorityManagementService {
      * @param dupeMode
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Set<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
+    public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Collection<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
         Activity activity = new Activity();
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", class1.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
@@ -533,9 +533,9 @@ public class AuthorityManagementService {
 
     }
 
-    public void findPluralDups(Class<? extends Keyword> cls) {
+    public void findPluralDups(Class<? extends Keyword> cls, Person user, boolean listOnly) {
         Map<String, Keyword> map = new HashMap<>();
-        Map<Keyword,List<Keyword>> dups = new HashMap<>();
+        Map<Keyword,Set<Keyword>> dups = new HashMap<>();
         for (Keyword kwd : genericDao.findAll(cls)) {
             map.put(kwd.getLabel(), kwd);
         }
@@ -543,17 +543,26 @@ public class AuthorityManagementService {
             String plural = English.plural(label);
             Keyword dup = map.get(plural);
             Keyword key = map.get(label);
+            if (dup.isDuplicate()   ) {
+                continue;
+            }
             if (dup != null && ObjectUtils.notEqual(dup, key)) {
                 logger.debug("should set plural: {} to singular: {}", plural, label);
-                List<Keyword> list = dups.get(key);
+                Set<Keyword> list = dups.get(key);
                 if (list == null) {
-                    list = new ArrayList<>();
+                    list = new HashSet<>();
                 }
                 list.add(dup);
                 dups.put(key, list);
             }
         }
-        
+        if (listOnly) {
+            return;
+        }
+        for (Entry<Keyword, Set<Keyword>> entry : dups.entrySet()){
+            processSynonyms( entry.getKey() , entry.getValue(), DupeMode.MARK_DUPS_ONLY);
+            updateReferrers(user, (Class<? extends Dedupable>)cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(), DupeMode.MARK_DUPS_ONLY);
+        }
     }
 
 }
