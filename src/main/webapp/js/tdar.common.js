@@ -592,7 +592,7 @@ TDAR.common = function () {
         $(".licenseRadio", $("#license_section")).change(_toggleLicense);
 
         //monitor document height and fire event when it changes
-        $.documentHeightEvents();
+        TDAR.documentHeightEvents();
 
         //Refresh any scrollspies whenever document height changes.
         $('[data-spy="scroll"]').each(function () {
