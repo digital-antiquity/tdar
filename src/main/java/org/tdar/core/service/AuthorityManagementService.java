@@ -543,10 +543,10 @@ public class AuthorityManagementService {
             String plural = English.plural(label);
             Keyword dup = map.get(plural);
             Keyword key = map.get(label);
-            if (dup.isDuplicate()   ) {
-                continue;
-            }
             if (dup != null && ObjectUtils.notEqual(dup, key)) {
+                if (dup.isDuplicate()) {
+                    continue;
+                }
                 logger.debug("should set plural: {} to singular: {}", plural, label);
                 Set<Keyword> list = dups.get(key);
                 if (list == null) {
