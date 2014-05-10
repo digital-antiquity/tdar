@@ -30,8 +30,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -235,7 +233,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         // if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
-            query.setParameterList("roles", ResourceCreatorRole.getAuthorshipRoles());
         }
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);

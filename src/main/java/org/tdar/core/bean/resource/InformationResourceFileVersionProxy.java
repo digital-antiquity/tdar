@@ -27,7 +27,7 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Immutable
-@Subselect(value = "select * from information_resource_file_version where internal_type='WEB_SMALL'")
+@Subselect(value = "select * from information_resource_file_version")
 public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
