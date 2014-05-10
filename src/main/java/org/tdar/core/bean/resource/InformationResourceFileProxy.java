@@ -13,11 +13,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.Subselect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
  */
 @Entity
 @Immutable
-@Subselect(value = "select * from information_resource_file")
+@Table(name= "information_resource_file")
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
