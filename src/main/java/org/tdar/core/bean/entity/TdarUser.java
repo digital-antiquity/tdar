@@ -1,9 +1,8 @@
 package org.tdar.core.bean.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -147,8 +146,8 @@ public class TdarUser extends Person {
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
-        List<Obfuscatable> results = new ArrayList<>();
+    public Set<Obfuscatable> obfuscate() {
+        Set<Obfuscatable> results = new HashSet<>();
         setObfuscated(true);
         results.addAll(super.obfuscate());
         setObfuscatedObjectDifferent(true);

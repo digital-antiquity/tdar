@@ -317,10 +317,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         setObfuscated(true);
         setObfuscatedObjectDifferent(false);
         // check if email and phone are actually confidential
+        Set<Obfuscatable> set = new HashSet<>();
         if (!getEmailPublic()) {
             setEmail(null);
             setObfuscatedObjectDifferent(true);
@@ -330,7 +331,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
             setPhone(null);
         }
         setRpaNumber(null);
-        return Arrays.asList((Obfuscatable) getInstitution());
+        set.add(getInstitution());
+        return set;
     }
 
     @Override
