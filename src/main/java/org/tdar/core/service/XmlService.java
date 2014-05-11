@@ -36,12 +36,13 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.DirectoryType;
+import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -287,7 +288,7 @@ public class XmlService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(DirectoryType.SUPPORT, creator.getId(), file.getName());
+        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
@@ -343,7 +344,7 @@ public class XmlService {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
-        FileStoreFile fsf = new FileStoreFile(DirectoryType.SUPPORT, creator.getId(), file.getName());
+        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
