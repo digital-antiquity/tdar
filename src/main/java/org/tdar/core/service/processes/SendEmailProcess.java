@@ -29,7 +29,6 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
     private transient EmailService emailService;
 
     @Override
@@ -54,7 +53,7 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
 
     @Override
     public void process(Email email) {
-        DateTime dt = new DateTime(email.getDate());
+        DateTime dt = new DateTime(email.getDateSent());
         if (email.getStatus() == Status.SENT && dt.isBefore(DateTime.now().minusDays(7))) {
             genericDao.delete(email);
         }
@@ -74,4 +73,8 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
         return true;
     }
 
+    @Autowired
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
 }

@@ -1,6 +1,7 @@
 package org.tdar.core.service.external;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -60,10 +61,17 @@ public class EmailService {
      *            set of String varargs
      */
     public void queue(Email email) {
+        enforceFromAndTo(email);
+        genericService.save(email);
+    }
+
+    private void enforceFromAndTo(Email email) {
         if (StringUtils.isBlank(email.getTo())) {
             email.addToAddress(getTdarConfiguration().getSystemAdminEmail());
         } 
-        genericService.save(email);
+        if (StringUtils.isBlank(email.getFrom())) {
+            email.setFrom(getFromEmail());
+        }
     }
 
     /**
@@ -82,6 +90,7 @@ public class EmailService {
         if (email.getStatus() != Status.QUEUED) {
             return;
         }
+        enforceFromAndTo(email);
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             // Message message = new MimeMessage(session);
@@ -91,6 +100,7 @@ public class EmailService {
             message.setText(email.getMessage());
             mailSender.send(message);
             email.setStatus(Status.SENT);
+            email.setDate(new Date());
         } catch (MailException me) {
             email.setNumberOfTries(email.getNumberOfTries() - 1);
             email.setErrorMessage(me.getMessage());

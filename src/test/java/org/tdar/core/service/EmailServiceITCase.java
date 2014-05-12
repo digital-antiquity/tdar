@@ -13,9 +13,13 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.processes.SendEmailProcess;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
+    @Autowired
+    SendEmailProcess sendEmailProcess;
+    
     @Test
     public void testMockMailSender() {
         Person to = new Person(null, null, "toguy@mailinator.com");
@@ -44,7 +48,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         Email email = new Email();
         email.addToAddress("toguy@mailinator.com");
         email.setSubject("test");
+        sendEmailProcess.setEmailService(emailService);
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
+        sendEmailProcess.execute();
         assertTrue("expecting a mail in in the inbox", mockMailSender.getMessages().size() > 0);
 
     }

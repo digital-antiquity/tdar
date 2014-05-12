@@ -73,3 +73,19 @@ ALTER table pos_members ADD foreign key (user_id) references tdar_user:
 ALTER table pos_coupon ADD foreign key (user_id) references tdar_user:
 ALTER table authorized_user ADD foreign key (user_id) references tdar_user:
 
+
+
+-- abrin 05-11-2014
+create table email_queue (
+    id  bigserial not null,
+    date_created timestamp,
+    date_sent timestamp,
+    error_message varchar(2048),
+    from_address varchar(255),
+    message text,
+    number_of_tries int4,
+    status varchar(25),
+    subject varchar(1024),
+    to_address varchar(1024),
+    primary key (id)
+)

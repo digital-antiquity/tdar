@@ -254,18 +254,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
-    // FIXME: I don't think this index helps us. Can we get rid of it?
-    // @Index(name = "resource_title_index")
     @Length(max = 512)
     private String title;
 
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
-    // @NotNull
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    // @Boost(.5f)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
@@ -291,7 +287,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Column(name = "previous_status", length = FieldLength.FIELD_LENGTH_50)
     private Status previousStatus = Status.ACTIVE;
 
-    // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
