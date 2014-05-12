@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
@@ -108,7 +109,10 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
 
             logger.debug(subject + "[ " + getTdarConfiguration().getSystemAdminEmail() + " ]");
             logger.debug(message);
-            emailService.send(message, subject.toString());
+            Email email = new Email();
+            email.setSubject(subject.toString());
+            email.setMessage(message);
+            emailService.send(email);
             logger.info("ending automated verification of files");
         } catch (Exception e) {
             logger.error("eception occurred when testing filestore", e);

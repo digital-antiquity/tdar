@@ -42,6 +42,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.ReflectionDao;
@@ -382,7 +383,8 @@ public class AuthorityManagementService {
                 Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(),
                         MessageHelper.getMessage("authorityManagementService.service_name"),
                         logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
-
+        Email email = new Email();
+        email.setSubject(subject);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("log", logData);
         map.put("className", className);
@@ -390,7 +392,7 @@ public class AuthorityManagementService {
 
         map.put("referrers", logData.getUpdatedReferrers().entrySet());
         try {
-            emailService.sendWithFreemarkerTemplate("auth-report.ftl", map, subject);
+            emailService.queueWithFreemarkerTemplate("auth-report.ftl", map, email);
         } catch (Exception e) {
             logger.warn("could not send email: {} ", e);
         }

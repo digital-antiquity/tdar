@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -929,7 +930,10 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         result.put("config", config);
         try {
             String subject = MessageHelper.getMessage("userAccountController.welcome", Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
-            emailService.sendWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, subject, person);
+            Email email = new Email();
+            email.setSubject(subject);
+            email.addToAddress(person.getEmail());
+            emailService.queueWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, email);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
             logger.error("Suppressed error that occurred when trying to send welcome email", e);

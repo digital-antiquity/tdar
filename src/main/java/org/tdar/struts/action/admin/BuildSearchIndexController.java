@@ -21,6 +21,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
@@ -38,6 +39,8 @@ import org.tdar.utils.activity.IgnoreActivity;
 @Namespace("/admin/searchindex")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
+
+    private static final String INDEXING_COMPLETED = "indexing completed";
 
     public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
 
@@ -128,7 +131,10 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             searchIndexService.indexAll(this, toReindex, person);
         }
         if (isProduction()) {
-            emailService.send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");
+            Email email = new Email();
+            email.setSubject(INDEXING_COMPLETED);
+            email.setMessage(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()));
+            emailService.send(email);
         }
         percentDone = 100;
     }

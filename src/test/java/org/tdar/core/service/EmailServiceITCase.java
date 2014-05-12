@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.service.external.EmailService;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
@@ -20,8 +21,11 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         Person to = new Person(null, null, "toguy@mailinator.com");
         String mailBody = "this is a message body";
         String subject = "this is a subject";
-
-        emailService.send(mailBody, subject, to);
+        Email email = new Email();
+        email.addToAddress(to.getEmail());
+        email.setMessage(mailBody);
+        email.setSubject(subject);
+        emailService.send(email);
 
         assertTrue("should have a mail in our 'inbox'", mockMailSender.getMessages().size() > 0);
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
@@ -37,7 +41,10 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("foo", "Hieronymous");
         map.put("bar", "Basho");
-        emailService.sendWithFreemarkerTemplate("test-email.ftl", map, "test", new Person(null, null, "toguy@mailinator.com"));
+        Email email = new Email();
+        email.addToAddress("toguy@mailinator.com");
+        email.setSubject("test");
+        emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         assertTrue("expecting a mail in in the inbox", mockMailSender.getMessages().size() > 0);
 
     }
