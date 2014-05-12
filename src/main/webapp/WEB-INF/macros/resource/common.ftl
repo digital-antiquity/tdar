@@ -43,7 +43,8 @@ Common macros used in multiple contexts
 
 <#--define global getBaseURI(), getURI(path), TDAR.uri -->
     <#macro baseUriJavascript>
-    //FIXME: replace occurances with TDAR.uri
+    if(typeof TDAR === "undefined") {var TDAR = {};}
+    //FIXME: replace occurances with TDAR.uri (TDAR-3830)
     //Return the application base URL, including context path
     function getBaseURI() {
     return "<@s.url value='/' />";

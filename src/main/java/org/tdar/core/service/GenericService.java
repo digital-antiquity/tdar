@@ -714,6 +714,22 @@ public class GenericService {
     }
 
     /**
+     * Sort @link Updatable by their created date.
+     * 
+     * @param resourcesToEvaluate
+     */
+    public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
+        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+            @Override
+            public int compare(T o1, T o2) {
+                return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
+            }
+        });
+
+    }
+
+    /**
      * Find Ids of @link Persistable objects that have a @link Status of ACTIVE.
      * 
      * @param class1

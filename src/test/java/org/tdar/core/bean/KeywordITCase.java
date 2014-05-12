@@ -56,7 +56,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         TemporalKeyword tk2 = new TemporalKeyword();
         tk2.setLabel("Rocks");
         genericKeywordService.saveOrUpdate(tk2);
-        authorityManagementService.findPluralDups(TemporalKeyword.class);
+        authorityManagementService.findPluralDups(TemporalKeyword.class,getUser(), true);
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.

@@ -232,7 +232,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (controlledCultureKeywordStats == null) {
             controlledCultureKeywordStats = genericKeywordService.getControlledCultureKeywordStats();
         }
-        authorityManagementService.findPluralDups(CultureKeyword.class);    
+        authorityManagementService.findPluralDups(CultureKeyword.class, getAuthenticatedUser(), true);
         return controlledCultureKeywordStats;
     }
 
@@ -240,7 +240,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (geographicKeywordStats == null) {
             geographicKeywordStats = genericKeywordService.getGeographicKeywordStats();
         }
-        authorityManagementService.findPluralDups(GeographicKeyword.class);    
+        authorityManagementService.findPluralDups(GeographicKeyword.class, getAuthenticatedUser(), true);
         return geographicKeywordStats;
     }
 
@@ -262,7 +262,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (otherKeywordStats == null) {
             otherKeywordStats = genericKeywordService.getOtherKeywordStats();
         }
-        authorityManagementService.findPluralDups(OtherKeyword.class);    
+        authorityManagementService.findPluralDups(OtherKeyword.class, getAuthenticatedUser(), true);
         return otherKeywordStats;
     }
 
@@ -270,7 +270,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (siteNameKeywordStats == null) {
             siteNameKeywordStats = genericKeywordService.getSiteNameKeywordStats();
         }
-        authorityManagementService.findPluralDups(SiteNameKeyword.class);    
+        authorityManagementService.findPluralDups(SiteNameKeyword.class, getAuthenticatedUser(), true);
         return siteNameKeywordStats;
     }
 
@@ -278,7 +278,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (controlledSiteTypeKeywordStats == null) {
             controlledSiteTypeKeywordStats = genericKeywordService.getControlledSiteTypeKeywordStats();
         }
-        authorityManagementService.findPluralDups(SiteTypeKeyword.class);    
+        authorityManagementService.findPluralDups(SiteTypeKeyword.class, getAuthenticatedUser(), true);
         return controlledSiteTypeKeywordStats;
     }
 
@@ -293,7 +293,7 @@ public class AdminController extends AuthenticationAware.Base {
         if (temporalKeywordStats == null) {
             temporalKeywordStats = genericKeywordService.getTemporalKeywordStats();
         }
-        authorityManagementService.findPluralDups(TemporalKeyword.class);    
+        authorityManagementService.findPluralDups(TemporalKeyword.class, getAuthenticatedUser(), true);
         return temporalKeywordStats;
     }
 

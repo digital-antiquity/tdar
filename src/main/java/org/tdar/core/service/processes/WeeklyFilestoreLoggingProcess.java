@@ -45,6 +45,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
 
     @Override
     public void execute() {
+        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         run = true;
         logger.info("beginning automated verification of files");
         Filestore filestore = getTdarConfiguration().getFilestore();

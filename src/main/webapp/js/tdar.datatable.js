@@ -457,28 +457,43 @@ TDAR.datatable = function () {
 
     /**
      * Define sorting behavior when user clicks on datatable columns.
+     * Currency detection courtesy of Allan Jardine, Nuno Gomes (http://legacy.datatables.net/plug-ins/type-detection)
      * @private
      */
     function _extendSorting() {
+        //match anything that is not a currency symbol, seperator, or number (if some of these symbols appear identical then your IDE sucks)
+        //if regex matches we assume it is definitly not a currency (e.g. "apple"), if false it *may* be a currency (e.g. "$3")
+        var _reDetect = /[^$₠₡₢₣₤₥₦₧₨₩₪₫€₭₮₯₰₱₲₳₴₵¢₶0123456789.,-]/;
 
-        jQuery.fn.dataTableExt.aTypes.unshift(function (sData) {
-                    if (typeof sData === "number" || $.trim(sData).match(/\$?\-?([\d,\.])*/g)) {
-                        return 'tdar-number';
-                    }
-                    return null;
-                });
+        //assuming we have detected a currency string, we use this regex to strip out symbols prior to sort
+        var _rePrep = /[^-\d.]/g
 
-        jQuery.fn.dataTableExt.oSort['tdar-number-asc'] = function (x_, y_) {
-            var x = parseFloat(x_.replace(/([\$|\s|\,]*)/g, ""));
-            var y = parseFloat(y_.replace(/([\$|\s|\,]*)/g, ""));
-            return x - y;
-        };
+        function _fnCurrencyDetect(sData) {
+            var ret = null;
+            if(typeof sData !== "string" || _reDetect.test(sData)) {
+                ret = null;
+            } else {
+                ret = "tdar-currency";
+            }
+            return ret;
+        }
 
-        jQuery.fn.dataTableExt.oSort['tdar-number-desc'] = function (x_, y_) {
-            var x = parseFloat(x_.replace(/([\$|\s|\,]*)/g, ""));
-            var y = parseFloat(y_.replace(/([\$|\s|\,]*)/g, ""));
-            return y - x;
-        };
+        function _fnCurrencySortPrep(a) {
+            a = (a === "-") ? 0 : a.replace( _rePrep, "" );
+            return parseFloat(a);
+        }
+
+        function _fnCurrencySortAsc(a, b) {return a - b;}
+
+        function _fnCurrencySortDesc(a, b) {return b - a;}
+
+        //add our custom type detector to the front of the line
+        jQuery.fn.dataTableExt.aTypes.unshift(_fnCurrencyDetect);
+
+        //register our custom sorters
+        jQuery.fn.dataTableExt.oSort['tdar-currency-pre'] = _fnCurrencySortPrep;
+        jQuery.fn.dataTableExt.oSort['tdar-currency-asc'] = _fnCurrencySortAsc;
+        jQuery.fn.dataTableExt.oSort['tdar-currency-desc'] = _fnCurrencySortDesc;
     }
 
     return {

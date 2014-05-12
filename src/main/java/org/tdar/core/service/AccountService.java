@@ -470,7 +470,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
-        GenericService.sortByUpdatedDate(resourceList);
+        GenericService.sortByCreatedDate(resourceList);
         processResourceGroup(helper, resourceList, Mode.ADD);
     }
 

@@ -1,7 +1,8 @@
-/** @constructor */
-var TDAR = function () {
-
-};
+/** top level namespace for tDAR javascript libraries */
+//FIXME: remove this if-wrapper once TDAR-3830 is complete
+if(typeof TDAR === "undefined") {
+    var TDAR =  {};
+}
 
 /**
  * Returns the namespace specified and creates it if it doesn't exist  (e.g. "TDAR.maps.controls",  "TDAR.stringutils")
