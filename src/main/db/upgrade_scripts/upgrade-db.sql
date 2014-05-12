@@ -151,3 +151,6 @@ alter table resource_collection_view_statistics drop constraint resource_collect
 
 -- abrin 04/28/2014
 create index idx_created on resource (date_registered);
+
+-- abrin 05/11/2014
+create index information_resource_file_ir2 on information_resource_file(information_resource_id);
