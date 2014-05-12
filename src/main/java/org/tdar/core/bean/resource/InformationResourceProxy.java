@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 
 @Entity
 @Immutable
@@ -41,6 +42,8 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
     @Immutable
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
+    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    private boolean inheritingSpatialInformation = false;
 
     @Override
     public String toString() {
@@ -77,6 +80,7 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
         if (projectProxy != null) {
             res.setProject((Project)getProjectProxy().generateResource());
         }
+        res.setInheritingSpatialInformation(isInheritingSpatialInformation());
         if (res instanceof InformationResource) {
             InformationResource ir = (InformationResource) res;
             ir.setDate(this.getDate());
@@ -100,5 +104,14 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
 
     public void setDate(Integer date) {
         this.date = date;
+    }
+
+
+    public boolean isInheritingSpatialInformation() {
+        return inheritingSpatialInformation;
+    }
+
+    public void setInheritingSpatialInformation(boolean inheritingSpatialInformation) {
+        this.inheritingSpatialInformation = inheritingSpatialInformation;
     }
 }
