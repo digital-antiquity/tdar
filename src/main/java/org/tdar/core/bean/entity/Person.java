@@ -545,6 +545,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      * */
     @Deprecated
     public String getTempDisplayName() {
+        if(StringUtils.isNotBlank(tempDisplayName)) {
+            return tempDisplayName;
+        }
         if (StringUtils.isBlank(firstName)) {
             return "";
         }
