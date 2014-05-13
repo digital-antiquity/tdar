@@ -227,7 +227,7 @@ public class AuthorityManagementService {
      * @param dupeMode
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Collection<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
+    public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Collection<Long> dupeIds, Long authorityId, DupeMode dupeMode, boolean sendEmail) {
         Activity activity = new Activity();
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", class1.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
@@ -300,10 +300,10 @@ public class AuthorityManagementService {
             throw new TdarRecoverableRuntimeException(msg);
         }
 
-        logAndNotify(authorityManagementLog);
 
         // add the dupes to the authority as synonyms
         processSynonyms(authority, dupes, dupeMode);
+        logAndNotify(authorityManagementLog, sendEmail);
 
         // finally, delete each dupe
         genericDao.saveOrUpdate(dupes);
@@ -358,7 +358,7 @@ public class AuthorityManagementService {
      * 
      * @param logData
      */
-    private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData) {
+    private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData, boolean email) {
         logger.debug("{}", logData);
 
         // log the xml to filestore/logs
@@ -376,6 +376,9 @@ public class AuthorityManagementService {
         String datePart = dateFormat.format(new Date());
         String filename = className.toLowerCase() + "-" + datePart + ".txt";
         filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
+        if (!email) {
+            return;
+        }
 
         // now send a summary email
         String subject = MessageHelper.getMessage("authorityManagementService.email_subject",
@@ -561,7 +564,7 @@ public class AuthorityManagementService {
         }
         for (Entry<Keyword, Set<Keyword>> entry : dups.entrySet()){
             processSynonyms( entry.getKey() , entry.getValue(), DupeMode.MARK_DUPS_ONLY);
-            updateReferrers(user, (Class<? extends Dedupable>)cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(), DupeMode.MARK_DUPS_ONLY);
+            updateReferrers(user, (Class<? extends Dedupable>)cls, Persistable.Base.extractIds(entry.getValue()), entry.getKey().getId(), DupeMode.MARK_DUPS_ONLY, false);
         }
     }
 
