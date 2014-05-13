@@ -262,6 +262,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
+        sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
         ArrayList<SimpleMailMessage> messages = mockMailSender.getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
