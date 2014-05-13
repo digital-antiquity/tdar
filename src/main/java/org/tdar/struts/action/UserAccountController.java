@@ -3,8 +3,6 @@ package org.tdar.struts.action;
 import java.util.Arrays;
 import java.util.List;
 
-import net.tanesha.recaptcha.ReCaptcha;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.struts2.convention.annotation.Action;
@@ -28,6 +26,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -59,12 +58,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     private static final long serialVersionUID = 1147098995283237748L;
 
-    private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
     public static final long ONE_HOUR_IN_MS = 3_600_000;
-    public static final long FIVE_SECONDS_IN_MS = 5_000;
+    private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
-    private Long timeCheck;
     private Long personId;
+    private AntiSpamHelper h = new AntiSpamHelper();
     private TdarUser person;
     private String reminderEmail;
     private String confirmEmail;
@@ -72,11 +70,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String confirmPassword;
     private boolean requestingContributorAccess;
     private String institutionName;
-    private String comment; // for simple spam protection
     private String passwordResetURL;
-
-    private String recaptcha_challenge_field;
-    private String recaptcha_response_field;
 
     @Autowired
     private transient RecaptchaService reCaptchaService;
@@ -98,17 +92,13 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @Override
     @HttpsOnly
-    /* disabling because it interacts with @HttpsOnly */
-    // @Result(name = "new", type = "redirect", location = "new")
     public String execute() {
-        setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
             return "authenticated";
         }
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            ReCaptcha recaptcha = reCaptchaService.generateRecaptcha();
-            reCaptchaText = recaptcha.createRecaptchaHtml(null, null);
+            setH(new AntiSpamHelper(reCaptchaService));
         }
         return SUCCESS;
     }
@@ -196,7 +186,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             return ADD;
         }
 
-        checkRecaptcha();
         person.setContributorReason(contributorReason);
         person.setAffilliation(getAffilliation());
         try {
@@ -222,15 +211,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
         }
         return ERROR;
-    }
-
-    private void checkRecaptcha() {
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            final boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
-            if (reCaptchaResponse == false) {
-                throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
-            }
-        }
     }
 
     public boolean isUsernameRegistered(String username) {
@@ -307,42 +287,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
         // 3 - check for known spammer - fname == lname & phone = 123456
-        if (StringUtils.isNotBlank(getComment())) {
-            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
+
+        try {
+            getH().setPerson(getPerson());
+            getH().checkForSpammers();
+        } catch (TdarRecoverableRuntimeException tre) {
+            addActionError(tre.getMessage());
             return true;
         }
-
-        if (getPerson() != null) {
-            try {
-                if (getPerson().getEmail().endsWith("\\r") ||
-                        (getPerson().getFirstName().equals(getPerson().getLastName())
-                        && getPerson().getPhone().equals("123456"))) {
-                    getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-                    addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
-                    return true;
-                }
-            } catch (NullPointerException npe) {
-                // this is ok, just doing a spam check, not validating
-            }
-        }
-        long now = System.currentTimeMillis();
-
-        getLogger().debug("timcheck:{}", getTimeCheck());
-        if (getTimeCheck() == null) {
-            getLogger().debug("internal time check was null, this should never happen for real users");
-            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
-            return true;
-        }
-
-        now -= timeCheck;
-        if ((now < FIVE_SECONDS_IN_MS) || (now > ONE_HOUR_IN_MS)) {
-            getLogger().debug(String.format("we think this user was a spammer, due to the time taken " +
-                    "to complete the form field: %s  -- %s", getConfirmEmail(), now));
-            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
-            return true;
-        }
-
         return false;
     }
 
@@ -413,36 +365,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.requestingContributorAccess = requestingContributorAccess;
     }
 
-    /**
-     * @return the comment
-     */
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * @param comment
-     *            the comment to set
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    /**
-     * @return the timeCheck
-     */
-    public Long getTimeCheck() {
-        return timeCheck;
-    }
-
-    /**
-     * @param timeCheck
-     *            the timeCheck to set
-     */
-    public void setTimeCheck(Long timeCheck) {
-        this.timeCheck = timeCheck;
-    }
-
     public String getPasswordResetURL()
     {
         return passwordResetURL;
@@ -451,22 +373,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public void setPasswordResetURL(String url)
     {
         this.passwordResetURL = url;
-    }
-
-    public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
-        this.recaptcha_challenge_field = recaptcha_challenge_field;
-    }
-
-    public String getRecaptcha_challenge_field() {
-        return recaptcha_challenge_field;
-    }
-
-    public void setRecaptcha_response_field(String recaptcha_response_field) {
-        this.recaptcha_response_field = recaptcha_response_field;
-    }
-
-    public String getRecaptcha_response_field() {
-        return recaptcha_response_field;
     }
 
     public boolean isEditable() {
@@ -514,6 +420,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     public void setAffilliation(UserAffiliation affiliation) {
         this.affilliation = affiliation;
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 
 }

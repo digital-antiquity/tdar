@@ -1246,7 +1246,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (includeUserAgreement) {
             setInput("requestingContributorAccess", "CONTRIBUTOR_AGREEMENT");
         }
-        setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
         evictCache();
         setSessionUser(entityService.findByUsername(username));

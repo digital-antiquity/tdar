@@ -187,15 +187,15 @@
     </div>
 
 
-    <#if recaptcha_public_key??>
-        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${recaptcha_public_key}"></script>
+    <#if h.recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
     </#if>
 
-    <@s.hidden name="timeCheck"/>
-    <textarea name="comment" class="tdarCommentDescription"></textarea>
+    <@s.hidden name="h.timeCheck"/>
+    <textarea name="h.comment" class="tdarCommentDescription"></textarea>
 
-    <#if reCaptchaText?has_content>
-    ${reCaptchaText}
+    <#if h.reCaptchaText?has_content>
+    ${h.reCaptchaText}
     </#if>
 
 
