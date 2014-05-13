@@ -45,7 +45,7 @@ public class ReservedSearchParameters extends SearchParameters {
         QueryPartGroup queryPartGroup = super.toQueryPartGroup(support);
         // TODO: not just statusQueryPart, but also maps, resourceTypes
         StatusAndRelatedPermissionsQueryPart statusQueryPart = new StatusAndRelatedPermissionsQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
-        FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
+//        FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
         if (isUseSubmitterContext()) {
             if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
                 throw new TdarRecoverableRuntimeException(support.getText("reservedSearchParameter.logged_in"));
@@ -55,9 +55,9 @@ public class ReservedSearchParameters extends SearchParameters {
             queryPartGroup.append(fqp);
         }
 
-        generated.setInverse(true);
-        generated.setDescriptionVisible(false);
-        queryPartGroup.append(generated);
+//        generated.setInverse(true);
+//        generated.setDescriptionVisible(false);
+//        queryPartGroup.append(generated);
         queryPartGroup.append(statusQueryPart);
         return queryPartGroup;
     }
