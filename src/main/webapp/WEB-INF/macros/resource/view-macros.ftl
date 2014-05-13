@@ -558,7 +558,13 @@ View freemarker macros
                         <div class="span3">
 				  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
 				  	<span class="thumbnail-center-spacing "></span>
-				  <img class="thumbnailLink img-polaroid" alt="<@_altText irfile />" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"
+				  <img class="thumbnailLink img-polaroid"
+                       <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
+                       alt="<@_altText irfile resource.title />"<#t>
+                       <#else>
+                       alt="<@_altText irfile />"
+                       </#if>
+                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"
                        style="max-width:100%;"
                        onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"
                        data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"
@@ -616,9 +622,9 @@ View freemarker macros
         });
     </script>
     </#macro>
-    <#macro _altText irfile>
-    ${irfile.filename} <#if ( irfile.description?has_content && (irfile.filename)?has_content ) >- ${irfile.description}</#if>
-        <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if>
+    <#macro _altText irfile description = irfile.description!"">
+    ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if><#t>
+        <#if irfile.fileCreatedDate??>(<@_printCreatedDate irfile/>)</#if><#t>
     </#macro>
 
 <#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->
