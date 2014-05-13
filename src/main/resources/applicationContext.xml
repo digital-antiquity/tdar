@@ -15,6 +15,8 @@
 	xmlns:task="http://www.springframework.org/schema/task">
 
 	<task:annotation-driven />
+    <task:scheduler id="taskScheduler" pool-size="2"/>
+    
 	<!-- scan all subpackages of org.tdar for spring stereotype annotations 
 		eligible for autowiring -->
 	<context:component-scan base-package="org.tdar" />
@@ -28,20 +30,17 @@
 	<!-- hibernate session factory configuration -->
 	<import resource='spring-hibernate.xml' />
 	<!-- Spring transaction interceptors and managers -->
-	<!-- 
-		<cache:annotation-driven cache-manager="cacheManager" />
-     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache"/>
-     <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" 
-             p:config-location="classpath:ehcache.xml"/>
-     -->
+
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+
 	<!-- spring JavaMailSenderImpl configuration to be autowired into the EmailService -->
 	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="${mail.smtp.host:localhost}" />
 	</bean>
+
 	<bean id="freemarkerMailConfiguration"
 		class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
 		<property name="templateLoaderPaths">
@@ -66,4 +65,5 @@
 	<bean id='sessionData' class='org.tdar.web.SessionData' scope='session'>
 		<aop:scoped-proxy />
 	</bean>
+
 </beans>
