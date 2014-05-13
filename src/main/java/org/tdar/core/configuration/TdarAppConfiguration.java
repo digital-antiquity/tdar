@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.persistence.Transient;
 import javax.sql.DataSource;
@@ -26,6 +28,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
@@ -39,9 +44,10 @@ import org.tdar.web.SessionData;
 @ComponentScan(basePackages = {"org.tdar"})
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableScheduling
 //@PropertySource(value = {  "classpath:/tdar.properties" }, ignoreResourceNotFound = true)
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
-public class TdarAppConfiguration implements Serializable {
+public class TdarAppConfiguration implements Serializable, SchedulingConfigurer {
 
     private static final long serialVersionUID = 6038273491995542363L;
     @Transient
@@ -107,6 +113,16 @@ public class TdarAppConfiguration implements Serializable {
     @Bean(name="DoiProvider")
     public ExternalIDProvider getIdProvider() throws IOException {
         return new EZIDDao();
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(taskScheduler());
+    }
+
+    @Bean(destroyMethod="shutdown")
+    public Executor taskScheduler() {
+        return Executors.newScheduledThreadPool(2);
     }
 
     
