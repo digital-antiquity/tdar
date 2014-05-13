@@ -45,6 +45,7 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
@@ -66,6 +67,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     RebuildHomepageCache homepage;
+
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
 
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
@@ -111,8 +115,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     WeeklyFilestoreLoggingProcess fsp;
 
     @Test
+    @Rollback
     public void testVerifyProcess() {
         fsp.execute();
+        sendEmailProcess.execute();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
@@ -127,6 +133,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
+        sendEmailProcess.execute();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));

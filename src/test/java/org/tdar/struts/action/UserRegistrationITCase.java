@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -22,15 +21,14 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.Action;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.vividsolutions.jts.util.Assert;
 
 import freemarker.template.Configuration;
@@ -55,6 +53,9 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
+
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
 
     private List<TdarUser> crowdPeople = new ArrayList<TdarUser>();
 
@@ -225,7 +226,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testInvalidUsers() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-
         List<String> emails = Arrays.asList("a", "a b", "adam brin", "abcd1234!", "http://", "!#####/bin/ls");
         for (String email : emails) {
             logger.info("TRYING =======> {}", email);
@@ -262,10 +262,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
-        MockMailSender mms = (MockMailSender) emailService.getMailSender();
-        ArrayList<SimpleMailMessage> messages = mms.getMessages();
+        sendEmailProcess.execute();
+        ArrayList<SimpleMailMessage> messages = mockMailSender.getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
-        assertTrue("Registration email was not sent.", messages.size() == 1);
+        assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
         String messageText = messages.get(0).getText();
         assertTrue(StringUtils.isNotBlank(messageText));
     }

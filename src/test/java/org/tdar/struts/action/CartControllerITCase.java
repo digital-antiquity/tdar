@@ -30,6 +30,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 
@@ -42,6 +43,10 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     AccountService accountService;
+
+
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
 
     @Test
     @Rollback
@@ -226,6 +231,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
+        sendEmailProcess.execute();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
