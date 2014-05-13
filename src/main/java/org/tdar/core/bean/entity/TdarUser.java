@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -26,6 +27,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
@@ -36,6 +38,7 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 @Indexed
 @Table(name = "tdar_user")
 @XmlRootElement(name = "user")
+@Check(constraints="username <> ''")
 public class TdarUser extends Person {
 
     private static final long serialVersionUID = 6232922939044373880L;
@@ -48,7 +51,8 @@ public class TdarUser extends Person {
     public TdarUser(String firstName, String lastName, String email) {
         super(firstName, lastName, email);
     }
-    
+
+    @NotEmpty
     @Column(unique = true, nullable = true)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String username;

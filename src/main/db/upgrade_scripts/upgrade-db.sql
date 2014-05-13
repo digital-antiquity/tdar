@@ -56,22 +56,22 @@ select remove_fk_person();
 
 ALTER table personal_filestore_ticket ADD foreign key (submitter_id) references tdar_user;
 ALTER table bookmarked_resource ADD foreign key (person_id) references tdar_user;
-ALTER table resource ADD foreign key (submitter_id) references tdar_user:
-ALTER table resource ADD foreign key (uploader_id) references tdar_user:
-ALTER table resource ADD foreign key (updater_id) references tdar_user:
-ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user:
-ALTER table user_session ADD foreign key (person_id) references tdar_user:
-ALTER table collection ADD foreign key (owner_id) references tdar_user:
-ALTER table collection ADD foreign key (updater_id) references tdar_user:
-ALTER table pos_invoice ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_invoice ADD foreign key (executor_id) references tdar_user:
-ALTER table pos_account_group ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_account_group ADD foreign key (modifier_id) references tdar_user:
-ALTER table pos_account ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_account ADD foreign key (modifier_id) references tdar_user:
-ALTER table pos_members ADD foreign key (user_id) references tdar_user:
-ALTER table pos_coupon ADD foreign key (user_id) references tdar_user:
-ALTER table authorized_user ADD foreign key (user_id) references tdar_user:
+ALTER table resource ADD foreign key (submitter_id) references tdar_user;
+ALTER table resource ADD foreign key (uploader_id) references tdar_user;
+ALTER table resource ADD foreign key (updater_id) references tdar_user;
+ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user
+ALTER table user_session ADD foreign key (person_id) references tdar_user;
+ALTER table collection ADD foreign key (owner_id) references tdar_user;
+ALTER table collection ADD foreign key (updater_id) references tdar_user;
+ALTER table pos_invoice ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_invoice ADD foreign key (executor_id) references tdar_user;
+ALTER table pos_account_group ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_account_group ADD foreign key (modifier_id) references tdar_user;
+ALTER table pos_account ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_account ADD foreign key (modifier_id) references tdar_user;
+ALTER table pos_members ADD foreign key (user_id) references tdar_user;
+ALTER table pos_coupon ADD foreign key (user_id) references tdar_user;
+ALTER table authorized_user ADD foreign key (user_id) references tdar_user;
 
 
 
@@ -88,4 +88,12 @@ create table email_queue (
     subject varchar(1024),
     to_address varchar(1024),
     primary key (id)
-)
+);
+
+-- jdevos 05/13/2014
+--nullify invalid email address that was introduced prior to email validation
+update person set email = null where id = 8009 and email = '';
+
+--add 'not empty' constraint for person email, username
+alter table person add constraint person_email_notempty check (email <> '');
+alter table person add constraint person_username_notempty check(username <> '');

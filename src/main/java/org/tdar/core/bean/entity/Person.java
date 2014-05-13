@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -29,6 +30,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
@@ -48,9 +50,9 @@ import org.tdar.search.query.QueryFieldNames;
  */
 @Entity
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
-// FIXME: not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
+@Check(constraints="email <> ''")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
 
     @Transient
@@ -98,6 +100,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private String orcidId;
     // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
 
+    @NotEmpty
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
