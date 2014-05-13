@@ -1130,7 +1130,7 @@
 
     <reporting>
         <plugins>
-            <plugin>
+<!--             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>2.3</version>
@@ -1159,20 +1159,15 @@
                 <version>3.0.1</version>
                 <configuration>
                     <rulesets>
-                        <!-- http://pmd.sourceforge.net/pmd-5.0.5/rules/index.html -->
-                        <!-- Two rule sets that come bundled with PMD -->
                         <ruleset>rulesets/java/braces.xml</ruleset>
                         <ruleset>rulesets/java/naming.xml</ruleset>
-                        <!-- <ruleset>rulesets/java/coupling.xml</ruleset> 
-                            <ruleset>rulesets/java/design.xml</ruleset> -->
                         <ruleset>rulesets/java/optimizations.xml</ruleset>
                         <ruleset>rulesets/java/sunsecure.xml</ruleset>
-                        <!-- Custom local file system rule set <ruleset>d:\rulesets\strings.xml</ruleset> 
-                            Custom remote rule set accessed via a URL <ruleset>http://localhost/design.xml</ruleset> -->
                     </rulesets>
                 </configuration>
             </plugin>
-            <plugin>
+ -->
+             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>2.5.3</version>
