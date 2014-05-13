@@ -11,11 +11,14 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.Email.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;
+import org.tdar.utils.EmailMessageType;
 
 /**
  * $Id$
@@ -132,6 +135,21 @@ public class EmailService {
      */
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
+    }
+
+    @Transactional(readOnly=false)
+    public void constructEmail(Long fromId, Long toId, String subject, String messageBody, EmailMessageType type) {
+        Person from = genericService.find(Person.class, fromId);
+        Person to = genericService.find(Person.class, toId);
+        Email email = new Email();
+        genericService.markWritable(email);
+        email.setFrom(from.getEmail());
+        email.setTo(to.getEmail());
+        email.setSubject(type.name() +  " " + subject);
+        email.setMessage(messageBody);
+        genericService.saveOrUpdate(email);
+        queue(email);
+        
     }
 
 }
