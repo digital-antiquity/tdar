@@ -89,18 +89,23 @@ public class DownloadService {
     @Transactional
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions)
             throws TdarActionException {
+        logger.debug("requested files:{}", irFileVersions);
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
-        Integer downloadKey = createDownloadKey(authenticatedUser, irFileVersions);
-        if (downloadLockSet.contains(downloadKey)) {
-            throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
-        }
-        downloadLockSet.add(downloadKey);
+        Integer downloadKey = 1;
         Map<File, String> files = new HashMap<>();
         String mimeType = null;
         String fileName = null;
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
+            downloadKey = createDownloadKey(authenticatedUser, irFileVersions);
+            //prevent user from performing multiple, concurrent downloads of the same file (TDAR
+            if (downloadLockSet.contains(downloadKey)) {
+                throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
+            }
+            downloadLockSet.add(downloadKey);
+
+
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
             }
