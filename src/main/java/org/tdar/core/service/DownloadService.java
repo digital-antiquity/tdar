@@ -12,12 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -59,11 +60,17 @@ public class DownloadService {
     @Autowired
     private GenericService genericService;
 
-    // TODO
-    private String slugify(InformationResource resource) {
-        return "ir-archive";
+    private ConcurrentSkipListSet<Integer> downloadLockSet = new ConcurrentSkipListSet<>();
+    
+    private Integer createDownloadKey(Person user, InformationResourceFileVersion[] versions ) {
+        HashCodeBuilder hcb = new HashCodeBuilder(5,23);
+        hcb.append(user.getId());
+        for (InformationResourceFileVersion version : versions) {
+            hcb.append(version);
+        }
+        return new Integer(hcb.toHashCode());
     }
-
+    
     public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
         ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
@@ -101,6 +108,12 @@ public class DownloadService {
     @Transactional(readOnly=true)
     public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) 
             throws TdarActionException {
+        Integer downloadKey = createDownloadKey(authenticatedUser, irFileVersions);
+        if (downloadLockSet.contains(downloadKey)) {
+            throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
+        }
+        downloadLockSet.add(downloadKey);
+
         Map<File, String> files = new HashMap<>();
         String mimeType = null;
         String fileName = null;
@@ -159,6 +172,8 @@ public class DownloadService {
         } catch (IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+        } finally {
+            downloadLockSet.remove(downloadKey);
         }
         return stats;
     }

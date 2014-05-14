@@ -167,7 +167,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, mode);
+        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, mode, true);
         d1 = genericService.find(Document.class, d1.getId());
         d2 = genericService.find(Document.class, d2.getId());
         user1 = genericService.find(AuthorizedUser.class, user1.getId());
@@ -242,7 +242,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, mode);
+        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, mode, true);
 
         // todo: make sure that the authority replaced all the dupes of the former referrers
         doc1 = genericService.find(Document.class, doc1.getId());
@@ -351,7 +351,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         genericService.save(authority);
         genericService.save(dupe);
         authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(),
-                DupeMode.MARK_DUPS_AND_CONSOLDIATE);
+                DupeMode.MARK_DUPS_AND_CONSOLDIATE, true);
         // dupe = null;
         String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
         Assert.assertTrue(message, authority.getSynonyms().contains(dupe));

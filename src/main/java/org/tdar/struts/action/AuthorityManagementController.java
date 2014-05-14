@@ -125,7 +125,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode);
+            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode, true);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
