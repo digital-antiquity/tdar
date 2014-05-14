@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,8 +32,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         email.setSubject(subject);
         emailService.send(email);
 
-        assertTrue("should have a mail in our 'inbox'", mockMailSender.getMessages().size() > 0);
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
+        assertTrue("should have a mail in our 'inbox'", messages.size() > 0);
+        SimpleMailMessage received = messages.get(0);
 
         assertEquals(received.getSubject(), subject);
         assertEquals(received.getText(), mailBody);
@@ -51,7 +53,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         sendEmailProcess.setEmailService(emailService);
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();
-        assertTrue("expecting a mail in in the inbox", mockMailSender.getMessages().size() > 0);
+        assertTrue("expecting a mail in in the inbox", ((MockMailSender)emailService.getMailSender()).getMessages().size() > 0);
 
     }
 

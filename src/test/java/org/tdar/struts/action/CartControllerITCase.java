@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
@@ -233,7 +235,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

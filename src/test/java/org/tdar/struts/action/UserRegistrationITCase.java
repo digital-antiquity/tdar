@@ -21,6 +21,7 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.resource.DocumentController;
@@ -177,7 +178,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         TdarUser findByEmail = entityService.findUserByEmail(email);
         if (findByEmail != null) {
             findByEmail.setStatus(status);
-            findByEmail.setUsername(null);
+            findByEmail.setUsername("abc123");
     
             genericService.saveOrUpdate(findByEmail);
         }
@@ -264,7 +265,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setupValidUserInController(controller);
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        ArrayList<SimpleMailMessage> messages = mockMailSender.getMessages();
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
         assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
         String messageText = messages.get(0).getText();

@@ -68,7 +68,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         return builder.buildSessionFactory();
     }
 
-    @Bean
+    @Bean(name="mailSender")
     public JavaMailSender getJavaMailSender(@Value("${mail.smtp.host:localhost}") String hostname) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(hostname);

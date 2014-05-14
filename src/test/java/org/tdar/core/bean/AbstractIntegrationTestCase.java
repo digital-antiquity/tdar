@@ -187,7 +187,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private List<String> actionErrors = new ArrayList<>();
     private boolean ignoreActionErrors = false;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected MockMailSender mockMailSender = new MockMailSender();
     private SessionData sessionData;
 
     @Rule
@@ -208,8 +207,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
-        emailService.setMailSender(mockMailSender);
-        mockMailSender.getMessages().clear();
+        ((MockMailSender)emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/xml/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
@@ -252,6 +250,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         testPerson.setEmail(email);
         testPerson.setFirstName(TestConstants.DEFAULT_FIRST_NAME + suffix);
         testPerson.setLastName(TestConstants.DEFAULT_LAST_NAME + suffix);
+        testPerson.setUsername(email);
         Institution institution = entityService.findInstitutionByName(TestConstants.INSTITUTION_NAME);
         if (institution == null) {
             institution = new Institution();

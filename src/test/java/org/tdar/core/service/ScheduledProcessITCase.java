@@ -120,7 +120,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         fsp.execute();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -136,7 +136,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         oau.execute();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

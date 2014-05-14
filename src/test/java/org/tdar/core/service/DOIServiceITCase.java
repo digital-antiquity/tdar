@@ -91,7 +91,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
         sendEmailProcess.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
         assertTrue(received.getText().contains("DOI Daily"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
