@@ -14,6 +14,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {

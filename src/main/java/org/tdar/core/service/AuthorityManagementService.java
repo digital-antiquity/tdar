@@ -359,7 +359,7 @@ public class AuthorityManagementService {
      * 
      * @param logData
      */
-    private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData, boolean email) {
+    private <T extends Dedupable<?>> void logAndNotify(AuthorityManagementLog<T> logData, boolean sendEmail) {
         logger.debug("{}", logData);
 
         // log the xml to filestore/logs
@@ -377,7 +377,7 @@ public class AuthorityManagementService {
         String datePart = dateFormat.format(new Date());
         String filename = className.toLowerCase() + "-" + datePart + ".txt";
         filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
-        if (!email) {
+        if (!sendEmail) {
             return;
         }
 
