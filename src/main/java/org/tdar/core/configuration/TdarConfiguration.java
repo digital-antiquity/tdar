@@ -736,7 +736,6 @@ public class TdarConfiguration {
             baseUrls.add("https://" + url);
         }
         String result = StringUtils.join(baseUrls, ",");
-        logger.debug(result);
         return result;
     }
 
