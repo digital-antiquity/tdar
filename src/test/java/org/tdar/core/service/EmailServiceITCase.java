@@ -51,16 +51,10 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         Email email = new Email();
         email.addToAddress("toguy@mailinator.com");
         email.setSubject("test");
-        sendEmailProcess.setEmailService(emailService);
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();
         assertTrue("expecting a mail in in the inbox", ((MockMailSender)emailService.getMailSender()).getMessages().size() > 0);
 
-    }
-
-    @Autowired
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
     }
 
 }

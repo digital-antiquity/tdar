@@ -135,7 +135,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
-        sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
         SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
