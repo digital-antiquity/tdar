@@ -39,7 +39,6 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
             TrimFilter trimFilter = new TrimFilter(filter, true);
             // normalizing where possible so that RI-0000 matches RI0000
             PatternReplaceFilter replaceFilter = new PatternReplaceFilter(trimFilter, sep_pattern, "", true);
-
             return replaceFilter;
         } catch (IOException e) {
             throw new TdarRecoverableRuntimeException();

@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 
-public class SiteNameIndexingITCase {
+public class SiteNameIndexingTestCase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
