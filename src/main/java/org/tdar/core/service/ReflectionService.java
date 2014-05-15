@@ -27,13 +27,14 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.persistence.OneToMany;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -115,30 +116,6 @@ public class ReflectionService {
         return matchingFields;
     }
 
-    /**
-     * Find Fields with any of the annotations specified within the source tree
-     * 
-     * @param targetClass
-     * @param list
-     * @param recursive
-     * @return
-     */
-    public Set<Field> findFieldsWithAnnotation(Class<?> targetClass, List<Class<? extends Annotation>> list, boolean recursive) {
-        Set<Field> set = new HashSet<>();
-        for (Field field : targetClass.getDeclaredFields()) {
-            for (Class<? extends Annotation> ann : list) {
-                if (field.isAnnotationPresent(ann)) {
-                    set.add(field);
-                }
-            }
-        }
-        if (recursive) {
-            for (Class<?> parent : ReflectionTools.getClassHierarchy(targetClass)) {
-                set.addAll(findFieldsWithAnnotation(parent, list, false));
-            }
-        }
-        return set;
-    }
 
     /**
      * Take the method name and try and replace it with the same
@@ -751,6 +728,26 @@ public class ReflectionService {
                 }
                 result.add(new Pair<Method, Class<? extends Obfuscatable>>(method, type));
             }
+        }
+        return result;
+    }
+    
+    public static List<Field> findAnnotatedFieldsOfClass(Class<?> cls, Class<? extends Annotation> annotationClass) {
+        List<Field> result = new ArrayList<>();
+        // iterate up the package hierarchy
+        Class<?> actualClass = null;
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
+            // find first implemented tDAR class (actual class);
+            if (actualClass == null) {
+                actualClass = cls;
+            }
+            for (Field field : cls.getDeclaredFields()) {
+                Object annotation = field.getAnnotation(annotationClass);
+                if (annotation != null) {
+                    result.add(field);
+                }
+            }
+            cls = cls.getSuperclass();
         }
         return result;
     }

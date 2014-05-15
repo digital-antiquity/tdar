@@ -7,6 +7,7 @@
 package org.tdar.core.service;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.OneToMany;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -42,6 +46,10 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -81,6 +89,9 @@ public class ImportService {
     private GenericService genericService;
     @Autowired
     private InformationResourceService informationResourceService;
+    @Autowired
+    private XmlService xmlService;
+
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -210,15 +221,15 @@ public class ImportService {
      * 
      * @param authorizedUser
      * @param incomingResource
-     * @return 
+     * @return
      * @throws APIException
      */
     @Transactional(readOnly = false)
     public <R extends Persistable> R reconcilePersistableChildBeans(final TdarUser authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
-//        Map<String, Persistable> knownObjects = new HashMap<>();
-//        knownObjects.put(makeKey(authorizedUser), authorizedUser);
+        // Map<String, Persistable> knownObjects = new HashMap<>();
+        // knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
             Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
@@ -301,21 +312,60 @@ public class ImportService {
         }
     }
 
-    @Transactional(readOnly=false)
-    public <R extends Resource> R cloneResource(R resource) {
-        genericService.markReadOnly(resource);
-        resource.setId(null);
-        if (resource instanceof InformationResource) {
-            ((InformationResource) resource).getInformationResourceFiles().clear();
+    /**
+     * Takes a record and round-trips it to XML to allow us to manipulate it and clone it with the session
+     * @param resource
+     * @param user
+     * @return
+     * @throws Exception
+     */
+    @Transactional(readOnly = false)
+    public <R extends Resource> R cloneResource(R resource, TdarUser user) throws Exception {
+        String xml = xmlService.convertToXML(resource);
+        R rec = (R) xmlService.parseXml(new StringReader(xml));
+        rec.setId(null);
+        ResourceCollection irc = rec.getInternalResourceCollection();
+        if (irc != null) {
+            irc.setId(null);
+            for (AuthorizedUser au : irc.getAuthorizedUsers()) {
+                au.setId(null);
+            }
         }
-        logger.debug("{}", resource.getCoverageDates());
-        genericService.detachFromSession(resource);
-        resource = genericService.merge(resource);
-        logger.debug("{}", resource.getCoverageDates());
-        
-        return resource;
+        if (rec instanceof InformationResource) {
+            ((InformationResource) rec).getInformationResourceFiles().clear();
+        }
+        resetPersistableIds(rec);
+        rec.getResourceRevisionLog().clear();
+        rec = bringObjectOntoSession(rec, user);
+        return rec;
     }
-    
+
+    public <R extends Resource> void resetPersistableIds(R rec) {
+        List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
+        for (Field fld : findAnnotatedFieldsOfClass) {
+            Collection<Persistable> values = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            for (Persistable value : values) {
+                value.setId(null);
+                if (value instanceof DataTable) {
+                    DataTable dataTable = (DataTable) value;
+                    Dataset dataset = (Dataset) rec;
+                    dataTable.setDataset(dataset);
+                    for (DataTableColumn dtc : dataTable.getDataTableColumns()) {
+                        dtc.setDataTable(dataTable);
+                        dtc.setId(null);
+                    }
+                    for (DataTableRelationship dtr : dataset.getRelationships()) {
+                        dtr.setId(null);
+                        for (DataTableColumnRelationship r : dtr.getColumnRelationships()) {
+                            r.setId(null);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
     /**
      * Takes a POJO property that's off the session and returns a managed instance of that property and handling
      * special casing and validation as needed.
@@ -331,11 +381,11 @@ public class ImportService {
         P toReturn = property;
         // if we're not transient, find by id...
         if (Persistable.Base.isNotNullOrTransient(property)) {
-                toReturn = (P) findById(property.getClass(), property.getId());
+            toReturn = (P) findById(property.getClass(), property.getId());
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
-                collection.getResources().add((Resource)resource);
-                ((Resource)resource).getResourceCollections().add(collection);
+                collection.getResources().add((Resource) resource);
+                ((Resource) resource).getResourceCollections().add(collection);
             }
         }
         else // otherwise, reconcile appropriately
@@ -355,7 +405,7 @@ public class ImportService {
             if (property instanceof ResourceCreator) {
                 ResourceCreator creator = (ResourceCreator) property;
                 entityService.findOrSaveResourceCreator(creator);
-                creator.isValidForResource((Resource)resource);
+                creator.isValidForResource((Resource) resource);
             }
 
             if (property instanceof Creator) {
@@ -364,9 +414,10 @@ public class ImportService {
             }
 
             if (property instanceof ResourceCollection && resource instanceof Resource) {
-                ResourceCollection collection = (ResourceCollection)property;
+                ResourceCollection collection = (ResourceCollection) property;
                 collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-                resourceCollectionService.addResourceCollectionToResource((Resource)resource, ((Resource)resource).getResourceCollections(), authenticatedUser, true,
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
+                        authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
             }
 

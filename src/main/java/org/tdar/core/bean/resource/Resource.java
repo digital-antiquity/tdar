@@ -318,9 +318,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
-//    private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
