@@ -32,9 +32,6 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     private GenericService genericService;
 
 
-    @Autowired
-    private SendEmailProcess sendEmailProcess;
-
     @Before
     public void setup() {
         controller = generateNewInitializedController(AuthorityManagementController.class);

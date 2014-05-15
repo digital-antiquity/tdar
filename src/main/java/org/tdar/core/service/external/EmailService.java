@@ -65,6 +65,7 @@ public class EmailService {
      *            set of String varargs
      */
     public void queue(Email email) {
+        logger.debug("Queuing email {}", email);
         enforceFromAndTo(email);
         genericService.save(email);
     }
@@ -87,11 +88,14 @@ public class EmailService {
      *            set of String varargs
      */
     public void send(Email email) {
+        logger.debug("sending: {}", email);
         if (email.getNumberOfTries() < 1) {
+            logger.debug("too many tries {}", email.getStatus());
             email.setStatus(Status.ERROR);
             genericService.saveOrUpdate(email);
         }
         if (email.getStatus() != Status.QUEUED) {
+            logger.debug("email rejected -- not queued {}", email.getStatus());
             return;
         }
         enforceFromAndTo(email);
@@ -108,6 +112,7 @@ public class EmailService {
         } catch (MailException me) {
             email.setNumberOfTries(email.getNumberOfTries() - 1);
             email.setErrorMessage(me.getMessage());
+            logger.error("email error: {} {}", email,me);
         }
         genericService.saveOrUpdate(email);
     }

@@ -104,6 +104,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
@@ -182,6 +183,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     AuthorizedUserDao authorizedUserDao;
 
     @Autowired
+    public SendEmailProcess sendEmailProcess;
+
+    @Autowired
     protected EmailService emailService;
 
     private List<String> actionErrors = new ArrayList<>();
@@ -207,6 +211,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
+        sendEmailProcess.setAllIds(null);
         ((MockMailSender)emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/xml/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));

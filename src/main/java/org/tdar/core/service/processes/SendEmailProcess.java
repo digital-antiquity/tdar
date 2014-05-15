@@ -54,19 +54,14 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
     @Override
     public void process(Email email) {
         DateTime dt = new DateTime(email.getDateSent());
+        logger.debug("processing: {}", email);
         if (email.getStatus() == Status.SENT && dt.isBefore(DateTime.now().minusDays(7))) {
+            logger.debug("deleting: {}", email);
             genericDao.delete(email);
         }
         emailService.send(email);
     }
 
-    /**
-     * This ScheduledProcess is finished to completion after execute().
-     */
-    @Override
-    public boolean isCompleted() {
-        return true;
-    }
 
     @Override
     public boolean isEnabled() {

@@ -244,14 +244,13 @@ public class SearchService {
         if (resultHandler.getFacetFields() == null) {
             return;
         }
+        org.hibernate.search.query.dsl.QueryBuilder queryBuilder = getQueryBuilder(Resource.class);
 
         for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
-            FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
+            FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
                     .includeZeroCounts(false).createFacetingRequest();
             ftq.getFacetManager().enableFaceting(facetRequest);
-        }
-        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
             for (Facet facetResult : ftq.getFacetManager().getFacets(facet.getFacetField())) {
                 facet.add(facetResult.getValue(), facetResult.getCount());
             }

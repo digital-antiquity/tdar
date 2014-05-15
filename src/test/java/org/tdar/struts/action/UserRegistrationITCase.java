@@ -23,7 +23,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.MockMailSender;
-import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.utils.MessageHelper;
@@ -54,9 +53,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
-
-    @Autowired
-    private SendEmailProcess sendEmailProcess;
 
     private List<TdarUser> crowdPeople = new ArrayList<TdarUser>();
 

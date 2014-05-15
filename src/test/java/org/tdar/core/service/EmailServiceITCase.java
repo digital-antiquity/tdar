@@ -8,19 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.Email;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.MockMailSender;
-import org.tdar.core.service.processes.SendEmailProcess;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
-    @Autowired
-    SendEmailProcess sendEmailProcess;
     
     @Test
     public void testMockMailSender() {
