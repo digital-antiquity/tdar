@@ -36,6 +36,7 @@ import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.ProjectionConstants;
 import org.hibernate.search.Search;
+import org.hibernate.search.query.engine.spi.FacetManager;
 import org.hibernate.search.query.facet.Facet;
 import org.hibernate.search.query.facet.FacetSortOrder;
 import org.hibernate.search.query.facet.FacetingRequest;
@@ -247,14 +248,15 @@ public class SearchService {
             return;
         }
 
+        org.hibernate.search.query.dsl.QueryBuilder queryBuilder = getQueryBuilder(Resource.class);
+        FacetManager facetManager = ftq.getFacetManager();
+
         for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
-            FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
+            FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
                     .includeZeroCounts(false).createFacetingRequest();
-            ftq.getFacetManager().enableFaceting(facetRequest);
-        }
-        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
-            for (Facet facetResult : ftq.getFacetManager().getFacets(facet.getFacetField())) {
+            facetManager.enableFaceting(facetRequest);
+            for (Facet facetResult : facetManager.getFacets(facet.getFacetField())) {
                 facet.add(facetResult.getValue(), facetResult.getCount());
             }
         }
