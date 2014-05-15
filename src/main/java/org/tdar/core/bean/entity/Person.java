@@ -96,11 +96,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String firstName;
 
+    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
     @Column(name = "orcid_id")
     private String orcidId;
-    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
 
-    @NotEmpty
+    @NotEmpty(message="{Person.email.not_empty}")
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
@@ -115,8 +115,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
 
-    // rpanet.org number (if applicable - using String since I'm not sure if
-    // it's in numeric format)
+    // rpanet.org "number"
     @Column(name = "rpa_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String rpaNumber;

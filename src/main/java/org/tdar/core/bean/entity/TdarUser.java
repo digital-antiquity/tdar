@@ -52,7 +52,7 @@ public class TdarUser extends Person {
         super(firstName, lastName, email);
     }
 
-    @NotEmpty
+    @NotEmpty(message = "{TdarUser.username.not_empty}")
     @Column(unique = true, nullable = true)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String username;

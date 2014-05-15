@@ -1,12 +1,8 @@
 package org.tdar.core.bean.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +13,9 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.service.GenericService;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
 
 public class PersonITCase extends AbstractIntegrationTestCase {
 
@@ -38,20 +37,22 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFindByExample() {
+        //create a user that we will try to find
         TdarUser user1 = createAndSaveNewPerson();
         user1.setDescription("this sia tst");
         user1.setUsername("1234");
-        genericService.saveOrUpdate(user1);
-        genericService.detachFromSession(user1);
-        user1.setEmail(null);
-        user1.setUsername(null);
-        user1.setId(null);
-        TdarUser user2 = genericService.merge(user1);
+        genericService.update(user1);
+
+        //now create a prototypical user object that we'll use to find the first user
+        TdarUser example = new TdarUser();
+        example.setId(null);
+        example.setEmail(user1.getEmail());
+        example.setUsername(null);
+        example.setDescription(null);
         genericService.synchronize();
-        for (Person p : personDao.findByPerson(user1)) {
-            logger.debug(" : {}", p);
-        }
-        
+
+        Set<Person> results = personDao.findByPerson(example);
+        assertThat("findByExample should find only one person", results, hasSize(1));
     }
 
     @Test
