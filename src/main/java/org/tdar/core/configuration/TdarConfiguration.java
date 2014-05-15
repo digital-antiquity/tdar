@@ -740,4 +740,8 @@ public class TdarConfiguration {
         return result;
     }
 
+    public boolean shouldThrowExceptionOnConcurrentUserDownload() {
+        return assistant.getBooleanProperty("exception.on.bad.download", false);
+    }
+
 }
