@@ -272,7 +272,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            searchService.handleSearch(queryBuilder, this);
+            searchService.handleSearch(queryBuilder, this, this);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -308,7 +308,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             // geoMode = GeoRssMode.NONE;
             // }
             if (!isReindexing()) {
-                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true, this));
             } else {
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
@@ -431,7 +431,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            searchService.handleSearch(queryBuilder, this);
+            searchService.handleSearch(queryBuilder, this, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {

@@ -187,7 +187,7 @@ public class BrowseController extends AbstractLookupController {
         }
 
         try {
-            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser()));
+            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
         } catch (ParseException pe) {
             getLogger().debug("error", pe);
         }

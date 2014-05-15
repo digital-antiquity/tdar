@@ -9,8 +9,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
-import com.opensymphony.xwork2.TextProvider;
-
 /* further abstracting some of the functions of the search result handler 
  * so it can be pushed into the service layer. HibernateSearch handles the request by pulling field info
  * from the SearchResultHandler, and then sets results back on when done along with additional info if needed.
@@ -23,7 +21,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @see org.tdar.core.service.SearchService#handleSearch(org.tdar.search.query.QueryBuilder, SearchResultHandler)
  * 
  */
-public interface SearchResultHandler<I extends Indexable> extends TextProvider {
+public interface SearchResultHandler<I extends Indexable> {
 
     final int DEFAULT_START = 0;
     final int DEFAULT_RESULT_SIZE = 25;

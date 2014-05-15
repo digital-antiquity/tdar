@@ -196,7 +196,7 @@ public class SearchService {
      * @throws ParseException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler) throws ParseException {
+    public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException {
         if (q.isEmpty() && !resultHandler.isShowAll()) {
             logger.trace("empty query or show all");
             resultHandler.setResults(Collections.EMPTY_LIST);
@@ -752,7 +752,7 @@ public class SearchService {
         }
     }
 
-    public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser) throws ParseException {
+    public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser, TextProvider provider) throws ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getStatuses().add(Status.ACTIVE);
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
@@ -763,7 +763,7 @@ public class SearchService {
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
         result.setRecordsPerPage(10);
-        handleSearch(qb, result);
+        handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
     }
 
