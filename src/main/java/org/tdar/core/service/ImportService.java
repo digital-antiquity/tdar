@@ -301,6 +301,21 @@ public class ImportService {
         }
     }
 
+    @Transactional(readOnly=false)
+    public <R extends Resource> R cloneResource(R resource) {
+        genericService.markReadOnly(resource);
+        resource.setId(null);
+        if (resource instanceof InformationResource) {
+            ((InformationResource) resource).getInformationResourceFiles().clear();
+        }
+        logger.debug("{}", resource.getCoverageDates());
+        genericService.detachFromSession(resource);
+        resource = genericService.merge(resource);
+        logger.debug("{}", resource.getCoverageDates());
+        
+        return resource;
+    }
+    
     /**
      * Takes a POJO property that's off the session and returns a managed instance of that property and handling
      * special casing and validation as needed.
