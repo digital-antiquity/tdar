@@ -756,4 +756,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("filestore.ignoreMissing", false);
     }
 
+    public boolean shouldThrowExceptionOnConcurrentUserDownload() {
+        return assistant.getBooleanProperty("exception.on.bad.download", false);
+    }
+
 }
