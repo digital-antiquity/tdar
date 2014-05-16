@@ -115,6 +115,7 @@
                 <div class="row">
                     <div class="span6">
                         <@s.hidden name="id" value="${invoice.id?c!-1}" />
+                        <@s.hidden name="accountId" value="${accountId?c!-1}" />
                         <#if !production || administrator || editor >
                             <hr>
                             <p><b>For Admin Use Only:</b></p>

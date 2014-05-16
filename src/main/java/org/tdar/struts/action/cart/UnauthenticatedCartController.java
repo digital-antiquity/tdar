@@ -56,6 +56,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long id;
+    private Long accountId;
 
     private Invoice invoice;
     private List<Long> extraItemIds = new ArrayList<Long>();
@@ -104,7 +105,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         }
         setActivities(cartService.getActiveBillingActivities());
         try {
-            cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType);
+            cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
         }
@@ -312,6 +313,14 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         } else {
             return Arrays.asList(PaymentMethod.CREDIT_CARD);
         }
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
 }

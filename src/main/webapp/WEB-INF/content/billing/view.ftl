@@ -12,7 +12,7 @@
 </head>
 <body>
     <@nav.toolbar "${account.urlNamespace}" "view">
-        <@nav.makeLink "cart" "add" "add invoice" "add" "" false false />
+        <@nav.makeLink "cart" "add?accountId=${account.id?c}" "add invoice" "add" "" false false />
         <#if administrator>
             <@nav.makeLink "billing" "updateQuotas?id=${account.id?c}" "Reset Totals" "add" "" false false />
             <@nav.makeLink "billing" "fix?id=${account.id?c}" "Fix Initial Billing" "add" "" false false />

@@ -419,13 +419,14 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
     
     @Transactional(readOnly=false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, TdarUser owner, String code, List<Long> extraItemIds, List<Integer> extraItemQuantities, PricingType pricingType) {
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, TdarUser owner, String code, List<Long> extraItemIds, List<Integer> extraItemQuantities, PricingType pricingType, Long accountId) {
         boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
         if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
             throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
         }
 
         invoice.getItems().clear();
+        
         Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
         for (int i = 0; i < extraItemIds.size(); i++) {
             BillingActivity act = actIdMap.get(extraItemIds.get(i));
@@ -466,6 +467,11 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             genericDao.markWritable(item);
         }
         getDao().saveOrUpdate(invoice);
+        if (Persistable.Base.isNotNullOrTransient(accountId)) {
+            Account account = genericDao.find(Account.class, accountId);
+            account.getInvoices().add(invoice);
+        }
+
         return invoice;
     }
 
