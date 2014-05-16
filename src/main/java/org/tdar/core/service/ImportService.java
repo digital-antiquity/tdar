@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -45,11 +46,13 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -323,28 +326,68 @@ public class ImportService {
      */
     @Transactional(readOnly = false)
     public <R extends Resource> R cloneResource(R resource, TdarUser user) throws Exception {
+        boolean canEditResource = true;
+        if (!authenticationAndAuthorizationService.canEdit(user, resource)) {
+            canEditResource = false;
+        }
+        
+        // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed 
         String xml = xmlService.convertToXML(resource);
         R rec = (R) xmlService.parseXml(new StringReader(xml));
+
+        
         rec.setId(null);
-        ResourceCollection irc = rec.getInternalResourceCollection();
-        if (irc != null) {
-            irc.setId(null);
-            for (AuthorizedUser au : irc.getAuthorizedUsers()) {
-                au.setId(null);
+        
+        if (rec instanceof InformationResource) {
+            InformationResource originalIr = (InformationResource) resource;
+            InformationResource informationResource = (InformationResource) rec;
+
+            // reset project if user doesn't have rights to it
+            if (originalIr.getProject() != Project.NULL) {
+                if (authenticationAndAuthorizationService.canEdit(user, originalIr.getProject())) {
+                    informationResource.setProject(originalIr.getProject());
+                }
+            }
+            
+            // remove files
+            informationResource.getInformationResourceFiles().clear();
+        }
+
+        // obfuscate LatLong and clear collections if no permissions to resource
+        if (!canEditResource) {
+            for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
+                latLong.obfuscate();
+            }
+            rec.getResourceCollections().clear();
+        } else {
+            // if user does have rights; clone the collections, but reset the Internal ResourceCollection
+            ResourceCollection irc = rec.getInternalResourceCollection();
+            if (irc != null) {
+                irc.setId(null);
+                for (AuthorizedUser au : irc.getAuthorizedUsers()) {
+                    au.setId(null);
+                }
+            }
+            for (ResourceCollection rc : rec.getResourceCollections()) {
+                rc.getResources().add(rec);
             }
         }
-        if (rec instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) rec;
-            informationResource.getInformationResourceFiles().clear();
-            informationResource.setProject(((InformationResource) resource).getProject());
-        }
-        resetPersistableIds(rec);
+        // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
+        resetOneToManyPersistableIds(rec);
+
         rec.getResourceRevisionLog().clear();
         rec = bringObjectOntoSession(rec, user, false);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
+        genericService.saveOrUpdate(rrl);
+        rec.getResourceRevisionLog().add(rrl);
+        rec.markUpdated(user);
+        rec.setSubmitter(user);
+        rec.setUploader(user);
+        genericService.saveOrUpdate(rec);
         return rec;
     }
 
-    public <R extends Resource> void resetPersistableIds(R rec) {
+    public <R extends Resource> void resetOneToManyPersistableIds(R rec) {
         List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
         for (Field fld : findAnnotatedFieldsOfClass) {
             Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);

@@ -2,16 +2,13 @@ package org.tdar.core.service;
 
 import java.util.Set;
 
-import org.apache.commons.collections.SetUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class ImportServiceITCase extends AbstractDataIntegrationTestCase {
