@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 @SuppressWarnings("static-method")
-public class LicenseTypeITCase {
+public class LicenseTypeTestCase {
 
     @Test
     public void testImageUrlIsHttpOnHttpConfigration() {

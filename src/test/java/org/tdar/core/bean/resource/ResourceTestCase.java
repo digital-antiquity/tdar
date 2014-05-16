@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 
-public class ResourceTest {
+public class ResourceTestCase {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -736,8 +736,11 @@ public class TdarConfiguration {
             baseUrls.add("https://" + url);
         }
         String result = StringUtils.join(baseUrls, ",");
-        logger.debug(result);
         return result;
+    }
+
+    public boolean shouldThrowExceptionOnConcurrentUserDownload() {
+        return assistant.getBooleanProperty("exception.on.bad.download", false);
     }
 
 }

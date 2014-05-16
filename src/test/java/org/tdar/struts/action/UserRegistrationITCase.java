@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -22,15 +21,14 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.Action;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.vividsolutions.jts.util.Assert;
 
 import freemarker.template.Configuration;
@@ -176,7 +174,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         TdarUser findByEmail = entityService.findUserByEmail(email);
         if (findByEmail != null) {
             findByEmail.setStatus(status);
-            findByEmail.setUsername(null);
+            findByEmail.setUsername("abc123");
     
             genericService.saveOrUpdate(findByEmail);
         }
@@ -207,7 +205,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testNewUser() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
         TdarUser p = controller.getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
@@ -225,11 +223,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testInvalidUsers() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-
         List<String> emails = Arrays.asList("a", "a b", "adam brin", "abcd1234!", "http://", "!#####/bin/ls");
         for (String email : emails) {
             logger.info("TRYING =======> {}", email);
-            controller.setTimeCheck(System.currentTimeMillis() - 10000);
+            controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
             String execute = setupValidUserInController(controller, email);
             // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
             logger.info("errors:{}", controller.getActionErrors());
@@ -248,7 +245,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             assertTrue(authenticationAndAuthorizationService.isValidEmail(email));
             assertTrue(authenticationAndAuthorizationService.isValidUsername(email));
             logger.info("TRYING =======> {}", email);
-            controller.setTimeCheck(System.currentTimeMillis() - 10000);
+            controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
             String execute = setupValidUserInController(controller, email);
             // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
             logger.info("errors:{}", controller.getActionErrors());
@@ -260,12 +257,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testRegistrationEmailSent() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
-        MockMailSender mms = (MockMailSender) emailService.getMailSender();
-        ArrayList<SimpleMailMessage> messages = mms.getMessages();
+        sendEmailProcess.execute();
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
         // we assume that the message sent was the registration one. If it wasn't we will soon find out...
-        assertTrue("Registration email was not sent.", messages.size() == 1);
+        assertTrue("Registration email was not sent - " + messages.size(), messages.size() == 1);
         String messageText = messages.get(0).getText();
         assertTrue(StringUtils.isNotBlank(messageText));
     }
@@ -275,7 +272,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testEmailWithPlusSign() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String email = "test++++++user@gmail.com";
         Person findByEmail = entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
@@ -316,7 +313,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testUserCreatedTooFast() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setTimeCheck(System.currentTimeMillis() - 1000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 1000);
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
@@ -328,7 +325,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testUserCreatedTooSlow() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setTimeCheck(System.currentTimeMillis() + (1000 * 61));
+        controller.getH().setTimeCheck(System.currentTimeMillis() + (1000 * 61));
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
@@ -340,8 +337,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testUserCreatedFallsIntoHoneypot() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
-        controller.setComment("could you help me?  I love your site");
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setComment("could you help me?  I love your site");
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'null' (validate should fail)", null, execute);
         String firstError = getFirstFieldError(controller);
@@ -448,7 +445,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         p.setFirstName("First");
         p.setLastName("last");
-        controller.setTimeCheck(System.currentTimeMillis() - 5000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 5000);
         controller.setConfirmEmail(TESTING_EMAIL.toUpperCase());
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
@@ -489,7 +486,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setRpaNumber("234");
 
         // create account, making sure the controller knows we're legit.
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String accountResponse = setupValidUserInController(controller, p, "super.secret");
         logger.info(accountResponse);
         logger.info("errors: {}", controller.getActionErrors());

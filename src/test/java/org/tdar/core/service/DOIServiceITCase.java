@@ -16,7 +16,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;
 
@@ -29,9 +31,13 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private ResourceService resourceService;
+
     @Autowired
     private DoiProcess doiProcess;
 
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
+    
     public Map<String, List<Pair<Long, String>>> processDois() throws Exception {
         // using mock DAO instead of real service
         doiProcess.setProvider(new MockIdentifierDao());
@@ -85,7 +91,8 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(1, created_.size());
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
         assertTrue(received.getText().contains("DOI Daily"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

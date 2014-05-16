@@ -13,7 +13,7 @@ import org.junit.Test;
  * 
  * @author Martin Paulo
  */
-public class ConfigurationAssistantTest {
+public class ConfigurationAssistantTestCase {
 
     private static final String SWITCHABLE_MAP_OBFUSCATION_KEY = "switchable.map.obfuscation";
     ConfigurationAssistant configurationAssistant;

@@ -37,6 +37,7 @@ import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
@@ -112,6 +113,11 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void clearPermissionsCache() {
         authenticationService.clearPermissionsCache();
     }
+
+   @Scheduled(fixedDelay = FIVE_MIN_MS)
+   public void queueEmail() {
+       queue(scheduledProcessMap.get(SendEmailProcess.class));
+   }
 
     /**
      * Generate DOIs

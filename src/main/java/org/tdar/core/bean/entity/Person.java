@@ -15,10 +15,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -29,6 +31,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
@@ -48,9 +51,9 @@ import org.tdar.search.query.QueryFieldNames;
  */
 @Entity
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
-// FIXME: not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
+@Check(constraints="email <> ''")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
 
     @Transient
@@ -94,14 +97,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String firstName;
 
+    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
     @Column(name = "orcid_id")
     private String orcidId;
-    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
 
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
@@ -112,8 +115,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
 
-    // rpanet.org number (if applicable - using String since I'm not sure if
-    // it's in numeric format)
+    // rpanet.org "number"
     @Column(name = "rpa_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String rpaNumber;
@@ -317,10 +319,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         setObfuscated(true);
         setObfuscatedObjectDifferent(false);
         // check if email and phone are actually confidential
+        Set<Obfuscatable> set = new HashSet<>();
         if (!getEmailPublic()) {
             setEmail(null);
             setObfuscatedObjectDifferent(true);
@@ -330,7 +333,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
             setPhone(null);
         }
         setRpaNumber(null);
-        return Arrays.asList((Obfuscatable) getInstitution());
+        set.add(getInstitution());
+        return set;
     }
 
     @Override
@@ -386,6 +390,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      * */
     @Deprecated
     public String getTempDisplayName() {
+        if(StringUtils.isNotBlank(tempDisplayName)) {
+            return tempDisplayName;
+        }
         if (StringUtils.isBlank(firstName)) {
             return "";
         }

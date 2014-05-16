@@ -112,9 +112,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-            if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
-                setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
-            }
+//            if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
+//                setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
+//            }
             getLogger().trace("jsonResults:" + getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);

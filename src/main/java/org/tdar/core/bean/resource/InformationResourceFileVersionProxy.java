@@ -9,11 +9,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Immutable
-@Subselect(value = "select * from information_resource_file_version")
+@Table(name="information_resource_file_version")
 public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

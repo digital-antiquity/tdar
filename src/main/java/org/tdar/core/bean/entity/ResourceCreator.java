@@ -1,7 +1,7 @@
 package org.tdar.core.bean.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -173,8 +173,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
-        List<Obfuscatable> toObfuscate = new ArrayList<>();
+    public Set<Obfuscatable> obfuscate() {
+        Set<Obfuscatable> toObfuscate = new HashSet<>();
         toObfuscate.add(getCreator());
         setObfuscated(true);
         return toObfuscate;

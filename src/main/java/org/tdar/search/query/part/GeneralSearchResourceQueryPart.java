@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
@@ -48,7 +49,6 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         }
 
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
-        FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
 
@@ -64,7 +64,11 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         }
 
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
-        queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
+        // we use the original value because we'd be esacping things we don't want to otherwise
+        if (SiteCodeTokenizingAnalyzer.pattern.matcher(value).matches()) {
+            FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
+            queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
+        }
         queryPart.append(content);
         queryPart.append(linkedContent);
         return queryPart;

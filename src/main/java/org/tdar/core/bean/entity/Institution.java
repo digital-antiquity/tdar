@@ -152,7 +152,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         return null;
     }
 

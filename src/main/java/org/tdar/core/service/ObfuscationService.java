@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -95,7 +96,7 @@ public class ObfuscationService {
         }
 
         genericDao.markReadOnly(target);
-        List<Obfuscatable> obfuscateList = handleObfuscation(target);
+        Set<Obfuscatable> obfuscateList = handleObfuscation(target);
         if (CollectionUtils.isNotEmpty(obfuscateList)) {
             for (Obfuscatable subTarget : obfuscateList) {
                 obfuscate(subTarget, user);
@@ -111,7 +112,7 @@ public class ObfuscationService {
      * @return
      */
     @SuppressWarnings("deprecation")
-    private List<Obfuscatable> handleObfuscation(Obfuscatable target) {
+    private Set<Obfuscatable> handleObfuscation(Obfuscatable target) {
         logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
         target.setObfuscated(true);
         return target.obfuscate();

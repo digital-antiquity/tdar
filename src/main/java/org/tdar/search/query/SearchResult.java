@@ -2,14 +2,11 @@ package org.tdar.search.query;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
-
-import com.opensymphony.xwork2.util.ValueStack;
 
 public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
 
@@ -186,80 +183,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
-    }
-
-    @Override
-    public boolean hasKey(String key) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public String getText(String key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String obj) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, List<?> args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String[] args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, List<?> args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String[] args) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, List<?> args,
-            ValueStack stack) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getText(String key, String defaultValue, String[] args,
-            ValueStack stack) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResourceBundle getTexts(String bundleName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResourceBundle getTexts() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

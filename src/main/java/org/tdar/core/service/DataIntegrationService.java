@@ -365,6 +365,7 @@ public class DataIntegrationService {
         }
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.setGenerated(true);
+        codingSheet.setAccount(column.getDataTable().getDataset().getAccount());
         codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName())));
         codingSheet.markUpdated(submitter);
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));

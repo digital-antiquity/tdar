@@ -130,7 +130,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
             try {
-                searchService.handleSearch(qb, this);
+                searchService.handleSearch(qb, this, this);
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException e) {

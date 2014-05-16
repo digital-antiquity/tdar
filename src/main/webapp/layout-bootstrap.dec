@@ -24,7 +24,13 @@
             <#global schemaScope>itemscope itemtype="http://schema.org/${resource.documentType.schema}"</#global>
         </#if>
     </#if>
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+    <#if (uri != '' && uri != '/about')>
+        <#assign bodyid = "alt" />
+    </#if>
 
+<#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
@@ -34,39 +40,26 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
     <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}">
-    <script>        TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
-    <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
-<#-- dev only
-<script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
--->
-    <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
 
+    <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-<#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
 
     <link rel="stylesheet" type="text/css" href='${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/base/jquery-ui.css'>
     <link href="${staticHost}<@s.url value="/css/tdar-base.css"/>" rel="stylesheet">
     <link href="${staticHost}<@s.url value="/css/tdar-print.css"/>" rel="stylesheet" media="print">
-    <#if qunit>
-        <link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css">
-    </#if>
-
-    <script src="${staticHost}<@s.url value="/js/tdar.core.js"/>"></script>
-    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
-
-    <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
-    <#include "${themeDir}/head.dec" />
-
-    <#assign uri = request.requestURI />
-    <#assign bodyid = 'home' />
-    <#if (uri != '' && uri != '/about')>
-        <#assign bodyid = "alt" />
-    </#if>
+    <#if qunit><link rel="stylesheet" href="/includes/qunit-1.11.0.css" type="text/css"></#if>
     <@header.css (webFilePreprocessingEnabled ) />
 
-${head}
+    <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
+
+    <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
+    <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
+    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+    <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
+    <#include "${themeDir}/head.dec" />
+    ${head}
 
     <@common.globalJavascript />
 

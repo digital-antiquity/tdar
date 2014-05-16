@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRuntimeException;
@@ -120,7 +122,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             map.put("date", new Date());
             if (total > 0) {
                 logger.info("sending email");
-                emailService.sendWithFreemarkerTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
+                Email email = new Email();
+                email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + SUBJECT);
+                emailService.queueWithFreemarkerTemplate("doi-daily.ftl", map, email);
             }
             batchResults.clear();
             initializeBatchResults();

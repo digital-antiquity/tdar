@@ -234,7 +234,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
-                        columnRelationship.setRelationship(relationshipToPersist);
+//                        columnRelationship.setRelationship(relationshipToPersist);
                         relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
 

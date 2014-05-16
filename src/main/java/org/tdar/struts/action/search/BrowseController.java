@@ -39,6 +39,7 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
@@ -53,7 +54,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFile.DirectoryType;
+import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -186,7 +187,7 @@ public class BrowseController extends AbstractLookupController {
         }
 
         try {
-            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser()));
+            getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
         } catch (ParseException pe) {
             getLogger().debug("error", pe);
         }
@@ -230,7 +231,7 @@ public class BrowseController extends AbstractLookupController {
     public String creatorRdf() throws FileNotFoundException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + FOAF_XML);
+            FileStoreFile object = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
 
             File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
@@ -294,7 +295,7 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception: {}", e.getMessage());
                 }
             }
-            FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
+            FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
             try {
                 File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
                 if (foafFile.exists()) {

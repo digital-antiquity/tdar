@@ -2,10 +2,8 @@ package org.tdar.core.bean.resource;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -14,20 +12,21 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -61,28 +60,17 @@ import org.tdar.core.bean.entity.TdarUser;
  */
 @Entity
 @Immutable
-@Subselect(value = "select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id")
+@Table(name="resource")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Column(name = "date_created")
-    private Integer date = -1;
-
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     @Immutable
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "project_id")
-    private ResourceProxy projectProxy;
-
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
-    @JoinColumn(name = "information_resource_id")
-    @Immutable
-    private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
@@ -142,8 +130,7 @@ public class ResourceProxy implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(),
-                getInformationResourceFileProxies(), submitter);
+        return String.format("%s %s %s %s %s %s %s", id, title, getLatitudeLongitudeBoxes(), getResourceCreators(), submitter);
     }
 
     public String getDescription() {
@@ -192,22 +179,6 @@ public class ResourceProxy implements Serializable {
 
     public void setLatitudeLongitudeBoxes(Set<LatitudeLongitudeBox> latitudeLongitudeBoxes) {
         this.latitudeLongitudeBoxes = latitudeLongitudeBoxes;
-    }
-
-    public ResourceProxy getProjectProxy() {
-        return projectProxy;
-    }
-
-    public void setProjectProxy(ResourceProxy project) {
-        this.projectProxy = project;
-    }
-
-    public List<InformationResourceFileProxy> getInformationResourceFileProxies() {
-        return informationResourceFileProxies;
-    }
-
-    public void setInformationResourceFileProxies(List<InformationResourceFileProxy> informationResourceFiles) {
-        this.informationResourceFileProxies = informationResourceFiles;
     }
 
     public Date getDateCreated() {
@@ -285,29 +256,8 @@ public class ResourceProxy implements Serializable {
         res.setId(this.getId());
         logger.trace("recursing down");
         res.setResourceCollections(getResourceCollections());
-        if (res instanceof InformationResource) {
-            InformationResource ir = (InformationResource) res;
-            ir.setDate(this.getDate());
-            for (InformationResourceFileProxy prox : getInformationResourceFileProxies()) {
-                ir.getInformationResourceFiles().add(prox.generateInformationResourceFile());
-            }
-            Project project = Project.NULL;
-            if (getProjectProxy() != null) {
-                project = getProjectProxy().generateResource();
-            }
-            ir.setProject(project);
-
-        }
         logger.trace("done generation");
         return res;
-    }
-
-    public Integer getDate() {
-        return date;
-    }
-
-    public void setDate(Integer date) {
-        this.date = date;
     }
 
     public Set<ResourceCollection> getResourceCollections() {

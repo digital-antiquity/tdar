@@ -507,10 +507,10 @@ public class GenericService {
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
                 errors.add(violations);
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", errors));
+                throw new TdarValidationException("genericService.object_not_valid_with_violations", errors);
             }
             if ((obj instanceof Validatable) && !((Validatable) obj).isValid()) {
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", errors));
+                throw new TdarValidationException("genericService.object_not_valid", errors);
             }
         }
     }
@@ -708,6 +708,22 @@ public class GenericService {
             @Override
             public int compare(T o1, T o2) {
                 return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
+            }
+        });
+
+    }
+
+    /**
+     * Sort @link Updatable by their created date.
+     * 
+     * @param resourcesToEvaluate
+     */
+    public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
+        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+            @Override
+            public int compare(T o1, T o2) {
+                return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
             }
         });
 

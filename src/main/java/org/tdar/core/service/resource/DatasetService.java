@@ -33,7 +33,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable.Base;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -493,6 +492,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             final DataTableColumn descriptionColumn) {
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
+//        codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
         codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
         codingSheet.setDescription(codingSheet.getTitle());
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));

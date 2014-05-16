@@ -328,7 +328,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
 
         try {
-            searchService.handleSearch(qb, this);
+            searchService.handleSearch(qb, this, this);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }

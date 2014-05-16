@@ -196,7 +196,7 @@ public class SearchService {
      * @throws ParseException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler) throws ParseException {
+    public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException {
         if (q.isEmpty() && !resultHandler.isShowAll()) {
             logger.trace("empty query or show all");
             resultHandler.setResults(Collections.EMPTY_LIST);
@@ -244,14 +244,13 @@ public class SearchService {
         if (resultHandler.getFacetFields() == null) {
             return;
         }
+        org.hibernate.search.query.dsl.QueryBuilder queryBuilder = getQueryBuilder(Resource.class);
 
         for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
-            FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
+            FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
                     .includeZeroCounts(false).createFacetingRequest();
             ftq.getFacetManager().enableFaceting(facetRequest);
-        }
-        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
             for (Facet facetResult : ftq.getFacetManager().getFacets(facet.getFacetField())) {
                 facet.add(facetResult.getValue(), facetResult.getCount());
             }
@@ -753,7 +752,7 @@ public class SearchService {
         }
     }
 
-    public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser) throws ParseException {
+    public Collection<? extends Resource> findMostRecentResources(long l, TdarUser authenticatedUser, TextProvider provider) throws ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getStatuses().add(Status.ACTIVE);
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
@@ -764,7 +763,7 @@ public class SearchService {
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
         result.setRecordsPerPage(10);
-        handleSearch(qb, result);
+        handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
     }
 

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -39,6 +39,8 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -59,11 +61,12 @@ public class DownloadService {
     @Autowired
     private GenericService genericService;
 
-    // TODO
-    private String slugify(InformationResource resource) {
-        return "ir-archive";
-    }
-
+    private Cache<Long, List<Integer>> downloadLock = CacheBuilder.newBuilder()
+            .concurrencyLevel(4)
+            .maximumSize(10000)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .build();
+    
     public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
         ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
@@ -84,9 +87,11 @@ public class DownloadService {
 
     public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions)
             throws TdarActionException {
+        logger.debug("requested files:{}", irFileVersions);
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
+                
         List<FileDownloadStatistic> stats = handleActualDownload(authenticatedUser, dh, informationResourceId, irFileVersions);
         registerDownload(stats);
     }
@@ -101,11 +106,15 @@ public class DownloadService {
     @Transactional(readOnly=true)
     public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) 
             throws TdarActionException {
+
         Map<File, String> files = new HashMap<>();
         String mimeType = null;
         String fileName = null;
         List<FileDownloadStatistic> stats = new ArrayList<>();
+        enforceDownloadLock(authenticatedUser, irFileVersions);
+
         for (InformationResourceFileVersion irFileVersion : irFileVersions) {
+
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
             }
@@ -159,8 +168,57 @@ public class DownloadService {
         } catch (IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+        } finally {
+            releaseDownloadLock(authenticatedUser, irFileVersions);
         }
         return stats;
+    }
+
+    private void releaseDownloadLock(Person authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
+        if (isUnauthenticatedOrThumbnail(authenticatedUser, irFileVersions)) {
+            return;
+        }
+        Long key = authenticatedUser.getId();
+        List<Integer> list = downloadLock.getIfPresent(key);
+        if (CollectionUtils.isNotEmpty(list)) {
+            list.remove(new Integer(irFileVersions.hashCode()));
+        }
+        
+        if (CollectionUtils.isEmpty(list));
+        downloadLock.invalidate(key);
+    }
+
+    private void enforceDownloadLock(Person authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
+        if (isUnauthenticatedOrThumbnail(authenticatedUser, irFileVersions)) {
+            return;
+        }
+        Long key = authenticatedUser.getId();
+        List<Integer> list = downloadLock.getIfPresent(key);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        if (list.contains(irFileVersions.hashCode())) {
+            if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
+                throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
+            } else {
+                logger.error("too many concurrent downloads of the same file by one user");
+            }
+        }
+        
+        if (list.size() > 4) {
+            if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
+                throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
+            } else {
+                logger.error("too many concurrent downloads by one user");
+            }
+        }
+
+        list.add(new Integer(irFileVersions.hashCode()));
+        downloadLock.put(key, list);
+    }
+
+    private boolean isUnauthenticatedOrThumbnail(Person authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
+        return Persistable.Base.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
     }
 
     private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser,

@@ -20,8 +20,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
+//import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
 
@@ -36,6 +38,7 @@ import org.tdar.utils.MessageHelper;
  */
 public class PairtreeFilestore extends BaseFilestore {
 
+    private static final String SUPPORT = "support";
     public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
@@ -99,13 +102,12 @@ public class PairtreeFilestore extends BaseFilestore {
                 throw new TdarRuntimeException(errorMessage);
             }
 
-            if (version instanceof InformationResourceFileVersion) {
-                InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-                if (irfv.isUploaded()) {
+            if (version.getType() == Type.RESOURCE) {
+                if (version.getVersionType().isUploaded()) {
                     outFile.setWritable(false);
                 }
 
-                updateVersionInfo(outFile, irfv);
+                updateVersionInfo(outFile, version);
             }
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
@@ -238,22 +240,20 @@ public class PairtreeFilestore extends BaseFilestore {
         Long irID = version.getPersistableId();
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(type, irID));
-        if (version instanceof InformationResourceFileVersion) {
-            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-            if (Persistable.Base.isNotNullOrTransient(irfv.getInformationResourceFileId())) {
-                append(base, irfv.getInformationResourceFileId());
-                append(base, "v" + irfv.getVersion());
-                if (irfv.isArchival()) {
+        if (version.getType() == Type.RESOURCE) {
+            if (Persistable.Base.isNotNullOrTransient(version.getInformationResourceFileId())) {
+                append(base, version.getInformationResourceFileId());
+                append(base, "v" + version.getVersion());
+                if (version.getVersionType().isArchival()) {
                     append(base, ARCHIVAL);
-                } else if (!irfv.isUploaded()) {
+                } else if (!version.getVersionType().isUploaded()) {
                     append(base, DERIV);
                 }
             }
-        }
-
-        if (version instanceof FileStoreFile) {
-            FileStoreFile fsf = (FileStoreFile) version;
-            append(base, fsf.getType().toString().toLowerCase());
+        } else {
+            if (version.getVersionType() == VersionType.METADATA && "xml".equalsIgnoreCase(version.getExtension())) {
+                append(base, SUPPORT);
+            }
         }
         logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
@@ -298,15 +298,14 @@ public class PairtreeFilestore extends BaseFilestore {
     @Override
     public void purge(ObjectType type, FileStoreFileProxy version) throws IOException {
         File file = new File(getAbsoluteFilePath(type, version));
-        if (version instanceof InformationResourceFileVersion) {
-            InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-            if (irfv.isDerivative() || irfv.isTranslated()) {
+        if (version.getType() == Type.RESOURCE) {
+            if (version.getVersionType().isDerivative() || version.getVersionType() == VersionType.TRANSLATED) {
                 FileUtils.deleteQuietly(file);
                 cleanEmptyParents(file.getParentFile());
             } else {
                 try {
                     // if archival, need to go up one more
-                    if (irfv.isArchival()) {
+                    if (version.getVersionType().isArchival()) {
                         file = file.getParentFile();
                     }
                     File parentFile = file.getParentFile();

@@ -31,7 +31,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testMessageStore() {
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
         TdarUser p = controller.getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);

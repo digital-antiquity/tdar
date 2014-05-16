@@ -82,7 +82,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private transient SearchService searchService;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
-        searchService.handleSearch(q, this);
+        searchService.handleSearch(q, this, this);
     }
 
     public String getCallback() {

@@ -8,15 +8,15 @@
 <h1>All Accounts</h1>
 <table class="table tableFormat" id="tblAllAccounts">
     <thead>
-    <tr>
-        <th>Name</th>
-        <th>Owner</th>
-        <th>Status</th>
-        <th>Total</th>
-        <th>Files</th>
-        <th>Resources</th>
-        <th>Space</th>
-    </tr>
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Files</th>
+            <th>Resources</th>
+            <th>Space</th>
+        </tr>
     </thead>
     <tbody>
         <#list accounts as account>
@@ -35,7 +35,7 @@
 <script type="text/javascript">
     $(function () {
         TDAR.datatable.extendSorting();
-        $("#tblAllAccounts").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false})
+        $("#tblAllAccounts").dataTable({"bPaginate": false});
     });
 </script>
 </body>

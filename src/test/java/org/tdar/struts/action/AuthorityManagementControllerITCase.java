@@ -20,6 +20,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.utils.MessageHelper;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
@@ -28,6 +30,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
 
     @Autowired
     private GenericService genericService;
+
 
     @Before
     public void setup() {
@@ -103,7 +106,9 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
         evictCache();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.setEmailService(emailService);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

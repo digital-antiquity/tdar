@@ -50,13 +50,18 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testFindAndReconcilePlurals() {
-        TemporalKeyword tk = new TemporalKeyword();
-        tk.setLabel("Rock");
-        genericKeywordService.saveOrUpdate(tk);
+        createAndAddTK("Rock");
+        createAndAddTK("Rocks");
+        createAndAddTK("1920");
+        createAndAddTK("1920s");
+
+        authorityManagementService.findPluralDups(TemporalKeyword.class,getUser(), true);
+    }
+
+    private void createAndAddTK(String term) {
         TemporalKeyword tk2 = new TemporalKeyword();
-        tk2.setLabel("Rocks");
+        tk2.setLabel(term);
         genericKeywordService.saveOrUpdate(tk2);
-        authorityManagementService.findPluralDups(TemporalKeyword.class);
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.

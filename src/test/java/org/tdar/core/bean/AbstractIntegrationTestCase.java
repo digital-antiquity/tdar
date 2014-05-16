@@ -85,6 +85,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
@@ -94,7 +95,6 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
@@ -103,6 +103,8 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
@@ -181,12 +183,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     AuthorizedUserDao authorizedUserDao;
 
     @Autowired
+    public SendEmailProcess sendEmailProcess;
+
+    @Autowired
     protected EmailService emailService;
 
     private List<String> actionErrors = new ArrayList<>();
     private boolean ignoreActionErrors = false;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected MockMailSender mockMailSender = new MockMailSender();
     private SessionData sessionData;
 
     @Rule
@@ -206,8 +210,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public void announceTestStarting() {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-
-        emailService.setMailSender(mockMailSender);
+        genericService.delete(genericService.findAll(Email.class));
+        sendEmailProcess.setAllIds(null);
+        ((MockMailSender)emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/xml/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
@@ -250,6 +255,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         testPerson.setEmail(email);
         testPerson.setFirstName(TestConstants.DEFAULT_FIRST_NAME + suffix);
         testPerson.setLastName(TestConstants.DEFAULT_LAST_NAME + suffix);
+        testPerson.setUsername(email);
         Institution institution = entityService.findInstitutionByName(TestConstants.INSTITUTION_NAME);
         if (institution == null) {
             institution = new Institution();

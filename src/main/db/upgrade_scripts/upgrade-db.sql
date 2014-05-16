@@ -20,7 +20,7 @@ create table tdar_user (
     primary key (id)
 );
  
-insert into tdar_user (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select user_id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from person;
+insert into tdar_user (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from person;
 update tdar_user set username=person.username from tdar_user u, person where u.id=person.id and tdar_user.id=u.id;
 
 
@@ -56,20 +56,44 @@ select remove_fk_person();
 
 ALTER table personal_filestore_ticket ADD foreign key (submitter_id) references tdar_user;
 ALTER table bookmarked_resource ADD foreign key (person_id) references tdar_user;
-ALTER table resource ADD foreign key (submitter_id) references tdar_user:
-ALTER table resource ADD foreign key (uploader_id) references tdar_user:
-ALTER table resource ADD foreign key (updater_id) references tdar_user:
-ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user:
-ALTER table user_session ADD foreign key (person_id) references tdar_user:
-ALTER table collection ADD foreign key (owner_id) references tdar_user:
-ALTER table collection ADD foreign key (updater_id) references tdar_user:
-ALTER table pos_invoice ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_invoice ADD foreign key (executor_id) references tdar_user:
-ALTER table pos_account_group ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_account_group ADD foreign key (modifier_id) references tdar_user:
-ALTER table pos_account ADD foreign key (owner_id) references tdar_user:
-ALTER table pos_account ADD foreign key (modifier_id) references tdar_user:
-ALTER table pos_members ADD foreign key (user_id) references tdar_user:
-ALTER table pos_coupon ADD foreign key (user_id) references tdar_user:
-ALTER table authorized_user ADD foreign key (user_id) references tdar_user:
+ALTER table resource ADD foreign key (submitter_id) references tdar_user;
+ALTER table resource ADD foreign key (uploader_id) references tdar_user;
+ALTER table resource ADD foreign key (updater_id) references tdar_user;
+ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user
+ALTER table user_session ADD foreign key (person_id) references tdar_user;
+ALTER table collection ADD foreign key (owner_id) references tdar_user;
+ALTER table collection ADD foreign key (updater_id) references tdar_user;
+ALTER table pos_invoice ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_invoice ADD foreign key (executor_id) references tdar_user;
+ALTER table pos_account_group ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_account_group ADD foreign key (modifier_id) references tdar_user;
+ALTER table pos_account ADD foreign key (owner_id) references tdar_user;
+ALTER table pos_account ADD foreign key (modifier_id) references tdar_user;
+ALTER table pos_members ADD foreign key (user_id) references tdar_user;
+ALTER table pos_coupon ADD foreign key (user_id) references tdar_user;
+ALTER table authorized_user ADD foreign key (user_id) references tdar_user;
 
+
+
+-- abrin 05-11-2014
+create table email_queue (
+    id  bigserial not null,
+    date_created timestamp,
+    date_sent timestamp,
+    error_message varchar(2048),
+    from_address varchar(255),
+    message text,
+    number_of_tries int4,
+    status varchar(25),
+    subject varchar(1024),
+    to_address varchar(1024),
+    primary key (id)
+);
+
+-- jdevos 05/13/2014
+--nullify invalid email address that was introduced prior to email validation
+update person set email = null where id = 8009 and email = '';
+
+--add 'not empty' constraint for person email, username
+alter table person add constraint person_email_notempty check (email <> '');
+alter table person add constraint person_username_notempty check(username <> '');

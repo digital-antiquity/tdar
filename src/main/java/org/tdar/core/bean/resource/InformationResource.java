@@ -932,9 +932,9 @@ public abstract class InformationResource extends Resource {
     @Transient
     @JSONTransient
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
-        List<Obfuscatable> toObfuscate = super.obfuscate();
+        Set<Obfuscatable> toObfuscate = super.obfuscate();
         if (!isProjectVisible()) {
             setProject(Project.NULL);
             // setting the project to null should be enough...

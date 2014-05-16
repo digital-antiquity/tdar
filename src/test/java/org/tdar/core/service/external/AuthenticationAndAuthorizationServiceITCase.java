@@ -167,7 +167,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
         // create account, making sure the controller knows we're legit.
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         controller.setRequestingContributorAccess(true);
         controller.setPassword(password);
         controller.setConfirmPassword(password);

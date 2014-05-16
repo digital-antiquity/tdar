@@ -7,6 +7,7 @@
 package org.tdar.core.service;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.OneToMany;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -26,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -41,7 +46,13 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -65,6 +76,9 @@ import org.tdar.utils.Pair;
 @Service
 public class ImportService {
 
+    public static final String _ = "_";
+    public static final String _NEW_ID = "_NEW_ID_";
+    public static final String COPY = " (Copy)";
     @Autowired
     private FileAnalyzer fileAnalyzer;
     @Autowired
@@ -81,6 +95,9 @@ public class ImportService {
     private GenericService genericService;
     @Autowired
     private InformationResourceService informationResourceService;
+    @Autowired
+    private XmlService xmlService;
+
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -93,8 +110,8 @@ public class ImportService {
      * @throws APIException
      * @throws Exception
      */
-    public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser) throws Exception {
-        return bringObjectOntoSession(incoming, authorizedUser, null, null);
+    public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser, boolean validate) throws Exception {
+        return bringObjectOntoSession(incoming, authorizedUser, null, null,validate);
     }
 
     /**
@@ -110,7 +127,7 @@ public class ImportService {
      * @throws IOException
      */
     @Transactional
-    public <R extends Resource> R bringObjectOntoSession(R incoming_, TdarUser authorizedUser, Collection<FileProxy> proxies, Long projectId)
+    public <R extends Resource> R bringObjectOntoSession(R incoming_, TdarUser authorizedUser, Collection<FileProxy> proxies, Long projectId, boolean validate)
             throws APIException, IOException {
         R incomingResource = incoming_;
         boolean created = true;
@@ -121,7 +138,9 @@ public class ImportService {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
         }
 
-        validateInvalidImportFields(incomingResource);
+        if (validate) {
+            validateInvalidImportFields(incomingResource);
+        }
         TdarUser blessedAuthorizedUser = genericService.merge(authorizedUser);
         incomingResource.markUpdated(blessedAuthorizedUser);
 
@@ -210,15 +229,15 @@ public class ImportService {
      * 
      * @param authorizedUser
      * @param incomingResource
-     * @return 
+     * @return
      * @throws APIException
      */
     @Transactional(readOnly = false)
     public <R extends Persistable> R reconcilePersistableChildBeans(final TdarUser authorizedUser, final R incomingResource) throws APIException {
         // for every field that has a "persistable" or a collection of them...
         List<Pair<Field, Class<? extends Persistable>>> testReflection = reflectionService.findAllPersistableFields(incomingResource.getClass());
-//        Map<String, Persistable> knownObjects = new HashMap<>();
-//        knownObjects.put(makeKey(authorizedUser), authorizedUser);
+        // Map<String, Persistable> knownObjects = new HashMap<>();
+        // knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
             Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
@@ -302,6 +321,131 @@ public class ImportService {
     }
 
     /**
+     * Takes a record and round-trips it to XML to allow us to manipulate it and clone it with the session
+     * @param resource
+     * @param user
+     * @return
+     * @throws Exception
+     */
+    @Transactional(readOnly = false)
+    public <R extends Resource> R cloneResource(R resource, TdarUser user) throws Exception {
+        boolean canEditResource = true;
+        if (!authenticationAndAuthorizationService.canEdit(user, resource)) {
+            canEditResource = false;
+        }
+        
+        // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed 
+        Long oldId = resource.getId();
+        String xml = xmlService.convertToXML(resource);
+        R rec = (R) xmlService.parseXml(new StringReader(xml));
+
+        rec.setId(null);
+        rec.setTitle(rec.getTitle() + COPY);
+        if (rec instanceof InformationResource) {
+            InformationResource originalIr = (InformationResource) resource;
+            InformationResource informationResource = (InformationResource) rec;
+            informationResource.setExternalId(null);
+            // reset project if user doesn't have rights to it
+            if (originalIr.getProject() != Project.NULL) {
+                if (authenticationAndAuthorizationService.canEdit(user, originalIr.getProject())) {
+                    informationResource.setProject(originalIr.getProject());
+                }
+            }
+            
+            // remove files
+            informationResource.getInformationResourceFiles().clear();
+        }
+
+        // obfuscate LatLong and clear collections if no permissions to resource
+        if (!canEditResource) {
+            for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
+                latLong.obfuscate();
+            }
+            rec.getResourceCollections().clear();
+        } else {
+            // if user does have rights; clone the collections, but reset the Internal ResourceCollection
+            ResourceCollection irc = rec.getInternalResourceCollection();
+            if (irc != null) {
+                irc.setId(null);
+                for (AuthorizedUser au : irc.getAuthorizedUsers()) {
+                    au.setId(null);
+                }
+            }
+            for (ResourceCollection rc : rec.getResourceCollections()) {
+                rc.getResources().add(rec);
+            }
+        }
+        // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
+        resetOneToManyPersistableIds(rec);
+
+        rec.getResourceRevisionLog().clear();
+        rec = bringObjectOntoSession(rec, user, false);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
+        genericService.saveOrUpdate(rrl);
+        if (rec instanceof Dataset) {
+            Dataset dataset = (Dataset) rec;
+            for (DataTable dt : dataset.getDataTables()) {
+                String name = dt.getName();
+                int index1 = name.indexOf(_);
+                int index2 = name.indexOf(_, index1 +1);
+                name = name.substring(0,index1) + "_0_" + name.substring(index2 + 1); 
+                dt.setName(name);
+            }
+            genericService.saveOrUpdate(dataset.getDataTables());
+        }
+        rec.getResourceRevisionLog().add(rrl);
+        rec.setStatus(Status.DRAFT);
+        rec.markUpdated(user);
+        rec.setSubmitter(user);
+        rec.setUploader(user);
+        genericService.saveOrUpdate(rec);
+        return rec;
+    }
+
+    public <R extends Resource> void resetOneToManyPersistableIds(R rec) {
+        List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
+        for (Field fld : findAnnotatedFieldsOfClass) {
+            Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            Collection<Persistable> values = new ArrayList<>(actual);
+            actual.clear();
+            for (Persistable value : values) {
+                value.setId(null);
+                actual.add(value);
+                if (value instanceof DataTable) {
+                    DataTable dataTable = (DataTable) value;
+                    Dataset dataset = (Dataset) rec;
+                    dataTable.setDataset(dataset);
+                    List<DataTableColumn> adt = dataTable.getDataTableColumns();
+                    List<DataTableColumn> vals = new ArrayList<>(adt);
+                    adt.clear();
+                    for (DataTableColumn dtc : vals) {
+                        resetIdAndAdd(adt, dtc);
+                        dtc.setDataTable(dataTable);
+                    }
+                    Set<DataTableRelationship> relationships = dataset.getRelationships();
+                    Collection<DataTableRelationship> vals_ = new ArrayList<>(relationships);
+                    relationships.clear();
+                    for (DataTableRelationship dtr : vals_) {
+                        resetIdAndAdd(relationships, dtr);
+                        Set<DataTableColumnRelationship> crs = dtr.getColumnRelationships();
+                        Collection<DataTableColumnRelationship> cr_ = new ArrayList<>(crs);
+                        crs.clear();
+                        for (DataTableColumnRelationship r : cr_) {
+                            resetIdAndAdd(crs, r);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private <R extends Persistable> void resetIdAndAdd(Collection<R> crs, R r) {
+        r.setId(null);
+        crs.add(r);
+    }
+
+    /**
      * Takes a POJO property that's off the session and returns a managed instance of that property and handling
      * special casing and validation as needed.
      * 
@@ -316,11 +460,11 @@ public class ImportService {
         P toReturn = property;
         // if we're not transient, find by id...
         if (Persistable.Base.isNotNullOrTransient(property)) {
-                toReturn = (P) findById(property.getClass(), property.getId());
+            toReturn = (P) findById(property.getClass(), property.getId());
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
-                collection.getResources().add((Resource)resource);
-                ((Resource)resource).getResourceCollections().add(collection);
+                collection.getResources().add((Resource) resource);
+                ((Resource) resource).getResourceCollections().add(collection);
             }
         }
         else // otherwise, reconcile appropriately
@@ -340,7 +484,7 @@ public class ImportService {
             if (property instanceof ResourceCreator) {
                 ResourceCreator creator = (ResourceCreator) property;
                 entityService.findOrSaveResourceCreator(creator);
-                creator.isValidForResource((Resource)resource);
+                creator.isValidForResource((Resource) resource);
             }
 
             if (property instanceof Creator) {
@@ -349,9 +493,10 @@ public class ImportService {
             }
 
             if (property instanceof ResourceCollection && resource instanceof Resource) {
-                ResourceCollection collection = (ResourceCollection)property;
+                ResourceCollection collection = (ResourceCollection) property;
                 collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-                resourceCollectionService.addResourceCollectionToResource((Resource)resource, ((Resource)resource).getResourceCollections(), authenticatedUser, true,
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
+                        authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
             }
 

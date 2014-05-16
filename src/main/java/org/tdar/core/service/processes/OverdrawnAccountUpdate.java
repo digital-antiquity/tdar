@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.EmailService;
@@ -53,7 +54,9 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("accounts", accounts);
-        emailService.sendWithFreemarkerTemplate("overdrawn-admin.ftl", map, SUBJECT);
+        Email email = new Email();
+        email.setSubject(SUBJECT);
+        emailService.queueWithFreemarkerTemplate("overdrawn-admin.ftl", map, email);
     }
 
     @Override

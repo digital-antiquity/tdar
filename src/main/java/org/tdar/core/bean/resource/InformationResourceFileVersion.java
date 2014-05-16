@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.FileStoreFileProxy;
 
 @Entity
@@ -310,7 +311,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     public boolean isUploaded() {
-        return ((getFileVersionType() == VersionType.UPLOADED) || (getFileVersionType() == VersionType.UPLOADED_ARCHIVAL));
+        return getFileVersionType().isUploaded();
     }
 
     @Transient
@@ -320,8 +321,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     public boolean isArchival() {
-        // FIXME: change back later and update test
-        return ((getFileVersionType() == VersionType.ARCHIVAL) || (getFileVersionType() == VersionType.UPLOADED_ARCHIVAL));
+        return getFileVersionType().isArchival();
     }
 
     @Transient
@@ -334,20 +334,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     public boolean isDerivative() {
         return getFileVersionType().isDerivative();
-        // switch (getFileVersionType()) {
-        // case INDEXABLE_TEXT:
-        // case WEB_SMALL:
-        // case WEB_MEDIUM:
-        // case WEB_LARGE:
-        // case METADATA:
-        // case TRANSLATED:
-        // return true;
-        // default:
-        // return false;
-        // }
-        // // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
-        // // || getFileVersionType() == VersionType.WEB_SMALL
-        // // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
     }
 
     /**
@@ -479,6 +465,16 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Override
     public Long getPersistableId() {
         return getInformationResourceId();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.RESOURCE;
+    }
+
+    @Override
+    public VersionType getVersionType() {
+        return getFileVersionType();
     }
 
 }

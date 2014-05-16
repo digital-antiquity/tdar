@@ -41,10 +41,12 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
@@ -66,6 +68,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     RebuildHomepageCache homepage;
+
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
 
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
@@ -111,9 +116,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     WeeklyFilestoreLoggingProcess fsp;
 
     @Test
+    @Rollback
     public void testVerifyProcess() {
         fsp.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.setEmailService(emailService);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -127,7 +135,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

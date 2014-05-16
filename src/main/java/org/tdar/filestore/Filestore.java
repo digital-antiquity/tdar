@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
@@ -223,7 +222,7 @@ public interface Filestore {
             return mediaType.getType() + "/" + mediaType.getSubtype();
         }
 
-        protected InformationResourceFileVersion updateVersionInfo(File file, InformationResourceFileVersion version) throws IOException {
+        protected FileStoreFileProxy updateVersionInfo(File file, FileStoreFileProxy version) throws IOException {
             String mimeType = getContentType(file, "UNKNOWN/UNKNOWN");
             logger.trace("MIMETYPE: {}", mimeType);
             if (StringUtils.isEmpty(version.getFilename())) {
@@ -247,7 +246,7 @@ public interface Filestore {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
-                if (version.isArchival() || version.isUploaded()) {
+                if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                     File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
                     FileUtils.write(checksum, version.getChecksum());
                 }

@@ -1,20 +1,25 @@
 package org.tdar.core.service.external;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.util.Email;
+import org.tdar.core.bean.util.Email.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.core.service.GenericService;
+import org.tdar.utils.EmailMessageType;
 
 /**
  * $Id$
@@ -34,16 +39,20 @@ public class EmailService {
     private MailSender mailSender;
 
     @Autowired
+    private GenericService genericService;
+    
+    @Autowired
     private FreemarkerService freemarkerService;
 
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
-    public void sendWithFreemarkerTemplate(String templateName, Object dataModel, String subject, Person... recipients) {
+    public void queueWithFreemarkerTemplate(String templateName, Object dataModel, Email email) {
         try {
-            send(freemarkerService.render(templateName, dataModel), subject, recipients);
+            email.setMessage(freemarkerService.render(templateName, dataModel));
+            queue(email);
         } catch (IOException fnf) {
-            logger.error("Email template file not found (" + subject + ")", fnf);
+            logger.error("Email template file not found (" + templateName + ")", fnf);
         }
     }
 
@@ -55,32 +64,60 @@ public class EmailService {
      * @param recipients
      *            set of String varargs
      */
-    public void send(String emailMessage, String subject, Person... recipients) {
-        List<String> toAddresses = new ArrayList<String>();
-        if (ArrayUtils.isEmpty(recipients)) {
-            // if we don't receive any recipients, admin email is our default.
-            toAddresses.add(getTdarConfiguration().getSystemAdminEmail());
-        } else {
-            for (Person recipient : recipients) {
-                if (StringUtils.isNotEmpty(recipient.getEmail())) {
-                    toAddresses.add(recipient.getEmail());
-                }
-            }
-        }
-        SimpleMailMessage message = new SimpleMailMessage();
-        // Message message = new MimeMessage(session);
-        message.setFrom(getFromEmail());
-        message.setSubject(subject);
-        message.setTo(toAddresses.toArray(new String[0]));
-        // message.addRecipient(RecipientType.TO, toAddress);
-        // FIXME: send HTML and plaintext email? Will need to use JavaMailMessage and MimeMessages instead
-        // see http://java.sun.com/products/javamail/FAQ.html#sendmpa
-        // for more info
-        // message.setContent(emailMessage, "text/plain");
-        message.setText(emailMessage);
-        mailSender.send(message);
+    public void queue(Email email) {
+        logger.debug("Queuing email {}", email);
+        enforceFromAndTo(email);
+        genericService.save(email);
     }
 
+    private void enforceFromAndTo(Email email) {
+        if (StringUtils.isBlank(email.getTo())) {
+            email.addToAddress(getTdarConfiguration().getSystemAdminEmail());
+        } 
+        if (StringUtils.isBlank(email.getFrom())) {
+            email.setFrom(getFromEmail());
+        }
+    }
+
+    /**
+     * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
+     * 
+     * @param emailMessage
+     * @param subject
+     * @param recipients
+     *            set of String varargs
+     */
+    public void send(Email email) {
+        logger.debug("sending: {}", email);
+        if (email.getNumberOfTries() < 1) {
+            logger.debug("too many tries {}", email.getStatus());
+            email.setStatus(Status.ERROR);
+            genericService.saveOrUpdate(email);
+        }
+        if (email.getStatus() != Status.QUEUED) {
+            logger.debug("email rejected -- not queued {}", email.getStatus());
+            return;
+        }
+        enforceFromAndTo(email);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            // Message message = new MimeMessage(session);
+            message.setFrom(email.getFrom());
+            message.setSubject(email.getSubject());
+            message.setTo(email.getToAsArray());
+            message.setText(email.getMessage());
+            mailSender.send(message);
+            email.setStatus(Status.SENT);
+            email.setDate(new Date());
+        } catch (MailException me) {
+            email.setNumberOfTries(email.getNumberOfTries() - 1);
+            email.setErrorMessage(me.getMessage());
+            logger.error("email error: {} {}", email,me);
+        }
+        genericService.saveOrUpdate(email);
+    }
+
+    
     public String getFromEmail() {
         return getTdarConfiguration().getDefaultFromEmail();
     }
@@ -102,8 +139,25 @@ public class EmailService {
      * @param mailSender
      *            the mailSender to set
      */
+    @Autowired
+    @Qualifier("mailSender")
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;
+    }
+
+    @Transactional(readOnly=false)
+    public void constructEmail(Long fromId, Long toId, String subject, String messageBody, EmailMessageType type) {
+        Person from = genericService.find(Person.class, fromId);
+        Person to = genericService.find(Person.class, toId);
+        Email email = new Email();
+        genericService.markWritable(email);
+        email.setFrom(from.getEmail());
+        email.setTo(to.getEmail());
+        email.setSubject(type.name() +  " " + subject);
+        email.setMessage(messageBody);
+        genericService.saveOrUpdate(email);
+        queue(email);
+        
     }
 
 }

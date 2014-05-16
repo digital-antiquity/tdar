@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,10 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     AccountService accountService;
+
+
+    @Autowired
+    private SendEmailProcess sendEmailProcess;
 
     @Test
     @Rollback
@@ -233,7 +238,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.setEmailService(emailService);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

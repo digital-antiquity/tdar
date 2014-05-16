@@ -35,4 +35,14 @@ public enum VersionType {
         }
         return derivativeTypes;
     }
+
+    public boolean isUploaded() {
+        return ((this == VersionType.UPLOADED) || (this == VersionType.UPLOADED_ARCHIVAL));
+    }
+
+    public boolean isArchival() {
+        return ((this == VersionType.ARCHIVAL) || (this == VersionType.UPLOADED_ARCHIVAL));
+    }
+    
+    
 }

@@ -31,17 +31,16 @@ navigation freemarker macros
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
-                </#if>
-        <#if editable>
                     <#local _deleteable = persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted') >
                     <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
-                </#if>
+        </#if>
         <#if persistable.resourceType??>
                     <@list.bookmark resource true true />
                     <#if resource.resourceType == "PROJECT">
                         <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
                         <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
                     </#if>
+            <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
                 </#if>
         <#nested>
        <#elseif creator??>

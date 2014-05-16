@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * @author Martin Paulo
  */
-public class ResourceTypeTest {
+public class ResourceTypeTestCase {
 
     /**
      * This test is only useful in that it guards against accidental changes to the expected elements of the Audio ResourceType.

@@ -1,6 +1,7 @@
 package org.tdar.utils.jaxb.converters;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -26,6 +27,9 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
         String id = "-1";
         if (d.getId() != null) {
             id = d.getId().toString();
+        }
+        if (HibernateProxy.class.isAssignableFrom(d.getClass())) {
+            d = (Persistable) ((HibernateProxy) d).getHibernateLazyInitializer().getImplementation();
         }
         return d.getClass().getSimpleName() + ":" + id;
     }
