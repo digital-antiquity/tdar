@@ -164,7 +164,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             if (isAcceptableException(exception.getSQLException())) {
                 return;
             }
-            throw new TdarRecoverableRuntimeException(exception);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table",exception, Arrays.asList(tableName));
         }
     }
 

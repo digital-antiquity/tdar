@@ -76,6 +76,8 @@ import org.tdar.utils.Pair;
 @Service
 public class ImportService {
 
+    public static final String _ = "_";
+    public static final String _NEW_ID = "_NEW_ID_";
     public static final String COPY = " (Copy)";
     @Autowired
     private FileAnalyzer fileAnalyzer;
@@ -333,10 +335,10 @@ public class ImportService {
         }
         
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed 
+        Long oldId = resource.getId();
         String xml = xmlService.convertToXML(resource);
         R rec = (R) xmlService.parseXml(new StringReader(xml));
 
-        
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);
         if (rec instanceof InformationResource) {
@@ -380,6 +382,17 @@ public class ImportService {
         rec = bringObjectOntoSession(rec, user, false);
         ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
         genericService.saveOrUpdate(rrl);
+        if (rec instanceof Dataset) {
+            Dataset dataset = (Dataset) rec;
+            for (DataTable dt : dataset.getDataTables()) {
+                String name = dt.getName();
+                int index1 = name.indexOf(_);
+                int index2 = name.indexOf(_, index1 +1);
+                name = name.substring(0,index1) + "_0_" + name.substring(index2 + 1); 
+                dt.setName(name);
+            }
+            genericService.saveOrUpdate(dataset.getDataTables());
+        }
         rec.getResourceRevisionLog().add(rrl);
         rec.setStatus(Status.DRAFT);
         rec.markUpdated(user);
@@ -407,6 +420,7 @@ public class ImportService {
                     adt.clear();
                     for (DataTableColumn dtc : vals) {
                         resetIdAndAdd(adt, dtc);
+                        dtc.setDataTable(dataTable);
                     }
                     Set<DataTableRelationship> relationships = dataset.getRelationships();
                     Collection<DataTableRelationship> vals_ = new ArrayList<>(relationships);

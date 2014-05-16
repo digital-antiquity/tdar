@@ -40,7 +40,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base {
         }
         try {
             setCopy(importService.cloneResource(resource, getAuthenticatedUser()));
-            addActionMessage("duplicateResourceController.duplicate_success");
+            addActionMessage(getText("duplicateResourceController.duplicate_success"));
         } catch (Exception e) {
             addActionErrorWithException(getText("duplicateResourceController.could_not_copy_resource"), e);
             return INPUT;
