@@ -31,16 +31,19 @@ public class DuplicateResourceController extends AuthenticationAware.Base {
 
     @Action(value="duplicate",results= {
             @Result(name = SUCCESS, type=TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/view?id=${copy.id}"),
-            @Result(name = INPUT, location = "/resource/duplicate_error.ftl")
+            @Result(name = INPUT, type="freemarker", location = "/resource/duplicate_error.ftl")
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {
             addActionError("resourceController.must_be_contribytor");
+            return INPUT;
         }
         try {
-            copy = importService.cloneResource(resource, getAuthenticatedUser());
+            setCopy(importService.cloneResource(resource, getAuthenticatedUser()));
+            addActionMessage("duplicateResourceController.duplicate_success");
         } catch (Exception e) {
-            addActionErrorWithException("duplicateResourceController.could_not_copy_resource", e);
+            addActionErrorWithException(getText("duplicateResourceController.could_not_copy_resource"), e);
+            return INPUT;
         }
         return SUCCESS;
     }
@@ -63,5 +66,13 @@ public class DuplicateResourceController extends AuthenticationAware.Base {
         if (resource == null) {
             addFieldError("id", getText("duplicateResourceController.id_invalid_not_exist"));
         }
+    }
+
+    public Resource getCopy() {
+        return copy;
+    }
+
+    public void setCopy(Resource copy) {
+        this.copy = copy;
     }
 }

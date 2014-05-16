@@ -48,6 +48,7 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
@@ -341,7 +342,7 @@ public class ImportService {
         if (rec instanceof InformationResource) {
             InformationResource originalIr = (InformationResource) resource;
             InformationResource informationResource = (InformationResource) rec;
-
+            informationResource.setExternalId(null);
             // reset project if user doesn't have rights to it
             if (originalIr.getProject() != Project.NULL) {
                 if (authenticationAndAuthorizationService.canEdit(user, originalIr.getProject())) {
@@ -380,6 +381,7 @@ public class ImportService {
         ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
         genericService.saveOrUpdate(rrl);
         rec.getResourceRevisionLog().add(rrl);
+        rec.setStatus(Status.DRAFT);
         rec.markUpdated(user);
         rec.setSubmitter(user);
         rec.setUploader(user);
