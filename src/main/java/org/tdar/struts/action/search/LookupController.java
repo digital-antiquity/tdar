@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -343,7 +343,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 }

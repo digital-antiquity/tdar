@@ -99,12 +99,18 @@
                 <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
             <#else>
             <h4>
-                There are ${paginationHelper.totalNumberOfItems?c}
-                <#if selectedResourceTypes?has_content>
-                ${resourceTypeFacets[0].plural}
+               There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
-                <#else>Resources</#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                                          href="<@s.url includeParams="all">
+            <#if selectedResourceTypes?has_content>
+                <#if paginationHelper.totalNumberOfItems == 1>
+                    <@s.text name="${resourceTypeFacets[0].key}" />
+                <#else>
+                    <@s.text name="${resourceTypeFacets[0].pluralKey}" />
+                </#if>
+            <#else>
+                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
+            </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
+                                                                                                      href="<@s.url includeParams="all">
 			            <@s.param name="selectedResourceTypes"value="" />
 			            <@s.param name="startRecord" value=""/>
 			</@s.url>">[remove this filter]</a></sup>

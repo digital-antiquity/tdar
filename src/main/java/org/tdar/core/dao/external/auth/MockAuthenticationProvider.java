@@ -32,7 +32,7 @@ import org.tdar.core.service.EntityService;
  * *As you might expect,  authentication-tests will probably fail
  * ** This class has failsafes to prevent use in production.  Don't rely on them.
  */
-@Service
+//@Service
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

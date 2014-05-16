@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -59,7 +59,7 @@ public class ScholarController extends AbstractLookupController {
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 

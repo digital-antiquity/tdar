@@ -228,7 +228,7 @@
                         <span class="media-body">
                 
                 <a rel="noindex" href="<@s.url action=action includeParams="all">
-                    <@s.param name="${facetParam}">${facet}</@s.param>
+                    <@s.param name="${facetParam}">${facet.value}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">
                         <@s.param name="documentType" value=""/>
@@ -239,11 +239,11 @@
                     <#nested>
                 </@s.url>">
                     <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                ${facetLabel}</a> <span>(${facet.count})</span></span>
+                <@s.text name="${facet.pluralKey}"/></a> <span>(${facet.count})</span></span>
                     <#elseif (currentValues?size > 0) >
                         <@removeFacet facetlist=currentValues facetParam=facetParam />
                     <#else>
-                        <span class="media-body">${facetLabel} <span>(${facet.count})</span></span>
+                        <span class="media-body"> <@s.text name="${facet.pluralKey}"/> <span>(${facet.count})</span></span>
                     </#if>
                 </li>
             </#list>
@@ -277,7 +277,6 @@
             </#if>
             <#nested>
         </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i>
-
                 <div class="media-body">${facetText}</div>
             </a>
             </#if>

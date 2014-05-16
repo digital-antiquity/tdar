@@ -54,7 +54,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -65,6 +64,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
@@ -243,7 +243,7 @@ public class SearchService {
      * @param resultHandler
      */
     @SuppressWarnings("rawtypes")
-    private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
+    private <F extends FacetValue> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
         if (resultHandler.getFacetFields() == null) {
             return;
         }
@@ -251,7 +251,7 @@ public class SearchService {
         org.hibernate.search.query.dsl.QueryBuilder queryBuilder = getQueryBuilder(Resource.class);
         FacetManager facetManager = ftq.getFacetManager();
 
-        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
+        for (FacetGroup<? extends Enum> facet : resultHandler.getFacetFields()) {
             FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
                     .includeZeroCounts(false).createFacetingRequest();

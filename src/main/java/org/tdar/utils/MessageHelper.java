@@ -172,4 +172,8 @@ public class MessageHelper implements Serializable, TextProvider {
         return String.format("%s.%s", en.getClass().getSimpleName(), en.name());
     }
 
+    public static final String formatPluralLocalizableKey(Enum<?> en) {
+        return String.format("%s.%s_PLURAL", en.getClass().getSimpleName(), en.name());
+    }
+
 }

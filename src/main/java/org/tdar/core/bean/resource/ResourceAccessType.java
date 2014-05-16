@@ -8,7 +8,6 @@ package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -17,15 +16,13 @@ import org.tdar.utils.MessageHelper;
  * @author Adam Brin
  * 
  */
-@SuppressWarnings("rawtypes")
-public enum ResourceAccessType implements HasLabel, Facetable, Localizable {
+public enum ResourceAccessType implements HasLabel, Localizable {
     CITATION("Citation Only"),
     PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"),
     PARTIALLY_RESTRICTED("Some Files Restricted"),
     RESTRICTED("Restricted Files");
 
     private String label;
-    private transient Integer count;
 
     ResourceAccessType(String label) {
         this.setLabel(label);
@@ -45,23 +42,5 @@ public enum ResourceAccessType implements HasLabel, Facetable, Localizable {
         this.label = label;
     }
 
-    @Override
-    public Integer getCount() {
-        return count;
-    }
 
-    @Override
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    @Override
-    public String getLuceneFieldName() {
-        return QueryFieldNames.RESOURCE_ACCESS_TYPE;
-    }
-
-    @Override
-    public ResourceAccessType getValueOf(String val) {
-        return valueOf(val);
-    }
 }

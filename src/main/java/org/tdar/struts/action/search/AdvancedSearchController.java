@@ -48,7 +48,6 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
@@ -64,6 +63,7 @@ import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -122,10 +122,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
 
     // facet statistics for results.ftl
-    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
-    private ArrayList<DocumentType> documentTypeFacets = new ArrayList<DocumentType>();
-    private ArrayList<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
-    private ArrayList<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
+    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
+    private ArrayList<FacetValue> documentTypeFacets = new ArrayList<>();
+    private ArrayList<FacetValue> fileAccessFacets = new ArrayList<>();
+    private ArrayList<FacetValue> integratableOptionFacets = new ArrayList<>();
 
     private String latLongBox;
     // we plan to support some types of legacy requests. For example, the old
@@ -640,26 +640,26 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         throw new NotImplementedException(getText("advancedSearchController.admin_not_implemented"));
     }
 
-    public List<ResourceType> getResourceTypeFacets() {
+    public List<FacetValue> getResourceTypeFacets() {
         return resourceTypeFacets;
     }
 
-    public List<IntegratableOptions> getIntegratableOptionFacets() {
+    public List<FacetValue> getIntegratableOptionFacets() {
         return integratableOptionFacets;
     }
 
-    public List<DocumentType> getDocumentTypeFacets() {
+    public List<FacetValue> getDocumentTypeFacets() {
         return documentTypeFacets;
     }
 
-    public List<ResourceAccessType> getFileAccessFacets() {
+    public List<FacetValue> getFileAccessFacets() {
         return fileAccessFacets;
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,

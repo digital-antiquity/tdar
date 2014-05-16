@@ -35,7 +35,6 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
@@ -46,6 +45,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -378,7 +378,7 @@ public class BrowseController extends AbstractLookupController {
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -118,6 +117,6 @@ public interface SearchResultHandler<I extends Indexable> extends TextProvider {
     int getPrevPageStartRecord();
 
     @SuppressWarnings("rawtypes")
-    List<FacetGroup<? extends Facetable>> getFacetFields();
+    List<FacetGroup<? extends Enum>> getFacetFields();
 
 }

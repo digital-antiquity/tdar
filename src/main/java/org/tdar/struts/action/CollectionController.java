@@ -21,13 +21,13 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -51,13 +51,13 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<>();
-    private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
 
-    private List<Long> selectedResourceIds = new ArrayList<Long>();
+    private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections = new LinkedList<>();
-    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
 
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
@@ -501,8 +501,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         return group;
@@ -520,11 +520,11 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     }
 
-    public ArrayList<ResourceType> getResourceTypeFacets() {
+    public ArrayList<FacetValue> getResourceTypeFacets() {
         return resourceTypeFacets;
     }
 
-    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
     }
 

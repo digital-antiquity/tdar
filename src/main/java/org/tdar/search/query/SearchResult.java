@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
 import com.opensymphony.xwork2.util.ValueStack;
@@ -174,7 +173,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub
         return null;
     }
