@@ -52,7 +52,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -76,6 +75,7 @@ import org.tdar.utils.Pair;
 @Service
 public class ImportService {
 
+    public static final String COPY = " (Copy)";
     @Autowired
     private FileAnalyzer fileAnalyzer;
     @Autowired
@@ -337,7 +337,7 @@ public class ImportService {
 
         
         rec.setId(null);
-        
+        rec.setTitle(rec.getTitle() + COPY);
         if (rec instanceof InformationResource) {
             InformationResource originalIr = (InformationResource) resource;
             InformationResource informationResource = (InformationResource) rec;

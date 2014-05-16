@@ -102,6 +102,10 @@ public class TdarUser extends Person {
         return contributor;
     }
 
+    public Boolean isContributor() {
+        return contributor;
+    }
+
     public void setContributor(Boolean contributor) {
         this.contributor = contributor;
     }

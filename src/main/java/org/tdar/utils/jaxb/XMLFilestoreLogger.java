@@ -81,6 +81,9 @@ public class XMLFilestoreLogger implements Serializable {
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
         // get rid of proxies
+        if (object == null) {
+            return writer;
+        }
         if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
             object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
         }
