@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<bean id="tdarMetadataDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${javax.persistence.jdbc.driver}" />
+		<property name="url" value="${javax.persistence.jdbc.url}" />
+		<property name="username" value="${javax.persistence.jdbc.user}" />
+		<property name="password" value="${javax.persistence.jdbc.password}" />
+		<property name='maxActive' value='${tdarmetadata.maxConnections}' />
+		<property name='initialSize' value='${tdarmetadata.minConnections}' />
+		<property name='validationQuery' value='select 1' />
+		<property name='testWhileIdle' value='true' />
+	</bean>
+	<bean id="tdarDataImportDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${javax.persistence.jdbc.driver}" />
+		<property name="url" value="${tdardata.connection.url}" />
+		<property name="username" value="${javax.persistence.jdbc.user}" />
+		<property name="password" value="${javax.persistence.jdbc.password}" />
+        <property name='maxActive' value='${tdardata.maxConnections}' />
+        <property name='initialSize' value='${tdardata.minConnections}' />
+		<property name='validationQuery' value='select 1' />
+		<property name='testWhileIdle' value='true' />
+	</bean>
+	<bean id="tdarGeoDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close" lazy-init="true">
+		<property name="driverClassName" value="${postgis.driver.class}" />
+		<property name="url" value="${tdargisdata.connection.url}" />
+		<property name="username" value="${javax.persistence.jdbc.user}" />
+		<property name="password" value="${javax.persistence.jdbc.password}" />
+        <property name='maxActive' value='${tdargis.maxConnections}' />
+        <property name='initialSize' value='${tdargis.minConnections}' />
+		<property name='validationQuery' value='select 1' />
+		<property name='testWhileIdle' value='true' />
+	</bean>
+</beans>
