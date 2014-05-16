@@ -122,7 +122,7 @@ public class APIController extends AuthenticationAware.Base {
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
-            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId,true);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);

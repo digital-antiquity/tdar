@@ -27,13 +27,6 @@ public class DataTableColumnRelationship extends Persistable.Base {
      */
     private static final long serialVersionUID = 715161001656287643L;
 
-    /**
-     * The relationship which this inter-column relationship forms part of
-     */
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "relationship_id")
-    private DataTableRelationship relationship;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "local_column_id")
     private DataTableColumn localColumn;
@@ -74,21 +67,5 @@ public class DataTableColumnRelationship extends Persistable.Base {
      */
     public void setForeignColumn(DataTableColumn foreignColumn) {
         this.foreignColumn = foreignColumn;
-    }
-
-    /**
-     * @return the relationship
-     */
-    @XmlTransient
-    public DataTableRelationship getRelationship() {
-        return relationship;
-    }
-
-    /**
-     * @param relationship
-     *            the relationship to set
-     */
-    public void setRelationship(DataTableRelationship relationship) {
-        this.relationship = relationship;
     }
 }

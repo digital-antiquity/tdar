@@ -104,8 +104,8 @@ public class ImportService {
      * @throws APIException
      * @throws Exception
      */
-    public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser) throws Exception {
-        return bringObjectOntoSession(incoming, authorizedUser, null, null);
+    public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser, boolean validate) throws Exception {
+        return bringObjectOntoSession(incoming, authorizedUser, null, null,validate);
     }
 
     /**
@@ -121,7 +121,7 @@ public class ImportService {
      * @throws IOException
      */
     @Transactional
-    public <R extends Resource> R bringObjectOntoSession(R incoming_, TdarUser authorizedUser, Collection<FileProxy> proxies, Long projectId)
+    public <R extends Resource> R bringObjectOntoSession(R incoming_, TdarUser authorizedUser, Collection<FileProxy> proxies, Long projectId, boolean validate)
             throws APIException, IOException {
         R incomingResource = incoming_;
         boolean created = true;
@@ -132,7 +132,9 @@ public class ImportService {
             ((InformationResource) incoming_).setProject(genericService.find(Project.class, projectId));
         }
 
-        validateInvalidImportFields(incomingResource);
+        if (validate) {
+            validateInvalidImportFields(incomingResource);
+        }
         TdarUser blessedAuthorizedUser = genericService.merge(authorizedUser);
         incomingResource.markUpdated(blessedAuthorizedUser);
 
@@ -332,38 +334,56 @@ public class ImportService {
             }
         }
         if (rec instanceof InformationResource) {
-            ((InformationResource) rec).getInformationResourceFiles().clear();
+            InformationResource informationResource = (InformationResource) rec;
+            informationResource.getInformationResourceFiles().clear();
+            informationResource.setProject(((InformationResource) resource).getProject());
         }
         resetPersistableIds(rec);
         rec.getResourceRevisionLog().clear();
-        rec = bringObjectOntoSession(rec, user);
+        rec = bringObjectOntoSession(rec, user, false);
         return rec;
     }
 
     public <R extends Resource> void resetPersistableIds(R rec) {
         List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
         for (Field fld : findAnnotatedFieldsOfClass) {
-            Collection<Persistable> values = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            Collection<Persistable> values = new ArrayList<>(actual);
+            actual.clear();
             for (Persistable value : values) {
                 value.setId(null);
+                actual.add(value);
                 if (value instanceof DataTable) {
                     DataTable dataTable = (DataTable) value;
                     Dataset dataset = (Dataset) rec;
                     dataTable.setDataset(dataset);
-                    for (DataTableColumn dtc : dataTable.getDataTableColumns()) {
-                        dtc.setDataTable(dataTable);
-                        dtc.setId(null);
+                    List<DataTableColumn> adt = dataTable.getDataTableColumns();
+                    List<DataTableColumn> vals = new ArrayList<>(adt);
+                    adt.clear();
+                    for (DataTableColumn dtc : vals) {
+                        resetIdAndAdd(adt, dtc);
                     }
-                    for (DataTableRelationship dtr : dataset.getRelationships()) {
-                        dtr.setId(null);
-                        for (DataTableColumnRelationship r : dtr.getColumnRelationships()) {
-                            r.setId(null);
+                    Set<DataTableRelationship> relationships = dataset.getRelationships();
+                    Collection<DataTableRelationship> vals_ = new ArrayList<>(relationships);
+                    relationships.clear();
+                    for (DataTableRelationship dtr : vals_) {
+                        resetIdAndAdd(relationships, dtr);
+                        Set<DataTableColumnRelationship> crs = dtr.getColumnRelationships();
+                        Collection<DataTableColumnRelationship> cr_ = new ArrayList<>(crs);
+                        crs.clear();
+                        for (DataTableColumnRelationship r : cr_) {
+                            resetIdAndAdd(crs, r);
                         }
                     }
 
                 }
             }
         }
+    }
+
+    private <R extends Persistable> void resetIdAndAdd(Collection<R> crs, R r) {
+        r.setId(null);
+        crs.add(r);
     }
 
     /**

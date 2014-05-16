@@ -96,7 +96,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
                 try {
                     Project newProject = (Project) xmlService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
-                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser());
+                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
