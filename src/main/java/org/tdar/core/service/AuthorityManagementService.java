@@ -542,6 +542,9 @@ public class AuthorityManagementService {
         Map<String, Keyword> map = new HashMap<>();
         Map<Keyword,Set<Keyword>> dups = new HashMap<>();
         for (Keyword kwd : genericDao.findAll(cls)) {
+            if (kwd.getLabel().matches("\\d+s")) {
+                continue;
+            }
             map.put(kwd.getLabel(), kwd);
         }
         for (String label : map.keySet()) {
