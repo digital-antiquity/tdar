@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 public class MockMailSender implements MailSender {
     private final ArrayList<SimpleMailMessage> messages = new ArrayList<SimpleMailMessage>();
     private Logger logger = LoggerFactory.getLogger(MockMailSender.class);
-    private String host = "zombo.com";
-
 
     @Override
     public void send(SimpleMailMessage simpleMessage) throws MailException {
@@ -34,11 +32,4 @@ public class MockMailSender implements MailSender {
         return messages;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
 }

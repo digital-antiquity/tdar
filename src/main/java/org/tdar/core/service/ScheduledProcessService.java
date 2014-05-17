@@ -166,7 +166,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      * @param processes
      */
-    @Autowired(required = false)
+    @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess<?>> processes) {
         for (ScheduledProcess<?> process_ : processes) {
             @SuppressWarnings("unchecked")
