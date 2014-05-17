@@ -28,7 +28,7 @@ import org.tdar.struts.data.SvgMapWrapper;
 @Service
 public class GeoSearchService {
 
-    @Autowired
+    @Autowired(required=false)
     GeoSearchDao geoSearchDao;
     private final Logger logger = Logger.getLogger(getClass());
 
