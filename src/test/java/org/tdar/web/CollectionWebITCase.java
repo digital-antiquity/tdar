@@ -69,6 +69,14 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             assertTextPresent(user.getProperName()); // let's assume the view page uses tostring to format the user names.
         }
 
+        // we're having inconsistent failures on this assertion.
+        try {
+            Thread.sleep(20000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         // assert the removed resources are *not* present on the view page
         for (Resource resource : removedResources) {
             assertTextNotPresent(resource.getTitle());
