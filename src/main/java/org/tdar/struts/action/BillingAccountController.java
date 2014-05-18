@@ -96,7 +96,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = INPUT, location = VIEW_ID, type = "redirect")
     })
     @PostOnly
-    @WriteableSession
     @SkipValidation
     public String createCouponCode() throws TdarActionException {
         try {
@@ -182,7 +181,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     })
     public String updateQuotas() {
         accountService.updateQuota(getAccount(), getAccount().getResources());
-        return com.opensymphony.xwork2.Action.SUCCESS;
+        return SUCCESS;
     }
 
     /**
@@ -192,35 +191,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
      * @return
      */
     @SkipValidation
-    @WriteableSession
     @Action(value = FIX_FOR_DELETE_ISSUE, results = {
             @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
     })
     public String fix() {
-        getLogger().debug(">>>>> F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
-        accountService.updateQuota(getAccount(), getAccount().getResources());
-        getGenericService().refresh(getAccount());
-        getLogger().debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
-        if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && (getAccount().getInvoices().size() == 1)) {
-            Invoice invoice = getAccount().getInvoices().iterator().next();
-            Long space = getAccount().getSpaceUsedInMb() + 10l;
-            Long files = getAccount().getFilesUsed() + 1l;
-            for (BillingItem item : invoice.getItems()) {
-                if (item.getActivity().isSpaceOnly()) {
-                    getLogger().debug("changing space from: {} to {}", item.getQuantity(), space);
-                    item.setQuantity(space.intValue());
-                }
-
-                if (item.getActivity().isFilesOnly()) {
-                    getLogger().debug("changing files from: {} to {}", item.getQuantity(), files);
-                    item.setQuantity(files.intValue());
-                }
-            }
-            getGenericService().saveOrUpdate(invoice.getItems());
-        }
-        accountService.updateQuota(getAccount(), getAccount().getResources());
-        getLogger().debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
-        return com.opensymphony.xwork2.Action.SUCCESS;
+        accountService.resetAccountTotalsToHaveOneFileLeft(getAccount());
+        return SUCCESS;
     }
 
     @Override

@@ -50,6 +50,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      */
     @Transactional(readOnly=false)
     public boolean bookmarkResource(Resource resource, TdarUser person) {
+        getDao().markWritableOnExistingSession(person);
         if (isAlreadyBookmarked(resource, person)) {
             logger.trace(String.format("person %s already bookmarked resource %s", person, resource.getId()));
             return false;
@@ -76,7 +77,9 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
     @Transactional(readOnly=false)
     public boolean removeBookmark(Resource resource, TdarUser person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
-        if (bookmark == null) {
+        getDao().markWritableOnExistingSession(bookmark);
+        getDao().markWritableOnExistingSession(person);
+       if (bookmark == null) {
             return false;
         }
         person.getBookmarkedResources().remove(bookmark);

@@ -105,7 +105,6 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
     @Action(value = "merge-duplicates",
             results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
-    @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
             addActionError(getText("authorityManagementController.error_no_authority_record"));

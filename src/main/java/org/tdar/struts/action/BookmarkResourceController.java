@@ -12,7 +12,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
  * $Id$
@@ -26,7 +25,6 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
-@WriteableSession
 public class BookmarkResourceController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -5396034976314292120L;
