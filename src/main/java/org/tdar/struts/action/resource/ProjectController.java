@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -26,6 +25,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -73,8 +73,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private SortOption sortField;
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
-    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
-    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
+    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
+    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -294,8 +294,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         return group;
@@ -308,11 +308,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return paginationHelper;
     }
 
-    public ArrayList<ResourceType> getResourceTypeFacets() {
+    public ArrayList<FacetValue> getResourceTypeFacets() {
         return resourceTypeFacets;
     }
 
-    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
     }
 

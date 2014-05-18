@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.search.query.QueryFieldNames;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
 import org.tdar.utils.MessageHelper;
 
@@ -17,7 +17,7 @@ import org.tdar.utils.MessageHelper;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizable {
+public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
@@ -40,7 +40,6 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
-    private transient Integer count;
     // Schema is one of from http://schema.org/docs/full.html
     private String schema;
     private final Class<? extends Resource> resourceClass;
@@ -209,30 +208,16 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
         return openUrlGenre;
     }
 
-    @Override
-    public Integer getCount() {
-        return count;
-    }
-
-    @Override
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
     public String getUrlNamespace() {
         String urlToReturn = name();
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
-    @Override
-    public String getLuceneFieldName() {
-        return QueryFieldNames.RESOURCE_TYPE;
-    }
+//    @Override
+//    public String getLuceneFieldName() {
+//        return QueryFieldNames.RESOURCE_TYPE;
+//    }
 
-    @Override
-    public ResourceType getValueOf(String val) {
-        return valueOf(val);
-    }
 
     public boolean hasDemensions() {
         switch (this) {
@@ -290,6 +275,12 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType>, Localizab
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
+    }
+
+
+    @Override
+    public String getPluralLocaleKey() {
+        return MessageHelper.formatPluralLocalizableKey(this);
     }
 
     public static ResourceType[] getTypesSupportingBulkUpload() {
