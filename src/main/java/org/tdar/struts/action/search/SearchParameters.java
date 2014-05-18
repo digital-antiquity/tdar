@@ -316,7 +316,11 @@ public class SearchParameters {
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
-        appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
+        if (CollectionUtils.isNotEmpty(this.getSiteNames())) {
+            appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
+            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, this.getSiteNames()));
+
+        }
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
                 Arrays.asList(this.getUncontrolledCultureKeywords()));
         appendKeywordQueryParts(queryPartGroup, TemporalKeyword.class, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, Arrays.asList(this.getTemporalKeywords()));
