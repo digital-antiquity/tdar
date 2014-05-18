@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
+import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.core.service.excel.SheetProxy;
 
 /**
@@ -240,7 +241,7 @@ public class ExcelService {
      * @return
      */
     public CellStyle createBasicSummaryStyle(Workbook workbook) {
-        return CellFormat.BOLD.createStyle(workbook);
+        return CellFormat.build(Style.BOLD).createStyle(workbook);
     }
 
     /**
@@ -418,7 +419,7 @@ public class ExcelService {
      * @param fieldNames
      */
     public CellStyle addDocumentHeaderRow(Sheet sheet, int rowNum, int columnNumber, List<String> fieldNames) {
-        CellStyle headerStyle = CellFormat.BOLD.setFontSize((short) 14).setBackgroundColor(new HSSFColor.WHITE()).createStyle(sheet.getWorkbook());
+        CellStyle headerStyle = CellFormat.build(Style.BOLD).setFontSize((short) 14).setBackgroundColor(new HSSFColor.WHITE()).createStyle(sheet.getWorkbook());
         addRow(sheet, rowNum, columnNumber, fieldNames, headerStyle);
         return headerStyle;
     }
@@ -466,11 +467,10 @@ public class ExcelService {
      * @return
      */
     public CellStyle createDefaultHeaderStyle(Workbook workbook) {
-        return CellFormat.NORMAL
+        return CellFormat.build(Style.BOLD)
                 .setColor(new HSSFColor.GREY_25_PERCENT())
                 .setBorderBottom(CellStyle.BORDER_THIN)
                 .setWrapping(true)
-                .setBoldweight(Font.BOLDWEIGHT_BOLD)
                 .createStyle(workbook);
     }
 
@@ -566,9 +566,9 @@ public class ExcelService {
      * @param asList
      */
     public void addPairedHeaderRow(Sheet sheet, int rowNum, int i, List<String> asList) {
-        addRow(sheet, rowNum, i, asList, CellFormat.NORMAL.createStyle(sheet.getWorkbook()));
+        addRow(sheet, rowNum, i, asList, CellFormat.build(Style.NORMAL).createStyle(sheet.getWorkbook()));
         sheet.getRow(rowNum).getCell(i)
-                .setCellStyle(CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
+                .setCellStyle(CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
     }
 
     /**

@@ -43,14 +43,13 @@ public interface Filestore {
         NO_ROTATION,
         ROTATE,
         DATE;
-        private int rotations = 0;
+        private int rotations = 5;
 
         public int getRotations() {
+            if (this != ROTATE) {
+                return 0;
+            }
             return rotations;
-        }
-
-        public void setRotations(int rotations) {
-            this.rotations = rotations;
         }
 
     }

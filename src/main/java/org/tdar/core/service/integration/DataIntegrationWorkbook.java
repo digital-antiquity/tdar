@@ -34,6 +34,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
@@ -80,7 +81,7 @@ public class DataIntegrationWorkbook implements Serializable {
      */
     public void generate() {
         // HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook);
-        CellStyle dataTableNameStyle = CellFormat.NORMAL.setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
+        CellStyle dataTableNameStyle = CellFormat.build(Style.NORMAL).setColor(new HSSFColor.GREY_25_PERCENT()).createStyle(getWorkbook());
         CellStyle summaryStyle = excelService.createSummaryStyle(getWorkbook());
         // first column is the table where the
         int rowIndex = 0;
