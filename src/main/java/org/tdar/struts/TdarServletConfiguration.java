@@ -38,7 +38,9 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     public final String BAR = "\r\n*************************************************************************\r\n";
+    // NOTE: when changing these, you must test both TOMCAT and JETTY as they behave differently
     EnumSet<DispatcherType> allDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
+    EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
     private String failureMessage;
 
     public TdarServletConfiguration() {
@@ -84,7 +86,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
-        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), true, ALL_PATHS);
+        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
         configureStrutsAndSiteMeshFilters(container);
         
@@ -92,11 +94,11 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
     private void configureStrutsAndSiteMeshFilters(ServletContext container) {
         Dynamic strutsPrepare = container.addFilter("struts-prepare", StrutsPrepareFilter.class);
-        strutsPrepare.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        strutsPrepare.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
         Dynamic sitemesh = container.addFilter("sitemesh", SiteMeshFilter.class);
-        sitemesh.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        sitemesh.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
         Dynamic strutsExecute = container.addFilter("struts-execute", StrutsExecuteFilter.class);
-        strutsExecute.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        strutsExecute.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
     }
 
     private void configureCorsFilter(ServletContext container, TdarConfiguration configuration) {
@@ -106,7 +108,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         corsFilter.setInitParameter("cors.preflight.maxage", "3600");
         corsFilter.setInitParameter("cors.allowed.methods", "GET,POST,HEAD,PUT,DELETE,OPTIONS");
         corsFilter.setInitParameter("cors.logging.enabled", "true");
-        corsFilter.addMappingForUrlPatterns(allDispacherTypes, true, ALL_PATHS);
+        corsFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
     }
 
 }
