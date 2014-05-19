@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 
 /**
@@ -21,6 +22,7 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "temporal_keyword")
 @Indexed(index = "Keyword")
+@Check(constraints="label <> ''")
 public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     private static final long serialVersionUID = -626136232824053935L;

@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -30,6 +31,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "cltkwd_appr", columnList = "approved, id")
 })
 @Indexed(index = "Keyword")
+@Check(constraints="label <> ''")
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;
