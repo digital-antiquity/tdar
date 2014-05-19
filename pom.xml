@@ -12,7 +12,6 @@
         <hibernate.search.version>4.5.1.Final</hibernate.search.version>
         <spring.framework.version>4.0.4.RELEASE</spring.framework.version>
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
-        <spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
         <postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
@@ -26,13 +25,13 @@
         <generated.schema.dir>target/generated/db</generated.schema.dir>
         <generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.7.5</wro4j.version>
-        <jetty.version>8.1.11.v20130520</jetty.version>
+        <jetty.version>8.1.14.v20131031</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>11.0</geotools.version>
+        <geotools.version>11.1</geotools.version>
         <tika.version>1.5</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
@@ -227,7 +226,7 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.9.3</version>
+            <version>1.9.4</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -600,18 +599,6 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-amqp</artifactId>
-            <version>${spring.amqp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit</artifactId>
-            <version>${spring.amqp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-convention-plugin</artifactId>
             <version>${struts2.version}</version>
@@ -799,7 +786,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.2</version>
+            <version>3.3</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -959,7 +946,7 @@
          <dependency>
             <groupId>org.ebaysf.web</groupId>
             <artifactId>cors-filter</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
           </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
@@ -1409,19 +1396,6 @@
                         <version>${clover.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>0.26</version>
-                <configuration>
-                    <inScopeClasses>
-                        <param>org.tdar.*</param>
-                    </inScopeClasses>
-                    <targetClasses>
-                        <param>org.tdar.*</param>
-                    </targetClasses>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
