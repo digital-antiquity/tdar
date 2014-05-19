@@ -54,7 +54,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -65,6 +64,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
@@ -97,18 +97,22 @@ import com.opensymphony.xwork2.TextProvider;
 public class SearchService {
     private static final String ID_FIELD = "id";
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
-    @Autowired
-    private ObfuscationService obfuscationService;
+    private final ObfuscationService obfuscationService;
 
-    @Autowired
-    private GenericService genericService;
+    private final GenericService genericService;
 
-    @Autowired
-    private DatasetDao datasetDao;
+    private final DatasetDao datasetDao;
 
+    @Autowired 
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao) {
+        this.sessionFactory = sessionFactory;
+        this.obfuscationService = obfuscationService;
+        this.genericService = genericService;
+        this.datasetDao = datasetDao;
+    }
+    
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
@@ -130,15 +134,6 @@ public class SearchService {
                 logger.info("\t\t i:{}\t v:{}", i, pair.getFirst()[i]);
             }
         }
-    }
-
-    /**
-     * Expose the session factory for HibernateSearch
-     * 
-     * @param sessionFactory
-     */
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
     }
 
     /**
@@ -240,13 +235,13 @@ public class SearchService {
      * @param resultHandler
      */
     @SuppressWarnings("rawtypes")
-    private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
+    private <F extends FacetValue> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
         if (resultHandler.getFacetFields() == null) {
             return;
         }
         org.hibernate.search.query.dsl.QueryBuilder queryBuilder = getQueryBuilder(Resource.class);
 
-        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
+        for (FacetGroup<? extends Enum> facet : resultHandler.getFacetFields()) {
             FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
                     .includeZeroCounts(false).createFacetingRequest();

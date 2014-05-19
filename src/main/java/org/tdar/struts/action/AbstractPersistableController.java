@@ -164,7 +164,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Action(value = DELETE, results = {
             @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
-    @WriteableSession
     public String delete() throws TdarActionException {
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);

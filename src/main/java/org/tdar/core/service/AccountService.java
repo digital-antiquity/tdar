@@ -590,6 +590,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
+        genericDao.markWritableOnExistingSession(account);
         if (Persistable.Base.isNotNullOrTransient(numberOfFiles)) {
             coupon.setNumberOfFiles(numberOfFiles);
         }
@@ -626,5 +627,33 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         genericDao.saveOrUpdate(account);
         genericDao.saveOrUpdate(coupon);
         return coupon;
+    }
+
+    public void resetAccountTotalsToHaveOneFileLeft(Account account) {
+        genericDao.markWritableOnExistingSession(account);
+        getLogger().debug(">>>>> F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
+        updateQuota(account, account.getResources());
+        genericDao.refresh(account);
+        getLogger().debug(":::: F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
+        if (CollectionUtils.isNotEmpty(account.getInvoices()) && (account.getInvoices().size() == 1)) {
+            Invoice invoice = account.getInvoices().iterator().next();
+            Long space = account.getSpaceUsedInMb() + 10l;
+            Long files = account.getFilesUsed() + 1l;
+            for (BillingItem item : invoice.getItems()) {
+                if (item.getActivity().isSpaceOnly()) {
+                    getLogger().debug("changing space from: {} to {}", item.getQuantity(), space);
+                    item.setQuantity(space.intValue());
+                }
+
+                if (item.getActivity().isFilesOnly()) {
+                    getLogger().debug("changing files from: {} to {}", item.getQuantity(), files);
+                    item.setQuantity(files.intValue());
+                }
+            }
+            genericDao.saveOrUpdate(invoice.getItems());
+        }
+        updateQuota(account, account.getResources());
+        getLogger().debug("<<<<<< F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
+        
     }
 }

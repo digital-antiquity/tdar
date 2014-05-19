@@ -273,7 +273,7 @@ public abstract class AbstractSeleniumWebITCase {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
                 FirefoxProfile profile = new FirefoxProfile();
-                if (isOSX()) {
+                if (TestConfiguration.isMac()) {
                     profile.setPreference("focusmanager.testmode", true);
                 }
                 driver = new FirefoxDriver(fb, profile);
@@ -282,19 +282,16 @@ public abstract class AbstractSeleniumWebITCase {
                 // http://peter.sh/experiments/chromium-command-line-switches
                 /* yes, this is ugly */
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
-                File app = new File("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
-                app = new File(CONFIG.getChromeDriverPath());
-                if (!app.exists()) {
-                    app = new File("/usr/local/bin/chromedriver");
-                }
-                if (!app.exists()) {
-                    app = new File("/usr/bin/google-chrome");
-                }
+                File app = new File(CONFIG.getChromeDriverPath());
                 logger.info("usign app: {} ", app);
                 ChromeDriverService service = new ChromeDriverService
                         .Builder().usingDriverExecutable(app).usingPort(9515).withEnvironment(environment).build();
                 ChromeOptions copts = new ChromeOptions();
+//                copts.setExperimentalOption("autofill.enabled",false);
+                
+                // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
                 File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
+                //                File dir = new File("src/test/resources/c1");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
                 copts.addArguments(
@@ -323,11 +320,6 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
-    }
-
-    public static boolean isOSX() {
-        String osName = System.getProperty("os.name");
-        return osName.contains("OS X");
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {

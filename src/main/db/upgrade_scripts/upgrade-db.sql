@@ -20,8 +20,7 @@ create table tdar_user (
     primary key (id)
 );
  
-insert into tdar_user (id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select id, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from person;
-update tdar_user set username=person.username from tdar_user u, person where u.id=person.id and tdar_user.id=u.id;
+insert into tdar_user (id, username, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select id, username, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from person where username is not null;
 
 
 --alter table person drop column registered;

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
 /* further abstracting some of the functions of the search result handler 
@@ -116,6 +115,6 @@ public interface SearchResultHandler<I extends Indexable> {
     int getPrevPageStartRecord();
 
     @SuppressWarnings("rawtypes")
-    List<FacetGroup<? extends Facetable>> getFacetFields();
+    List<FacetGroup<? extends Enum>> getFacetFields();
 
 }

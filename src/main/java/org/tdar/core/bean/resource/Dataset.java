@@ -25,6 +25,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
@@ -47,11 +48,10 @@ public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions>, Localizable {
+    public enum IntegratableOptions implements HasLabel, Localizable {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
-        private transient Integer count;
 
         private IntegratableOptions(String label) {
             this.label = label;
@@ -67,25 +67,6 @@ public class Dataset extends InformationResource {
             return MessageHelper.formatLocalizableKey(this);
         }
 
-        @Override
-        public Integer getCount() {
-            return count;
-        }
-
-        @Override
-        public void setCount(Integer count) {
-            this.count = count;
-        }
-
-        @Override
-        public String getLuceneFieldName() {
-            return QueryFieldNames.INTEGRATABLE;
-        }
-
-        @Override
-        public IntegratableOptions getValueOf(String val) {
-            return valueOf(val);
-        }
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)

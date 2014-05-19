@@ -267,6 +267,7 @@ public class AuthorityManagementService {
                 affectedRecordCount++;
 
                 Persistable referrer = (Persistable) scrollableResults.get(0);
+                genericDao.markWritableOnExistingSession(referrer);
                 if (dupeMode != DupeMode.MARK_DUPS_ONLY) {
                     if (Collection.class.isAssignableFrom(field.getType())) {
                         // remove all dupes from the Collection and add in the authoritative entity (unless it's there already)

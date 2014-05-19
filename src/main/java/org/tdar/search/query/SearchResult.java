@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
 
 public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
@@ -171,7 +170,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub
         return null;
     }

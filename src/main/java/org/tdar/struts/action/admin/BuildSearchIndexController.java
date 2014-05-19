@@ -111,13 +111,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         Date date = new Date();
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
         getLogger().info("{}", getIndexesToRebuild());
-        for (LookupSource source : getIndexesToRebuild()) {
-            if (source == LookupSource.RESOURCE) {
-                toReindex.add(Resource.class);
-            } else {
-                toReindex.addAll(Arrays.asList(source.getClasses()));
-            }
-        }
+        searchIndexService.getClassessToReindex(getIndexesToRebuild().toArray(new LookupSource[0]));
 
         getLogger().info("to reindex: {}", toReindex);
         Person person = null;

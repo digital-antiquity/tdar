@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
+import org.tdar.core.service.excel.CellFormat.Style;
 
 /**
  * Create an Excel Template for use by the @link BulkUploadService
@@ -74,11 +75,11 @@ public class BulkUploadTemplate implements Serializable {
         // When the comment box is visible, have it show in a 1x3 space
 
         CellStyle defaultStyle = getExcelService().createSummaryStyle(workbook);
-        CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.createStyle(workbook);
+        CellStyle resourceCreatorRoleStyle = CellFormat.build(Style.NORMAL).createStyle(workbook);
         resourceCreatorRoleStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
         resourceCreatorRoleStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
-        CellStyle requiredStyle = CellFormat.BOLD.setWrapping(false).createStyle(workbook);
+        CellStyle headerStyle2 = CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
+        CellStyle requiredStyle = CellFormat.build(Style.BOLD).setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
 
         HashMap<String, String> exampleDoc = new HashMap<String, String>();

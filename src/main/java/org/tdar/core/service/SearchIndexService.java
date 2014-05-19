@@ -76,13 +76,22 @@ public class SearchIndexService {
      * @return
      */
     private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
-        List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        for (LookupSource source : LookupSource.values()) {
-            // FIXME::
-            if (source == LookupSource.RESOURCE) {
-                toReindex.add(Resource.class);
-            } else {
-                toReindex.addAll(Arrays.asList(source.getClasses()));
+        LookupSource[] values = LookupSource.values();
+        return getClassessToReindex(values);
+    }
+
+    public List<Class<? extends Indexable>> getClassessToReindex(LookupSource[] values) {
+        List<Class<? extends Indexable>> toReindex = new ArrayList<>();
+        for (LookupSource source : values) {
+            switch (source) {
+                case RESOURCE:
+                    toReindex.add(Resource.class);
+                break;
+                case PERSON:
+                    toReindex.add(Person.class);
+                    break;
+                default:
+                    toReindex.addAll(Arrays.asList(source.getClasses()));
             }
         }
         return toReindex;

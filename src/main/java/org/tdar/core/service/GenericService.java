@@ -534,6 +534,7 @@ public class GenericService {
      */
     @Transactional
     public void delete(Object obj) {
+        genericDao.markWritableOnExistingSession(obj);
         genericDao.delete(obj);
     }
 
