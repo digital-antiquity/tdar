@@ -20,10 +20,10 @@ public enum PdfFontHelper {
     private int fontSize;
     private int lineHeight;
     private int charsPerLine;
-    private transient PDType1Font font;
-    private transient PDType1Font bold;
-    private transient PDType1Font italic;
-    private transient Encoding encoding;
+    private PDType1Font font;
+    private PDType1Font bold;
+    private PDType1Font italic;
+    private Encoding encoding;
 
     private PdfFontHelper(PDType1Font font, PDType1Font boldVariant, PDType1Font italicVariant, Encoding encoding, int size, int charsPerLine) {
         setFont(font);
@@ -40,7 +40,7 @@ public enum PdfFontHelper {
         return charsPerLine;
     }
 
-    public void setCharsPerLine(int charsPerLine) {
+    private void setCharsPerLine(int charsPerLine) {
         this.charsPerLine = charsPerLine;
     }
 
@@ -48,7 +48,7 @@ public enum PdfFontHelper {
         return lineHeight;
     }
 
-    public void setLineHeight(int lineHeight) {
+    private void setLineHeight(int lineHeight) {
         this.lineHeight = lineHeight;
     }
 
@@ -56,7 +56,7 @@ public enum PdfFontHelper {
         return font;
     }
 
-    public void setFont(PDType1Font font) {
+    private void setFont(PDType1Font font) {
         this.font = font;
     }
 
@@ -64,7 +64,7 @@ public enum PdfFontHelper {
         return bold;
     }
 
-    public void setBold(PDType1Font bold) {
+    private void setBold(PDType1Font bold) {
         this.bold = bold;
     }
 
@@ -72,7 +72,7 @@ public enum PdfFontHelper {
         return fontSize;
     }
 
-    public void setFontSize(int fontSize) {
+    private void setFontSize(int fontSize) {
         this.fontSize = fontSize;
     }
 
@@ -80,7 +80,7 @@ public enum PdfFontHelper {
         return encoding;
     }
 
-    public void setEncoding(Encoding encoding) {
+    private void setEncoding(Encoding encoding) {
         this.encoding = encoding;
     }
 
@@ -88,7 +88,7 @@ public enum PdfFontHelper {
         return italic;
     }
 
-    public void setItalic(PDType1Font italic) {
+    private void setItalic(PDType1Font italic) {
         this.italic = italic;
     }
 }

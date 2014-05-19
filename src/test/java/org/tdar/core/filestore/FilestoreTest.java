@@ -139,7 +139,6 @@ public class FilestoreTest {
         version.setFileVersionType(VersionType.LOG);
         File f = new File(TEST_DOCUMENT);
         StorageMethod rotate = StorageMethod.ROTATE;
-        rotate.setRotations(5);
         store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
         version.setTransientFile(f);
         store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
