@@ -97,18 +97,22 @@ import com.opensymphony.xwork2.TextProvider;
 public class SearchService {
     private static final String ID_FIELD = "id";
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
-    @Autowired
-    private ObfuscationService obfuscationService;
+    private final ObfuscationService obfuscationService;
 
-    @Autowired
-    private GenericService genericService;
+    private final GenericService genericService;
 
-    @Autowired
-    private DatasetDao datasetDao;
+    private final DatasetDao datasetDao;
 
+    @Autowired 
+    public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao) {
+        this.sessionFactory = sessionFactory;
+        this.obfuscationService = obfuscationService;
+        this.genericService = genericService;
+        this.datasetDao = datasetDao;
+    }
+    
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
@@ -130,15 +134,6 @@ public class SearchService {
                 logger.info("\t\t i:{}\t v:{}", i, pair.getFirst()[i]);
             }
         }
-    }
-
-    /**
-     * Expose the session factory for HibernateSearch
-     * 
-     * @param sessionFactory
-     */
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
     }
 
     /**
