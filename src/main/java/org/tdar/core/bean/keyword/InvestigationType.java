@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 
 /**
@@ -20,6 +21,7 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "investigation_type")
 @Indexed(index = "Keyword")
+@Check(constraints="label <> ''")
 public class InvestigationType extends Keyword.Base<InvestigationType> implements ControlledKeyword {
 
     private static final long serialVersionUID = 2557655317256194003L;

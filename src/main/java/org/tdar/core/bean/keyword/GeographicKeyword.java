@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.FieldLength;
 
@@ -31,6 +32,7 @@ import org.tdar.core.bean.FieldLength;
 @Entity
 @Table(name = "geographic_keyword")
 @Indexed(index = "Keyword")
+@Check(constraints="label <> ''")
 public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;

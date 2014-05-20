@@ -96,3 +96,44 @@ update person set email = null where id = 8009 and email = '';
 --add 'not empty' constraint for person email, username
 alter table person add constraint person_email_notempty check (email <> '');
 alter table person add constraint person_username_notempty check(username <> '');
+
+-- jdevos 05/19/2014
+-- empty-strings::geographic_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_geographic_keyword rk where exists (select * from geographic_keyword k where k.id = rk.geographic_keyword_id and k.label = '');
+delete from geographic_keyword where label = '';
+alter table geographic_keyword add constraint geographic_keyword_label_notempty check (label <> '');
+
+-- empty-strings::other_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_other_keyword rk where exists (select * from other_keyword k where k.id = rk.other_keyword_id and k.label = '');
+delete from other_keyword where label = '';
+alter table other_keyword add constraint other_keyword_label_notempty check (label <> '');
+
+-- empty-strings::site_name_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_site_name_keyword rk where exists (select * from site_name_keyword k where k.id = rk.site_name_keyword_id and k.label = '');
+delete from site_name_keyword where label = '';
+alter table site_name_keyword add constraint site_name_keyword_label_notempty check (label <> '');
+
+-- empty-strings::temporal_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_temporal_keyword rk where exists (select * from temporal_keyword k where k.id = rk.temporal_keyword_id and k.label = '');
+delete from temporal_keyword where label = '';
+alter table temporal_keyword add constraint temporal_keyword_label_notempty check (label <> '');
+
+-- empty-strings::investigation_type: remove references, then remove instances, then add not-empty constraint
+delete from resource_investigation_type rk where exists (select * from investigation_type k where k.id = rk.investigation_type_id and k.label = '');
+delete from investigation_type where label = '';
+alter table investigation_type add constraint investigation_type_label_notempty check (label <> '');
+
+-- empty-strings::material_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_material_keyword rk where exists (select * from material_keyword k where k.id = rk.material_keyword_id and k.label = '');
+delete from material_keyword where label = '';
+alter table material_keyword add constraint material_keyword_label_notempty check (label <> '');
+
+-- empty-strings::culture_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_culture_keyword rk where exists (select * from culture_keyword k where k.id = rk.culture_keyword_id and k.label = '');
+delete from culture_keyword where label = '';
+alter table culture_keyword add constraint culture_keyword_label_notempty check (label <> '');
+
+-- empty-strings::site_type_keyword: remove references, then remove instances, then add not-empty constraint
+delete from resource_site_type_keyword rk where exists (select * from site_type_keyword k where k.id = rk.site_type_keyword_id and k.label = '');
+delete from site_type_keyword where label = '';
+alter table site_type_keyword add constraint site_type_keyword_label_notempty check (label <> '');
