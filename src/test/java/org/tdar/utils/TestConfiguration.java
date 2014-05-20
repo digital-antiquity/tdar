@@ -167,6 +167,19 @@ public class TestConfiguration {
         return String.format("https://%s:%s/", getHostName(), getHttpsPort());
     }
 
+    
+    public String getChromeApplicationPath() {
+        String deflt = "Google Chrome";
+        if (isUnix()) {
+            deflt = "/usr/bin/google-chrome-stable";
+        }
+        if (isMac()) {
+            deflt = "/Applications/Google Chrome.app";
+        }
+        return assistant.getStringProperty("tdar.chrome.path", deflt);
+
+    }
+    
     public String getChromeDriverPath() {
         String deflt = "chromedriver";
         if (isUnix()) {
