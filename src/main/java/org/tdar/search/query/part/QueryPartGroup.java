@@ -9,6 +9,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -32,7 +34,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         this.descriptionVisible = descriptionVisible;
     }
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public QueryPartGroup() {
     }
@@ -68,8 +70,9 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
 
     @Override
     public void append(QueryPart<?> q) {
-        if (q == null || q.isEmpty())
+        if ((q == null) || q.isEmpty()) {
             return;
+        }
         if (q instanceof QueryPartGroup) {
             QueryPartGroup group = (QueryPartGroup) q;
             // this may not be a good idea
@@ -125,16 +128,17 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return generateQueryString();
     }
 
-    private String getDescription(boolean escape) {
-        if (!descriptionVisible)
+    private String getDescription(TextProvider provider, boolean escape) {
+        if (!descriptionVisible) {
             return "";
+        }
         List<String> partDescriptions = new ArrayList<String>();
         for (QueryPart<?> part : getParts()) {
             String description = "";
             if (escape) {
-                description = part.getDescriptionHtml();
+                description = part.getDescriptionHtml(provider);
             } else {
-                description = part.getDescription();
+                description = part.getDescription(provider);
             }
 
             // filter out blank descriptions
@@ -143,7 +147,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
             }
         }
 
-        String delim = getDescriptionOperator();
+        String delim = " " + getDescriptionOperator() + " ";
 
         String description = StringUtils.join(partDescriptions, delim);
 
@@ -158,13 +162,13 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     }
 
     @Override
-    public String getDescription() {
-        return getDescription(false);
+    public String getDescription(TextProvider provider) {
+        return getDescription(provider, false);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return getDescription(true);
+    public String getDescriptionHtml(TextProvider provider) {
+        return getDescription(provider, true);
     }
 
     public int size() {

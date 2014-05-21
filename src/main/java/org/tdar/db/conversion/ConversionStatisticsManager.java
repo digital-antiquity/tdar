@@ -16,7 +16,7 @@ import org.tdar.db.conversion.analyzers.LongAnalyzer;
 
 public class ConversionStatisticsManager {
 
-    Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     private Map<DataTableColumn, List<ColumnAnalyzer>> statistics = new HashMap<DataTableColumn, List<ColumnAnalyzer>>();
 
@@ -36,14 +36,15 @@ public class ConversionStatisticsManager {
     // update the provided most-desired-datatype statistics based on the provided column and value. This method
     // modifies the provided map in that in removes desired-datatypelist items for the provided column if the provided value
     // cannot be converted to that datatype. Null values have no effect on the statistics
-    public void updateStatistics(DataTableColumn column, String value) {
-        if (value == null)
+    public void updateStatistics(DataTableColumn column, String value, int rowNumber) {
+        if (value == null) {
             return;
+        }
         List<ColumnAnalyzer> analyzers = statistics.get(column);
         Iterator<ColumnAnalyzer> iter = analyzers.iterator();
         while (iter.hasNext()) {
             ColumnAnalyzer ca = iter.next();
-            if (!ca.analyze(value)) {
+            if (!ca.analyze(value, column, rowNumber)) {
                 logger.trace("removing " + ca.getType() + " from list of potential conversion types for column " + column + "(value was: '" + value + "'");
                 iter.remove();
             }

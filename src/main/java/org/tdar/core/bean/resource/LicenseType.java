@@ -1,8 +1,16 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
-public enum LicenseType implements HasLabel {
+/**
+ * Represents a type of License for a Resource
+ * 
+ * @author abrin
+ * 
+ */
+public enum LicenseType implements HasLabel, Localizable {
     PUBLIC_DOMAIN("Public Domain", "Public Domain", "This option dictates that the work in question has no applicable attribution and can be reused freely.",
             "http://en.wikipedia.org/wiki/Public_domain", ""),
     CREATIVE_COMMONS_ATTRIBUTION(
@@ -47,6 +55,11 @@ public enum LicenseType implements HasLabel {
 
     public String getLicenseTag() {
         return licenseTag;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     @Override

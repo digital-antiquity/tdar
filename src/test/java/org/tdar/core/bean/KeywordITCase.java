@@ -17,6 +17,8 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.utils.Pair;
@@ -29,6 +31,9 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     @Autowired
     private GenericKeywordService genericKeywordService;
 
+    @Autowired
+    private AuthorityManagementService authorityManagementService;
+    
     @Test
     public void testFindAllDescendants() {
         CultureKeyword historicKeyword = genericKeywordService.findByLabel(CultureKeyword.class, "Historic");
@@ -41,6 +46,22 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         }
         assertTrue(map.containsKey("Spanish"));
 
+    }
+
+    @Test
+    public void testFindAndReconcilePlurals() {
+        createAndAddTK("Rock");
+        createAndAddTK("Rocks");
+        createAndAddTK("1920");
+        createAndAddTK("1920s");
+
+        authorityManagementService.findPluralDups(TemporalKeyword.class,getUser(), true);
+    }
+
+    private void createAndAddTK(String term) {
+        TemporalKeyword tk2 = new TemporalKeyword();
+        tk2.setLabel(term);
+        genericKeywordService.saveOrUpdate(tk2);
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.
@@ -102,8 +123,10 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     private <K extends Keyword> void testKeywordStats(List<Pair<K, Integer>> stats) {
         assertFalse(CollectionUtils.isEmpty(stats));
         if (stats.get(0).getFirst() instanceof HierarchicalKeyword)
+        {
             return; // for heirarchical keywords we sort by index then by count
-        for (int i = 0; i < stats.size() - 2; i++) {
+        }
+        for (int i = 0; i < (stats.size() - 2); i++) {
             int currentCount = stats.get(i).getSecond();
             int nextCount = stats.get(i + 1).getSecond();
             String msg = String.format("keywordcount for '%s(%s)' should be less than '%s(%s)'", stats.get(i).getFirst(), currentCount, stats.get(i + 1)

@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -28,18 +29,22 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.WordUtils;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -53,10 +58,16 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "information_resource_file")
+@Table(name = "information_resource_file", 
+indexes = {
+        @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
+})
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
     private static final long serialVersionUID = -6957336216505367012L;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient WorkflowContext workflowContext;
 
@@ -112,7 +123,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         }
     }
 
-    public enum FileAccessRestriction implements HasLabel {
+    public enum FileAccessRestriction implements HasLabel, Localizable {
         PUBLIC,
         EMBARGOED,
         CONFIDENTIAL;
@@ -120,6 +131,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         @Override
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
         public boolean isRestricted() {
@@ -137,7 +153,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         QUEUED,
         // whether or not this InformationResourceFile has been converted into postgres
         PROCESSED,
-        DELETED,
         PROCESSING_ERROR,
         PROCESSING_WARNING;
     }
@@ -156,11 +171,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "file_created_date")
     private Date fileCreatedDate;
 
-    @Column(name = "part_of_composite")
+    @Column(name = "part_of_composite", columnDefinition = "boolean default false")
     private Boolean partOfComposite = Boolean.FALSE;
 
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted = Boolean.FALSE;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_type", length = 255)
+    @Column(name = "general_type", length = FieldLength.FIELD_LENGTH_255)
     private FileType informationResourceFileType;
 
     @Column(name = "latest_version")
@@ -169,13 +187,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "number_of_parts")
     private Integer numberOfParts = 0;
 
+    @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
+    private String filename;
+
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
-    @Sort(type = SortType.NATURAL)
+    @SortNatural
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
+    @Column(length = FieldLength.FIELD_LENGTH_50)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
     @Lob
@@ -275,14 +296,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         latestVersion++;
     }
 
-    @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
-    public String getFileName() {
-        if (getLatestUploadedVersion() == null) {
-            return null;
-        }
-        return getLatestUploadedVersion().getFilename();
-    }
-
     @Transient
     @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
@@ -292,8 +305,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public Collection<InformationResourceFileVersion> getVersions(int version) {
         ArrayList<InformationResourceFileVersion> files = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : getInformationResourceFileVersions()) {
-            if (irfv.getVersion().equals(version))
+            if (irfv.getVersion().equals(version)) {
                 files.add(irfv);
+            }
         }
         return files;
     }
@@ -313,8 +327,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @XmlTransient
     public InformationResourceFileVersion getLatestPDF() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf"))
+            if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf")) {
                 ;
+            }
             return version;
         }
         return null;
@@ -324,8 +339,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @XmlTransient
     public InformationResourceFileVersion getLatestThumbnail() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(latestVersion) && version.isThumbnail())
+            if (version.getVersion().equals(latestVersion) && version.isThumbnail()) {
                 return version;
+            }
         }
         return null;
     }
@@ -335,8 +351,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getLatestArchival() {
         logger.debug("looking for latest archival version in {} with version number {}", getInformationResourceFileVersions(), latestVersion);
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(latestVersion) && version.isArchival())
+            if (version.getVersion().equals(latestVersion) && version.isArchival()) {
                 return version;
+            }
         }
         return null;
     }
@@ -358,7 +375,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getVersion(Integer versionNumber, VersionType... types) {
         int currentVersionNumber = -1;
         Set<InformationResourceFileVersion> versions = getInformationResourceFileVersions();
-        if (versionNumber == null || versionNumber == -1) {
+        if ((versionNumber == null) || (versionNumber == -1)) {
             // FIXME: why not just set versionNumber = latestVersion?
             for (InformationResourceFileVersion file : versions) {
                 if (file.getVersion().intValue() > currentVersionNumber) {
@@ -451,10 +468,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return status == FileStatus.PROCESSED;
     }
 
-    @Transient
-    @XmlTransient
     public boolean isDeleted() {
-        return status == FileStatus.DELETED;
+        if (deleted == null) {
+            return false;
+        }
+        return deleted;
     }
 
     @Transient
@@ -475,10 +493,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void clearStatus() {
         setStatus(null);
-    }
-
-    public void markAsDeleted() {
-        setStatus(FileStatus.DELETED);
     }
 
     @Override
@@ -591,12 +605,25 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isHasTranslatedVersion() {
         try {
-            if (getLatestTranslatedVersion() != null && getInformationResource().getResourceType().isDataTableSupported()) {
+            if ((getLatestTranslatedVersion() != null) && getInformationResource().getResourceType().isDataTableSupported()) {
                 return true;
             }
         } catch (Exception e) {
             logger.error("cannot tell if file has translated version {}", e);
         }
         return false;
+    }
+
+    @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -22,6 +24,7 @@ import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 
@@ -39,19 +42,23 @@ import org.tdar.struts.data.PricingOption;
 public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    final static long EXTRA_MB = 10l;
-    final static long EXTRA_FILES = 1l;
+    final long EXTRA_MB = 10l;
+    final long EXTRA_FILES = 1l;
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
-    private AccountService accountService;
+    private transient AccountService accountService;
 
     @Autowired
-    private EntityService entityService;
+    private transient EntityService entityService;
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient GenericService genericService;
 
     @Override
     public String getDisplayName() {
@@ -92,11 +99,11 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;
         for (BillingActivity activity : activeBillingActivities) {
-            if (activity.getEnabled() == true && !activity.isProduction()) {
-                if (activity.getNumberOfFiles() == 1L && activity.getNumberOfMb() == 0L) {
+            if ((activity.getEnabled() == true) && !activity.isProduction()) {
+                if ((activity.getNumberOfFiles() == 1L) && (activity.getNumberOfMb() == 0L)) {
                     oneFileActivity = activity;
                 }
-                if (activity.getNumberOfFiles() == 0L && activity.getNumberOfMb() == 1L) {
+                if ((activity.getNumberOfFiles() == 0L) && (activity.getNumberOfMb() == 1L)) {
                     oneMbActivity = activity;
                 }
             }
@@ -108,7 +115,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             oneFileActivity.setNumberOfMb(0L);
             oneFileActivity.setActivityType(BillingActivityType.TEST);
             oneFileActivity.setEnabled(true);
-            accountService.saveOrUpdate(oneFileActivity);
+            genericService.saveOrUpdate(oneFileActivity);
         }
 
         if (oneMbActivity == null) {
@@ -118,7 +125,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             oneMbActivity.setActivityType(BillingActivityType.TEST);
             oneMbActivity.setMinAllowedNumberOfFiles(0L);
             oneMbActivity.setNumberOfMb(1L);
-            accountService.saveOrUpdate(oneMbActivity);
+            genericService.saveOrUpdate(oneMbActivity);
         }
         try {
             String properName = person.getProperName();
@@ -189,7 +196,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 
 }

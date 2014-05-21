@@ -6,12 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -26,6 +27,7 @@ import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -33,12 +35,17 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFile.DirectoryType;
+import org.tdar.filestore.Filestore.ObjectType;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -48,7 +55,9 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -70,13 +79,17 @@ import freemarker.ext.dom.NodeModel;
 @HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
+    private static final String FOAF_XML = ".foaf.xml";
+    private static final String SLASH = "/";
+    private static final String XML = ".xml";
     public static final String CREATORS = "creators";
     public static final String COLLECTIONS = "collections";
     public static final String EXPLORE = "explore";
-    private static final String ALL_TDAR_COLLECTIONS = "All Collections";
+
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
     private Persistable persistable;
+    private Long viewCount = 0L;
     private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();
     private List<SiteTypeKeyword> siteTypeKeywords = new ArrayList<SiteTypeKeyword>();
@@ -84,26 +97,32 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
-    private File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
     private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+    private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
+
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<Resource> recentResources = new ArrayList<Resource>();
+
     private String creatorXml;
     private List<Account> accounts = new ArrayList<Account>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
     private Long contentLength;
-    private NodeModel nodeModel;
-
-    // private Keyword keyword;
+    private Document dom;
+    private float keywordMedian = 0;
+    private float creatorMedian = 0;
+    private float creatorMean = 0;
+    private float keywordMean = 0;
+    private List<NodeModel> keywords;
+    private List<NodeModel> collaborators;
 
     @Action(EXPLORE)
     public String explore() {
-        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
@@ -111,6 +130,33 @@ public class BrowseController extends AbstractLookupController {
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
+        getResourceService().setupWorldMap(worldMapData);
+
+        Long count = 10L;
+        try {
+            int cacheCount = 0;
+            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof Resource) {
+                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
+                }
+                if (key.isActive()) {
+                    if (cacheCount == count) {
+                        break;
+                    }
+                    cacheCount++;
+                    getFeaturedResources().add(key);
+                }
+            }
+        } catch (IndexOutOfBoundsException ioe) {
+            getLogger().debug("no featured resources found");
+        }
+
+        try {
+            getRecentResources().addAll(getSearchService().findMostRecentResources(count, getAuthenticatedUser()));
+        } catch (ParseException pe) {
+            getLogger().debug("error", pe);
+        }
         return SUCCESS;
     }
 
@@ -125,9 +171,10 @@ public class BrowseController extends AbstractLookupController {
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         handleSearch(qb);
-        setSearchDescription(ALL_TDAR_COLLECTIONS);
-        setSearchTitle(ALL_TDAR_COLLECTIONS);
+        setSearchDescription(getText("browseController.all_tdar_collections"));
+        setSearchTitle(getText("browseController.all_tdar_collections"));
 
         if (isEditor()) {
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
@@ -150,7 +197,9 @@ public class BrowseController extends AbstractLookupController {
     public String creatorRdf() throws FileNotFoundException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            File file = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".foaf.xml");
+            FileStoreFile object = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + FOAF_XML);
+
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -164,27 +213,15 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser());
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
-            if (Persistable.Base.isNotNullOrTransient(creator)) {
-                try {
-                    File foafFile = new File(TdarConfiguration.getInstance().getCreatorFOAFDir() + "/" + getId() + ".xml");
-                    if (foafFile.exists()) {
-                        setNodeModel(NodeModel.parse(foafFile));
-                    } else {
-                        logger.debug("foaf file did not exist {} ", foafFile);
-                    }
-                } catch (Exception e) {
-                    logger.debug("{}", e);
-                }
-            }
             if (isEditor()) {
-                if (creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
+                if ((creator instanceof Person) && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                     Person person = (Person) creator;
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {
-                        logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                        getLogger().error("problem communicating with crowd getting user info for {} ", creator, e);
                     }
                     getAccounts().addAll(
                             getAccountService().listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
@@ -192,30 +229,56 @@ public class BrowseController extends AbstractLookupController {
                 try {
                     setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
                 } catch (Exception e) {
-                    logger.error("error: {}", e);
+                    getLogger().error("error: {}", e);
                 }
+                setViewCount(getEntityService().getCreatorViewCount(creator));
+            }
 
+            if (!isEditor() && !Persistable.Base.isEqual(creator, getAuthenticatedUser())) {
+                CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator);
+                getGenericService().saveOrUpdate(cvs);
             }
 
             setPersistable(creator);
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             if (Persistable.Base.isNotNullOrTransient(creator)) {
-                String descr = String.format("All Resources from %s", creator.getProperName());
+                String descr = getText("browseController.all_resource_from", creator.getProperName());
                 setSearchDescription(descr);
                 setSearchTitle(descr);
                 setRecordsPerPage(50);
                 try {
+                    setProjectionModel(ProjectionModel.RESOURCE_PROXY);
                     handleSearch(queryBuilder);
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {
-                    logger.warn("search parse exception: {}", tdre.getMessage());
+                    getLogger().warn("search parse exception: {}", tdre.getMessage());
                     addActionError(tdre.getMessage());
                 } catch (ParseException e) {
-                    logger.warn("search parse exception: {}", e.getMessage());
+                    getLogger().warn("search parse exception: {}", e.getMessage());
                 }
             }
+            FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
+            try {
+                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
+                if (foafFile.exists()) {
+                    dom = getFileSystemResourceService().openCreatorInfoLog(foafFile);
+                    getKeywords();
+                    getCollaborators();
+                    NamedNodeMap attributes = dom.getElementsByTagName("creatorInfoLog").item(0).getAttributes();
+                    // getLogger().info("attributes: {}", attributes);
+                    setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
+                    setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
+                    setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
+                    setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
+                }
+            } catch (FileNotFoundException fnf) {
+                getLogger().debug(personInfo.getFilename() + " does not exist in filestore");
+            } catch (Exception e) {
+                getLogger().debug("{}", e);
+            }
+
         }
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
@@ -290,12 +353,6 @@ public class BrowseController extends AbstractLookupController {
         this.timelineData = list;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return ListUtils.EMPTY_LIST;
-    }
-
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
         return uploadedResourceAccessStatistic;
     }
@@ -312,14 +369,6 @@ public class BrowseController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
-        return geographicKeywordCache;
-    }
-
-    public void setGeographicKeywordCache(List<HomepageGeographicKeywordCache> geographicKeywordCache) {
-        this.geographicKeywordCache = geographicKeywordCache;
-    }
-
     public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
         return homepageResourceCountCache;
     }
@@ -329,7 +378,7 @@ public class BrowseController extends AbstractLookupController {
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 
@@ -389,14 +438,6 @@ public class BrowseController extends AbstractLookupController {
         this.inputStream = inputStream;
     }
 
-    public NodeModel getNodeModel() {
-        return nodeModel;
-    }
-
-    public void setNodeModel(NodeModel nodeModel) {
-        this.nodeModel = nodeModel;
-    }
-
     public Map<String, SearchFieldType> getKeywordTypeBySimpleName() {
         if (CollectionUtils.isEmpty(searchFieldLookup.keySet())) {
             for (SearchFieldType type : SearchFieldType.values()) {
@@ -407,4 +448,108 @@ public class BrowseController extends AbstractLookupController {
         }
         return searchFieldLookup;
     }
+
+    public List<NodeModel> getCollaborators() throws TdarActionException {
+        if (collaborators != null) {
+            return collaborators;
+        }
+        collaborators = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+                dom);
+        return collaborators;
+    }
+
+    public List<NodeModel> getKeywords() throws TdarActionException {
+        if (keywords != null) {
+            return keywords;
+        }
+        keywords = getFileSystemResourceService().parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+        return keywords;
+    }
+
+    public float getKeywordMedian() {
+        return keywordMedian;
+    }
+
+    public void setKeywordMedian(float keywordMedian) {
+        this.keywordMedian = keywordMedian;
+    }
+
+    public float getCreatorMedian() {
+        return creatorMedian;
+    }
+
+    public void setCreatorMedian(float creatorMedian) {
+        this.creatorMedian = creatorMedian;
+    }
+
+    public float getCreatorMean() {
+        return creatorMean;
+    }
+
+    public void setCreatorMean(float creatorMean) {
+        this.creatorMean = creatorMean;
+    }
+
+    public float getKeywordMean() {
+        return keywordMean;
+    }
+
+    public void setKeywordMean(float keywordMean) {
+        this.keywordMean = keywordMean;
+    }
+
+    public int getSidebarValuesToShow() {
+        int num = getResults().size();
+        // start with how many records are being shown on the current page
+        if (num > getRecordsPerPage()) {
+            num = getRecordsPerPage();
+        }
+        // if less than 20, then show 20
+        if (num < 20) {
+            num = 20;
+        }
+        num = (int) Math.ceil(num / 2.0);
+        return num;
+    }
+
+    public boolean isShowAdminInfo() {
+        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
+    }
+
+    public boolean isShowBasicInfo() {
+        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
+    }
+
+    public List<Resource> getRecentResources() {
+        return recentResources;
+    }
+
+    public void setRecentResources(List<Resource> recentResources) {
+        this.recentResources = recentResources;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {
+        return worldMapData;
+    }
+
+    public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
+        this.worldMapData = worldMapData;
+    }
+
 }

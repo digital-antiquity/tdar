@@ -8,11 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 
 @Entity
 @Indexed
 @Table(name = "video")
 @XmlRootElement(name = "video")
+/**
+ * Represents a "video" resource.
+ * @author abrin
+ *
+ */
 public class Video extends InformationResource {
 
     public Video() {
@@ -24,13 +30,13 @@ public class Video extends InformationResource {
     private Integer kbps;
 
     @Column(name = "video_codec")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String videoCodec;
     @Column(name = "audio_codec")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String audioCodec;
     @Column(name = "audio_channels")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String audioChannels;
     @Column(name = "audio_kbps")
     private Integer audioKbps;

@@ -18,6 +18,8 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.search.SearchParameters;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -27,7 +29,8 @@ import org.tdar.struts.action.search.SearchParameters;
  * 
  */
 public abstract class QueryBuilder extends QueryPartGroup {
-    protected final Logger logger = Logger.getLogger(getClass());
+    private static final String _AUTO = "_auto";
+    private final Logger logger = Logger.getLogger(getClass());
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
     // private List<String> omitContainedLabels = Arrays.asList("_auto");
@@ -44,9 +47,10 @@ public abstract class QueryBuilder extends QueryPartGroup {
         this.overrides = over;
     }
 
-    public void append(SearchParameters param) {
-        if (param != null)
-            append(param.toQueryPartGroup());
+    public void append(SearchParameters param, TextProvider provider) {
+        if (param != null) {
+            append(param.toQueryPartGroup(provider));
+        }
     }
 
     /*
@@ -69,7 +73,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
 
     protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
         Map<String, Class<? extends Analyzer>> map = new HashMap<String, Class<? extends Analyzer>>();
-        map.put("_auto", NonTokenizingLowercaseKeywordAnalyzer.class);
+        map.put(_AUTO, NonTokenizingLowercaseKeywordAnalyzer.class);
         return map;
     }
 
@@ -89,8 +93,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
     }
 
     public String stringContainedInLabel(String label) {
-        if (createPartialLabelOverrides() == null)
+        if (createPartialLabelOverrides() == null) {
             return null;
+        }
         Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
 
         for (String omitItem : omitContainedLabels) {
@@ -106,10 +111,12 @@ public abstract class QueryBuilder extends QueryPartGroup {
         return createPartialLabelOverrides();
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
 
+    @Override
     public void setOperator(Operator or) {
         this.operator = or;
     }

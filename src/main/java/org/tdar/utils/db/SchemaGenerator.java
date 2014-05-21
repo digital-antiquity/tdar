@@ -17,6 +17,8 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaExport.Type;
@@ -41,18 +43,21 @@ public class SchemaGenerator {
     public SchemaGenerator() throws Exception {
         cfg = new Configuration();
 
-        //allow for xml-based mappings, if present.
-        if(getClass().getClassLoader().getResource(HBM_FILENAME) != null) {
+        // allow for xml-based mappings, if present.
+        if (getClass().getClassLoader().getResource(HBM_FILENAME) != null) {
             cfg.addResource("hibernate.hbm.xml");
         }
 
-        //now add annotated class mappings
+        // now add annotated class mappings
         ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
         scanner.addIncludeFilter(new AnnotationTypeFilter(NamedQuery.class));
+        scanner.addExcludeFilter(new AnnotationTypeFilter(Subselect.class));
+        scanner.addExcludeFilter(new AnnotationTypeFilter(Immutable.class));
         String basePackage = "org/tdar/";
         for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
-            cfg.addAnnotatedClass(Class.forName(bd.getBeanClassName()));
+            Class<?> forName = Class.forName(bd.getBeanClassName());
+            cfg.addAnnotatedClass(forName);
         }
 
         cfg.setProperty("hibernate.hbm2ddl.auto", "create");
@@ -60,10 +65,9 @@ public class SchemaGenerator {
 
     }
 
-
     /**
      * Method that actually creates the file.
-     *
+     * 
      * @param dbDialect
      *            to use
      */

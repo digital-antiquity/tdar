@@ -5,42 +5,48 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
 /**
- * $Id$
  * <p>
- * A persistable pointer to a resource, stored by a registered user of tDAR.
+ * A persistable pointer to a resource that has been "bookmarked" by a user. Bookmarked resources serve two purposes:
+ * <ul>
+ * <li>Bookmarks facilitate a rudimentary, user-specific organizational tool for users.
+ * <li>Bookmarked datasets serve as a the "pool" from which a user may choose to include in a dataset integration task.
+ * </ul>
+ * </p>
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
 
 @Entity
-@Table(name = "bookmarked_resource")
+@Table(name = "bookmarked_resource", indexes = {
+        @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
+        @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
+})
 public class BookmarkedResource extends Persistable.Base {
 
     private static final long serialVersionUID = -5112227003063546552L;
 
     @ManyToOne(optional = false)
-    @Index(name = "bookmarked_resource_person_id_idx")
     private Person person;
 
     @ManyToOne(optional = false)
-    @Index(name = "bookmarked_resource_resource_id_idx")
     private Resource resource;
 
     // an alias for this bookmarked resource - if not present, uses the name of the resource.
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -78,6 +84,7 @@ public class BookmarkedResource extends Persistable.Base {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         if (StringUtils.isEmpty(name)) {
             return String.format("(%d, %s, %s)", getId(), getPerson(), getResource());
@@ -86,6 +93,7 @@ public class BookmarkedResource extends Persistable.Base {
         }
     }
 
+    @Override
     public List<?> getEqualityFields() {
         // ab probably okay as not nullable fields
         return Arrays.asList(person, resource);

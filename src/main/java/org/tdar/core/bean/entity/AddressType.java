@@ -1,8 +1,16 @@
 package org.tdar.core.bean.entity;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
-public enum AddressType implements HasLabel {
+/**
+ * Enum for Type of Address
+ * 
+ * @author abrin
+ * 
+ */
+public enum AddressType implements HasLabel, Localizable {
     MAILING("Mailing Address"),
     BILLING("Billing Address"),
     OTHER("Other");
@@ -13,8 +21,14 @@ public enum AddressType implements HasLabel {
         this.setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public void setLabel(String label) {

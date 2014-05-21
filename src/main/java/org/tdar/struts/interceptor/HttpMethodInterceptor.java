@@ -7,13 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 public class HttpMethodInterceptor implements Interceptor {
 
-    public static final String ERROR_POST_ONLY = "Only POST requests accepted";
     private static final long serialVersionUID = -3378318981792368491L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -35,7 +36,9 @@ public class HttpMethodInterceptor implements Interceptor {
 
         logger.warn("ERROR_POST_ONLY");
         if (invocation.getAction() instanceof TdarActionSupport) {
-            ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_POST_ONLY);
+
+            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpMethodInterceptor.error_post_only", invocation
+                    .getInvocationContext().getLocale()));
         }
 
         return TdarActionSupport.BAD_REQUEST;

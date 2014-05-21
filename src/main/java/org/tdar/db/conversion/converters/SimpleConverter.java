@@ -1,9 +1,15 @@
 package org.tdar.db.conversion.converters;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -25,6 +31,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     protected CSVReader reader;
     protected String[] headerLine;
     protected String tableName = "";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public SimpleConverter() {
     }
@@ -35,7 +42,32 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     }
 
     @Override
-    protected abstract void openInputDatabase() throws IOException;
+    protected void openInputDatabase()
+            throws IOException {
+        logger.info("SIMPLE CONVERTER");
+        if (informationResourceFileVersion == null) {
+            logger.warn("Received null information resource file.");
+            return;
+        }
+        File csvFile = informationResourceFileVersion.getTransientFile();
+        if (csvFile == null) {
+            logger.error("InformationResourceFile's file was null, this should never happen.");
+            return;
+        }
+        if (getDelimeterChar() != null) {
+            setReader(new CSVReader(new FileReader(csvFile), getDelimeterChar()));
+        } else {
+            setReader(new CSVReader(new FileReader(csvFile)));
+        }
+        // grab first line as header.
+        setTableName(FilenameUtils.getBaseName(csvFile.getName()));
+        setHeaderLine(getReader().readNext());
+        setIrFileId(informationResourceFileVersion.getId());
+    }
+
+    public Character getDelimeterChar() {
+        return null;
+    }
 
     /**
      * Do the job, to convert the db file and put the data into the
@@ -72,18 +104,18 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
             // 1-based count for PreparedStatement's weirdness.
             int count = 1;
             Map<DataTableColumn, String> columnToValueMap = new HashMap<DataTableColumn, String>();
-            if (line.length > getHeaderLine().length)
-                throw new TdarRecoverableRuntimeException("row " + numberOfLines + " has more columns " + line.length + " than the header column");
+            if (line.length > getHeaderLine().length) {
+                throw new TdarRecoverableRuntimeException("simpleConverter.column_has_more", Arrays.asList(numberOfLines, line.length,
+                        dataTable.getDisplayName()));
+            }
 
             for (int i = 0; i < line.length; i++) {
                 if (count <= getHeaderLine().length) {
                     columnToValueMap.put(
                             dataTable.getDataTableColumns().get(i), line[i]);
-                    statisticsManager.updateStatistics(dataTable
-                            .getDataTableColumns().get(i), line[i]);
+                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(i), line[i], i);
                 } else {
-                    logger.warn("Discarding degenerate data value at index "
-                            + count + " : " + line[i]);
+                    logger.warn("Discarding degenerate data value at index " + count + " : " + line[i]);
                 }
             }
             targetDatabase.addTableRow(dataTable, columnToValueMap);

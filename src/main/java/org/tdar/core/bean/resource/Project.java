@@ -13,7 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -22,14 +22,14 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * $Id$
+ * Represents a Project. Projects allow for inheritance of metadata from the project to resources within the project and thus simplifying metadata entry.
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -70,7 +70,9 @@ public class Project extends Resource implements Sortable {
             "sourceCollections",
             "resourceNotes",
             "resourceAnnotations",
-            "resourceAnnotationKey"
+            "resourceAnnotationKey",
+            "individualAndInstitutionalCredit", "creator", "dateUpdated",
+            "role", "firstName", "lastName", "name", "institution", "email"
     };
 
     public static final Project NULL = new Project() {
@@ -119,15 +121,15 @@ public class Project extends Resource implements Sortable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'", length = 50)
+    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'", length = FieldLength.FIELD_LENGTH_50)
     private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = 25)
+    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption secondarySortBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = 50)
+    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Override
@@ -150,7 +152,8 @@ public class Project extends Resource implements Sortable {
     }
 
     @IndexedEmbedded(prefix = "informationResources.")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlTransient
+    // @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }
@@ -159,6 +162,7 @@ public class Project extends Resource implements Sortable {
         this.cachedInformationResources = cachedInformationResources;
     }
 
+    @Override
     public SortOption getSortBy() {
         return sortBy;
     }

@@ -10,12 +10,16 @@ import java.sql.Types;
 
 import org.odata4j.edm.EdmSimpleType;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
+ * Enum to manage the type of column between tDAR internal types, and database and other types
+ * 
  * @author Adam Brin
  * 
  */
-public enum DataTableColumnType implements HasLabel {
+public enum DataTableColumnType implements HasLabel, Localizable {
 
     // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx for EdmSimpleTypes
 
@@ -44,23 +48,31 @@ public enum DataTableColumnType implements HasLabel {
     }
 
     public static DataTableColumnType fromString(String typeToCheck) {
-        if (typeToCheck.toLowerCase().contains("char"))
+        if (typeToCheck.toLowerCase().contains("char")) {
             return VARCHAR;
-        if (typeToCheck.toLowerCase().contains("text"))
+        }
+        if (typeToCheck.toLowerCase().contains("text")) {
             return TEXT;
-        if (typeToCheck.toLowerCase().contains("blob"))
+        }
+        if (typeToCheck.toLowerCase().contains("blob")) {
             return BLOB;
+        }
         if (typeToCheck.toLowerCase().contains("double")
-                || typeToCheck.contains("float"))
+                || typeToCheck.contains("float")) {
             return DOUBLE;
-        if (typeToCheck.toLowerCase().contains("bool"))
+        }
+        if (typeToCheck.toLowerCase().contains("bool")) {
             return BOOLEAN;
-        if (typeToCheck.toLowerCase().contains("int"))
+        }
+        if (typeToCheck.toLowerCase().contains("int")) {
             return BIGINT;
-        if (typeToCheck.toLowerCase().contains("time"))
+        }
+        if (typeToCheck.toLowerCase().contains("time")) {
             return DATETIME;
-        if (typeToCheck.toLowerCase().equals("date"))
+        }
+        if (typeToCheck.toLowerCase().equals("date")) {
             return DATE;
+        }
         return TEXT;
     }
 
@@ -123,14 +135,21 @@ public enum DataTableColumnType implements HasLabel {
      * @return
      */
     public boolean isNumeric() {
-        if (this == DOUBLE || this == BIGINT)
+        if ((this == DOUBLE) || (this == BIGINT)) {
             return true;
+        }
 
         return false;
     }
 
+    @Override
     public String getLabel() {
         return name();
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public EdmSimpleType<?> getEdmSimpleType() {

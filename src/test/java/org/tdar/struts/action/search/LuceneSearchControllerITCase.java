@@ -34,8 +34,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DateRange;
+import org.tdar.utils.MessageHelper;
 
 @Transactional
 public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -75,7 +77,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Rollback(true)
     public void testFindAllSearchPhrase() {
         doSearch("");
-        assertEquals(AdvancedSearchController.TITLE_ALL_RECORDS, controller.getSearchSubtitle());
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
     }
 
     @Test
@@ -110,6 +112,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
         setupTestDocuments();
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch(resourceTitle);
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -122,7 +125,9 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
+
         setupTestDocuments();
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch(resourceTitle);
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -137,6 +142,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         searchIndexService.index(document);
         setupTestDocuments();
         firstGroup().getTitles().add(resourceTitle);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -151,6 +157,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         searchIndexService.index(document);
         setupTestDocuments();
         firstGroup().getTitles().add(resourceTitle.replaceAll("\\-", ""));
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -170,6 +177,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         searchIndexService.index(document);
         setupTestDocuments();
         firstGroup().getSiteNames().add(label);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -188,6 +196,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         document.getSiteNameKeywords().add(snk);
         searchIndexService.index(document);
         setupTestDocuments();
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("what fun 33-Cu-314");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
@@ -202,13 +211,14 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         logger.debug("search phrase:{}", controller.getSearchPhrase());
         assertTrue(controller.getSearchPhrase().contains(ResourceType.DOCUMENT.getLabel()));
         assertTrue(controller.getSearchPhrase().contains(ResourceType.IMAGE.getLabel()));
-        assertEquals(controller.getSearchSubtitle(), AdvancedSearchController.TITLE_ALL_RECORDS);
+        assertEquals(controller.getSearchSubtitle(), MessageHelper.getMessage("advancedSearchController.title_all_records"));
     }
 
     @Test
     @Rollback(true)
     public void testFindResourceById() {
         controller.setId(Long.valueOf(3074));
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         assertTrue(resultsContainId(3074l));
         for (Indexable r : controller.getResults()) {
@@ -271,6 +281,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testCalDateSearchPhrase() {
+        controller = generateNewInitializedController(AdvancedSearchController.class);
         setResourceTypes(ResourceType.DOCUMENT, ResourceType.IMAGE);
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
         firstGroup().getCoverageDates().add(cd);
@@ -304,6 +315,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     public void testForInheritedCulturalInformationFromProject() {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(getInheritingTypes());
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("Archaic");
         assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(DOCUMENT_INHERITING_CULTURE_ID));
         assertFalse("A child document that inherits nothing from parent project should not appear in results", resultsContainId(DOCUMENT_INHERITING_NOTHING_ID));
@@ -319,6 +331,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         logger.info("imgId:" + imgId + " datasetId:" + datasetId + " codingSheetId:" + codingSheetId);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("precambrian");
         assertFalse(resultsContainId(datasetId));
         assertTrue(resultsContainId(codingSheetId));
@@ -347,11 +360,14 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         setResourceTypes(allResourceTypes);
 
         setStatusAll();
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch(("testabc"));
         assertTrue("expected to find person in keyword style search of firstname", resultsContainId(imgId));
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("\"" + TestConstants.DEFAULT_FIRST_NAME + "abc " + TestConstants.DEFAULT_LAST_NAME + "abc\"");
         assertTrue("expected to find person in phrase style search of full name", resultsContainId(imgId));
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("university");
         assertTrue("institutional author expected to find in search", resultsContainId(imgId));
     }
@@ -371,6 +387,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         Long docId = setupDatedDocument();
         logger.info("Created new document: " + docId);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         setResourceTypes(allResourceTypes);
 
         // test inner range
@@ -423,6 +440,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         // because equality based on label[NULL]
         setResourceTypes(allResourceTypes);
         setStatuses(Status.ACTIVE, Status.DELETED, Status.DRAFT, Status.FLAGGED);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         assertTrue("we should get back at least one hit", !controller.getResults().isEmpty());
         assertTrue("expected to find document that uses known investigation types", resultsContainId(2420L));
@@ -445,11 +463,12 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         // specify some filters that would normally filter-out the document we just created.
         setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
         setTitle("thistitleshouldprettymuchfilteroutanyandallresources");
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
 
         controller.setId(expectedId);
         controller.search();
         assertEquals("expecting only one result", 1, controller.getResults().size());
-        Resource resource = (Resource) controller.getResults().iterator().next();
+        Resource resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());
     }
 
@@ -493,6 +512,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         dateRange.setEnd(dm2.plusDays(1).toDate());
         firstGroup().getRegisteredDates().add(dateRange);
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
 
         assertTrue(controller.getResults().contains(document1));
@@ -503,6 +523,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         dateRange.setEnd(dm2.minusDays(1).toDate());
         firstGroup().getRegisteredDates().add(dateRange);
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
 
         assertTrue(controller.getResults().contains(document1));
@@ -543,11 +564,13 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
         searchIndexService.index(document);
         firstGroup().setContents(Arrays.asList("fun"));
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));
         reset();
         firstGroup().setContents(Arrays.asList("have fun digging"));
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch("");
         logger.info("results:{}", controller.getResults());
         assertTrue(controller.getResults().contains(document));

@@ -49,9 +49,6 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     EntityService entityService;
 
     @Autowired
-    GenericService genericService;
-
-    @Autowired
     GenericKeywordService genericKeywordService;
 
     @Autowired
@@ -77,7 +74,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         long newCount = authorityManagementService.getTotalReferrerCount(keyword.getClass(), Arrays.asList(keyword.getId()));
         logger.debug("original count:{}\tnew count:{}", origCount, newCount);
         Assert.assertTrue("reference count should have increased by one and only one. ref1:" + origCount + " ref2:" + newCount,
-                newCount == origCount + 1);
+                newCount == (origCount + 1));
     }
 
     @Test
@@ -112,7 +109,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
             Long origCount = entry.getValue();
             Long newCount = newMap.get(id);
             logger.debug("keyword id:{}  oldcount:{}  newcount:{}", new Object[] { id, origCount, newCount });
-            Assert.assertTrue("itemcount should increase by 1 and only 1", origCount + 1 == newCount);
+            Assert.assertTrue("itemcount should increase by 1 and only 1", (origCount + 1) == newCount);
         }
 
         Assert.assertTrue(!origMap.isEmpty());
@@ -165,11 +162,11 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         AuthorizedUser user1 = new AuthorizedUser(dupe1, GeneralPermissions.ADMINISTER_GROUP);
         ResourceCollection resourceCollection = genericService.findAll(ResourceCollection.class).iterator().next();
         resourceCollection.getAuthorizedUsers().add(user1);
-        entityService.save(user1);
+        genericService.save(user1);
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, mode);
+        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, mode, true);
         d1 = genericService.find(Document.class, d1.getId());
         d2 = genericService.find(Document.class, d2.getId());
         user1 = genericService.find(AuthorizedUser.class, user1.getId());
@@ -240,7 +237,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, mode);
+        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, mode, true);
 
         // todo: make sure that the authority replaced all the dupes of the former referrers
         doc1 = genericService.find(Document.class, doc1.getId());
@@ -349,7 +346,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         genericService.save(authority);
         genericService.save(dupe);
         authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(),
-                DupeMode.MARK_DUPS_AND_CONSOLDIATE);
+                DupeMode.MARK_DUPS_AND_CONSOLDIATE, true);
         // dupe = null;
         String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
         Assert.assertTrue(message, authority.getSynonyms().contains(dupe));

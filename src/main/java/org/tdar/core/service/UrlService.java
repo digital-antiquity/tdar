@@ -18,19 +18,34 @@ public class UrlService {
     public static final String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
     public static final String TDAR_NAMESPACE_PREFIX = "tdar";
 
-    private String baseUrl;
+    private static String baseUrl;
 
-    public String getBaseUrl() {
+    /*
+     * Get the tDAR Base URL
+     */
+    public static String getBaseUrl() {
         if (baseUrl == null) {
             baseUrl = StringUtils.stripEnd(TdarConfiguration.getInstance().getBaseUrl().trim(), "/");
         }
         return baseUrl;
     }
 
+    /**
+     * Generate an absolute URL for anything that's Addressable (has getUriPart()
+     * 
+     * @param resource
+     * @return
+     */
     public String absoluteUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
+    /**
+     * When passing URLs around, need to reformat them to make sure we don't expose the id=
+     * 
+     * @param url
+     * @return
+     */
     public static String reformatViewUrl(String url) {
         if (url.matches("(.+)/view\\?id=([0-9]+)&?$")) {
             url = url.replaceFirst("(.+)/view\\?id=(\\d+)", "$1/$2");
@@ -45,18 +60,60 @@ public class UrlService {
         return url;
     }
 
+    /**
+     * generate a relative URL for a view
+     * 
+     * @param resource
+     * @return
+     */
     public String relativeUrl(Addressable resource) {
         return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
     }
 
-    public String absoluteUrl(String namespace, Long id) {
+    /**
+     * Generate an absolute URL for a view
+     * 
+     * @param namespace
+     * @param id
+     * @return
+     */
+    public static String absoluteUrl(String namespace, Long id) {
         return String.format("%s/%s/%s", StringUtils.stripEnd(getBaseUrl(), "/"), namespace, id);
     }
 
+    /**
+     * Generate a download URL
+     * 
+     * @param version
+     * @return
+     */
     public String downloadUrl(InformationResourceFileVersion version) {
         return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
 
+    /**
+     * get the URL for a thumbnail image
+     * 
+     * @return
+     */
+    public String thumbnailUrl(InformationResourceFileVersion version) {
+        return String.format("%s/files/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
+    }
+
+    /**
+     * get the URL for a thumbnail image
+     * 
+     * @return
+     */
+    public static String thumbnailUrl(Long id) {
+        return String.format("%s/files/img/sm/%d", StringUtils.stripEnd(getBaseUrl(), "/"), id);
+    }
+
+    /**
+     * get the Schema URL
+     * 
+     * @return
+     */
     public String getPairedSchemaUrl() {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
@@ -86,8 +143,16 @@ public class UrlService {
         return sb.toString();
     }
 
+    /**
+     * Parse the request for an attribute
+     * 
+     * @param servletRequest
+     * @param attribute
+     * @return
+     */
     private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
         Object attr = servletRequest.getAttribute(attribute);
         return (String) attr;
     }
+
 }

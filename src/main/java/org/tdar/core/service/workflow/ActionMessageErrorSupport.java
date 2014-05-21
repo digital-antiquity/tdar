@@ -8,6 +8,8 @@ public interface ActionMessageErrorSupport {
 
     void addActionMessage(String message);
 
-    public List<String> getStackTraces();
+    List<String> getStackTraces();
+
+    void setMoreInfoUrlKey(String url);
 
 }

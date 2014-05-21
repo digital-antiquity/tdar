@@ -20,15 +20,16 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.search.query.SortOption;
-import org.tdar.utils.activity.Activity;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
 /**
  * $Id$
@@ -42,7 +43,7 @@ import org.tdar.utils.activity.Activity;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class DashboardController extends AuthenticationAware.Base {
+public class DashboardController extends AuthenticationAware.Base implements DataTableResourceDisplay {
 
     private static final long serialVersionUID = -2959809512424441740L;
     private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
@@ -53,12 +54,13 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private Map<ResourceType, Map<Status, Long>> resourceCountAndStatusForUser = new HashMap<ResourceType, Map<Status, Long>>();
-    private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
+    private List<InformationResource> resourcesWithErrors;
 
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
@@ -66,39 +68,15 @@ public class DashboardController extends AuthenticationAware.Base {
     @Override
     @Action("dashboard")
     public String execute() {
+        getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
+        getLogger().trace("find empty projects");
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
+        getLogger().trace("counts for graphs");
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
-        getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
-        List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
-        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // try {
-        // getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // } catch (ParseException e1) {
-        // logger.error("parse exception: {} ", e1);
-        // }
-        try {
-            Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-            if (isEditor() && indexingTask != null) {
-                String properName = "unknown user";
-                try {
-                    properName = indexingTask.getUser().getProperName();
-                } catch (Exception e) {
-                    logger.warn("reindexing user could not be determined");
-                }
-                String msg = String.format("%s is RE-INDEXING %s (%s)", properName, getSiteAcronym(), indexingTask.getStartDate());
-                addActionMessage(msg);
-            }
-        } catch (Throwable t) {
-            logger.error("what???", t);
-        }
-        getSharedResourceCollections().removeAll(getResourceCollections());
-        Collections.sort(resourceCollections);
-        Collections.sort(sharedResourceCollections);
+        setupResourceCollectionTreesForDashboard();
+        setResourcesWithErrors(getInformationResourceFileService().findInformationResourcesWithFileStatus(getAuthenticatedUser(),
+                Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
         getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         for (Account account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
@@ -109,6 +87,26 @@ public class DashboardController extends AuthenticationAware.Base {
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
 
         return SUCCESS;
+    }
+
+    private void setupResourceCollectionTreesForDashboard() {
+        getLogger().trace("parent/ owner collections");
+        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
+        getLogger().trace("accessible collections");
+        getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
+        List<Long> collectionIds = Persistable.Base.extractIds(getAllResourceCollections());
+        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+        getLogger().trace("reconcile tree1");
+        getResourceCollectionService().reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
+        getLogger().trace("reconcile tree2");
+        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+
+        getLogger().trace("removing duplicates");
+        getSharedResourceCollections().removeAll(getAllResourceCollections());
+        getLogger().trace("sorting");
+        Collections.sort(allResourceCollections);
+        Collections.sort(sharedResourceCollections);
+        getLogger().trace("done sort");
     }
 
     /**
@@ -162,7 +160,8 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {
@@ -276,17 +275,19 @@ public class DashboardController extends AuthenticationAware.Base {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
+    @DoNotObfuscate(reason = "not needed / performance test")
+    public List<ResourceCollection> getAllResourceCollections() {
+        return allResourceCollections;
     }
 
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
+        this.allResourceCollections = resourceCollections;
     }
 
     /**
      * @return the sharedResourceCollections
      */
+    @DoNotObfuscate(reason = "not needed / performance test")
     public List<ResourceCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
@@ -313,6 +314,14 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
         this.overdrawnAccounts = overdrawnAccounts;
+    }
+
+    public List<InformationResource> getResourcesWithErrors() {
+        return resourcesWithErrors;
+    }
+
+    public void setResourcesWithErrors(List<InformationResource> resourcesWithErrors) {
+        this.resourcesWithErrors = resourcesWithErrors;
     }
 
 }

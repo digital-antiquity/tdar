@@ -20,10 +20,13 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
+
+    private static final String TXT = ".txt";
 
     private static final long serialVersionUID = -3261759402735229520L;
 
@@ -66,19 +69,18 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         if (!isTextInput()) {
             return null;
         }
-
         if (StringUtils.isBlank(getFileTextInput())) {
-            addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
+            addActionError(getText("abstractSupportingInformationResourceController.please_enter"));
             return null;
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
-        if (latestUploadedTextVersion != null
-                && latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR) {
+        if ((latestUploadedTextVersion != null)
+                && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR)) {
             if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
-                logger.info("incoming and current file input text is the same, skipping further actions");
+                getLogger().info("incoming and current file input text is the same, skipping further actions");
                 return null;
             } else {
-                logger.info("processing updated text input for {}", getPersistable());
+                getLogger().info("processing updated text input for {}", getPersistable());
             }
         }
 
@@ -86,11 +88,11 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
             // 2013-22-04 AB: if our validation rules for Struts are working, this is not needed as the title already is checked way before this
             // if (StringUtils.isBlank(getPersistable().getTitle())) {
-            // logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
+            // getLogger().error("Resource title was empty, client side validation failed for {}", getPersistable());
             // addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
             // return null;
             // }
-            String uploadedTextFilename = getPersistable().getTitle() + ".txt";
+            String uploadedTextFilename = getPersistable().getTitle() + TXT;
 
             FileProxy uploadedTextFileProxy = new FileProxy(uploadedTextFilename, FileProxy.createTempFileFromString(getFileTextInput()),
                     VersionType.UPLOADED_TEXT);
@@ -129,7 +131,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     protected void saveCategories() {
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
-            logger.info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
+            getLogger().info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
             if (Persistable.Base.isNullOrTransient(subcategoryId)) {
                 supporting.setCategoryVariable(getCategoryVariableService().find(categoryId));
             } else {
@@ -160,7 +162,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     public List<Resource> getRelatedResources() {
         if (relatedResources == null) {
             relatedResources = new ArrayList<Resource>();
-            for (DataTable table : getDataTableService().findDataTablesUsingResource((Resource) getPersistable())) {
+            for (DataTable table : getDataTableService().findDataTablesUsingResource(getPersistable())) {
                 if (!table.getDataset().isDeleted()) {
                     relatedResources.add(table.getDataset());
                 }
@@ -174,8 +176,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         List<Resource> related = getRelatedResources();
         if (related.size() > 0) {
             String titles = StringUtils.join(related, ',');
-            String message = "please remove the mappings before deleting: " + titles;
-            addActionErrorWithException("this resource is still mapped to the following datasets", new TdarRecoverableRuntimeException(message));
+            String message = getText("abstractSupportingInformationResourceController.remove_mappings", titles);
+            addActionErrorWithException(getText("abstractSupportingInformationResourceController.still_mapped"), new TdarRecoverableRuntimeException(message));
             return ERROR;
         }
         return SUCCESS;
@@ -198,9 +200,9 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         InformationResourceFileVersion version = getLatestUploadedTextVersion();
         if (version != null) {
             try {
-                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             } catch (IOException e) {
-                logger.debug("an error occurred when trying to load the text version of a file", e);
+                getLogger().debug("an error occurred when trying to load the text version of a file", e);
             }
         }
         return versionText;

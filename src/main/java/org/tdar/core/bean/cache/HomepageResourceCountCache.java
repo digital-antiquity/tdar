@@ -10,6 +10,12 @@ import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 
+/**
+ * This caches the counts of resource types for the homepage.
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Table(name = "homepage_cache_resource_type")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
@@ -20,7 +26,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
     private Long count;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type", nullable = false,  unique = true)
+    @Column(name = "resource_type", nullable = false, unique = true)
     private ResourceType resourceType;
 
     public HomepageResourceCountCache() {
@@ -32,6 +38,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         this.count = count;
     }
 
+    @Override
     public Long getCount() {
         return count;
     }
@@ -40,6 +47,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         this.count = count;
     }
 
+    @Override
     public Double getLogCount() {
         return Math.log(getCount());
     }
@@ -57,14 +65,17 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
         return ObjectUtils.compare(getResourceType(), o.getResourceType());
     }
 
+    @Override
     public String getLabel() {
         return getResourceType().getPlural();
     }
 
+    @Override
     public ResourceType getKey() {
         return getResourceType();
     }
 
+    @Override
     public String getCssId() {
         return this.getKey().name();
     }

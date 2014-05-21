@@ -1,6 +1,7 @@
 package org.tdar.db.conversion;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -18,7 +19,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,19 +45,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
             logger.info("{}", table);
         }
 
-        //FIXME: add more depth to testing
+        // FIXME: add more depth to testing
     }
-
-    @Override
-    public String[] getDataImportDatabaseTables() {
-        String[] databases = { "d_503_spital_abone_database_mdb_basic_int", "d_503_spital_abone_database_mdb_bone_modification",
-                "d_503_spital_abone_database_mdb_context_data", "d_503_spital_abone_database_mdb_element_codes",
-                "d_503_spital_abone_database_mdb_modification_codes", "d_503_spital_abone_database_mdb_environmental_sample_number",
-                "d_503_spital_abone_database_mdb_main_table", "d_503_spital_abone_database_mdb_zones", "d_503_spital_abone_database_mdb_tooth_wear",
-                "d_503_spital_abone_database_mdb_tooth_codes",
-                "d_503_spital_abone_database_mdb_part_codes", "d_503_spital_abone_database_mdb_species_codes", "d_503_spital_abone_database_mdb_measurements" };
-        return databases;
-    };
 
     @Override
     @Autowired
@@ -82,7 +71,9 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     public void testConvertTableToCodingSheet() throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        DataTable dataTable = converter.getDataTableByName("d_503_spital_abone_database_mdb_basic_int");
+        DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
+        assertNotNull(dataTable);
+
         // need to solidfy the relationships before passing it onto the list function
         Dataset dataset = new Dataset();
         for (DataTable table : converter.getDataTables()) {
@@ -104,7 +95,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     public void testFindingRelationships() throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        DataTable dataTable = converter.getDataTableByName("d_503_spital_abone_database_mdb_basic_int");
+        DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), dataTable.getColumnByName("basic_int"),
                 dataTable.getColumnByName("basic_int_exp"), null);
         Map<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
@@ -125,19 +116,19 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
             throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        for (DataTable table : converter.getDataTables()) {
-            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDataImportDatabaseTables(), table.getName()));
-        }
-
         Set<DataTableRelationship> rels = converter.getRelationships();
         assertTrue(rels.size() > 0);
-        DataTableRelationship rel = converter.getRelationshipsWithTable("d_503_spital_abone_database_mdb_basic_int").get(0);
+        DataTable table = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
+        String tableName = table.getName();
+        DataTableRelationship rel = converter.getRelationshipsWithTable(tableName).get(0);
         // assertEquals("d_503_spital_abone_database_mdb_basic_int", rel.getLocalTable().getName());
         // assertEquals("d_503_spital_abone_database_mdb_context_data", rel.getForeignTable().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getLocalColumn().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getForeignColumn().getName());
+        logger.info("TABLE:{}", tableName);
+        DataTable mainTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_main_table");
 
-        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_503_spital_abone_database_mdb_main_table"),
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(mainTable,
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)
@@ -218,12 +209,12 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testPgmDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1124L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1125L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
-        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_1124_pgm_tdr_test_docs_mdb_spec_test"),
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_1125_pgm_tdr_test_docs_mdb_spec_test"),
                 new ResultSetExtractor<Object>() {
                     @Override
                     public Object extractData(ResultSet rs)

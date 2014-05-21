@@ -15,17 +15,16 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
-/*
- * an Activity + quantity
+/**
+ * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction.
+ * 
  */
 @Entity
 @Table(name = "pos_item")
 public class BillingItem extends Base implements Validatable {
 
-    private static final String CHOOSE_A_NON_ZERO_QUANTITY = "Please choose a non-zero quantity";
-    private static final String ACTIVITY_MUST_BE_SPECIFIED = "an activity must be specified";
     private static final long serialVersionUID = -2775737509085985555L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "activity_id")
@@ -51,7 +50,7 @@ public class BillingItem extends Base implements Validatable {
     }
 
     public Integer getQuantity() {
-        if (quantity == null || quantity < 1) {
+        if ((quantity == null) || (quantity < 1)) {
             return 0;
         }
         return quantity;
@@ -66,10 +65,10 @@ public class BillingItem extends Base implements Validatable {
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
-            throw new TdarValidationException(ACTIVITY_MUST_BE_SPECIFIED);
+            throw new TdarValidationException("billingItem.specify_activity");
         }
         if (getQuantity() < 1) {
-            throw new TdarValidationException(CHOOSE_A_NON_ZERO_QUANTITY);
+            throw new TdarValidationException("billingItem.non_zero_value");
         }
         return true;
     }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.tdar.core.exception.I18nException;
+
 /**
  * $Id$
  * 
@@ -13,7 +15,7 @@ import java.util.List;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class CodingSheetParserException extends Exception {
+public class CodingSheetParserException extends I18nException {
 
     private static final long serialVersionUID = 6246686753761896569L;
     // TODO: considering immutableList, but remember we have pom exclusions for the latest version (i think)

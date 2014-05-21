@@ -1,6 +1,7 @@
 #!/bin/sh
 echoerr() { echo "$@" 1>&2; }
 sudo echo "deploying production"
+#java -XshowSettings 2>&1 | grep tmp | awk -F= '{print "wro4jDir:" $2 "/.wro4j/"}'
 
 if [  $(id -u) -eq 0  ]
  then
@@ -9,7 +10,7 @@ if [  $(id -u) -eq 0  ]
 fi
 
 while true; do
-    read -p "Is the build clean (GREEN) and are there NO ACTIVE users?" yn
+    read -p "Is the build clean (GREEN) and are there NO ACTIVE users? " yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit;;
@@ -44,7 +45,10 @@ cd /home/tdar/tdar.src/
 hg pull
 hg update $PARAM
 perl src/main/release/release.pl
-mvn clean compile war:war -Pproduction
+sudo rm /tmp/.wro4j/buildContext.properties
+sudo rmdir /tmp/.wro4j/
+
+mvn clean compile war:war -Pproduction,minify-web-resources
 if [ $? -ne 0 ] 
   then
    echoerr "==============================================="

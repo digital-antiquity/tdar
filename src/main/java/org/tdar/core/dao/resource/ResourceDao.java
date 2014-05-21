@@ -18,6 +18,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -53,8 +55,11 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
  * @param <E>
  */
 public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
+
     @Autowired
     private AuthenticationAndAuthorizationService authenticationService;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ResourceDao(Class<E> resourceClass) {
         super(resourceClass);
@@ -99,7 +104,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     public List<ResourceRevisionLog> getLogEntriesForResource(Resource resource) {
         Query query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
         query.setParameter("resourceId", resource.getId());
-        return (List<ResourceRevisionLog>) query.list();
+        return query.list();
     }
 
     /*
@@ -154,8 +159,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     }
 
     public Number countActiveResourcesWithFiles(ResourceType type) {
-        if (type == ResourceType.PROJECT)
+        if (type == ResourceType.PROJECT) {
             return 0;
+        }
         Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES, type.name()));
         return (Number) query.uniqueResult();
     }
@@ -168,8 +174,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if (objs == null || objs[0] == null)
+                if ((objs == null) || (objs[0] == null)) {
                     continue;
+                }
                 cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2], (Long) objs[3]));
             } catch (Exception e) {
                 logger.debug("cannot get iso counts:", e);
@@ -192,8 +199,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
-                if (objs == null || objs[0] == null)
+                if ((objs == null) || (objs[0] == null)) {
                     continue;
+                }
                 ResourceType resourceType = (ResourceType) objs[1];
                 Long count = (Long) objs[0];
                 if (count > 0) {
@@ -295,12 +303,27 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
     public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
-        Query query = setupStatsQuery(granularity, start, end, minCount, false);
+        Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
             @SuppressWarnings("deprecation")
-            AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], new Resource((Long) obj[0], (String) obj[1],
-                    (ResourceType) obj[2]));
+            Resource res = new Resource((Long) obj[0], (String) obj[1], (ResourceType) obj[2]);
+            AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], res);
+            markReadOnly(view.getResource());
+            toReturn.add(view);
+        }
+        return toReturn;
+    }
+
+    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
+        List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
+        Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
+        query.setMaxResults(max.intValue());
+        for (Object obj_ : query.list()) {
+            Object[] obj = (Object[]) obj_;
+            @SuppressWarnings("deprecation")
+            Resource res = new Resource((Long) obj[0], (String) obj[1], (ResourceType) obj[2]);
+            AggregateViewStatistic view = new AggregateViewStatistic(null, (Number) obj[3], res);
             markReadOnly(view.getResource());
             toReturn.add(view);
         }
@@ -317,6 +340,12 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query.list();
     }
 
+    public enum StatisticsQueryMode {
+        ACCESS_DAY,
+        ACCESS_OVERALL,
+        DOWNLOAD_DAY;
+    }
+
     @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long... irFileIds) {
         Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
@@ -327,10 +356,17 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query.list();
     }
 
-    private Query setupStatsQuery(DateGranularity granularity, Date start, Date end, Long minCount, boolean download) {
+    private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
         Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
-        if (download) {
-            query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
+        switch (mode) {
+            case ACCESS_DAY:
+                break;
+            case ACCESS_OVERALL:
+                query = getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
+                break;
+            case DOWNLOAD_DAY:
+                query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
+                break;
         }
         // query.setParameter("part", granularity.name().toLowerCase());
         query.setParameter("start", start);
@@ -341,11 +377,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateDownloadStatistic> toReturn = new ArrayList<AggregateDownloadStatistic>();
-        Query query = setupStatsQuery(granularity, start, end, minCount, true);
+        Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
             InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
-            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), irf.getInformationResource().getId()));
+            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFilename(), irf.getId(), irf.getInformationResource().getId()));
         }
         return toReturn;
     }

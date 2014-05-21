@@ -58,7 +58,19 @@ public enum StatusCode {
         return this;
     }
 
+    @Override
     public String toString() {
         return String.format("HTTP %d %s (%s)", httpStatusCode, errorMessage, getResultName());
+    }
+
+    public static boolean shouldShowException(int statusCode) {
+        switch (statusCode) {
+            case HttpStatus.SC_FORBIDDEN:
+            case HttpStatus.SC_GONE:
+            case HttpStatus.SC_OK:
+                return false;
+            default:
+                return true;
+        }
     }
 }

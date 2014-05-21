@@ -26,7 +26,7 @@ import org.tdar.filestore.tasks.ShapefileReaderTask;
  */
 public class ShapefileITCase extends AbstractIntegrationTestCase {
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     @Autowired
     FileAnalyzer fileAnalyzer;

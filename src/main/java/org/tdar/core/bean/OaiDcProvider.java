@@ -4,17 +4,17 @@ import java.util.Date;
 
 import org.tdar.core.bean.resource.Addressable;
 
-/*
+/**
  * Implemented by objects which can publish basic information about themselves in OAI_DC format.
  */
 public interface OaiDcProvider extends Addressable {
 
-    abstract Date getDateCreated();
+    Date getDateCreated();
 
-    abstract Date getDateUpdated();
+    Date getDateUpdated();
 
-    abstract String getTitle();
+    String getTitle();
 
-    abstract String getDescription();
+    String getDescription();
 
 }

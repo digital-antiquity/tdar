@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 
 /**
  * The elements on this resource are inspired by:
@@ -14,8 +15,8 @@ import org.hibernate.validator.constraints.Length;
  * Not done yet are:
  * Transcript
  * Also, not yet resolved: we should try to automatically extract some of the fields from the audio file: are the ones below enough?
- * Note: Depending on how we implement length, it should likely be kept on the InformationResourceFile 
- * (unless it differs between the archival and non-archival).  In that case, the derivative should live on the version.
+ * Note: Depending on how we implement length, it should likely be kept on the InformationResourceFile
+ * (unless it differs between the archival and non-archival). In that case, the derivative should live on the version.
  * Until I get a better understanding from actual users as to how the audio is to work I'm not populating the fields below. I'm going to simply put a very
  * long descriptive string into the audio codec that displays all of the information suggested by the guide above, and show that on the form.
  * 
@@ -30,7 +31,7 @@ public final class Audio extends InformationResource {
     private static final long serialVersionUID = -5207630181373559506L;
 
     @Column(name = "software")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String software;
 
     // all the following fields should be in the header (and probably length)
@@ -44,7 +45,7 @@ public final class Audio extends InformationResource {
     private Integer sampleRate;
 
     @Column(name = "audio_codec")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String audioCodec;
 
     public Audio() {

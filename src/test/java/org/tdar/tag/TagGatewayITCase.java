@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,8 +93,19 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         query.setWhat(domestic);
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
-        assertTrue("size should be 6 or 7", meta.getTotalRecords() >= 6); // there should be 6 Project records matching domestic
-        assertTrue("size should be 6 or 7", meta.getTotalRecords() < 8); // there should be 6 Project records matching domestic
+        String[] ids = { "262", "1268", "2420", "3805" };
+        boolean ok = false;
+        for (ResultType result : results.getResults().getResult()) {
+            for (String id : ids) {
+                if (id.equals(result.getIdentifier())) {
+                    // logger.info("ok: {} ", id);
+                    ids = (String[]) ArrayUtils.removeElement(ids, id);
+                    ok = true;
+                }
+            }
+            // logger.info("saw: {}", result.identifier);
+        }
+        assertTrue("should see something, missed:" + ArrayUtils.toString(ids), ok);
         query.setWhat(null);
 
         Where where = new Where(); // look in AZ and NM
@@ -127,8 +139,9 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
 
     private boolean titleInResults(List<ResultType> results, String title) {
         for (ResultType res : results) {
-            if (res.getTitle().equalsIgnoreCase(title))
+            if (res.getTitle().equalsIgnoreCase(title)) {
                 return true;
+            }
         }
         return false;
     }

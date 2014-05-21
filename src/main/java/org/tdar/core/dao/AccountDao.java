@@ -14,6 +14,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
@@ -38,6 +40,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  */
 @Component
 public class AccountDao extends Dao.HibernateBase<Account> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public AccountDao() {
         super(Account.class);
@@ -81,20 +85,20 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
         query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
-        return (List<Long>) query.list();
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
         query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
-        return (List<Long>) query.list();
+        return query.list();
     }
 
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
         Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
         String sql = String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray()));
-        if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || resourceIdMap.keySet().size() == 1 && resourceIdMap.keySet().contains(-1L)) {
+        if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || ((resourceIdMap.keySet().size() == 1) && resourceIdMap.keySet().contains(-1L))) {
             return;
         }
         Query query = getCurrentSession().createSQLQuery(sql);
@@ -141,7 +145,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
         for (Coupon coupon : account.getCoupons()) {
             totalFiles += coupon.getNumberOfFiles();
-            totalSpaceInBytes += coupon.getNumberOfMb() * Coupon.ONE_MB;
+            totalSpaceInBytes += coupon.getNumberOfMb() * Persistable.ONE_MB;
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
@@ -175,12 +179,23 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         query.setParameter("code", coupon.getCode().toLowerCase());
         for (Invoice inv : (List<Invoice>) query.list()) {
             if (inv.getTransactionStatus().isComplete()) {
-                throw new TdarRecoverableRuntimeException("Cannot use Coupon, it has already been used");
+                throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }
         }
         if (!invoice.getCoupon().getId().equals(coupon.getId())) {
-            throw new TdarRecoverableRuntimeException("Coupon is assigned to wrong invoice");
+            throw new TdarRecoverableRuntimeException("accountDao.coupon_assigned_wrong");
         }
+    }
+
+    public Account getAccountForInvoice(Invoice invoice) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
+        query.setParameter("id", invoice.getId());
+        Object obj = query.uniqueResult();
+        if (obj != null) {
+            logger.debug("{}", obj);
+            return (Account) obj;
+        }
+        return null;
     }
 
     public Account getAccountForInvoice(Invoice invoice) {

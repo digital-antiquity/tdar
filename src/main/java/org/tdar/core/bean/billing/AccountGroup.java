@@ -19,15 +19,15 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 
 /**
- * $Id$
- * 
- * 
+ * Represents a group of Accounts. Each account may be associated with people who can charge. This "group of groups" allows for super-admins to manage lots of
+ * accounts.
  * 
  * @author TDAR
  * @version $Rev$
@@ -42,14 +42,14 @@ public class AccountGroup extends Base implements Updatable {
     @JoinColumn(nullable = true, updatable = true, name = "account_group_id")
     private Set<Account> accounts = new HashSet<Account>();
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 25)
+    @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.ACTIVE;
 
     @NotNull
@@ -79,6 +79,7 @@ public class AccountGroup extends Base implements Updatable {
         return accounts;
     }
 
+    @Override
     public void markUpdated(Person p) {
         if (getOwner() == null) {
             setDateCreated(new Date());
@@ -156,6 +157,7 @@ public class AccountGroup extends Base implements Updatable {
         this.status = status;
     }
 
+    @Override
     public Date getDateUpdated() {
         return lastModified;
     }

@@ -1,6 +1,9 @@
 package org.tdar.struts.action;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,12 +15,11 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.struts.action.entity.AbstractCreatorController;
 import org.tdar.struts.action.entity.PersonController;
+import org.tdar.utils.MessageHelper;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import com.opensymphony.xwork2.Action;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
@@ -97,7 +99,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertEquals(StatusCode.FORBIDDEN, code);
 
         // did hibernate save the person record anyway?
-        genericService.synchronize();
+        evictCache();
         runInNewTransaction(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {
@@ -119,7 +121,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setId(presonId);
         controller.prepare();
         String editAddress = controller.editAddress();
-        assertEquals(PersonController.SUCCESS, editAddress);
+        assertEquals(Action.SUCCESS, editAddress);
 
         controller = generateNewInitializedController(PersonController.class);
         controller.setId(presonId);
@@ -128,8 +130,8 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setAddress(null);
         controller.setServletRequest(getServletPostRequest());
 
-        assertEquals(PersonController.INPUT, controller.saveAddress());
-        assertEquals(Address.STREET_ADDRESS_IS_REQUIRED, controller.getActionErrors().iterator().next());
+        assertEquals(Action.INPUT, controller.saveAddress());
+        assertEquals(MessageHelper.getMessage("address.street_required"), controller.getActionErrors().iterator().next());
         setIgnoreActionErrors(true);
 
     }
@@ -174,7 +176,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         controller.setReturnUrl("/test");
         String saveAddress = controller.saveAddress();
-        assertEquals(PersonController.RETURN_URL, saveAddress);
+        assertEquals(AbstractCreatorController.RETURN_URL, saveAddress);
         controller = null;
 
         person = genericService.find(Person.class, presonId);
@@ -199,7 +201,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         logger.info("hi");
         String saveAddress = controller.deleteAddress();
-        assertEquals(PersonController.SUCCESS, saveAddress);
+        assertEquals(Action.SUCCESS, saveAddress);
         controller = null;
         Person person_ = genericService.find(Person.class, presonId);
         assertEquals(0, person_.getAddresses().size());
@@ -222,9 +224,9 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    //make sure none of the validators fail if we aren't making any changes
+    // make sure none of the validators fail if we aren't making any changes
     public void testSaveWithNoChanges() throws TdarActionException {
-        //change the first name but leave the email alone
+        // change the first name but leave the email alone
         controller.setId(getUserId());
         controller.prepare();
         controller.setEmail(controller.getPerson().getEmail());
@@ -232,8 +234,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.validate();
         assertThat(controller.getFieldErrors().keySet(), empty());
     }
-
-
 
     @Test
     @Rollback
@@ -267,7 +267,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         controller.setId(presonId);
         controller.prepare();
         String editAddress = controller.editAddress();
-        assertEquals(PersonController.SUCCESS, editAddress);
+        assertEquals(Action.SUCCESS, editAddress);
 
         controller = generateNewInitializedController(PersonController.class);
         controller.setId(presonId);
@@ -281,8 +281,8 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         address.setPostal("85287");
         address.setType(AddressType.BILLING);
         String saveAddress = controller.saveAddress();
-        assertEquals(PersonController.SUCCESS, saveAddress);
-        genericService.synchronize();
+        assertEquals(Action.SUCCESS, saveAddress);
+        evictCache();
         return presonId;
     }
 

@@ -30,57 +30,59 @@ public interface TargetDatabase extends Database {
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
-    public static final String TDAR_ID_COLUMN = "id_row_tdar";
+    static final String TDAR_ID_COLUMN = "id_row_tdar";
 
-    public String normalizeTableOrColumnNames(String input);
+    String normalizeTableOrColumnNames(String input);
 
-    public void closePreparedStatements(Collection<DataTable> dataTables) throws Exception;
+    void closePreparedStatements(Collection<DataTable> dataTables) throws Exception;
 
-    public String getFullyQualifiedTableName(String tableName);
+    String getFullyQualifiedTableName(String tableName);
 
-    public void dropTable(String tableName);
+    void dropTable(String tableName);
 
-    public void dropTable(DataTable dataTable);
+    void dropTable(DataTable dataTable);
 
-    public void createTable(DataTable dataTable) throws Exception;
+    void createTable(DataTable dataTable) throws Exception;
 
-    public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse);
+    <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse);
 
-    public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
+    void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
 
-    public List<String> selectNonNullDistinctValues(DataTableColumn column);
+    List<String> selectNonNullDistinctValues(DataTableColumn column);
 
     /**
      * @param dataType
      * @return
      */
-    public String toImplementedTypeDeclaration(DataTableColumnType dataType, int precision);
+    String toImplementedTypeDeclaration(DataTableColumnType dataType, int precision);
 
     @Deprecated
-    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
-    public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
-    public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
+    <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
 
-    public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
+    Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
 
-    public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
+    String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
             Map<List<OntologyNode>, Map<DataTable, Integer>> pivot);
 
-    // public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
+    // List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
-    public String getResultSetValueAsString(ResultSet resultSet, int resultSetPosition, DataTableColumn column) throws SQLException;
+    String getResultSetValueAsString(ResultSet resultSet, int resultSetPosition, DataTableColumn column) throws SQLException;
 
-    public List<String> selectDistinctValues(DataTableColumn column);
+    List<String> selectDistinctValues(DataTableColumn column);
 
-    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
+    List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
-    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+    List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query);
 
-    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId);
+    <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId);
 
-    public String selectTableAsXml(DataTable dataTable);
+    String selectTableAsXml(DataTable dataTable);
+
+    int getMaxColumnNameLength();
 
 }

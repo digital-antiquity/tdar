@@ -16,8 +16,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.resource.AbstractResourceController;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.web.SessionDataAware;
 
 /**
@@ -35,16 +35,16 @@ import org.tdar.web.SessionDataAware;
 })
 public interface AuthenticationAware extends SessionDataAware {
 
-    static final String TYPE_REDIRECT = "redirect";
+    final String TYPE_REDIRECT = "redirect";
 
     AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
-    @DoNotObfuscate(reason="never obfuscate the session user")
+    @DoNotObfuscate(reason = "never obfuscate the session user")
     Person getAuthenticatedUser();
 
     boolean isAuthenticated();
 
-    abstract boolean isBillingManager();
+    boolean isBillingManager();
 
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
@@ -54,10 +54,11 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         @Override
-        @DoNotObfuscate(reason="never obfuscate the session user")
+        @DoNotObfuscate(reason = "never obfuscate the session user")
         public Person getAuthenticatedUser() {
-            if (getSessionData() == null)
+            if (getSessionData() == null) {
                 return null;
+            }
             if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
                 return getGenericService().find(Person.class, getSessionData().getPerson().getId());
             } else {
@@ -141,7 +142,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
             List<Long> validIds = new ArrayList<Long>();
             for (Long id : rawIds) {
-                if (id != null && id >= GenericService.MINIMUM_VALID_ID) {
+                if ((id != null) && (id >= GenericService.MINIMUM_VALID_ID)) {
                     validIds.add(id);
                 }
             }

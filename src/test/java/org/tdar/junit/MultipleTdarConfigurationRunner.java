@@ -53,7 +53,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         return description;
     }
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
 
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
@@ -62,8 +62,8 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
         RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
-        if (annotation != null &&
-                method.getAnnotation(Ignore.class) == null) {
+        if ((annotation != null) &&
+                (method.getAnnotation(Ignore.class) == null)) {
             String[] configs = annotation.runWith();
 
             if (configs.length > 0) {

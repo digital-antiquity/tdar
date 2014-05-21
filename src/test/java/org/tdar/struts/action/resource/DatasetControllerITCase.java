@@ -105,8 +105,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         List<String> findAllDistinctValues = dataTableService.findAllDistinctValues(column);
         List<String> tibias = new ArrayList<String>();
         for (String distinct : findAllDistinctValues) {
-            if (distinct.toLowerCase().contains("tibia"))
+            if (distinct.toLowerCase().contains("tibia")) {
                 tibias.add(distinct);
+            }
         }
 
         int tibia = -1;
@@ -122,8 +123,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                 tibia = i;
             }
             i++;
-            if (key.toLowerCase().contains("tibia"))
+            if (key.toLowerCase().contains("tibia")) {
                 suggestedTibias.add(key);
+            }
         }
 
         assertEquals(tibias.size(), suggestedTibias.size());
@@ -150,16 +152,16 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                 try {
                     String result = (String) method.invoke(controller);
                     if (successActions.contains(method.getName())) {
-                        assertEquals("DatasetController." + method.getName() + "() should return success", DatasetController.SUCCESS, result);
+                        assertEquals("DatasetController." + method.getName() + "() should return success", com.opensymphony.xwork2.Action.SUCCESS, result);
                     } else {
                         setIgnoreActionErrors(true);
-                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS, result);
+                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS, result);
                     }
                 } catch (Exception e) {
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
-                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS,
+                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
                                 exception.getResultName());
                     }
 
@@ -181,7 +183,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void tableAsXmlReturnsErrorIfXmlExportNotEnabled() {
         controller = generateNewInitializedController(DatasetController.class);
-        assertSame(TdarActionSupport.ERROR, controller.getTableAsXml());
+        assertSame(com.opensymphony.xwork2.Action.ERROR, controller.getTableAsXml());
     }
 
     @Test
@@ -194,7 +196,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataset.getId());
         controller.setDataTableId(dataTable.getId());
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getTableAsXml());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.getTableAsXml());
         InputStream xmlStream = controller.getXmlStream();
         String xml = IOUtils.toString(xmlStream, "UTF-8");
         assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
@@ -219,7 +221,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
         controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
         // FIXME: I believe this causes the NonUniqueObjectException because we're
         // still actually using the same Hibernate Session / thread of execution that we were in initially
         // (when setupAndLoadResource was invoked at the top of the method)
@@ -244,7 +246,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
     }
 
     @Test
@@ -270,7 +272,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
     }
 
     @Test

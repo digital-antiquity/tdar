@@ -10,11 +10,18 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.utils.MessageHelper;
 
-//domain of entity types that we allow users to 'de-dupe'
+/**
+ * Controls the types of objects that can be deduped.
+ * 
+ * @author abrin
+ * 
+ */
+// domain of entity types that we allow users to 'de-dupe'
 // FIXME: consider using an INTERFACE instead of a ENUM and then autowiring a list of the thing that support that interface
 @SuppressWarnings("rawtypes")
-public enum DedupeableType implements HasLabel {
+public enum DedupeableType implements HasLabel, Localizable {
     INSTITUTION(Institution.class, "Institution"),
     PERSON(Person.class, "Person"),
     KEYWORD_CULTURE_KEYWORD(CultureKeyword.class, "Culture Keyword"),
@@ -35,6 +42,11 @@ public enum DedupeableType implements HasLabel {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     private DedupeableType(Class<? extends Dedupable> type, String label) {

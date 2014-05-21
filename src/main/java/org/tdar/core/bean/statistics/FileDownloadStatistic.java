@@ -4,18 +4,22 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
 import org.tdar.core.bean.resource.InformationResourceFile;
 
 @Entity
-@Table(name = "information_resource_file_download_statistics")
-@org.hibernate.annotations.Table( appliesTo = "information_resource_file_download_statistics", indexes = {
-        @Index(name="file_download_stats_count_id", columnNames={"information_resource_file_id", "id"})
+@Table(name = "information_resource_file_download_statistics", indexes = {
+        @Index(name = "file_download_stats_count_id", columnList = "information_resource_file_id, id")
 })
+/**
+ * Tracks anonymous download statistics
+ * @author abrin
+ *
+ */
 public class FileDownloadStatistic extends AbstractResourceStatistic<InformationResourceFile> {
     private static final long serialVersionUID = 3754152671288642718L;
 
@@ -31,10 +35,12 @@ public class FileDownloadStatistic extends AbstractResourceStatistic<Information
         setReference(r);
     }
 
+    @Override
     public InformationResourceFile getReference() {
         return reference;
     }
 
+    @Override
     public void setReference(InformationResourceFile reference) {
         this.reference = reference;
     }

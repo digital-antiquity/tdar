@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
+import org.tdar.utils.MessageHelper;
 
 /**
  * This is a DAO to manage access to postGIS. It's attempted to manage this by hiding all of the PostGIS info at this layer
@@ -46,6 +47,7 @@ public class GeoSearchDao {
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
     private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
+
     // private static final String PSQL_MULTIPOLYGON_DATELINE =
     // "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
     public String convertToPolygonBox(LatitudeLongitudeBox latLong) {
@@ -53,7 +55,7 @@ public class GeoSearchDao {
         // into a multipolygon instead of a standard one. The multipolygon is two polygons
         // each one being on either side of the dateline
         if (!latLong.isValid()) {
-            throw new TdarRuntimeException("the specified latLong box is not valid");
+            throw new TdarRuntimeException(MessageHelper.getMessage("geoSearchService.lat_long_Not_valid"));
         }
         if (latLong.crossesDateline()) {
             return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude(),
@@ -212,10 +214,10 @@ public class GeoSearchDao {
             logger.trace("no results found for query");
         } catch (CannotGetJdbcConnectionException e) {
             logger.error("gis database connection not enabled");
-            databaseEnabled = false;
+            GeoSearchDao.setEnabled(false);
         } catch (Exception e) {
             logger.debug("exception in geosearch:", e);
-            databaseEnabled = false;
+            GeoSearchDao.setEnabled(false);
         }
         return queryForList;
     }
@@ -282,8 +284,9 @@ public class GeoSearchDao {
     public LatitudeLongitudeBox extractLatLongFromFipsCode(String... fipsCodes) {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         StringBuffer suffix = new StringBuffer();
-        if (ArrayUtils.isEmpty(fipsCodes))
+        if (ArrayUtils.isEmpty(fipsCodes)) {
             return null;
+        }
 
         for (int i = 0; i < fipsCodes.length; i++) {
             try {
@@ -305,15 +308,17 @@ public class GeoSearchDao {
                 }
             }
             suffix.append(String.format(QUERY_ENVELOPE_2, col, fipsCodes[i]));
-            if (i + 1 < fipsCodes.length)
+            if ((i + 1) < fipsCodes.length) {
                 suffix.append(" OR ");
+            }
         }
 
         String sql = String.format(QUERY_ENVELOPE, SpatialTables.COUNTY.getTableName(), POLYGON, suffix.toString());
         logger.trace(sql);
         Map<String, Object> fipsResults = findFirst(sql);
-        if (fipsResults == null || fipsResults.get(POLYGON) == null)
+        if ((fipsResults == null) || (fipsResults.get(POLYGON) == null)) {
             return null;
+        }
         PGgeometry poly = (PGgeometry) fipsResults.get(POLYGON);
         logger.trace(poly.getGeometry().toString());
         Point firstPoint = poly.getGeometry().getPoint(0);
@@ -354,7 +359,7 @@ public class GeoSearchDao {
         }
         logger.info(sql);
         Map<String, Object> envelope = findFirst(sql);
-        if (envelope != null && envelope.get(POLYGON) != null) {
+        if ((envelope != null) && (envelope.get(POLYGON) != null)) {
             PGgeometry poly = (PGgeometry) envelope.get(POLYGON);
             logger.trace(poly.getGeometry().toString());
             Point firstPoint = poly.getGeometry().getPoint(0);

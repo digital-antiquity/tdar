@@ -1,6 +1,7 @@
 package org.tdar.utils.jaxb.converters;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -27,6 +28,9 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
         if (d.getId() != null) {
             id = d.getId().toString();
         }
+        if (HibernateProxy.class.isAssignableFrom(d.getClass())) {
+            d = (Persistable) ((HibernateProxy) d).getHibernateLazyInitializer().getImplementation();
+        }
         return d.getClass().getSimpleName() + ":" + id;
     }
 
@@ -37,6 +41,6 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
         }
         String[] split = id.split(":");
         Class<Persistable> cls = reflectionService.getMatchingClassForSimpleName(split[0]);
-        return (Persistable) genericService.find(cls, Long.valueOf(split[1]));
+        return genericService.find(cls, Long.valueOf(split[1]));
     }
 }

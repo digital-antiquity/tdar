@@ -66,11 +66,20 @@ public enum SortOption {
     public static List<SortOption> getOptionsForContext(Class<? extends Indexable> cls) {
         List<SortOption> toReturn = new ArrayList<SortOption>();
         for (SortOption option : SortOption.values()) {
-            if (option.getContext() == null || cls.isAssignableFrom(option.getContext())) {
+            if ((option.getContext() == null) || cls.isAssignableFrom(option.getContext())) {
                 toReturn.add(option);
             }
         }
         return toReturn;
+    }
+
+    public static List<SortOption> getOptionsForResourceCollectionPage() {
+        List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
+        options.remove(SortOption.RESOURCE_TYPE);
+        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
+        options.add(0, SortOption.RESOURCE_TYPE);
+        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
+        return options;
     }
 
     private SortOption(Class<? extends Indexable> context, String label, String sortField) {
@@ -148,7 +157,7 @@ public enum SortOption {
     public static <I extends Indexable> List<SortOption> getApplicableSortOptions(Class<I> context) {
         List<SortOption> sortOptions = new ArrayList<SortOption>();
         for (SortOption sortOption : SortOption.values()) {
-            if (sortOption.context == null || context.equals(sortOption.context)) {
+            if ((sortOption.context == null) || context.equals(sortOption.context)) {
                 sortOptions.add(sortOption);
             }
         }

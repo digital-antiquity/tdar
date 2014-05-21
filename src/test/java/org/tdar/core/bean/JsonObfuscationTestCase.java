@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
 
 public class JsonObfuscationTestCase {
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     /*
      * these tests are around to help prevent cases of double escaping,

@@ -15,6 +15,12 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
+/**
+ * A service to help with the obfuscation of @link Persistable Beans supporting @link Obfuscatable
+ * 
+ * @author abrin
+ * 
+ */
 @Service
 @Transactional(readOnly = true)
 public class ObfuscationService {
@@ -26,47 +32,64 @@ public class ObfuscationService {
 
     @Autowired
     private AuthenticationAndAuthorizationService authService;
-    
+
+    /**
+     * Obfuscates a collection of objects based on the specified user.
+     * 
+     * @see #obfuscate(Obfuscatable, Person)
+     * 
+     * @param targets
+     * @param user
+     */
     @Transactional(readOnly = true)
     public void obfuscate(Collection<? extends Obfuscatable> targets, Person user) {
         for (Obfuscatable target : targets) {
             obfuscate(target, user);
         }
     }
-    
+
+    /**
+     * Due to Autowiring complexity, we expose the @link AuthenticationAndAuthorizationService here so we don't have autowiring issues in services like the @link
+     * SearchService
+     * 
+     * @return
+     */
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
         return authService;
     }
 
+    /**
+     * we're going to manipulate the record, so, we detach the items from the session before
+     * we muck with them... then we'll pass it on. If we don't detach, then hibernate may try
+     * to persist the changes.
+     * Before we detach from the session, though, we have to make sure any lazily-initialized
+     * properties and collections are initialized, because without a session, these properties
+     * can't be initialized. So first we'll serialize the object (and discard the serialization),
+     * purely as a means of fully loading the properties for the final serialization later.
+     * 
+     * @param target
+     * @param user
+     */
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, Person user) {
-        /*
-         * we're going to manipulate the record, so, we detach the items from the session before
-         * we muck with them... then we'll pass it on. If we don't detach, then hibernate may try
-         * to persist the changes.
-         * Before we detach from the session, though, we have to make sure any lazily-initialized
-         * properties and collections are initialized, because without a session, these properties
-         * can't be initialized. So first we'll serialize the object (and discard the serialization),
-         * purely as a means of fully loading the properties for the final serialization later.
-         */
 
-        if (target == null || target.isObfuscated()) {
+        if ((target == null) || target.isObfuscated()) {
             logger.trace("target is already obfuscated or null: {} ({}}", target, user);
             return;
         }
 
-//        if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
-//            return;
-//        }
+        // if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
+        // return;
+        // }
 
         if (authService.isEditor(user)) {
-            logger.debug("user is editor: {} ({}}", target, user);
+            // logger.debug("user is editor: {} ({}}", target, user);
             return;
         }
-        
+
         // don't obfuscate someone for themself
-        if (target instanceof Person && ObjectUtils.equals(user, (Person)target)) {
-            logger.info("not obfuscating person: {}", user);
+        if ((target instanceof Person) && ObjectUtils.equals(user, target)) {
+            logger.trace("not obfuscating person: {}", user);
             return;
         }
 
@@ -79,11 +102,18 @@ public class ObfuscationService {
         }
     }
 
+    /**
+     * Ultimately, this should be replaced with a Vistor pattern for obfuscation, but right now, it handles the obfuscation by calling @link
+     * Obfuscatable.obfuscate()
+     * 
+     * @param target
+     * @return
+     */
+    @SuppressWarnings("deprecation")
     private List<Obfuscatable> handleObfuscation(Obfuscatable target) {
         logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
         target.setObfuscated(true);
         return target.obfuscate();
     }
-    
 
 }

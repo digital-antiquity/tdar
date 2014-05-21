@@ -39,6 +39,8 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
+import com.opensymphony.xwork2.Action;
+
 public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -72,6 +74,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     @Ignore
+    // ignored because bad test with HashCode
     public void testProjectResourceCreator() throws Exception {
         Institution inst = new Institution("da");
 
@@ -133,12 +136,13 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Project project = new Project();
         project.setTitle("test");
         project.setDescription("test");
-        project.markUpdated(getAdminUser());
+        project.markUpdated(getBasicUser());
         genericService.save(project);
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
         users.add(user);
-        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true);
-
+        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
+        project.setSubmitter(getAdminUser());
+        genericService.saveOrUpdate(project);
         // ensure that basicUser can edit the project
         Long id = project.getId();
         project = null;
@@ -156,7 +160,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         testResource.setProject(project_);
         genericService.saveOrUpdate(testResource);
         assertEquals(getBasicUser(), testResource.getSubmitter());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, GeneralPermissions.MODIFY_METADATA));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
         ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
@@ -176,17 +180,17 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
                 new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(testCollection, users, true);
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, testCollection.getOwner());
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
         logger.info("rc:{}", project_.getResourceCollections());
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, GeneralPermissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, GeneralPermissions.MODIFY_METADATA));
 
         // THESE NEXT TESTS SHOULD BE TRUE IF INHERITANCE IS TURNED BACK ON FROM PROJECT -> RESOURCE
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource, GeneralPermissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource, GeneralPermissions.MODIFY_METADATA));
     }
 
     @Override
@@ -229,23 +233,23 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
         ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
-        genericService.synchronize();
+        evictCache();
         assertNotNull(rc);
 
         // try and fail due to rights
         ProjectController controller = tryAndSaveCollectionToController(rc);
-        assertNotEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertNotEquals(Action.SUCCESS, controller.save());
 
         rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_GROUP));
         genericService.saveOrUpdate(rc);
-        genericService.synchronize();
+        evictCache();
         // try ... and should succeed now that we add the user + permissions
         controller = tryAndSaveCollectionToController(rc);
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(Action.SUCCESS, controller.save());
 
         assertNotNull(controller.getProject());
         Long id = controller.getProject().getId();
-        assertTrue("project should have been saved", id != null && id != -1L);
+        assertTrue("project should have been saved", (id != null) && (id != -1L));
         logger.info("HI!!! {}", id);
 
         Project loadedProject = genericService.find(Project.class, id);
@@ -254,7 +258,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue("collection list shouldn't be empty", loadedProject.getResourceCollections().size() > 0);
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
-        genericService.synchronize();
+        evictCache();
         setIgnoreActionErrors(true);
     }
 
@@ -311,7 +315,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertUniqueCollections(controller.getResourceCollections(), name1, name2);
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, result);
+        assertEquals(Action.SUCCESS, result);
         Long id = project.getId();
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);

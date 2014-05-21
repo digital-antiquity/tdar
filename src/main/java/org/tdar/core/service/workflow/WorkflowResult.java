@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -23,7 +24,7 @@ public class WorkflowResult implements Serializable {
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean success = true; // deliberately assume the happy case
 
@@ -35,7 +36,9 @@ public class WorkflowResult implements Serializable {
                     copyContextResults(file.getWorkflowContext());
                 }
             }
-            logger.warn("EXCEPTIONS: {}", getExceptions());
+            if (CollectionUtils.isNotEmpty(getExceptions())) {
+                logger.warn("EXCEPTIONS: {}", getExceptions());
+            }
         }
     }
 
@@ -64,7 +67,11 @@ public class WorkflowResult implements Serializable {
             } else {
                 actionSupport.addActionMessage(exception.getMessage());
             }
-            actionSupport.getStackTraces().add(exception.getStackTrace());
+            logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
+            actionSupport.getStackTraces().add(exception.getErrorCode());
+            if (StringUtils.isNotBlank(exception.getMoreInfoUrlKey())) {
+                actionSupport.setMoreInfoUrlKey(exception.getMoreInfoUrlKey());
+            }
         }
     }
 

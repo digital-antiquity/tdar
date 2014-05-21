@@ -13,9 +13,10 @@ import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.struts.DoNotObfuscate;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.SessionData;
@@ -43,9 +44,9 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     enum SessionType {
-        READ_ONLY,WRITEABLE
+        READ_ONLY, WRITEABLE
     }
-    
+
     @Autowired
     private transient GenericService genericService;
     @Autowired
@@ -69,14 +70,26 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         Activity activity = null;
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
-            if (getSessionData() != null && getSessionData().isAuthenticated()) {
+            if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
                 activity.setUser(sessionData.getPerson());
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
         }
         logger.debug("<< activity begin: {} ", activity);
 
-        
+        HttpServletResponse response = ServletActionContext.getResponse();
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
+            response.setHeader("Cache-Control", "no-store,no-Cache");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+        }
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        // response.setHeader("Content-Security-Policy", "'default-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" +
+        // TdarConfiguration.getInstance().getContentSecurityPolicyAdditions()
+        // +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
+        // http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
@@ -96,12 +109,11 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             String invoke = invocation.invoke();
             return invoke;
         } catch (TdarActionException exception) {
-            if (exception.getStatusCode() == StatusCode.FORBIDDEN.getHttpStatusCode()) {
-                logger.warn("caught TdarActionException", exception.getMessage());
+            if (StatusCode.shouldShowException(exception.getStatusCode())) {
+                logger.warn("caught TdarActionException ({})", exception.getStatusCode(), exception);
             } else {
-                logger.warn("caught TdarActionException", exception);
+                logger.warn("caught TdarActionException", exception.getMessage());
             }
-            HttpServletResponse response = ServletActionContext.getResponse();
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
             genericService.clearCurrentSession();

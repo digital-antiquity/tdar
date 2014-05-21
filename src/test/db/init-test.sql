@@ -29,10 +29,12 @@ INSERT INTO creator (id, date_created, last_updated, url) VALUES (12088, NULL, N
 INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
 INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
 INSERT INTO creator (id, date_created, last_updated, url) VALUES (8094, NULL, NULL, NULL);
+INSERT INTO creator (id, date_created, last_updated, url) VALUES (8095, NULL, NULL, NULL);
 INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
 INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
 INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', NULL, 12088);
 INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', NULL, 12088);
+INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8095, true, 'billing@tdar.org', 'billing', 'user', true, NULL, '', NULL, 12088);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
 INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, 8092, NULL);
 INSERT INTO project (id) VALUES (1);
@@ -2647,7 +2649,7 @@ INSERT INTO geospatial (currentnessUpdateNotes,map_source,id) VALUES ('recent', 
 INSERT INTO image VALUES (4292);
 INSERT INTO collection_resource(resource_id, collection_id) VALUES(4289,1575),(4290,1575),(4291,1575),(4292,1575);
 SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
-SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
+--SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
 SELECT setval('culture_keyword_id_seq', (SELECT MAX(id) FROM culture_keyword)+1);
 SELECT setval('geographic_keyword_id_seq', (SELECT MAX(id) FROM geographic_keyword)+1);

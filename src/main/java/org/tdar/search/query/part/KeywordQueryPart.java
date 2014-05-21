@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -27,12 +29,9 @@ import org.tdar.core.bean.keyword.Keyword;
 @Deprecated
 public class KeywordQueryPart implements QueryPart<Keyword> {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<String> terms;
     private boolean includeChildren = true;
-
-    // for use when generating description
-    private String descriptionLabel = "Keyword";
 
     private String keywordType;
 
@@ -44,12 +43,13 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.keywordType = field;
     }
 
+    @Override
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(terms);
     }
 
     public void setLimit(Keyword obj) {
-        terms = new ArrayList<String>(Arrays.asList((String) obj.getLabel()));
+        terms = new ArrayList<String>(Arrays.asList(obj.getLabel()));
     }
 
     public KeywordQueryPart(String keywordType) {
@@ -70,8 +70,9 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public KeywordQueryPart(String keywordType, Collection terms_) {
         terms = new ArrayList<String>();
         for (Object term : terms_) {
-            if (term == null)
+            if (term == null) {
                 continue;
+            }
 
             if (term instanceof Keyword) {
                 Keyword kwd = (Keyword) term;
@@ -107,10 +108,12 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     public String generateQueryString() {
         StringBuilder q = new StringBuilder();
         for (String term : terms) {
-            if (StringUtils.isEmpty(term))
+            if (StringUtils.isEmpty(term)) {
                 continue;
-            if (q.length() > 1)
+            }
+            if (q.length() > 1) {
                 q.append(" OR ");
+            }
 
             String field = "label";
             if (StringUtils.isNumeric(term)) {
@@ -133,23 +136,23 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         return keywordType;
     }
 
-    public String getDescriptionLabel() {
-        return descriptionLabel;
-    }
-
-    public void setDescriptionLabel(String label) {
-        descriptionLabel = label;
-    }
+    // public String getDescriptionLabel() {
+    // return descriptionLabel;
+    // }
+    //
+    // public void setDescriptionLabel(String label) {
+    // descriptionLabel = label;
+    // }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String strValues = StringUtils.join(terms, ", ");
-        return String.format("%s: %s", descriptionLabel, strValues);
+        return String.format("%s: %s", provider.getText("keywordQueryPart.label"), strValues);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override
@@ -170,6 +173,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.includeChildren = includeChildren;
     }
 
+    @Override
     public Operator getOperator() {
         return Operator.OR;
     }

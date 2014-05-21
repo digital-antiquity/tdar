@@ -20,23 +20,35 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.HashQueue;
 
+/**
+ * Service to help manage and handle the complexity of @link FileProxy objects
+ * 
+ * @author jtdevos
+ * 
+ */
 @Component
 public class FileProxyService {
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    PersonalFilestoreService filestoreService;
+    private PersonalFilestoreService filestoreService;
 
     public static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
 
-    // build a priorityqueue of proxies that expect files.
+    /**
+     * build a priority-queue of proxies that expect files.
+     * 
+     * @param proxies
+     * @return
+     */
     public HashQueue<String, FileProxy> buildProxyQueue(List<FileProxy> proxies) {
-        HashQueue<String, FileProxy> hashQueue = new HashQueue<String, FileProxy>();
+        HashQueue<String, FileProxy> hashQueue = new HashQueue<>();
         for (FileProxy proxy : proxies) {
-            if (proxy == null)
+            if (proxy == null) {
                 continue;
+            }
             if (proxy.getAction() == null) {
                 logger.error("null proxy action on '{}'", proxy);
                 proxy.setAction(FileAction.NONE);
@@ -48,6 +60,15 @@ public class FileProxyService {
         return hashQueue;
     }
 
+    /**
+     * The @link FileProxy objects come from the @link AbstractInformationResourceController, while the @link PersonalFilestoreFile entries come from the @link
+     * UploadController. This method tries to reconcile the two so that the file gets associated with the appropriate user-defined metadata. We use the two
+     * sources so we can handle asynchronous uploads.
+     * 
+     * @param fileProxies
+     * @param ticketId
+     * @return
+     */
     public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies, Long ticketId) {
         cullInvalidProxies(fileProxies);
         List<PersonalFilestoreFile> pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
@@ -57,8 +78,7 @@ public class FileProxyService {
         HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
 
         // FIXME: trying to handle duplicate filenames more gracefully by using hashqueue instead of hashmap, but this assumes that the sequence of pending
-        // files
-        // is *similar* to sequence of incoming file proxies. probably a dodgy assumption, but arguably better than obliterating proxies w/ dupe filenames
+        // files is *similar* to sequence of incoming file proxies. probably a dodgy assumption, but arguably better than obliterating proxies w/ dupe filenames
         logger.info("pending: {} proxies: {}", pendingFiles, fileProxies);
         // associates InputStreams with all FileProxy objects that need to create a new version.
         for (PersonalFilestoreFile pendingFile : pendingFiles) {
@@ -78,7 +98,11 @@ public class FileProxyService {
         return finalProxyList;
     }
 
-    // return a list of fileProxies, culling null and invalid instances
+    /**
+     * return a list of fileProxies, culling null and invalid instances
+     * 
+     * @param proxies
+     */
     public void cullInvalidProxies(List<FileProxy> proxies) {
         logger.debug("file proxies: {} ", proxies);
         ListIterator<FileProxy> iterator = proxies.listIterator();

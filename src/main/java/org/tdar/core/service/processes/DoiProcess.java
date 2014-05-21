@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
@@ -27,6 +29,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     public static final String SUBJECT = " DOI Creation Info";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final long serialVersionUID = 6004534173920064945L;
 
     public static final String DELETED = "deleted";
@@ -35,11 +38,11 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     public static final String DOI_KEY = "DOI";
 
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
     @Autowired
-    private DatasetDao datasetDao;
+    private transient DatasetDao datasetDao;
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
     private ConfigurableService<ExternalIDProvider> providers = new AbstractConfigurableService<ExternalIDProvider>() {
         @Override
@@ -48,9 +51,10 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             return false;
         }
     };
-    
+
     /**
      * Used in testing
+     * 
      * @return the providers
      */
     public ConfigurableService<ExternalIDProvider> getProviders() {
@@ -134,7 +138,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             map.put("date", new Date());
             if (total > 0) {
                 logger.info("sending email");
-                emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
+                emailService.sendWithFreemarkerTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
             }
             batchResults.clear();
             initializeBatchResults();
@@ -146,13 +150,13 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     }
 
     @Autowired
-    public void setAllServices(List<ExternalIDProvider> providers) {
+    private void setAllServices(List<ExternalIDProvider> providers) {
         ((AbstractConfigurableService<ExternalIDProvider>) this.providers).setAllServices(providers);
     }
 
     @Override
     public boolean isEnabled() {
         ExternalIDProvider idProvider = providers.getProvider();
-        return idProvider != null && idProvider.isConfigured();
+        return (idProvider != null) && idProvider.isConfigured();
     }
 }

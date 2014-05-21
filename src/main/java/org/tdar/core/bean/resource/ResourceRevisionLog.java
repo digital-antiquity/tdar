@@ -15,11 +15,12 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 
 /**
- * $Id$
+ * Tracks administrative changes. When the UI changes a resource, a log entry should be added.
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -41,8 +42,8 @@ public class ResourceRevisionLog extends Persistable.Base {
     private Date timestamp;
 
     // the action taken
-    @Column(name = "log_message", length = 512)
-    @Length(max = 512)
+    @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
+    @Length(max = FieldLength.FIELD_LENGTH_512)
     private String logMessage;
 
     @ManyToOne(optional = false)

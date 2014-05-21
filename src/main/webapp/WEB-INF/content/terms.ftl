@@ -1,6 +1,5 @@
 <head>
-<title>${siteName} Terms and Conditions of Use</title>
-<meta name="lastModifiedDate" content="$Date$"/>
+    <title>${siteName} Terms and Conditions of Use</title>
 </head>
 <body>
 <#include "/${themeDir}/terms.ftl">

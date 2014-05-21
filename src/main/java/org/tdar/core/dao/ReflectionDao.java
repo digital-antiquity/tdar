@@ -2,9 +2,9 @@ package org.tdar.core.dao;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.MessageHelper;
 
 @Component
 public class ReflectionDao {
@@ -36,7 +37,7 @@ public class ReflectionDao {
     }
 
     // find all the instances of the specified type that refer to instances of the target specified type
-    public ScrollableResults findReferrers(Field field, Set<Long> idlist) {
+    public ScrollableResults findReferrers(Field field, Collection<Long> idlist) {
         String hql, fmt;
         String targetClass = field.getDeclaringClass().getSimpleName();
         if (field.getAnnotation(ManyToMany.class) != null) {
@@ -50,7 +51,7 @@ public class ReflectionDao {
             logger.warn("encountered a one-to-many relationship  on {} when looking for references.  Treating the same as many-to-many", field);
             fmt = TdarNamedQueries.QUERY_HQL_MANY_TO_MANY_REFERENCES;
         } else {
-            throw new IllegalArgumentException("Field must have a jpa relationship annotation e.g. @OneToMany, @ManyToOne, etc..:" + field);
+            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.field_must_be_jpa", Arrays.asList(field)));
         }
         hql = String.format(fmt, targetClass, field.getName());
         Query query = getCurrentSession().createQuery(hql);
@@ -85,7 +86,7 @@ public class ReflectionDao {
             logger.warn("encountered a one-to-many relationship  on {} when looking for references.  Treating the same as many-to-many", field);
             fmt = TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES;
         } else {
-            throw new IllegalArgumentException("Field must have a jpa relationship annotation e.g. @OneToMany, @ManyToOne, etc..:" + field);
+            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.field_must_be_jpa_relationship", Arrays.asList(field)));
         }
 
         hql = String.format(fmt, targetClass, field.getName());
@@ -130,9 +131,9 @@ public class ReflectionDao {
         } else if (field.getAnnotation(ManyToOne.class) != null) {
             fmt = TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP;
         } else if (field.getAnnotation(OneToMany.class) != null) {
-            throw new IllegalArgumentException("one-to-many relationships not implemented yet. oops" + field);
+            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.one_to_many_not_implemented", Arrays.asList(field)));
         } else {
-            throw new IllegalArgumentException("Field must have a jpa relationship annotation e.g. @OneToMany, @ManyToOne, etc..:" + field);
+            throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.many_to_many_not_implemented", Arrays.asList(field)));
         }
 
         hql = String.format(fmt, targetClass, field.getName());

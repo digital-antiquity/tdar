@@ -3,9 +3,12 @@ package org.tdar.core.service.processes;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -21,58 +24,72 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ResourceService;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
+import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
+import com.redfin.sitemapgenerator.SitemapIndexGenerator;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 @Component
 public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
-    private static final int BATCH_SIZE = 1000;
-
     private static final long serialVersionUID = 561910508692901053L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private transient ResourceCollectionService resourceCollectionService;
     @Autowired
-    private UrlService urlService;
+    private transient UrlService urlService;
 
-    int batchCount = 0;
-    boolean run = false;
+    private int batchCount = 0;
+    private boolean run = false;
 
     @Override
     public void execute() {
         run = true;
         TdarConfiguration config = TdarConfiguration.getInstance();
-        File file = new File(config.getSitemapDir());
+        File dir = new File(config.getSitemapDir());
         try {
-            FileUtils.deleteDirectory(file);
+            FileUtils.deleteDirectory(dir);
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        file.mkdirs();
+        dir.mkdirs();
         WebSitemapGenerator wsg;
+        GoogleImageSitemapGenerator gisg;
+        SitemapIndexGenerator sig;
         int total = 0;
+        int totalImages = 0;
+        boolean imageSitemapGeneratorEnabled = true;
         try {
-            wsg = WebSitemapGenerator.builder(config.getBaseUrl(), file).gzip(true).allowMultipleSitemaps(true).build();
+            wsg = WebSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).build();
+            gisg = GoogleImageSitemapGenerator.builder(config.getBaseUrl(), dir).gzip(true).allowMultipleSitemaps(true).fileNamePrefix("image_sitemap").build();
+            sig = new SitemapIndexGenerator(config.getBaseUrl(), new File(dir, "sitemap_index.xml"));
             // wsg.set
             List<Resource> resources = resourceService.findAllSparseActiveResources();
             total += resources.size();
+
             logger.info("({}) resources in sitemap", resources.size());
             for (Resource resource : resources) {
                 String url = urlService.absoluteUrl(resource);
                 addUrl(wsg, url);
             }
 
+            if (imageSitemapGeneratorEnabled) {
+                totalImages = resourceService.findAllResourcesWithPublicImagesForSitemap(gisg);
+            }
+
+            logger.info("({}) images in sitemap", totalImages);
+
             List<Long> people = genericService.findActiveIds(Person.class);
             total += people.size();
             logger.info("({}) people in sitemap", people.size());
             for (Long id : people) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
 
@@ -80,7 +97,7 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             total += institutions.size();
             logger.info("({}) institutions in sitemap", institutions.size());
             for (Long id : institutions) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
 
@@ -88,16 +105,34 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
             total += collections.size();
             logger.info("({}) collections in sitemap", collections.size());
             for (Long id : collections) {
-                String url = urlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
+                String url = UrlService.absoluteUrl(URLConstants.ENTITY_NAMESPACE, id);
                 addUrl(wsg, url);
             }
-            // for (int i = 0; i < 60000; i++) wsg.addUrl(config.getBaseUrl() +"/doc"+i+".html");
-            // total += 60000;
-
-            wsg.write();
-            if (total > WebSitemapGenerator.MAX_URLS_PER_SITEMAP) {
-                wsg.writeSitemapsWithIndex();
+            if (total > 0) {
+                wsg.write();
             }
+            if (totalImages > 0) {
+                gisg.write();
+            }
+
+            Date date = new Date();
+            for (File file : dir.listFiles()) {
+                if (file.getName().equals("sitemap_index.xml")) {
+                    continue;
+                }
+                File sitemap1 = new File(dir, "sitemap1.xml.gz");
+                if (file.getName().equals("sitemap.xml.gz") && sitemap1.exists()) {
+                    continue;
+                }
+                File imageSitemap1 = new File(dir, "image_sitemap1.xml.gz");
+                if (file.getName().equals("image_sitemap.xml.gz") && imageSitemap1.exists()) {
+                    continue;
+                }
+
+                sig.addUrl(String.format("%s/%s/%s", config.getBaseUrl(), "sitemap", file.getName()), date);
+            }
+
+            sig.write();
             // wsg.addUrl("http://www.example.com/index.html"); // repeat multiple times
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block

@@ -46,8 +46,9 @@ public class KeywordNode<K extends HierarchicalKeyword<K>> implements Iterable<K
             List<Integer> index = new ArrayList<Integer>();
 
             String indexString = keyword.getIndex();
-            if (StringUtils.isBlank(indexString))
+            if (StringUtils.isBlank(indexString)) {
                 continue;
+            }
             for (String s : StringUtils.splitPreserveAllTokens(indexString, ".")) {
                 index.add(Integer.parseInt(s));
             }

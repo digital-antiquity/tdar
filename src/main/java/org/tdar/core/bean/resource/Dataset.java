@@ -24,15 +24,16 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
- * 
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
  * 
  * 
@@ -47,11 +48,10 @@ public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> {
+    public enum IntegratableOptions implements HasLabel, Localizable {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
-        private transient Integer count;
 
         private IntegratableOptions(String label) {
             this.label = label;
@@ -63,24 +63,10 @@ public class Dataset extends InformationResource {
         }
 
         @Override
-        public Integer getCount() {
-            return count;
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
-        @Override
-        public void setCount(Integer count) {
-            this.count = count;
-        }
-
-        @Override
-        public String getLuceneFieldName() {
-            return QueryFieldNames.INTEGRATABLE;
-        }
-
-        @Override
-        public IntegratableOptions getValueOf(String val) {
-            return valueOf(val);
-        }
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
@@ -114,8 +100,9 @@ public class Dataset extends InformationResource {
     public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getDefaultOntology() != null)
+                if (dtc.getDefaultOntology() != null) {
                     return IntegratableOptions.YES;
+                }
             }
         }
         return IntegratableOptions.NO;
@@ -127,7 +114,7 @@ public class Dataset extends InformationResource {
      */
     @Transient
     public DataTable getDataTableByName(String name) {
-        if (nameToTableMap == null || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
+        if ((nameToTableMap == null) || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
@@ -141,7 +128,7 @@ public class Dataset extends InformationResource {
     @Transient
     public DataTable getDataTableById(Long id) {
         for (DataTable datatable : getDataTables()) {
-            if (datatable.getId() == id) {
+            if (ObjectUtils.equals(datatable.getId(), id)) {
                 return datatable;
             }
         }
@@ -162,7 +149,7 @@ public class Dataset extends InformationResource {
 
     @Transient
     public DataTable getDataTableByGenericName(String name) {
-        if (genericNameToTableMap == null || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
+        if ((genericNameToTableMap == null) || ObjectUtils.notEqual(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync

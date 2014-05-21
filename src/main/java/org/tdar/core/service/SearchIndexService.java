@@ -29,6 +29,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -62,9 +63,6 @@ public class SearchIndexService {
     private static final int INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS = 50;
     private static final int INDEXER_THREADS_FOR_SUBSEQUENT_FETCHING = 5;
     private static final int INDEXER_THREADS_TO_LOAD_OBJECTS = 5;
-    // private Class<? extends Indexable>[] defaultClassesToIndex = { Resource.class, Person.class, Institution.class, GeographicKeyword.class,
-    // CultureKeyword.class, InvestigationType.class, MaterialKeyword.class, SiteNameKeyword.class, SiteTypeKeyword.class, TemporalKeyword.class,
-    // OtherKeyword.class, ResourceAnnotationKey.class, ResourceCollection.class };
 
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
@@ -72,6 +70,11 @@ public class SearchIndexService {
         indexAll(updateReceiver, getDefaultClassesToIndex(), person);
     }
 
+    /**
+     * The default classes to reindex
+     * 
+     * @return
+     */
     private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
         for (LookupSource source : LookupSource.values()) {
@@ -85,6 +88,13 @@ public class SearchIndexService {
         return toReindex;
     }
 
+    /**
+     * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
+     * 
+     * @param updateReceiver
+     * @param classesToIndex
+     * @param person
+     */
     @SuppressWarnings("deprecation")
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
@@ -108,7 +118,7 @@ public class SearchIndexService {
             fullTextSession.setCacheMode(CacheMode.IGNORE);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
-            float maxPer = (1f / (float) classesToIndex.size()) * 100f;
+            float maxPer = (1f / classesToIndex.size()) * 100f;
             for (Class<?> toIndex : classesToIndex) {
                 fullTextSession.purgeAll(toIndex);
                 sf.optimize(toIndex);
@@ -122,28 +132,35 @@ public class SearchIndexService {
 
                 while (scrollableResults.next()) {
                     Object item = scrollableResults.get(0);
-                    currentProgress = (float) numProcessed / total.floatValue();
+                    currentProgress = numProcessed / total.floatValue();
                     index(fullTextSession, item);
                     numProcessed++;
-                    float totalProgress = (currentProgress * maxPer + percent);
-
-                    if (numProcessed % divisor == 0) {
-                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "%");
+                    float totalProgress = ((currentProgress * maxPer) + percent);
+                    String message = "";
+                    if ((numProcessed % divisor) == 0) {
+                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
+                        updateReceiver.setStatus(message);
                         updateReceiver.setPercentComplete(totalProgress / 100f);
                     }
                     if ((numProcessed % FLUSH_EVERY) == 0) {
-                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)");
+                        message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
+                        updateReceiver.setStatus(message);
                         log.trace("flushing search index");
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                         log.trace("flushed search index");
+                    }
+                    if (StringUtils.isNotBlank(message)) {
+                        activity.setMessage(message);
                     }
                 }
                 scrollableResults.close();
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
-                updateReceiver.setStatus("finished indexing all " + toIndex.getSimpleName() + "(s).");
+                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                updateReceiver.setStatus(message);
+                activity.setMessage(message);
             }
 
             fullTextSession.flushToIndexes();
@@ -159,6 +176,12 @@ public class SearchIndexService {
         activity.end();
     }
 
+    /**
+     * Index an item of some sort.
+     * 
+     * @param fullTextSession
+     * @param item
+     */
     private void index(FullTextSession fullTextSession, Object item) {
         if (item instanceof InformationResource) {
             datasetDao.assignMappedDataForInformationResource(((InformationResource) item));
@@ -167,15 +190,20 @@ public class SearchIndexService {
         if (item instanceof Project) {
             Project project = (Project) item;
             if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
-                projectDao.findAllResourcesInProject(project);
+                projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT);
             }
         }
         fullTextSession.index(item);
     }
 
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         log.info("indexing collection async");
-        List<ResourceCollection> collections = resourceCollectionService.findAllChildCollections(collectionToReindex, null, CollectionType.SHARED);
+        List<ResourceCollection> collections = resourceCollectionService.buildCollectionTreeForController(collectionToReindex, null, CollectionType.SHARED);
         collections.add(collectionToReindex);
         Set<Resource> resources = new HashSet<Resource>();
         for (ResourceCollection collection : collections) {
@@ -185,37 +213,31 @@ public class SearchIndexService {
         indexCollection(resources);
     }
 
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
     @Async
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
+    /**
+     * @see #indexCollection(Collection)
+     * @param collectionToReindex
+     */
     @Async
     public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) {
         indexCollection(collectionToReindex);
     }
 
-    // @SuppressWarnings("deprecation")
-    // public <H extends Indexable & Persistable> void index(H... obj) {
-    // log.debug("MANUAL INDEXING ... " + obj.length);
-    // genericService.synchronize();
-    //
-    // FullTextSession fullTextSession = getFullTextSession();
-    // FlushMode previousFlushMode = fullTextSession.getFlushMode();
-    // fullTextSession.setFlushMode(FlushMode.MANUAL);
-    // fullTextSession.setCacheMode(CacheMode.IGNORE);
-    // fullTextSession.flushToIndexes();
-    // for (H obj_ : obj) {
-    // if (obj_ != null) {
-    // fullTextSession.purge(obj_.getClass(), obj_.getId());
-    // index(fullTextSession, obj_);
-    // }
-    // }
-    // fullTextSession.flushToIndexes();
-    // // fullTextSession.clear();
-    // fullTextSession.setFlushMode(previousFlushMode);
-    // }
-
+    /**
+     * help's calcualate the percentage complete
+     * 
+     * @param total
+     * @return
+     */
     public int getDivisor(Number total) {
         int divisor = 5;
         if (total.intValue() < 50) {
@@ -232,12 +254,22 @@ public class SearchIndexService {
         return divisor;
     }
 
+    /**
+     * @see #indexCollection(Collection)
+     * @param indexable
+     */
     @SuppressWarnings("unchecked")
     public <C extends Indexable> void index(C... indexable) {
         indexCollection(Arrays.asList(indexable));
     }
 
-    public <C extends Indexable> void indexCollection(Collection<C> indexable) {
+    /**
+     * Index a collection of @link Indexable entities
+     * 
+     * @param indexable
+     */
+    public <C extends Indexable> boolean indexCollection(Collection<C> indexable) {
+        boolean exceptions = false;
         if (indexable != null) {
             log.debug("manual indexing ... " + indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
@@ -250,39 +282,64 @@ public class SearchIndexService {
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
-                    log.error("exception in indexing", e);
+                    log.error(String.format("exception in indexing, %s [%s]", toIndex, e.getMessage()), e);
                     log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
+                    exceptions = true;
                 }
             }
             fullTextSession.flushToIndexes();
         }
+        return exceptions;
     }
 
-    /*
-     * should only be used in tests...
+    /**
+     * Similar to @link GenericService.synchronize() forces all pending indexing actions to be written.
+     * 
+     * Should only be used in tests...
+     * 
      */
     @Deprecated
     public void flushToIndexes() {
         getFullTextSession().flushToIndexes();
     }
 
+    /**
+     * Index/Reindex everything. Requested by the @link Person
+     * 
+     * @param person
+     */
     public void indexAll(Person person) {
         indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
     }
 
+    /**
+     * Index all items of the Specified Class; person is the person requesting the index
+     * 
+     * @param person
+     * @param classes
+     */
     @SuppressWarnings("unchecked")
     public void indexAll(Person person, Class<? extends Indexable>... classes) {
         indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
     }
 
-    // an update receiver that doesn't do anything
+    /**
+     * The AsyncUpdateReciever allows us to pass data about the indexing back to the requester. The default one does nothing.
+     * 
+     * @return
+     */
     private AsyncUpdateReceiver getDefaultUpdateReceiver() {
         return AsyncUpdateReceiver.DEFAULT_RECEIVER;
     }
 
-    // Warning, this type of indexing does not use lazy fetching, which as of
-    // the current build is causing exceptions
+    /**
+     * Maintained for reference, we have not used this since Azmiuth as it has issues with Lazy references
+     * 
+     * Warning, this type of indexing does not use lazy fetching, which as of the current build is causing exceptions
+     * 
+     * @param classes
+     */
     public void massIndex(Class<?>... classes) {
         try {
             getFullTextSession().createIndexer(classes).purgeAllOnStart(true).batchSizeToLoadObjects(INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS)
@@ -293,14 +350,28 @@ public class SearchIndexService {
         }
     }
 
+    /**
+     * Exposes the FullTextSession (HibernateSearch's interface to Lucene)
+     * 
+     * @return
+     */
     private FullTextSession getFullTextSession() {
         return Search.getFullTextSession(hibernateSearchDao.getFullTextSession());
     }
 
+    /**
+     * Wipe everything from the index
+     * 
+     */
     public void purgeAll() {
         purgeAll(getDefaultClassesToIndex());
     }
 
+    /**
+     * Purge all objects of the specified Class frmo the index
+     * 
+     * @param classes
+     */
     public void purgeAll(List<Class<? extends Indexable>> classes) {
         FullTextSession fullTextSession = getFullTextSession();
         for (Class<?> clss : classes) {
@@ -309,6 +380,7 @@ public class SearchIndexService {
     }
 
     /**
+     * Optimizes all lucene indexes
      * 
      */
     public void optimizeAll() {
@@ -325,17 +397,32 @@ public class SearchIndexService {
         this.genericService = genericService;
     }
 
-    public void indexProject(Project project) {
-        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project)));
+    /**
+     * Indexes a @link Project and it's contents. It loads the project's child @link Resource entries before indexing
+     * 
+     * @param project
+     */
+    public boolean indexProject(Project project) {
+        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
         project.setReadyToIndex(true);
         index(project);
         log.debug("reindexing project contents");
-        indexCollection(project.getCachedInformationResources());
+        boolean exceptions = indexCollection(project.getCachedInformationResources());
         log.debug("completed reindexing project contents");
+        return exceptions;
     }
 
+    /**
+     * @see #indexProject(Project)
+     * @param project
+     */
     @Async
     public void indexProjectAsync(final Project project) {
         indexProject(project);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean indexProject(Long id) {
+        return indexProject(genericService.find(Project.class, id));
     }
 }

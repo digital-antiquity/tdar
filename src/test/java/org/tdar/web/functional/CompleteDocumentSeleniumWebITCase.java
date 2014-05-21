@@ -27,11 +27,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -43,6 +44,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String IJ_BLANK_COM = "ij@blank.com";
     private static final String INDIANA = "indiana";
     private static final String JONES = "jones";
@@ -50,18 +52,19 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     private static final String ROBERT = "robert";
     private static final String BOBLOBLAW_BLANK_COM = "bobloblaw@blank.com";
     private static final String UNIVERSITY_OF_TEST = "university of TEST";
-    public static HashMap<String, String> docValMap = new LinkedHashMap<>();
-    public static HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
-    public static HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
+    public HashMap<String, String> docValMap;
+    public HashMap<String, List<String>> docMultiValMap = new LinkedHashMap<String, List<String>>();
+    public HashMap<String, List<String>> docMultiValMapLab = new LinkedHashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
-    public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
-    public static List<String> alternateTextLookup = new ArrayList<String>();
-    public static List<String> alternateCodeLookup = new ArrayList<String>();
+    public Map<String, String> docUnorderdValMap = new HashMap<String, String>();
+    public List<String> alternateTextLookup = new ArrayList<String>();
+    public List<String> alternateCodeLookup = new ArrayList<String>();
 
     public static String REGEX_DOCUMENT_VIEW = ".+\\/document\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DOCUMENT_VIEW);
 
     public CompleteDocumentSeleniumWebITCase() {
+        docValMap = new LinkedHashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         alternateTextLookup.add(AbstractWebTestCase.RESTRICTED_ACCESS_TEXT);
 
@@ -91,7 +94,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
+        docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
         docValMap.put("resourceLanguage", Language.SPANISH.name());
@@ -165,7 +168,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-    @Ignore
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
@@ -177,8 +179,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
         addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
         submitForm();
     }
 
@@ -209,7 +213,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
 
         submitForm();
-        logger.info(getText());
+        logger.trace(getText());
         assertTrue(getText().contains(JONES));
         assertTrue(getText().contains(INDIANA));
         assertTrue(getText().contains("UC"));
@@ -242,7 +246,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
 
         String path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_START_DATE));
         assertTrue("expected value on view page", sourceContains(ORIGINAL_END_DATE));
@@ -256,7 +260,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
 
         path = getDriver().getCurrentUrl();
-        logger.info(find("body").getText());
+        logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTrue(sourceContains(NEW_START_DATE));
         assertFalse(sourceContains(ORIGINAL_START_DATE));
@@ -264,7 +268,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         logger.trace(find("body").getText());
     }
 
-    @Ignore
     @Test
     public void testCreateDocument() {
         gotoPage("/document/add");
@@ -298,8 +301,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
 
         addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", VIEW_ALL);
+        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
@@ -311,7 +316,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
-        logger.info(getDriver().getPageSource());
+        logger.trace(getDriver().getPageSource());
         submitForm();
 
         String path = getDriver().getCurrentUrl();
@@ -359,13 +364,14 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email")) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTrue("looking for '" + val + "' in text", textContains(val));
             } else {
-                assertEquals(find(By.name(key)).val(), val);
+                assertEquals(val, find(By.name(key)).val());
             }
         }
 
@@ -386,19 +392,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // make sure our 'async' file was added to the resource
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
-    }
-
-    private void addAuthuser(String nameField, String selectField, String name, String email, GeneralPermissions permissions) {
-
-        WebElement blankField = find(By.name(nameField)).first();
-        if (!selectAutocompleteValue(blankField, name, email)) {
-            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
-                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
-                    "menu.";
-            fail(String.format(fmt, email));
-        }
-        find(By.name(selectField)).val(permissions.name());
-
     }
 
 }

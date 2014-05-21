@@ -34,7 +34,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         assertTextPresent("Create a new project");
         clickLinkWithText("UPLOAD");
         gotoPage("/account/view?personId=1");
-        assertPageTitleEquals("Page not found");
+        assertPageTitleEquals("Unauthorized");
         gotoPage("/logout");
     }
 

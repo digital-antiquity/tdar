@@ -3,4 +3,4 @@
 <#import "/WEB-INF/macros/header.ftl" as header>
 
 <h3>${siteAcronym} Worldwide</h3>
-<@common.worldMap forceAddSchemeHostAndPort=true />
+<@common.renderWorldMap forceAddSchemeHostAndPort=true />

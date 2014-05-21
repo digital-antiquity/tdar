@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class PaginationHelperTest {
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     // return new ph and log the method/line that created it
     private PaginationHelper newPaginationHelper(int itemCount, int itemsPerPage, int visiblePages, int currentPage) {
@@ -30,7 +30,7 @@ public class PaginationHelperTest {
         }
         for (int i = 5; i < 20; i++) {
             PaginationHelper ph = newPaginationHelper(5000, 10, 10, i);
-            assertEquals("minimum page should be i - window size / 2", i - ph.getWindowSize() / 2, ph.getMinimumPageNumber());
+            assertEquals("minimum page should be i - window size / 2", i - (ph.getWindowSize() / 2), ph.getMinimumPageNumber());
         }
     }
 
@@ -38,7 +38,7 @@ public class PaginationHelperTest {
     public void testPaginationMethodsCalledByPaginationMacroLinks() {
         int recordsPerPage = 2;
         int max = 5000;
-        for (int i = 10; i < max + 1; i++) {
+        for (int i = 10; i < (max + 1); i++) {
             int currentPage = i + (int) (Math.random() * ((max - i) + 1));
             int prevPage = currentPage - 1;
             int nextPage = currentPage + 1;

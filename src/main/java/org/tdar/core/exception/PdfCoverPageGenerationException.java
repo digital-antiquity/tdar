@@ -1,6 +1,6 @@
 package org.tdar.core.exception;
 
-public class PdfCoverPageGenerationException extends TdarRecoverableRuntimeException {
+public class PdfCoverPageGenerationException extends I18nRuntimeException {
 
     private static final long serialVersionUID = 7411723303332607060L;
 

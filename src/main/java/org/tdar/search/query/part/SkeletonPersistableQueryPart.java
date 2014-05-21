@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 
 public class SkeletonPersistableQueryPart<P extends Persistable> extends AbstractHydrateableQueryPart<P> {
@@ -13,6 +15,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
     private FieldQueryPart<P> transientFieldQueryPart;
 
     private List<P> reference;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
     public SkeletonPersistableQueryPart(String fieldName, String fieldLabel, Class<P> originalClass, List<P> fieldValues_) {
@@ -52,7 +55,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
 
         // for the transient values; we'll grab them via a query using the transientFieldQueryPart --
         // this will look it up by "title" or "whatever"
-        if (transientFieldQueryPart != null && !transientFieldQueryPart.isEmpty()) {
+        if ((transientFieldQueryPart != null) && !transientFieldQueryPart.isEmpty()) {
             for (int i = 0; i < getFieldValues().size(); i++) {
                 if (!trans.contains(i)) {
                     transientFieldQueryPart.getFieldValues().remove(i);
@@ -60,7 +63,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
             }
         }
 
-        if (!transientFieldQueryPart.isEmpty()) {
+        if ((transientFieldQueryPart != null) && !transientFieldQueryPart.isEmpty()) {
             sb.insert(0, "(");
             if (sb.length() > 1) {
                 sb.append(" OR ");
@@ -76,8 +79,9 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
     @Override
     protected String formatValueAsStringForQuery(int index) {
         P p = getFieldValues().get(index);
-        if (Persistable.Base.isNullOrTransient(p))
+        if (Persistable.Base.isNullOrTransient(p)) {
             return null;
+        }
 
         return p.getId().toString();
     }
@@ -98,7 +102,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
         if (CollectionUtils.isNotEmpty(reference)) {
             for (int i = 0; i < reference.size(); i++) {
                 P item = reference.get(i);
-                if (item != null && idMap.containsKey(item.getId())) {
+                if ((item != null) && idMap.containsKey(item.getId())) {
                     logger.trace("replacing {} with {} ", item, idMap.get(item.getId()));
                     reference.set(i, idMap.get(item.getId()));
                 }

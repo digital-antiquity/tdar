@@ -36,6 +36,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -52,6 +53,8 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
@@ -59,7 +62,8 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.utils.bulkUpload.BulkUploadTemplate;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * $Id$
@@ -76,6 +80,9 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
+    @Autowired
+    XmlService xmlService;
+
     @Test
     @Rollback
     public void testExcelTemplate() throws FileNotFoundException, IOException {
@@ -84,7 +91,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File file = File.createTempFile("tempTemplate", ".xls");
         String downloadBulkTemplate = bulkUploadController.downloadBulkTemplate();
         logger.info(bulkUploadController.getTemplateFile().getCanonicalPath());
-        assertEquals(TdarActionSupport.SUCCESS, downloadBulkTemplate);
+        assertEquals(Action.SUCCESS, downloadBulkTemplate);
         FileInputStream templateInputStream = bulkUploadController.getTemplateInputStream();
         assertFalse(null == templateInputStream);
         FileOutputStream fos = new FileOutputStream(file);
@@ -96,7 +103,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     @Test
-    @Rollback
+    @Rollback()
     public void testBulkUpload() throws Exception {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
@@ -110,7 +117,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
         bulkUploadController.setTicketId(ticketId);
-        bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
+        Long projectId = 3462L;
+        bulkUploadController.setProjectId(projectId);
         // setup controller
         bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + "image_manifest.xlsx")));
         bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
@@ -119,6 +127,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setMaterialKeywordIds(materialKeywordIds);
         List<Long> siteTypeKeywordIds = genericService.findRandomIds(SiteTypeKeyword.class, 3);
         Collections.sort(siteTypeKeywordIds);
+        bulkUploadController.getPersistable().setInheritingCulturalInformation(true);
+        bulkUploadController.getPersistable().setInheritingIndividualAndInstitutionalCredit(true);
         bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
         ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
         bulkUploadController.getResourceNotes().addAll(Arrays.asList(note));
@@ -133,7 +143,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         bulkUploadController.checkStatus();
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
-
+        evictCache();
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         boolean manifest_gc = false;
         boolean manifest_book = false;
@@ -149,12 +159,13 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             ids = genericService.extractIds(resource.getSiteTypeKeywords());
             Collections.sort(ids);
             assertEquals(siteTypeKeywordIds, ids);
+            logger.debug(xmlService.convertToXML(resource));
             assertEquals(1, resource.getResourceNotes().size());
             ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
             assertEquals(note.getType(), resourceNote.getType());
             assertEquals(note.getNote(), resourceNote.getNote());
             assertFalse(resource.getResourceCreators().isEmpty());
-            assertEquals(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID, ((InformationResource) resource).getProjectId());
+            assertEquals(projectId, ((InformationResource) resource).getProjectId());
             if (resource.getTitle().equals("Grand Canyon")) {
                 assertEquals("A photo of the grand canyon", resource.getDescription());
                 assertEquals(1, resource.getResourceCreators().size());
@@ -254,6 +265,24 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(bulkUploadController.getAsyncErrors().contains("resource creator is not valid"));
     }
 
+    
+    @Test
+    @Rollback
+//    @Ignore
+    public void testDatasetBulkUpload() throws Exception {
+        List<File> files = new ArrayList<>();
+        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        files.add(file);
+        assertTrue(file.exists());
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("dataset_manifest.xlsx", TdarActionSupport.SUCCESS_ASYNC, files);
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+    }
+
     @Test
     @Rollback
     public void testBulkUploadWithFloat() throws Exception {
@@ -264,7 +293,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(resourceService.find(details.get(0).getFirst()).isActive());
+        Resource find1 = resourceService.find(details.get(0).getFirst());
+        assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
         assertEquals(new Integer(1234), ((InformationResource) resourceService.find(details.get(0).getFirst())).getDate());
         assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
@@ -277,15 +307,14 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
 
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
-        logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         assertTrue(bulkUploadController.getAsyncErrors().contains(
-                "<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type:IMAGE</li>"));
+                "<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type: IMAGE</li>"));
         // should be two results, one deleted b/c of errors
-        assertEquals(2, bulkUploadController.getDetails().size());
-        assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
-        assertEquals(Status.ACTIVE, resourceService.find(details.get(1).getFirst()).getStatus());
+        assertEquals(0, bulkUploadController.getDetails().size());
+        // assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
+        // assertEquals(Status.ACTIVE, resourceService.find(details.get(1).getFirst()).getStatus());
     }
 
     @Test
@@ -321,25 +350,34 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         String manifestFilename = "document_manifest_required_col_has_blanks.xls";
         // this file should fail validation and shouldn't even get to the async saving part.
         // the controller will always return success, however
-        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.SUCCESS_ASYNC);
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, TdarActionSupport.SUCCESS_ASYNC);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         assertFalse(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Title, Description, Date Created (Year)</li>"));
         assertTrue(bulkUploadController
                 .getAsyncErrors()
                 .contains(
-                        "<li>skipping line in excel file as resource with the filename \"Codes E1 txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E2.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E3.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E4.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E5A.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E5B.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E6.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E7.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E8.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E9.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E10.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E11.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E12.txt\" was not found in the import batch</li>"));
+                        "<li>Filename \"Codes E1 txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E2.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E3.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E4.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E5A.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E5B.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E6.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E7.txt\" was not found in the import batch</li"
+                                + "><li>Filename \"Codes E8.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E9.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E10.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E11.txt\" was not found in the import batch</li>"
+                                + "<li>Filename \"Codes E12.txt\" was not found in the import batch</li>"));
     }
 
-    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {
-        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse, List<File> uploadFiles) throws Exception {
+        Person user = createAndSaveNewPerson();
+        BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
+        init(bulkUploadController, user);
         bulkUploadController.prepare();
 
-        // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        assertTrue(testImagesDirectory.isDirectory());
-        List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -358,8 +396,18 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws Exception {
-        return setupBasicBulkUploadTest(manifestName, BulkUploadController.SUCCESS_ASYNC);
+        return setupBasicBulkUploadTest(manifestName, TdarActionSupport.SUCCESS_ASYNC);
     }
+
+    
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName, String successAsync) throws Exception {
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        assertTrue(testImagesDirectory.isDirectory());
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
+        return setupBasicBulkUploadTest(manifestName, successAsync, uploadFiles);
+    }
+
 
     @Test
     @Rollback
@@ -544,6 +592,9 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
         bulkUploadController.setFileProxies(proxyPair.getSecond());
         bulkUploadController.setAsync(false);
+        bulkUploadController.getResource().setTitle("test");
+        bulkUploadController.getResource().setDescription("test");
+        bulkUploadController.getResource().setDate(1234);
 
         // specify an adhoc collection
         ResourceCollection adHocCollection = new ResourceCollection();
@@ -565,25 +616,33 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
         // ensure one shared collection created
-        // genericService.synchronize();
+        // evictCache();
 
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
-
+        evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
+            genericService.refresh(resource);
             Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
-                logger.debug("\t\t ");
+                logger.debug("\t\t {}", rc);
             }
 
             collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
-
+        for (ResourceCollection col : collections) {
+            logger.debug("{} : {}", col, col.getResources());
+            if (col.isInternal()) {
+                assertEquals(1, col.getResources().size());
+            } else {
+                assertEquals(2, col.getResources().size());
+            }
+        }
         assertEquals("we should have one new adhoc collection", 1, newSharedCount - origSharedCount);
         // ensure N internal collections created
         // String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),

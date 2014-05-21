@@ -1,8 +1,7 @@
 package org.tdar.struts.action;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import net.tanesha.recaptcha.ReCaptcha;
 
@@ -18,22 +17,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.AuthNotice;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.struts.DoNotObfuscate;
-import org.tdar.struts.WriteableSession;
-import org.tdar.struts.interceptor.HttpsOnly;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -55,33 +52,14 @@ import com.opensymphony.xwork2.Preparable;
 // @InterceptorRef("paramsPrepareParamsStack")
 // @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
+@CacheControl
 public class UserAccountController extends AuthenticationAware.Base implements Preparable {
-
-    public static final String USERNAME_INVALID = "Username invalid, usernames must be at least 5 characters and can only have letters and numbers";
-    public static final String EMAIL_INVALID = "Email invalid, usernames must be at least 5 characters and can only have letters and numbers";
-
-    private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     private static final long serialVersionUID = 1147098995283237748L;
 
-    // FIXME: localize messages
-    public static final String SUCCESSFUL_REGISTRATION_MESSAGE = "Thank you for registering! Your registration was processed successfully.";
-    public static final String COULD_NOT_AUTHENTICATE_AT_THIS_TIME = "Could not authenticate at this time";
-    public static final String ERROR_PASSWORDS_DONT_MATCH = "Please make sure your passwords match.";
-    public static final String ERROR_MISSING_EMAIL = "Please enter an email address";
-    public static final String ERROR_DUPLICATE_EMAIL = "Email already registered";
-    public static final String ERROR_EMAILS_DONT_MATCH = "Please make sure your emails match.";
-    public static final String ERROR_CONFIRM_EMAIL = "Please confirm your email to access the site.";
-    public static final String ERROR_CONFIRM_PASSWORD = "Please confirm your password to access the site.";
-    public static final String ERROR_CHOOSE_PASSWORD = "Please choose a password to access the site.";
-    public static final String ERROR_USERNAME_ALREADY_REGISTERED = "This username  is already registered in our system.";
-    public static final String ERROR_MAXLENGTH = "The '%s' field accepts a maximum of %s characters.";
-    private static final int MAXLENGTH_CONTRIBUTOR = 512;
-
-    public static final long ONE_HOUR_IN_MS = 3600000;
-    public static final long FIVE_SECONDS_IN_MS = 5000;
-
-    private static final String ERROR_MISSING_USERNAME = "Please enter a username";
+    private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
+    public static final long ONE_HOUR_IN_MS = 3_600_000;
+    public static final long FIVE_SECONDS_IN_MS = 5_000;
 
     private Long timeCheck;
     private Long personId;
@@ -94,7 +72,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private String institutionName;
     private String comment; // for simple spam protection
     private String passwordResetURL;
-    private ContributorRequest contributorRequest;
 
     private String recaptcha_challenge_field;
     private String recaptcha_response_field;
@@ -151,11 +128,13 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @HttpsOnly
     public String view() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return "new";
-        if (getAuthenticatedUser().equals(person))
+        }
+        if (getAuthenticatedUser().equals(person)) {
             return SUCCESS;
-        logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
+        }
+        getLogger().warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
                 getAuthenticatedUser().getId(), person, personId });
         return UNAUTHORIZED;
     }
@@ -197,209 +176,115 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", type = "redirect", location = "welcome"),
-            @Result(name = ADD, type = "redirect", location = "/account/add"),
-            @Result(name = INPUT, location = "edit.ftl") })
+                    @Result(name = ADD, type = "redirect", location = "/account/add"),
+                    @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
     @PostOnly
     @WriteableSession
-    @DoNotObfuscate(reason="person may have not been set on the session before sent to obfuscator, so don't want to wipe email")
+    @DoNotObfuscate(reason = "person may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
-        if (person == null || !isPostRequest()) {
+        if ((person == null) || !isPostRequest()) {
             return ADD;
         }
 
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
-            if (reCaptchaResponse == false) {
-                throw new TdarRecoverableRuntimeException("Captcha Response is not valid");
-            }
-
-        }
+        checkRecaptcha();
 
         try {
-            Person findByUsername = getEntityService().findByUsername(person.getUsername());
-            // short circut the login process -- if there username and password are registered and valid -- just move on.
-            if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
-                try {
-                    AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password,
-                            getServletRequest(), getServletResponse(),
-                            getSessionData());
-                    if (status == AuthenticationStatus.AUTHENTICATED) {
-                        return SUCCESS;
-                    }
-                } catch (Exception e) {
-                    logger.warn("could not authenticate", e);
-                }
-            }
-            reconcilePersonWithTransient(findByUsername, ERROR_USERNAME_ALREADY_REGISTERED);
-            reconcilePersonWithTransient(getEntityService().findByEmail(person.getEmail()), ERROR_DUPLICATE_EMAIL);
-            person.setRegistered(true);
-            Institution institution = getEntityService().findInstitutionByName(institutionName);
-            if (institution == null && !StringUtils.isBlank(institutionName)) {
-                institution = new Institution();
-                institution.setName(institutionName);
-                getEntityService().save(institution);
-            }
-            person.setInstitution(institution);
-
-            getEntityService().saveOrUpdate(person);
-            // after the person has been saved, create a contributor request for
-            // them as needed.
-            if (isRequestingContributorAccess()) {
-                // create an account request for the administrator..
-                setContributorRequest(new ContributorRequest());
-                getContributorRequest().setApplicant(person);
-                // FIXME: eventually, this should only happen after being approved (and giving us money)
-                person.setContributor(true);
-                getContributorRequest().setContributorReason(person.getContributorReason());
-                getContributorRequest().setTimestamp(new Date());
-                getEntityService().saveOrUpdate(getContributorRequest());
-                getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
-            }
-            getAuthenticationAndAuthorizationService().satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
-
-            // add user to Crowd
-            person.setStatus(Status.ACTIVE);
-            getEntityService().saveOrUpdate(person);
-
-            getLogger().debug("Trying to add user to auth service...");
-
-            boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
-            if (success) {
-                sendWelcomeEmail();
-                getLogger().info("Added user to auth service successfully.");
-            } else {
-                // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
-                getLogger().error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
-            }
-            // log person in.
-            AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
-                    getServletResponse(), person.getUsername(), password);
-
+            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
+                    getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
             if (result.isValid()) {
+                setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
+                getXmlService().logRecordXmlToFilestore(person);
+
                 getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
-                addActionMessage(SUCCESSFUL_REGISTRATION_MESSAGE);
+                addActionMessage(getText("userAccountController.successful_registration_message"));
                 return SUCCESS;
             }
 
             // pushing error lower for unsuccessful add to CROWD, there could be
             // mulitple reasons for this failure including the fact that the
             // user is already in CROWD
-            if (!success) {
-                addActionError("a problem occurred while trying to create a user");
-                return ERROR;
-            }
             getLogger().error("Unable to authenticate with the auth service.");
             addActionError(result.toString());
+            return ERROR;
         } catch (Throwable t) {
-            logger.debug("authentication error", t);
-            addActionErrorWithException("Could not create account", t);
+            addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
         }
         return ERROR;
     }
 
-    private void sendWelcomeEmail() {
-        try {
-            String subject = String.format("Welcome to %s", TdarConfiguration.getInstance().getSiteAcronym());
-            getEmailService().sendTemplate(EMAIL_WELCOME_TEMPLATE, getWelcomeEmailValues(), subject, person);
-        } catch (Exception e) {
-            // we don't want to ruin the new user's experience with a nasty error message...
-            logger.error("Suppressed error that occurred when trying to send welcome email", e);
-        }
-    }
-
-    protected Map<String, Object> getWelcomeEmailValues() {
-        Map<String, Object> result = new HashMap<>();
-        final TdarConfiguration config = TdarConfiguration.getInstance();
-        result.put("user", person);
-        result.put("config", config);
-        return result;
-    }
-
-    private void reconcilePersonWithTransient(Person person_, String error) {
-        if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
-
-            if (person_.isRegistered()) {
-                throw new TdarRecoverableRuntimeException(error);
+    private void checkRecaptcha() {
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            final boolean reCaptchaResponse = reCaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
+            if (reCaptchaResponse == false) {
+                throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
             }
-
-            if (person_.getStatus() != Status.FLAGGED && person_.getStatus() != Status.DELETED && person_.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
-                person.setStatus(Status.ACTIVE);
-                person_.setStatus(Status.ACTIVE);
-            } else {
-                logger.error("user is not valid");
-                throw new TdarRecoverableRuntimeException(error);
-            }
-
-            person.setId(person_.getId());
-            person = getEntityService().merge(person);
-
         }
     }
 
     public boolean isUsernameRegistered(String username) {
-        logger.trace("testing username:", username);
+        getLogger().trace("testing username:", username);
         if (StringUtils.isBlank(username)) {
-            addActionError(ERROR_MISSING_USERNAME);
+            addActionError(getText("userAccountController.error_missing_username"));
             return true;
         }
         Person person = getEntityService().findByUsername(username);
-        return (person != null && person.isRegistered());
+        return ((person != null) && person.isRegistered());
     }
 
     @Override
     public void validate() {
-        logger.trace("calling validate");
+        getLogger().trace("calling validate");
 
         if (person.getUsername() != null) {
             String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
             if (!normalizedUsername.equals(person.getUsername())) {
-                logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
+                getLogger().info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
                 person.setUsername(normalizedUsername);
             }
 
             if (!getAuthenticationAndAuthorizationService().isValidUsername(person.getUsername())) {
-                addActionError(USERNAME_INVALID);
+                addActionError(getText("userAccountController.username_invalid"));
                 return;
             }
 
             if (!getAuthenticationAndAuthorizationService().isValidEmail(person.getEmail())) {
-                addActionError(EMAIL_INVALID);
+                addActionError(getText("userAccountController.email_invalid"));
                 return;
             }
         }
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
-            logger.debug("contributor reason too long");
-            addActionError(String.format(ERROR_MAXLENGTH, "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
+            getLogger().debug("contributor reason too long");
+            addActionError(String.format(getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
         }
         // FIXME: replace with visitor field validation on Person?
         if (StringUtils.isBlank(person.getFirstName())) {
-            addActionError("Please enter your first name");
+            addActionError(getText("userAccountController.enter_first_name"));
         }
         if (StringUtils.isBlank(person.getLastName())) {
-            addActionError("Please enter your last name");
+            addActionError(getText("userAccountController.enter_last_name"));
         }
 
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
-            logger.debug("username was already registered: ", person.getUsername());
-            addActionError(ERROR_USERNAME_ALREADY_REGISTERED);
+            getLogger().debug("username was already registered: ", person.getUsername());
+            addActionError(getText("userAccountController.error_username_already_registered"));
         } else if (StringUtils.isBlank(getConfirmEmail())) {
-            addActionError(ERROR_CONFIRM_EMAIL);
+            addActionError(getText("userAccountController.error_confirm_email"));
         } else if (!new EqualsBuilder().append(person.getEmail(), getConfirmEmail()).isEquals()) {
-            addActionError(ERROR_EMAILS_DONT_MATCH);
+            addActionError(getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + confirmation
         if (StringUtils.isBlank(password)) {
-            addActionError(ERROR_CHOOSE_PASSWORD);
+            addActionError(getText("userAccountController.error_choose_password"));
         } else if (StringUtils.isBlank(confirmPassword)) {
-            addActionError(ERROR_CONFIRM_PASSWORD);
+            addActionError(getText("userAccountController.error_confirm_password"));
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
-            addActionError(ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(getText("userAccountController.error_passwords_dont_match"));
         }
 
         checkForSpammers();
@@ -414,18 +299,18 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         // 2 - check whether someone is adding characters that should not be there
         // 3 - check for known spammer - fname == lname & phone = 123456
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
         if (getPerson() != null) {
             try {
                 if (getPerson().getEmail().endsWith("\\r") ||
-                        getPerson().getFirstName().equals(getPerson().getLastName())
-                        && getPerson().getPhone().equals("123456")) {
-                    logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
-                    addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+                        (getPerson().getFirstName().equals(getPerson().getLastName())
+                        && getPerson().getPhone().equals("123456"))) {
+                    getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+                    addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
                     return true;
                 }
             } catch (NullPointerException npe) {
@@ -434,18 +319,18 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
         long now = System.currentTimeMillis();
 
-        logger.debug("timcheck:{}", getTimeCheck());
+        getLogger().debug("timcheck:{}", getTimeCheck());
         if (getTimeCheck() == null) {
-            logger.debug("internal time check was null, this should never happen for real users");
-            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            getLogger().debug("internal time check was null, this should never happen for real users");
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
         now -= timeCheck;
-        if (now < FIVE_SECONDS_IN_MS || now > ONE_HOUR_IN_MS) {
-            logger.debug(String.format("we think this user was a spammer, due to the time taken " +
+        if ((now < FIVE_SECONDS_IN_MS) || (now > ONE_HOUR_IN_MS)) {
+            getLogger().debug(String.format("we think this user was a spammer, due to the time taken " +
                     "to complete the form field: %s  -- %s", getConfirmEmail(), now));
-            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            addActionError(getText("userAccountController.could_not_authenticate_at_this_time"));
             return true;
         }
 
@@ -559,14 +444,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.passwordResetURL = url;
     }
 
-    public ContributorRequest getContributorRequest() {
-        return contributorRequest;
-    }
-
-    public void setContributorRequest(ContributorRequest contributorRequest) {
-        this.contributorRequest = contributorRequest;
-    }
-
     public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
         this.recaptcha_challenge_field = recaptcha_challenge_field;
     }
@@ -610,4 +487,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return getTdarConfiguration().getContributorAgreementUrl();
     }
 
+    public List<UserAffiliation> getUserAffiliations() {
+        return Arrays.asList(UserAffiliation.values());
+    }
 }

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.InvalidCredentialException;
 import com.atlassian.crowd.exception.InvalidTokenException;
 import com.atlassian.crowd.exception.InvalidUserException;
+import com.atlassian.crowd.exception.MembershipAlreadyExistsException;
 import com.atlassian.crowd.exception.ObjectNotFoundException;
 import com.atlassian.crowd.exception.OperationFailedException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
@@ -52,10 +55,10 @@ import com.atlassian.crowd.service.client.CrowdClient;
  */
 @Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private CrowdClient securityServerClient;
-    private CrowdHttpAuthenticator httpAuthenticator; 
-
+    private CrowdHttpAuthenticator httpAuthenticator;
 
     private Properties crowdProperties;
     private String passwordResetURL;
@@ -70,17 +73,18 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
-            httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties, CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
+            httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties,
+                    CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
+            logger.debug("maxHttpConnections: {} timeout: {}", clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
     }
 
-
     @Override
     public boolean isConfigured() {
         logger.info("testing crowdRestDao: {} {}", securityServerClient, httpAuthenticator);
-        if (securityServerClient == null || httpAuthenticator == null) {
+        if ((securityServerClient == null) || (httpAuthenticator == null)) {
             logger.debug("client and/or authenticator are null " + securityServerClient + " " + httpAuthenticator);
             return false;
         }
@@ -103,11 +107,11 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
             httpAuthenticator.logout(request, response);
         } catch (ApplicationPermissionException e) {
-            logger.error("application permission exception",e);
+            logger.error("application permission exception", e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("invalid authentication token",e);
+            logger.error("invalid authentication token", e);
         } catch (OperationFailedException e) {
-            logger.error("operation failed",e);
+            logger.error("operation failed", e);
         }
     }
 
@@ -124,19 +128,19 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             return AuthenticationResult.VALID;
         } catch (InvalidAuthenticationException e) {
             // this is the only exception that should be DEBUG level only.
-            logger.debug("Invalid authentication for " + name, e);
+            logger.debug("++++ CROWD: Invalid authentication for " + name);
             return AuthenticationResult.INVALID_PASSWORD.exception(e);
         } catch (InactiveAccountException e) {
-            logger.debug("Inactive account for " + name, e);
+            logger.debug("++++ CROWD: Inactive account for " + name);
             return AuthenticationResult.INACTIVE_ACCOUNT.exception(e);
         } catch (ApplicationAccessDeniedException e) {
             logger.error("This webapp is not currently authorized to access crowd server", e);
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ExpiredCredentialException e) {
-            logger.error("Credentials Expired", e);
+            logger.error("++++ CROWD: Credentials Expired");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ApplicationPermissionException e) {
-            logger.error("Application Permissions Exception", e);
+            logger.error("++++ CROWD: Application Permissions Exception");
             return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (OperationFailedException e) {
             logger.error("Operation Failed", e);
@@ -168,59 +172,83 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#addUser(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public boolean addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         String login = person.getUsername();
+        User user = null;
         try {
-            
-            User user = securityServerClient.getUser(login);
+
+            user = securityServerClient.getUser(login);
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can
             // just authenticate to edit their account / profile.
             logger.warn("XXX: Trying to add a user that already exists: [" + person.toString() + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return false;
+            if (user != null) {
+                try {
+                    securityServerClient.authenticateUser(login, password);
+                } catch (Exception e) {
+                    logger.error("AccountExists, but issues... ", e);
+                    return AuthenticationResult.ACCOUNT_EXISTS;
+                }
+            }
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (OperationFailedException e) {
-            logger.error("Caught RemoteException while trying to contact the crowd server", e);
-            throw new RuntimeException(e);
+            logger.error("++++ CROWD: Caught RemoteException while trying to contact the crowd server", e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ApplicationPermissionException e) {
-            logger.error("Caught Permissions Exception while trying to contact the crowd server", e);
-            throw new RuntimeException(e);
+            logger.error("++++ CROWD: Caught Permissions Exception while trying to contact the crowd server", e);
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("Invalid auth token", e);
-            throw new RuntimeException(e);
+            logger.error("++++ CROWD: Invalid auth token");
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         }
-        logger.debug("Adding user : " + person);
+        boolean userNew = false;
         PasswordEntity passwordEntity = new PasswordEntity(password);
         PasswordCredential credential = new PasswordCredential(password);
-        
-        UserEntity user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity , true);
 
+        if (user == null) {
+            userNew = true;
+            logger.debug("Adding user : " + person);
+            user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
+                    true);
+        }
         if (ArrayUtils.isEmpty(groups)) {
             groups = AuthenticationProvider.DEFAULT_GROUPS;
         }
         try {
-            securityServerClient.addUser(user, credential);
+            if (userNew) {
+                securityServerClient.addUser(user, credential);
+            }
             for (TdarGroup group : groups) {
-                securityServerClient.addUserToGroup(login, group.getGroupName());
+                try {
+                    securityServerClient.addUserToGroup(login, group.getGroupName());
+                } catch (MembershipAlreadyExistsException e) {
+                    // we'll ignore it if membership already exissts
+                }
             }
         } catch (ApplicationPermissionException e) {
-            logger.error("Crowd server does not permit this application to connect", e);
-            throw new RuntimeException(e);
+            logger.error("++++ CROWD: Crowd server does not permit this application to connect");
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidCredentialException e) {
-            logger.debug("invalid credentials", e);
+            logger.debug("++++ CROWD: invalid credentials");
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidUserException e) {
-            logger.error("Unable to add user (invalid user): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (invalid user): " + login + " " + e.getMessage());
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (ObjectNotFoundException e) {
-            logger.error("Unable to add principal " + user + " to group", e);
+            logger.error("++++ CROWD: Unable to add principal " + user + " to group " + e.getMessage());
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (OperationFailedException e) {
-            logger.error("Unable to add user (operation failed): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (operation failed): " + login + " " + e.getMessage());
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         } catch (InvalidAuthenticationException e) {
-            logger.error("Unable to add user (invalid authentication): " + login, e);
+            logger.error("++++ CROWD: Unable to add user (invalid authentication): " + login + " " + e.getMessage());
+            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
         }
-        return true;
+
+        return AuthenticationResult.VALID;
     }
 
     /*
@@ -293,7 +321,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
             List<Group> groupsForUser = securityServerClient.getGroupsForUser(toFind, 0, 100);
             List<String> groups = new ArrayList<>();
-            for (Group group: groupsForUser) {
+            for (Group group : groupsForUser) {
                 groups.add(group.getName());
             }
             return groups.toArray(new String[0]);
@@ -318,15 +346,16 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         return passwordResetURL;
     }
 
+    @SuppressWarnings("el-syntax")
     @Value("${crowd.passwordreseturl:http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action}")
     public void setPasswordResetURL(String url)
     {
         this.passwordResetURL = url;
     }
-    
+
     @Override
     public boolean isEnabled() {
-        if (crowdProperties == null || crowdProperties.getProperty("crowd.server.url") == null) {
+        if ((crowdProperties == null) || (crowdProperties.getProperty("crowd.server.url") == null)) {
             return false;
         }
         return true;

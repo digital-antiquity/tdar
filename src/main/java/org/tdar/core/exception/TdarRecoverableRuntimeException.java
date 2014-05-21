@@ -1,5 +1,7 @@
 package org.tdar.core.exception;
 
+import java.util.List;
+
 /**
  * $Id$
  * 
@@ -10,9 +12,11 @@ package org.tdar.core.exception;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class TdarRecoverableRuntimeException extends RuntimeException {
+public class TdarRecoverableRuntimeException extends I18nRuntimeException {
 
     private static final long serialVersionUID = 6246686753761896569L;
+
+    private String moreInfoUrlKey;
 
     public TdarRecoverableRuntimeException() {
         super();
@@ -26,8 +30,29 @@ public class TdarRecoverableRuntimeException extends RuntimeException {
         super(message, cause);
     }
 
+    public TdarRecoverableRuntimeException(String message, List<?> values) {
+        super(message, values);
+    }
+
+    public TdarRecoverableRuntimeException(String message, Throwable cause, List<?> values) {
+        super(message, cause, values);
+    }
+
     public TdarRecoverableRuntimeException(Throwable cause) {
         super(cause);
+    }
+
+    public TdarRecoverableRuntimeException(String message, String moreInfoUrlKey, List<?> values) {
+        this(message, values);
+        this.moreInfoUrlKey = moreInfoUrlKey;
+    }
+
+    public String getMoreInfoUrlKey() {
+        return moreInfoUrlKey;
+    }
+
+    public void setMoreInfoUrlKey(String moreInfoUrlKey) {
+        this.moreInfoUrlKey = moreInfoUrlKey;
     }
 
 }

@@ -12,6 +12,12 @@ import javax.persistence.Table;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.Person;
 
+/**
+ * A coupon or 'credit' for space or files in tDAR.
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Table(name = "pos_coupon")
 public class Coupon extends Base {

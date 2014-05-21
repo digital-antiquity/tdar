@@ -21,7 +21,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 public class NelNetTransactionRequestTemplate implements Serializable {
 
     private static final long serialVersionUID = -6993533612215066367L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum ItemType {
         NUMERIC,
@@ -140,8 +140,9 @@ public class NelNetTransactionRequestTemplate implements Serializable {
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItem item : list) {
-            if (item == NelnetTransactionItem.HASH)
+            if (item == NelnetTransactionItem.HASH) {
                 continue;
+            }
             String key = item.key;
             String value = values.get(key);
             if (values.containsKey(key) && StringUtils.isNotBlank(value)) {
@@ -178,13 +179,13 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                     break;
                 case USER_CHOICE_2:
                     if (!NelnetTransactionItem.getUserIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException("user id key has been changed");
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.user_id_key_changed");
                     }
                     value = invoice.getOwner().getId().toString();
                     break;
                 case USER_CHOICE_3:
                     if (!NelnetTransactionItem.getInvoiceIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException("invoice id key has been changed");
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.invoice_id_key_changed");
                     }
                     value = invoice.getId().toString();
                     break;
@@ -218,8 +219,9 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case STREET_ONE:
                 case STREET_TWO:
                 case ZIP:
-                    if (Persistable.Base.isNullOrTransient(invoice.getAddress()))
+                    if (Persistable.Base.isNullOrTransient(invoice.getAddress())) {
                         break;
+                    }
                     switch (item) {
                         case CITY:
                             value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.getLength());

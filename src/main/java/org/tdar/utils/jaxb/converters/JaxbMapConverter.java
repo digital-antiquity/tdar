@@ -17,7 +17,7 @@ public class JaxbMapConverter<K, V>
     public final static class SimpleMapAdapter<K, V> {
 
         @XmlElement
-        protected List<SimpleMapEntry<K, V>> key = new LinkedList<SimpleMapEntry<K, V>>();
+        private List<SimpleMapEntry<K, V>> key = new LinkedList<SimpleMapEntry<K, V>>();
 
         @SuppressWarnings("unused")
         private SimpleMapAdapter() {
@@ -36,10 +36,10 @@ public class JaxbMapConverter<K, V>
     public final static class SimpleMapEntry<K, V> {
 
         @XmlElement
-        protected K key;
+        private K key;
 
         @XmlElement
-        protected V value;
+        private V value;
 
         @SuppressWarnings("unused")
         private SimpleMapEntry() {
@@ -59,7 +59,6 @@ public class JaxbMapConverter<K, V>
 
     @Override
     public SimpleMapAdapter<K, V> marshal(Map<K, V> arg0) throws Exception {
-        // TODO Auto-generated method stub
         return new SimpleMapAdapter<K, V>(arg0);
     }
 

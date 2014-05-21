@@ -1,19 +1,23 @@
 package org.tdar.core.bean.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
-import org.tdar.search.query.QueryFieldNames;
+import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
+import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
  * 
  * Controlled vocabulary for resource types.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Facetable<ResourceType> {
+public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
@@ -36,7 +40,6 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     private final String dcmiTypeString;
     private final String openUrlGenre;
     private int order;
-    private transient Integer count;
     // Schema is one of from http://schema.org/docs/full.html
     private String schema;
     private final Class<? extends Resource> resourceClass;
@@ -72,6 +75,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
     public boolean supportBulkUpload() {
         switch (this) {
             case DOCUMENT:
+            case DATASET:
             case IMAGE:
                 return true;
             default:
@@ -171,8 +175,9 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
 
     public static ResourceType fromClass(Class<?> clas) {
         for (ResourceType type : values()) {
-            if (type.getResourceClass().equals(clas))
+            if (type.getResourceClass().equals(clas)) {
                 return type;
+            }
         }
         return null;
     }
@@ -203,35 +208,21 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
         return openUrlGenre;
     }
 
-    @Override
-    public Integer getCount() {
-        return count;
-    }
-
-    @Override
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
     public String getUrlNamespace() {
         String urlToReturn = name();
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
-    @Override
-    public String getLuceneFieldName() {
-        return QueryFieldNames.RESOURCE_TYPE;
-    }
+//    @Override
+//    public String getLuceneFieldName() {
+//        return QueryFieldNames.RESOURCE_TYPE;
+//    }
 
-    @Override
-    public ResourceType getValueOf(String val) {
-        return valueOf(val);
-    }
 
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
-            case GEOSPATIAL: 
+            case GEOSPATIAL:
             case SENSORY_DATA:
                 return true;
             default:
@@ -243,7 +234,7 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
         switch (this) {
             case PROJECT:
             case IMAGE:
-            case GEOSPATIAL: 
+            case GEOSPATIAL:
             case SENSORY_DATA:
                 return false;
             default:
@@ -279,5 +270,26 @@ public enum ResourceType implements HasLabel, Facetable<ResourceType> {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
+
+    @Override
+    public String getPluralLocaleKey() {
+        return MessageHelper.formatPluralLocalizableKey(this);
+    }
+
+    public static ResourceType[] getTypesSupportingBulkUpload() {
+        List<ResourceType> types = new ArrayList<>();
+        for (ResourceType type : values()) {
+            if (type.supportBulkUpload()) {
+                types.add(type);
+            }
+        }
+        return types.toArray(new ResourceType[0]);
     }
 }

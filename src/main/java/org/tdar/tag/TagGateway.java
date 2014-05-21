@@ -21,22 +21,22 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.FreetextQueryPart;
-import org.tdar.search.query.part.KeywordQueryPart;
-import org.tdar.search.query.part.SpatialQueryPart;
-import org.tdar.search.query.part.StatusQueryPart;
-import org.tdar.search.query.part.TemporalQueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -55,6 +55,7 @@ import org.w3c.dom.Element;
  * @version $Rev$
  * 
  */
+@SuppressWarnings("deprecation")
 @Component
 @WebService(portName = "TagGateway", serviceName = "TagGatewayService",
         targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
@@ -66,6 +67,13 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private String version;
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+
+    @Autowired
+    private GenericKeywordService genericKeywordService;
+
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -86,11 +94,11 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
     @Override
     public SearchResults getTopRecords(String sessionId, Query query, int numberOfRecords) {
 
-        logger.debug("Called getTopRecords.");
+        logger.debug("TAGGateway: Called getTopRecords...");
 
         // grab relevant parts of the query
         What what = query.getWhat();
@@ -100,42 +108,40 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
         // build the query from the supplied parameters
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-        qb.append(new FieldQueryPart<ResourceType>(RESOURCE_TYPE, ResourceType.PROJECT));
-        qb.append(new StatusQueryPart(Arrays.asList(Status.ACTIVE), null, null));
-
+        SearchParameters params = new SearchParameters();
+        ReservedSearchParameters reserved = new ReservedSearchParameters();
+        reserved.setResourceTypes(Arrays.asList(ResourceType.PROJECT));
+        reserved.setStatuses(Arrays.asList(Status.ACTIVE));
         if (what != null) {
             List<String> terms = new ArrayList<String>();
             for (SubjectType type : what.getSubjectTerm()) {
                 for (String stTerm : siteTypeQueryMapper.findMappedValues(type)) {
-                    terms.add(stTerm);
+                    SiteTypeKeyword stk = genericKeywordService.findByLabel(SiteTypeKeyword.class, stTerm);
+                    // params.getUncontrolledSiteTypes().add(stTerm);
+                    terms.add(stk.getId().toString());
                 }
             }
-            qb.append(new KeywordQueryPart(ACTIVE_SITE_TYPE_KEYWORDS, terms));
+            params.getApprovedSiteTypeIdLists().add(terms);
+            // qb.append(new HydrateableKeywordQueryPart<>(ACTIVE_SITE_TYPE_KEYWORDS, originalClass, fieldValues_));
         }
         if (when != null) {
-            TemporalQueryPart tqp = new TemporalQueryPart();
-            tqp.add(new CoverageDate(CoverageType.CALENDAR_DATE,
-                    when.getMinDate(), when.getMaxDate()));
-            logger.debug("Temporal query clause:" + tqp.generateQueryString());
-            qb.append(tqp);
+            params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, when.getMinDate(), when.getMaxDate()));
         }
         if (where != null) {
-            SpatialQueryPart sqp = new SpatialQueryPart();
             LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
             latLong.setMinimumLatitude(where.getMinLatitude().doubleValue());
             latLong.setMaximumLatitude(where.getMaxLatitude().doubleValue());
             latLong.setMinimumLongitude(where.getMinLongitude().doubleValue());
             latLong.setMaximumLongitude(where.getMaxLongitude().doubleValue());
-            sqp.add(latLong);
-            logger.debug("Spatial query clause:" + sqp.generateQueryString());
-            qb.append(sqp);
+            params.getLatitudeLongitudeBoxes().add(latLong);
         }
-        if (StringUtils.isNotBlank(freetext)) {
-            FreetextQueryPart qp = new FreetextQueryPart();
-            qp.add(freetext);
-            qb.append(qp);
+        if (StringUtils.isNotBlank(freetext) && !"*:*".equals(freetext)) {
+            params.getAllFields().add(freetext);
         }
-
+        authenticationAndAuthorizationService.initializeReservedSearchParameters(reserved, null);
+        QueryPartGroup reservedPart = reserved.toQueryPartGroup(null);
+        qb.append(reservedPart);
+        qb.append(params, null);
         // initialize detail values for results
         FullTextQuery q = null;
         List<Project> resources = Collections.emptyList();
@@ -157,8 +163,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
         if (q != null) {
             totalRecords = q.getResultSize();
-            if (totalRecords > 0)
+            if (totalRecords > 0) {
                 firstRec = 1;
+            }
             q.setMaxResults(numberOfRecords);
             if (totalRecords > numberOfRecords) {
                 totalExceedsRequested = true;
@@ -192,8 +199,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         List<Long> projIds = new ArrayList<Long>();
 
         for (Project p : resources) {
-            if (!totalExceedsRequested)
+            if (!totalExceedsRequested) {
                 projIds.add(p.getId());
+            }
             ResultType res = new ResultType();
             res.setIdentifier(p.getId().toString());
             res.setTitle(p.getTitle());
@@ -269,6 +277,6 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             sb.append("groups[").append(i).append("].projects.id=").append(projIds.get(i)).append("&");
         }
         return String.format("%s/search/search?query=%s&integratableOptions=%s&resourceTypes=DATASET&referrer=TAG",
-                urlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
+                UrlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
     }
 }

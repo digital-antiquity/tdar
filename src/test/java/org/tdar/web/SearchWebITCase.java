@@ -76,6 +76,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    @Override
     public void testBasicSearchView() {
         super.testBasicSearchView();
         submitForm("Search");
@@ -83,6 +84,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    @Override
     public void testAdvancedSearchView() {
         super.testAdvancedSearchView();
         submitForm("Search");
@@ -124,7 +126,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("groups[0].fieldTypes[0]",
                 SearchFieldType.FFK_SITE_TYPE.name());
         createTextInput("groups[0].uncontrolledSiteTypes[0]", keyword);
-        logger.debug("page code\n\n {}\n\n", getPageCode());
+        logger.trace("page code\n\n {}\n\n", getPageCode());
         submitForm("Search");
         assertTextPresent(title);
     }
@@ -165,7 +167,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
         for (ResourceType rt : ResourceType.values()) {
-            createResourceFromType(rt,"test");
+            createResourceFromType(rt, "test");
         }
 
         reindex();
@@ -982,16 +984,25 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         urls.add(SEARCH_RESULTS_BASE_URL
                 + "/search/advanced?__multiselect_groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=&groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B2%5D=KEYWORD_CULTURAL&sortField=RELEVANCE&__multiselect_groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=&groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=272&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=&groups%5B0%5D.fieldTypes%5B0%5D=KEYWORD_SITE&groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=4");
 
-        List<String> errors = new ArrayList<String>();
+        List<String> empty = new ArrayList<String>();
+        List<String> toobig = new ArrayList<String>();
         for (String url : urls) {
             gotoPage(url);
-            if (!getPageCode().contains(" is greater than total number of results")) {
-                errors.add(url);
+            if (getPageCode().contains("No records match the query")) {
+                empty.add(url);
             }
+
+            if (getPageCode().contains(" is greater than total number of results")) {
+                toobig.add(url);
+            }
+
             assertNoErrorTextPresent();
         }
-        for (String url : errors) {
-            logger.warn("URL NOT VALID: {}", url);
+        for (String url : empty) {
+            logger.warn("SEARCH EMPTY: {}", url);
+        }
+        for (String url : toobig) {
+            logger.warn("RESULTS REQUEST TOO HIGH: {}", url);
         }
     }
 
@@ -1015,7 +1026,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(ADVANCED_SEARCH_BASE_URL);
         createTextInput("groups[0].registeredDates[0].start", "1/1/10");
         createTextInput("groups[0].registeredDates[0].end", "1/1/12");
-        logger.debug(getPageText());
+        logger.trace(getPageText());
         submitForm("Search");
         // FIXME: I can tell from looking that this search is failing, but this
         // assert isn't failing... basically we should not be on the INPUT page

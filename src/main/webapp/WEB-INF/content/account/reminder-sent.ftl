@@ -2,8 +2,7 @@
 vim:sts=2:sw=2:filetype=jsp
 -->
 <head>
-<title>Forgot your password?</title>
-<meta name="lastModifiedDate" content="$Date$"/>
+    <title>Forgot your password?</title>
 </head>
 <body>
 You should receive an email soon with more instructions on how to reset your

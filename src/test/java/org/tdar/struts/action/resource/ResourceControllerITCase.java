@@ -3,8 +3,6 @@ package org.tdar.struts.action.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.SortedMap;
-
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
@@ -55,13 +53,6 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Test
-    public void testGetResourceTypes() {
-        ResourceController controller = generateNewInitializedController(ResourceController.class);
-        SortedMap<ResourceType, String> resourceTypes = controller.getResourceTypes();
-        assertEquals(6, resourceTypes.size());
     }
 
     @Override

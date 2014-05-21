@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 public class AsciiTransliterator {
     private final KeywordTokenizer keywordTokenizer = new KeywordTokenizer(new StringReader(""));
     private final ASCIIFoldingFilter asciiFoldingFilter = new ASCIIFoldingFilter(keywordTokenizer);
-    private final CharTermAttribute termAttribute = (CharTermAttribute) asciiFoldingFilter.getAttribute(CharTermAttribute.class);
+    private final CharTermAttribute termAttribute = asciiFoldingFilter.getAttribute(CharTermAttribute.class);
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public String process(String line)
     {

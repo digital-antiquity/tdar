@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
@@ -32,9 +31,6 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
 
     @Autowired
     DatasetService datasetService;
-
-    @Autowired
-    GenericService genericService;
 
     Dataset sharedDataset = null;
     List<Long> sharedImageIds;

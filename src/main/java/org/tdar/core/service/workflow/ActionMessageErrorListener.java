@@ -14,6 +14,8 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     private List<String> actionErrors = new ArrayList<>();
     private List<String> actionMessages = new ArrayList<>();
     private List<String> stackTraces = new ArrayList<>();
+    private List<String> errorCodes = new ArrayList<>();
+    private List<String> moreInfoUrlKeys = new ArrayList<>();
     private Resource resource;
 
     @Override
@@ -68,4 +70,16 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
         this.resource = resource;
     }
 
+    public List<String> getMoreInfoUrlKeys() {
+        return moreInfoUrlKeys;
+    }
+
+    public void setMoreInfoUrlKeys(List<String> moreInfoUrlKeys) {
+        this.moreInfoUrlKeys = moreInfoUrlKeys;
+    }
+
+    @Override
+    public void setMoreInfoUrlKey(String url) {
+        getMoreInfoUrlKeys().add(url);
+    }
 }

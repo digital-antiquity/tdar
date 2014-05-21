@@ -16,7 +16,7 @@ import org.tdar.search.query.SearchResultHandler;
 public class PaginationHelper {
     public static final int DEFAULT_ITEMS_PER_WINDOW = 20;
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private int totalNumberOfItems;
     private int itemsPerPage;
@@ -36,7 +36,7 @@ public class PaginationHelper {
     // index of current page within window
     private int currentPageIndex;
 
-    int padding;
+    private int padding;
 
     public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
         // lock the startRecord to the first record in a page
@@ -81,7 +81,7 @@ public class PaginationHelper {
             }
 
             minimumPageNumber = currentPage - currentPageIndex;
-            maximumPageNumber = minimumPageNumber + windowSize - 1;
+            maximumPageNumber = (minimumPageNumber + windowSize) - 1;
         }
 
         padding = Integer.toString(maximumPageNumber).length();
@@ -129,6 +129,7 @@ public class PaginationHelper {
         return minimumPageNumber + windowIndex;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < getWindowSize(); i++) {
@@ -163,8 +164,8 @@ public class PaginationHelper {
 
     public int getLastItem() {
         int firstItem = firstItemOnPage(currentPage);
-        int lastItem = firstItem + itemsPerPage - 1;
-        if (lastItem > totalNumberOfItems - 1) {
+        int lastItem = (firstItem + itemsPerPage) - 1;
+        if (lastItem > (totalNumberOfItems - 1)) {
             lastItem = totalNumberOfItems - 1;
         }
         return lastItem;

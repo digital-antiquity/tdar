@@ -4,7 +4,9 @@ import java.io.InputStream;
 
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 
-public interface DownloadHandler extends ActionMessageErrorSupport {
+import com.opensymphony.xwork2.TextProvider;
+
+public interface DownloadHandler extends ActionMessageErrorSupport, TextProvider {
 
     void setFileName(String filename);
 
@@ -18,6 +20,7 @@ public interface DownloadHandler extends ActionMessageErrorSupport {
 
     void setDispositionPrefix(String string);
 
-    boolean isCoverPageIncluded();
+    public boolean isEditor();
 
+    boolean isCoverPageIncluded();
 }

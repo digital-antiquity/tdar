@@ -92,13 +92,14 @@ public class SensoryDataController extends AbstractInformationResourceController
     @Override
     public Collection<String> getValidFileExtensions() {
         List<String> validExtensions = new ArrayList<String>();
-        validExtensions.addAll(analyzer.getExtensionsForTypes(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET));
+        validExtensions.addAll(getAnalyzer().getExtensionsForTypes(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET));
         return validExtensions;
     }
 
     public List<SensoryDataImage> getSensoryDataImages() {
-        if (sensoryDataImages == null)
+        if (sensoryDataImages == null) {
             sensoryDataImages = new ArrayList<SensoryDataImage>();
+        }
         return sensoryDataImages;
     }
 
@@ -107,8 +108,9 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public List<SensoryDataScan> getSensoryDataScans() {
-        if (sensoryDataScans == null)
+        if (sensoryDataScans == null) {
             sensoryDataScans = new ArrayList<SensoryDataScan>();
+        }
         return sensoryDataScans;
     }
 
@@ -141,14 +143,16 @@ public class SensoryDataController extends AbstractInformationResourceController
         setPersistable(sensoryData);
     }
 
+    @Override
     public Class<SensoryData> getPersistableClass() {
         return SensoryData.class;
     }
 
     @Override
     public SensoryData getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

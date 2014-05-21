@@ -2,14 +2,19 @@ package org.tdar.struts.action;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.ServletActionContext;
@@ -24,6 +29,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
@@ -31,6 +37,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
@@ -56,6 +63,8 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceRelationshipService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
@@ -78,9 +87,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private static final long serialVersionUID = 7084489869489013998L;
 
     // result name constants
+    private boolean hideExceptionArea = false;
     public static final String REDIRECT = "redirect";
     public static final String WAIT = "wait";
     public static final String THUMBNAIL = "thumbnail";
+    public static final String SM = "sm";
+    public static final String MD = "md";
+    public static final String LG = "lg";
+
     public static final String FORBIDDEN = "forbidden";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
     public static final String NOT_FOUND = "not_found";
@@ -107,7 +121,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String VIEW = "view";
     public static final String EDIT = "edit";
     public static final String JSON = "json";
-    public static final String BILLING = "BILLING";
+	public static final String BILLING = "billing";
+	public static final String CONTRIBUTOR = "contributor";
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
@@ -130,7 +145,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * 
      */
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private String moreInfoUrlKey;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient DownloadService downloadService;
@@ -142,6 +158,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient EmailService emailService;
     @Autowired
     private transient XmlService xmlService;
+    @Autowired
+    private transient FileSystemResourceService filesystemResourceService;
     @Autowired
     private transient AccountService accountService;
     @Autowired
@@ -202,6 +220,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private HttpServletResponse servletResponse;
 
+    private Map<String, String> clientValidationInfo = new LinkedHashMap<>();
+
     public ProjectService getProjectService() {
         return projectService;
     }
@@ -251,15 +271,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getActionName() {
-        if (ActionContext.getContext() == null)
+        if (ActionContext.getContext() == null) {
             return null;
+        }
         return ActionContext.getContext().getName();
     }
 
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
-            throw new IllegalStateException("Session data was null, should be managed by Spring.");
+            throw new IllegalStateException(getText("tdarActionSupport.no_sesion_data"));
         }
         return sessionData;
     }
@@ -334,6 +355,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getSiteAcronym() {
         return getTdarConfiguration().getSiteAcronym();
+    }
+
+    public String getServiceProvider() {
+        return getTdarConfiguration().getServiceProvider();
     }
 
     public String getSiteName() {
@@ -501,13 +526,19 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = ExceptionUtils.getFullStackTrace(exception);
 
-        getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
+        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception), exception, trace });
+        if (exception instanceof TdarActionException) {
+            setHideExceptionArea(true);
+        }
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
-            StringBuilder sb = new StringBuilder(exception.getMessage());
+            if (exception instanceof LocalizableException) {
+                ((LocalizableException) exception).setLocale(getLocale());
+            }
+            StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
-            while (thrw.getCause() != null && maxDepth > -1) {
+            while ((thrw.getCause() != null) && (maxDepth > -1)) {
                 thrw = thrw.getCause();
                 if (StringUtils.isNotBlank(thrw.getMessage())) {
                     sb.append(": ").append(thrw.getMessage());
@@ -516,15 +547,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             }
 
             super.addActionError(sb.toString());
-        } else {
+        } else if (StringUtils.isNotBlank(message)) {
             super.addActionError(message);
         }
-        stackTraces.add(trace);
+        stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));
     }
 
     @Override
     public void addActionError(String message) {
-        logger.debug("ACTIONERROR:: {}", message);
+        getLogger().debug("ACTIONERROR:: {}", message);
         super.addActionError(message);
     }
 
@@ -547,6 +578,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public StatisticService getStatisticService() {
         return statisticService;
+    }
+
+    public FileSystemResourceService getFileSystemResourceService() {
+        return filesystemResourceService;
     }
 
     protected HttpServletRequest getServletRequest() {
@@ -613,6 +648,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return "http:";
     }
 
+    public String getStaticHost() {
+        if (!getTdarConfiguration().isStaticContentEnabled()) {
+            // expecting that default requests are relative to root; so / becomes //
+            return "";
+        }
+
+        String port = "";
+        if (isSecure() && (getTdarConfiguration().getStaticContentSSLPort() != 443)) {
+            port = ":" + getTdarConfiguration().getStaticContentSSLPort();
+        }
+
+        if (!isSecure() && (getTdarConfiguration().getStaticContentPort() != 80)) {
+            port = ":" + getTdarConfiguration().getStaticContentPort();
+        }
+
+        return String.format("%s//%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port);
+    }
+
     public boolean getShowJiraLink() {
         return getTdarConfiguration().getShowJiraLink();
     }
@@ -623,7 +676,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isReindexing() {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (indexingTask != null && !indexingTask.hasEnded()) {
+        if ((indexingTask != null) && !indexingTask.hasEnded()) {
             return true;
         }
         return false;
@@ -658,23 +711,27 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     /**
-     * Check the js error log for any client-side errors that preceeded to the current request. If we detect any
-     * errors, log them at ERROR.
+     * Check the js error log and js validation error log. If we detect any js errors, log them at ERROR. Validation
+     * errors are an expected part of the workflow and are only logged at INFO.
      */
     public void reportAnyJavascriptErrors() {
         if (StringUtils.isBlank(javascriptErrorLog)) {
-            logger.trace("No javascript errors reported by the client");
-            return;
-        }
-
-        if (StringUtils.equals(getJavascriptErrorLogDefault(), javascriptErrorLog)) {
-            logger.error("JS error log contains {}, an indication that javascript was disabled on the client prior to the request",
-                    getJavascriptErrorLogDefault());
+            getLogger().trace("No javascript errors reported by the client");
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            if(logger.isErrorEnabled()) {
-                logger.error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
+            if (getLogger().isErrorEnabled()) {
+                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"),
+                        errors.length, StringUtils.join(errors, "\n\t - "));
             }
+        }
+
+        List<String> lines = new ArrayList<>(clientValidationInfo.size());
+        for (Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
+            String line = String.format("%s\t %s", entry.getKey(), entry.getValue());
+            lines.add(line);
+        }
+        if (!lines.isEmpty()) {
+            getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
 
@@ -685,7 +742,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getJavascriptErrorLog() {
         return javascriptErrorLog;
     }
-    
+
+    public boolean isJSCSSMergeServletEnabled() {
+        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+    }
+
     /**
      * @see TdarConfiguration#isSwitchableMapObfuscation()
      * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
@@ -693,8 +754,70 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isSwitchableMapObfuscation() {
         return getTdarConfiguration().isSwitchableMapObfuscation();
     }
-    
-    public boolean isJSCSSMergeServletEnabled() {
-        return getTdarConfiguration().isJSCSSMergeServletEnabled();
+
+    public Map<String, String> getClientValidationInfo() {
+        return clientValidationInfo;
+    }
+
+    public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
+        this.clientValidationInfo = clientValidationInfo;
+    }
+
+    public String getText(String aTextName, Object... args) {
+        return super.getText(aTextName, Arrays.asList(args));
+    }
+
+    public List<String> getJavascriptFiles() throws TdarActionException {
+        return filesystemResourceService.parseWroXML("js");
+    }
+
+    public List<String> getCssFiles() throws TdarActionException {
+        return filesystemResourceService.parseWroXML("css");
+    }
+
+    public boolean isWebFilePreprocessingEnabled() {
+        return filesystemResourceService.testWRO();
+    }
+
+    public String getMoreInfoUrlKey() {
+        return moreInfoUrlKey;
+    }
+
+    @Override
+    public void setMoreInfoUrlKey(String moreInfoUrl) {
+        this.moreInfoUrlKey = moreInfoUrl;
+    }
+
+    public boolean isHideExceptionArea() {
+        return hideExceptionArea;
+    }
+
+    public void setHideExceptionArea(boolean hideExceptionArea) {
+        this.hideExceptionArea = hideExceptionArea;
+    }
+
+    public boolean isErrorWarningSectionVisible() {
+        if (hideExceptionArea) {
+            return false;
+        }
+
+        if (CollectionUtils.isNotEmpty(getActionErrors())) {
+            return true;
+        }
+        if (MapUtils.isNotEmpty(getFieldErrors())) {
+            return true;
+        }
+        if (this instanceof AbstractInformationResourceController) {
+            AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>) this;
+            if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public String getWroTempDirName() {
+        return filesystemResourceService.getWroDir();
     }
 }

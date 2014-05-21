@@ -43,7 +43,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
     public void testProjectLists() throws InstantiationException, IllegalAccessException {
         // used for setting up project
         Project projectWithDifferentSubmitterAndFullUser = new Project();
-        projectWithDifferentSubmitterAndFullUser.setTitle("test");
+        projectWithDifferentSubmitterAndFullUser.setTitle("project with different submitter and user");
         projectWithDifferentSubmitterAndFullUser.setDescription("test");
         projectWithDifferentSubmitterAndFullUser.setStatus(Status.ACTIVE);
         projectWithDifferentSubmitterAndFullUser.markUpdated(getBasicUser());
@@ -52,16 +52,17 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         genericService.save(projectWithDifferentSubmitterAndFullUser);
 
         addAuthorizedUser(projectWithDifferentSubmitterAndFullUser, testPerson, GeneralPermissions.MODIFY_RECORD);
+        // evictCache();
 
+        logger.debug("{internal: {}", projectWithDifferentSubmitterAndFullUser.getInternalResourceCollection());
         Project projectWithSameFullUserAndSubmitter = new Project();
-        projectWithSameFullUserAndSubmitter.setTitle("test2");
+        projectWithSameFullUserAndSubmitter.setTitle("project with same submitter");
         projectWithSameFullUserAndSubmitter.setDescription("test2");
         projectWithSameFullUserAndSubmitter.setStatus(Status.ACTIVE);
         projectWithSameFullUserAndSubmitter.markUpdated(testPerson);
         genericService.save(projectWithSameFullUserAndSubmitter);
         addAuthorizedUser(projectWithSameFullUserAndSubmitter, testPerson, GeneralPermissions.MODIFY_RECORD);
         addAuthorizedUser(projectWithSameFullUserAndSubmitter, getBasicUser(), GeneralPermissions.MODIFY_RECORD);
-
         DashboardController controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, testPerson);

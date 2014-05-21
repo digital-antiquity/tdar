@@ -1,11 +1,10 @@
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,7 +22,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
@@ -41,8 +39,6 @@ public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
-    @Autowired
-    XmlService xmlService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
@@ -50,7 +46,7 @@ public class UploadController extends AuthenticationAware.Base {
     private PersonalFilestoreTicket personalFilestoreTicket;
     private String callback;
     private Long informationResourceId;
-    InputStream jsonInputStream;
+    private InputStream jsonInputStream;
     private int jsonContentLength;
 
     // on the receiving end
@@ -71,26 +67,31 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = { "contentType", "text/plain" }),
-            @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
+            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = {"contentType", "text/plain"}),
+            @Result(name = ERROR, type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    })
     })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
-        logger.info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
+        getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
         if (ticketRequested) {
             grabTicket();
             ticketId = personalFilestoreTicket.getId();
             ticket = personalFilestoreTicket;
-            logger.debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
+            getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
         } else {
             ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-            logger.debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
+            getLogger().debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
             if (ticket == null) {
-                addActionError("asynchronous uploads require a valid ticket");
+                addActionError(getText("uploadController.require_valid_ticket"));
             }
         }
+
         if (CollectionUtils.isEmpty(uploadFile)) {
-            addActionError("No files in this request");
+            addActionError(getText("uploadController.no_files"));
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
             Person submitter = getAuthenticatedUser();
@@ -98,19 +99,19 @@ public class UploadController extends AuthenticationAware.Base {
                 File file = uploadFile.get(i);
                 String fileName = uploadFileFileName.get(i);
                 // put upload in holding area to be retrieved later (maybe) by the informationResourceController
-                if (file != null && file.exists()) {
+                if ((file != null) && file.exists()) {
                     String contentType = "";
                     try {
                         contentType = uploadFileContentType.get(i);
                     } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
                     }
                     Object[] out = { fileName, file.length(), contentType, ticketId };
-                    logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
+                    getLogger().debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                     PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                     try {
                         filestore.store(ticket, file, fileName);
                     } catch (Exception e) {
-                        addActionErrorWithException("Could not store file.", e);
+                        addActionErrorWithException(getText("uploadController.could_not_store"), e);
                     }
                 }
             }
@@ -118,8 +119,8 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(getActionErrors())) {
             return SUCCESS;
         } else {
-            logger.error("{}", getActionErrors());
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            buildJsonError();
             return ERROR;
         }
     }
@@ -176,14 +177,29 @@ public class UploadController extends AuthenticationAware.Base {
             }
         }
         StringWriter sw = new StringWriter();
-        xmlService.convertToJson(fileProxies, sw);
+        getXmlService().convertToJson(fileProxies, sw);
         String json = sw.toString();
-        logger.trace("file list as json: {}", json);
+        getLogger().trace("file list as json: {}", json);
         byte[] jsonBytes = json.getBytes();
         jsonInputStream = new ByteArrayInputStream(jsonBytes);
         jsonContentLength = jsonBytes.length;
 
         return SUCCESS;
+    }
+
+    //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
+    private void buildJsonError()  {
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        result.put("ticket", ticketId);
+        result.put("errors", getActionErrors());
+        String resultJson = "{}";
+        try {
+            resultJson = getXmlService().convertToJson(result);
+        } catch(IOException iox) {
+            getLogger().error("cannot convert actionErrors to xml", iox);
+        }
+        getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
+        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
     }
 
     public List<File> getUploadFile() {

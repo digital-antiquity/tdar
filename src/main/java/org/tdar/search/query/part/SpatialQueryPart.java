@@ -16,6 +16,8 @@ import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.query.QueryFieldNames;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * $Id$
  * 
@@ -40,7 +42,7 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     private Operator operator = Operator.AND;
 
     @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
      * trying to say either:
@@ -90,10 +92,12 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         StringBuilder q = new StringBuilder();
 
         for (LatitudeLongitudeBox spatialLimit : getFieldValues()) {
-            if (!spatialLimit.isInitialized())
+            if (!spatialLimit.isInitialized()) {
                 continue;
-            if (q.length() > 0)
+            }
+            if (q.length() > 0) {
                 q.append(" " + operator.name() + " ");
+            }
 
             String format = SPATIAL_QUERY_FORMAT;
 
@@ -145,23 +149,25 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         if (getFieldValues().isEmpty()) {
-            return "Resource Located: anywhere (or does not specifiy grographic boundaries)";
+            return provider.getText("spatialQueryPart.empty_description");
         }
 
-        String fmt = "Resource Located: %s";
         List<String> latlongs = new ArrayList<String>();
         for (LatitudeLongitudeBox box : getFieldValues()) {
             latlongs.add(box.toString());
         }
         String seperator = " " + operator.name().toLowerCase() + " ";
-        return String.format(fmt, StringUtils.join(latlongs, seperator));
+        List<String> vals = new ArrayList<>();
+        vals.add(StringUtils.join(latlongs, seperator));
+        String fmt = provider.getText("spatialQueryPart.resource_located", vals);
+        return fmt;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

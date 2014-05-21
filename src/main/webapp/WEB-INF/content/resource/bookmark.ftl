@@ -1,12 +1,12 @@
 <#if callback??>
- ${callback}(<#rt />
+${callback}(<#rt />
 </#if>
 {
 <#if success >
-    "success" : true
+"success" : true
 <#else>
-    "success" : false
+"success" : false
 </#if>
 }<#if callback??>
- );<#rt />
+);<#rt />
 </#if>

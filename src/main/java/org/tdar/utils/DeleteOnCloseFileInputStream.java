@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import org.tdar.core.exception.TdarRuntimeException;
  * with slight modifications to ensure we don't delete things out of our filestore
  */
 public class DeleteOnCloseFileInputStream extends FileInputStream {
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private File file;
 
     public DeleteOnCloseFileInputStream(String fileName) throws FileNotFoundException {
@@ -28,6 +29,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
         this.file = file;
     }
 
+    @Override
     public void close() throws IOException {
         try {
             super.close();
@@ -39,7 +41,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
                     file = null;
                 } else {
                     logger.error("trying to delete temp file in FILESTORE!!!!!!: {}", file);
-                    throw new TdarRuntimeException("cannot delete a file in the filestore with the DeleteOnCloseInputStream:" + file);
+                    throw new TdarRuntimeException("deleteOnCloseFileInputStream.cannot_delete_file", Arrays.asList(file.getCanonicalPath()));
                 }
             }
         }

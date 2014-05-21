@@ -11,9 +11,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Project;
 
 public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     // FIXME: make this more generic (it was generated from selenium IDE)
     private void fillOUtProjectForm(WebDriver driver, Project project) {
@@ -201,9 +204,30 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
     }
 
+    @Test
+    public void testInheritCreditSection() throws InterruptedException {
+        gotoPage("/document/add");
+        find("#resourceRegistrationTitle").val("my fancy document");
+        find("#resourceDescription").val("this test took me 8 hours to write. a lot of trial and error was involved.");
+        find("#dateCreated").val("2012");
+        find("#projectId").val("3805");
+        find("#cbInheritingCreditRoles").click();
+        // this project should have about four contributors.
+        waitFor("#creditTable > :nth-child(4)");
+        find("#submitButton").click();
+    }
+
     @After
     public void turnIgnoresOff() {
         ignoreJavascriptErrors = false;
     }
 
+    @Override
+    public void login() {
+        setScreenshotsAllowed(false);
+        reindexOnce();
+        loginAdmin();
+        setIgnoreModals(false);
+        setScreenshotsAllowed(true);
+    }
 }

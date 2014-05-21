@@ -6,6 +6,7 @@ package org.tdar.filestore.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +16,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -93,12 +95,25 @@ public interface Task extends Serializable {
                     ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
 
             try {
-                ctx.getFilestore().store(f, version);
+                ctx.getFilestore().store(ObjectType.RESOURCE, f, version);
                 version.setTransientFile(f);
             } catch (IOException e) {
                 getLogger().warn("cannot store version", e);
             }
             return version;
+        }
+
+        /**
+         * Utility method to mark and log a fatal error, and then complete by throwing a TdarRecoverableRuntimeException
+         * 
+         * @param message
+         *            The message to be logged as an error.
+         * @Throws TdarRecoverableRuntimeException <b>NB</b> Each and every time this method is called!
+         */
+        protected void recordErrorAndExit(final String message, final Object key) {
+            getWorkflowContext().setErrorFatal(true); // anything that stops us running should be reported as an error, IMHO.
+            getLogger().error(message);
+            throw new TdarRecoverableRuntimeException(message, Arrays.asList(key));
         }
 
         /**

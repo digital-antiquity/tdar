@@ -1,11 +1,14 @@
 package org.tdar.search.query;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.struts.data.FacetGroup;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /* further abstracting some of the functions of the search result handler 
  * so it can be pushed into the service layer. HibernateSearch handles the request by pulling field info
@@ -19,16 +22,38 @@ import org.tdar.struts.data.FacetGroup;
  * @see org.tdar.core.service.SearchService#handleSearch(org.tdar.search.query.QueryBuilder, SearchResultHandler)
  * 
  */
-public interface SearchResultHandler<I extends Indexable> {
+public interface SearchResultHandler<I extends Indexable> extends TextProvider {
 
-    static final int DEFAULT_START = 0;
-    static final int DEFAULT_RESULT_SIZE = 25;
+    final int DEFAULT_START = 0;
+    final int DEFAULT_RESULT_SIZE = 25;
 
     SortOption getSortField();
 
     void setSortField(SortOption sortField);
 
     SortOption getSecondarySortField();
+
+    public enum ProjectionModel {
+        HIBERNATE_DEFAULT,
+        LUCENE,
+        RESOURCE_PROXY;
+
+        private List<String> projections = new ArrayList<>();
+
+        public List<String> getProjections() {
+            if (this == RESOURCE_PROXY) {
+                return Arrays.asList("id");
+            }
+            return projections;
+        }
+
+        public void setProjections(List<String> projections) {
+            this.projections = projections;
+        }
+
+    }
+
+    ProjectionModel getProjectionModel();
 
     /**
      * Sets the total number of records found by the SearchService.
@@ -83,7 +108,7 @@ public interface SearchResultHandler<I extends Indexable> {
 
     Person getAuthenticatedUser();
 
-    abstract String getSearchTitle();
+    String getSearchTitle();
 
     String getSearchDescription();
 
@@ -91,9 +116,7 @@ public interface SearchResultHandler<I extends Indexable> {
 
     int getPrevPageStartRecord();
 
-    List<String> getProjections();
-
     @SuppressWarnings("rawtypes")
-    List<FacetGroup<? extends Facetable>> getFacetFields();
+    List<FacetGroup<? extends Enum>> getFacetFields();
 
 }

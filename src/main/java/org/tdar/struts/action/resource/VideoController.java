@@ -41,7 +41,7 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.VIDEO);
+        return getAnalyzer().getExtensionsForType(ResourceType.VIDEO);
     }
 
     @Override
@@ -64,8 +64,9 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     @Override
     public Video getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 }

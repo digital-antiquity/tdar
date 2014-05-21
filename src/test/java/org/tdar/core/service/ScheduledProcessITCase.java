@@ -42,9 +42,10 @@ import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
-import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
+import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
+import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 
@@ -57,11 +58,14 @@ import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+    // private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
     @Autowired
     private SitemapGeneratorProcess sitemap;
+
+    @Autowired
+    RebuildHomepageCache homepage;
 
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
@@ -104,13 +108,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     OverdrawnAccountUpdate oau;
 
     @Autowired
-    FilestoreWeeklyLoggingProcess fsp;
+    WeeklyFilestoreLoggingProcess fsp;
 
     @Test
     public void testVerifyProcess() {
         fsp.execute();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        assertTrue(received.getSubject().contains(FilestoreWeeklyLoggingProcess.PROBLEM_FILES_REPORT));
+        assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
@@ -149,6 +153,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    public void testHomepageGen() {
+        homepage.execute();
+    }
+
+    @Test
     public void testBatchProcessing() {
         MockScheduledProcess mock = new MockScheduledProcess();
         List<Long> batch = mock.getNextBatch();
@@ -175,6 +184,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
         pap.setDaysToRun(3000);
+        pap.execute();
+        pap.cleanup();
+        pap.setAllIds(null);
+        // resetting
         pap.execute();
     }
 
@@ -206,7 +219,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
-        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUser();
+        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);

@@ -12,8 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
+ * Lists the name of the site in the resource
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -31,6 +30,7 @@ public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
     @JoinColumn(name = "merge_keyword_id")
     private Set<SiteNameKeyword> synonyms = new HashSet<SiteNameKeyword>();
 
+    @Override
     public Set<SiteNameKeyword> getSynonyms() {
         return synonyms;
     }

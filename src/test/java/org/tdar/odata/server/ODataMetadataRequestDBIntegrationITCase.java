@@ -78,6 +78,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
         genericService.saveOrUpdate(dataset);
     }
 
+    @Override
     protected Logger getLogger() {
         return logger;
     }

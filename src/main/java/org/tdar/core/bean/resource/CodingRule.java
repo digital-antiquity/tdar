@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -14,41 +15,44 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
+ * Key, Description, and Mapping for each entry in a coding-sheet
+ * 
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
  * @latest $Id$
  */
 @Entity
-@Table(name = "coding_rule")
+@Table(name = "coding_rule", indexes = {
+        @Index(name = "coding_rule_coding_sheet_id_idx", columnList = "coding_sheet_id"),
+        @Index(name = "coding_rule_term_index", columnList = "term"),
+        @Index(name = "coding_rule_ontology_node_id_idx", columnList = "ontology_node_id")
+})
 public class CodingRule extends Persistable.Base implements Comparable<CodingRule> {
 
     private static final long serialVersionUID = -577936920767925065L;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
-    @Index(name = "coding_rule_coding_sheet_id_idx")
     @ContainedIn
     private CodingSheet codingSheet;
 
     @Column(nullable = false)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String code;
 
     @Column(nullable = false)
     @Field
-    @Length(max = 255)
-    @Index(name = "coding_rule_term_index")
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String term;
 
     @Column(length = 2000)
@@ -57,7 +61,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ontology_node_id")
-    @Index(name = "coding_rule_ontology_node_id_idx")
     private OntologyNode ontologyNode;
 
     private transient long count = -1L;
@@ -108,8 +111,9 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     // strips leading zeros and trims whitespace from string.
     private static String sanitize(String string) {
-        if (string == null || string.isEmpty())
+        if ((string == null) || string.isEmpty()) {
             return null;
+        }
         try {
             Integer integer = Integer.parseInt(string);
             string = String.valueOf(integer);
@@ -147,6 +151,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         this.codingSheet = codingSheet;
     }
 
+    @Override
     public String toString() {
         return String.format("{%s, %s, %s, %s}", code, term, description, getOntologyNode());
     }
@@ -154,6 +159,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     /**
      * Default implementation of compareTo using the code.
      */
+    @Override
     public int compareTo(CodingRule other) {
         try {
             // try to use integer comparison instead of String lexicographic comparison

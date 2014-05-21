@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,13 +14,22 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.external.Accessible;
 import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.odata.server.RepositoryService;
+import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
+/**
+ * Provide core methods needed to support the OData Data editing protocol
+ * 
+ * @author
+ * 
+ */
 @Service
 public class ODataRepositoryService implements RepositoryService, SessionDataAware {
 
@@ -27,6 +37,9 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
 
     @Autowired
     private Accessible authService;
+
+    @Autowired
+    private EntityService entityService;
 
     @Autowired
     private RowOperations databaseService;
@@ -37,120 +50,83 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Autowired
     private SessionData sessionData;
 
+    @Override
     public SessionData getSessionData() {
         return sessionData;
     }
 
+    @Override
     public void setSessionData(SessionData sessionData) {
         this.sessionData = sessionData;
     }
 
     /**
-     * We could probably return a set here as Datasets have unique names.
+     * Find all @link Dataset entries that user has access to
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Dataset> findAllOwnedDatasets() {
-        // TODO RR: check if authenticatedUser is a persisted entity.
         List<Dataset> ownedDatasets = new ArrayList<Dataset>();
         Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
+        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
-            List<Dataset> knownDatasets = genericService.findAll(Dataset.class);
-            if (knownDatasets.size() > 0) {
-                for (Dataset knownDataset : knownDatasets) {
-                    if (authService.canView(knownPerson, knownDataset)) {
-                        ownedDatasets.add(knownDataset);
-                    }
-                }
+            List<ResourceType> types = new ArrayList<>();
+            types.add(ResourceType.DATASET);
+            for (Resource resource : authService.findEditableResources(knownPerson, false, types)) {
+                ownedDatasets.add((Dataset) resource);
             }
         }
         return ownedDatasets;
     }
 
     /**
-     * We could probably return a set here as DataTables have unique names.
+     * Find All @link DataTable entries that a user has access to
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<DataTable> findAllOwnedDataTables() {
-        // TODO RR: check if authenticatedUser is a persisted entity.
         List<DataTable> ownedDataTables = new ArrayList<DataTable>();
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
-        if (knownPerson != null) {
-            // TODO RR: A database query that returns owned datasets directly rather than filter in code.
-            List<Dataset> knownDatasets = genericService.findAll(Dataset.class);
-            for (Dataset dataSet : knownDatasets) {
-                if (authService.canView(knownPerson, dataSet)) {
-                    Set<DataTable> dataTables = dataSet.getDataTables();
-                    assert dataTables != null;
-                    // session..initialize(dataTables);
-                    ownedDataTables.addAll(dataTables);
-                }
-            }
+        for (Dataset dataset : findAllOwnedDatasets()) {
+            ownedDataTables.addAll(dataset.getDataTables());
         }
         return ownedDataTables;
     }
 
+    /**
+     * Find a @link DataTable by name
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public DataTable findOwnedDataTableByName(String entitySetName) {
         assert entitySetName != null;
         assert entitySetName.length() > 0;
-
-        // TODO RR: check if authenticatedUser is a persisted entity.
-        DataTable nullDataTable = null;
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
-        if (knownPerson != null) {
-            // TODO RR: A database query that returns owned datatable by name directly rather than filter in code.
-            List<Dataset> knownDatasets = genericService.findAll(Dataset.class);
-            for (Dataset dataSet : knownDatasets) {
-                if (authService.canView(knownPerson, dataSet)) {
-                    Set<DataTable> dataTables = dataSet.getDataTables();
-                    assert dataTables != null;
-                    for (DataTable ownedDataTable : dataTables) {
-                        if (entitySetName.equals(ownedDataTable.getName())) {
-                            return ownedDataTable;
-                        }
-                    }
-                }
+        List<DataTable> dataTables = findAllOwnedDataTables();
+        for (DataTable table : dataTables) {
+            if (entitySetName.equals(table.getName())) {
+                return table;
             }
         }
-        return nullDataTable;
+        return null;
     }
 
     /**
-     * We return a list since AbstractDataRecord will only obey the set contract if it has a unique id.
+     * Find all Rows of data from @link DataTable and @link Dataset entities that user has access to
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public List<AbstractDataRecord> findAllOwnedDataRecords() {
 
         List<AbstractDataRecord> ownedDataRecords = new ArrayList<AbstractDataRecord>();
-
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
-        if (knownPerson != null) {
-            // TODO RR: A database query that returns owned datasets directly rather than filter in code.
-            List<Dataset> knownDatasets = genericService.findAll(Dataset.class);
-            for (Dataset dataSet : knownDatasets) {
-                if (authService.canView(knownPerson, dataSet)) {
-                    Set<DataTable> dataTables = dataSet.getDataTables();
-                    assert dataTables != null;
-                    for (DataTable dataTable : dataTables) {
-                        Set<AbstractDataRecord> dataTableRecords = databaseService.findAllRows(dataTable);
-                        ownedDataRecords.addAll(dataTableRecords);
-                    }
-                }
-            }
+        List<DataTable> dataTables = findAllOwnedDataTables();
+        for (DataTable dataTable : dataTables) {
+            Set<AbstractDataRecord> dataTableRecords = databaseService.findAllRows(dataTable);
+            ownedDataRecords.addAll(dataTableRecords);
         }
         return ownedDataRecords;
     }
 
     /**
-     * We return a list since AbstractDataRecord will only obey the set contract if it has a unique id.
+     * Find all Rows of data from @link DataTable entities that user has access to
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -158,24 +134,28 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
 
         List<AbstractDataRecord> dataRecords = new ArrayList<AbstractDataRecord>();
         Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
+        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             Dataset dataset = dataTable.getDataset();
             assert dataset != null;
             if (!authService.canView(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(String.format("User %s is not permitted to view the dataset %s", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             dataRecords.addAll(databaseService.findAllRows(dataTable));
         }
         return dataRecords;
     }
 
+    /**
+     * Update a row
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateRecord(AbstractDataRecord dataRecord) {
         Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
+        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             DataTable dataTable = dataRecord.getDataTable();
             assert dataTable != null;
@@ -183,7 +163,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canEdit(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(String.format("User %s is not permitted to edit the dataset %s", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             Map<?, ?> data = dataRecord.asMap();
             databaseService.editRow(dataTable, dataRecord.getId(), data);

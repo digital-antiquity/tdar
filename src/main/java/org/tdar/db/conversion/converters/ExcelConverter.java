@@ -19,6 +19,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -27,6 +29,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.utils.MessageHelper;
 
 /**
  * Uses Apache POI to parse and convert Excel workbooks into a unique table,
@@ -40,13 +43,12 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 public class ExcelConverter extends DatasetConverter.Base {
 
     private static final String DEFAULT_SHEET_NAME = "Sheet1";
-    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "The system cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
-    private static final String ERROR_WRONG_EXCEL_FORMAT = "The system could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
-    private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -60,6 +62,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         this.setFilename(version[0].getFilename());
     }
 
+    @Override
     protected void openInputDatabase() throws IOException {
         if (informationResourceFileVersion == null) {
             logger.warn("Received null information resource file.");
@@ -86,12 +89,11 @@ public class ExcelConverter extends DatasetConverter.Base {
         } catch (IllegalArgumentException exception) {
             logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.", exception);
             throw new TdarRecoverableRuntimeException(
-                    ERROR_WRONG_EXCEL_FORMAT,
-                    exception);
+                    MessageHelper.getMessage("excelConverter.error_wrong_excel_format"), exception);
         } catch (RuntimeException rex) {
             // if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
-            if (rex.getMessage().equals(POI_ERROR_MISSING_ROWS)) {
-                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_FILE_TRY_RESAVING);
+            if (rex.getMessage().equals(MessageHelper.getMessage("excelConverter.poi_error_missing_rows"))) {
+                throw new TdarRecoverableRuntimeException("excelConverter.error_corrupt_file_try_resaving");
             } else {
                 throw rex;
             }
@@ -105,6 +107,7 @@ public class ExcelConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         int numberOfSheets = workbook.getNumberOfSheets();
 
@@ -120,7 +123,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             }
             numberOfActualSheets++;
             try {
-                if (numberOfActualSheets == 1 && sheetName.equals(DEFAULT_SHEET_NAME)) {
+                if ((numberOfActualSheets == 1) && sheetName.equals(DEFAULT_SHEET_NAME)) {
                     sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getTransientFile().getName());
                 }
                 processSheet(currentSheet, sheetName);
@@ -177,9 +180,12 @@ public class ExcelConverter extends DatasetConverter.Base {
         sheetEvalator.evaluateBeginning(currentSheet, 25);
 
         Row columnNamesRow = currentSheet.getRow(sheetEvalator.getFirstNonHeaderRow());
+        if (columnNamesRow == null) {
+            throw new TdarRecoverableRuntimeException("excelConverter.could_not_find_header_row");
+        }
         generateDataTableColumns(columnNamesRow, dataTable);
 
-        if (dataTable.getDataTableColumns() == null || dataTable.getDataTableColumns().isEmpty()) {
+        if ((dataTable.getDataTableColumns() == null) || dataTable.getDataTableColumns().isEmpty()) {
             logger.info(sheetName + " appears to be empty or have non-tabular data, skipping data table");
             dataTables.remove(dataTable);
         }
@@ -205,11 +211,13 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         for (int rowIndex = startRow; rowIndex <= endRow; ++rowIndex) {
             Row currentRow = currentSheet.getRow(rowIndex);
-            if (currentRow == null)
+            if (currentRow == null) {
                 continue;
+            }
 
-            if (currentRow.getFirstCellNum() < 0)
+            if (currentRow.getFirstCellNum() < 0) {
                 continue;
+            }
 
             sheetEvalator.evaluateForBlankCells(currentRow, startColumnIndex);
 
@@ -227,7 +235,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                         cellValue = null;
                     }
                     valueColumnMap.put(dataTable.getDataTableColumns().get(columnIndex), cellValue);
-                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue);
+                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue, rowIndex);
                 }
             }
             logger.trace("inserting {} into {}", valueColumnMap, dataTable.getName());

@@ -5,7 +5,6 @@ package org.tdar.search.query.builder;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
-import org.tdar.core.service.SearchService;
 
 /**
  * $$Id$$
@@ -23,10 +22,10 @@ import org.tdar.core.service.SearchService;
  */
 
 public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> {
-    String label;
-    Class<?> analyzer;
-    String parent;
-    public static Logger logger = Logger.getLogger(DynamicQueryComponent.class);
+    private String label;
+    private Class<?> analyzer;
+    private String parent;
+    private Logger logger = Logger.getLogger(DynamicQueryComponent.class);
 
     /**
      * Basic constructor
@@ -42,7 +41,7 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
     }
 
     public String getLabel() {
-        return SearchService.addParent(parent, label);
+        return DynamicQueryComponentHelper.addParent(parent, label);
     }
 
     public void setLabel(String label) {
@@ -67,10 +66,12 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
 
     @Override
     public boolean equals(Object o) {
-        if (o == null)
+        if (o == null) {
             return false;
-        if (o == this)
+        }
+        if (o == this) {
             return true;
+        }
         if (o instanceof DynamicQueryComponent) {
             return toString().equals(o.toString());
         }
@@ -89,8 +90,9 @@ public class DynamicQueryComponent implements Comparable<DynamicQueryComponent> 
 
     @Override
     public String toString() {
-        if (this.getAnalyzer() == null)
+        if (this.getAnalyzer() == null) {
             return this.getLabel() + " - null";
+        }
         return this.getParent() + this.getLabel() + " - " + this.getAnalyzer().getCanonicalName();
     }
 }

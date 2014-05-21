@@ -1,5 +1,7 @@
 package org.tdar.core.exception;
 
+import java.util.List;
+
 /**
  * $Id$
  * 
@@ -7,7 +9,7 @@ package org.tdar.core.exception;
  * @author Adam Brin
  * @version $Rev$
  */
-public class APIException extends Exception {
+public class APIException extends I18nException {
 
     private static final long serialVersionUID = -6383202970353307213L;
 
@@ -21,6 +23,11 @@ public class APIException extends Exception {
     public APIException(String msg, StatusCode code) {
         super(msg);
         this.setCode(code);
+    }
+
+    public APIException(String msg, List<?> asList, StatusCode forbidden) {
+        super(msg, asList);
+        this.setCode(forbidden);
     }
 
     public void setCode(StatusCode code) {

@@ -1,6 +1,6 @@
-Articulated Skeleton
+Articulated Skeleton {description}
 	Articulated Skeleton Complete
-	Articulated Skeleton Nearly Complete
+	Articulated Skeleton Nearly Complete (ASNC) {another description}
 	Articulated Skeleton Partial
 		Articulated Skeleton Anterior Portion
 		Articulated Skeleton Posterior Portion
@@ -154,7 +154,7 @@ Appendicular
 Foot
 	Carpal or Tarsal
 		Carpal
-			Scaphoid (Radial)
+			Scaphoid (Carpal Radial)
 			Lunate (Intermediate)
 			Scaphoid & Lunate (Radial & Intermediate)
 			Triquetrum (Ulnar; Cuneiform)
@@ -206,7 +206,7 @@ Foot
 		Vestigial Phalanx (dew claw)
 		Vestigial Hoof Core
 	Sesamoid
-{Amphibian & Reptile Element Additional}
+Amphibian Additional {Amphibian & Reptile Element Additional}
 Carapace or Plastron
 	Carapace
 	Costal
@@ -222,29 +222,29 @@ Carapace or Plastron
 	Pygal
 	Suprapygal
 	Xiphiplstron
-Ectopterygoid {Amphibian & Reptile}
+Amphibian Ectopterygoid {Amphibian & Reptile}
 Episternum
-Jugal {Amphibian & Reptile}
+Amphibian Jugal {Amphibian & Reptile}
 Mesosternum
 Omosternum
-Prootic {Amphibian & Reptile}
+Amphibian Prootic {Amphibian & Reptile}
 Pterygoid
-Quadrate {Amphibian}
+Amphibian Quadrate {Amphibian}
 Quadratojugal
 Squamossal
 Urostyle
 Xiphisternum
-{Bird Element Additional}
+Bird Additional {Bird Element Additional}
 Beak
 Coracoid
 Eggshell
 Furculum
-Jugal {Bird}
+Bird Jugal {Bird}
 Lumbosacral vertebrae
 Orbital ring
 Pollex
 Pygostyle
-Quadrate {Bird}
+Bird Quadrate {Bird}
 Scapholunar
 Synsacrum
 Tracheal Cartilage
@@ -254,7 +254,7 @@ Wing Phalanges
 		1st Phalanx Digit 2
 		2nd Phalanx Digit 2
 	Digit 3
-{Fish Element Additional}
+Fish Additional {Fish Element Additional}
 Alisphenoid
 Angular
 Articular
@@ -263,7 +263,7 @@ Basipterigium
 Ceratohyal
 Ceratobranchial
 Cleithrum
-Ectopterygoid {Fish}
+Fish Ectopterygoid {Fish}
 Endocranium (neurocranium)
 Epihyal
 Epiotic
@@ -292,7 +292,7 @@ Posttemporal
 Precaudal
 Preopercular
 Proatlas
-Prootic {Fish}
+Fish Prootic {Fish}
 Pterotic
 Pterygiophore
 Quadrate {Fish}
@@ -313,13 +313,13 @@ Supratemporal
 Supraoccipital
 Symplectic
 Urohyal
-Vertebra {Fish}
+Fish Vertebra {Fish}
 	Abdominal Anterior Vertebra {Fish}
 	Abdominal Posterior Vertebra {Fish}
 	Penultimate Vertebrae {Fish}
 	Ultimate Vertebrae {Fish}
 	Weberian Vertebra {Fish}
-{Mollusc Elements}
+Mollusc {Mollusc Elements}
 Hinge plate
 Umbo
 Other shell

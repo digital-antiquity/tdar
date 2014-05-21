@@ -16,6 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -35,7 +36,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -48,6 +48,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -95,15 +96,14 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "information_resource")
-@org.hibernate.annotations.Table( appliesTo="information_resource", indexes = {
-        @Index(name = "infores_projid", columnNames={"project_id", "id"}),
-        @Index(name = "infores_provid", columnNames={"provider_institution_id"}),
-        @Index(name = "ires_copyright", columnNames={"copyright_holder_id"}),
-        //FIXME: prod database has two indexes on these fields with different names.  Remove if they are redundant(as well as the @Index annotation)
-        //@Index(name = "ires_provicer",  columnNames={"provider_institution_id"}),
-        //@Index(name = "infores_provid", columnNames={"provider_institution_id"}),
-        @Index(name = "ires_publisher", columnNames={"publisher_id"})
+@Table(name = "information_resource", indexes = {
+        @Index(name = "infores_projid", columnList = "project_id, id"),
+        @Index(name = "infores_provid", columnList = "provider_institution_id"),
+        @Index(name = "ires_copyright", columnList = "copyright_holder_id"),
+        // FIXME: prod database has two indexes on these fields with different names. Remove if they are redundant(as well as the @Index annotation)
+        // @Index(name = "ires_provicer", columnList={"provider_institution_id"}),
+        // @Index(name = "infores_provid", columnList={"provider_institution_id"}),
+        @Index(name = "ires_publisher", columnList = "publisher_id")
 })
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -112,7 +112,7 @@ public abstract class InformationResource extends Resource {
     private static final long serialVersionUID = -1534799746444826257L;
     public static final String[] JSON_PROPERTIES = { "inheritingCulturalInformation", "inheritingInvestigationInformation", "inheritingMaterialInformation",
             "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
-            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation"
+            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation", "inheritingIndividualAndInstitutionalCredit"
     };
 
     public InformationResource() {
@@ -132,7 +132,7 @@ public abstract class InformationResource extends Resource {
         setResourceType(type);
     }
 
-    @ManyToOne(optional = true)
+    @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.DETACH })
     // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
     private Project project;
 
@@ -160,18 +160,18 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "metadata_language", length = 100)
+    @Column(name = "metadata_language", length = FieldLength.FIELD_LENGTH_100)
     private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "resource_language", length = 100)
+    @Column(name = "resource_language", length = FieldLength.FIELD_LENGTH_100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Column(name = "license_type", length = 128)
+    @Column(name = "license_type", length = FieldLength.FIELD_LENGTH_128)
     @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
     private LicenseType licenseType;
 
@@ -187,7 +187,7 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
     @Column(name = "copy_location")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String copyLocation;
 
     @Column(name = "last_uploaded")
@@ -208,12 +208,12 @@ public abstract class InformationResource extends Resource {
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
     private Institution resourceProviderInstitution;
 
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
@@ -221,11 +221,11 @@ public abstract class InformationResource extends Resource {
 
     @BulkImportField(label = "Publisher Location")
     @Column(name = "publisher_location")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
     private Creator copyrightHolder;
 
@@ -250,12 +250,14 @@ public abstract class InformationResource extends Resource {
     private boolean inheritingIdentifierInformation = false;
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCollectionInformation = false;
+    @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
+    private boolean inheritingIndividualAndInstitutionalCredit = false;
 
     @ManyToOne(optional = true)
     private DataTableColumn mappedDataKeyColumn;
 
     @Column
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String mappedDataKeyValue;
 
     @Transient
@@ -320,7 +322,7 @@ public abstract class InformationResource extends Resource {
     public void setDate(Integer dateCreated) {
         this.date = dateCreated;
         if (dateCreated != null) {
-            this.dateNormalized = Math.round(dateCreated / 10) * 10;
+            this.dateNormalized = Math.round(dateCreated.floatValue() / 10f) * 10;
         } else {
             this.dateNormalized = null;
         }
@@ -437,8 +439,9 @@ public abstract class InformationResource extends Resource {
     public int getTotalNumberOfActiveFiles() {
         int count = 0;
         for (InformationResourceFile file : informationResourceFiles) {
-            if (file.isDeleted())
+            if (file.isDeleted()) {
                 continue;
+            }
             count++;
         }
         return count;
@@ -452,7 +455,7 @@ public abstract class InformationResource extends Resource {
         appendIfNotBlank(sb, getPublisherLocation(), ".", "");
         appendIfNotBlank(sb, getPublisherName(), ":", "");
 
-        if (getDate() != null && getDate().intValue() != -1) {
+        if ((getDate() != null) && (getDate().intValue() != -1)) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
         appendIfNotBlank(sb, getCopyLocation(), ".", "");
@@ -559,8 +562,9 @@ public abstract class InformationResource extends Resource {
         List<InformationResourceFileVersion> fileURIs = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFile irFile : files) {
             try {
-                if (irFile.getRestriction().isRestricted())
+                if (irFile.getRestriction().isRestricted()) {
                     continue;
+                }
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
                 fileURIs.add(indexableVersion);
             } catch (Exception e) {
@@ -675,6 +679,23 @@ public abstract class InformationResource extends Resource {
         return isProjectVisible() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
     }
 
+    @IndexedEmbedded
+    @Override
+    public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
+        return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit()
+                : getIndividualAndInstitutionalCredit();
+    }
+
+    @IndexedEmbedded
+    @Override
+    public Set<ResourceCreator> getActiveResourceCreators() {
+        Set<ResourceCreator> local = new HashSet<ResourceCreator>(super.getResourceCreators());
+        if (isProjectVisible() && isInheritingIndividualAndInstitutionalCredit()) {
+            local.addAll(project.getIndividualAndInstitutionalCredit());
+        }
+        return local;
+    }
+
     @Transient
     @XmlTransient
     public boolean isProjectVisible() {
@@ -736,10 +757,12 @@ public abstract class InformationResource extends Resource {
         return isProjectVisible() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
     }
 
+    @Override
     public Set<ResourceNote> getActiveResourceNotes() {
         return isProjectVisible() && isInheritingNoteInformation() ? project.getResourceNotes() : getResourceNotes();
     }
 
+    @Override
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return isProjectVisible() && isInheritingIdentifierInformation() ? project.getResourceAnnotations() : getResourceAnnotations();
     }
@@ -791,8 +814,9 @@ public abstract class InformationResource extends Resource {
     @Override
     public boolean hasEmbargoedFiles() {
         for (InformationResourceFile file : getConfidentialFiles()) {
-            if (file.isEmbargoed())
+            if (file.isEmbargoed()) {
                 return true;
+            }
         }
         return false;
     }
@@ -838,16 +862,16 @@ public abstract class InformationResource extends Resource {
                 sb.append(" ");
             }
         }
-        
+
         if (CollectionUtils.isNotEmpty(getActiveInformationResourceFiles())) {
-            for (InformationResourceFile file :getActiveInformationResourceFiles()) {
-                sb.append(file.getFileName());
+            for (InformationResourceFile file : getActiveInformationResourceFiles()) {
+                sb.append(file.getFilename());
                 sb.append(" ");
                 sb.append(file.getDescription());
                 sb.append(" ");
             }
         }
-        
+
         // if (getProject() != null) {
         // getProject().getTitle();
         // }
@@ -865,7 +889,7 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public boolean isValidForController() {
         if (date == null) {
-            throw new TdarValidationException("Specifying a \"Created Date\" is required for this " + getResourceType());
+            throw new TdarValidationException("informationResource.created_date_required", Arrays.asList(getResourceType()));
         }
         return super.isValidForController();
     }
@@ -901,7 +925,8 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public boolean isInheritingSomeMetadata() {
         return (inheritingCulturalInformation || inheritingInvestigationInformation || inheritingMaterialInformation || inheritingOtherInformation ||
-                inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation || inheritingNoteInformation);
+                inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation
+                || inheritingNoteInformation || inheritingIndividualAndInstitutionalCredit);
     }
 
     @Transient
@@ -914,6 +939,7 @@ public abstract class InformationResource extends Resource {
             setProject(Project.NULL);
             // setting the project to null should be enough...
             setInheritingCulturalInformation(false);
+            setInheritingIndividualAndInstitutionalCredit(false);
             setInheritingInvestigationInformation(false);
             setInheritingMaterialInformation(false);
             setInheritingOtherInformation(false);
@@ -981,6 +1007,9 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {
+            if (logger.isTraceEnabled()) {
+                logger.debug("{}", irfile.getLatestThumbnail());
+            }
             if (irfile.getLatestThumbnail() != null) {
                 visibleFiles.add(irfile);
             }
@@ -995,6 +1024,9 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} ({} {} )", irfile, irfile.isViewable(), irfile.isDeleted());
+            }
             if (irfile.isViewable() && !irfile.isDeleted()) {
                 visibleFiles.add(irfile);
             }
@@ -1079,7 +1111,7 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
-            if (file.getStatus() == FileStatus.PROCESSING_ERROR || file.getStatus() == FileStatus.PROCESSING_WARNING) {
+            if ((file.getStatus() == FileStatus.PROCESSING_ERROR) || (file.getStatus() == FileStatus.PROCESSING_WARNING)) {
                 files.add(file);
             }
         }
@@ -1125,5 +1157,14 @@ public abstract class InformationResource extends Resource {
      */
     public void updateFromTransientResource(InformationResource transientCopy) {
         // Should we throw an exception if we are here ?
+    }
+
+    public boolean isInheritingIndividualAndInstitutionalCredit() {
+        return inheritingIndividualAndInstitutionalCredit;
+    }
+
+    public void setInheritingIndividualAndInstitutionalCredit(
+            boolean inheritingIndividualAndInstitutionalCredit) {
+        this.inheritingIndividualAndInstitutionalCredit = inheritingIndividualAndInstitutionalCredit;
     }
 }

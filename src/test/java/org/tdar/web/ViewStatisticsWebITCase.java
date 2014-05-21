@@ -10,23 +10,32 @@ public class ViewStatisticsWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testViewStatisticsIncremented() {
+        logout();
+        loginAdmin();
         createDocumentAndUploadFile(TEST_TITLE);
         String pageCode = getPageCode();
+        URL url = internalPage.getUrl();
         String docUrl = pageCode.substring(pageCode.indexOf("/filestore/"));
         docUrl = docUrl.substring(0, docUrl.indexOf("\""));
+        logout();
+        login();
         logger.info(docUrl);
-        URL url = internalPage.getUrl();
-        //start at 0
+        // start at 0
+        gotoPage(url.toString());
+        gotoPageWithoutErrorCheck(docUrl);
+        logout();
+        loginAdmin();
         gotoPage(url.toString());
         assertTextPresent("1 time");
+        assertTextPresent("downloaded 1 time");
+        logout();
+        login();
+        gotoPage(url.toString());
+        gotoPageWithoutErrorCheck(docUrl);
+        logout();
+        loginAdmin();
         gotoPage(url.toString());
         assertTextPresent("2 time(s)");
-
-        gotoPage(docUrl);
-        gotoPage(url.toString());
-        assertTextPresent("downloaded 1 time");
-        gotoPage(docUrl);
-        gotoPage(url.toString());
         assertTextPresent("downloaded 2 times");
     }
 

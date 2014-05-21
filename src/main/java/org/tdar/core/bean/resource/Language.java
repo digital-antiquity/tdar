@@ -2,16 +2,16 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
- * 
- * Controlled vocabulary for document types.
+ * Controlled vocabulary for languages
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum Language implements HasLabel {
+public enum Language implements HasLabel, Localizable {
 
     ENGLISH("English", "en", "eng"),
     SPANISH("Spanish", "sp", "spa"),
@@ -37,6 +37,7 @@ public enum Language implements HasLabel {
         return code;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }
@@ -45,11 +46,17 @@ public enum Language implements HasLabel {
         return iso639_2;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
     public static Language fromISO(String str) {
         if (!StringUtils.isEmpty(str)) {
             for (Language val : Language.values()) {
-                if (val.getIso639_2().equalsIgnoreCase(str))
+                if (val.getIso639_2().equalsIgnoreCase(str)) {
                     return val;
+                }
             }
         }
         return null;
@@ -60,7 +67,7 @@ public enum Language implements HasLabel {
      * valueOf throws RuntimeExceptions.
      */
     public static Language fromString(String string) {
-        if (string == null || "".equals(string)) {
+        if ((string == null) || "".equals(string)) {
             return null;
         }
         // try to convert incoming resource type String query parameter to ResourceType enum.. unfortunately valueOf only throws RuntimeExceptions.

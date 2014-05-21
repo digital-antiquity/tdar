@@ -1,3 +1,3 @@
 <#if callback??>${callback}(</#if>
-   ${projectAsJson}
+${projectAsJson}
 <#if callback??>);</#if>

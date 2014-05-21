@@ -1,5 +1,6 @@
 package org.tdar.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public class Pair<R, S> {
+public class Pair<R, S> implements Serializable {
 
+    private static final long serialVersionUID = -2511232129063917716L;
     private R first;
     private S second;
 
@@ -80,8 +82,13 @@ public class Pair<R, S> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object object) {
-        if (object == this)
+        if (object == null) {
+            return false;
+        }
+
+        if (object == this) {
             return true;
+        }
         try {
             Pair<R, S> other = (Pair<R, S>) object;
             return new EqualsBuilder().append(first, other.first).append(second, other.second).isEquals();

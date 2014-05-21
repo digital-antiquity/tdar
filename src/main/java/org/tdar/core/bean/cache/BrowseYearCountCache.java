@@ -4,6 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * This caches the counts of resources-per-year for the browse page.
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Table(name = "explore_cache_year")
 public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCache, Integer> {
@@ -26,6 +32,7 @@ public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCach
         setCount(count);
     }
 
+    @Override
     public String getCssId() {
         return this.getClass().getSimpleName() + this.getKey().toString();
     }
@@ -40,6 +47,7 @@ public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCach
         this.key = key;
     }
 
+    @Override
     public Long getCount() {
         return count;
     }

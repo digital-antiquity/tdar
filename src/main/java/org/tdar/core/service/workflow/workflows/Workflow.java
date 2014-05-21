@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
@@ -46,7 +47,6 @@ public interface Workflow {
     void registerFileExtension(String ext, ResourceType... types);
 
     Set<String> getValidExtensionsForResourceType(ResourceType type);
-
 
     Map<String, List<String>> getRequiredExtensions();
 
@@ -85,13 +85,14 @@ public interface Workflow {
 
             try {
                 for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
-                    version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                    version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
                 }
             } catch (Exception e) {
                 workflowContext.addException(e);
                 workflowContext.setErrorFatal(true);
                 return false;
             }
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
             // ensuring proper sorting
             EnumSet<WorkflowPhase> phases = EnumSet.allOf(WorkflowPhase.class);
@@ -116,9 +117,12 @@ public interface Workflow {
                     } finally {
                         workflowContext.logTask(task, message);
                         task.cleanup();
+                        Thread.yield();
                     }
                 }
             }
+            Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+
             workflowContext.setProcessedSuccessfully(successful);
             return successful;
         }
@@ -154,7 +158,7 @@ public interface Workflow {
 
         @Override
         public void registerFileExtension(String fileExtension, ResourceType... resourceTypes) {
-            if (resourceTypes == null || resourceTypes.length == 0) {
+            if ((resourceTypes == null) || (resourceTypes.length == 0)) {
                 logger.warn("Trying to register a null resource type with file extension: {}", fileExtension);
                 return;
             }
@@ -170,7 +174,7 @@ public interface Workflow {
         }
 
         public void registerFileExtensions(String[] fileExtensions, ResourceType... resourceTypes) {
-            if (resourceTypes == null || resourceTypes.length == 0 || fileExtensions == null || fileExtensions.length == 0) {
+            if ((resourceTypes == null) || (resourceTypes.length == 0) || (fileExtensions == null) || (fileExtensions.length == 0)) {
                 logger.warn("invalid file extensions {} or resource types {}", getAsList(fileExtensions), getAsList(resourceTypes));
                 return;
             }
@@ -179,8 +183,9 @@ public interface Workflow {
             }
         }
 
-       /**
-        * A utility method to return the argument in a list in a NPE safe way
+        /**
+         * A utility method to return the argument in a list in a NPE safe way
+         * 
          * @param targetArray
          * @return
          */

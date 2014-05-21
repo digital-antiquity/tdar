@@ -11,6 +11,9 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -18,7 +21,7 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
 public class HttpsInterceptor implements Interceptor {
 
     private static final long serialVersionUID = 5032186873591920365L;
-    public static final String ERROR_HTTPS_ONLY = "Only Https requests accepted";
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -41,7 +44,7 @@ public class HttpsInterceptor implements Interceptor {
          * If we're not secured or user is authenticated, just go on as usual, otherwise, force unauthenticated users to HTTP
          * this means you google.
          */
-        if (request.isSecure() && invocation.getAction() instanceof AuthenticationAware && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
+        if (request.isSecure() && (invocation.getAction() instanceof AuthenticationAware) && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
             String baseUrl = changeUrlProtocol("http", request);
             response.sendRedirect(baseUrl);
         }
@@ -73,6 +76,7 @@ public class HttpsInterceptor implements Interceptor {
     private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
+        response.setHeader("Frame-Options:", "DENY");
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
             return invocation.invoke();
         }
@@ -81,7 +85,8 @@ public class HttpsInterceptor implements Interceptor {
             response.sendRedirect(changeUrlProtocol("https", request));
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");
-            ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_HTTPS_ONLY);
+            ((TdarActionSupport) invocation.getAction()).addActionError(MessageHelper.getMessage("httpsInterceptor.error_https_only", invocation
+                    .getInvocationContext().getLocale()));
         }
 
         return TdarActionSupport.BAD_REQUEST;

@@ -46,6 +46,7 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -85,10 +86,12 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
 
+    @Override
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
 
+    @Override
     public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
         this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
     }
@@ -149,12 +152,12 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(name = "last_updated", nullable = true)
     private Date dateUpdated;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created")
     private Date dateCreated;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 25)
+    @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
@@ -168,8 +171,8 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         setDateUpdated(new Date());
     }
 
-    @Column(length = 255)
-    @Length(max = 255)
+    @Column(length = FieldLength.FIELD_LENGTH_255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

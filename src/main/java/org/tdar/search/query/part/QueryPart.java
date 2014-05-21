@@ -2,6 +2,8 @@ package org.tdar.search.query.part;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * 
  * $Id$
@@ -12,20 +14,20 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
  */
 public interface QueryPart<T> {
 
-    abstract String generateQueryString();
+    String[] LUCENE_RESERVED_WORDS = { "AND", "OR", "NOT", "TO" };
 
-    String[] LUCENE_RESERVED_WORDS = {"AND", "OR", "NOT","TO"};
+    String generateQueryString();
 
-    abstract boolean isDescriptionVisible();
+    boolean isDescriptionVisible();
 
-    abstract void setDescriptionVisible(boolean visible);
+    void setDescriptionVisible(boolean visible);
 
-    abstract String getDescription();
+    String getDescription(TextProvider provider);
 
-    abstract String getDescriptionHtml();
+    String getDescriptionHtml(TextProvider provider);
 
-    abstract boolean isEmpty();
+    boolean isEmpty();
 
-    abstract Operator getOperator();
+    Operator getOperator();
 
 }

@@ -99,7 +99,7 @@ public class WorkflowContextService {
                 case CODING_SHEET:
                     CodingSheet codingSheet = (CodingSheet) resource;
                     codingSheetService.ingestCodingSheet(codingSheet, ctx);
-                    ontologyService.saveOrUpdate(codingSheet);
+                    genericDao.saveOrUpdate(codingSheet);
                     datasetService.refreshAssociatedDataTables(codingSheet);
                     break;
                 case ARCHIVE:

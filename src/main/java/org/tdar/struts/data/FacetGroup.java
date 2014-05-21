@@ -4,13 +4,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.search.query.FacetValue;
 
-public class FacetGroup<C extends Facetable> implements Serializable {
+@SuppressWarnings("rawtypes")
+public class FacetGroup<C extends Enum> implements Serializable {
 
     private static final long serialVersionUID = -4830192828726636840L;
 
-    public FacetGroup(Class<C> facetClass, String facetField, ArrayList<C> facets, Facetable facetEnum) {
+    public FacetGroup(Class<C> facetClass, String facetField, ArrayList<FacetValue> facets, Enum facetEnum) {
         this.facetClass = facetClass;
         this.facetField = facetField;
         this.facets = facets;
@@ -33,30 +36,42 @@ public class FacetGroup<C extends Facetable> implements Serializable {
         this.facetClass = facetClass;
     }
 
-    public List<C> getFacets() {
+    public List<FacetValue> getFacets() {
         return facets;
     }
 
-    public void setFacets(List<C> facets) {
+    public void setFacets(List<FacetValue> facets) {
         this.facets = facets;
     }
 
     public void add(String result, int count) {
-        C f = (C) facetEnum.getValueOf(result);
-        f.setCount(count);
-        getFacets().add(f);
+        @SuppressWarnings("unchecked")
+        C f = (C) facetEnum.valueOf(facetClass, result);
+        FacetValue facet = new FacetValue();
+        facet.setCount(count);
+        facet.setKey(f.name());
+        facet.setValue(f.name());
+        facet.setPluralKey(f.name());
+        if (f instanceof Localizable) {
+            facet.setKey(((Localizable) f).getLocaleKey());
+            facet.setPluralKey(facet.getKey());
+        }
+        if (f instanceof PluralLocalizable) {
+            facet.setPluralKey(((PluralLocalizable) f).getPluralLocaleKey());
+        }
+        getFacets().add(facet);
     }
 
-    public Facetable getFacetEnum() {
+    public Enum getFacetEnum() {
         return facetEnum;
     }
 
-    public void setFacetEnum(Facetable facetEnum) {
+    public void setFacetEnum(Enum facetEnum) {
         this.facetEnum = facetEnum;
     }
 
     private String facetField;
-    private Facetable facetEnum;
+    private Enum facetEnum;
     private Class<C> facetClass;
-    private List<C> facets = new ArrayList<C>();
+    private List<FacetValue> facets = new ArrayList<FacetValue>();
 }

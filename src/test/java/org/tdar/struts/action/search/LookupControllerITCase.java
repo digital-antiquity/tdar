@@ -20,6 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -45,7 +46,6 @@ import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
-    @Autowired
     private LookupController controller;
 
     @Before
@@ -135,6 +135,29 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setTerm("test");
         controller.lookupResourceCollection();
         assertTrue(controller.getResults().contains(e));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testModifyEditor() {
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        init(controller, getEditorUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids = Persistable.Base.extractIds(controller.getResults());
+
+        controller = generateNewController(LookupController.class);
+        init(controller, getAdminUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids2 = Persistable.Base.extractIds(controller.getResults());
+        Assert.assertArrayEquals(ids.toArray(), ids2.toArray());
     }
 
     @Test
@@ -464,7 +487,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.getIncludedStatuses().add(null);
         controller.setSortField(SortOption.RELEVANCE);
         controller.setTerm(null);
-        controller.setProjectId((String) null);
+        controller.setProjectId(null);
         controller.setCollectionId(null);
     }
 
@@ -530,7 +553,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         flaggedDoc.setTitle("testFlaggedaDoc");
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
-        entityService.saveOrUpdateAll(docs);
+        genericService.saveOrUpdate(docs);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
 
         // login as an admin
@@ -578,7 +601,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();
-        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService,null, null);
+        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService, null, null);
         listener.prepareResult(controller);
         assertTrue(controller.getResults().size() > 0);
         for (Indexable result : controller.getResults()) {

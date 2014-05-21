@@ -27,6 +27,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = VIEW, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/view.ftl")
     })
+    @Override
     public String view() throws TdarActionException {
         return super.view();
     }
@@ -35,6 +36,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "/WEB-INF/content/entity/keyword/edit.ftl")
     })
+    @Override
     public String edit() throws TdarActionException {
         return super.edit();
     }
@@ -48,14 +50,15 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     protected void delete(K persistable) {
         // no deleting of keywords (for now)
-        addActionError("Sorry, deleting keywords is not supported");
+        addActionError(getText("abstractKeywordController.cannot_delete"));
     }
 
     @Override
     public String loadViewMetadata() {
         // lets avoid the implications of creating a new keyword (for now)
-        if (Persistable.Base.isNullOrTransient(getPersistable()))
+        if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return REDIRECT_HOME;
+        }
         return SUCCESS;
     }
 

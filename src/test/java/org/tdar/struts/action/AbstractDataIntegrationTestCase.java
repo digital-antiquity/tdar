@@ -40,6 +40,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
@@ -48,7 +49,7 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-    public static final long SPITAL_IR_ID = 503l;
+    // public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
@@ -117,36 +118,29 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, 1234L, 123L);
+        long infoId = (long) (Math.random() * 10000);
+        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
-        filestore.store(name, version);
+        filestore.store(ObjectType.RESOURCE, name, version);
         version.setTransientFile(name);
         return version;
     }
 
-    // public Dataset setupAndConvertDataset(String filename, Long irFileId) throws IOException {
-    // DatasetConverter converter = convertDatabase(filename, irFileId);
-    // Dataset dataset = new Dataset();
-    // dataset.setDataTables(converter.getDataTables());
-    // dataset.setTitle(filename);
-    // dataset.setDescription(filename);
-    // dataset.markUpdated(getUser());
-    // datasetService.saveOrUpdate(dataset);
-    // datasetService.saveOrUpdateAll(dataset.getDataTables());
-    // return dataset;
-    // }
-
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
         return converter;
     }
 
+    static Long spitalIrId = (long) (Math.random() * 10000);
+
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), SPITAL_IR_ID);
+        spitalIrId++;
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
         return converter;
     }
 
@@ -156,13 +150,19 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
-    public String[] getDataImportDatabaseTables() {
-        return new String[0];
+    String[] dataImportTables = new String[0];
+
+    public String[] getDataImportTables() {
+        return dataImportTables;
+    }
+
+    public void setDataImportTables(String[] dataImportTables) {
+        this.dataImportTables = dataImportTables;
     }
 
     @Before
     public void dropDataImportDatabaseTables() throws Exception {
-        for (String table : getDataImportDatabaseTables()) {
+        for (String table : getDataImportTables()) {
             try {
                 tdarDataImportDatabase.dropTable(table);
             } catch (Exception ignored) {
@@ -240,8 +240,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             colCount += integrationDataResult.getIntegrationColumns().size();
 
             for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
-                if (!col.isDisplayColumn())
+                if (!col.isDisplayColumn()) {
                     colCount++;
+                }
             }
 
             int size = 0;
@@ -268,8 +269,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (integrationColumn.isDisplayColumn())
+            if (integrationColumn.isDisplayColumn()) {
                 continue;
+            }
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
                 int foundNodeCount = 0;
                 for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {

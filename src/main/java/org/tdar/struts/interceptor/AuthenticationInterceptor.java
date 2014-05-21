@@ -1,7 +1,6 @@
 package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -12,9 +11,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAgreementController;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -39,7 +38,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     private static final long serialVersionUID = -3147151913316273258L;
 
-    public static final String SKIP_REDIRECT = "(.*)/lookup/(.*)";
+    public static final String SKIP_REDIRECT = "(.*)/(lookup|page-not-found|unauthorized|datatable\\/browse)/(.*)";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -119,16 +118,6 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             result = invocation.invoke();
         }
         return result;
-    }
-
-    protected void setCacheControl(String cacheControlHeaders) {
-        logger.debug("Setting cache control headers to {}", cacheControlHeaders);
-        HttpServletResponse response = ServletActionContext.getResponse();
-        if (response == null) {
-            logger.warn("No http servlet response available to set headers: {}", cacheControlHeaders);
-            return;
-        }
-        response.setHeader("Cache-control", cacheControlHeaders);
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {

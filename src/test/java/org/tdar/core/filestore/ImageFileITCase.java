@@ -42,7 +42,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @Autowired
     private MessageService messageService;
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     @Test
     @Rollback

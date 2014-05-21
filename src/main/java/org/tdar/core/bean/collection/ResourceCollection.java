@@ -18,12 +18,14 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
@@ -31,17 +33,21 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
+import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -51,9 +57,13 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
@@ -83,10 +93,20 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * 
  *         <b>INTERNAL</b> collections enable access rights to a specific resource. Users never see these, they simply see the rights on the resource.
  *         <b>SHARED</b> collections are ones that users create and enable access. Shared collections can be public or private
+ *         <b>PUBLIC</b> collections do not store rights and can be used for bookmarks and such things (not fully implemented).
+ * 
+ *         The Tree structure that is represented is a hybrid of a "materialized path" implementation -- see
+ *         http://vadimtropashko.wordpress.com/2008/08/09/one-more-nested-intervals-vs-adjacency-list-comparison/.
+ *         It's however, optimized so that the node's children are manifested in a supporting table to optimize rights queries, which will be the most common
+ *         lookup.
  */
 @Entity
 @Indexed(index = "Collection")
-@Table(name = "collection")
+@Table(name = "collection", indexes = {
+        @Index(name = "collection_parent_id_idx", columnList = "parent_id"),
+        @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
+        @Index(name = "collection_updater_id_idx", columnList = "updater_id")
+})
 @FetchProfiles(value = {
         @FetchProfile(name = "simple", fetchOverrides = {
                 @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
@@ -97,13 +117,16 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
                 @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
         })
 })
+@XmlRootElement(name = "ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
 
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
 
     // private transient boolean readyToIndex = true;
-
     public enum CollectionType {
         INTERNAL("Internal"),
         SHARED("Shared"),
@@ -130,12 +153,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
     // @Boost(1.5f)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
+
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name = "description_admin")
+    private String adminDescription;
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY,
@@ -145,36 +173,35 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", length = 25)
+    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = 25)
+    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption secondarySortBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = 50)
+    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
-    @Column(name = "collection_type", length = 255)
+    @Column(name = "collection_type", length = FieldLength.FIELD_LENGTH_255)
+    @NotNull
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
-    @Index(name = "collection_owner_id_idx")
     private Person owner;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id", nullable = true)
-    @Index(name = "collection_updater_id_idx")
     private Person updater;
 
     @Column(nullable = false, name = "date_created")
@@ -185,8 +212,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    @Index(name = "collection_parent_id_idx")
     private ResourceCollection parent;
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "parent_id")
+    private Set<Long> parentIds = new HashSet<>();
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
@@ -222,6 +253,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         getResources().add(resource);
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -232,6 +264,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     // @Boost(1.2f)
     @Field
+    @Override
     public String getDescription() {
         return description;
     }
@@ -299,7 +332,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if (getParent() == null || getParent().isVisible() == false) {
+        if ((getParent() == null) || (getParent().isVisible() == false)) {
             return true;
         }
         return false;
@@ -319,7 +352,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
                 people.add(user.getUser());
             }
         }
-        if (getParent() != null && recurse) {
+        if ((getParent() != null) && recurse) {
             people.addAll(getParent().getUsersWhoCan(permission, recurse));
         }
         return people;
@@ -332,7 +365,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Override
     public void markUpdated(Person p) {
-        if (getDateCreated() == null || getOwner() == null) {
+        if ((getDateCreated() == null) || (getOwner() == null)) {
             setDateCreated(new Date());
             setOwner(p);
             setUpdater(p);
@@ -376,6 +409,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /**
      * @return the sortBy
      */
+    @Override
     public SortOption getSortBy() {
         return sortBy;
     }
@@ -411,8 +445,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Transient
     public Long getParentId() {
-        if (getParent() == null)
+        if (getParent() == null) {
             return null;
+        }
         return getParent().getId();
     }
 
@@ -472,7 +507,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public int compareTo(ResourceCollection o) {
         List<String> tree = getParentNameList();
         List<String> tree_ = o.getParentNameList();
-        while (!tree.isEmpty() && !tree_.isEmpty() && tree.get(0) == tree_.get(0)) {
+        while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
             tree.remove(0);
             tree_.remove(0);
         }
@@ -529,22 +564,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return parentNameTree;
     }
 
-    /*
-     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
-     */
-    @Transient
-    @Field(name = QueryFieldNames.COLLECTION_TREE)
-    @JSONTransient
-    @ElementCollection
-    @IndexedEmbedded
-    public List<Long> getParentIdList() {
-        ArrayList<Long> parentIdTree = new ArrayList<Long>();
-        for (ResourceCollection collection : getHierarchicalResourceCollections()) {
-            parentIdTree.add(collection.getId());
-        }
-        return parentIdTree;
-    }
-
     @Override
     public boolean isValidForController() {
         return StringUtils.isNotBlank(getName());
@@ -552,37 +571,44 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     public boolean isValid() {
-        if (isValidForController() || getType() == CollectionType.INTERNAL) {
-            if (getType() == CollectionType.SHARED && sortBy == null) {
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName(), getSortBy());
+        if ((getType() == CollectionType.INTERNAL) || isValidForController()) {
+            if ((getType() == CollectionType.SHARED) && (sortBy == null)) {
                 return false;
             }
-            return (getOwner() != null && getOwner().getId() != null && getOwner().getId() > -1);
+            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
         }
         return false;
     }
 
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @Override
     public String getTitleSort() {
-        if (getTitle() == null)
+        if (getTitle() == null) {
             return "";
+        }
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
     @Field
     // @Boost(1.5f)
+    @Override
     public String getTitle() {
         return getName();
     }
 
+    @Override
     public String getUrlNamespace() {
         return "collection";
     }
 
     @XmlTransient
+    @Override
     public boolean isViewable() {
         return viewable;
     }
 
+    @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
     }
@@ -591,6 +617,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return type == CollectionType.PUBLIC;
     }
 
+    @Override
     @Transient
     public Person getSubmitter() {
         return owner;
@@ -619,6 +646,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     }
 
+    @Override
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -642,13 +670,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
-        Logger staticLogger = Logger.getLogger(ResourceCollection.class);
+        Logger staticLogger = LoggerFactory.getLogger(ResourceCollection.class);
         staticLogger.trace("incoming " + authorizedUsers);
         Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
         while (iterator.hasNext()) {
             AuthorizedUser incoming = iterator.next();
-            if (incoming == null || incoming.getUser() == null) {
+            if ((incoming == null) || (incoming.getUser() == null)) {
                 continue;
             }
             Long user = incoming.getUser().getId();
@@ -686,5 +714,40 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setSecondarySortBy(SortOption secondarySortBy) {
         this.secondarySortBy = secondarySortBy;
+    }
+
+    public String getAdminDescription() {
+        return adminDescription;
+    }
+
+    public void setAdminDescription(String adminDescription) {
+        this.adminDescription = adminDescription;
+    }
+
+    /**
+     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
+     * 
+     * Note: in earlier implementations this contained the currentId as well, I've removed this, but am unsure
+     * whether it should be there
+     */
+    @Transient
+    @Field(name = QueryFieldNames.COLLECTION_TREE)
+    @JSONTransient
+    @ElementCollection
+    @IndexedEmbedded
+    public Set<Long> getParentIds() {
+        return parentIds;
+    }
+
+    public void setParentIds(Set<Long> parentIds) {
+        this.parentIds = parentIds;
+    }
+
+    public boolean isChangesNeedToBeLogged() {
+        return changesNeedToBeLogged;
+    }
+
+    public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
+        this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
 }

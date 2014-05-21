@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * $Id$
- * 
+ * Types of InformationResourceFileVersions
  * 
  * @version $Rev$
  */

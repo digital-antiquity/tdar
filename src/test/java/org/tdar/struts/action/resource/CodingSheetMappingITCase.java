@@ -46,7 +46,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResultMetadataWrapper;
@@ -155,7 +157,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertEquals(DataTableColumnType.DOUBLE, column.getColumnDataType());
         column.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         column.setDefaultCodingSheet(codingSheet);
-        datasetService.save(column);
+        genericService.save(column);
         datasetService.translate(column, codingSheet);
 
         ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
@@ -328,7 +330,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
             logger.info("file: {} ", file);
             logger.info("dataset: {} ", transientDataset);
-            assertTrue(transientDataset == null || CollectionUtils.isEmpty(transientDataset.getDataTables()));
+            assertTrue((transientDataset == null) || CollectionUtils.isEmpty(transientDataset.getDataTables()));
             assertTrue(CollectionUtils.isEmpty(file.getWorkflowContext().getExceptions()));
         }
     }
@@ -369,7 +371,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testCodingSheetMapping() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
-	}
+    }
 
     @Test
     @Rollback
@@ -379,19 +381,19 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
         codingSheet = null;
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
-        genericService.synchronize();
+        evictCache();
         codingSheetController.setId(codingId);
         codingSheetController.prepare();
         codingSheet = codingSheetController.getCodingSheet();
 
-//        List<File> uploadedFiles = new ArrayList<File>();
-//        List<String> uploadedFileNames = new ArrayList<String>();
-//        uploadedFiles.add(PERIOD_2);
-//        uploadedFileNames.add(PERIOD_2.getName());
-//        codingSheetController.setUploadedFilesFileName(uploadedFileNames);
-//        codingSheetController.setUploadedFiles(uploadedFiles);
+        // List<File> uploadedFiles = new ArrayList<File>();
+        // List<String> uploadedFileNames = new ArrayList<String>();
+        // uploadedFiles.add(PERIOD_2);
+        // uploadedFileNames.add(PERIOD_2.getName());
+        // codingSheetController.setUploadedFilesFileName(uploadedFileNames);
+        // codingSheetController.setUploadedFiles(uploadedFiles);
         codingSheetController.setFileTextInput(FileUtils.readFileToString(PERIOD_2));
-        codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
+        codingSheetController.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         assertNotNull(codingId);
@@ -443,7 +445,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             rules.add(createRule("3", "three", codingSheet));
             genericService.save(codingSheet);
 
-            File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+            // File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();
@@ -461,8 +463,14 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             InformationResourceFile translatedFile = datasetService.createTranslatedFile(dataset);
             ExcelUnit excelUnit = new ExcelUnit();
-            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(translatedFile.getTranslatedFile()));
+            excelUnit.open(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, translatedFile.getTranslatedFile()));
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
+
+            DownloadController dc = generateNewInitializedController(DownloadController.class);
+            dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.execute();
+            assertEquals("bigsheet_translated.xls", dc.getFileName());
+
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
         }
@@ -474,7 +482,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         testCodingSheetMapping();
         assertNotNull("file proxy was null", tranlatedIRFile);
         ExcelUnit excelUnit = new ExcelUnit();
-        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(tranlatedIRFile.getTranslatedFile());
+        File retrieveFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, tranlatedIRFile.getTranslatedFile());
         excelUnit.open(retrieveFile);
 
         excelUnit.selectSheet("total_number_of_bones_per_perio");
@@ -569,7 +577,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         codingSheet.setDefaultOntology(ontology);
         if (textFile != null) {
             codingSheetController.setFileTextInput(FileUtils.readFileToString(textFile));
-            codingSheetController.setFileInputMethod(CodingSheetController.FILE_INPUT_METHOD);
+            codingSheetController.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
         } else {
             List<File> uploadedFiles = new ArrayList<File>();
             List<String> uploadedFileNames = new ArrayList<String>();
@@ -673,7 +681,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         csc.setCodingRules(rules);
         csc.saveValueOntologyNodeMapping();
         ontology = setupAndLoadResource("fauna-element-ontology-v2.txt", Ontology.class, ontology_id);
-        genericService.synchronize();
+        evictCache();
         genericService.refresh(ontology);
         Set<OntologyNode> nodes = new HashSet<>(ontology.getOntologyNodes());
         logger.info("what's the difference: {}", CollectionUtils.disjunction(nodes, ontology.getOntologyNodes()));

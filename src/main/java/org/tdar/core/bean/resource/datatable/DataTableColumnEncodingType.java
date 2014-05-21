@@ -1,8 +1,16 @@
 package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
-public enum DataTableColumnEncodingType implements HasLabel {
+/**
+ * Manages the column type that the user tells us.
+ * 
+ * @author abrin
+ * 
+ */
+public enum DataTableColumnEncodingType implements HasLabel, Localizable {
     UNCODED_VALUE("Uncoded Value", false, true, false),
     CODED_VALUE("Coded Value", true, true, false),
     MEASUREMENT("Measurement", false, false, true),
@@ -20,8 +28,14 @@ public enum DataTableColumnEncodingType implements HasLabel {
         setSupportsOntology(supportsOntology);
     }
 
+    @Override
     public String getLabel() {
         return this.label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     /**

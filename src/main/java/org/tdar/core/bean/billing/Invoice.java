@@ -23,17 +23,20 @@ import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
  * 
- * Represents a credit card swipe to purchase space and number of resources for a given Account.
+ * Represents a financial transaction to purchase space and number of resources for a given Account.
  * 
  * @author TDAR
  * @version $Rev$
@@ -43,13 +46,13 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
 
-    public enum TransactionStatus implements HasLabel {
+    public enum TransactionStatus implements HasLabel, Localizable {
         PREPARED("Prepared"),
         PENDING_TRANSACTION("Pending Transaction"),
         TRANSACTION_SUCCESSFUL("Transaction Successful"),
@@ -67,6 +70,8 @@ public class Invoice extends Base implements Updatable {
                 case PENDING_TRANSACTION:
                 case PREPARED:
                     return false;
+                default:
+                    break;
             }
             return true;
         }
@@ -81,9 +86,16 @@ public class Invoice extends Base implements Updatable {
             }
         }
 
+        @Override
         public String getLabel() {
             return this.label;
         }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
+        }
+
     }
 
     public Invoice() {
@@ -108,7 +120,7 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_type", length = 255)
+    @Column(name = "transaction_type", length = FieldLength.FIELD_LENGTH_255)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
@@ -120,19 +132,19 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_date")
     private Date transactionDate;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
     private Person owner;
 
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = true, name = "coupon_id")
     private Coupon coupon;
 
-    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     private BillingTransactionLog response;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
     private Person transactedBy;
@@ -156,11 +168,11 @@ public class Invoice extends Base implements Updatable {
     @Length(max = 25)
     private String invoiceNumber;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transactionstatus", length = 25)
+    @Column(name = "transactionstatus", length = FieldLength.FIELD_LENGTH_25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**
@@ -253,10 +265,12 @@ public class Invoice extends Base implements Updatable {
         return totalFiles;
     }
 
-    private <T> T coalesce(T... items) {
-        for (T i : items)
-            if (i != null)
+    private <T> T coalesce(@SuppressWarnings("unchecked") T... items) {
+        for (T i : items) {
+            if (i != null) {
                 return i;
+            }
+        }
         return null;
     }
 
@@ -279,12 +293,12 @@ public class Invoice extends Base implements Updatable {
                 Long space = coalesce(activity.getNumberOfMb(), 0L);
                 Long numberOfResources = coalesce(activity.getNumberOfResources(), 0L);
 
-                if (numberOfFiles > 0L && discountedFiles > 0L) {
+                if ((numberOfFiles > 0L) && (discountedFiles > 0L)) {
                     couponValue += activity.getPrice() * discountedFiles;
                     discountedFiles = 0L;
                 }
 
-                if (space > 0L && discountedSpace > 0L) {
+                if ((space > 0L) && (discountedSpace > 0L)) {
                     couponValue += activity.getPrice() * discountedSpace;
                     discountedSpace = 0L;
                 }
@@ -450,6 +464,7 @@ public class Invoice extends Base implements Updatable {
         return ObjectUtils.notEqual(owner, transactedBy);
     }
 
+    @Override
     public Date getDateUpdated() {
         return dateCreated;
     }
@@ -470,8 +485,23 @@ public class Invoice extends Base implements Updatable {
         this.couponValue = couponValue;
     }
 
+    @Override
     public String toString() {
         return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
+    }
+
+    public boolean hasValidValue() {
+        if (isLessThan(getNumberOfFiles(), 1) && isLessThan(getNumberOfMb(), 1) && (getCoupon() == null)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isLessThan(Long val, long comp) {
+        if (val == null) {
+            return false;
+        }
+        return val.longValue() < comp;
     }
 
 }

@@ -1,6 +1,7 @@
 package org.tdar.core.dao.external.pid;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class AndsPidsDao implements ExternalIDProvider {
     public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         Map<String, String> typeMap = new HashMap<>();
         AndsPidResponse response;
-       try {
+        try {
             response = pidsClient.mintHandleFormattedResponse(HandleType.URL, 0, resourceUrl);
             String handle = response.getHandle();
             if (response.isSuccess()) {
@@ -107,7 +108,9 @@ public class AndsPidsDao implements ExternalIDProvider {
                 throw new TdarRecoverableRuntimeException(message);
             }
         } catch (IllegalStateException | IllegalArgumentException | XPathExpressionException | ParserConfigurationException | SAXException e) {
-            throw new TdarRecoverableRuntimeException("the DOI Creation was not successful for: " + resourceUrl, e);
+            List<String> vals = new ArrayList<>();
+            vals.add(resourceUrl);
+            throw new TdarRecoverableRuntimeException("andsPidDao.creation_fail", e, vals);
         }
         return typeMap;
     }
@@ -139,7 +142,9 @@ public class AndsPidsDao implements ExternalIDProvider {
             }
         } catch (Exception e) {
             logger.debug("could not modify handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException("the DOI modification was not successful for: " + resourceUrl, e);
+            List<String> vals = new ArrayList<>();
+            vals.add(resourceUrl);
+            throw new TdarRecoverableRuntimeException("andsPidDao.update_fail", e, vals);
         }
         return typeMap;
     }
@@ -150,13 +155,15 @@ public class AndsPidsDao implements ExternalIDProvider {
         try {
             String handle = identifier;
             typeMap.put(DoiProcess.DOI_KEY, handle);
-            if (r.getStatus() != Status.ACTIVE)
+            if (r.getStatus() != Status.ACTIVE) {
                 pidsClient.deleteValueByIndex(handle, 1);
+            }
         } catch (Exception e) {
             logger.debug("could not delete handle for resource: {}", resourceUrl);
-            throw new TdarRecoverableRuntimeException("the DOI value deletion was not successful for: " + resourceUrl, e);
+            List<String> vals = new ArrayList<>();
+            vals.add(resourceUrl);
+            throw new TdarRecoverableRuntimeException("andsPidDao.delete_fail", e, vals);
         }
-
         return typeMap;
     }
 

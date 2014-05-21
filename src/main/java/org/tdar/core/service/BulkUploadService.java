@@ -1,9 +1,3 @@
-/**
- * $Id$
- *
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.service;
 
 import java.io.File;
@@ -12,26 +6,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -45,36 +30,37 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
-import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.bulk.BulkFileProxy;
+import org.tdar.core.service.bulk.BulkManifestProxy;
+import org.tdar.core.service.bulk.BulkUploadTemplate;
+import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
-import org.tdar.utils.bulkUpload.BulkManifestProxy;
-import org.tdar.utils.bulkUpload.BulkUploadTemplate;
-import org.tdar.utils.bulkUpload.CellMetadata;
+
+import com.google.common.collect.MapMaker;
 
 /**
+ * The BulkUploadService support the bulk loading of resources into tDAR through
+ * the user interface
+ * 
  * @author Adam Brin
  * 
  */
@@ -82,19 +68,11 @@ import org.tdar.utils.bulkUpload.CellMetadata;
 @Service
 public class BulkUploadService {
 
-    private static final String THE_FIRST_COLUMN_MUST_BE_THE_FILENAME = "the first column must be the filename";
-    private static final String THE_FOLLOWING_COLUMNS_ARE_REQUIRED_S = "the following columns are required: %s";
-    private static final String DUPLICATE_FILENAME_S_WAS_FOUND_IN_MANIFEST_FILE = "Duplicate Filename %s was found in manifest file";
-    private static final String FIELDNAME_IS_NOT_VALID_FOR_TYPE = "%s : the fieldname %s is not valid for the resource type:%s";
-    private static final String RESOURCE_CREATOR_IS_NOT_VALID_FOR_TYPE = "resource creator is not valid %s, %s, %s (check appropriate role for type)";
-    private static final String SKIPPING_LINE_FILENAME_NOT_FOUND = "skipping line in excel file as resource with the filename \"%s\" was not found in the import batch";
-    private static final String THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES = "The system has not received any files.";
-    private static final String AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE = "an exception occurred while processing the manifest file";
-    private static final String PLEASE_INCLUDE_THE_FILE_EXTENSION_IN_THE_FILENAME = "please include the file extension in the filename";
-    private static final String THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND = "the manifest file uploaded appears to be empty, no columns found";
-
     @Autowired
     private EntityService entityService;
+
+    @Autowired
+    private ImportService importService;
 
     @Autowired
     private PersonalFilestoreService filestoreService;
@@ -113,135 +91,319 @@ public class BulkUploadService {
     private AccountService accountService;
 
     @Autowired
+    private SearchIndexService searchIndexService;
+
+    @Autowired
     private FileAnalyzer analyzer;
+
+    @Autowired
+    private XmlService xmlService;
 
     @Autowired
     private ExcelService excelService;
 
     @Autowired
+    private BulkUploadTemplateService bulkUploadTemplateService;
+
+    @Autowired
     private ReflectionService reflectionService;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private DataFormatter formatter = new HSSFDataFormatter();
 
-    private Map<Long, AsyncUpdateReceiver> asyncStatusMap = new WeakHashMap<Long, AsyncUpdateReceiver>();
-
+    private Map<Long, AsyncUpdateReceiver> asyncStatusMap;
+    
+    
+    public BulkUploadService() {
+            MapMaker mapMaker = new MapMaker();
+            asyncStatusMap = mapMaker.weakKeys().makeMap();
+    }
+    /**
+     * The Save method needs to endpoints, one with the @Async annotation to
+     * allow Spring to run it asynchronously, and one without. Note, the @Async
+     * annotation does not work in the Spring testing framework
+     */
     @Async
-    public void saveAsync(final InformationResource image,
-            final Long submitterId, final Long ticketId,
-            final File excelManifest, final Collection<FileProxy> fileProxies, Long accountId) {
+    public void saveAsync(final InformationResource image, final Long submitterId, final Long ticketId, final File excelManifest,
+            final Collection<FileProxy> fileProxies, Long accountId) {
         save(image, submitterId, ticketId, excelManifest, fileProxies, accountId);
     }
 
-    @Transactional
-    public void save(final InformationResource image, final Long submitterId,
-            final Long ticketId, final File excelManifest,
-            final Collection<FileProxy> fileProxies, Long accountId) {
-        Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
-        Person submitter = genericDao.find(Person.class, submitterId);
-        logger.debug("BEGIN ASYNC: " + image + fileProxies);
-
-        // in an async method the image's persistent associations will have
-        // become detached from the hibernate session that loaded them,
-        // and their lazy-init fields will be unavailable. So we reload them to
-        // make them part of the current session and regain access
-        // to any lazy-init associations.
-        if (image.getProject() != null) {
-            Project p = genericDao.find(Project.class, image.getProject()
-                    .getId());
-            image.setProject(p);
+    /**
+     * Load the Excel manifest if it exists
+     */
+    private BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, Person submitter, Collection<FileProxy> fileProxies,
+            Long ticketId) {
+        BulkManifestProxy manifestProxy = null;
+        File excelManifest = wrapper.getFile();
+        if ((excelManifest != null) && excelManifest.exists()) {
+            logger.debug("processing manifest:" + excelManifest.getName());
+            FileInputStream stream = null;
+            try {
+                stream = new FileInputStream(excelManifest);
+                wrapper.setStream(stream);
+                Workbook workbook = WorkbookFactory.create(wrapper.getStream());
+                manifestProxy = validateManifestFile(workbook.getSheetAt(0), resourceTemplate, submitter, fileProxies, ticketId);
+            } catch (Exception e) {
+                logger.debug("exception happened when reading excel file", e);
+                manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+                manifestProxy.getAsyncUpdateReceiver().addError(e);
+                if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+                    getAsyncStatusMap().put(ticketId, manifestProxy.getAsyncUpdateReceiver());
+                }
+            } finally {
+                if (stream != null) {
+                    IOUtils.closeQuietly(stream);
+                }
+            }
         }
+        return manifestProxy;
+    }
+
+    /**
+     * The Save method needs to endpoints, one with the @Async annotation to
+     * allow Spring to run it asynchronously. This method: 
+     *  (a) looks at the excel manifest proxy, tries to parse it, validate it, and fails if there are errors.
+     *  (b) loads the resourceTemplate (image) record and clones it to each resource type as needed one per file
+     *  (c) clones the resourceTemplate and copies
+     *  (d) copies the values from the excel manifest proxy onto the clone for each file
+     *  (e) processes each file through the workflow 
+     *  (f) reconcile account issues
+     *  (g) save records to XML
+     *  (h) reindex if needed
+     */
+    @Transactional
+    public void save(final InformationResource resourceTemplate_, final Long submitterId, final Long ticketId, final File excelManifest_, final Collection<FileProxy> fileProxies,
+            final Long accountId) {
+        genericDao.clearCurrentSession();
+        Person submitter = genericDao.find(Person.class, submitterId);
+        // enforce that we're entirely on the session
+        InformationResource resourceTemplate = resourceTemplate_;
+        logger.debug("BEGIN ASYNC: " + resourceTemplate + fileProxies);
+        // in an async method the image's persistent associations will have
+        // become detached from the hibernate session that loaded them, and
+        // their lazy-init
+        // fields will be unavailable. So we reload them to make them part of
+        // the current session and regain access to any lazy-init associations.
+
+        
+        
+        // merge complex, shared & pre-persisted objects at the beginning (Project, ResourceCollections, Submitter); do this so that their child objects are
+        // brought onto session and not causing conflicts or duplicated
+        Long projectId = prepareTemplateAndBringSharedObjectsOnSession(submitter, resourceTemplate);
+
         logger.debug("ticketID:" + ticketId);
+        Activity activity = registerActivity(fileProxies, submitter);
+        BulkFileProxy excelManifest = new BulkFileProxy(excelManifest_, activity);
+
+        if (CollectionUtils.isEmpty(fileProxies)) {
+            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("bulkUploadService.the_system_has_not_received_any_files");
+            throw throwable;
+        }
+        logger.debug("mapping metadata with excelManifest:" + excelManifest);
+        BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, resourceTemplate, submitter, fileProxies, ticketId);
+        // we're done with the template; get rid of it and its references off the session
+        resourceTemplate = null;
+        if (manifestProxy == null) {
+            manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+        }
+        manifestProxy.setFileProxies(fileProxies);
+        // If there are errors, then stop...
+        AsyncUpdateReceiver updateReciever = manifestProxy.getAsyncUpdateReceiver();
+        List<String> asyncErrors = updateReciever.getAsyncErrors();
+        if (CollectionUtils.isNotEmpty(asyncErrors)) {
+            logger.debug("not moving further because of async validation errors: {}", asyncErrors);
+            completeBulkUpload(accountId, updateReciever, excelManifest, ticketId);
+            return;
+        }
+
+        logger.info("bulk: processing files, and then persisting");
+        processFileProxiesIntoResources(manifestProxy);
+
+        Collection<Resource> remainingResources =  manifestProxy.getResourcesCreated().values();
+        logger.info("bulk: applying manifest file data to resources");
+        updateAccountQuotas(accountId, manifestProxy.getResourcesCreated().values(), updateReciever);
+
+        logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
+        completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
+        reindexProject(projectId, updateReciever);
+
+        logger.info("bulk: done");
+    }
+    
+    
+    private Long prepareTemplateAndBringSharedObjectsOnSession(Person authorizedUser, InformationResource resourceTemplate) {;
+        // account will be set by controller, but future calls to "merge" will not pass through and thus cause issues
+        // because account is a transient object on Resource. Same with shared collections, submitter, and projects. 
+        // calling merge now so we can only call it once. 
+        resourceTemplate.setAccount(null);
+
+        resourceTemplate.setDescription("");
+        resourceTemplate.setDate(-1);
+
+        List<ResourceCollection> shared = new ArrayList<>();
+        Iterator<ResourceCollection>iter = resourceTemplate.getResourceCollections().iterator();
+        while (iter.hasNext()) {
+            ResourceCollection collection= iter.next();
+            if (collection.isInternal()) {
+                continue;
+            }
+            iter.remove();
+            shared.add(genericDao.merge(collection));
+        }
+        resourceTemplate.getResourceCollections().addAll(shared);
+
+        Project project = resourceTemplate.getProject();
+        if ((project != null) && !project.equals(Project.NULL)) {
+            Project p = genericDao.find(Project.class, project.getId());
+            resourceTemplate.setProject(p);
+            return p.getId();
+        } 
+        
+        
+        return null;
+    }
+
+    private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
+        try {
+            if (Persistable.Base.isNotNullOrTransient(projectId)) {
+                boolean exceptions = searchIndexService.indexProject(projectId);
+                if (exceptions) {
+                    throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
+                }
+            }
+        } catch (Throwable t) {
+            logger.error("reindexing error happened", t);
+            updateReciever.addError(t);
+        }
+    }
+
+    /**
+     * Take the ManifestProxy and iterate through attached FileProxies and make resources out of them
+     * 
+     */
+    @Transactional
+    public void processFileProxiesIntoResources(BulkManifestProxy manifestProxy) {
+        for (FileProxy fileProxy : manifestProxy.getFileProxies()) {
+            logger.trace("processing: {}", fileProxy);
+            try {
+                if ((fileProxy == null) || (fileProxy.getAction() != FileAction.ADD)) {
+                    continue;
+                }
+                logger.debug("processing: {} | {}", fileProxy, fileProxy.getAction());
+                String fileName = fileProxy.getFilename();
+                // if there is not an exact match in the manifest file then,
+                // skip it. If there is no manifest file, then go merrily along
+                if ((manifestProxy != null) && !manifestProxy.containsFilename(fileName)) {
+                    logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
+                    continue;
+                }
+
+                ActionMessageErrorListener listener = new ActionMessageErrorListener();
+                InformationResource informationResource = (InformationResource) manifestProxy.getResourcesCreated().get(fileName);
+                manifestProxy.getResourcesCreated().put(fileName, null);
+                informationResource = importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
+                informationResource = genericDao.merge(informationResource);
+
+                genericDao.saveOrUpdate(informationResource);
+                informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
+                        Arrays.asList(fileProxy));
+                informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
+
+                manifestProxy.getResourcesCreated().put(fileName, informationResource);
+                manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
+                if (listener.hasActionErrors()) {
+                    manifestProxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
+                }
+            } catch (Exception e) {
+                logger.warn("something happend  while processing file proxy", e);
+                manifestProxy.getAsyncUpdateReceiver().addError(e);
+            }
+        }
+    }
+
+    /**
+     * Update the billing quotas and accounts as needed
+     * @param updateReciever 
+     */
+    private void updateAccountQuotas(Long accountId, Collection<Resource> resources, AsyncUpdateReceiver updateReciever) {
+        try {
+            logger.info("bulk: finishing quota work");
+            if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+                Account account = genericDao.find(Account.class, accountId);
+                accountService.updateQuota(account, resources);
+            }
+        } catch (Throwable t) {
+            logger.error("quota error happend", t);
+            updateReciever.addError(t);
+        }
+    }
+
+    /**
+     * Log each record to XML and put in the filestore, and persist the record
+     * as needed, then let the @link AsyncUpdateReceiver know we're done
+     */
+    private void logAndPersist(AsyncUpdateReceiver receiver, Collection<Resource> resources, Long submitterId, Long accountId) {
+        logger.info("bulk: setting final statuses and logging");
+        try {
+            Person submitter = genericDao.find(Person.class, submitterId);
+
+            Iterator<Resource> iterator = resources.iterator();
+            while (iterator.hasNext()) {
+                try {
+                    Resource resource = iterator.next();
+                    genericDao.refresh(resource);
+                } catch (Exception e) {
+                    logger.error("could not bring resource onto session: {} ", e);
+                }
+            }
+            resources.clear();
+    
+            Set<ResourceCollection> cols = new HashSet<>();
+            for (Resource resource : resources) {
+                receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
+                String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
+                        resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
+    
+                try {
+                    xmlService.logRecordXmlToFilestore(resource);
+                    logger.debug("resource: {} {}", resource, resource.getResourceCollections());
+                    cols.addAll(resource.getResourceCollections());
+                    resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
+                    resource.setReadyToIndex(true);
+                    genericDao.saveOrUpdate(resource);
+                } catch (TdarRecoverableRuntimeException trex) {
+                    receiver.addError(trex);
+                    receiver.setCompleted();
+                    throw trex;
+                }
+            }
+            logger.info("bulk: completing");
+        } catch (Throwable t) {
+            logger.error("log and persist error happened", t);
+            receiver.addError(t);
+        }
+    }
+
+    /**
+     * Setup the @link Activity so we can track it
+     * 
+     * @param fileProxies
+     * @param submitter
+     * @return
+     */
+    private Activity registerActivity(final Collection<FileProxy> fileProxies, Person submitter) {
         Activity activity = new Activity();
         activity.setName(String.format("bulk upload for %s of %s resources", submitter.getName(), fileProxies.size()));
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
-        asyncStatusMap.put(ticketId, receiver);
-        float count = 0f;
-        image.setDescription("");
-        image.setDate(-1);
-        if (CollectionUtils.isEmpty(fileProxies)) {
-            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException(THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES);
-            receiver.addError(throwable);
-            throw throwable;
-        }
-        logger.debug("mapping metadata with excelManifest:" + excelManifest);
-        BulkManifestProxy manifestProxy = null;
-        // try {
-
-        FileInputStream stream = null;
-        if (excelManifest != null && excelManifest.exists()) {
-            logger.debug("processing manifest:" + excelManifest.getName());
-            try {
-                stream = new FileInputStream(excelManifest);
-                Workbook workbook = WorkbookFactory.create(stream);
-                manifestProxy = validateManifestFile(workbook.getSheetAt(0));
-            } catch (Exception e) {
-                logger.debug("exception happened when reading excel file", e);
-                receiver.addError(e);
-            } finally {
-                IOUtils.closeQuietly(stream);
-            }
-        }
-
-        // If there are errors, then stop...
-        if (StringUtils.isNotBlank(receiver.getAsyncErrors())) {
-            completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
-            return;
-        }
-
-        if (manifestProxy != null && !manifestProxy.isCaseSensitive()) {
-            resourcesCreated = new TreeMap<String, Resource>(String.CASE_INSENSITIVE_ORDER);
-        }
-
-        logger.info("bulk: creating individual resources");
-        count = processFileProxiesIntoResources(image, submitter, manifestProxy, fileProxies, receiver, resourcesCreated, count);
-
-        logger.info("bulk: applying manifest file data to resources");
-        try {
-            readExcelFile(manifestProxy, resourcesCreated, receiver);
-        } catch (Exception e) {
-            logger.warn(AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE, e);
-        }
-
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            final Account account = genericDao.find(Account.class, accountId);
-            try {
-                accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
-            } catch (Throwable t) {
-                logger.error(t.getMessage(), t);
-                throw t;
-            }
-        }
-
-        logger.info("bulk: setting final statuses and logging");
-        for (Resource resource : resourcesCreated.values()) {
-            receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
-            String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType().getLabel(), submitter,
-                    resource.getId(), StringUtils.left(resource.getTitle(), 100));
-
-            try {
-                resourceService.saveRecordToFilestore(resource);
-                genericDao.refresh(submitter);
-                resourceService.logResourceModification(resource, submitter, logMessage);
-                // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
-                resource.setReadyToIndex(true);
-                genericDao.saveOrUpdate(resource);
-            } catch (TdarRecoverableRuntimeException trex) {
-                receiver.addError(trex);
-                receiver.setCompleted();
-                // rethrow so that hibernate will rollback these saves
-                throw trex;
-            }
-        }
-
-        completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
-
+        return activity;
     }
 
-    private void completeBulkUpload(InformationResource image, Long accountId, Map<String, Resource> resourcesCreated,
-            Activity activity, AsyncUpdateReceiver receiver, FileInputStream stream, Long ticketId) {
+    /**
+     * Close all of our @link InputStream entries, purge the @link
+     * PersonalFilestore , delete the @link Image entry, and return
+     */
+    private void completeBulkUpload(Long accountId, AsyncUpdateReceiver receiver, BulkFileProxy wrapper, Long ticketId) {
 
         try {
             PersonalFilestoreTicket findPersonalFilestoreTicket = filestoreService.findPersonalFilestoreTicket(ticketId);
@@ -252,436 +414,189 @@ public class BulkUploadService {
 
         receiver.setCompleted();
         logger.info("bulk upload complete");
-        logger.info("remaining: " + image.getInternalResourceCollection());
-        activity.end();
-        image.setStatus(Status.DELETED);
+        // logger.info("remaining: " + image.getInternalResourceCollection());
+        wrapper.getActivity().end();
+        // image.setStatus(Status.DELETED);
         try {
-            IOUtils.closeQuietly(stream);
+            IOUtils.closeQuietly(wrapper.getStream());
         } catch (Exception e) {
             logger.debug("an exception occurred when closing import stream", e);
         }
 
     }
 
-    public BulkManifestProxy validateManifestFile(Sheet sheet) {
-        List<String> columnNames = new ArrayList<String>();
-        List<String> errorColumns = new ArrayList<String>();
+    /**
+     * Reads through the Excel Sheet and validates it. Looks for required fields
+     * that are missing, and also parses all files to figure out what files we
+     * have and whether to evaluate the entire sheet as case-sensitive filenames
+     * or not.
+     * 
+     * @param sheet
+     * @param fileProxies
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource resourceTemplate, Person submitter, Collection<FileProxy> fileProxies, Long ticketId) {
 
-        LinkedHashSet<CellMetadata> allValidFields = getAllValidFieldNames();
-        Map<String, CellMetadata> cellLookupMap = getCellLookupMap(allValidFields);
+        Iterator<Row> rowIterator = sheet.rowIterator();
+
+        LinkedHashSet<CellMetadata> allValidFields = bulkUploadTemplateService.getAllValidFieldNames();
+        Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
+        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService, reflectionService);
+        if (Persistable.Base.isNotNullOrTransient(ticketId)) {
+            getAsyncStatusMap().put(ticketId, proxy.getAsyncUpdateReceiver());
+        }
+        proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
-        Row columnNamesRow = sheet.getRow(ExcelService.FIRST_ROW);
+        proxy.setColumnNamesRow(sheet.getRow(ExcelService.FIRST_ROW));
 
         // capture all of the column names and make sure they're valid in general
-
-        Set<CellMetadata> required = new HashSet<CellMetadata>();
-        for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
-            String name = excelService.getCellValue(formatter, evaluator, columnNamesRow, i);
-            name = StringUtils.replace(name, "*", "").trim(); // remove required char
-            columnNames.add(name);
-
-            CellMetadata cellMetadata = cellLookupMap.get(name);
-            if (cellMetadata != null) {
-                if (cellMetadata.isRequired()) {
-                    required.add(cellMetadata);
-                }
-
-            } else if (!StringUtils.isBlank(name)) {
-                logger.debug("error name: {}", name);
-                errorColumns.add(name);
-            }
+        proxy.initializeColumnMetadata(cellLookupMap, evaluator);
+        if (CollectionUtils.isEmpty(fileProxies)) {
+            proxy.createFakeFileProxies(sheet);
+        } else {
+            proxy.setFileProxies(fileProxies);
         }
-
-        // if (!errorColumns.isEmpty()) {
-        // logger.info("error columns" + errorColumns);
-        // throw new TdarRecoverableRuntimeException("the following column names are not 'valid' tDar field names:" + StringUtils.join(errorColumns, ", "));
-        // }
-
         List<String> requiredErrors = new ArrayList<String>();
         for (CellMetadata field : allValidFields) {
-            if (field.isRequired() && !required.contains(field)) {
+            if (field.isRequired() && !proxy.getRequired().contains(field)) {
                 requiredErrors.add(field.getDisplayName());
             }
         }
 
-        if (columnNames.isEmpty()) {
+        if (proxy.getColumnNames().isEmpty()) {
             logger.info("the manifest file uploaded appears to be empty");
-            throw new TdarRecoverableRuntimeException(THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND);
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found");
         }
 
-        if (!columnNames.get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
-            throw new TdarRecoverableRuntimeException(THE_FIRST_COLUMN_MUST_BE_THE_FILENAME);
+        if (!proxy.getColumnNames().get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_first_column_must_be_the_filename");
         }
 
         if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException(String.format(THE_FOLLOWING_COLUMNS_ARE_REQUIRED_S, StringUtils.join(requiredErrors.toArray(), ", ")));
+            throw new TdarRecoverableRuntimeException("bulkUploadService.the_following_columns_are_required_s",
+                    Arrays.asList(StringUtils.join(requiredErrors.toArray(), ", ")));
         }
 
-        Iterator<Row> rowIterator = sheet.rowIterator();
-        BulkManifestProxy proxy = new BulkManifestProxy();
-        proxy.setColumnNames(columnNames);
-        proxy.setColumnNamesRow(columnNamesRow);
-        proxy.setSheet(sheet);
-        proxy.setAllValidFields(allValidFields);
-        proxy.setCellLookupMap(cellLookupMap);
-        Map<String, String> caseTest = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            Cell cell = row.getCell(ExcelService.FIRST_COLUMN);
-            if (cell == null) {
-                continue;
-            }
-            String filename = cell.getStringCellValue();
-            // if not the label, then...
-            if (filename.equalsIgnoreCase(BulkUploadTemplate.FILENAME))
-                continue;
+        proxy.testFilenameCaseAndAddFiles(rowIterator);
 
-            proxy.addFilename(filename);
-            List<String> list = proxy.getRowFilenameMap().get(row);
-            if (list == null) {
-                list = new ArrayList<String>();
-                proxy.getRowFilenameMap().put(row, list);
-            }
-            if (caseTest.containsKey(filename)) {
-                String testFile = caseTest.get(filename);
-                if (testFile.equals(filename)) {
-                    throw new TdarRecoverableRuntimeException(String.format(DUPLICATE_FILENAME_S_WAS_FOUND_IN_MANIFEST_FILE, filename));
-                }
-                if (testFile.equalsIgnoreCase(filename)) {
-                    proxy.setCaseSensitive(true);
-                }
-            }
-            list.add(filename);
+        createResourceFromFileProxies(resourceTemplate, proxy);
+        try {
+            proxy.readExcelFile();
+        } catch (InvalidFormatException | IOException e) {
+            proxy.getAsyncUpdateReceiver().addError(e);
+            logger.error(e.getMessage(), e);
         }
 
         return proxy;
     }
 
-    private float processFileProxiesIntoResources(final InformationResource image, final Person submitter, final BulkManifestProxy manifestProxy,
-            final Collection<FileProxy> fileProxies, AsyncUpdateReceiver receiver, Map<String, Resource> resourcesCreated, float count) {
+    /**
+     * Given the template @link Image (@link InformationResource) process each
+     * of the @link FileProxy entries (Excel template excluded) into it's own
+     * resource
+     * 
+     * @param image
+     * @param submitter
+     * @param proxy
+     * @param fileProxies
+     * @param receiver
+     * @param count
+     * @return
+     */
+    private void createResourceFromFileProxies(final InformationResource image, final BulkManifestProxy proxy) {
 
         if (StringUtils.isBlank(image.getTitle())) {
             image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         }
 
-        for (FileProxy fileProxy : fileProxies) {
-            logger.debug("processing:" + fileProxy + " |" + fileProxy.getAction());
+        if (proxy == null) {
+            return;
+        }
+        float count = 0f;
+        for (FileProxy fileProxy : proxy.getFileProxies()) {
+            logger.trace("processing: {}", fileProxy);
             try {
-                if (fileProxy == null || fileProxy.getAction() != FileAction.ADD) {
-                    // || (excelManifest != null && fileProxy.getFilename()
-                    // .equals(excelManifest.getName()))
+                if ((fileProxy == null) || (fileProxy.getAction() != FileAction.ADD)) {
                     continue;
                 }
+                logger.debug("processing: {} | {}", fileProxy, fileProxy.getAction());
                 String fileName = fileProxy.getFilename();
                 // if there is not an exact match in the manifest file then,
                 // skip it. If there is no manifest file, then go merrily along
-                if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
-                    logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
+                if ((proxy != null) && !proxy.containsFilename(fileName)) {
+                    logger.info("skipping {} filenames: {} ", fileName, proxy.listFilenames());
                     continue;
                 }
 
-                logger.info("inspecting ..." + fileName);
+                logger.info("inspecting ... {}", fileName);
                 count++;
-                float percent = (count / Float.valueOf(fileProxies.size())) * 50;
-                receiver.update(percent, " processing " + fileName);
-                String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
-                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
-                Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
-
-                ActionMessageErrorListener listener = new ActionMessageErrorListener();
-                if (InformationResource.class.isAssignableFrom(resourceClass)) {
-                    logger.info("saving " + fileName + "..." + suggestTypeForFile);
-                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
-                    informationResource.setReadyToIndex(false);
-                    informationResource.setTitle(fileName);
-                    informationResource.markUpdated(submitter);
-                    informationResource.setDescription(" ");
-                    genericDao.saveOrUpdate(informationResource);
-                    informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, submitter, null, listener,
-                            Arrays.asList(fileProxy));
-
-                    receiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-                    resourcesCreated.put(fileName, informationResource);
-                    if (listener.hasActionErrors()) {
-                        receiver.addError(new Exception(String.format("Errors: %s", listener)));
-                    }
+                float percent = (count / Float.valueOf(proxy.getFileProxies().size())) * 50;
+                proxy.getAsyncUpdateReceiver().update(percent, " processing " + fileName);
+                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileName(fileName, getResourceTypesSupportingBulkUpload());
+                if (suggestTypeForFile == null) {
+                    logger.debug("skipping because cannot figure out extension for file {}", fileName);
+                    proxy.getAsyncUpdateReceiver().addError(
+                            new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
+                    continue;
                 }
+
+                createResourceAndAddToProxyList(image, proxy, fileName, suggestTypeForFile);
             } catch (Exception e) {
                 logger.error("something happend", e);
-                receiver.addError(e);
+                proxy.getAsyncUpdateReceiver().addError(e);
             }
         }
-        return count;
     }
 
-    public ResourceType[] getResourceTypesSupportingBulkUpload() {
-        List<ResourceType> types = new ArrayList<ResourceType>();
-        for (ResourceType type : ResourceType.values()) {
-            if (type.supportBulkUpload())
-                types.add(type);
-        }
-        return types.toArray(new ResourceType[0]);
-
-    }
-
-    public LinkedHashSet<CellMetadata> getAllValidFieldNames(ResourceType... resourceTypes) {
-        List<ResourceType> resourceClasses = new ArrayList<ResourceType>(Arrays.asList(resourceTypes));
-        if (ArrayUtils.isEmpty(resourceTypes)) {
-            resourceClasses = Arrays.asList(getResourceTypesSupportingBulkUpload());
-        }
-        CellMetadata filename = CellMetadata.FILENAME;
-
-        LinkedHashSet<CellMetadata> nameSet = new LinkedHashSet<CellMetadata>();
-        nameSet.add(filename);
-        for (ResourceType clas : resourceClasses) {
-            nameSet.addAll(reflectionService.findBulkAnnotationsOnClass(clas.getResourceClass()));
-        }
-
-        Iterator<CellMetadata> fields = nameSet.iterator();
-        while (fields.hasNext()) {
-            CellMetadata field = fields.next();
-            logger.trace(field.getName() + " " + field.getDisplayName());
-            if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
-                if (StringUtils.isNotBlank(field.getDisplayName())
-                        && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
-                    fields.remove();
-                }
-            }
-            // we are striping out copyright holder for the time being, and applying the copyright holder to all uploads in the post processing step.
-            // this is because the copyright holder can either be an institution or a person, and we can't yet simply differentiate between the two,
-            // so this is deemed less confusing.
-            //if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
-                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName())
-                        && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
-                    fields.remove();
-                }
-            //}
-        }
-
-        return nameSet;
-    }
-
-    public Set<CellMetadata> getRequiredFields(ResourceType... resourceTypes) {
-        Set<CellMetadata> toReturn = new HashSet<CellMetadata>();
-        for (CellMetadata cell : getAllValidFieldNames(resourceTypes)) {
-            if (cell.isRequired()) {
-                toReturn.add(cell);
-            }
-        }
-        return toReturn;
-    }
-
-    /*
-     * Special Case lookup: (a) look for exact match (b) look for case where
-     * person forgot file extension
+    /**
+     * Create the actual resource and add it to the proxy list
+     * 
+     * @param image
+     * @param proxy
+     * @param fileName
+     * @param suggestTypeForFile
      */
-    public Resource findResource(String filename, Map<String, Resource> filenameResourceMap) {
-        /*
-         * DEPENDING ON WHETHER THE MANIFEST IS CASE SENSITIVE OR NOT, the MAP
-         * WILL EITHER BE (A) a TreeMap(case insensitive) or a HashMap
-         */
-        Resource toReturn = filenameResourceMap.get(filename);
-        if (toReturn != null) {
-            return toReturn;
-        }
+    private void createResourceAndAddToProxyList(final InformationResource image, final BulkManifestProxy proxy, String fileName,
+            ResourceType suggestTypeForFile) {
+        ActionMessageErrorListener listener = new ActionMessageErrorListener();
+        Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
+        if (InformationResource.class.isAssignableFrom(resourceClass)) {
+            logger.info("saving " + fileName + "..." + suggestTypeForFile);
+            InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
+            informationResource.setReadyToIndex(false);
+            informationResource.setTitle(fileName);
+            informationResource.markUpdated(proxy.getSubmitter());
+            informationResource.setDescription(" ");
 
-        for (String name : filenameResourceMap.keySet()) {
-            String base = FilenameUtils.getBaseName(name);
-            if (base.equals(filename)) {
-                if (toReturn != null) {
-                    throw new TdarRecoverableRuntimeException(PLEASE_INCLUDE_THE_FILE_EXTENSION_IN_THE_FILENAME);
-                }
-                toReturn = filenameResourceMap.get(name);
+            proxy.getResourcesCreated().put(fileName, informationResource);
+            if (listener.hasActionErrors()) {
+                proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
             }
-        }
-
-        return toReturn;
-    }
-
-    public Map<String, CellMetadata> getCellLookupMap(Set<CellMetadata> set) {
-        Map<String, CellMetadata> map = new HashMap<String, CellMetadata>();
-        for (CellMetadata meta : set) {
-            if (!StringUtils.isEmpty(meta.getName())) {
-                map.put(meta.getName(), meta);
-            }
-            if (!StringUtils.isEmpty(meta.getDisplayName())) {
-                map.put(meta.getDisplayName(), meta);
-            }
-        }
-        return map;
-    }
-
-    public Set<CellMetadata> getRequiredFields(Set<CellMetadata> set) {
-        Set<CellMetadata> map = new HashSet<CellMetadata>();
-        for (CellMetadata meta : set) {
-            if (meta.isRequired()) {
-                map.add(meta);
-            }
-        }
-        logger.trace("{}", map);
-        return map;
-    }
-
-    @Transactional
-    public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy, Map<String, Resource> filenameResourceMap, AsyncUpdateReceiver receiver)
-            throws InvalidFormatException, IOException {
-
-        if (manifestProxy == null) {
-            return;
-        }
-        FormulaEvaluator evaluator = manifestProxy.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-
-        int rowNum = 0;
-        Map<String, CellMetadata> cellLookupMap = manifestProxy.getCellLookupMap();
-
-        // if we use a manifest file, then keep track of all resources that have
-        // errors
-        for (Row row : manifestProxy.getSheet()) {
-            if (row == null) {
-                logger.warn("null row.");
-                continue;
-            }
-            if (rowNum != ExcelService.FIRST_ROW) {
-                // find the resource for the identifier (based on current title
-
-                int startColumnIndex = manifestProxy.getFirstCellNum();
-                int endColumnIndex = manifestProxy.getLastCellNum();
-
-                String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
-                // filename = StringUtils.replace(filename, "*", ""); // remove
-                // required char
-
-                // look in the hashmap for the filename, skip the examples
-                Resource resourceToProcess = findResource(filename, filenameResourceMap);
-                logger.debug("fn: {} resource to Process: {}", filename, resourceToProcess);
-                if (StringUtils.isBlank(filename) || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
-                        || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
-                    continue;
-                }
-                if (resourceToProcess == null) {
-                    receiver.addError(new TdarRecoverableRuntimeException(String.format(SKIPPING_LINE_FILENAME_NOT_FOUND, filename)));
-                    continue;
-                }
-                logger.info("processing:" + filename);
-
-                receiver.setPercentComplete(receiver.getPercentComplete() + 1f);
-                receiver.setStatus("processing metadata for:" + filename);
-
-                ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
-
-                // there has to be a smarter way to do this generically... iterate through valid field names for class
-                boolean seenCreatorFields = false;
-
-                Set<CellMetadata> requiredFields = getRequiredFields(manifestProxy.getAllValidFields());
-                requiredFields.remove(cellLookupMap.get(BulkUploadTemplate.FILENAME));
-                // iterate through the spreadsheet
-                try {
-                    for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
-                        String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
-                        String name = manifestProxy.getColumnNames().get(columnIndex);
-                        CellMetadata cellMetadata = cellLookupMap.get(name);
-                        logger.trace("cell metadata: {}", cellMetadata);
-
-                        if (StringUtils.isBlank(name) || StringUtils.isBlank(value) || cellMetadata == null)
-                            continue;
-
-                        Class<?> mappedClass = cellMetadata.getMappedClass();
-                        boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
-                        boolean resourceSubtypeAssignableFrom = false;
-                        if (mappedClass != null && resourceToProcess != null) {
-                            resourceSubtypeAssignableFrom = mappedClass.isAssignableFrom(resourceToProcess.getClass());
-                        }
-                        boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
-                        boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
-                        if (cellMetadata == null
-                                || !(mappedClass != null && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
-                            if (mappedClass != null) {
-                                throw new TdarRecoverableRuntimeException(String.format(FIELDNAME_IS_NOT_VALID_FOR_TYPE, filename, name,
-                                        resourceToProcess.getResourceType()));
-                            }
-                        }
-                        requiredFields.remove(cellMetadata);
-                        if (resourceAssignableFrom) {
-                            reflectionService.validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
-
-                        } else {
-                            if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
-
-                                logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
-                                if (resourceCreatorAssignableFrom) {
-                                    seenCreatorFields = true;
-                                    reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
-
-                                    // FIXME: This is a big assumption that role is the last field and then we repeat
-                                    reconcileResourceCreator(resourceToProcess, creatorProxy);
-
-                                    creatorProxy = new ResourceCreatorProxy();
-
-                                    seenCreatorFields = false;
-                                }
-                                if (Person.class.isAssignableFrom(mappedClass)) {
-                                    reflectionService.validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
-                                }
-                                if (Institution.class.isAssignableFrom(mappedClass)) {
-                                    logger.trace("{} ", cellMetadata);
-                                    Object bean = creatorProxy.getInstitution();
-                                    if (cellMetadata.getName().contains("Person.Institution")) {
-                                        if (creatorProxy.getPerson().getInstitution() == null) {
-                                            creatorProxy.getPerson().setInstitution(new Institution());
-                                        }
-                                        bean = creatorProxy.getPerson().getInstitution();
-                                    }
-                                    reflectionService.validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
-                                }
-                            }
-                        }
-                    }
-                    if (seenCreatorFields) {
-                        reconcileResourceCreator(resourceToProcess, creatorProxy);
-                    }
-                    logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
-                    if (requiredFields.size() > 0) {
-                        String msg = filename + ": The following required fields have not been provided:";
-                        for (CellMetadata meta : requiredFields) {
-                            logger.trace("{}", meta);
-                            msg += meta.getDisplayName() + ", ";
-                        }
-                        msg = msg.substring(0, msg.length() - 2);
-                        throw new TdarRecoverableRuntimeException(msg);
-                    }
-                } catch (Throwable t) {
-                    logger.debug("excel mapping error: {}", t);
-                    resourceToProcess.setStatus(Status.DELETED);
-                    receiver.addError(t);
-                }
-                genericDao.saveOrUpdate(resourceToProcess);
-            }
-            rowNum++;
         }
     }
 
-    private void reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy) {
-        ResourceCreator creator = proxy.getResourceCreator();
-        logger.info("reconciling creator... {}", creator);
-        if (creator.isValidForResource(resource)) {
-            entityService.findOrSaveResourceCreator(creator);
-            creator.setSequenceNumber(resource.getResourceCreators().size());
-            logger.debug(creator + " (" + creator.getSequenceNumber() + ")");
+    /**
+     * get the set of @link ResourceType enums that support BulkUpload
+     * 
+     * @return
+     */
+    public ResourceType[] getResourceTypesSupportingBulkUpload() {
+        return ResourceType.getTypesSupportingBulkUpload();
 
-            resource.getResourceCreators().add(creator);
-            logger.debug("added " + creator + " successfully");
-        } else {
-            throw new TdarRecoverableRuntimeException(
-                    String.format(RESOURCE_CREATOR_IS_NOT_VALID_FOR_TYPE, creator.getCreator().getName(), creator.getRole(), resource.getResourceType()));
-        }
     }
 
+    /**
+     * Expose the AsyncStatus Reciever
+     * 
+     * @param ticketId
+     * @return
+     */
     public AsyncUpdateReceiver checkAsyncStatus(Long ticketId) {
         return asyncStatusMap.get(ticketId);
     }
 
-    public HSSFWorkbook createExcelTemplate() {
-        BulkUploadTemplate template = new BulkUploadTemplate(excelService);
-        return template.getTemplate(getAllValidFieldNames());
+    public Map<Long, AsyncUpdateReceiver> getAsyncStatusMap() {
+        return asyncStatusMap;
     }
 }

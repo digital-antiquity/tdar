@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
@@ -15,7 +15,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.utils.Pair;
-
 
 @Component
 public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
@@ -52,10 +51,11 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         Map<ResourceType, List<BigInteger>> toReturn = new HashMap<ResourceType, List<BigInteger>>();
         for (Object[] result_ : (List<Object[]>) query.list()) {
             List<BigInteger> stat = new ArrayList<BigInteger>();
-            toReturn.put(ResourceType.valueOf((String) result_[3]), stat);
-            stat.add((BigInteger) result_[0]);
+            toReturn.put(ResourceType.valueOf((String) result_[0]), stat);
             stat.add((BigInteger) result_[1]);
             stat.add((BigInteger) result_[2]);
+            stat.add((BigInteger) result_[3]);
+            stat.add((BigInteger) result_[4]);
         }
         return toReturn;
     }

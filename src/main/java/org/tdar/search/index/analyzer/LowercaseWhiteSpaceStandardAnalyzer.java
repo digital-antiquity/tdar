@@ -58,7 +58,7 @@ public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
             ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stopFilter);
             return filter;
         } catch (IOException e) {
-            throw new TdarRecoverableRuntimeException("cannot tokenize!");
+            throw new TdarRecoverableRuntimeException("lowercaseWhitespaceTokenizer.cannot_tokenize");
         }
 
     }

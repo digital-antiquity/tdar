@@ -12,8 +12,8 @@ import java.util.Set;
  * @version $Revision$
  */
 public interface SourceDatabase extends Database {
-    public SourceDatabase open(final String filename);
+    SourceDatabase open(final String filename);
 
-    public Set<String> getTableNames();
+    Set<String> getTableNames();
 
 }

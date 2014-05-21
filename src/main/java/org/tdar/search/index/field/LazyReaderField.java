@@ -31,17 +31,17 @@ import org.slf4j.LoggerFactory;
 public class LazyReaderField extends AbstractField implements Fieldable {
 
     private static final long serialVersionUID = 2428565315964872093L;
-    Reader reader;
-    protected final static transient Logger logger = LoggerFactory.getLogger(LazyReaderField.class);
-    String content;
+    private Reader reader;
+    private final static transient Logger logger = LoggerFactory.getLogger(LazyReaderField.class);
     private List<URI> paths;
 
     public LazyReaderField(String name, List<URI> paths, Field.Store store, Field.Index index, Float boost) {
         super(name, store, index, Field.TermVector.NO);
         // fundamental set: this instructs Lucene not to call the stringValue on field creation, but only when needed
         super.lazy = true;
-        if (boost != null)
+        if (boost != null) {
             setBoost(boost);
+        }
         this.paths = paths;
     }
 
@@ -49,6 +49,7 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         return null;
     }
 
+    @Override
     public Reader readerValue() {
         logger.trace("getting reader for: {}", name);
 
@@ -67,10 +68,12 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         return reader;
     }
 
+    @Override
     public TokenStream tokenStreamValue() {
         return null;
     }
 
+    @Override
     public String stringValue() {
         return null;
     }

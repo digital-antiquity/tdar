@@ -251,7 +251,6 @@ drop table test;
 
 
 --DONT-PROCESS-- SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
---DONT-PROCESS-- SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 --DONT-PROCESS-- SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
 --DONT-PROCESS-- SELECT setval('culture_keyword_id_seq', (SELECT MAX(id) FROM culture_keyword)+1);
 --DONT-PROCESS-- SELECT setval('geographic_keyword_id_seq', (SELECT MAX(id) FROM geographic_keyword)+1);

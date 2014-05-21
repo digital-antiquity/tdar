@@ -44,13 +44,16 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     @SuppressWarnings("rawtypes")
     public static abstract class DesignatedComparable<T> implements Comparator<T> {
+        @Override
         public final int compare(T obj1, T obj2) {
             Comparable item1 = null;
             Comparable item2 = null;
-            if (obj1 != null)
+            if (obj1 != null) {
                 item1 = getComparableFor(obj1);
-            if (obj2 != null)
+            }
+            if (obj2 != null) {
                 item2 = getComparableFor(obj2);
+            }
 
             return ObjectUtils.compare(item1, item2);
         }
@@ -61,12 +64,14 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
     public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             return item1.getTitleSort().compareTo(item2.getTitleSort());
         }
     });
 
     public static Comparator<Resource> idComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             return item1.getId().compareTo(item2.getId());
         }
@@ -74,6 +79,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     // kill me now.
     public static Comparator<Resource> projectComparator = new Comparator<Resource>() {
+        @Override
         public int compare(Resource item1, Resource item2) {
             String title1 = getProjectTitle(item1);
             String title2 = getProjectTitle(item2);
@@ -85,8 +91,9 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     public static String getProjectTitle(Resource item1) {
         String title1 = "";
-        if (item1 == null)
+        if (item1 == null) {
             return title1;
+        }
         if (item1 instanceof Project) {
             title1 = ((Project) item1).getProjectTitle();
         }
@@ -120,6 +127,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         resourceQueryBuilder
                 .setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
+            @Override
             public int compare(Resource arg0, Resource arg1) {
                 InformationResource ir1 = (InformationResource) arg0;
                 InformationResource ir2 = (InformationResource) arg1;
@@ -135,11 +143,13 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     @Test
     public void testDateSorting() throws ParseException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getDateCreated();
             }
         };
         DesignatedComparable<Resource> dateUpdatedComparator = new DesignatedComparable<Resource>() {
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getDateUpdated();
             }
@@ -153,6 +163,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     public void testResourceTypeSorting() throws ParseException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
             @SuppressWarnings("rawtypes")
+            @Override
             public Comparable getComparableFor(Resource t) {
                 return t.getResourceTypeSort();
             }
@@ -178,7 +189,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
                 assertFalse("list should not be empty", results.isEmpty());
                 Comparator comparator = entry.getValue();
 
-                for (int i = 0; i < results.size() - 2; i++) {
+                for (int i = 0; i < (results.size() - 2); i++) {
                     logger.info("now testing sorting for {}.{}", sortTestInfo.type.getSimpleName(), sortOption.getSortField());
                     Object item1 = results.get(i);
                     Object item2 = results.get(i + 1);
@@ -217,7 +228,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         // ArrayList<Resource> toCompare = new ArrayList<Resource>(resources);
         // Collections.sort(toCompare, comparator);
         // ListUtils.isEqualList(resources, toCompare);
-        for (int i = 0; i < resources.size() - 2; i++) {
+        for (int i = 0; i < (resources.size() - 2); i++) {
             Resource item1 = resources.get(i);
             Resource item2 = resources.get(i + 1);
             String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);

@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
  * Temporal term coverage
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
@@ -33,6 +31,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
     @JoinColumn(name = "merge_keyword_id")
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();
 
+    @Override
     public Set<TemporalKeyword> getSynonyms() {
         return synonyms;
     }

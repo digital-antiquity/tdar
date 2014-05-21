@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.AuthenticationException;
@@ -26,6 +28,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -41,6 +44,7 @@ import org.tdar.core.bean.entity.Person;
  */
 @Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final LdapOperations ldapTemplate;
     private String passwordResetURL;
@@ -133,7 +137,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public boolean addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
         String username = person.getUsername();
 
         PersonLdapDao ldapDAO = new PersonLdapDao();
@@ -149,14 +153,14 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                     + person.toString()
                     + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return false;
+            return AuthenticationResult.ACCOUNT_EXISTS;
         } catch (NameNotFoundException e) {
             logger.debug("Object not found, as expected.");
         }
 
         logger.debug("Adding LDAP user : " + username);
         ldapDAO.create(person, password);
-        return true;
+        return AuthenticationResult.VALID;
     }
 
     /*
@@ -189,8 +193,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         // predefined password reset url,
         // depending on the specific ldap implementation. Till then, just throw
         // an exception
-        throw new UnsupportedOperationException(
-                "Password reset not supported by Ldap Authentication Provider");
+        throw new UnsupportedOperationException(MessageHelper.getMessage("ldap.password_reset_disabled"));
     }
 
     /*
@@ -263,7 +266,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * Ideally, this should be a stand alone class with most, if not all, data stored on the LDAP server.
      */
     public class PersonLdapDao {
-        
+
         private static final String CLASS_PERSON = "inetOrgPerson";
         private static final String CLASS_GROUP = "posixgroup";
         private static final String ATTR_MEMBER = "memberuid";

@@ -17,8 +17,10 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
@@ -42,7 +44,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Rollback
     public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Institution institution = new Institution("testBrowseControllerInstitution");
-        entityService.save(institution);
+        genericService.save(institution);
         testBrowseController(institution);
     }
 
@@ -50,14 +52,14 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Rollback
     public void testBrowseInstitutionWithResultsViaResourceProvider() throws Exception {
         Institution institution = new Institution("testBrowseControllerInstitution");
-        entityService.save(institution);
+        genericService.save(institution);
         Document doc = genericService.find(Document.class, setupDatedDocument());
         doc.setResourceProviderInstitution(institution);
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(institution.getId());
         controller.browseCreators();
-        List<Creator> results = controller.getResults();
+        List<Resource> results = controller.getResults();
         assertTrue(results.contains(doc));
     }
 
@@ -71,7 +73,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
         initController();
         creator = new Institution("testNewCreatorHasNoResourceAssociations");
-        entityService.save(creator);
+        genericService.save(creator);
         controller.setId(creator.getId());
         controller.browseCreators();
         assertEquals(0, controller.getResults().size());
@@ -92,7 +94,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(creator.getId());
-        assertEquals(TdarActionSupport.SUCCESS, controller.browseCreators());
+        assertEquals(Action.SUCCESS, controller.browseCreators());
         assertEquals(creator, controller.getCreator());
         log.info(controller.getResults());
         assertTrue(controller.getResults().size() > 0);

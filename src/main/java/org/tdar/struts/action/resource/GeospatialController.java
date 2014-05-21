@@ -9,11 +9,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
@@ -45,12 +43,12 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         // to mask weird sounds your engine is making
 
         handleUploadedFiles();
-        boolean fileChanged = false;
-        for (FileProxy proxy : getFileProxies()) {
-            if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
-                fileChanged = true;
-            }
-        }
+        // boolean fileChanged = false;
+        // for (FileProxy proxy : getFileProxies()) {
+        // if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
+        // fileChanged = true;
+        // }
+        // }
 
         resolvePostSaveAction(getPersistable());
         return SUCCESS;
@@ -71,7 +69,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     public Set<String> getValidFileExtensions() {
-        Set<String> extensionsForTypes = analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
+        Set<String> extensionsForTypes = getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET, ResourceType.IMAGE);
         // FIXME: these should come from the analyzer
         // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
         String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",
@@ -89,8 +87,9 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     public Geospatial getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

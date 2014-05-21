@@ -35,10 +35,10 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 @Component
 @Scope("prototype")
@@ -46,13 +46,7 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
-    public static final String SUBJECT = "Billing Transaction";
     public static final String SIMPLE = "simple";
-    public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
-    public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
-    public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
-    public static final String CANNOT_MODIFY = "cannot modify existing invoice";
-    public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long accountId = -1L;
@@ -78,12 +72,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         loadEditMetadata();
 
-        if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
-                (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1) &&
+        if (!persistable.hasValidValue() && StringUtils.isBlank(code) &&
                 !getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser())) {
             addActionError(SPECIFY_SOMETHING);
             return INPUT;
@@ -94,11 +87,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         for (int i = 0; i < getExtraItemIds().size(); i++) {
             BillingActivity act = actIdMap.get(getExtraItemIds().get(i));
             Integer quantity = getExtraItemQuantities().get(i);
-            logger.info("{} {} {}", getExtraItemIds().get(i), act, quantity);
-            if (act == null || quantity == null || quantity < 1) {
+            getLogger().info("{} {} {}", getExtraItemIds().get(i), act, quantity);
+            if ((act == null) || (quantity == null) || (quantity < 1)) {
                 continue;
             }
-            logger.info("adding {}", act);
+            getLogger().info("adding {}", act);
             getInvoice().getItems().add(new BillingItem(act, quantity));
         }
 
@@ -117,7 +110,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if (CollectionUtils.isEmpty(getInvoice().getItems())) {
-            throw new TdarRecoverableRuntimeException("no items were found");
+            throw new TdarRecoverableRuntimeException(getText("cartController.no_items_found"));
         }
 
         getInvoice().setTransactedBy(getAuthenticatedUser());
@@ -162,7 +155,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public boolean isNotNullOrZero(Long num) {
-        if (num == null || num < 1) {
+        if ((num == null) || (num < 1)) {
             return false;
         }
         return true;
@@ -175,7 +168,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         boolean add = true;
 
         for (PricingOption option : pricingOptions) {
-            if (option == null || option.sameAs(incoming)) {
+            if ((option == null) || option.sameAs(incoming)) {
                 add = false;
             }
         }
@@ -197,14 +190,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String addPaymentMethod() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
 
         if (getInvoice().getAddress() == null) {
-            throw new TdarRecoverableRuntimeException(ENTER_A_BILLING_ADDERESS);
+            throw new TdarRecoverableRuntimeException(getText("cartController.enter_a_billing_adderess"));
         }
 
         return SUCCESS;
@@ -215,7 +208,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
@@ -243,12 +236,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
 
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            addActionError("Please choose an address");
+            addActionError(getText("cartController.choose_address"));
             return SUCCESS_ADD_ADDRESS;
         }
         getGenericService().saveOrUpdate(getInvoice());
@@ -286,7 +279,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getSuccessPathForPayment(); // initialize
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
         if (paymentMethod == null) {
-            throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
+            throw new TdarRecoverableRuntimeException(getText("cartController.valid_payment_method_is_required"));
         }
 
         Long phone = null;
@@ -294,13 +287,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
         }
 
-        if (isPhoneRequired() && (phone == null || phone.toString().length() < 10)) {
-            throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
+        if (isPhoneRequired() && ((phone == null) || (phone.toString().length() < 10))) {
+            throw new TdarRecoverableRuntimeException(getText("cartController.valid_phone_number_is_required"));
         }
 
         invoice.setAddress(getGenericService().loadFromSparseEntity(invoice.getAddress(), Address.class));
         if (isAddressRequired() && Persistable.Base.isNullOrTransient(invoice.getAddress())) {
-            throw new TdarRecoverableRuntimeException(A_BILING_ADDRESS_IS_REQUIRED);
+            throw new TdarRecoverableRuntimeException(getText("cartController.a_biling_address_is_required"));
         }
 
         String invoiceNumber = invoice.getInvoiceNumber();
@@ -312,10 +305,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getGenericService().saveOrUpdate(invoice);
         // finalize the cost and cache it
         invoice.markFinal();
-        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice.getId(), invoice.getTotal());
+        getLogger().info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice.getId(), invoice.getTotal());
 
         // if the discount brings the total cost down to 0, then skip the credit card process
-        if (invoice.getTotal() <= 0 && CollectionUtils.isNotEmpty(invoice.getItems())) {
+        if ((invoice.getTotal() <= 0) && CollectionUtils.isNotEmpty(invoice.getItems())) {
             if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
                 // getAccountService().redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
                 getAccountService().checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
@@ -335,7 +328,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 try {
                     setRedirectUrl(paymentTransactionProcessor.prepareRequest(invoice));
                 } catch (URIException e) {
-                    logger.warn("error happend {}", e);
+                    getLogger().warn("error happend {}", e);
                 }
                 return POLLING;
             case INVOICE:
@@ -363,7 +356,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             })
     public String processPaymentResponse() throws TdarActionException {
         try {
-            logger.trace("PROCESS RESPONSE {}", getParameters());
+            getLogger().trace("PROCESS RESPONSE {}", getParameters());
             TransactionResponse response = paymentTransactionProcessor.setupTransactionResponse(getParameters());
             // if transaction is valid (hashKey matches) then mark the session as writeable and go on
             if (paymentTransactionProcessor.validateResponse(response)) {
@@ -378,39 +371,42 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     boolean found = false;
                     Address addressToSave = response.getAddress();
                     for (Address address : p.getAddresses()) {
-                        if (address.isSameAs(addressToSave))
+                        if (address.isSameAs(addressToSave)) {
                             found = true;
+                        }
                     }
                     if (!found) {
                         p.getAddresses().add(addressToSave);
-                        logger.info(addressToSave.getAddressSingleLine());
+                        getLogger().info(addressToSave.getAddressSingleLine());
                         getGenericService().saveOrUpdate(addressToSave);
                         invoice.setAddress(addressToSave);
                     }
                     paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                     invoice.setResponse(billingResponse);
-                    logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                    getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                     Map<String, Object> map = new HashMap<String, Object>();
                     map.put("invoice", invoice);
                     map.put("date", new Date());
                     try {
                         List<Person> people = new ArrayList<>();
                         for (String email : StringUtils.split(getTdarConfiguration().getBillingAdminEmail(), ";")) {
-                            if (StringUtils.isBlank(email))
+                            if (StringUtils.isBlank(email)) {
                                 continue;
+                            }
                             Person person = new Person("Billing", "Info", email.trim());
                             getGenericService().markReadOnly(person);
                             people.add(person);
                         }
-                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, people.toArray(new Person[0]));
+                        getEmailService().sendWithFreemarkerTemplate("transaction-complete-admin.ftl", map,
+                                getSiteAcronym() + getText("cartController.subject"), people.toArray(new Person[0]));
                     } catch (Exception e) {
-                        logger.error("could not send email: {} ", e);
+                        getLogger().error("could not send email: {} ", e);
                     }
                     getGenericService().saveOrUpdate(invoice);
                 }
             }
         } catch (Exception e) {
-            logger.error("{}", e);
+            getLogger().error("{}", e);
         }
         return INVOICE;
     }
@@ -438,10 +434,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public Invoice getInvoice() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
 
-        return (Invoice) getPersistable();
+        return getPersistable();
     }
 
     @Override
@@ -511,7 +508,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     public void setParameters(Map<String, String[]> arg0) {
         this.parameters = arg0;
-        logger.trace("parameters: {} ", getParameters());
+        getLogger().trace("parameters: {} ", getParameters());
     }
 
     public Map<String, String[]> getParameters() {
@@ -532,7 +529,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (account != null) {
             successPath = String.format("%s&id=%d", successPath, account.getId());
         }
-        logger.trace("successpath: {} ", successPath);
+        getLogger().trace("successpath: {} ", successPath);
         return successPath;
     }
 

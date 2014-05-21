@@ -16,7 +16,7 @@ public class Activity implements Serializable {
 
     private static final long serialVersionUID = 1078566853797118113L;
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private static final String MOZILLA = "Mozilla/5.0 (compatible;";
     private Date startDate;
     private Date endDate;

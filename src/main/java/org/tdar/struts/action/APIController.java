@@ -25,9 +25,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -39,9 +36,6 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @ParentPackage("secured")
 public class APIController extends AuthenticationAware.Base {
 
-    @Autowired
-    PersonalFilestoreService filestoreService;
-
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
@@ -49,15 +43,11 @@ public class APIController extends AuthenticationAware.Base {
     private String status;
     private Long projectId; // note this will override projectId value specified in record
 
-    @Autowired
-    public ImportService importService;
-    @Autowired
-    public XmlService xmlService;
-
     // on the receiving end
     private List<String> processedFileNames;
 
-    private ObfuscationService obfuscationService;
+    @Autowired
+    private ImportService importService;
 
     private Resource importedRecord;
     private String message;
@@ -70,7 +60,7 @@ public class APIController extends AuthenticationAware.Base {
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
-        logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
+        getLogger().info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
     }
 
     @Action(value = "view", results = {
@@ -82,10 +72,10 @@ public class APIController extends AuthenticationAware.Base {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = getResourceService().find(getId());
             if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                obfuscationService.obfuscate(resource,getAuthenticatedUser());
+                getObfuscationService().obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            String xml = xmlService.convertToXML(resource);
+            String xml = getXmlService().convertToXML(resource);
             setInputStream(new ByteArrayInputStream(xml.getBytes()));
             return SUCCESS;
         }
@@ -99,10 +89,10 @@ public class APIController extends AuthenticationAware.Base {
         if (fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
             // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
-            logger.info("file access restrictions not set");
+            getLogger().info("file access restrictions not set");
             return errorResponse(StatusCode.BAD_REQUEST);
         } else if (StringUtils.isEmpty(getRecord())) {
-            logger.info("no record defined");
+            getLogger().info("no record defined");
             return errorResponse(StatusCode.BAD_REQUEST);
         }
         List<FileProxy> proxies = new ArrayList<>();
@@ -115,9 +105,11 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
             Person authenticatedUser = getAuthenticatedUser();
+            // getGenericService().detachFromSession(incoming);
+            // getGenericService().detachFromSession(getAuthenticatedUser());
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
@@ -131,11 +123,11 @@ public class APIController extends AuthenticationAware.Base {
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                code= StatusCode.CREATED;
+                code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
-            
-            logMessage(" API "+ code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+
+            logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             getServletResponse().setStatus(statuscode);
             getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());

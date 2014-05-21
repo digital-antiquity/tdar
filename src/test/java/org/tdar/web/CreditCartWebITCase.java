@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,6 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.CartController;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -154,7 +154,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         gotoPage(URLConstants.DASHBOARD);
         assertTextPresent(accountName);
         assertTextPresent(accountName2);
-        logger.info(getPageText());
+        logger.trace(getPageText());
 
     }
 
@@ -202,9 +202,10 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
                         logger.info("setting value {} {}", input.toString(), i);
                     }
                 }
-            } catch (ElementNotFoundException e) {
+            } catch (NoSuchElementException e) {
+                logger.warn("{}", e.getMessage());
             } catch (Exception e) {
-                logger.warn("{}", e);
+                logger.warn("exception:", e);
             }
         }
     }

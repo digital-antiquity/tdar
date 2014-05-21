@@ -77,4 +77,80 @@ alter table sensory_data_scan
     foreign key (sensory_data_id)
     references sensory_data;
 
+-- abrin 12/31/2013
 alter table person add column orcid_id varchar(50) default null;
+
+-- abrin 1/15/2014
+alter table collection add column description_admin text default null;
+
+-- abrin 1/24/2014
+create index res_uploader on resource (uploader_id);
+
+-- abrin 2/9/2014
+CREATE TABLE weekly_popular_resource_cache (
+    id bigserial NOT NULL,
+    label character varying(255) NOT NULL,
+    level character varying(50) NOT NULL,
+    resource_count bigint,
+    resource_id bigint
+);
+
+alter table weekly_popular_resource_cache drop column label;
+alter table weekly_popular_resource_cache drop column level;
+alter table weekly_popular_resource_cache drop column resource_count;
+
+-- abrin 2/14/2014
+create table creator_view_statistics (
+    id  bigserial not null,
+    date_accessed timestamp,
+    creator_id int8 references creator,
+    primary key (id)
+);
+create index creator_view_stats_count_id on creator_view_statistics (creator_id, id);
+
+
+create table resource_collection_view_statistics (
+    id  bigserial not null,
+    date_accessed timestamp,
+    resource_collection_id int8 references collection,
+    primary key (id)
+);
+
+create index resource_collection_view_stats_count_id on resource_collection_view_statistics (resource_collection_id, id);
+
+-- abrin 2/24/2014 adding ID Table
+create table collection_parents (
+     collection_id int8 not null references collection,
+     parent_id int8 not null references collection
+);
+
+-- abrin 2/27/2014 -- inheritance for individual and institutional credit
+alter table information_resource add inheriting_individual_institutional_credit boolean default FALSE;
+update information_resource set inheriting_individual_institutional_credit=false;
+alter table creator alter column date_created type timestamp;
+
+-- abrin 3/6/2014
+alter table person add column affilliation varchar(255);
+
+-- abrin 3/14/2014
+alter table information_resource_file add column filename varchar(255);
+
+update information_resource_file set filename=
+	(select filename from information_resource_file_version as irfv where 
+		irfv.information_resource_file_id=irf.id and internal_type like '%UPLOADED%' order by file_version desc limit 1)
+	from information_resource_file as irf where information_resource_file.id=irf.id;
+	
+-- abrin 3/21/2014
+alter table information_resource_file add column deleted boolean default false;
+update information_resource_file set deleted=TRUE where status='DELETED';
+update information_resource_file set status='PROCESSED' where status='DELETED';
+
+-- abrin 3/29/2014
+-- no foreign key as collections are simply deleted
+alter table resource_collection_view_statistics drop constraint resource_collection_view_statistics_resource_collection_id_fkey;
+
+-- abrin 04/28/2014
+create index idx_created on resource (date_registered);
+
+-- abrin 05/11/2014
+create index information_resource_file_ir2 on information_resource_file(information_resource_id);

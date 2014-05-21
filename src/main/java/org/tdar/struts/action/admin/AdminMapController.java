@@ -13,9 +13,9 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.SvgMapWrapper;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")
@@ -43,6 +43,7 @@ public class AdminMapController extends AuthenticationAware.Base {
 
     @Action(value = "map", results = {
             @Result(name = "success", location = "svg.ftl", type = "freemarker", params = { "contentType", "image/svg+xml" }) })
+    @Override
     public String execute() {
         List<HomepageGeographicKeywordCache> caches = getGenericService().findAll(HomepageGeographicKeywordCache.class);
         setSvgWrapper(geoSearchService.toSvg(.05, "/search/results?geographicKeywords=", " (ISO%20Country%20Code)", table, limit));
@@ -62,7 +63,7 @@ public class AdminMapController extends AuthenticationAware.Base {
 
         for (HomepageGeographicKeywordCache cache : caches) {
             // <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
-            int percent = (int) (100 * cache.getLogCount() / max);
+            int percent = (int) ((100 * cache.getLogCount()) / max);
 
             String code = cache.getKey().toUpperCase();
             if (code.length() > 2) {

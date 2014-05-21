@@ -44,6 +44,7 @@ public class HttpTestingServer implements ITestingServer {
         Authenticator authenticator = new BasicAuthenticator("tDAR_odata_realm")
         {
 
+            @Override
             public Result authenticate(HttpExchange exchange)
             {
                 return super.authenticate(exchange);

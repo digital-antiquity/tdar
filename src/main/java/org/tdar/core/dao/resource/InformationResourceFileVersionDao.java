@@ -3,6 +3,8 @@ package org.tdar.core.dao.resource;
 import java.io.IOException;
 
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -11,10 +13,14 @@ import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.ObjectType;
 
 @Component
 public class InformationResourceFileVersionDao extends HibernateBase<InformationResourceFileVersion> {
+
     private static final Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public InformationResourceFileVersionDao() {
         super(InformationResourceFileVersion.class);
@@ -30,10 +36,10 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
     public void delete(InformationResourceFileVersion file) {
         delete(file, false);
     }
-    
+
     public void delete(InformationResourceFileVersion file, boolean purge) {
         if (file.isUploadedOrArchival()) {
-            throw new TdarRecoverableRuntimeException("Should not delete Uploaded or Archival Version");
+            throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
         }
         if (purge) {
             purgeFromFilestore(file);
@@ -48,10 +54,9 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
 
     public void purgeFromFilestore(InformationResourceFileVersion file) {
         try {
-            filestore.purge(file);
+            filestore.purge(ObjectType.RESOURCE, file);
         } catch (IOException e) {
-            getLogger().warn("Problems purging file with filestoreID of" +
-                    file.getFilename() + " from the filestore.", e);
+            getLogger().warn("Problems purging file with filestoreID of {} from the filestore.", file.getFilename(), e);
         }
 
     }

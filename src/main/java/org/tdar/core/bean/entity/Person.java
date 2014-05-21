@@ -9,6 +9,9 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -21,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
@@ -34,11 +36,13 @@ import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
@@ -51,9 +55,8 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 @Entity
-@Table(name = "person")
-//FIXME:  not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
-@org.hibernate.annotations.Table( appliesTo = "person", indexes = { @Index(name = "person_instid", columnNames = {"institution_id", "id"})})
+@Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
+// FIXME: not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
@@ -91,28 +94,28 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String firstName;
 
-    @Column(name="orcid_id")
+    @Column(name = "orcid_id")
     private String orcidId;
-    //http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
-    
+    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
+
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
     @Column(unique = true, nullable = true)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String username;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
@@ -136,6 +139,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(name = "last_login")
     private Date lastLogin;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "affilliation", length = FieldLength.FIELD_LENGTH_255)
+    @Field(norms = Norms.NO, store = Store.YES)
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    private UserAffiliation affilliation;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "penultimate_login")
     private Date penultimateLogin;
@@ -147,8 +156,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
     private Boolean contributor = Boolean.FALSE;
 
-    @Column(name = "contributor_reason", length = 512)
-    @Length(max = 512)
+    @Column(name = "contributor_reason", length = FieldLength.FIELD_LENGTH_512)
+    @Length(max = FieldLength.FIELD_LENGTH_512)
     private String contributorReason;
 
     // did this user register with the system or were they entered by someone
@@ -160,10 +169,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
     @Column(name = "rpa_number")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String rpaNumber;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String phone;
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
@@ -245,8 +254,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     public void setLastName(String lastName) {
-        if (lastName == null)
+        if (lastName == null) {
             return;
+        }
         this.lastName = lastName.trim();
     }
 
@@ -255,8 +265,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     public void setFirstName(String firstName) {
-        if (firstName == null)
+        if (firstName == null) {
             return;
+        }
         this.firstName = firstName.trim();
     }
 
@@ -291,7 +302,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public String toString() {
-        if (institution != null && !StringUtils.isBlank(institution.toString())) {
+        if ((institution != null) && !StringUtils.isBlank(institution.toString())) {
             return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
         }
         return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
@@ -302,8 +313,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      */
     @Override
     public int compareTo(Person otherPerson) {
-        if (this == otherPerson)
+        if (this == otherPerson) {
             return 0;
+        }
         int comparison = lastName.compareTo(otherPerson.lastName);
         if (comparison == 0) {
             comparison = firstName.compareTo(otherPerson.firstName);
@@ -464,7 +476,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     @Override
     public boolean hasNoPersistableValues() {
-        if (StringUtils.isBlank(email) && (institution == null || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
+        if (StringUtils.isBlank(email) && ((institution == null) || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
                 StringUtils.isBlank(firstName) && Persistable.Base.isNullOrTransient(getId())) {
             return true;
         }
@@ -473,7 +485,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public boolean isValid() {
-        return isValidForController() && getId() != null;
+        return isValidForController() && (getId() != null);
     }
 
     public String getUsername() {
@@ -528,12 +540,20 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     /**
      * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * 
+     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
      * */
     @Deprecated
     public String getTempDisplayName() {
-        if(StringUtils.isBlank(firstName)) return "";
-        if(StringUtils.isBlank(lastName)) return "";
+        if(StringUtils.isNotBlank(tempDisplayName)) {
+            return tempDisplayName;
+        }
+        if (StringUtils.isBlank(firstName)) {
+            return "";
+        }
+        if (StringUtils.isBlank(lastName)) {
+            return "";
+        }
         if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
             setTempDisplayName(getProperName());
         }
@@ -542,7 +562,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     /**
      * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * @deprecated Do not use this method in new code.  Its behavior will change to fix legacy issues until it is removed from the API
+     * 
+     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
      * */
     @Deprecated
     public void setTempDisplayName(String tempName) {
@@ -572,4 +593,13 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     public void setOrcidId(String orcidId) {
         this.orcidId = orcidId;
     }
+
+    public UserAffiliation getAffilliation() {
+        return affilliation;
+    }
+
+    public void setAffilliation(UserAffiliation affilliation) {
+        this.affilliation = affilliation;
+    }
+
 }

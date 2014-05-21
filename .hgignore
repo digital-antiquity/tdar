@@ -1,12 +1,15 @@
 syntax:glob
 .project
+.checkstyle
 .settings
 .classpath
+.checkstyle
 indexes
 target
 bin
 src/main/resources/*.properties
 src/main/resources/*-local-settings.xml
+src/main/webapp/wro*
 googlemaps-api-key.js
 logs
 *.jpage
@@ -25,6 +28,10 @@ libpeerconnection.log
 
 .externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
 import.log
+
+*.sublime-workspace
+*.sublime-project
+
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 

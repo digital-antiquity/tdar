@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
@@ -42,11 +43,12 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(irFile.getInformationResourceFileType(), FileType.FILE_ARCHIVE);
 
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
+        evictCache();
 
         // however, whatever caused the processing error is fixed
-        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile.getLatestUploadedVersion());
+        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
+        fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);
 
         // and the file is reprocessed
@@ -78,10 +80,10 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         irFile.setStatus(FileStatus.PROCESSED);
         irFile.setErrorMessage("blah");
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
+        evictCache();
         ActionMessageErrorListener listener = new ActionMessageErrorListener();
         informationResourceService.reprocessInformationResourceFiles(ir, listener);
-        genericService.synchronize();
+        evictCache();
 
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
         assertNotNull("IrFile is null", irFile);

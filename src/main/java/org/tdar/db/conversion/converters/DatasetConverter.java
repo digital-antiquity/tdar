@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,8 @@ public interface DatasetConverter {
 
     DataTable getDataTableByName(String name);
 
+    DataTable getDataTableByOriginalName(String name);
+
     Set<DataTableRelationship> getRelationships();
 
     void setRelationships(Set<DataTableRelationship> relationships);
@@ -68,8 +74,6 @@ public interface DatasetConverter {
 
     List<DataTableRelationship> getRelationshipsWithTable(String tableName);
 
-    static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
-
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().
      */
@@ -78,26 +82,31 @@ public interface DatasetConverter {
         private String filename = "";
         private Long irFileId;
         private Database database = null;
-        protected final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger logger = LoggerFactory.getLogger(getClass());
         protected InformationResourceFileVersion informationResourceFileVersion;
         protected TargetDatabase targetDatabase;
         protected Connection connection;
         protected Set<DataTable> dataTables = new HashSet<DataTable>();
         protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
+        private File indexedContentsFile;
         private Set<String> dataTableNames = new HashSet<String>();
+        private Map<String,List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
 
         protected abstract void dumpData() throws IOException, Exception;
 
+        @Override
         public void setRelationships(Set<DataTableRelationship> relationships) {
             this.dataTableRelationships = relationships;
         }
 
+        @Override
         public Set<DataTableRelationship> getRelationships() {
             return dataTableRelationships;
         }
 
+        @Override
         public List<DataTableRelationship> getRelationshipsWithTable(String tableName) {
             List<DataTableRelationship> rels = new ArrayList<DataTableRelationship>();
             for (DataTableRelationship rel : dataTableRelationships) {
@@ -108,11 +117,10 @@ public interface DatasetConverter {
             return rels;
         }
 
+        @Override
         public Set<DataTable> getDataTables() {
             return dataTables;
         }
-
-        private File indexedContentsFile;
 
         public DataTable createDataTable(String name) {
             DataTable dataTable = new DataTable();
@@ -121,18 +129,7 @@ public interface DatasetConverter {
             logger.info(name_);
 
             if (dataTableNames.contains(name_)) {
-                int add = 1;
-
-                if (name_.length() + 1 > targetDatabase.getMaxTableLength()) {
-                    name_ = name_.substring(0, targetDatabase.getMaxTableLength() - 2);
-                }
-
-                while (dataTableNames.contains(name_ + add)) {
-                    add++;
-                }
-                String tmpName = name_ + add;
-                logger.debug("renaming table from " + name_ + " to " + tmpName);
-                name_ = tmpName;
+                name_ = extractAndIncrementIfDuplicate(name_, dataTableNames, targetDatabase.getMaxTableLength());
             }
             dataTableNames.add(name_);
             dataTable.setName(name_);
@@ -141,10 +138,40 @@ public interface DatasetConverter {
             return dataTable;
         }
 
+        private String extractAndIncrementIfDuplicate(String name_, Collection<String> existingNames, int maxTableLength) {
+            int add = 1;
+
+            if ((name_.length() + 1) > maxTableLength) {
+                name_ = name_.substring(0, maxTableLength - 2);
+            }
+
+            while (existingNames.contains(name_ + add)) {
+                add++;
+            }
+            String tmpName = name_ + add;
+            logger.debug("renaming from " + name_ + " to " + tmpName);
+            name_ = tmpName;
+            return name_;
+        }
+
         public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
             DataTableColumn dataTableColumn = new DataTableColumn();
+            if (StringUtils.length(name) > 250) {
+                name = name.substring(0, 250);
+            }
             dataTableColumn.setDisplayName(name);
-            dataTableColumn.setName(targetDatabase.normalizeTableOrColumnNames(name));
+            String internalName = targetDatabase.normalizeTableOrColumnNames(name);
+            String tableName = dataTable.getInternalName();
+            List<String> columnNames = dataTableColumnNames.get(tableName);
+            if (columnNames == null) {
+                columnNames = new ArrayList<>();
+                dataTableColumnNames.put(tableName, columnNames);
+            }
+            if (columnNames.contains(internalName)) {
+                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
+            }
+            dataTableColumn.setName(internalName);
+            columnNames.add(internalName);
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             dataTableColumn.setDataTable(dataTable);
@@ -172,18 +199,20 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException("I/O error while opening input database or dumping data", e);
+                throw new TdarRecoverableRuntimeException("datasetService.io_exception", e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message
                 // with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
+                logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
+                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion()
+                        .getFilename()));
             }
         }
 
+        @Override
         public List<String> getTableNames() {
             ArrayList<String> tables = new ArrayList<String>();
             for (DataTable table : dataTables) {
@@ -192,10 +221,22 @@ public interface DatasetConverter {
             return tables;
         }
 
+        @Override
         public DataTable getDataTableByName(String name) {
             for (DataTable table : dataTables) {
-                if (name.equals(table.getName()))
+                if (name.equals(table.getName())) {
                     return table;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public DataTable getDataTableByOriginalName(String name) {
+            for (DataTable table : dataTables) {
+                if (ObjectUtils.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
+                    return table;
+                }
             }
             return null;
         }
@@ -214,14 +255,17 @@ public interface DatasetConverter {
             }
         }
 
+        @Override
         public void setTargetDatabase(TargetDatabase targetDatabase) {
             this.targetDatabase = targetDatabase;
         }
 
+        @Override
         public void setFilename(String filename) {
             this.filename = filename;
         }
 
+        @Override
         public String getFilename() {
             return filename;
         }
@@ -247,16 +291,19 @@ public interface DatasetConverter {
         protected String generateDataTableName(String tableName) {
             StringBuilder sb = new StringBuilder(getDatabasePrefix());
             sb.append('_').append(getIrFileId()).append('_');
-            if (!StringUtils.isBlank(getFilename()))
+            if (!StringUtils.isBlank(getFilename())) {
                 sb.append(getFilename()).append('_');
+            }
             sb.append(targetDatabase.normalizeTableOrColumnNames(tableName));
             return targetDatabase.normalizeTableOrColumnNames(sb.toString());
         }
 
+        @Override
         public String getInternalTableName(String originalTableName) {
             return originalTableName.replaceAll("^(" + getDatabasePrefix() + "_)(\\d+)(_?)", "");
         }
 
+        @Override
         public Set<DataTableRelationship> getKeys() {
             return dataTableRelationships;
         }
@@ -265,6 +312,7 @@ public interface DatasetConverter {
          * @param informationResourceFileVersion
          *            the informationResourceFileVersion to set
          */
+        @Override
         public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
             this.informationResourceFileVersion = informationResourceFileVersion;
         }
@@ -276,10 +324,12 @@ public interface DatasetConverter {
             return informationResourceFileVersion;
         }
 
+        @Override
         public File getIndexedContentsFile() {
             return indexedContentsFile;
         }
 
+        @Override
         public void setIndexedContentsFile(File indexedContentsFile) {
             this.indexedContentsFile = indexedContentsFile;
         }

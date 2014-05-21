@@ -1,13 +1,14 @@
 package org.tdar.core.bean;
 
-/*
+import org.tdar.core.bean.entity.Person;
+
+/**
  * This interface is designed to ensure that fields are available for basic searhing
  * NOTE: HibernateSearch does not have the ability to inherit the @Field annotations
  * 
  * NOTE: THIS IS NOT USED
  */
-public interface SimpleSearch {
-
+public interface SimpleSearch extends Persistable {
     enum SimpleSearchType {
         RESOURCE("Resource"),
         COLLECTION("Collection");
@@ -36,5 +37,7 @@ public interface SimpleSearch {
     String getDescription();
 
     String getUrlNamespace();
+
+    Person getSubmitter();
 
 }

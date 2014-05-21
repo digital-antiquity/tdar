@@ -19,6 +19,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
  */
 public class LoggingTask extends AbstractTask {
 
+    private static final String LOG_XML = "log.xml";
     private static final long serialVersionUID = 8593717052108347438L;
 
     /*
@@ -29,7 +30,7 @@ public class LoggingTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
-            File f = new File(getWorkflowContext().getWorkingDirectory(), "log.xml");
+            File f = new File(getWorkflowContext().getWorkingDirectory(), LOG_XML);
             FileUtils.writeStringToFile(f, getWorkflowContext().toXML());
             generateInformationResourceFileVersionFromOriginal(version, f, VersionType.LOG);
             // don't add to context, just write to filesystem

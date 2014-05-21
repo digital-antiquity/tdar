@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
@@ -42,9 +43,6 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "this is a test";
 
     public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
-
-    public ThumbnailWebITCase() {
-    }
 
     @Test
     // create image as confidential, then log out and see if we see the image.
@@ -72,15 +70,15 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // the logged in creator should be able to see the image
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_IMAGE_VIEW));
-        logger.debug("source of view page: {}", getPageCode());
+        logger.trace("source of view page: {}", getPageCode());
         assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);
-        logger.info(getPageText());
+        logger.trace(getPageText());
         // we're dealing with a confidential file, should not be there
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
         String pageCode = getPageCode();
         Pattern p = Pattern.compile("/filestore/(\\d+)(/?)");
         Matcher m = p.matcher(pageCode);
@@ -93,12 +91,12 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // ONCE WE LOG OUT THE THUMBNAIL SHOULDN'T BE PRESENT BECAUSE THE RESOURCE IS CONFIDENTIAL
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertDeniedAccess(irFileVersionIds);
 
@@ -111,7 +109,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertLoginPrompt(irFileVersionIds);
 
@@ -119,7 +117,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(viewPage);
         // not present because not showing only one thumbnail
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
         assertTextPresentInCode("/filestore/");
 
         assertAllowedToViewIRVersionIds(irFileVersionIds);
@@ -134,18 +132,22 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         logout();
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         assertLoginPrompt(irFileVersionIds);
 
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
-        assertTrue(getCurrentUrlPath().contains("edit")); // we can be on the "edit" page with an error message
+        logger.debug("statusCode: {} ", statusCode);
+        assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), statusCode);
+        // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
+        // redirects to a different page... current URL is null?
+        assertTrue(getCurrentUrlPath().contains("unauthorized")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
-        assertTextNotPresent("/thumbnail");
+        assertTextNotPresent("/img/sm");
 
         Long imageId = extractTdarIdFromCurrentURL();
 

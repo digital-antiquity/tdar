@@ -1,17 +1,20 @@
 package org.tdar.core.bean.billing;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 
@@ -24,14 +27,18 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 @Table(name = "pos_billing_activity")
 public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
 
+    private static final long BYTES_IN_MB = 1_048_576L;
+
     private static final long serialVersionUID = 6891881586235180640L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Transient
+    private transient final Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum BillingActivityType {
         PRODUCTION, TEST;
     }
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
     @Column(updatable = false)
     private Integer numberOfHours = 0;
@@ -43,13 +50,13 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "activity_type", length = 25)
+    @Column(name = "activity_type", length = FieldLength.FIELD_LENGTH_25)
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
 
     @Column(name = "sort_order")
     private Integer order;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @NotNull
     private BillingActivityModel model;
 
@@ -83,13 +90,13 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Column(updatable = false)
     private Float price;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String currency;
 
     private Boolean enabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "groupName", length = 255)
+    @Column(name = "groupName", length = FieldLength.FIELD_LENGTH_255)
     private TdarGroup group;
 
     public Integer getNumberOfHours() {
@@ -105,7 +112,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public Long getNumberOfBytes() {
-        return getNumberOfMb() * 1048576L;
+        return getNumberOfMb() * BYTES_IN_MB;
     }
 
     public void setNumberOfMb(Long numberOfMb) {
@@ -214,7 +221,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public boolean supportsFileLimit() {
-        if (getNumberOfFiles() != null && getNumberOfFiles() > 0) {
+        if ((getNumberOfFiles() != null) && (getNumberOfFiles() > 0)) {
             return true;
         }
         return false;
@@ -247,5 +254,28 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
         } else {
             return ObjectUtils.compare(getName(), o.getName());
         }
+    }
+
+    private boolean isNullOrZero(Number number) {
+        if ((number == null) || (number.floatValue() == 0.0)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSpaceOnly() {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && (getNumberOfBytes() != null) && (getNumberOfBytes() > 0)
+                && isNullOrZero(getNumberOfFiles())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFilesOnly() {
+        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && (getNumberOfFiles() != null) && (getNumberOfFiles() > 0)
+                && isNullOrZero(getNumberOfBytes())) {
+            return true;
+        }
+        return false;
     }
 }

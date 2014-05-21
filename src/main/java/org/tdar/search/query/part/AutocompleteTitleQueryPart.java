@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 
+import com.opensymphony.xwork2.TextProvider;
+
 public class AutocompleteTitleQueryPart implements QueryPart<String> {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
 
     private String title;
@@ -20,13 +22,15 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         this.title = value;
     }
 
+    @Override
     public boolean isEmpty() {
         return StringUtils.isBlank(title);
     }
 
     protected QueryPart<?> getQueryPart(String value) {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setBoost(TITLE_BOOST).setPhraseFormatters(
                 PhraseFormatter.ESCAPE_QUOTED);
@@ -65,13 +69,13 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     // }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         return "Title: " + title;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml(getDescription(provider));
     }
 
     @Override
@@ -84,6 +88,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public Operator getOperator() {
         return Operator.AND;
     }

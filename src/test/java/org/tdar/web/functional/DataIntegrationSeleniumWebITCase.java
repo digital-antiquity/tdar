@@ -22,13 +22,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.struts.action.DataIntegrationITCase;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 @Ignore
 public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String BONE_COMMON_NAME = "Bone Common name";
     private static final String MAIN_TABLE = "Main table";
@@ -78,10 +81,10 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             find(By.className("bookmark-label")).click();
             String datasetViewUrl = getCurrentUrl();
             find(By.linkText(GENERATED + "Species Common name")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getTaxonValueMap());
             gotoPage(datasetViewUrl);
             find(By.linkText(GENERATED + BONE_COMMON_NAME)).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getElementValueMap());
 
             Long alexId = uploadSparseResource(ALEXANDRIA_DATASET_NAME, "Alexandria Description", ResourceType.DATASET, "1924", -1, new File(
                     TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_DB_NAME));
@@ -92,10 +95,10 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             find(By.className("bookmark-label")).click();
             datasetViewUrl = getCurrentUrl();
             find(By.linkText(GENERATED + "Taxon")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getTaxonValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getTaxonValueMap());
             gotoPage(datasetViewUrl);
             find(By.linkText(GENERATED + "BELEMENT")).click();
-            mapCodingSheetToOntology(DataIntegrationITCase.getElementValueMap());
+            mapCodingSheetToOntology(AbstractDataIntegrationTestCase.getElementValueMap());
         }
 
         find(By.linkText("Integrate")).click();
@@ -111,27 +114,29 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         }
 
         submitForm();
-        find(By.id("addColumn")).click(); // 3 columns
-        find(By.id("addColumn")).click();
+        WebElementSelection addColumn = find(By.id("addColumn"));
+        addColumn.click(); // 3 columns
+        addColumn.click();
         WebElementSelection columns = find(By.id("drplist")).find(By.tagName("td"));
 
         WebElement column = columns.get(0);
-        WebElementSelection draggables = find(By.className("drg"));
-        WebElement taxon = findMatchingElementBy(draggables, "Taxon", By.className("name")).first();
-        WebElement scn = findMatchingElementBy(draggables, "Species Common name", By.className("name")).first();
+        WebElementSelection draggables = find(By.className("ui-draggable"));
+        By nameElements = By.className("name");
+        WebElement taxon = findMatchingElementWithChildBy(draggables, "Taxon", nameElements).first();
         dragAndDrop(taxon, column);
+        WebElement scn = findMatchingElementWithChildBy(draggables, "Species Common name", nameElements).first();
         dragAndDrop(scn, column);
 
         column = columns.get(1);
-        WebElement belement = findMatchingElementBy(draggables, "BELEMENT", By.className("name")).first();
-        WebElement bcn = findMatchingElementBy(draggables, BONE_COMMON_NAME, By.className("name")).first();
-        dragAndDrop(bcn, column);
+        WebElement belement = findMatchingElementWithChildBy(draggables, "BELEMENT", nameElements).first();
         dragAndDrop(belement, column);
+        WebElement bcn = findMatchingElementWithChildBy(draggables, BONE_COMMON_NAME, nameElements).first();
+        dragAndDrop(bcn, column);
 
         column = columns.get(2);
-        WebElement bclass = findMatchingElementBy(draggables, "BCLASS", By.className("name")).first();
-        WebElement scode = findMatchingElementBy(draggables, "Site code", By.className("name")).first();
+        WebElement bclass = findMatchingElementWithChildBy(draggables, "BCLASS", nameElements).first();
         dragAndDrop(bclass, column);
+        WebElement scode = findMatchingElementWithChildBy(draggables, "Site code", nameElements).first();
         dragAndDrop(scode, column);
 
         submitForm();
@@ -151,9 +156,29 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         // find(By.id("downloadLink")).click();
     }
 
+    private WebElementSelection findMatchingElementWithChildBy(WebElementSelection parentElement, String matchingText, By selector) {
+        logger.info("looking for {} in {} ({})", matchingText, selector.toString(), parentElement.size());
+        for (WebElement element_ : parentElement) {
+            WebElementSelection element = new WebElementSelection(element_, driver);
+            WebElementSelection name = element.find(selector);
+            logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
+            if (name.getText().equals(matchingText)) {
+                return element;
+            }
+            if (StringUtils.equals(name.val(), matchingText)) {
+                return element;
+            }
+            if (StringUtils.containsIgnoreCase(StringUtils.trim(name.val()), StringUtils.trim(matchingText + " -"))) {
+                return element;
+            }
+        }
+        return null;
+    }
+
     private void dragAndDrop(WebElement draggable, WebElement target) {
         // http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
         Actions builder = new Actions(driver);
+        logger.debug("dragging {} to {} ", draggable.getText(), target.getText());
         Action dragAndDrop = builder.clickAndHold(draggable).moveToElement(target).release(target).build();
         dragAndDrop.perform();
     }
@@ -161,8 +186,8 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     private void mapCodingSheetToOntology(Map<String, String> map) {
         find(By.className("mappingLink")).find(By.tagName("a")).click();
 
-        WebElementSelection nodePairs = find(By.className("mappingPair"));
         for (Entry<String, String> entry : map.entrySet()) {
+            WebElementSelection nodePairs = find(By.id("row_" + entry.getKey()));
             WebElementSelection match = findMatchingElementBy(nodePairs, entry.getKey(), By.className("codingSheetTerm"));
             if (match == null) {
                 continue;
@@ -173,7 +198,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             if (value.indexOf("(") != -1) {
                 value = value.substring(0, value.indexOf("("));
             }
-            if (!selectAutocompleteValue(ontologyNode, value, value)) {
+            if (!selectAutocompleteValue(ontologyNode, value, value, null)) {
                 String fmt = "Failed to map ontology %s because selenium failed to select a user from the autocomplete " +
                         "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                         "menu.";
@@ -188,11 +213,14 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         for (WebElement element_ : parentElement) {
             WebElementSelection element = new WebElementSelection(element_, driver);
             WebElementSelection name = element.find(selector);
-            logger.info("{} {} ({})", name.getText(), name.val(), name.toList().size());
+            logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
             if (name.getText().equals(matchingText)) {
                 return element;
             }
             if (StringUtils.equals(name.val(), matchingText)) {
+                return element;
+            }
+            if (StringUtils.equalsIgnoreCase(StringUtils.trim(name.val()), StringUtils.trim(matchingText))) {
                 return element;
             }
         }
@@ -206,7 +234,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
         }
 
         WebElement ontologyField = column.find(By.className("ontologyfield")).first();
-        if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName)) {
+        if (!selectAutocompleteValue(ontologyField, ontologyName, ontologyName, null)) {
             String fmt = "Failed to add ontology %s because selenium failed to select a user from the autocomplete " +
                     "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
                     "menu.";

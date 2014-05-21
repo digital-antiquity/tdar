@@ -31,6 +31,9 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.Action;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
@@ -46,14 +49,14 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = generateNewInitializedController(CartController.class);
         controller.prepare();
         String result = controller.add();
-        assertEquals(TdarActionSupport.SUCCESS, result);
+        assertEquals(Action.SUCCESS, result);
         controller = generateNewInitializedController(CartController.class);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
 
         assertTrue(controller.getActionErrors().contains(CartController.SPECIFY_SOMETHING));
-        assertEquals(CartController.INPUT, save);
+        assertEquals(Action.INPUT, save);
         setIgnoreActionErrors(true);
     }
 
@@ -82,6 +85,16 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
         assertEquals(350.0, invoice.getTotal().floatValue(), 0);
         assertEquals(20L, invoice.getTotalNumberOfFiles().longValue());
+    }
+
+    @Test
+    @Rollback
+    public void testCartCouponNone() throws TdarActionException {
+        long numFiles = 10L;
+        Invoice invoice = setupAccountWithCouponForFiles(numFiles, 0L);
+        logger.info("{} {} ", invoice.getTotalNumberOfFiles(), invoice.getTotal());
+        assertEquals(0.0, invoice.getTotal().floatValue(), 0);
+        assertEquals(numFiles, invoice.getTotalNumberOfFiles().longValue());
     }
 
     @Test
@@ -118,22 +131,22 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         String msg = null;
         try {
-            assertEquals(CartController.ERROR, controller.processPayment());
+            assertEquals(Action.ERROR, controller.processPayment());
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.VALID_PAYMENT_METHOD_IS_REQUIRED, msg);
+        assertEquals(MessageHelper.getMessage("cartController.valid_payment_method_is_required"), msg);
 
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
         msg = null;
         try {
-            assertEquals(CartController.ERROR, controller.addPaymentMethod());
+            assertEquals(Action.ERROR, controller.addPaymentMethod());
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.ENTER_A_BILLING_ADDERESS, msg);
+        assertEquals(MessageHelper.getMessage("cartController.enter_a_billing_adderess"), msg);
     }
 
     @Test
@@ -151,7 +164,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
-        String msg = CartController.WAIT;
+        String msg = TdarActionSupport.WAIT;
 
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
@@ -194,12 +207,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         invoice.setBillingPhone(1234567890L);
 
-        assertPolingResponseCorrect(invoice.getId(), CartController.WAIT);
+        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.WAIT);
         controller.setBillingPhone("123-415-9999");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         String response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
-        assertPolingResponseCorrect(invoice.getId(), CartController.WAIT);
+        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.WAIT);
 
         String redirectUrl = controller.getRedirectUrl();
         String response2 = processMockResponse(invoice, redirectUrl, true);
@@ -214,7 +227,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        assertTrue(received.getSubject().contains(CartController.SUBJECT));
+        assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
     }
@@ -358,7 +371,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals(CartController.VALID_PHONE_NUMBER_IS_REQUIRED, msg);
+        assertEquals(MessageHelper.getMessage("cartController.valid_phone_number_is_required"), msg);
     }
 
     private CartController setupPaymentTests() throws TdarActionException {
@@ -368,7 +381,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(invoiceId);
         controller.prepare();
         String response = controller.addPaymentMethod();
-        assertEquals(CartController.SUCCESS, response);
+        assertEquals(Action.SUCCESS, response);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -399,7 +412,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         user.getAddresses().add(address);
         user.getAddresses().add(address2);
         genericService.saveOrUpdate(user);
-        genericService.synchronize();
+        evictCache();
         Long invoiceId = createAndTestInvoiceQuantity(controller, 10L, null);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
@@ -418,7 +431,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     private Long createAndTestInvoiceQuantity(CartController controller, Long numberOfFiles, String code) throws TdarActionException {
         controller.prepare();
         String result = controller.add();
-        assertEquals(TdarActionSupport.SUCCESS, result);
+        assertEquals(Action.SUCCESS, result);
         controller = generateNewInitializedController(CartController.class);
         controller.prepare();
         if (StringUtils.isNotBlank(code)) {
@@ -428,7 +441,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
 
-        assertEquals(CartController.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
         return controller.getInvoice().getId();
     }

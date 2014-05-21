@@ -1,8 +1,7 @@
 package org.tdar.core.bean.citation;
 
-import org.hibernate.annotations.Index;
-
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**
@@ -14,9 +13,8 @@ import javax.persistence.Table;
  * @version $Revision$
  */
 @Entity
-@Table(name = "related_comparative_collection")
-@org.hibernate.annotations.Table(appliesTo = "related_comparative_collection", indexes = {
-        @Index(name = "related_comparative_collection_resource_id_idx", columnNames = "resource_id")
+@Table(name = "related_comparative_collection", indexes = {
+        @Index(name = "related_comparative_collection_resource_id_idx", columnList = "resource_id")
 })
 public class RelatedComparativeCollection extends Citation {
 

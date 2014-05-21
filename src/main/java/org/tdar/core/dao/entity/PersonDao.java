@@ -14,7 +14,10 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
@@ -32,6 +35,8 @@ import org.tdar.core.dao.TdarNamedQueries;
 @Component
 public class PersonDao extends Dao.HibernateBase<Person> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public PersonDao() {
         super(Person.class);
     }
@@ -39,10 +44,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public List<Person> findAllRegisteredUsers(Integer num) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
-        if (num != null && num > 0) {
+        if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
         }
-        return (List<Person>) query.list();
+        return query.list();
     }
 
     /**
@@ -87,7 +92,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Person findAuthorityFromDuplicate(Person dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
                 return find(result.get(0).longValue());
@@ -168,6 +173,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
         logger.info("beginning updates - resource");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
+        logger.info("beginning updates - resource - inherited");
+        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED)).executeUpdate();
         logger.info("beginning updates - copyright");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
         logger.info("beginning updates - provider");
@@ -177,6 +184,13 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         logger.info("beginning updates - submitter");
         session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("completed updates");
+    }
+
+    public Long getCreatorViewCount(Creator creator) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
+        query.setParameter("id", creator.getId());
+        Number result = (Number) query.uniqueResult();
+        return result.longValue();
     }
 
 }

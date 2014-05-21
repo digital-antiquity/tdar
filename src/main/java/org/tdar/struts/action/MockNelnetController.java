@@ -16,7 +16,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -45,12 +46,12 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
     @Autowired
-    private NelNetPaymentDao nelnet;
+    private transient NelNetPaymentDao nelnet;
 
     @Override
     public void setParameters(Map<String, String[]> arg0) {
         this.params = arg0;
-        logger.info("{}", arg0);
+        getLogger().info("{}", arg0);
     }
 
     private String ccnum = "";
@@ -71,6 +72,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     }
 
     @Action("process-payment")
+    @Override
     public String execute() throws ClientProtocolException, IOException, TdarActionException {
 
         processFakeResponse(getCcType(getCcnum()));
@@ -81,17 +83,20 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     private void sendResponse() throws TdarActionException {
         String url = String.format("http://%s:%s/cart/process-external-payment-response", getHostName(), getHostPort());
         HttpPost postReq = new HttpPost(url);
-        logger.info(url);
+        getLogger().info(url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (!getResponseParams().containsKey(item.getKey()) || item == NelnetTransactionItemResponse.KEY)
+            if (!getResponseParams().containsKey(item.getKey()) || (item == NelnetTransactionItemResponse.KEY)) {
                 continue;
+            }
             pairs.add(new BasicNameValuePair(item.getKey(), responseParams.get(item.getKey())[0]));
         }
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
         try {
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-            HttpResponse httpresponse = httpclient.execute(postReq);
+            @SuppressWarnings({ "resource" })
+            HttpClientBuilder builder = HttpClientBuilder.create();
+            CloseableHttpClient httpClient = builder.build();
+            HttpResponse httpresponse = httpClient.execute(postReq);
             BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));
             boolean seen = false;
             for (String line : IOUtils.readLines(rd)) {
@@ -100,10 +105,10 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
                 }
             }
             if (seen == false) {
-                logger.warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
-                throw new TdarRecoverableRuntimeException("did not see 'success' in response");
+                getLogger().warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
+                throw new TdarRecoverableRuntimeException("mockNelnetController.did_not_see_success");
             }
-            logger.info("response: {} ", httpresponse);
+            getLogger().info("response: {} ", httpresponse);
         } catch (Exception e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
         }
@@ -143,7 +148,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_STATUS.getKey(), new String[] { responseCode });
         NelNetTransactionResponseTemplate resp = new NelNetTransactionResponseTemplate(nelnet.getSecretResponseWord());
         resp.setValues(responseParams);
-        logger.info(resp.generateHashKey());
+        getLogger().info(resp.generateHashKey());
         responseParams.put(NelnetTransactionItemResponse.HASH.getKey(), new String[] { resp.generateHashKey() });
 
     }
@@ -159,7 +164,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         } else if (cc.startsWith("6011")) {
             cctype = "DISCOVER";
         }
-        logger.info("cctype: {}", cctype);
+        getLogger().info("cctype: {}", cctype);
         return cctype;
     }
 

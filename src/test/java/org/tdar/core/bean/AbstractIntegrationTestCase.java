@@ -15,7 +15,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +33,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
+import org.hibernate.Cache;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -81,6 +86,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -103,6 +109,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -110,7 +117,15 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.LocaleProvider;
+import com.opensymphony.xwork2.TextProviderFactory;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
+import com.opensymphony.xwork2.util.LocalizedTextUtil;
+import com.opensymphony.xwork2.util.ValueStack;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
@@ -160,6 +175,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private XmlService xmlService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
+    @Autowired
+    AuthorizedUserDao authorizedUserDao;
 
     @Autowired
     protected EmailService emailService;
@@ -184,11 +201,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     };
 
     @Before
-    public final void announceTestStarting() {
+    public void announceTestStarting() {
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
 
         emailService.setMailSender(mockMailSender);
+        String base = "src/test/resources/xml/schemaCache";
+        schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
+        schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
 
         getControllers().clear();
         setIgnoreActionErrors(false);
@@ -199,13 +221,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     @After
-    public final void announceTestOver() {
+    public void announceTestOver() {
 
         int errorCount = 0;
         List<String> errors = new ArrayList<>();
         if (!isIgnoreActionErrors()) {
             for (ActionSupport controller : getControllers()) {
-                if (controller != null && !controller.getActionErrors().isEmpty()) {
+                if ((controller != null) && !controller.getActionErrors().isEmpty()) {
                     logger.error("action errors {}", controller.getActionErrors());
                     errorCount += controller.getActionErrors().size();
                     errors.addAll(controller.getActionErrors());
@@ -216,7 +238,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         if (errorCount > 0) {
-            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount,StringUtils.join(errors.toArray(new String[0]))));
+            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount, StringUtils.join(errors.toArray(new String[0]))));
         }
     }
 
@@ -276,12 +298,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         irFile.getInformationResourceFileVersions().add(version);
         genericService.save(irFile);
         genericService.save(version);
-        filestore.store(f, version);
+        filestore.store(ObjectType.RESOURCE, f, version);
         return version;
     }
 
-    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
+        assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
+        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
+        ir = (Document) addFileToResource(ir, file);
+        return ir;
+    }
+
+    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
+        Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
@@ -311,7 +342,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
-            genericService.synchronize();
+            evictCache();
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -435,11 +466,37 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <T> T generateNewController(Class<T> controllerClass) {
-        T controller = (T) applicationContext.getBean(controllerClass);
+        authorizedUserDao.clearUserPermissionsCache();
+        // evictCache();
+
+        T controller = applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
-            ((TdarActionSupport) controller).setServletRequest(getServletRequest());
-            ((TdarActionSupport) controller).setServletResponse(getServletResponse());
+            TdarActionSupport tas = (TdarActionSupport) controller;
+            tas.setServletRequest(getServletRequest());
+            tas.setServletResponse(getServletResponse());
+            // set the context
         }
+        Map<String, Object> contextMap = new HashMap<String, Object>();
+        contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
+        ActionContext context = new ActionContext(contextMap);
+        context.setLocale(Locale.getDefault());
+        // http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        OgnlValueStackFactory factory = new OgnlValueStackFactory();
+
+        // FIXME: needs to be a better way to handle this
+        TextProviderFactory textProviderFactory = new TextProviderFactory();
+        String bundle = "Locales/tdar-messages";
+
+        LocalizedTextUtil.addDefaultResourceBundle(bundle);
+        factory.setTextProvider(textProviderFactory.createInstance(ResourceBundle.getBundle(bundle), (LocaleProvider) controller));
+
+        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+        configurationManager.getConfiguration().getContainer().inject(factory);
+        ValueStack stack = factory.createValueStack();
+
+        context.setValueStack(stack);
+        ActionContext.setContext(context);
         return controller;
     }
 
@@ -447,7 +504,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller != null) {
             controller.setSessionData(getSessionData());
 
-            if (user != null && Persistable.Base.isTransient(user)) {
+            if ((user != null) && Persistable.Base.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 Person user_ = genericService.find(Person.class, user.getId());
@@ -474,7 +531,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 init((TdarActionSupport) controller);
             }
         }
-        getControllers().add((ActionSupport) controller);
+        getControllers().add(controller);
         return controller;
     }
 
@@ -511,8 +568,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConfiguration.getInstance().getUserId();
     }
 
+    protected final Long getBillingAdminUserId() {
+        return TestConfiguration.getInstance().getBillingAdminUserId();
+    }
+
     protected Person getBasicUser() {
         return getUser(getBasicUserId());
+    }
+
+    protected Person getEditorUser() {
+        return getUser(getEditorUserId());
+    }
+
+    protected Person getBillingUser() {
+        return getUser(getBillingAdminUserId());
     }
 
     protected Person getAdminUser() {
@@ -520,23 +589,44 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected Person getUser(Long id) {
-        Person p = genericService.find(Person.class,id);
+        Person p = genericService.find(Person.class, id);
         if (Persistable.Base.isNullOrTransient(p)) {
             fail("failed to load user:" + id);
         }
         genericService.refresh(p);
         Assert.assertNotNull(p.getEmail());
-//        genericService.markWritableOnExistingSession(p);
-//        logger.info("({}) {}",p.getEmail(),p);
+        // genericService.markWritableOnExistingSession(p);
+        // logger.info("({}) {}",p.getEmail(),p);
         return p;
     }
 
     protected void flush() {
-        sessionFactory.getCurrentSession().flush();
+        Session session = sessionFactory.getCurrentSession();
+        if (session != null) {
+            session.flush();
+            session.clear();
+        }
+
+        evictCache();
+
+        // searchIndexService.flushToIndexes();
+        Cache cache = sessionFactory.getCache();
+        if (cache != null) {
+            cache.evictAllRegions();
+        }
+
+    }
+
+    public void evictCache() {
+        genericService.synchronize();
     }
 
     protected Long getAdminUserId() {
         return TestConfiguration.getInstance().getAdminUserId();
+    }
+
+    protected Long getEditorUserId() {
+        return TestConfiguration.getInstance().getEditorUserId();
     }
 
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
@@ -570,10 +660,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
             internalResourceCollection.setOwner(person);
             resource.getResourceCollections().add(internalResourceCollection);
+            genericService.save(internalResourceCollection);
         }
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);
+        logger.debug("{}", internalResourceCollection);
         genericService.saveOrUpdate(internalResourceCollection);
-        entityService.saveOrUpdate(resource);
+        genericService.saveOrUpdate(authorizedUser);
+        genericService.saveOrUpdate(resource);
     }
 
     /**
@@ -693,6 +786,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         File schema = null;
         if (schemaMap.containsKey(url)) {
             schema = schemaMap.get(url);
+            logger.debug("using cache of: {}", url);
         } else {
             logger.debug("attempting to add schema to validation list: " + url);
             try {
@@ -714,12 +808,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
 
         if (schema != null) {
-            // try {
-            // // testValidXMLSchemaResponse(schema);
-            // } catch (Exception e) {
-            // logger.debug("schema setup exception ", e);
-            // assertTrue(false);
-            // }
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
                 logger.error("*=> schema error: {0} ", err.toString());
@@ -803,7 +891,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
         Assert.assertNotNull(tv);
         if (reason != null) {
-            Assert.assertEquals(reason, tv.getMessage());
+            Assert.assertEquals(reason, tv.getLocalizedMessage());
         }
     }
 

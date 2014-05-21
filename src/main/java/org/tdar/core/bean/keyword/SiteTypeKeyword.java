@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -14,22 +15,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * $Id$
- * 
+ * Describes the type of site in the resource
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
 
 @Entity
-@Table(name = "site_type_keyword")
-@org.hibernate.annotations.Table( appliesTo="site_type_keyword", indexes = {
-        @Index(name="sitetype_appr", columnNames={"approved", "id"})})
+@Table(name = "site_type_keyword", indexes = {
+        @Index(name = "sitetype_appr", columnList = "approved, id") })
 @Indexed(index = "Keyword")
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
@@ -41,6 +39,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     private SiteTypeKeyword parent;
 
     @XmlAttribute
+    @Override
     public boolean isApproved() {
         return approved;
     }
@@ -51,10 +50,12 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @XmlElement(name = "parentRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public SiteTypeKeyword getParent() {
         return parent;
     }
 
+    @Override
     public void setParent(SiteTypeKeyword parent) {
         this.parent = parent;
     }
@@ -63,6 +64,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     @JoinColumn(name = "merge_keyword_id")
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
 
+    @Override
     public Set<SiteTypeKeyword> getSynonyms() {
         return synonyms;
     }

@@ -41,8 +41,9 @@ public class ResourceTest {
     public void testResourceCreatorRoles() {
         for (ResourceType type : ResourceType.values()) {
             boolean ok = false;
-            if (type.isProject())
+            if (type.isProject()) {
                 continue;
+            }
             if (!CollectionUtils.isEmpty(ResourceCreatorRole.getAuthorshipRoles(CreatorType.PERSON, type)) ||
                     !CollectionUtils.isEmpty(ResourceCreatorRole.getAuthorshipRoles(CreatorType.INSTITUTION, type))) {
                 ok = true;
@@ -59,8 +60,9 @@ public class ResourceTest {
     public void testResourceCopyrightHolderRoles() {
         for (ResourceType type : ResourceType.values()) {
             boolean ok = false;
-            if (type.isProject())
+            if (type.isProject()) {
                 continue;
+            }
             if (ResourceCreatorRole.COPYRIGHT_HOLDER.isRelevantFor(type)) {
                 ok = true;
             }

@@ -27,7 +27,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 public class NelNetTransactionResponseTemplate implements Serializable, TransactionResponse {
 
     private static final long serialVersionUID = -5575891484534148580L;
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
     private String secret = "";
@@ -127,15 +127,17 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         }
     }
 
+    @Override
     public String getTransactionId() {
         return this.getValuesFor(NelnetTransactionItemResponse.TRANSACTION_ID);
     }
 
+    @Override
     public boolean validate() {
         String hashkey = generateHashKey();
         String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
         if (!actual.equals(hashkey)) {
-            throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
+            throw new TdarRecoverableRuntimeException("nelNetTransactionResponseTemplate.hash_keys_do_not_match", Arrays.asList(actual, hashkey));
         }
         return true;
     }
@@ -151,8 +153,9 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (item == NelnetTransactionItemResponse.HASH || item == NelnetTransactionItemResponse.KEY)
+            if ((item == NelnetTransactionItemResponse.HASH) || (item == NelnetTransactionItemResponse.KEY)) {
                 continue;
+            }
             String value = getValuesFor(item);
             if (getValues().containsKey(item.getKey()) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
@@ -164,6 +167,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         return hashkey;
     }
 
+    @Override
     public void updateInvoiceFromResponse(Invoice invoice) {
         populateInvoiceFromResponse(invoice);
     }
@@ -311,6 +315,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         this.values = values;
     }
 
+    @Override
     public String getValuesFor(String key) {
         if (!values.containsKey(key)) {
             return null;
@@ -325,6 +330,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         return StringUtils.join(values.get(key.getKey()));
     }
 
+    @Override
     public Address getAddress() {
         Address toReturn = new Address();
         toReturn.setType(AddressType.BILLING);

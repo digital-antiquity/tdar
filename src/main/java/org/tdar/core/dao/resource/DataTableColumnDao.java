@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -29,7 +30,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     }
 
     public List<CodingRule> findMappedCodingRules(DataTableColumn column, List<String> valuesToMatch) {
-        if (column == null || CollectionUtils.isEmpty(valuesToMatch)) {
+        if ((column == null) || CollectionUtils.isEmpty(valuesToMatch)) {
             getLogger().debug("No mapped coding rules available for column {} and values {}", column, valuesToMatch);
             return Collections.emptyList();
         }
@@ -37,8 +38,10 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
     }
 
     @SuppressWarnings("unchecked")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH",
+            justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     public List<CodingRule> findMappedCodingRules(CodingSheet sheet, List<String> valuesToMatch) {
-        if (sheet == null || CollectionUtils.isEmpty(valuesToMatch)) {
+        if (Persistable.Base.isNullOrTransient(sheet) || CollectionUtils.isEmpty(valuesToMatch)) {
             getLogger().debug("no mapped coding rules available for sheet {} and values {}", sheet, valuesToMatch);
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_MAPPED_CODING_RULES);

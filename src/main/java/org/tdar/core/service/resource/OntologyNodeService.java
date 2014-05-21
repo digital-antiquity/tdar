@@ -44,15 +44,33 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
         return hierarchyMap;
     }
 
+    /**
+     * Find all child nodes of the specified @link OntologyNode entries.
+     * 
+     * @param selectedOntologyNodes
+     * @return
+     */
     // FIXME: may want to aggregate / batch for efficiency
     public Set<OntologyNode> getAllChildren(List<OntologyNode> selectedOntologyNodes) {
         return getDao().getAllChildren(selectedOntologyNodes);
     }
 
+    /**
+     * Find all @link Dataset Resources that are mapped to the specified @link OntologyNode
+     * 
+     * @param node
+     * @return
+     */
     public List<Dataset> listDatasetsWithMappingsToNode(OntologyNode node) {
         return getDao().findDatasetsUsingNode(node);
     }
 
+    /**
+     * Find the parent @link OntologyNode of the specified node
+     * 
+     * @param node
+     * @return
+     */
     public OntologyNode getParent(OntologyNode node) {
         return getDao().getParentNode(node);
     }

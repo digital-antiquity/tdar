@@ -41,7 +41,7 @@ public class PersonalFilestoreTicket extends Persistable.Base {
     @JoinColumn(nullable = false, name = "submitter_id")
     private Person submitter;
 
-    @Column(length = 500)
+    @Column(length = FieldLength.FIELD_LENGTH_500)
     private String description;
 
     public Person getSubmitter() {

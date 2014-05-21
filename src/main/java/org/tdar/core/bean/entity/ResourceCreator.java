@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -15,19 +16,21 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -39,17 +42,19 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  * @version $Rev$
  */
 @Entity
-@Table(name = "resource_creator")
-@org.hibernate.annotations.Table( appliesTo ="resource_creator", indexes = {
-        @Index(name="creator_sequence", columnNames={"resource_id", "sequence_number", "creator_id"}),
-        @Index(name = "creatorid", columnNames = {"creator_id"}),
-        @Index(name = "rescreator_resid", columnNames = {"resource_id"})
+@Table(name = "resource_creator", indexes = {
+        @Index(name = "creator_sequence", columnList = "resource_id, sequence_number, creator_id"),
+        @Index(name = "creatorid", columnList = "creator_id"),
+        @Index(name = "rescreator_resid", columnList = "resource_id")
 })
-public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
+public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
@@ -59,9 +64,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
-    @Column(length = 255)
+    @Column(length = FieldLength.FIELD_LENGTH_255)
     private ResourceCreatorRole role;
-
 
     private transient Boolean obfuscatedObjectDifferent = false;
 
@@ -111,8 +115,9 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
      * 
      * @see org.tdar.core.bean.Validatable#isValid()
      */
+    @Override
     public boolean isValid() {
-        if (role == null || creator == null) {
+        if ((role == null) || (creator == null)) {
             logger.trace(String.format("role:%s creator:%s ", role, creator));
             return false;
         }
@@ -133,6 +138,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         return false;
     }
 
+    @Override
     public boolean isValidForController() {
         return true;
     }
@@ -145,14 +151,14 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Transient
     public static final String getCreatorRoleIdentifier(Creator creatorToFormat, ResourceCreatorRole creatorRole) {
         String toReturn = "";
-        if (creatorToFormat != null && creatorToFormat.getCreatorType() != null) {
+        if ((creatorToFormat != null) && (creatorToFormat.getCreatorType() != null)) {
             String code = creatorToFormat.getCreatorType().getCode();
             String role = "";
             if (creatorRole != null) {
                 role = creatorRole.name();
             }
             if (isNullOrTransient(creatorToFormat)) {
-                throw new TdarRecoverableRuntimeException("creator id should never be -1 in search query");
+                throw new TdarRecoverableRuntimeException("resourceCreator.undefined_creator_id");
             }
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();
         }
@@ -160,6 +166,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Override
+    @XmlTransient
+    @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -178,6 +186,8 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Override
+    @XmlTransient
+    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }

@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -26,7 +28,7 @@ import org.tdar.core.bean.resource.ResourceType;
 
 // FIXME: the logic of these roles, when they are relevant, when they should be accepted for input, and when they should be included for citation, is almost
 // totally inscrutable
-public enum ResourceCreatorRole implements HasLabel {
+public enum ResourceCreatorRole implements HasLabel, Localizable {
     CONTACT("Contact", ResourceCreatorRoleType.CREDIT),
     AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT),
     CONTRIBUTOR("Contributor", ResourceCreatorRoleType.CREDIT),
@@ -118,8 +120,13 @@ public enum ResourceCreatorRole implements HasLabel {
         return label;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
     public boolean isRelevantFor(CreatorType creatorType) {
-        return (relevantCreatorType == null || creatorType == null || relevantCreatorType == creatorType);
+        return ((relevantCreatorType == null) || (creatorType == null) || (relevantCreatorType == creatorType));
     }
 
     public boolean isRelevantFor(ResourceType resourceType) {
@@ -212,4 +219,25 @@ public enum ResourceCreatorRole implements HasLabel {
         this.type = type;
     }
 
+    public String getSchemaOrgLabel() {
+        switch (this) {
+            case COPYRIGHT_HOLDER:
+                return "copyrightHolder";
+            default:
+                return this.name().toLowerCase();
+        }
+    }
+
+    public boolean isPartOfSchemaOrg() {
+        switch (this) {
+            case AUTHOR:
+            case EDITOR:
+            case CREATOR:
+            case COPYRIGHT_HOLDER:
+            case PUBLISHER:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

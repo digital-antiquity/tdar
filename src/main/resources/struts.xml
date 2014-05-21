@@ -5,9 +5,11 @@
     <include file="struts-local-settings.xml"/>
     <!-- performance enhancements -->
     <!-- freemarker cache -->
-    <!-- <constant name='struts.freemarker.templatesCache' value='true'/> -->
     <constant name="struts.freemarker.mru.max.strong.size" value="250"/>
-    <constant name="struts.freemarker.templatesCache.updateDelay" value="60000"/>
+    <!-- 
+    	set this in struts-local-settings.xml 
+	    <constant name="struts.freemarker.templatesCache.updateDelay" value="5000000"/>
+     -->
     <!-- javatemplates plugin, possible optimization for freemarker tags using
           the simple theme. it may only work if you're using basic JSP struts tags
           though, needs testing. -->
@@ -15,10 +17,8 @@
     <constant name="struts.ui.theme" value="bootstrap"/>
     <constant name="struts.url.includeParams" value="none"/>
     <constant name="struts.action.excludePattern" value="/services/.*"/>
-    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages" />
-    <!-- set it to 50 MB to start with, using the ISI standard for megabyte,
-          i.e., 1,000,000 bytes -->
-    <constant name="struts.multipart.maxSize" value="5368709120"/>
+    <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages,/Locales/tdar-messages" />
+
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
@@ -55,7 +55,13 @@
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
-                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="fileUpload">
+	<!--
+	 ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
+		AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
+		<param name="maximumSize">8589934592</param> 
+		-->
+                </interceptor-ref>
                 <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="actionMappingParams"/>
                 <interceptor-ref name="params">
@@ -94,10 +100,22 @@
                 <param name="status">500</param>
                 <param name="location">/WEB-INF/content/errors/exception.ftl</param>
             </result>
-            <result name="unauthorized" type="freemarker">/WEB-INF/content/errors/unauthorized.ftl</result>
-            <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
-            <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
-            <result name="invalid.token" type="freemarker">/WEB-INF/content/errors/double-submit.ftl</result>
+            <result name="not_found" type="freemarkerhttp">
+                <param name="status">404</param>
+                <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
+            </result>
+            <result name="gone" type="freemarkerhttp">
+                <param name="status">410</param>
+                <param name="location">/WEB-INF/content/errors/resource-deleted.ftl</param>
+            </result>
+            <!--  NOTE: we should be doing ONLY redirects here because if something went wrong , the values are likely not on the stack; 
+            		thus a redirect clears the stack (values match IndexAction)-->
+			<result name="unauthorized" type="redirect">
+				<param name="location">/unauthorized</param>
+			</result>
+			<result name="invalid.token" type="redirect">
+				<param name="location">/invalid-token</param>
+			</result>
             <result name="user_agreement" type="redirect">/show-notices</result>
             <result name="login" type="redirect">/login</result>
         </global-results>

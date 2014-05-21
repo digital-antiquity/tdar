@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -34,9 +35,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.Pair;
 
@@ -56,7 +58,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
 
-    public enum PostSaveColumnMapActions implements HasLabel {
+    public enum PostSaveColumnMapActions implements HasLabel, Localizable {
         SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
         SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
 
@@ -68,8 +70,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             this.setOntologyLabel(ontologyLabel);
         }
 
+        @Override
         public String getLabel() {
             return label;
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
 
         public void setLabel(String label) {
@@ -87,7 +95,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         public String getResultName(boolean gotoView, Dataset resource) {
             Logger logger = LoggerFactory.getLogger(getClass());
             logger.info(" {} {} ", resource.getTotalNumberOfActiveFiles(), resource.getDataTables());
-            if (resource.getTotalNumberOfActiveFiles() < 1 || CollectionUtils.isEmpty(resource.getDataTables())) {
+            if ((resource.getTotalNumberOfActiveFiles() < 1) || CollectionUtils.isEmpty(resource.getDataTables())) {
                 return AbstractDatasetController.SAVE_VIEW;
             }
             return name();
@@ -157,7 +165,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {
-            if (persistable.getTotalNumberOfActiveFiles() > 0 && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
+            if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
                 setSaveSuccessPath("columns");
             }
         }
@@ -169,20 +177,15 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         if (getDataResource().getLatestVersions().isEmpty()) {
-            addActionError("You should upload a data file before attempting to register column metadata.");
+            addActionError(getText("abstractDatasetController.upload_data_file_first"));
             return INPUT;
         }
 
         if (CollectionUtils.isEmpty(getDataResource().getDataTables())) {
-            addActionError("No data tables were found for this resource.");
+            addActionError(getText("abstractDatasetController.no_tables"));
             return INPUT;
         }
-        // load existing column metadata if any.
-        DataTable currentDataTable = getDataTable();
-        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
-        // FIXME: replace with Pagination helper
-
-        setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
+        List<DataTableColumn> columns = initializePaginationHelper();
 
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(paginationHelper.getFirstItem(), paginationHelper.getLastItem() + 1);
@@ -225,17 +228,26 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public String saveColumnMetadata() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
+        initializePaginationHelper();
+
         try {
-            updateResults = getDatasetService().updateColumnMetadata(getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            updateResults = getDatasetService().updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
-            logger.error(tde.getMessage(), tde);
+            getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        getResourceService().saveRecordToFilestore(getDataResource());
+        getXmlService().logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
+    }
+
+    private List<DataTableColumn> initializePaginationHelper() {
+        DataTable currentDataTable = getDataTable();
+        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
+        setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
+        return columns;
     }
 
     private List<DataTableColumn> columnsToRemap;
@@ -342,7 +354,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
      * @return
      */
     public DataTable getDataTable() {
-        logger.trace(dataTable + " dtID:" + dataTableId);
+        getLogger().trace(dataTable + " dtID:" + dataTableId);
         if (dataTable == null) {
             if (dataTableId != null) {
                 this.dataTable = getDataTableService().find(dataTableId);
@@ -358,7 +370,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setDataTableId(Long dataTableId) {
         if (Persistable.Base.isNullOrTransient(dataTableId)) {
-            logger.error("Trying to set data table id to null or -1: " + dataTableId);
+            getLogger().error("Trying to set data table id to null or -1: " + dataTableId);
             return;
         }
         this.dataTableId = dataTableId;
@@ -384,11 +396,11 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setColumnId(Long columnId) {
         if (Persistable.Base.isNullOrTransient(columnId)) {
-            logger.warn("Trying to set data table column id to null or -1: " + columnId);
+            getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }
         this.dataTableColumn = getDataTableService().findDataTableColumn(columnId);
-        if (dataTableColumn != null && getResource() == null) {
+        if ((dataTableColumn != null) && (getResource() == null)) {
             setId(dataTableColumn.getDataTable().getDataset().getId());
         }
     }
@@ -439,7 +451,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             String status = getOntologyService().isOntologyMapped(column) ? "" : "unmapped";
             ontologyMappedColumnStatus.add(status);
         }
-        logger.trace("{}", ontologyMappedColumnStatus);
+        getLogger().trace("{}", ontologyMappedColumnStatus);
         return ontologyMappedColumnStatus;
     }
 
@@ -492,7 +504,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
+        return getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
     }
 
     /**

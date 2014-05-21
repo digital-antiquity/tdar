@@ -30,15 +30,17 @@ import org.w3c.dom.svg.SVGSVGElement;
 public class SVG_Reader extends ImagePlus implements PlugIn {
 
     /** Expects path as argument, or will ask for it and then open the image. */
+    @Override
     public void run(final String arg) {
         File file = null;
-        if (arg != null && arg.length() > 0)
+        if ((arg != null) && (arg.length() > 0)) {
             file = new File(arg);
-        else {
+        } else {
             OpenDialog od = new OpenDialog("Choose .svg file", null);
             String directory = od.getDirectory();
-            if (null == directory)
+            if (null == directory) {
                 return;
+            }
             file = new File(directory + "/" + od.getFileName());
         }
 
@@ -58,7 +60,7 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
         }
         GVTBuilder builder = new GVTBuilder();
         renderer.setTree(builder.build(context, document));
-        SVGSVGElement root = ((SVGDocument) document).getRootElement();
+        SVGSVGElement root = document.getRootElement();
         float svgX = root.getX().getBaseVal().getValue();
         float svgY = root.getY().getBaseVal().getValue();
         float svgWidth = root.getWidth().getBaseVal().getValue();
@@ -68,8 +70,9 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
         gd.addNumericField("width", svgWidth, 0);
         gd.addNumericField("height", svgHeight, 0);
         gd.showDialog();
-        if (gd.wasCanceled())
+        if (gd.wasCanceled()) {
             return;
+        }
 
         int w = (int) gd.getNextNumber();
         int h = (int) gd.getNextNumber();
@@ -85,7 +88,8 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
         setTitle(file.getName());
         setImage(renderer.getOffScreen());
 
-        if (arg.equals(""))
+        if (arg.equals("")) {
             show();
+        }
     }
 }

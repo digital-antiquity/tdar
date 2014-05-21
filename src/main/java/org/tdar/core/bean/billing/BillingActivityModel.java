@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 
 @Entity
 @Table(name = "pos_billing_model")
@@ -43,7 +44,7 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
 
     private Boolean active = false;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String description;
 
     @Column(name = "date_created")

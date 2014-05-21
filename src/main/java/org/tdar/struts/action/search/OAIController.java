@@ -16,7 +16,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -34,14 +33,15 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
+import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -86,13 +86,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     ObfuscationService obfuscationService;
 
     // results
-    private static final String SUCCESS_IDENTIFY = "success-identify";
-    private static final String SUCCESS_LIST_IDENTIFIERS = "success-list-identifiers";
-    private static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
-    private static final String SUCCESS_GET_RECORD = "success-get-record";
-    private static final String SUCCESS_LIST_RECORDS = "success-list-records";
+    public static final String SUCCESS_IDENTIFY = "success-identify";
+    public static final String SUCCESS_LIST_IDENTIFIERS = "success-list-identifiers";
+    public static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
+    public static final String SUCCESS_GET_RECORD = "success-get-record";
+    public static final String SUCCESS_LIST_RECORDS = "success-list-records";
     @SuppressWarnings("unused")
-    private static final String SUCCESS_LIST_SETS = "success-list-sets";
+    public static final String SUCCESS_LIST_SETS = "success-list-sets";
 
     // OAI-PMH URL parameters
     private String verb;
@@ -167,12 +167,12 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
             // Sets are currently not supported
             if (set != null) {
-                throw new OAIException("Sets are not supported", OaiErrorCode.NO_SET_HIERARCHY);
+                throw new OAIException(getText("oaiController.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
             }
 
             if (verbToHandle == null) {
-                logger.warn("NO VERB PROVIDED");
-                throw new OAIException("no verb or bad verb provided", OaiErrorCode.BAD_VERB);
+                getLogger().warn("NO VERB PROVIDED");
+                throw new OAIException(getText("oaiController.bad_verb"), OaiErrorCode.BAD_VERB);
             } else {
                 switch (verbToHandle) {
                     case IDENTIFY:
@@ -198,7 +198,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 setErrorCode(OaiErrorCode.BAD_ARGUMENT);
             }
             errorCode.setMessage(e.getMessage());
-            logger.debug(e.getMessage(), e);
+            if (e instanceof SearchPaginationException) {
+                getLogger().trace(e.getMessage(), e);
+            } else {
+                getLogger().debug(e.getMessage(), e);
+            }
         }
         return ERROR;
     }
@@ -215,7 +219,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private String identifyVerb() throws OAIException {
-        String message = "Not allowed with identify verb";
+        String message = getText("oaiController.not_allowed_with_identity");
         assertParameterIsNull(metadataPrefix, "metadataPrefix", message);
         assertParameterIsNull(identifier, "identifier", message);
         assertParameterIsNull(set, "set", message);
@@ -227,7 +231,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
         if (parameter != null) {
-            throw new OAIException("Bad argument: '" + parameterName + "'. " + message, OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.bad_arguement", parameterName, message), OaiErrorCode.BAD_ARGUMENT);
         }
     }
 
@@ -245,8 +249,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // Check parameters
 
         // The only valid parameters for ListRecords are verb, from, until, set, resumptionToken, and metadataPrefix: identifier is always invalid
-        assertParameterIsNull(identifier, "identifier", "Not allowed with ListRecords or ListIdentifiers verb");
-
+        assertParameterIsNull(identifier, "identifier", getText("oaiController.not_allowed_with_list"));
         // the resumptionToken parameter is exclusive - if present, then no other parameters may be present apart from verb
         if (resumptionToken != null) {
             String message = "Not allowed with resumptionToken";
@@ -314,14 +317,14 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // if any of the queries returned more than a page of search results, create a resumptionToken to allow
         // the client to continue harvesting from that point
         int recordsPerPage = getRecordsPerPage();
-        if (totalResources > recordsPerPage || totalPersons > recordsPerPage || totalInstitutions > recordsPerPage) {
+        if ((totalResources > recordsPerPage) || (totalPersons > recordsPerPage) || (totalInstitutions > recordsPerPage)) {
             // ... then this is a partial response, and should be terminated with a ResumptionToken
             // which may be empty if this is the last page of results
             newResumptionToken = new OAIResumptionToken();
             // advance the cursor by one page
             cursor = getNextPageStartRecord();
             // check if there would be any resources, persons or institutions in that hypothetical next page
-            if (totalResources > cursor || totalPersons > cursor || totalInstitutions > cursor) {
+            if ((totalResources > cursor) || (totalPersons > cursor) || (totalInstitutions > cursor)) {
                 // ... populate the resumptionToken so the harvester can continue harvesting from the next page
                 newResumptionToken.setCursor(cursor);
                 newResumptionToken.setFromDate(effectiveFrom);
@@ -331,8 +334,8 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         }
 
         // if there were no records found, then throw an exception
-        if (totalResources + totalPersons + totalInstitutions == 0) {
-            throw new OAIException("No records match", OaiErrorCode.NO_RECORDS_MATCH);
+        if ((totalResources + totalPersons + totalInstitutions) == 0) {
+            throw new OAIException(getText("oaiController.no_matches"), OaiErrorCode.NO_RECORDS_MATCH);
         }
 
     }
@@ -346,33 +349,39 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
         int total = 0;
         try {
+            switchProjectionModel(queryBuilder);
             super.handleSearch(queryBuilder);
             total = getTotalRecords();
             List<Long> ids = new ArrayList<>();
             for (Indexable i : getResults()) {
-                if (i instanceof Viewable && !((Viewable) i).isViewable())
+                if ((i instanceof Viewable) && !((Viewable) i).isViewable()) {
                     continue;
+                }
                 OaiDcProvider resource = (OaiDcProvider) i;
                 ids.add(resource.getId());
                 // create OAI metadata for the record
-                OAIRecordProxy proxy = new OAIRecordProxy(
-                        repositoryNamespaceIdentifier,
-                        recordType,
-                        resource.getId(),
-                        resource.getDateUpdated()
-                        );
+                OAIRecordProxy proxy = new OAIRecordProxy(repositoryNamespaceIdentifier, recordType, resource.getId(), resource.getDateUpdated());
                 if (includeRecords) {
                     proxy.setMetadata(createNodeModel(resource, metadataFormat));
                 }
                 records.add(proxy);
             }
-            logger.info("ALL IDS: {}", ids);
+            getLogger().info("ALL IDS: {}", ids);
+        } catch (SearchPaginationException spe) {
+            getLogger().debug("an pagination exception happened .. {} ", spe.getMessage());
         } catch (TdarRecoverableRuntimeException e) {
             // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
             // means that the others will throw this error.
-            logger.debug("an exception happened .. {} ", e);
+            getLogger().debug("an exception happened .. {} ", e);
         }
         return total;
+    }
+
+    private void switchProjectionModel(QueryBuilder queryBuilder) {
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        if (queryBuilder instanceof ResourceQueryBuilder) {
+            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+        }
     }
 
     private Document createDocument() throws ParserConfigurationException {
@@ -395,7 +404,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // from the Hibernate session, which will prevent loading lazily-initialized properties.
         // xmlService.convertToXML((Persistable) object);
         if (object instanceof Obfuscatable) {
-            obfuscationService.obfuscate((Obfuscatable) object,getAuthenticatedUser());
+            obfuscationService.obfuscate((Obfuscatable) object, getAuthenticatedUser());
         }
 
         // if the desired metadata format is "tdar", then simply marshal the Person
@@ -411,16 +420,16 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 } else {
                     jaxbDocument = DcTransformer.transformAny((Resource) object);
                     JaxbDocumentWriter.write(jaxbDocument, document, true);
-                    logger.trace("case:document: {} ", jaxbDocument);
+                    getLogger().trace("case:document: {} ", jaxbDocument);
                 }
                 break;
             case MODS:
                 if (object instanceof Creator) {
-                    throw new OAIException("Cannot disseminate format", OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
+                    throw new OAIException(getText("oaiController.cannot_disseminate"), OaiErrorCode.CANNOT_DISSEMINATE_FORMAT);
                 }
                 jaxbDocument = ModsTransformer.transformAny((Resource) object);
                 JaxbDocumentWriter.write(jaxbDocument, document, true);
-                logger.trace("case:document: {} ", jaxbDocument);
+                getLogger().trace("case:document: {} ", jaxbDocument);
                 break;
         }
 
@@ -491,30 +500,29 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private String listSetsVerb() throws OAIException {
-        throw new OAIException(
-                "This repository does not support sets",
-                OaiErrorCode.NO_SET_HIERARCHY);
+        throw new OAIException(getText("oaiController.sets_not_supported"), OaiErrorCode.NO_SET_HIERARCHY);
         // return SUCCESS_LIST_SETS;
     }
 
     private String getRecordVerb() throws JAXBException, OAIException, ParserConfigurationException {
         // validate parameters
-        String message = "Not allowed with GetRecord verb";
+        String message = getText("oaiController.not_allowed_with_get");
+
         assertParameterIsNull(resumptionToken, "resumptionToken", message);
         assertParameterIsNull(from, "from", message);
         assertParameterIsNull(until, "until", message);
 
         if (identifier == null) {
-            throw new OAIException("Missing identifier parameter", OaiErrorCode.BAD_ARGUMENT);
+            throw new OAIException(getText("oaiController.missing_identifer"), OaiErrorCode.BAD_ARGUMENT);
         }
 
         // check the requested metadata format
         OAIMetadataFormat requestedFormat = getMetadataPrefixEnum();
 
-        if (requestedFormat == null)
-            throw new OAIException(
-                    "Invalid or missing metadataPrefix parameter",
+        if (requestedFormat == null) {
+            throw new OAIException(getText("oaiController.invalid_metadata_param"),
                     OaiErrorCode.BAD_ARGUMENT);
+        }
 
         // check that this kind of record can be disseminated in the requested format
         getIdentifiedRecordType().checkCanDisseminateFormat(requestedFormat);
@@ -581,7 +589,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             // First token must = "oai"
             // Second token must = the repository namespace identifier
             if (!token[0].equals("oai") || !token[1].equals(repositoryNamespaceIdentifier)) {
-                throw new OAIException("Identifier does not belong to this repository'", OaiErrorCode.ID_DOES_NOT_EXIST);
+                throw new OAIException(getText("oaiController.identifier_not_part"), OaiErrorCode.ID_DOES_NOT_EXIST);
             }
             // the third token is the type of the record, i.e. "Resource", "Person" or "Institution"
             setIdentifierType(token[2]);
@@ -600,10 +608,11 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                     break;
             }
             setOaiObject((OaiDcProvider) getGenericService().find(oaiObjectClass, getIdentifierRecordNumber()));
-            if (getOaiObject() == null)
+            if (getOaiObject() == null) {
                 throw new OAIException(
-                        String.format("No %s with that identifier exists", oaiObjectClass.getSimpleName()),
+                        getText("oaiController.no_identifier", oaiObjectClass.getSimpleName()),
                         OaiErrorCode.ID_DOES_NOT_EXIST);
+            }
 
         } catch (OAIException e) {
             // save this exception to throw later when the main oai() method is called
@@ -787,7 +796,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     @Override
     public boolean acceptableParameterName(String parameterName) {
         // Called by Struts framework to ask if the parameter name is acceptable
-        logger.trace("OAI parameter:" + parameterName);
+        getLogger().trace("OAI parameter:" + parameterName);
         try {
             OAIParameter.fromString(parameterName);
             return true;
@@ -834,15 +843,9 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         this.description = description;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return ListUtils.EMPTY_LIST;
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 }

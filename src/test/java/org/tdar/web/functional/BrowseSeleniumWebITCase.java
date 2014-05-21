@@ -4,15 +4,16 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-
-import static java.util.regex.Pattern.quote;
 
 /**
  * User: jimdevos
  * Date: 7/1/13
  */
 public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public BrowseSeleniumWebITCase() {
         setJavascriptIgnorePatterns(IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);

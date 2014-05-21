@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -27,10 +28,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
-import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -156,33 +157,38 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+    @Action(value = DELETE, results = {
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
+        getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         if (isPostRequest() && DELETE.equals(getDelete())) {
             try {
                 checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
                 checkForNonContributorCrud();
                 if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-                    addActionError("cannot delete item because references still exist");
+                    addActionError(getText("abstractPersistableController.cannot_delete"));
                     return CONFIRM;
                 }
                 logAction("DELETING");
                 // FIXME: deleteCustom might as well just return a boolean in this current implementation
                 // should we return the result name specified by deleteCustom() instead?
-                if (deleteCustom() != SUCCESS)
+                if (deleteCustom() != SUCCESS) {
                     return ERROR;
+                }
 
                 delete(persistable);
                 getGenericService().delete(persistable);
             } catch (TdarActionException exception) {
                 throw exception;
             } catch (Exception e) {
-                addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
+                addActionErrorWithException(
+                        getText("abstractPersistableController.cannot_delete_reason", Arrays.asList(getPersistableClass().getSimpleName())), e);
             }
             return SUCCESS;
         }
+
         return CONFIRM;
     }
 
@@ -214,13 +220,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     isNew = true;
                 }
                 preSaveCallback();
-                if (persistable instanceof HasStatus) {
-                    if (getStatus() == null) {
-                        setStatus(Status.ACTIVE);
-                    }
-
-                    ((HasStatus) getPersistable()).setStatus(getStatus());
-                }
+                determineAndUpdateStatus();
 
                 if (persistable instanceof Updatable) {
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
@@ -244,17 +244,17 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
-                    logger.debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
+                    getLogger().debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
                     // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
                 }
             } else {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, "bad request -- expecting post");
+                throw new TdarActionException(StatusCode.BAD_REQUEST, getText("abstactPersistableController.bad_request"));
             }
         } catch (TdarActionException exception) {
             throw exception;
         } catch (Exception exception) {
-            addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
+            addActionErrorWithException(getText("abstactPersistableController.unable_to_save", getPersistable()), exception);
             return INPUT;
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
@@ -265,16 +265,26 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (getStartTime() == -1L) {
             editTime = -1L;
         }
-        if (isNew && getPersistable() != null) {
-            logger.debug("Created Id: {}", getPersistable().getId());
+        if (isNew && (getPersistable() != null)) {
+            getLogger().debug("Created Id: {}", getPersistable().getId());
         }
-        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
+        getLogger().debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
 
         // don't allow SUCCESS response if there are actionErrors, but give the other callbacks leeway in setting their own error message.
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
         return actionReturnStatus;
+    }
+
+    private void determineAndUpdateStatus() {
+        if (persistable instanceof HasStatus) {
+            if (getStatus() == null) {
+                setStatus(Status.ACTIVE);
+            }
+
+            ((HasStatus) getPersistable()).setStatus(getStatus());
+        }
     }
 
     protected void indexPersistable() {
@@ -302,9 +312,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         try {
             email_ = getAuthenticatedUser().getEmail().toUpperCase();
         } catch (Exception e) {
-            logger.debug("something weird happend, authenticated user is null");
+            getLogger().debug("something weird happend, authenticated user is null");
         }
-        logger.info(String.format(msg, email_, action_, getPersistableClass().getSimpleName().toUpperCase(), id_, name_));
+        getLogger().info(String.format(msg, email_, action_, getPersistableClass().getSimpleName().toUpperCase(), id_, name_));
     }
 
     protected void preSaveCallback() {
@@ -323,17 +333,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @Action(value = ADD, results = {
-            @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly
     public String add() throws TdarActionException {
-        if (!isAbleToCreateBillableItem()) {
-            return BILLING;
-        }
 
         // FIXME:make this a preference...
-        if (getPersistable() instanceof HasStatus && isEditor() && !isAdministrator()) {
+        if ((getPersistable() instanceof HasStatus) && isEditor() && !isAdministrator()) {
             ((HasStatus) getPersistable()).setStatus(Status.DRAFT);
         }
 
@@ -353,9 +359,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!getAuthenticatedUser().getContributor()) {
             // FIXME: The html here could benefit from link to the prefs page. Devise a way to hint to the view-layer that certain messages can be decorated
             // and/or replaced.
-            addActionMessage("The system has hidden the menu options for creating and editing records based on your " +
-                    "current preferences.  You can change this setting by going to your account page and enabling the " +
-                    "\"contributor\" option.");
+            addActionMessage(getText("abstactPersistableController.change_profile"));
         }
     }
 
@@ -422,24 +426,24 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             throws TdarActionException {
         // first check the session
         Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
-        logger.info("user {} is TRYING to {} a {}", msg);
+        getLogger().info("user {} is TRYING to {} a {}", msg);
 
         if (userAction.isAuthenticationRequired()) {
             try {
                 if (!getSessionData().isAuthenticated()) {
-                    addActionError("you must authenticate");
-                    abort(StatusCode.OK.withResultName(LOGIN), "you must authenticate");
+                    addActionError(getText("abstactPersistableController.must_authenticate"));
+                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstactPersistableController.must_authenticate"));
                 }
             } catch (Exception e) {
-                addActionErrorWithException("something wrong with the session, was it initialized properly?", e);
-                abort(StatusCode.OK.withResultName(LOGIN), "could not load item, no user on session");
+                addActionErrorWithException(getText("abstactPersistableController.session_not_initialized"), e);
+                abort(StatusCode.OK.withResultName(LOGIN), getText("abstactPersistableController.could_not_load"));
             }
         }
 
         Persistable persistable = action.getPersistable();
         if (Persistable.Base.isNullOrTransient(persistable)) {
             // deal with the case that we have a new or not found resource
-            logger.debug("Dealing with transient persistable {}", persistable);
+            getLogger().debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
                 case CREATE:
                 case SAVE:
@@ -451,11 +455,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 default:
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
-                        abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
+                        abort(StatusCode.NOT_FOUND, getText("abstactPersistableController.not_found"));
                     } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
-                        abort(StatusCode.BAD_REQUEST, String.format(
-                                "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
+                        abort(StatusCode.BAD_REQUEST, getText("abstactPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
                     }
             }
         }
@@ -495,9 +498,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             default:
                 break;
         }
-        addActionError("user does not have permissions to perform the requested action");
-        abort(StatusCode.FORBIDDEN.withResultName(GONE),
-                "could not load requested item (insufficient permissions -- may not be able to view deleted resources)");
+        addActionError(getText("abstactPersistableController.no_permissions"));
+        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), getText("abstactPersistableController.no_permissions"));
 
     }
 
@@ -605,21 +607,23 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      */
     @Override
     public void prepare() {
-
+        P p = null;
         if (isPersistableIdSet()) {
-            logger.error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
+            getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
         if (Persistable.Base.isNullOrTransient(getId())) {
             setPersistable(createPersistable());
         } else {
 
-            P p = loadFromId(getId());
+            p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            logger.info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
+        if( !ADD.equals(getActionName())) {
+            getLogger().info("id:{}, persistable:{}", getId(), p);
+        }
     }
 
     protected boolean isPersistableIdSet() {
@@ -684,7 +688,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
         for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if (permission.getContext() == null || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
+            if ((permission.getContext() == null) || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
                 permissions.add(permission);
             }
         }
@@ -710,17 +714,17 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *            the startTime to set
      */
     public void setStartTime(Long startTime) {
-        logger.info("set start time: " + startTime);
+        getLogger().info("set start time: " + startTime);
         this.startTime = startTime;
     }
 
     @Override
     public void validate() {
         reportAnyJavascriptErrors();
-        logger.debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
+        getLogger().debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
-            logger.warn("Null being validated.");
-            addActionError("Sorry, we couldn't find the resource you specified.");
+            getLogger().warn("Null being validated.");
+            addActionError(getText("abstactPersistableController.could_not_find"));
             return;
         }
         // String resourceTypeLabel = getPersistable().getResourceType().getLabel();
@@ -728,7 +732,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             try {
                 boolean valid = ((Validatable) getPersistable()).isValidForController();
                 if (!valid) {
-                    addActionError("could not validate:" + getPersistable());
+                    addActionError(getText("abstactPersistableController.could_not_validate", getPersistable()));
                 }
             } catch (Exception e) {
                 addActionError(e.getMessage());

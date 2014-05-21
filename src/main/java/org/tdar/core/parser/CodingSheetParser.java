@@ -17,9 +17,9 @@ import org.tdar.core.bean.resource.CodingSheet;
  */
 public interface CodingSheetParser {
 
-    final static int CODE_INDEX = 0;
-    final static int TERM_INDEX = 1;
-    final static int DESCRIPTION_INDEX = 2;
+    int CODE_INDEX = 0;
+    int TERM_INDEX = 1;
+    int DESCRIPTION_INDEX = 2;
 
     List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException;
 

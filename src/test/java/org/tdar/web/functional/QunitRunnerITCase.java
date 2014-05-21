@@ -18,7 +18,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 @RunWith(Parameterized.class)
 public class QunitRunnerITCase extends AbstractBasicSeleniumWebITCase {
 
-    Logger logger = LoggerFactory.getLogger(QunitRunnerITCase.class);
+    private Logger logger = LoggerFactory.getLogger(getClass());
     String path;
 
     public QunitRunnerITCase(String path) {

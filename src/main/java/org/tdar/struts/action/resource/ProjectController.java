@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -15,13 +14,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -47,7 +46,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private static final long serialVersionUID = -5625084702553576277L;
 
     private String callback;
-
+    private String json;
+    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -56,8 +56,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private SortOption sortField;
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
-    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
-    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
+    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
+    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -101,9 +101,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
+    @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
@@ -116,28 +117,14 @@ public class ProjectController extends AbstractResourceController<Project> imple
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
-                addActionErrorWithException("something happend", e);
+                addActionErrorWithException(getText("projectController.something_happened"), e);
             }
         }
-
     }
 
     @SkipValidation
     public String getProjectAsJson() {
-        getLogger().trace("getprojectasjson called");
-        String json = "{}";
-        try {
-            Project project = getProject();
-            if (project == null || project.isTransient()) {
-                getLogger().trace("Trying to convert blank or null project to json: " + project);
-                return json;
-            }
-            json = project.toJSON().toString();
-        } catch (Exception ex) {
-            addActionErrorWithException("There was an error retreiving project-level information for this resource.  Please reload the page " +
-                    " or report this problem to an administrator if the problem persists.", ex);
-        }
-        getLogger().trace("returning json:" + json);
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         return json;
     }
 
@@ -157,6 +144,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         setPersistable(project);
     }
 
+    @Override
     public Class<Project> getPersistableClass() {
         return Project.class;
     }
@@ -196,10 +184,12 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return false;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
@@ -211,7 +201,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public void setResults(List<Resource> results) {
-        logger.trace("setResults: {}", results);
+        getLogger().trace("setResults: {}", results);
         this.results = results;
     }
 
@@ -224,6 +214,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         this.secondarySortField = secondarySortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -248,28 +239,24 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return mode;
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }
 
     @Override
     public String getSearchTitle() {
-        return String.format("Resources in %s", getPersistable().getTitle());
+        return getText("projectController.search_title", getPersistable().getTitle());
     }
 
     @Override
     public String getSearchDescription() {
         return getSearchTitle();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return ListUtils.EMPTY_LIST;
     }
 
     public List<SortOption> getSortOptions() {
@@ -288,24 +275,25 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         return group;
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 
-    public ArrayList<ResourceType> getResourceTypeFacets() {
+    public ArrayList<FacetValue> getResourceTypeFacets() {
         return resourceTypeFacets;
     }
 
-    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
     }
 
@@ -315,6 +303,15 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
         this.selectedResourceTypes = selectedResourceTypes;
+    }
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return projectionModel;
+    }
+
+    public void setProjectionModel(ProjectionModel projectionModel) {
+        this.projectionModel = projectionModel;
     }
 
 }

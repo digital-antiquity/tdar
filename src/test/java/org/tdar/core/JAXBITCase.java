@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -14,6 +16,7 @@ import java.io.StringWriter;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -102,6 +105,22 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
                 return null;
             }
         });
+    }
+
+    @Test
+    @Rollback
+    @Ignore("Fixture for testing")
+    public void testLoad() throws FileNotFoundException, Exception {
+        Project p = new Project();
+        String convertToXML = xmlService.convertToXML(p);
+        // logger.debug(convertToXML);
+        try {
+            xmlService.parseXml(new StringReader(convertToXML));
+            xmlService.parseXml(new FileReader(new File("c:/Users/abrin/Documents/1979.020.xml"))); // confirm goodxml loads fine
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+
     }
 
     // make sure we're detecting enum errors.

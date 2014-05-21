@@ -6,8 +6,11 @@ import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
@@ -15,9 +18,10 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 
-import com.sun.xml.txw2.annotation.XmlElement;
+//import com.sun.xml.txw2.annotation.XmlElement;
 
 /**
  * $Id$
@@ -28,14 +32,16 @@ import com.sun.xml.txw2.annotation.XmlElement;
  * @version $Rev$
  */
 @MappedSuperclass
-@XmlElement
+// @XmlElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(name = "hierKwdbase")
 public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends Keyword.Base<HierarchicalKeyword<T>> {
 
     private static final long serialVersionUID = -9098940417785842655L;
 
     private boolean selectable;
 
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String index;
 
     @XmlAttribute
@@ -68,8 +74,9 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
-        if (getParent() == null)
+        if (getParent() == null) {
             return list;
+        }
         list.add(getParent().getLabel());
         list.addAll(getParent().getParentLabelList());
         return list;
@@ -83,8 +90,9 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @Transient
     public int getLevel() {
         // get the level without visiting the ancestors
-        if (StringUtils.isBlank(index))
+        if (StringUtils.isBlank(index)) {
             return 0;
+        }
         return 1 + StringUtils.countMatches(index, ".");
     }
 

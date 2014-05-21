@@ -21,28 +21,66 @@ import org.tdar.core.service.Configurable;
  */
 public interface ExternalIDProvider extends Configurable {
 
-    abstract boolean connect() throws ClientProtocolException, IOException;
+    /**
+     * Connect to the external id provider
+     * 
+     * @return
+     * @throws IOException
+     */
+    boolean connect() throws IOException;
 
-    abstract boolean logout() throws ClientProtocolException, IOException;
+    /**
+     * Logout from the external id provider
+     * 
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    boolean logout() throws IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
-    abstract Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException;
+    Map<String, String> create(Resource r, String resourceUrl) throws IOException;
 
     /**
      * returns a map of all of the information the ID server has on the resource
+     * 
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
-    abstract Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> getMetadata(String identifier) throws IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
-    abstract Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException;
 
     /**
      * returns a map of identifiers and values created by the system
+     * 
+     * @param r
+     * @param resourceUrl
+     * @param identifier
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
      */
-    abstract Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException;
+    Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException;
 
 }

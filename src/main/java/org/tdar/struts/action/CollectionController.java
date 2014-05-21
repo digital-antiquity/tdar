@@ -3,12 +3,12 @@ package org.tdar.struts.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,17 +20,18 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -38,21 +39,31 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
+public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource>, DataTableResourceDisplay {
+
+    /**
+     * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
+     * refers to the combined count of authorized users +the count of resources associated with a collection. Big
+     * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
+     * system may choose to mitigate these effects (somehow)
+     */
+    public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
     private static final long serialVersionUID = 5710621983240752457L;
-    private List<Resource> resources = new ArrayList<Resource>();
+    private List<Resource> resources = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
 
-    private List<Long> selectedResourceIds = new ArrayList<Long>();
+    private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections = new LinkedList<>();
-    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
 
+    private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
-    private List<ResourceCollection> results;
+    private List<Resource> results;
     private SortOption secondarySortField;
     private SortOption sortField;
     private String mode = "CollectionBrowse";
@@ -62,8 +73,9 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public boolean isEditable() {
-        if (isNullOrNew())
+        if (isNullOrNew()) {
             return false;
+        }
         return getAuthenticationAndAuthorizationService().canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
@@ -88,23 +100,28 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-        // FIXME: may need some potential check for recursive loops here to prevent self-referential
-        // parent-child loops
+        // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         ResourceCollection parent = getResourceCollectionService().find(parentId);
         if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
-                && (parent.getParentIdList().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
-            addActionError("cannot set a parent collection of self or it's child");
+                && (parent.getParentIds().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
+            addActionError(getText("collectionController.cannot_set_self_parent"));
             return INPUT;
         }
-        persistable.setParent(parent);
-        getGenericService().saveOrUpdate(persistable);
-        getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
 
+        getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+
+        getGenericService().saveOrUpdate(persistable);
+        getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
+                getAuthenticatedUser());
+        getLogger().trace("resources (original):{}", resources);
+        getLogger().trace("resources (retained):{}", getRetainedResources());
+        resources.addAll(getRetainedResources());
         List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
                 getAuthenticatedUser(), resources);
-        logger.trace("{}", rehydratedIncomingResources);
-        logger.debug("RESOURCES {}", persistable.getResources());
+        getLogger().trace("{}", rehydratedIncomingResources);
+        getLogger().debug("RESOURCES {}", persistable.getResources());
+        getXmlService().logRecordXmlToFilestore(getPersistable());
         return SUCCESS;
     }
 
@@ -125,7 +142,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public List<? extends Persistable> getDeleteIssues() {
         List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
-        logger.info("we still have children: {}", findAllChildCollections);
+        getLogger().info("we still have children: {}", findAllChildCollections);
         return findAllChildCollections;
     }
 
@@ -138,6 +155,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         getGenericService().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
+        getXmlService().logRecordXmlToFilestore(getPersistable());
 
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
     }
@@ -153,17 +171,13 @@ public class CollectionController extends AbstractPersistableController<Resource
         setPersistable(rc);
     }
 
+    @Override
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
-        List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
-        options.remove(SortOption.RESOURCE_TYPE);
-        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
-        options.add(0, SortOption.RESOURCE_TYPE);
-        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
-        return options;
+        return SortOption.getOptionsForResourceCollectionPage();
     }
 
     public List<DisplayOrientation> getResultsOrientations() {
@@ -171,19 +185,20 @@ public class CollectionController extends AbstractPersistableController<Resource
         return options;
     }
 
+    @Override
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
     @Override
     public String loadViewMetadata() {
-        // getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
-        // resources.addAll(getPersistable().getResources());
-        // for (Resource resource : getPersistable().getResources()) {
-        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        // }
-        // FIXME: update visible flag, using below to initialize transient children
         setParentId(getPersistable().getParentId());
+        if (!isEditor()) {
+            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
+            getGenericService().saveOrUpdate(rcvs);
+        } else {
+            setViewCount(getResourceCollectionService().getCollectionViewCount(getPersistable()));
+        }
         return SUCCESS;
     }
 
@@ -191,12 +206,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
+        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
 
-        // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
         resources.addAll(getPersistable().getResources());
-        // for (Resource resource : getPersistable().getResources()) {
-        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        // }
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -232,14 +244,23 @@ public class CollectionController extends AbstractPersistableController<Resource
     })
     public String edit() throws TdarActionException {
         String result = super.edit();
+        getLogger().trace(" resources (original:{}", resources);
+        getLogger().trace("resources (retained):{}", getRetainedResources());
         resources.removeAll(getRetainedResources());
         return result;
     }
 
+    /**
+     * resources that that the current user is prohibited from removing when editing a collection
+     * 
+     * @return
+     */
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
         for (Resource resource : getPersistable().getResources()) {
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
+            getLogger().trace("retain?: {}", resource);
+            getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
+            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
             if (!canEdit) {
                 retainedResources.add(resource);
             }
@@ -247,29 +268,20 @@ public class CollectionController extends AbstractPersistableController<Resource
         return retainedResources;
     }
 
+    @Override
     public void loadExtraViewMetadata() {
-        if (Persistable.Base.isNullOrTransient(getId()))
+        if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return;
+        }
+        getLogger().debug("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
-        // FIXME: reconcile
+
         if (isAuthenticated()) {
-            getResourceCollectionService().findAllChildCollections(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
+            getResourceCollectionService().buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
-            // FIXME: not needed?
-            // boolean granularPermissions = false;
-            // if (granularPermissions) {
-            // Iterator<ResourceCollection> iterator = findAllChildCollections.iterator();
-            // while (iterator.hasNext()) {
-            // ResourceCollection nextcollection = iterator.next();
-            // if (!nextcollection.getAuthorizedUsers().contains(new AuthorizedUser(getAuthenticatedUser(), GeneralPermissions.VIEW_ALL)) &&
-            // !nextcollection.getOwner().equals(getAuthenticatedUser()) &&
-            // getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-            // iterator.remove();
-            // }
-            // }
-            // }
+
             if (isEditor()) {
-                List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollections(getPersistable(),
+                List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().buildCollectionTreeForController(getPersistable(),
                         getAuthenticatedUser(), CollectionType.SHARED));
                 collectionIds.add(getId());
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
@@ -280,33 +292,33 @@ public class CollectionController extends AbstractPersistableController<Resource
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
+        getLogger().debug("child collections: sort");
         Collections.sort(collections);
+        getLogger().debug("child collections: end");
 
-        if (getPersistable() != null) {
-            // FIXME: logic is right here, but this feels "wrong"
+        // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
+        // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
+        // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
-            // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
-            // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
-            // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+        // the visibilty fence should take care of visible vs. shared above
+        ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                getResourceCollection(), getAuthenticatedUser(), this);
+        getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
-            // the visibilty fence should take care of visible vs. shared above
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                    getResourceCollection(), getAuthenticatedUser());
-            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
-            setSortField(getPersistable().getSortBy());
-            if (getSortField() != SortOption.RELEVANCE) {
-                setSecondarySortField(SortOption.TITLE);
-                if (getPersistable().getSecondarySortBy() != null) {
-                    setSecondarySortField(getPersistable().getSecondarySortBy());
-                }
-            }
-            try {
-                getSearchService().handleSearch(qb, this);
-            } catch (Exception e) {
-                addActionErrorWithException("error occurred while searching for collection contents", e);
+        setSortField(getPersistable().getSortBy());
+        if (getSortField() != SortOption.RELEVANCE) {
+            setSecondarySortField(SortOption.TITLE);
+            if (getPersistable().getSecondarySortBy() != null) {
+                setSecondarySortField(getPersistable().getSecondarySortBy());
             }
         }
+
+        try {
+            getSearchService().handleSearch(qb, this);
+        } catch (Exception e) {
+            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
+        }
+        getLogger().debug("lucene: end");
     }
 
     /**
@@ -340,13 +352,15 @@ public class CollectionController extends AbstractPersistableController<Resource
         return parentId;
     }
 
+    @Override
     public List<Project> getAllSubmittedProjects() {
         List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
-//    @DoNotObfuscate
+    // @DoNotObfuscate
+    @Override
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
             boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
@@ -356,10 +370,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         return fullUserProjects;
     }
 
+    @Override
     public List<Status> getStatuses() {
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
+    @Override
     public List<ResourceType> getResourceTypes() {
         return getResourceService().getAllResourceTypes();
     }
@@ -399,16 +415,18 @@ public class CollectionController extends AbstractPersistableController<Resource
         return false;
     }
 
+    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
 
+    @Override
     public void setRecordsPerPage(int recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
     }
 
     public void setCollections(List<ResourceCollection> findAllChildCollections) {
-        logger.info("child collections: {}", findAllChildCollections);
+        getLogger().info("child collections: {}", findAllChildCollections);
         this.collections = findAllChildCollections;
     }
 
@@ -422,13 +440,13 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public void setResults(List<ResourceCollection> toReturn) {
-        logger.trace("setResults: {}", toReturn);
+    public void setResults(List<Resource> toReturn) {
+        getLogger().trace("setResults: {}", toReturn);
         this.results = toReturn;
     }
 
     @Override
-    public List<ResourceCollection> getResults() {
+    public List<Resource> getResults() {
         return results;
     }
 
@@ -436,6 +454,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.secondarySortField = secondarySortField;
     }
 
+    @Override
     public void setSortField(SortOption sortField) {
         this.sortField = sortField;
     }
@@ -460,10 +479,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         return mode;
     }
 
+    @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
     }
 
+    @Override
     public int getPrevPageStartRecord() {
         return startRecord - recordsPerPage;
     }
@@ -478,24 +499,19 @@ public class CollectionController extends AbstractPersistableController<Resource
         return getSearchTitle();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<String> getProjections() {
-        return ListUtils.EMPTY_LIST;
-    }
-
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        List<FacetGroup<? extends Facetable>> group = new ArrayList<>();
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
         group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
         return group;
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 
@@ -504,11 +520,11 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     }
 
-    public ArrayList<ResourceType> getResourceTypeFacets() {
+    public ArrayList<FacetValue> getResourceTypeFacets() {
         return resourceTypeFacets;
     }
 
-    public void setResourceTypeFacets(ArrayList<ResourceType> resourceTypeFacets) {
+    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
         this.resourceTypeFacets = resourceTypeFacets;
     }
 
@@ -518,6 +534,39 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
         this.selectedResourceTypes = selectedResourceTypes;
+    }
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.RESOURCE_PROXY;
+    }
+
+    /**
+     * A hint to the view-layer that this resource collection is "big". The view-layer may choose to gracefully degrade the presentation to save on bandwidth
+     * and/or
+     * client resources.
+     * 
+     * @return
+     */
+    public boolean isBigCollection() {
+        return (getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+    }
+
+    public Long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Long viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    @Override
+    public List<ResourceCollection> getAllResourceCollections() {
+        return allResourceCollections;
+    }
+
+    public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
+        this.allResourceCollections = allResourceCollections;
     }
 
 }

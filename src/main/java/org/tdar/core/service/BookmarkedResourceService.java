@@ -3,6 +3,8 @@ package org.tdar.core.service;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
@@ -13,7 +15,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 /**
- * $Id$
+ * Helps create and manage Bookmarks for users. Bookmarks are for keeping track of items, and identifying items for DataIntegration
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -22,13 +24,15 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
 @Service
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Transactional(readOnly = true)
     public boolean isAlreadyBookmarked(Resource resource, Person person) {
         return getDao().isAlreadyBookmarked(resource, person);
     }
 
     /**
-     * Returns true if this a new BookmarkedResource was created as a result of this call, false otherwise.
+     * Returns true if this a new @link BookmarkedResource for a @link Resource and @link Person was created as a result of this call, false otherwise.
      * 
      * @param resource
      * @param person
@@ -52,6 +56,13 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         return true;
     }
 
+    /**
+     * Returns true if a @link BookmarkedResouce exists for a @link Person and @link Resource and it was removed successfully.
+     * 
+     * @param resource
+     * @param person
+     * @return
+     */
     public boolean removeBookmark(Resource resource, Person person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
         if (bookmark == null) {
@@ -60,13 +71,20 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         resource = getDao().merge(resource);
         boolean removed = resource.getBookmarks().remove(bookmark);
         logger.debug("was bookmark removed? " + removed);
-        save(resource);
+        getDao().saveOrUpdate(resource);
         getDao().delete(bookmark);
         return true;
     }
 
+    /**
+     * Find all @link Resource entries that are referred to by a @link BookmarkedResource and a @link Person with a specified set of @link Status entries.
+     * 
+     * @param person
+     * @param statuses
+     * @return
+     */
     @Transactional(readOnly = true)
-    public List<Resource> findResourcesByPerson(Person person, List<Status> statuses) {
-        return getDao().findResourcesByPerson(person, statuses);
+    public List<Resource> findBookmarkedResourcesByPerson(Person person, List<Status> statuses) {
+        return getDao().findBookmarkedResourcesByPerson(person, statuses);
     }
 }

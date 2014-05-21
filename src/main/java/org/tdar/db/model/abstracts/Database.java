@@ -16,25 +16,9 @@ public interface Database
         ACCESS, DB2, EXCEL, POSTGRES
     };
 
-    public static final String NULL_EMPTY_INTEGRATION_VALUE = "This integration value was not specified in the uploaded dataset";
-    public static final String NULL_EMPTY_MAPPED_VALUE = "This value has not been mapped to any ontology node";
+    DatabaseType getDatabaseType();
 
-    // enum DATA_TYPE
-    // {
-    // TINYINT, SMALLINT, INT, BIGINT, // 1 ... 4
-    // SMALLMONEY, MONEY, // 5, 6
-    // SMALLDATETIME, DATATIME, // 7, 8
-    // FLOAT, DOUBLE,
-    // DECIMAL, NUMBERIC,
-    // BINARY, VARBINARY,
-    // CHAR, NCHAR, NVARCHAR, VARCHAR,
-    // BIT, TIMESTAMP, UNIQUEIDENTIFIER,
-    // TEXT, NTEXT, IMAGE
-    // };
-
-    public DatabaseType getDatabaseType();
-
-    public int getMaxTableLength();
+    int getMaxTableLength();
 
     /**
      * Attempt to change the datatype of the specified column in the specified table
@@ -46,7 +30,8 @@ public interface Database
      * @param jdbcType
      *            type id as defined in {@link java.sql.Types}
      */
-    public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type); // TODO: add throws TypeConversionException?
+    // TODO: add throws TypeConversionException?
+    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type);
 
     /**
      * Attempt to change the datatype of the specified column in the specified table
@@ -60,11 +45,11 @@ public interface Database
      * @param jdbcType
      *            type id as defined in {@link java.sql.Types}
      */
-    public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type, int length); // TODO: add throws
-                                                                                                                      // TypeConversionException?
+    // TODO: add throws TypeConversionException?
+    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type, int length);
 
-    public void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet);
+    void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet);
 
-    public void untranslate(DataTableColumn column);
+    void untranslate(DataTableColumn column);
 
 }

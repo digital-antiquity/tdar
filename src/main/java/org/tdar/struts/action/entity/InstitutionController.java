@@ -1,5 +1,8 @@
 package org.tdar.struts.action.entity;
 
+import java.util.Arrays;
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -7,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
 
@@ -14,17 +18,17 @@ import org.tdar.struts.action.AbstractPersistableController;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/institution")
-public class InstitutionController extends AbstractPersistableController<Institution> {
+public class InstitutionController extends AbstractCreatorController<Institution> {
 
-    public static final String ERROR_INSTITUTION_NAME_BLANK = "Institution name cannot be blank.";
     private static final long serialVersionUID = 2051510910128780834L;
 
     private String name;
 
     @Override
     protected String save(Institution persistable) {
-        if (hasActionErrors())
+        if (hasActionErrors()) {
             return INPUT;
+        }
 
         // name has a unique key; so we need to be careful with it
         persistable.setName(getName());
@@ -33,6 +37,8 @@ public class InstitutionController extends AbstractPersistableController<Institu
         } else {
             getGenericService().update(persistable);
         }
+        getXmlService().logRecordXmlToFilestore(getPersistable());
+
         return SUCCESS;
     }
 
@@ -41,13 +47,14 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
             if (findInstitutionByName != null) {
-                addActionError(String.format("Cannot rename institution to %s because it already exists", name));
+                addActionError(getText("institutionController.cannot_rename", Arrays.asList(name)));
             }
         }
     }
 
     @Override
     protected void delete(Institution persistable) {
+        getXmlService().logRecordXmlToFilestore(getPersistable());
     }
 
     @Override
@@ -57,6 +64,10 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     public String loadViewMetadata() {
+        if (!isEditor()) {
+            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), getPersistable());
+            getGenericService().saveOrUpdate(cvs);
+        }
         return SUCCESS;
     }
 
@@ -86,8 +97,9 @@ public class InstitutionController extends AbstractPersistableController<Institu
 
     @Override
     public boolean isEditable() {
-        if (!isAuthenticated())
+        if (!isAuthenticated()) {
             return false;
+        }
         return getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
     }
 

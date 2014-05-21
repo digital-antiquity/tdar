@@ -33,6 +33,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 import com.google.common.io.Files;
 
@@ -99,7 +100,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         final int waitPerAttempt = 50;
         Bag bag = null;
         RuntimeException lastException = null;
-        while (attempt < maxAttempts && bag == null) {
+        while ((attempt < maxAttempts) && (bag == null)) {
             try {
                 bag = bagFactory.createBag(sourceFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
             } catch (RuntimeException rex) {
@@ -113,7 +114,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
             attempt++;
         }
         if (bag == null) {
-            throw new RuntimeException("could not successfully call createBag after repeated attempts.", lastException);
+            throw new RuntimeException(MessageHelper.getMessage("bagitPersonalFilestore.could_not_create_bag"), lastException);
         }
         if (attempt > 1) {
             // FIXME: lower to WARN once we are satisfied we've worked around this bug.
@@ -151,7 +152,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
                 return new File(pathToBag, storedBagFile.getFilepath());
             }
         }
-        throw new TdarRecoverableRuntimeException("could not find the file we just filed:" + incomingFileName);
+        List<String> names = new ArrayList<>();
+        names.add(incomingFileName);
+        throw new TdarRecoverableRuntimeException("bagitPersonalFilestore.could_not_find_file_created", names);
     }
 
     @Override
@@ -195,8 +198,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
 
     private void purge(PersonalFilestoreTicket ticket, boolean quiet) {
         File directory = new File(getPath(ticket));
-        if (!directory.exists())
+        if (!directory.exists()) {
             return;
+        }
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
@@ -216,8 +220,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
     @Override
     public void purge(Person person, PersonalFileType personalFileType) {
         File directory = new File(getPath(person, personalFileType));
-        if (!directory.exists())
+        if (!directory.exists()) {
             return;
+        }
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
@@ -240,8 +245,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         logger.trace("{}", result.getMessages());
         for (BagFile bf : bagOut.getPayload()) {
             File file = new File(pathToBag, bf.getFilepath());
-            if (!file.getName().equals(filename))
+            if (!file.getName().equals(filename)) {
                 continue;
+            }
             PersonalFilestoreFile pff = new PersonalFilestoreFile();
             pff.setFile(file);
             Map<Algorithm, String> map = bagOut.getChecksums(bf.getFilepath());

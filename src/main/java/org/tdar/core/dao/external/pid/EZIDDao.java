@@ -9,6 +9,7 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -18,16 +19,20 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +40,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.transform.DcTransformer;
 
@@ -74,13 +80,28 @@ public class EZIDDao implements ExternalIDProvider {
     private static final String _STATUS_AVAILABLE = "public";
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
-    DefaultHttpClient httpclient = new DefaultHttpClient();
+    CloseableHttpClient httpclient;
+
     private ConfigurationAssistant assistant = new ConfigurationAssistant();
     private String configIssue = "";
 
     public EZIDDao() {
         try {
             assistant.loadProperties("ezid.properties");
+
+            URL url = new URL(getDOIProviderHostname());
+            int port = TdarConfiguration.DEFAULT_PORT;
+            if (url.getPort() == -1) {
+                if (getDOIProviderHostname().toLowerCase().startsWith(HTTPS)) {
+                    port = TdarConfiguration.HTTPS_PORT_DEFAULT;
+                }
+            }
+            AuthScope scope = new AuthScope(url.getHost(), port);
+            logger.trace("using port: {}", port);
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(scope, new UsernamePasswordCredentials(getDOIProviderUsername(), getDOIProviderPassword()));
+            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+
         } catch (Throwable t) {
             configIssue = t.getMessage();
         }
@@ -102,19 +123,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#connect(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public boolean connect() throws ClientProtocolException, IOException {
-        URL url = new URL(getDOIProviderHostname());
-        int port = 80;
-        if (url.getPort() == -1) {
-            if (getDOIProviderHostname().toLowerCase().startsWith(HTTPS)) {
-                port = 443;
-            }
-        }
-        AuthScope scope = new AuthScope(url.getHost(), port);
-        logger.trace("using port: {}", port);
-        UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(getDOIProviderUsername(), getDOIProviderPassword());
-        httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
-
+    public boolean connect() throws IOException {
         logger.debug("creating challenge/response authentication request for: {} ({} / *****)", getDOIProviderHostname(), getDOIProviderUsername());
         HttpGet authenticationRequest = new HttpGet(getDOIProviderHostname() + "/login");
         processHttpRequest(authenticationRequest);
@@ -127,7 +136,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#logout(java.lang.String)
      */
     @Override
-    public boolean logout() throws ClientProtocolException, IOException {
+    public boolean logout() throws IOException {
         logger.info("logout: {} ", getDOIProviderHostname());
         HttpGet authenticationRequest = new HttpGet(getDOIProviderHostname() + "/logout");
         processHttpRequest(authenticationRequest);
@@ -146,10 +155,10 @@ public class EZIDDao implements ExternalIDProvider {
         String result = IOUtils.toString(content);
         content.close();
 
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+        if ((response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) && (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException("could not connect to EZID Server: " + result + "\n\n" + authenticationRequest.getRequestLine());
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect", Arrays.asList(result, authenticationRequest.getRequestLine().toString()));
         }
         recievedEntity.consumeContent();
         return result;
@@ -164,7 +173,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#create(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> create(Resource r, String resourceUrl) throws ClientProtocolException, IOException {
+    public Map<String, String> create(Resource r, String resourceUrl) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "shoulder", getDOIShoulder());
     }
 
@@ -177,7 +186,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#getMetadata(java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> getMetadata(String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> getMetadata(String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<String, String>();
         HttpGet request = new HttpGet(getDOIProviderHostname() + "/id/" + identifier);
         String result = processHttpRequest(request);
@@ -203,7 +212,7 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#modify(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> modify(Resource r, String resourceUrl, String identifier) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier);
     }
 
@@ -216,11 +225,11 @@ public class EZIDDao implements ExternalIDProvider {
      * @see org.tdar.core.dao.DaoProvider#delete(org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws IOException {
         return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier, true);
     }
 
-    public Map<String, String> forceDelete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+    public Map<String, String> forceDelete(Resource r, String resourceUrl, String identifier) throws IOException {
         HttpDelete post = new HttpDelete(getDOIProviderHostname() + "/id/" + identifier);
         return processRequest(post);
     }
@@ -237,7 +246,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException("the DOI Creation was not successful: " + result);
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi", Arrays.asList(result));
         }
         return typeMap;
     }
@@ -253,7 +262,7 @@ public class EZIDDao implements ExternalIDProvider {
         HttpPost post = new HttpPost(hostname + "/" + path + "/" + shoulder);
         String anvlContent = generateAnvlMetadata(r, resourceUrl, delete);
         logger.trace("sending content:to {} \n{}", post.getURI(), anvlContent);
-        StringEntity entity_ = new StringEntity(anvlContent, "text/plain", HTTP.UTF_8);
+        HttpEntity entity_ = EntityBuilder.create().setText(anvlContent).setContentType(ContentType.TEXT_PLAIN.withCharset("UTF-8")).build();
         post.setEntity(entity_);
         return processRequest(post);
     }
@@ -289,7 +298,7 @@ public class EZIDDao implements ExternalIDProvider {
             }
         }
 
-        if (r.getStatus() != Status.ACTIVE || delete) {
+        if ((r.getStatus() != Status.ACTIVE) || delete) {
             // EZID does not support DELETION, instead SETTING ALL VALUES TO EMPTY
             // responseBuilder.append(DATACITE_CREATOR).append(":").append("\n");
             // responseBuilder.append(DATACITE_RESOURCE_TYPE).append(":").append("\n");
@@ -319,8 +328,9 @@ public class EZIDDao implements ExternalIDProvider {
     }
 
     protected String aNVLEscape(String s) {
-        if (StringUtils.isEmpty(s))
+        if (StringUtils.isEmpty(s)) {
             return "";
+        }
         return s.replace("%", "%25").replace("\n", "%0A").
                 replace("\r", "%0D").replace(":", "%3A");
     }

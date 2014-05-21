@@ -28,6 +28,7 @@ import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 
 /**
@@ -42,7 +43,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
     @Autowired
     private MessageService messageService;
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     @Test
     public void testAnalyzerSuggestions() {
@@ -81,7 +82,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
             logger.info(version);
 
             if (version.isTranslated()) {
-                String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+                String contents = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));
                 seen = true;

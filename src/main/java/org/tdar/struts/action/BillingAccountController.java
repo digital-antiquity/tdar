@@ -23,6 +23,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -31,9 +32,9 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.DoNotObfuscate;
-import org.tdar.struts.WriteableSession;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 @Component
 @Scope("prototype")
@@ -42,10 +43,9 @@ import org.tdar.struts.interceptor.PostOnly;
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
+    public static final String FIX_FOR_DELETE_ISSUE = "fix";
     public static final String CHOOSE = "choose";
     public static final String VIEW_ID = "view?id=${id}";
-    public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
-    public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
     private static final String LIST_INVOICES = "listInvoices";
@@ -73,10 +73,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String selectAccount() throws TdarActionException {
         Invoice invoice = getInvoice();
         if (invoice == null) {
-            throw new TdarRecoverableRuntimeException(INVOICE_IS_REQURIED);
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
         }
         if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
-            throw new TdarRecoverableRuntimeException(RIGHTS_TO_ASSIGN_THIS_INVOICE);
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
         setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
@@ -105,6 +105,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return SUCCESS;
     }
 
+    @Override
     public void loadListData() {
         if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getAccounts().addAll(getAccountService().findAll());
@@ -132,7 +133,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     protected String save(Account persistable) {
-        logger.info("invoiceId {}", getInvoiceId());
+        getLogger().info("invoiceId {}", getInvoiceId());
 
         // if we're coming from "choose" and we want a "new account"
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
@@ -144,7 +145,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getInvoice();
-            logger.info("attaching invoice: {} ", invoice);
+            getLogger().info("attaching invoice: {} ", invoice);
             // if we have rights
             if (Persistable.Base.isTransient(getAccount())) {
                 getAccount().setOwner(invoice.getOwner());
@@ -159,7 +160,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
 
-        logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
+        getLogger().info("authorized members: {}", getAccount().getAuthorizedMembers());
         return SUCCESS;
     }
 
@@ -175,12 +176,50 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     })
     public String updateQuotas() {
         getAccountService().updateQuota(getAccount(), getAccount().getResources());
-        return TdarActionSupport.SUCCESS;
+        return com.opensymphony.xwork2.Action.SUCCESS;
+    }
+
+    /**
+     * Temporary controller to fix issue where deleted items were counted wrong/differently before
+     * we're changing the values here automatically
+     * 
+     * @return
+     */
+    @SkipValidation
+    @WriteableSession
+    @Action(value = FIX_FOR_DELETE_ISSUE, results = {
+            @Result(name = SUCCESS, location = "view?id=${id}", type = REDIRECT)
+    })
+    public String fix() {
+        getLogger().debug(">>>>> F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        getGenericService().refresh(getAccount());
+        getLogger().debug(":::: F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        if (CollectionUtils.isNotEmpty(getAccount().getInvoices()) && (getAccount().getInvoices().size() == 1)) {
+            Invoice invoice = getAccount().getInvoices().iterator().next();
+            Long space = getAccount().getSpaceUsedInMb() + 10l;
+            Long files = getAccount().getFilesUsed() + 1l;
+            for (BillingItem item : invoice.getItems()) {
+                if (item.getActivity().isSpaceOnly()) {
+                    getLogger().debug("changing space from: {} to {}", item.getQuantity(), space);
+                    item.setQuantity(space.intValue());
+                }
+
+                if (item.getActivity().isFilesOnly()) {
+                    getLogger().debug("changing files from: {} to {}", item.getQuantity(), files);
+                    item.setQuantity(files.intValue());
+                }
+            }
+            getGenericService().saveOrUpdate(invoice.getItems());
+        }
+        getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        getLogger().debug("<<<<<< F: {} S: {} ", getAccount().getFilesUsed(), getAccount().getSpaceUsedInMb());
+        return com.opensymphony.xwork2.Action.SUCCESS;
     }
 
     @Override
     public boolean isViewable() throws TdarActionException {
-        logger.info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
+        getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
@@ -211,10 +250,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     public Account getAccount() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
 
-        return (Account) getPersistable();
+        return getPersistable();
     }
 
     @Override
@@ -262,7 +302,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return new Person();
     }
 
-    @DoNotObfuscate(reason="needs access to Email Address on view page")
+    @DoNotObfuscate(reason = "needs access to Email Address on view page")
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }

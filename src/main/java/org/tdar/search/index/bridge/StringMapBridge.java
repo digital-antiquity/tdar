@@ -5,7 +5,6 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.hibernate.search.bridge.FieldBridge;
 import org.hibernate.search.bridge.LuceneOptions;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.query.QueryFieldNames;
@@ -14,13 +13,10 @@ import org.tdar.search.query.QueryFieldNames;
  * 
  * $Id$
  * 
- * A {@link FieldBridge} for indexing {@link LatitudeLongitudeBox}.
+ * A {@link FieldBridge} for indexing Related Data between resources and data sets.
  * 
- * This adds bounding box coordinates to the index document and
- * calculates minx' and maxx' to allow boxes to be drawn across
- * the prime meridian.
+ * This takes the data in the relatedDatasetData() map on InformationResource entities and adds it as field-value pairs on that resource's lucene document.
  * 
- * @author <a href="mailto:matt.cordial@asu.edu">Matt Cordial</a>
  * @version $Rev$
  * 
  */

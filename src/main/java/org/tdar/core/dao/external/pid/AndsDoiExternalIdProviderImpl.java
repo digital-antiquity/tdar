@@ -3,7 +3,9 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +20,7 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.utils.MessageHelper;
 
 import au.csiro.doiclient.AndsDoiClient;
 import au.csiro.doiclient.AndsDoiResponse;
@@ -114,7 +117,9 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private String getStringProperty(String property) {
         String result = assistant.getProperty(property, null);
         if (result == null) {
-            throw new IllegalStateException("AndsDoi required property not set: " + property);
+            List<String> vals = new ArrayList<>();
+            vals.add(property);
+            throw new IllegalStateException(MessageHelper.getMessage("andsDoi.required_property_not_set", vals));
         }
         return result;
     }
@@ -173,7 +178,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> getMetadata(String identifier) {
-        throw new TdarRecoverableRuntimeException("This method has yet to be writted.");
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
     }
 
     @Override
@@ -203,7 +208,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException("Could not " + operation + " doi: " + response.getMessage());
+            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete", Arrays.asList(operation, response.getMessage()));
         }
     }
 
@@ -214,7 +219,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         if (r instanceof InformationResource) { // should always be true, but
             Creator copyrightHolder = ((InformationResource) r).getCopyrightHolder();
             if (copyrightHolder != null) {
-                //uploaded resources might not have these set.
+                // uploaded resources might not have these set.
                 creatorNames.add(copyrightHolder.getName());
             }
         }

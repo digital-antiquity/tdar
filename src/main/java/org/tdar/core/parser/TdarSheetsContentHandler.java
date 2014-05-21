@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TdarSheetsContentHandler implements SheetContentsHandler {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    int toRead = -1;
-    int rowNum = 0;
+    private int toRead = -1;
+    private int rowNum = 0;
     private List<List<String>> rows = new ArrayList<>();
     private List<String> row = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
 
         for (int i = 0; i < chars.length; i++) {
             // retrieve ascii value of character, subtract 96 so number corresponds to place in alphabet. ascii 'a' = 97
-            multiplier = (int) chars[i] - 96;
+            multiplier = chars[i] - 96;
             // mult the number by 26^(position in array)
             retVal += multiplier * Math.pow(26, i);
         }

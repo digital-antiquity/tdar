@@ -12,10 +12,13 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * @author abrin
@@ -23,7 +26,9 @@ import org.tdar.core.exception.TdarValidationException;
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String NOT = " NOT ";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String fieldName;
     private String displayName;
@@ -49,36 +54,39 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         getFieldValues().add(obj);
     }
 
-    public FieldQueryPart(String fieldName, String displayName, Collection<C> fieldValues_) {
+    public FieldQueryPart(String fieldName, String displayName, Collection<C> incomingValues) {
         this.fieldName = fieldName;
-        setFieldValues(fieldValues_);
+        setFieldValues(incomingValues);
         setDisplayName(displayName);
     }
 
-    public FieldQueryPart(String fieldName, String displayName, Operator oper, Collection<C> fieldValues_) {
-        this(fieldName, displayName, fieldValues_);
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, Collection<C> incomingValues) {
+        this(fieldName, displayName, incomingValues);
         this.operator = oper;
     }
 
-    public FieldQueryPart(String fieldName, String displayName, Operator oper, C... fieldValues_) {
-        this(fieldName, displayName, Arrays.asList(fieldValues_));
+    @SuppressWarnings("unchecked")
+    public FieldQueryPart(String fieldName, String displayName, Operator oper, C... incomingValues) {
+        this(fieldName, displayName, Arrays.asList(incomingValues));
         this.operator = oper;
     }
 
-    public FieldQueryPart(String fieldName, C... fieldValues_) {
-        this(fieldName, "", Arrays.asList(fieldValues_));
+    @SuppressWarnings("unchecked")
+    public FieldQueryPart(String fieldName, C... incomingValues) {
+        this(fieldName, "", Arrays.asList(incomingValues));
     }
 
-    public FieldQueryPart(String fieldName, Collection<C> fieldValues_) {
-        this(fieldName, "", fieldValues_);
+    public FieldQueryPart(String fieldName, Collection<C> incomingValues) {
+        this(fieldName, "", incomingValues);
     }
 
-    public FieldQueryPart(String fieldName, Operator oper, Collection<C> fieldValues_) {
-        this(fieldName, "", oper, fieldValues_);
+    public FieldQueryPart(String fieldName, Operator oper, Collection<C> incomingValues) {
+        this(fieldName, "", oper, incomingValues);
     }
 
-    public FieldQueryPart(String fieldName, Operator oper, C... fieldValues_) {
-        this(fieldName, "", oper, fieldValues_);
+    @SuppressWarnings("unchecked")
+    public FieldQueryPart(String fieldName, Operator oper, C... incomingValues) {
+        this(fieldName, "", oper, incomingValues);
     }
 
     public FieldQueryPart<C> setPhraseFormatters(PhraseFormatter... phraseFormatters) {
@@ -138,7 +146,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         String value = "";
         value = formatValueAsStringForQuery(index);
 
-        if (value == null || StringUtils.isBlank(value)) {
+        if ((value == null) || StringUtils.isBlank(value)) {
             return;
         }
         if (CollectionUtils.isNotEmpty(phraseFormatters)) {
@@ -236,7 +244,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
      */
     public FieldQueryPart<C> setFuzzy(Float fuzzy) {
         if (fuzzy > 1) {
-            throw new TdarRecoverableRuntimeException("fuzzyness can only be between 0 & 1");
+            throw new TdarRecoverableRuntimeException("fieldQueryPart.fuzzyness_out_of_range");
         }
         this.fuzzy = fuzzy;
         return this;
@@ -263,28 +271,33 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     @Override
-    public String getDescription() {
-        if (!descriptionVisible)
+    public String getDescription(TextProvider provider) {
+        if (!descriptionVisible) {
             return "";
+        }
         List<Object> vals = new ArrayList<Object>();
         for (int i = 0; i < getFieldValues().size(); i++) {
             Object val = getFieldValues().get(i);
             if (SimpleSearch.class.isAssignableFrom(val.getClass())) {
                 val = ((SimpleSearch) val).getTitle();
+            } else if (val instanceof Localizable) {
+                val = provider.getText(((Localizable) val).getLocaleKey());
             } else if (val instanceof HasLabel) {
                 val = ((HasLabel) val).getLabel();
             }
+            val = " " + val + " ";
             vals.add(val);
         }
 
-        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator()));
+        return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
+    @Override
     public Operator getOperator() {
         return operator;
     }
@@ -302,8 +315,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     protected String getInverse() {
-        if (isInverse())
-            return " NOT ";
+        if (isInverse()) {
+            return NOT;
+        }
         return "";
     }
 
@@ -326,6 +340,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return fieldValues;
     }
 
+    @SuppressWarnings("unchecked")
     public void setFieldValues(Collection<C> fieldValues) {
         this.fieldValues.clear();
         for (C item : fieldValues) {
@@ -333,6 +348,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void add(C... values) {
         for (C value : values) {
             if (validate(value)) {
@@ -343,10 +359,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     // should a fieldValue be ignored when adding it to the value list? breaking out into separate method so that subclasses can make the call
     protected boolean validate(C value) {
-        if (value == null)
+        if (value == null) {
             return false;
-        if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException(String.format("%s is not valid", value));
+        }
+        if ((value instanceof Validatable) && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
+            throw new TdarValidationException("fieldQueryPart.is_not_valid", Arrays.asList(value.toString()));
         }
         return true;
     }
@@ -362,10 +379,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.displayName = displayName;
     }
 
+    @Override
     public boolean isDescriptionVisible() {
         return descriptionVisible;
     }
 
+    @Override
     public void setDescriptionVisible(boolean descriptionVisible) {
         this.descriptionVisible = descriptionVisible;
     }
@@ -381,11 +400,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     public void update() {
     }
 
-    public String getDescriptionOperator() {
-        String delim = " and ";
+    public String getDescriptionOperator(TextProvider provider) {
+        String delim = " " + provider.getText("fieldQueryPart.and");
         if (getOperator() == Operator.OR) {
-            delim = " or ";
+            delim = provider.getText("fieldQueryPart.or");
         }
+        delim += " ";
         return delim;
     }
 

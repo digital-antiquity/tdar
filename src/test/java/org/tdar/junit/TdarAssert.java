@@ -24,8 +24,9 @@ public class TdarAssert {
 
     public static void assertMatches(String message, String haystack, String pattern) {
         Pattern pat = Pattern.compile(pattern);
-        if (!pat.matcher(haystack).matches())
+        if (!pat.matcher(haystack).matches()) {
             fail(message);
+        }
     }
 
 }

@@ -54,7 +54,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                     continue;
                 }
                 if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
-                    throw new TdarRecoverableRuntimeException(String.format("Null code (%s) or term(%s)", code, term));
+                    throw new TdarRecoverableRuntimeException("csvCodingSheetParser.null_code_or_term", Arrays.asList(code, term));
                 }
 
                 CodingRule codingRule = new CodingRule();
@@ -71,11 +71,10 @@ public class CsvCodingSheetParser implements CodingSheetParser {
             throw new CodingSheetParserException(e);
         } catch (ArrayIndexOutOfBoundsException e) {
             logger.error("Invalid CSV format for coding sheets.", e);
-            throw new CodingSheetParserException(
-                    "We couldn't parse your coding rules properly.  Please enter at least 2 columns and make sure your input is well-formed.", e);
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_columns", e);
         }
         if (emptyBecauseOfParseIssues) {
-            throw new CodingSheetParserException("We couldn't parse your coding sheet properly, it does not appear to be in comma-separated-value format");
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_comma");
         }
         return codingRules;
     }

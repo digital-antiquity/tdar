@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -14,6 +16,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -21,18 +24,22 @@ import org.tdar.core.service.resource.ResourceService;
 public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
     private static final long serialVersionUID = 6866081834770368244L;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private ResourceService resourceService;
+    private transient ResourceService resourceService;
 
     @Autowired
-    private EntityService entityService;
+    private transient GenericService genericService;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
+    private transient EntityService entityService;
 
-    int batchCount = 0;
-    boolean run = false;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+
+    private int batchCount = 0;
+    private boolean run = false;
 
     @Override
     public void execute() {
@@ -50,7 +57,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_GIS, resourceService.countActiveResources(ResourceType.GEOSPATIAL), ""));
         stats.add(generateStatistics(StatisticType.NUM_ARCHIVES, resourceService.countActiveResources(ResourceType.ARCHIVE), ""));
         stats.add(generateStatistics(StatisticType.NUM_AUDIO, resourceService.countActiveResources(ResourceType.AUDIO), ""));
-
+        Thread.yield();
         stats.add(generateStatistics(StatisticType.NUM_DOCUMENT_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DOCUMENT), ""));
         stats.add(generateStatistics(StatisticType.NUM_DATASET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DATASET), ""));
         stats.add(generateStatistics(StatisticType.NUM_VIDEO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.VIDEO), ""));
@@ -61,13 +68,15 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_GIS_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.GEOSPATIAL), ""));
         stats.add(generateStatistics(StatisticType.NUM_ARCHIVES_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.ARCHIVE), ""));
         stats.add(generateStatistics(StatisticType.NUM_AUDIO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.AUDIO), ""));
+        Thread.yield();
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
+        Thread.yield();
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
-        entityService.save(stats);
+        genericService.saveOrUpdate(stats);
     }
 
     protected AggregateStatistic generateStatistics(AggregateStatistic.StatisticType statisticType, Number value, String comment) {

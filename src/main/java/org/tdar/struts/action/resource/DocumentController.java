@@ -53,7 +53,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
     @Override
     public String execute() {
         if (isNullOrNew()) {
-            logger.warn("trying to link related/source document with null or new resource.");
+            getLogger().warn("trying to link related/source document with null or new resource.");
             return REDIRECT_HOME;
         }
         return SUCCESS;
@@ -82,7 +82,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
     // return;
     // if (StringUtils.isBlank(linkType))
     // return;
-    // logger.debug("linking information resource: " + linkedInformationResource.getTitle() + " as " + linkType + " with " + getPersistable().getTitle());
+    // getLogger().debug("linking information resource: " + linkedInformationResource.getTitle() + " as " + linkType + " with " + getPersistable().getTitle());
     // if (linkType.equals("related")) {
     // linkedInformationResource.getRelatedCitations().add(getPersistable());
     // } else if (linkType.equals("source")) {
@@ -126,8 +126,9 @@ public class DocumentController extends AbstractInformationResourceController<Do
         this.linkType = linkType;
     }
 
+    @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.DOCUMENT);
+        return getAnalyzer().getExtensionsForType(ResourceType.DOCUMENT);
     }
 
     public void setDocument(Document document) {
@@ -138,6 +139,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
         return getPersistable();
     }
 
+    @Override
     public Class<Document> getPersistableClass() {
         return Document.class;
     }

@@ -9,11 +9,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.FieldLength;
 
 /**
  * $Id$
  * <p>
- * (What kind of files are allowed to be Images?
+ * Represents any type of geospatial object, ShapeFile, GeoDatabase, and Georectified image
  * </p>
  * 
  * @author Adam Brin
@@ -38,13 +39,13 @@ public class Geospatial extends Dataset {
     @Type(type = "org.hibernate.type.StringClobType")
     private String currentnessUpdateNotes;
 
-    @Column(name = "spatial_reference_system", length = 50)
+    @Column(name = "spatial_reference_system", length = FieldLength.FIELD_LENGTH_50)
     private String spatialReferenceSystem;
 
-    @Column(name = "map_source", length = 500)
+    @Column(name = "map_source", length = FieldLength.FIELD_LENGTH_500)
     private String mapSource;
 
-    @Column(name = "scale", length = 100)
+    @Column(name = "scale", length = FieldLength.FIELD_LENGTH_100)
     private String scale;
 
     @Override
@@ -93,12 +94,6 @@ public class Geospatial extends Dataset {
 
     @Override
     public boolean isValidForController() {
-        // if (StringUtils.isEmpty(getSpatialReferenceSystem())) {
-        // throw new TdarValidationException("A spatial reference system is required for this " + getResourceType());
-        // }
-        // if (StringUtils.isEmpty(getProjection())) {
-        // throw new TdarValidationException("A projection is required for this " + getResourceType());
-        // }
         return super.isValidForController();
     }
 

@@ -11,45 +11,45 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
+/**
+ * Represents a physical address for a person or institution.
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Table(name = "creator_address")
 public class Address extends Base implements Persistable, Validatable {
 
-    public static final String ADDRESS_TYPE_IS_REQUIRED = "an address type is required";
-    public static final String POSTAL_CODE_IS_REQUIRED = "a postal code is required";
-    public static final String COUNTRY_IS_REQUIRED = "a country is required";
-    public static final String STATE_IS_REQUIRED = "a state is required";
-    public static final String CITY_IS_REQUIRED = "a city is required";
-    public static final String STREET_ADDRESS_IS_REQUIRED = "a street address is required";
-
     private static final long serialVersionUID = 3179122792715811371L;
 
     @NotNull
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String street1;
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String street2;
     @NotNull
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String city;
     @NotNull
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String state;
     @NotNull
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String postal;
     @NotNull
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String country;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", length = 255)
+    @Column(name = "type", length = FieldLength.FIELD_LENGTH_255)
     @NotNull
     private AddressType type;
 
@@ -138,29 +138,29 @@ public class Address extends Base implements Persistable, Validatable {
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {
-            throw new TdarValidationException(STREET_ADDRESS_IS_REQUIRED);
+            throw new TdarValidationException("address.street_required");
         }
         if (StringUtils.isBlank(city)) {
-            throw new TdarValidationException(CITY_IS_REQUIRED);
+            throw new TdarValidationException("address.city_required");
         }
         if (StringUtils.isBlank(state)) {
-            throw new TdarValidationException(STATE_IS_REQUIRED);
+            throw new TdarValidationException("address.state_required");
         }
         if (StringUtils.isBlank(country)) {
-            throw new TdarValidationException(COUNTRY_IS_REQUIRED);
+            throw new TdarValidationException("address.country_required");
         }
         if (StringUtils.isBlank(postal)) {
-            throw new TdarValidationException(POSTAL_CODE_IS_REQUIRED);
+            throw new TdarValidationException("address.postal_required");
         }
         if (type == null) {
-            throw new TdarValidationException(ADDRESS_TYPE_IS_REQUIRED);
+            throw new TdarValidationException("address.type_required");
         }
         return true;
     }
 
     public String getAddressSingleLine() {
         StringBuilder sb = new StringBuilder(getStreet1());
-        if (sb.length() > 0 && StringUtils.isNotBlank(getStreet2())) {
+        if ((sb.length() > 0) && StringUtils.isNotBlank(getStreet2())) {
             sb.append(" ").append(getStreet2());
         }
         if (sb.length() > 0) {

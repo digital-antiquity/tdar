@@ -26,7 +26,7 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 /**
  * @author Adam Brin
  */
-//@Ignore("This test will only work when run from IP addresses registered with ANDS. For more see: https://jira.ands.org.au/browse/SD-4419")
+ @Ignore("not used in stable")
 public class AndsPidsITCase extends AbstractSearchControllerITCase {
 
     @Autowired
@@ -55,6 +55,7 @@ public class AndsPidsITCase extends AbstractSearchControllerITCase {
             Resource r = resourceService.find(DOCUMENT_INHERITING_CULTURE_ID);
             pidsDao.connect();
             String absoluteUrl = urlService.absoluteUrl(r);
+            logger.debug(absoluteUrl);
             Map<String, String> createdIDs = pidsDao.create(r, absoluteUrl);
             assertEquals(1, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();

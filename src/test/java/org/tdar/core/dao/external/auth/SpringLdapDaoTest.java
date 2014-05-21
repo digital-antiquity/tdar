@@ -1,8 +1,11 @@
 package org.tdar.core.dao.external.auth;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
+
+import java.util.Arrays;
 
 import javax.naming.Name;
 
@@ -19,12 +22,11 @@ import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
 import org.tdar.core.bean.entity.Person;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 /**
  * We know that the Spring LDAP code is tested by SpringSource. We simply need to test that our interface between tdar and that code works as we expect it to.
- * Hence we choose to mock the spring code and test to see if our codes public interface works as expected. We are only testing the methods in the 
+ * Hence we choose to mock the spring code and test to see if our codes public interface works as expected. We are only testing the methods in the
  * AuthenticationProvider interface that are actually supported/implemented by the SpringLdapDao written by Nuwan.
+ * 
  * @author Martin Paulo
  */
 public class SpringLdapDaoTest {
@@ -103,7 +105,7 @@ public class SpringLdapDaoTest {
                 will(returnValue(person));
             }
         });
-        assertFalse(dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResult.ACCOUNT_EXISTS, dao.addUser(person, password, TdarGroup.TDAR_USERS));
         context.assertIsSatisfied();
     }
 
@@ -121,7 +123,7 @@ public class SpringLdapDaoTest {
                 oneOf(template).modifyAttributes(with(any(DirContextOperations.class))); // add the group
             }
         });
-        assertTrue(dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResult.VALID, dao.addUser(person, password, TdarGroup.TDAR_USERS));
         context.assertIsSatisfied();
     }
 
@@ -154,7 +156,7 @@ public class SpringLdapDaoTest {
     @Test
     public void willFindGroupMemberships() {
         final Person person = getNewPerson();
-        final String[] groups = {"agroup", "bgroup"};
+        final String[] groups = { "agroup", "bgroup" };
         context.checking(new Expectations() {
             {
                 oneOf(template).search(with(any(DistinguishedName.class)), with(any(String.class)), with(any(AttributesMapper.class)));

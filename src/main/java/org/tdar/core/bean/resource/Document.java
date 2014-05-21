@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,8 +12,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -20,13 +19,12 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
- * $Id$
- * 
  * Represents a Document information resource.
  * 
  * The design decision was made to have null fields instead of overloading fields to mean different things for different
@@ -41,21 +39,22 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  */
 @Entity
 @Indexed
-@Table(name = "document")
+@Table(name = "document", indexes = {
+        @Index(name = "document_type_index", columnList = "document_type")
+})
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 
     private static final long serialVersionUID = 7895887664126751989L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "document_type", length = 255)
-    @Index(name = "document_type_index")
+    @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "degree", length = 50)
+    @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
     private DegreeType degree;
@@ -63,29 +62,29 @@ public class Document extends InformationResource {
     @BulkImportField(label = "Series Name")
     @Column(name = "series_name")
     @Field
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesName;
 
     @BulkImportField(label = "Series Number")
     @Column(name = "series_number")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesNumber;
 
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
     @BulkImportField(label = "Edition")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String edition;
 
     @BulkImportField(label = "ISBN")
     @Field
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
     @BulkImportField(label = "Book Title")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "book_title")
     @Field
     // @Boost(1.5f)
@@ -93,14 +92,14 @@ public class Document extends InformationResource {
 
     @BulkImportField(label = "ISSN")
     @Field
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
     @BulkImportField(label = "DOI")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String doi;
 
     @BulkImportField(label = "Start Page", order = 10)
@@ -116,11 +115,11 @@ public class Document extends InformationResource {
     @BulkImportField(label = "Journal Name")
     @Column(name = "journal_name")
     @Field
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalName;
 
     @BulkImportField(label = "Volume")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String volume;
 
     @BulkImportField(label = "# of Volumes")
@@ -129,7 +128,7 @@ public class Document extends InformationResource {
 
     @BulkImportField(label = "Journal Number")
     @Column(name = "journal_number")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalNumber;
 
     public Document() {
@@ -206,7 +205,7 @@ public class Document extends InformationResource {
         Integer count = 0;
         if (CollectionUtils.isNotEmpty(getInformationResourceFiles())) {
             for (InformationResourceFile file : getInformationResourceFiles()) {
-                if (!file.isDeleted() && file.getNumberOfParts() != null) {
+                if (!file.isDeleted() && (file.getNumberOfParts() != null)) {
                     count += file.getNumberOfParts();
                 }
             }
@@ -330,7 +329,7 @@ public class Document extends InformationResource {
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
         }
-        if (getDate() != null && getDate() != -1) {
+        if ((getDate() != null) && (getDate() != -1)) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
         return sb.toString();

@@ -18,7 +18,12 @@
 </#if>
  /> 
 </#if>
-
+<#--render a HierarchicalKeyword object as a 'treeview' widget with checkboxes at each node
+    @param node:HierarchicalKeyword the keyword object that should serve as the "root" node
+    @param name:string  name of valuestack entry that contains list<long> keyword.id values. For
+        every checkbox corresponding to a keyword node, if the list contains the same number as the id of that
+        keyword, this macro renders that checkbox as being "checked".
+-->
 <#macro listKeywords node>
     <#local ulid = "${parameters.name?html}_Treeview" />
     <#if parameters.id??>

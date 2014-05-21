@@ -130,7 +130,19 @@ public class TestConfiguration {
     }
 
     public Long getEditorUserId() {
-        return assistant.getLongProperty("tdar.editor.id", 8093L);
+        return assistant.getLongProperty("tdar.editor.id", 8094L);
+    }
+
+    public String getBillingAdminUsername() {
+        return assistant.getStringProperty("tdar.billing.username", "billing@tdar.org");
+    }
+
+    public String getBillingAdminPassword() {
+        return assistant.getStringProperty("tdar.billing.password", "billing");
+    }
+
+    public Long getBillingAdminUserId() {
+        return assistant.getLongProperty("tdar.billing.id", 8095L);
     }
 
     public String getBaseUrl() {
@@ -165,6 +177,10 @@ public class TestConfiguration {
 
     public int getMaxAPIFindAll() {
         return assistant.getIntProperty("test.findall.max", 10);
+    }
+
+    public int getWaitInt() {
+        return 1;
     }
 
 }

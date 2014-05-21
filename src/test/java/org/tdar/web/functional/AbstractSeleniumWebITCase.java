@@ -8,22 +8,40 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -43,10 +61,12 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -57,11 +77,8 @@ public abstract class AbstractSeleniumWebITCase {
     // private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String PATH_OUTPUT_ROOT = "target/selenium";
 
-
-    //regex pattern for js error that typically occurs when rendering google maps in test
+    // regex pattern for js error that typically occurs when rendering google maps in test
     public static final String IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent");
-
-
 
     private String pageText = null;
 
@@ -78,7 +95,8 @@ public abstract class AbstractSeleniumWebITCase {
     // protect against infinite loops killing our disk space
     static int MAX_SCREENSHOTS_PER_TEST = 100;
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean ignorePageErrorChecks;
 
     // Predicates that can be used as arguments for FluentWait.until.
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -97,49 +115,62 @@ public abstract class AbstractSeleniumWebITCase {
     private Set<WebElement> clickElems = new HashSet<>();
 
     private WebDriverEventListener eventListener = new WebDriverEventListener() {
+        @Override
         public void afterNavigateTo(String url, WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeNavigateBack(WebDriver driver) {
             beforePageChange();
         }
 
+        @Override
         public void afterNavigateBack(WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeNavigateForward(WebDriver driver) {
             beforePageChange();
         }
 
+        @Override
         public void afterNavigateForward(WebDriver driver) {
             afterPageChange();
         }
 
+        @Override
         public void beforeFindBy(By by, WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void afterFindBy(By by, WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void beforeChangeValueOf(WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void afterChangeValueOf(WebElement element, WebDriver driver) {
         }
 
+        @Override
         public void beforeScript(String script, WebDriver driver) {
         }
 
+        @Override
         public void afterScript(String script, WebDriver driver) {
         }
 
+        @Override
         public void onException(Throwable throwable, WebDriver driver) {
             logger.error("hey there was an error", throwable);
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
 
+        @Override
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if (elementCausesNavigation(element)) {
                 clickElems.add(element);
@@ -147,6 +178,7 @@ public abstract class AbstractSeleniumWebITCase {
             }
         }
 
+        @Override
         public void afterClickOn(WebElement element, WebDriver driver) {
             // if beforeClickOn() put this element here, we are on the other side of page change.
             if (clickElems.remove(element)) {
@@ -162,6 +194,7 @@ public abstract class AbstractSeleniumWebITCase {
                     || (tag.equals("button") && "submit".equals(element.getAttribute("type")));
         }
 
+        @Override
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }
@@ -179,14 +212,24 @@ public abstract class AbstractSeleniumWebITCase {
         }
         removeAffix();
         takeScreenshot();
+        if (!isIgnorePageErrorChecks()) {
+            String text = getText();
+            String lcText = text.toLowerCase();
+            for (String err : AbstractWebTestCase.errorPatterns) {
+                if (text.contains(err) || lcText.contains(err)) {
+                    fail("page has '" + err + "'");
+                }
+            }
+            setIgnorePageErrorChecks(false);
+        }
+
     }
 
-
-    //temporary hack
+    // temporary hack
     private void removeAffix() {
         try {
             executeJavascript("$('#subnavbar').remove()");
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logger.warn("js error", ex);
         }
     }
@@ -229,7 +272,11 @@ public abstract class AbstractSeleniumWebITCase {
                 for (String key : environment.keySet()) {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
-                driver = new FirefoxDriver(fb, new FirefoxProfile());
+                FirefoxProfile profile = new FirefoxProfile();
+                if (isOSX()) {
+                    profile.setPreference("focusmanager.testmode", true);
+                }
+                driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
                 // http://peter.sh/experiments/chromium-command-line-switches
@@ -278,6 +325,11 @@ public abstract class AbstractSeleniumWebITCase {
         this.driver = eventFiringWebDriver;
     }
 
+    public static boolean isOSX() {
+        String osName = System.getProperty("os.name");
+        return osName.contains("OS X");
+    }
+
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
         caps.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         caps.setCapability("initialBrowserUrl", "about:blank");
@@ -305,7 +357,6 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @After
     public final void shutdownSelenium() {
-        logger.debug("after");
         takeScreenshot();
         try {
             driver.quit();
@@ -326,10 +377,12 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void takeScreenshot(String filename) {
-        if (!screenshotsAllowed)
+        if (!screenshotsAllowed) {
             return;
-        if (screenidx > MAX_SCREENSHOTS_PER_TEST)
+        }
+        if (screenidx > MAX_SCREENSHOTS_PER_TEST) {
             return;
+        }
 
         screenidx++;
         // this is necessary since we take since onException() calls takeScreenshot()
@@ -463,6 +516,7 @@ public abstract class AbstractSeleniumWebITCase {
             String url = absoluteUrl(base, path);
             logger.debug("going to: {}", url);
             driver.get(url);
+            waitForPageload();
         } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);
@@ -542,6 +596,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#loginUsername").sendKeys(username);
         find("#loginPassword").sendKeys(password);
         find("#btnLogin").click();
+        waitForPageload();
     }
 
     public void logout() {
@@ -711,7 +766,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public int clickElementUntil(WebElement element, By findBy, int max) {
         int i = 0;
-        while (find(findBy).size() == 0 && i < max) {
+        while ((find(findBy).size() == 0) && (i < max)) {
             element.click();
             i++;
         }
@@ -722,8 +777,16 @@ public abstract class AbstractSeleniumWebITCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
     }
 
-    public boolean hasReindexedOnce() {
-        return reindexed;
+    public void loginEditor() {
+        login(CONFIG.getEditorUsername(), CONFIG.getEditorPassword());
+    }
+
+    public static boolean hasReindexedOnce() {
+        return AbstractSeleniumWebITCase.reindexed;
+    }
+
+    public static void setReindexed(boolean val) {
+        AbstractSeleniumWebITCase.reindexed = val;
     }
 
     public void reindex() {
@@ -733,7 +796,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#idxBtn").click();
         waitFor("#spanDone", 120);
         logout();
-        reindexed = true;
+        AbstractSeleniumWebITCase.setReindexed(true);
     }
 
     /**
@@ -779,8 +842,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public List<String> getJavascriptErrors() {
-        List<String> errors =  executeJavascript("return window.__errorMessages;");
-        if(errors == null) {
+        List<String> errors = executeJavascript("return window.__errorMessages;");
+        if (errors == null) {
             errors = Collections.emptyList();
         }
         return errors;
@@ -790,13 +853,13 @@ public abstract class AbstractSeleniumWebITCase {
         this.ignoreJavascriptErrors = ignoreJavascriptErrors;
     }
 
-    //        message: "errorEvent::" +  (evt.message || "(no error message)"),
-    //                filename: evt.filename || "(no filename - probably script from remote host)",
-    //                line: evt.lineno,
-    //                tag: "(inline script)"
+    // message: "errorEvent::" + (evt.message || "(no error message)"),
+    // filename: evt.filename || "(no filename - probably script from remote host)",
+    // line: evt.lineno,
+    // tag: "(inline script)"
     /**
      * If any javascript errors have occured since last pageload, log them and (if ignoreJavascriptErrors==false) fail the test.
-     *
+     * 
      * Note: most actions that cause page navigation will implicitly callreportJavascriptErrors() anyway, such as formSubmit(), gotoPage(), and click events on
      * links & buttons. An example of when you might wish to explicitly call this method is when you expect a javascript function to modify the
      * <code>Window.location</code> property, or if you call {@link WebElement#submit()} rather than submitForm();
@@ -807,7 +870,7 @@ public abstract class AbstractSeleniumWebITCase {
         logger.trace("javascript error report for {}", driver.getCurrentUrl());
 
         for (String error : errors) {
-            if(isLegitJavascriptError(error)) {
+            if (isLegitJavascriptError(error)) {
                 logger.error("javascript error: {}", error);
                 legitErrors.add(error);
             } else {
@@ -893,7 +956,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#inputMethodId").find("[value=file]").click();
         find("#fileUploadField").sendKeys(uploadFile.getAbsolutePath());
     }
-    
+
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
@@ -915,7 +978,7 @@ public abstract class AbstractSeleniumWebITCase {
     protected void expandAllTreeviews() {
         int giveupCount = 0;
         // yes, you really have to do this. the api has no "expand all" method.
-        while (!find(".expandable-hitarea").visibleElements().isEmpty() && giveupCount++ < 10) {
+        while (!find(".expandable-hitarea").visibleElements().isEmpty() && (giveupCount++ < 10)) {
             find(".expandable-hitarea").visibleElements().click();
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 10);
@@ -932,7 +995,6 @@ public abstract class AbstractSeleniumWebITCase {
         // waitFor(".ui-menu-item a").click();
     }
 
-    
     protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
         setFieldByName(prefix + ".institution.name", p.getName());
         setFieldByName(prefix + ".role", role.name());
@@ -968,57 +1030,89 @@ public abstract class AbstractSeleniumWebITCase {
      *             menu to appear.
      * 
      */
-    public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest) {
+    public boolean selectAutocompleteValue(WebElement field, String textEntry, String partialMenuItemTest, String idSelector) {
         field.sendKeys(textEntry);
-        waitFor(4); // kludge
+        waitFor(TestConfiguration.getInstance().getWaitInt()); // kludge
         field.sendKeys(Keys.ARROW_DOWN);
         WebElementSelection menuItems = null;
-        try {
-            menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", 20);
-        } catch (TimeoutException tex) {
+        for (int i = 0; i < 30; i++) {
+            if ((menuItems == null) || menuItems.isEmpty()) {
+                try {
+                    menuItems = waitFor("ul.ui-autocomplete li.ui-menu-item", TestConfiguration.getInstance().getWaitInt());
+                } catch (TimeoutException tex) {
+                    // ignore
+                }
+            }
+        }
+        if ((menuItems == null) || menuItems.isEmpty()) {
             fail("could not set value on  " + field + " because autocomplete never appeared or was dismissed too soon");
         }
 
-        logger.info("menuItems: {} ({})", menuItems, menuItems.size());
+        logger.trace("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
         String partialText = partialMenuItemTest.toLowerCase();
         WebElement firstMatch = null;
         for (WebElement menuItem : menuItems) {
             String text = menuItem.getText().toLowerCase();
-            logger.info(text);
-            if (text.contains(partialText)) {
+            WebElementSelection wes = new WebElementSelection(menuItem, getDriver());
+            String html = wes.getHtml();
+            if (text.contains(partialText) || (StringUtils.isNotBlank(idSelector) && StringUtils.containsIgnoreCase(html, idSelector))) {
                 firstMatch = menuItem;
                 break;
             }
+            logger.info(text);
         }
 
         boolean wasFound = firstMatch != null;
         logger.info("match: {} ", firstMatch);
         if (wasFound) {
             (firstMatch.findElement(By.tagName("a"))).click();
-            waitFor(2);
+            waitFor(TestConfiguration.getInstance().getWaitInt());
         }
         return wasFound;
     }
 
-    //set a list of regex strings that correspond to error messages that we should ignore (e.g.  google map quota errors)
-    public void setJavascriptIgnorePatterns(String ... patterns) {
-        for(String str : patterns) {
+    // set a list of regex strings that correspond to error messages that we should ignore (e.g. google map quota errors)
+    public void setJavascriptIgnorePatterns(String... patterns) {
+        for (String str : patterns) {
             Pattern pattern = Pattern.compile(str);
             jserrorIgnorePatterns.add(pattern);
         }
     }
 
-    //return true if this is a legit error (i.e something we aren't ignoring)
+    // return true if this is a legit error (i.e something we aren't ignoring)
     public boolean isLegitJavascriptError(String error) {
-        for(Pattern pattern : jserrorIgnorePatterns) {
-            if(pattern.matcher(error).find()) return false;
+        for (Pattern pattern : jserrorIgnorePatterns) {
+            if (pattern.matcher(error).find()) {
+                return false;
+            }
         }
         return true;
     }
 
-    //return true if this is an ignorable error
+    // return true if this is an ignorable error
     public boolean isIgnoreableJavascriptError(String error) {
         return !isLegitJavascriptError(error);
+    }
+
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+
+        WebElement blankField = find(By.name(nameField)).first();
+        if (!selectAutocompleteValue(blankField, name, email, selector)) {
+            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
+                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
+                    "menu.";
+            fail(String.format(fmt, email));
+        }
+        find(By.name(selectField)).val(permissions.name());
+
+    }
+
+    public boolean isIgnorePageErrorChecks() {
+        return ignorePageErrorChecks;
+    }
+
+    public void setIgnorePageErrorChecks(boolean ignorePageErrorChecks) {
+        this.ignorePageErrorChecks = ignorePageErrorChecks;
     }
 
 }

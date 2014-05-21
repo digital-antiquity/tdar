@@ -16,6 +16,7 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -53,31 +55,32 @@ public class GenericDao {
         FIND_FIRST_OR_CREATE;
     }
 
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient SessionFactory sessionFactory;
 
-    public <E> E find(Class<E> cls, Long id) {
+    public <T> T find(Class<T> cls, Long id) {
         // FIXME: push guard checks into Service layer.
-        if (id == null)
+        if (id == null) {
             return null;
+        }
         Object objectInSession = getCurrentSession().get(cls, id);
         logger.trace("{}", objectInSession);
-        E obj = cls.cast(objectInSession);
+        T obj = cls.cast(objectInSession);
         logger.trace("object: {}", obj);
         return obj;
     }
-    
-    public <E> List<E> findAllWithProfile(Class<E> class1, List<Long> ids, String profileName) {
+
+    public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
-        List<E> ret = findAll(class1, ids);
+        List<T> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAll(Class<E> persistentClass, Collection<Long> ids) {
+    public <T> List<T> findAll(Class<T> persistentClass, Collection<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
@@ -92,7 +95,7 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<Long> findAllIds(Class<E> persistentClass) {
+    public <T> List<Long> findAllIds(Class<T> persistentClass) {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
     }
 
@@ -102,7 +105,7 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<Long> findAllIds(Class<E> persistentClass, long startId, long endId) {
+    public <T> List<Long> findAllIds(Class<T> persistentClass, long startId, long endId) {
         String hqlfmt = "select id from %s where id between %s and %s order by id asc";
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
@@ -114,7 +117,7 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findIdRange(Class<E> persistentClass, long startId, long endId, int maxResults) {
+    public <T> List<T> findIdRange(Class<T> persistentClass, long startId, long endId, int maxResults) {
         Criteria criteria = getCriteria(persistentClass);
         // FIXME: replace with HasStatus isAssignable?
         if (Resource.class.isAssignableFrom(persistentClass)) {
@@ -128,7 +131,7 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findRandom(Class<E> persistentClass, int maxResults) {
+    public <T> List<T> findRandom(Class<T> persistentClass, int maxResults) {
         Criteria criteria = getCriteria(persistentClass);
         if (Resource.class.isAssignableFrom(persistentClass)) {
             criteria.add(Restrictions.eq("status", Status.ACTIVE));
@@ -138,19 +141,19 @@ public class GenericDao {
         return criteria.list();
     }
 
-    public <E> List<E> findByCriteria(Class<E> cls, DetachedCriteria criteria) {
+    public <T> List<T> findByCriteria(Class<T> cls, DetachedCriteria criteria) {
         return findByCriteria(cls, criteria, -1, -1);
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findByCriteria(Class<E> cls, DetachedCriteria criteria, int start, int numberOfRecords) {
+    public <T> List<T> findByCriteria(Class<T> cls, DetachedCriteria criteria, int start, int numberOfRecords) {
         Session session = getCurrentSession();
         Criteria executableCriteria = criteria.getExecutableCriteria(session);
         if (numberOfRecords != -1) {
             executableCriteria.setMaxResults(numberOfRecords);
             executableCriteria.setFirstResult(start);
         }
-        return (List<E>) executableCriteria.list();
+        return executableCriteria.list();
     }
 
     public <P extends Persistable> List<P> loadFromSparseEntities(Collection<P> incoming, Class<P> cls) {
@@ -159,8 +162,9 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <P extends Persistable> List<P> populateSparseObjectsById(Collection<Long> ids, Class<?> cls) {
-        if (CollectionUtils.isEmpty(ids))
+        if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
+        }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
         if (cls.isAssignableFrom(ResourceCollection.class)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP);
@@ -177,25 +181,25 @@ public class GenericDao {
         return find(cls, item.getId());
     }
 
-    public <E> List<E> findAll(Class<E> cls) {
+    public <T> List<T> findAll(Class<T> cls) {
         return findAll(cls, -1);
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAll(Class<E> cls, int maxResults) {
+    public <T> List<T> findAll(Class<T> cls, int maxResults) {
         Query query = getCurrentSession().createQuery("from " + cls.getName());
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
-        return (List<E>) query.list();
+        return query.list();
     }
 
-    public <E> List<E> findAllSorted(Class<E> cls) {
+    public <T> List<T> findAllSorted(Class<T> cls) {
         return findAllSorted(cls, getDefaultOrderingProperty() + " asc");
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAllSorted(Class<E> cls, String orderingProperty) {
+    public <T> List<T> findAllSorted(Class<T> cls, String orderingProperty) {
         if (StringUtils.isBlank(orderingProperty)) {
             getLogger().warn("Trying to find all sorted with no order by clause, using default ordering property.");
             orderingProperty = getDefaultOrderingProperty() + " asc";
@@ -206,41 +210,45 @@ public class GenericDao {
         return query.list();
     }
 
-    public <E> E findByProperty(Class<E> persistentClass, String propertyName, Object propertyValue) {
+    public <T> T findByProperty(Class<T> persistentClass, String propertyName, Object propertyValue) {
         return persistentClass.cast(getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue)).uniqueResult());
     }
 
+    public <T> T findByPropertyIgnoreCase(Class<T> persistentClass, String propertyName, Object propertyValue) {
+        return persistentClass.cast(getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue).ignoreCase()).uniqueResult());
+    }
+
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAllByProperty(Class<E> persistentClass, String propertyName, Object propertyValue) {
+    public <T> List<T> findAllByProperty(Class<T> persistentClass, String propertyName, Object propertyValue) {
         return getCriteria(persistentClass).add(Restrictions.eq(propertyName, propertyValue)).list();
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAllFromList(Class<E> persistentClass, String propertyName, List<?> propertyValues) {
+    public <T> List<T> findAllFromList(Class<T> persistentClass, String propertyName, List<?> propertyValues) {
         return getCriteria(persistentClass).add(Restrictions.in(propertyName, propertyValues.toArray())).list();
     }
 
-    public <E> E findByName(Class<E> persistentClass, String name) {
+    public <T> T findByName(Class<T> persistentClass, String name) {
         return findByProperty(persistentClass, "name", name);
     }
 
     protected String addWildCards(String value) {
-        if (value.charAt(0) == '%' || value.charAt(value.length() - 1) == '%') {
+        if ((value.charAt(0) == '%') || (value.charAt(value.length() - 1) == '%')) {
             // no-op if any wildcards are already present.
             return value;
         }
         return String.format("%%%s%%", value);
     }
 
-    public <E> List<E> findByExample(Class<E> persistentClass, E entity, FindOptions option) {
+    public <T> List<T> findByExample(Class<T> persistentClass, T entity, FindOptions option) {
         return findByExample(persistentClass, entity, new ArrayList<String>(), option);
     }
 
-    public <E> List<E> findByExample(Class<E> persistentClass, E entity, List<String> ignoredProperties, FindOptions option) {
-        List<E> toReturn = new ArrayList<E>();
+    public <T> List<T> findByExample(Class<T> persistentClass, T entity, List<String> ignoredProperties, FindOptions option) {
+        List<T> toReturn = new ArrayList<T>();
         logger.trace("find by example for {}: {}", persistentClass.getName(), entity);
         logger.trace("  ignoring {} [{}]", ignoredProperties, option);
-        List<E> found = findByExampleLike(persistentClass, entity, MatchMode.EXACT, ignoredProperties);
+        List<T> found = findByExampleLike(persistentClass, entity, MatchMode.EXACT, ignoredProperties);
         logger.trace("found: {} ", found);
         switch (option) {
             case FIND_FIRST_OR_CREATE:
@@ -286,8 +294,8 @@ public class GenericDao {
         return toReturn;
     }
 
-    public <E extends Persistable> E findOrCreateById(Class<E> persistentClass, E entity) {
-        E hibernateProxy = find(persistentClass, entity.getId());
+    public <T extends Persistable> T findOrCreateById(Class<T> persistentClass, T entity) {
+        T hibernateProxy = find(persistentClass, entity.getId());
         if (hibernateProxy == null) {
             save(entity);
             return entity;
@@ -295,13 +303,17 @@ public class GenericDao {
         return hibernateProxy;
     }
 
-    public <E> ScrollableResults findAllScrollable(Class<E> persistentClass) {
+    public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
         return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
+    public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
+        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+    }
+
     @SuppressWarnings("unchecked")
-    public <E> List<E> findByExampleLike(Class<E> persistentClass, E entity, MatchMode matchMode, List<String> ignoreProperties) {
+    public <T> List<T> findByExampleLike(Class<T> persistentClass, T entity, MatchMode matchMode, List<String> ignoreProperties) {
         Example example = Example.create(entity);
         example.enableLike(matchMode);
         if (!CollectionUtils.isEmpty(ignoreProperties)) {
@@ -314,57 +326,68 @@ public class GenericDao {
         return criteria.list();
     }
 
-    protected <E> DetachedCriteria getOrderedDetachedCriteria(Class<E> cls) {
+    protected <T> DetachedCriteria getOrderedDetachedCriteria(Class<T> cls) {
         return getOrderedDetachedCriteria(cls, getDefaultOrderingProperty());
     }
 
-    protected <E> DetachedCriteria getOrderedDetachedCriteria(Class<E> cls, String orderBy) {
+    protected <T> DetachedCriteria getOrderedDetachedCriteria(Class<T> cls, String orderBy) {
         return getDetachedCriteria(cls).addOrder(Order.asc(orderBy));
     }
 
-    protected <E> DetachedCriteria getDetachedCriteria(Class<E> persistentClass) {
-        return DetachedCriteria.forClass(persistentClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+    protected <T> DetachedCriteria getDetachedCriteria(Class<T> persistentClass) {
+        return DetachedCriteria.forClass(persistentClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
-    protected <E> Criteria getCriteria(Class<E> persistentClass) {
-        return getCurrentSession().createCriteria(persistentClass).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+    protected <T> Criteria getCriteria(Class<T> persistentClass) {
+        return getCurrentSession().createCriteria(persistentClass).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
-    public void save(Collection<?> persistentEntities) {
-        for (Object o : persistentEntities) {
+    public <T> void save(Collection<T> persistentEntities) {
+        for (T o : persistentEntities) {
             save(o);
         }
     }
 
-    public void saveOrUpdate(Collection<?> persistentEntities) {
-        for (Object o : persistentEntities) {
+    public <T> void saveOrUpdate(Collection<T> persistentEntities) {
+        for (T o : persistentEntities) {
             saveOrUpdate(o);
         }
     }
 
-    public void persist(Object entity) {
-        getCurrentSession().persist(entity);
+    public <T> void persist(T entity) {
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            getCurrentSession().persist(entity);
+        }
     }
 
-    public void save(Object entity) {
+    public <T> void save(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.save(entity);
     }
 
-    public void saveOrUpdate(Object entity) {
+    public <T> void saveOrUpdate(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.saveOrUpdate(entity);
     }
 
-    public void update(Object entity) {
+    public <T> void update(T entity) {
         Session session = getCurrentSession();
+        if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+        }
         session.update(entity);
     }
 
     @SuppressWarnings("unchecked")
-    public <E> E merge(E entity) {
+    public <T> T merge(T entity) {
         Session session = getCurrentSession();
-        return (E) session.merge(entity);
+        return (T) session.merge(entity);
     }
 
     public <P extends Persistable> P merge(P incomingUnmanagedEntity, P existingManagedEntity) {
@@ -379,32 +402,44 @@ public class GenericDao {
         return entity;
     }
 
-    public void delete(Object entity) {
+    public <T> void delete(T entity) {
         if (entity instanceof HasStatus) {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
-        } else if (entity  instanceof InformationResourceFileVersion) {
-            if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
-                throw new TdarRecoverableRuntimeException("Should not delete Uploaded or Archival Version");
-            } else {
-                forceDelete(entity);
-            }
-        } else {
-            forceDelete(entity);
+            return;
         }
+
+        if (entity instanceof InformationResourceFileVersion) {
+            if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
+                throw new TdarRecoverableRuntimeException("error.cannot_delete_archival");
+            }
+        }
+
+        forceDelete(entity);
     }
 
-    public void forceDelete(Object entity) {
+    public <T> void forceDelete(T entity) {
         Session session = getCurrentSession();
         session.delete(entity);
     }
 
-    public void detachFromSession(Object entity) {
+    public <T> void detachFromSession(T entity) {
         Session session = getCurrentSession();
         session.evict(entity);
     }
 
-    public void detachFromSessionAndWarn(Object entity) {
+    public <T> void detachFromSession(Collection<T> entities) {
+        Session session = getCurrentSession();
+        for (T entity : entities) {
+            session.evict(entity);
+        }
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return getCurrentSession().contains(entity);
+    }
+
+    public <T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
         if (session.contains(entity)) {
             logger.error("This entity should not be on the session: {}", entity);
@@ -417,21 +452,21 @@ public class GenericDao {
      * 
      * @param persistentEntities
      */
-    public void delete(Collection<?> persistentEntities) {
+    public <T> void delete(Collection<T> persistentEntities) {
         if (CollectionUtils.isEmpty(persistentEntities)) {
             return;
         }
         Session session = getCurrentSession();
-        ArrayList<Object> copy = new ArrayList<Object>(persistentEntities);
+        ArrayList<T> copy = new ArrayList<>(persistentEntities);
         // remove associations first
         persistentEntities.clear();
         // then delete all entities.
-        for (Object entity : copy) {
+        for (T entity : copy) {
             session.delete(entity);
         }
     }
 
-    public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
+    public <T extends Persistable> int deleteAll(Class<T> persistentClass) {
         return getCurrentSession().createQuery("DELETE FROM " + persistentClass.getName()).executeUpdate();
     }
 
@@ -476,17 +511,17 @@ public class GenericDao {
         getCurrentSession().clear();
     }
 
-    public void refresh(Object object) {
+    public <T> void refresh(T object) {
         getCurrentSession().refresh(object);
     }
 
-    public void refreshAll(Collection<?> objects) {
-        for (Object object : objects) {
+    public <T> void refreshAll(Collection<T> objects) {
+        for (T object : objects) {
             getCurrentSession().refresh(object);
         }
     }
 
-    public void markReadOnly(Object obj) {
+    public <T> void markReadOnly(T obj) {
         if (getCurrentSession().contains(obj)) {
             // mark as read only
             getCurrentSession().setCacheMode(CacheMode.GET);
@@ -511,11 +546,11 @@ public class GenericDao {
         }
         return obj;
     }
-    
-    public <O> O markWritable(O obj) {
+
+    public <T> T markWritable(T obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
-            if (obj instanceof Persistable && Persistable.Base.isNotTransient((Persistable) obj)) {
+            if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);

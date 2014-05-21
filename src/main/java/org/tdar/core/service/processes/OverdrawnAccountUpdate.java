@@ -18,13 +18,13 @@ import org.tdar.core.service.external.EmailService;
 public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
 
     public static final String SUBJECT = "overdrawn accounts";
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1198012881593988016L;
-    @Autowired
-    private EmailService emailService;
 
+    private static final long serialVersionUID = 1198012881593988016L;
+
+    @Autowired
+    private transient EmailService emailService;
+
+    @Override
     public String getDisplayName() {
         return "Overdrawn Account Process";
     }
@@ -34,6 +34,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         return 10000;
     }
 
+    @Override
     public Class<Account> getPersistentClass() {
         return Account.class;
     }
@@ -52,7 +53,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("accounts", accounts);
-        emailService.sendTemplate("overdrawn-admin.ftl", map, SUBJECT);
+        emailService.sendWithFreemarkerTemplate("overdrawn-admin.ftl", map, SUBJECT);
     }
 
     @Override

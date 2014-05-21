@@ -1,9 +1,12 @@
 package org.tdar.struts.action.search;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -54,6 +57,7 @@ import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
@@ -184,23 +188,40 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
         for (Resource resource : controller.getResults()) {
             logger.info("{}", resource);
-            boolean seen = false;
-            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
-                seen = true;
-            }
-            if (resource instanceof InformationResource) {
-                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-                if (institution != null && institution.getName().contains(namePart)) {
-                    seen = true;
+            boolean seen = checkResourceForValue(namePart, resource);
+            if (resource instanceof Project) {
+                for (Resource r : projectService.findAllResourcesInProject((Project) resource, Status.values())) {
+                    if (seen) {
+                        break;
+                    }
+                    seen = checkResourceForValue(namePart, r);
                 }
-            }
-            for (ResourceCreator creator : resource.getResourceCreators()) {
-                if (creator.getCreator().getProperName().contains(namePart)) {
-                    seen = true;
-                }
+
             }
             assertTrue("should have seen term somwehere", seen);
         }
+    }
+
+    private boolean checkResourceForValue(String namePart, Resource resource) {
+        boolean seen = false;
+        if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+            logger.debug("seen submitter or updater");
+            seen = true;
+        }
+        if (resource instanceof InformationResource) {
+            Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+            if ((institution != null) && institution.getName().contains(namePart)) {
+                logger.debug("seen in institution");
+                seen = true;
+            }
+        }
+        for (ResourceCreator creator : resource.getActiveResourceCreators()) {
+            if (creator.getCreator().getProperName().contains(namePart)) {
+                logger.debug("seen in resource creator");
+                seen = true;
+            }
+        }
+        return seen;
     }
 
     @Test
@@ -425,7 +446,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsUnauthenticatedUser() {
-        genericService.synchronize();
+        evictCache();
 
         setIgnoreActionErrors(true);
         testResourceCounts(null);
@@ -434,7 +455,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicUser() {
-        genericService.synchronize();
+        evictCache();
 
         // testing as a user who did not create their own stuff
         setIgnoreActionErrors(true);
@@ -448,7 +469,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback(true)
     public void testResultCountsAsBasicContributor() {
         // testing as a user who did create their own stuff
-        genericService.synchronize();
+        evictCache();
         setIgnoreActionErrors(true);
         testResourceCounts(getBasicUser());
     }
@@ -456,7 +477,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {
-        genericService.synchronize();
+        evictCache();
         testResourceCounts(getAdminUser());
     }
 
@@ -487,7 +508,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException {
-        Document doc = generateDocumentWithFileAndUser();
+        Document doc = generateDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
         doSearch();
@@ -504,7 +525,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
-                if (Status.DUPLICATE == status || Status.FLAGGED_ACCOUNT_BALANCE == status) {
+                if ((Status.DUPLICATE == status) || (Status.FLAGGED_ACCOUNT_BALANCE == status)) {
                     continue;
                 }
                 resource.setStatus(status);
@@ -525,12 +546,12 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.getResourceTypes().add(resourceType);
         controller.getIncludedStatuses().add(status);
-        if (status == Status.DELETED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user) ||
-                status == Status.FLAGGED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user)) {
+        if (((status == Status.DELETED) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user)) ||
+                ((status == Status.FLAGGED) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user))) {
             logger.debug("expecting exception");
             doSearch(true);
             assertTrue(String.format("expected action errors %s", stat), controller.getActionErrors().size() > 0);
-        } else if (status == Status.DRAFT && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
+        } else if ((status == Status.DRAFT) && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
             // this was in the test, but with the new status search I think this is more accurate to be commented out as
             doSearch(null);
             for (Resource res : controller.getResults()) {
@@ -555,7 +576,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         firstGroup().getProjects().add(sparseProject(projectId));
         doSearch();
         logger.info("{}", controller.getResults());
-        Resource found = (Resource) controller.getResults().iterator().next();
+        Resource found = controller.getResults().iterator().next();
         logger.info("{}", found);
         Assert.assertEquals(message, expectedId, found.getId());
     }
@@ -798,7 +819,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertEquals("only one result expected", 1L, controller.getResults().size());
         assertEquals(doc, controller.getResults().iterator().next());
     }
-    
+
     @Test
     @Rollback
     public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException {
@@ -863,8 +884,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doc2.getGeographicKeywords().add(constantinople);
         genericService.saveOrUpdate(doc1);
         genericService.saveOrUpdate(doc2);
-        genericService.synchronize();
-        searchIndexService.index(doc1,doc2);
+        evictCache();
+        searchIndexService.index(doc1, doc2);
         searchIndexService.flushToIndexes();
         SearchParameters params = new SearchParameters();
         controller.getG().add(params);
@@ -882,7 +903,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getResults().contains(doc1));
         assertFalse(controller.getResults().contains(doc2));
     }
-    
+
     @Test
     @Rollback(true)
     public void testCalDateSearch() throws InstantiationException, IllegalAccessException {
@@ -933,13 +954,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         reindex();
 
         controller.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+        evictCache();
+        searchIndexService.flushToIndexes();
         assertOnlyResultAndProject(doc);
         resetController();
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         controller.getUncontrolledSiteTypeKeywords().add(siteTypes.iterator().next().getLabel());
         assertOnlyResultAndProject(doc);
         resetController();
 
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         controller.getSiteNameKeywords().add(siteNames.iterator().next().getLabel());
         assertOnlyResultAndProject(doc);
     }
@@ -1060,12 +1086,26 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Project persisted = createAndSaveNewProject("PROJECT TEST TITLE");
         Project sparse = new Project();
         // ensure the project is in
-        genericService.synchronize();
+        evictCache();
         sparse.setId(persisted.getId());
         firstGroup().getProjects().add(sparse);
         controller.advanced();
 
         assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
+    }
+
+    @Test
+    @Rollback
+    public void testRefineSearchWithSparseCollection() {
+        ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        ResourceCollection sparseCollection = new ResourceCollection();
+        evictCache();
+        long collectionId = rc.getId();
+        assertThat(collectionId, greaterThan(0L));
+        sparseCollection.setId(collectionId);
+        firstGroup().getCollections().add(sparseCollection);
+
+        assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
     }
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {
@@ -1095,16 +1135,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     protected boolean resultsContainId(Long id) {
         boolean found = false;
         for (Resource r_ : controller.getResults()) {
-            Resource r = (Resource) r_;
+            Resource r = r_;
             logger.trace(r.getId() + " " + r.getResourceType());
-            if (id.equals(r.getId()))
+            if (id.equals(r.getId())) {
                 found = true;
+            }
         }
         return found;
     }
 
+    @Override
     protected void reindex() {
-        genericService.synchronize();
+        evictCache();
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
     }
@@ -1114,6 +1156,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void doSearch(Boolean b) {
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }

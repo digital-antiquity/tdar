@@ -42,7 +42,7 @@ public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
         assertThat(getDriver().getCurrentUrl(), not(endsWith("action")));
         assertThat(getDriver().getCurrentUrl(), not(endsWith("edit")));
 
-        logger.debug("document text \n\n {} \n\n", getText());
+        logger.trace("document text \n\n {} \n\n", getText());
     }
 
 }

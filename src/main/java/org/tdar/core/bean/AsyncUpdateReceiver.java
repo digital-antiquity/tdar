@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.tdar.utils.Pair;
 
-/*
- * This interface governs the interactions between asynchronous tasks. It's designed to enable basic communication 
- * between the caller and the processor. It allows for status, completion, and errors to be passed back and forth, 
+/**
+ * This interface governs the interactions between asynchronous tasks. It's designed to enable basic communication
+ * between the caller and the processor. It allows for status, completion, and errors to be passed back and forth,
  * finally, the "details" can be used to pass record specific info to be shared.
  */
 public interface AsyncUpdateReceiver {
 
-    final static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
+    static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
 
     void setPercentComplete(float complete);
 
@@ -22,9 +22,9 @@ public interface AsyncUpdateReceiver {
 
     void addDetail(Pair<Long, String> detail);
 
-    String getAsyncErrors();
+    List<String> getAsyncErrors();
 
-    String getHtmlAsyncErrors();
+    List<String> getHtmlAsyncErrors();
 
     List<Pair<Long, String>> getDetails();
 
@@ -68,6 +68,7 @@ public interface AsyncUpdateReceiver {
 
         @Override
         public void addError(Throwable t) {
+            setStatus("Error occurred");
             throwables.add(t);
         }
 
@@ -87,21 +88,21 @@ public interface AsyncUpdateReceiver {
         }
 
         @Override
-        public String getAsyncErrors() {
-            StringBuilder sb = new StringBuilder();
+        public List<String> getAsyncErrors() {
+            List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                sb.append(throwable.getMessage());
+                messages.add(throwable.getLocalizedMessage());
             }
-            return sb.toString();
+            return messages;
         }
 
         @Override
-        public String getHtmlAsyncErrors() {
-            StringBuilder sb = new StringBuilder();
+        public List<String> getHtmlAsyncErrors() {
+            List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
-                sb.append("<li>").append(throwable.getMessage()).append("</li>");
+                messages.add("<li>" + throwable.getLocalizedMessage() + "</li>");
             }
-            return sb.toString();
+            return messages;
         }
 
         @Override

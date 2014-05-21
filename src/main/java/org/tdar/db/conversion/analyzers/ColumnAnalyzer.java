@@ -1,5 +1,6 @@
 package org.tdar.db.conversion.analyzers;
 
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public interface ColumnAnalyzer {
@@ -8,7 +9,7 @@ public interface ColumnAnalyzer {
      * @return true if the value argument could be written to a database as the analysers DataTableColumn type,
      *         false otherwise.
      */
-    boolean analyze(String value);
+    boolean analyze(String value, DataTableColumn column, int rowNumber);
 
     /**
      * @return The DataTableColumn/SQL type the analyser is trying to detect

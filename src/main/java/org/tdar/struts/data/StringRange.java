@@ -21,18 +21,22 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
         super(first, second);
     }
 
+    @Override
     public String getStart() {
         return getFirst();
     }
 
+    @Override
     public void setStart(String start) {
         setFirst(start);
     }
 
+    @Override
     public String getEnd() {
         return getSecond();
     }
 
+    @Override
     public void setEnd(String end) {
         setSecond(end);
     }
@@ -40,8 +44,9 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
     @Override
     // range is valid if only one value is nonblank (an open-ended range), or if both values are nonblank and start <= end
     public boolean isValid() {
-        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond()))
+        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond())) {
             return false;
+        }
 
         if (StringUtils.isNotBlank(getFirst()) && StringUtils.isNotBlank(getSecond())) {
             return getFirst().compareTo(getSecond()) <= 0;
@@ -49,9 +54,11 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
         return StringUtils.isNotBlank(getFirst()) || StringUtils.isNotBlank(getSecond());
     }
 
+    @Override
     public boolean isInitialized() {
-        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond()))
+        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond())) {
             return false;
+        }
 
         return true;
     }

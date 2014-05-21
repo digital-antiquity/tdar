@@ -26,6 +26,8 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -44,7 +46,7 @@ public class FilestoreTest {
     public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
             + File.separator;
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private Logger logger = Logger.getLogger(getClass());
 
     @Before
     public void cleanup() {
@@ -70,16 +72,16 @@ public class FilestoreTest {
     @Test
     @SuppressWarnings("static-method")
     public void sanitizeFilenameTest() {
-        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc.txt"));
-        assertEquals("abc.txt", PairtreeFilestore.sanitizeFilename("abc'.txt"));
-        assertEquals("abc.tar.gz", PairtreeFilestore.sanitizeFilename("abc.tar.gz"));
-        assertEquals("abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc.tar.bz2"));
-        assertEquals("abc-tar.bz2", PairtreeFilestore.sanitizeFilename("abc-tar.bz2"));
-        assertEquals("abc.tar.bz2", PairtreeFilestore.sanitizeFilename("abc-.tar.bz2"));
-        assertEquals("abc-a----------_----+-----.txt", PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
-        for (String archiveExtension: FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED) {
+        assertEquals("abc.txt", BaseFilestore.sanitizeFilename("abc.txt"));
+        assertEquals("abc.txt", BaseFilestore.sanitizeFilename("abc'.txt"));
+        assertEquals("abc.tar.gz", BaseFilestore.sanitizeFilename("abc.tar.gz"));
+        assertEquals("abc.tar.bz2", BaseFilestore.sanitizeFilename("abc.tar.bz2"));
+        assertEquals("abc-tar.bz2", BaseFilestore.sanitizeFilename("abc-tar.bz2"));
+        assertEquals("abc.tar.bz2", BaseFilestore.sanitizeFilename("abc-.tar.bz2"));
+        assertEquals("abc-a----------_----+-----.txt", BaseFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"));
+        for (String archiveExtension : FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED) {
             String fileName = "test." + archiveExtension;
-            String sanitizedFileName = PairtreeFilestore.sanitizeFilename(fileName);
+            String sanitizedFileName = BaseFilestore.sanitizeFilename(fileName);
             assertEquals("Oh-oh: filename should not have altered from: " + fileName + " to: " + sanitizedFileName, fileName, sanitizedFileName);
         }
     }
@@ -92,10 +94,10 @@ public class FilestoreTest {
         String name = "abc.txt";
         InformationResourceFileVersion version = generateVersion(name);
         String baseAssert = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
-        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(version));
+        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         version.setFileVersionType(VersionType.WEB_LARGE);
-        assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(version));
-        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(version));
+        assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
+        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
     }
 
     @Test
@@ -105,7 +107,7 @@ public class FilestoreTest {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
         File f = new File(TEST_DOCUMENT);
-        store.store(f, version);
+        store.store(ObjectType.RESOURCE, f, version);
         assertNotNull(version.getChecksum());
         assertEquals("MD5", version.getChecksumType());
         assertNotNull(version.getDateCreated());
@@ -134,14 +136,14 @@ public class FilestoreTest {
         cleanup();
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+        version.setFileVersionType(VersionType.LOG);
         File f = new File(TEST_DOCUMENT);
         StorageMethod rotate = StorageMethod.ROTATE;
-        rotate.setRotations(5);
-        store.storeAndRotate(f, version, rotate);
+        store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
         version.setTransientFile(f);
-        store.storeAndRotate(f, version, rotate);
+        store.storeAndRotate(ObjectType.RESOURCE, f, version, rotate);
 
-        File tmpFile = store.retrieveFile(version);
+        File tmpFile = store.retrieveFile(ObjectType.RESOURCE, version);
         assertTrue(tmpFile.exists());
         File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
                 FilenameUtils.getExtension(tmpFile.getName())));
@@ -187,15 +189,15 @@ public class FilestoreTest {
         cleanup();
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
-        store.store(new File(TEST_DOCUMENT), version);
-        File f = new File(store.getAbsoluteFilePath(version));
+        store.store(ObjectType.RESOURCE, new File(TEST_DOCUMENT), version);
+        File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
         String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1";
         assertEquals(expectedPath + File.separator + "archival" + File.separator + TEST_DOCUMENT_NAME, f.getAbsolutePath());
         try {
-            store.purge(version);
+            store.purge(ObjectType.RESOURCE, version);
         } catch (IOException e) {
-            if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
+            if ((System.getProperty("os.name").indexOf("indows") == -1) && e.getMessage().contains("Unable to delete file")) {
                 logger.info("couldn't delete file... windows");
             } else {
                 e.printStackTrace();
@@ -221,16 +223,16 @@ public class FilestoreTest {
         version.getInformationResourceFile().setLatestVersion(2);
         version.setVersion(2);
         version.setFileVersionType(VersionType.UPLOADED);
-        store.store(new File(TEST_IMAGE), version);
-        assertTrue(store.verifyFile(version));
-        File f = new File(store.getAbsoluteFilePath(version));
+        store.store(ObjectType.RESOURCE, new File(TEST_IMAGE), version);
+        assertTrue(store.verifyFile(ObjectType.RESOURCE, version));
+        File f = new File(store.getAbsoluteFilePath(ObjectType.RESOURCE, version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
         String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";
         assertEquals(expectedPath + File.separator + TEST_IMAGE_NAME, f.getAbsolutePath());
         try {
-            store.purge(version);
+            store.purge(ObjectType.RESOURCE, version);
         } catch (IOException e) {
-            if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
+            if ((System.getProperty("os.name").indexOf("indows") == -1) && e.getMessage().contains("Unable to delete file")) {
                 logger.info("couldn't delete file... windows");
             } else {
                 e.printStackTrace();

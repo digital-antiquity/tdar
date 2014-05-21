@@ -50,10 +50,10 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "s";
-    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Shapefile.";
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
 
+    @Override
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
@@ -69,6 +69,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         this.versions = Arrays.asList(versions);
     }
 
+    @Override
     protected void openInputDatabase() throws IOException {
         setDatabaseFile(getInformationResourceFileVersion().getTransientFile());
 
@@ -89,6 +90,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
      * 
      * @param targetDatabase
      */
+    @Override
     public void dumpData() throws Exception {
         // start dumping ...
         // Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
@@ -100,7 +102,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         targetDatabase.dropTable(dataTable);
 
         Map<String, URL> connect = new HashMap<>();
-        connect.put("url", getDatabaseFile().toURL());
+        connect.put("url", getDatabaseFile().toURI().toURL());
 
         DataStore dataStore = DataStoreFinder.getDataStore(connect);
         String[] typeNames = dataStore.getTypeNames();
@@ -142,7 +144,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         try {
             @SuppressWarnings("unused")
             int rowCount = collection.size();
+            int rowNum = 0;
             while (iterator.hasNext()) {
+                rowNum++;
                 HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                 Feature feature = iterator.next();
                 StringBuilder sb = new StringBuilder();
@@ -151,7 +155,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
                     String value = prop.getValue().toString();
                     valueColumnMap.put(column, value);
                     sb.append(value).append(" ");
-                    statisticsManager.updateStatistics(column, value);
+                    statisticsManager.updateStatistics(column, value, rowNum);
 
                 }
                 targetDatabase.addTableRow(dataTable, valueColumnMap);
@@ -161,7 +165,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             }
         } catch (Exception e) {
             logger.error("could not process shapefile: {}", e);
-            throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            throw new TdarRecoverableRuntimeException("shapeFileConveter.corrupt");
         } finally {
             iterator.close();
             dataStore.dispose();

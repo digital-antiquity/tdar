@@ -5,18 +5,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.tools.ant.filters.StringInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,19 +35,12 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.resource.Video;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -53,15 +49,20 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
-import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
+import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
+
 @Service
 public class ResourceService extends GenericService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public enum ErrorHandling {
         NO_VALIDATION,
         VALIDATE_SKIP_ERRORS,
@@ -78,53 +79,66 @@ public class ResourceService extends GenericService {
     private GeoSearchService geoSearchService;
 
     @Transactional(readOnly = true)
-    public boolean isOntology(Long id) {
-        return getGenericDao().find(Ontology.class, id) != null;
+    public List<Resource> findSkeletonsForSearch(Long... ids) {
+        return datasetDao.findSkeletonsForSearch(ids);
     }
 
+    @Transactional(readOnly = true)
+    public List<Resource> findOld(Long... ids) {
+        return datasetDao.findOld(ids);
+    }
+
+    /**
+     * Find all @Link Resource Ids submitted by @link Person
+     * 
+     * @param person
+     * @return
+     */
     @Transactional(readOnly = true)
     public Set<Long> findResourcesSubmittedByUser(Person person) {
         return datasetDao.findResourcesSubmittedByUser(person);
     }
 
-    @Transactional(readOnly = true)
-    public boolean isDataset(Long id) {
-        return getGenericDao().find(Dataset.class, id) != null;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isProject(Long id) {
-        return getGenericDao().find(Project.class, id) != null;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isCodingSheet(Long id) {
-        return getGenericDao().find(CodingSheet.class, id) != null;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isSensoryData(Long id) {
-        return getGenericDao().find(SensoryData.class, id) != null;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isVideo(Long id) {
-        return getGenericDao().find(Video.class, id) != null;
-    }
-
+    /**
+     * Find @link Resource by Id only.
+     * 
+     * @param id
+     * @return
+     */
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <R extends Resource> R find(Long id) {
-        if (id == null)
+        if (id == null) {
             return null;
+        }
         ResourceType rt = datasetDao.findResourceType(id);
         logger.trace("finding resource " + id + " type:" + rt);
         if (rt == null) {
             return null;
         }
-        return (R) getGenericDao().find(rt.getResourceClass(), id);
+        return (R) datasetDao.find(rt.getResourceClass(), id);
     }
 
     /**
+     * Finds all Resources within tDAR and populates them with sparse data -- Title, Description, Date.
+     * 
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Resource> findAllSparseActiveResources() {
+        return datasetDao.findAllSparseActiveResources();
+    }
+
+    /**
+     * Finds @link Resource entries that have been modified recently.
+     */
+    public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
+        return datasetDao.findRecentlyUpdatedItemsInLastXDays(days);
+    }
+
+    /**
+     * Adds a @link ResourceRevisionLog entry for the resource based on the message.
+     * 
      * @param <T>
      * @param modifiedResource
      * @param message
@@ -135,12 +149,9 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
-    @Transactional(readOnly = true)
-    public List<Resource> findAllSparseActiveResources() {
-        return datasetDao.findAllSparseActiveResources();
-    }
-
     /**
+     * Adds a @link ResourceRevisionLog entry for the resource based on the message.
+     * 
      * @param <T>
      * @param modifiedResource
      * @param message
@@ -157,61 +168,79 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
-    @Transactional(readOnly = true)
-    public <T extends Resource> void saveRecordToFilestore(T resource) {
-        @SuppressWarnings("deprecation")
-        InformationResourceFileVersion version = new InformationResourceFileVersion();
-        version.setFilename("record.xml");
-        version.setExtension("xml");
-        version.setFileVersionType(VersionType.RECORD);
-        version.setInformationResourceId(resource.getId());
-        try {
-            StorageMethod rotate = StorageMethod.DATE;
-            // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource), "UTF-8"), version, rotate);
-        } catch (Exception e) {
-            logger.error("something happend when converting record to XML:" + resource, e);
-            throw new TdarRecoverableRuntimeException("could not save xml record");
-        }
-        logger.trace("done saving");
-    }
-
+    /**
+     * Lists all tDAR @link Status entries.
+     * 
+     * @return
+     */
     public List<Status> findAllStatuses() {
         return Arrays.asList(Status.values());
     }
 
+    /**
+     * For a given @link Resource, increment the Access Count by creating a @link ResourceAccessStatistic Entry. This is a service-layer function because (a)
+     * this may happen when the session is not writable, and we're going to make the explicit bean writable, and (b) because it's a transient (separate) value.
+     * 
+     * @param r
+     */
     @Transactional(readOnly = false)
     public void incrementAccessCounter(Resource r) {
         ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
-        getDao().markWritable(rac);
+        datasetDao.markWritable(rac);
         save(rac);
     }
 
+    /**
+     * Updates the transient access count entry on @link Resource
+     * 
+     * @param resource
+     */
     @Transactional(readOnly = true)
     public void updateTransientAccessCount(Resource resource) {
         resource.setTransientAccessCount(datasetDao.getAccessCount(resource).longValue());
     }
 
+    /**
+     * Provides a count of the total number of active resources.
+     * 
+     * @param type
+     * @return
+     */
     @Transactional(readOnly = true)
     public Number countActiveResources(ResourceType type) {
         return datasetDao.countActiveResources(type);
     }
 
+    /**
+     * Provides a count of the total number of active resources with files.
+     * 
+     * @param type
+     * @return
+     */
     @Transactional(readOnly = true)
     public Number countActiveResourcesWithFiles(ResourceType type) {
         return datasetDao.countActiveResourcesWithFiles(type);
     }
 
+    /**
+     * Provides counts of Country Codes in tDAR based on the Managed Geographic Keywords which are generated by the tDAR GIS Database and lookups comparing a
+     * LatLong to a shapefile. These are used on the homepage map.
+     * 
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<HomepageGeographicKeywordCache> getISOGeographicCounts() {
         return datasetDao.getISOGeographicCounts();
     }
 
-    @Transactional(readOnly = true)
-    public Long countResourcesForUserAccess(Person user) {
-        return datasetDao.countResourcesForUserAccess(user);
-    }
-
+    /**
+     * For a given @link Resource and set of @link LatitudeLogitudeBox entries, pass the LatitudeLogitudeBoxes to the @link GeographicSearchService to generate
+     * GeographicKeyword entries from the LatitudeLogitudeBox. The implementation will clear the old keywords when creating the new ones. It will use Shapefiles
+     * and the tdar_gis database (tdar.support repo) to look up where the LatitudeLogitudeBox is.
+     * 
+     * @param resource
+     * @param allLatLongBoxes
+     */
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
         // needed in cases like the APIController where the collection is not properly initialized
@@ -224,7 +253,7 @@ public class ResourceService extends GenericService {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
                             FindOptions.FIND_FIRST_OR_CREATE));
         }
         Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
@@ -251,14 +280,13 @@ public class ResourceService extends GenericService {
             return;
         }
 
-        // FIXME: the last parameter should be able to be determined via generics/reflection instead of passing in
         if (incoming_ == null) {
             incoming_ = new ArrayList<H>();
         }
         Collection<H> incoming = incoming_;
         // there are cases where current and incoming_ are the same object, if that's the case
         // then we need to copy incoming_ before
-        if (incoming_ == current && !CollectionUtils.isEmpty(incoming_)) {
+        if ((incoming_ == current) && !CollectionUtils.isEmpty(incoming_)) {
             incoming = new ArrayList<H>();
             incoming.addAll(incoming_);
             current.clear();
@@ -333,27 +361,59 @@ public class ResourceService extends GenericService {
     }
 
     /**
+     * Find all of the Resource Counts for the homepage which are cached in @link HomepageResourceCountCache entries because the counts take too long to load
+     * dynamically.
+     * 
      * @return
      */
     public List<HomepageResourceCountCache> getResourceCounts() {
         return datasetDao.getResourceCounts();
     }
 
-    public List<?> findResourceLinkedValues(Class<?> cls) {
-        return datasetDao.findResourceLinkedValues(cls);
-
-    }
-
+    /**
+     * For the Dashboard, create a Map<> of ResourceType to Status & Count for a given @link Person User. This map can be used to generate the two graphs on the
+     * dashboard.
+     * 
+     * @param p
+     * @param resourceTypes
+     * @return
+     */
     public Map<ResourceType, Map<Status, Long>> getResourceCountAndStatusForUser(Person p, List<ResourceType> resourceTypes) {
         return datasetDao.getResourceCountAndStatusForUser(p, resourceTypes);
     }
 
+    /**
+     * For a given @link ResourceType and @link Status provide a count of @link Resource entries.
+     * 
+     * @param resourceType
+     * @param status
+     * @return
+     */
     public Long getResourceCount(ResourceType resourceType, Status status) {
         return datasetDao.getResourceCount(resourceType, status);
     }
 
+    /**
+     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * 
+     * @param proxy
+     * @param resourceClass
+     * @return
+     */
     @Transactional
     public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
+        return createResourceFrom(proxy, resourceClass, true);
+    }
+
+    /**
+     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * 
+     * @param proxy
+     * @param resourceClass
+     * @return
+     */
+    @Transactional
+    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass, boolean save) {
         try {
             T resource = resourceClass.newInstance();
             resource.setTitle(proxy.getTitle());
@@ -364,7 +424,9 @@ public class ResourceService extends GenericService {
             resource.setDateCreated(proxy.getDateCreated());
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
-            getDao().save(resource);
+            if (save) {
+                datasetDao.save(resource);
+            }
             resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
             resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
             resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
@@ -384,8 +446,9 @@ public class ResourceService extends GenericService {
                     Person owner = collection.getOwner();
                     refresh(owner);
                     newInternal.markUpdated(owner);
-                    getDao().save(newInternal);
-
+                    if (save) {
+                        datasetDao.save(newInternal);
+                    }
                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
                                 proxyAuthorizedUser.getGeneralPermission());
@@ -395,7 +458,7 @@ public class ResourceService extends GenericService {
                     newInternal.getResources().add(resource);
                 } else {
                     logger.info("adding to shared collection : {} ", collection);
-                    if (collection.isTransient()) {
+                    if (collection.isTransient() && save) {
                         save(collection);
                     }
                     collection.getResources().add(resource);
@@ -411,7 +474,7 @@ public class ResourceService extends GenericService {
             cloneSet(resource, resource.getRelatedComparativeCollections(), proxy.getRelatedComparativeCollections());
             cloneSet(resource, resource.getSourceCollections(), proxy.getSourceCollections());
 
-            if (resource instanceof InformationResource && proxy instanceof InformationResource) {
+            if ((resource instanceof InformationResource) && (proxy instanceof InformationResource)) {
                 InformationResource proxyInformationResource = (InformationResource) proxy;
                 InformationResource informationResource = (InformationResource) resource;
                 informationResource.setDate(proxyInformationResource.getDate());
@@ -439,21 +502,34 @@ public class ResourceService extends GenericService {
                 informationResource.setInheritingIdentifierInformation(proxyInformationResource.isInheritingIdentifierInformation());
                 informationResource.setInheritingNoteInformation(proxyInformationResource.isInheritingNoteInformation());
                 informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
+                informationResource.setInheritingIndividualAndInstitutionalCredit(proxyInformationResource.isInheritingIndividualAndInstitutionalCredit());
             }
-            getDao().saveOrUpdate(resource);
+            if (save) {
+                datasetDao.saveOrUpdate(resource);
+                return datasetDao.merge(resource);
+            }
+            return resource;
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
-            return getDao().merge(resource);
         } catch (Exception exception) {
             throw new TdarRuntimeException(exception);
         }
     }
 
+    /**
+     * Given a Set of objects that support @link HasResource, clone the bean and attach it to the new Set
+     * 
+     * @param resource
+     * @param targetCollection
+     * @param sourceCollection
+     * @return
+     */
     @Transactional
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
-        logger.debug("cloning: " + sourceCollection);
+        logger.trace("cloning: " + sourceCollection);
         for (T t : sourceCollection) {
-            getDao().detachFromSessionAndWarn(t);
+            datasetDao.detachFromSessionAndWarn(t);
             try {
+                @SuppressWarnings("unchecked")
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);
             } catch (Exception e) {
@@ -464,16 +540,49 @@ public class ResourceService extends GenericService {
         return targetCollection;
     }
 
+    /**
+     * For a given list of People, Resources, Collections, Projects, and Statuses, return a @link ResourceSpaceUsageStatistic object for how much space,
+     * resources, and files are used.
+     * 
+     * @param personId
+     * @param resourceId
+     * @param collectionId
+     * @param projectId
+     * @param statuses
+     * @return
+     */
     @Transactional
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
-            List<Long> projectId,
-            List<Status> statuses) {
+            List<Long> projectId, List<Status> statuses) {
         return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses);
     }
 
+    /**
+     * Find the count of views for all resources for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @return
+     */
     @Transactional
     public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
+    }
+
+    /**
+     * Find the count of downloads for all InformationResourceFiles for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @return
+     */
+    @Transactional
+    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
+        return datasetDao.getOverallUsageStats(start, end, max);
     }
 
     @Transactional
@@ -481,28 +590,65 @@ public class ResourceService extends GenericService {
         return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
     }
 
+    /**
+     * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param iRFileId
+     * @return
+     */
     @Transactional
     public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
         return datasetDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
     }
 
+    /**
+     * Find the count of views for the specified resources for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param resourceIds
+     * @return
+     */
     @Transactional
     public List<AggregateViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
 
+    /**
+     * Return all resource revision log entries for a specified @link Resource.
+     * 
+     * @param resource
+     * @return
+     */
     @Transactional
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
-        if (Persistable.Base.isNullOrTransient(resource))
-            return Collections.EMPTY_LIST;
+        if (Persistable.Base.isNullOrTransient(resource)) {
+            return Collections.emptyList();
+        }
         return datasetDao.getLogEntriesForResource(resource);
     }
 
+    /**
+     * Find all ids of @link InformationResource entries that actually have files.
+     * 
+     * @return
+     */
     @Transactional
     public List<Long> findAllResourceIdsWithFiles() {
         return datasetDao.findAllResourceIdsWithFiles();
     }
 
+    /**
+     * Find all @link ResourceType entries that are active within the system (as opposed to exist).
+     * 
+     * @return
+     */
     public List<ResourceType> getAllResourceTypes() {
         ArrayList<ResourceType> arrayList = new ArrayList<>(Arrays.asList(ResourceType.values()));
         if (!TdarConfiguration.getInstance().isVideoEnabled()) {
@@ -516,4 +662,35 @@ public class ResourceService extends GenericService {
         return arrayList;
     }
 
+    @Transactional
+    public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
+        return datasetDao.findAllResourcesWithPublicImagesForSitemap(gisg);
+
+    }
+
+    @Transactional
+    public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
+        Long countryTotal = 0l;
+        Double countryLogTotal = 0d;
+        for (HomepageGeographicKeywordCache item : findAll(HomepageGeographicKeywordCache.class)) {
+            Long count = item.getCount();
+            Double logCount = item.getLogCount();
+            if (logCount > countryLogTotal) {
+                countryLogTotal = logCount;
+            }
+            if (count > countryTotal) {
+                countryTotal = count;
+            }
+            worldMapData.put(item.getKey(), item);
+        }
+        for (Entry<String, HomepageGeographicKeywordCache> entrySet : worldMapData.entrySet()) {
+            entrySet.getValue().setTotalCount(countryTotal);
+            entrySet.getValue().setTotalLogCount(countryLogTotal);
+        }
+    }
+
+    @Transactional(readOnly=true)
+    public List<Resource> findByTdarYear(SearchResultHandler resultHandler, int year) {
+        return datasetDao.findByTdarYear(resultHandler, year);
+    }
 }

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -24,6 +25,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
@@ -39,7 +42,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testConfidential() throws InstantiationException, IllegalAccessException {
         Document doc = (Document) generateInformationResourceWithFile();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        entityService.save(doc);
+        genericService.save(doc);
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
@@ -55,7 +58,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         InformationResourceFile file = doc.getInformationResourceFiles().iterator().next();
         file.setRestriction(FileAccessRestriction.EMBARGOED);
         file.setDateMadePublic(new DateTime().plusYears(4).toDate());
-        entityService.save(doc);
+        genericService.save(doc);
         return doc;
     }
 
@@ -64,7 +67,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testCombination() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        entityService.save(doc);
+        genericService.save(doc);
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
@@ -94,7 +97,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getUser(), GeneralPermissions.VIEW_ALL);
-        entityService.save(doc);
+        genericService.save(doc);
         return doc;
     }
 
@@ -102,7 +105,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getAdminUser(), GeneralPermissions.VIEW_ALL);
-        entityService.save(doc);
+        genericService.save(doc);
         return doc;
     }
 
@@ -138,7 +141,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         logger.info("test confidential");
         Document doc = (Document) generateInformationResourceWithFile();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        entityService.save(doc);
+        genericService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());
         // assertTrue(controller.getAccessibleFiles().isEmpty());
@@ -160,7 +163,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         logger.info("test combined");
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        entityService.save(doc);
+        genericService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());
         // assertTrue(controller.getAccessibleFiles().isEmpty());
@@ -227,7 +230,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupReadUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
-        assertEquals(DownloadController.SUCCESS, controller.execute());
+        assertEquals(Action.SUCCESS, controller.execute());
     }
 
     @Test
@@ -236,29 +239,38 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getLatestUploadedVersion().getId());
-        assertEquals(DownloadController.SUCCESS, controller.execute());
+        assertEquals(Action.SUCCESS, controller.execute());
     }
 
     @Test
     @Rollback
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
-        InformationResourceFileVersion currentVersion = doc.getInformationResourceFiles().iterator().next()
-                .getCurrentVersion(VersionType.WEB_SMALL);
+        InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
+        InformationResourceFileVersion currentVersion = irFile.getCurrentVersion(VersionType.WEB_SMALL);
         logger.info("{}", currentVersion.getId());
+        if ((irFile.getInformationResourceFileVersions().size() == 3) && (irFile.getCurrentVersion(VersionType.WEB_SMALL) == null)) {
+            Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
+        }
+
         controller.setInformationResourceFileId(currentVersion.getId());
         assertEquals(DownloadController.FORBIDDEN, controller.thumbnail());
     }
 
     @Test
     @Rollback
+    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testThumbnailController() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DownloadController controller = generateNewInitializedController(DownloadController.class);
-        controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next()
-                .getCurrentVersion(VersionType.WEB_SMALL).getId());
-        assertEquals(DownloadController.SUCCESS, controller.thumbnail());
+        InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
+        if ((irFile.getInformationResourceFileVersions().size() == 3) && (irFile.getCurrentVersion(VersionType.WEB_SMALL) == null)) {
+            Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
+        }
+        controller.setInformationResourceFileId(irFile.getCurrentVersion(VersionType.WEB_SMALL).getId());
+        assertEquals(Action.SUCCESS, controller.thumbnail());
     }
 
     /*

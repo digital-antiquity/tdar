@@ -7,6 +7,8 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.Query;
 import org.hibernate.type.StandardBasicTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
@@ -26,6 +28,8 @@ import org.tdar.core.bean.resource.Status;
 @SuppressWarnings("unchecked")
 public class ProjectDao extends ResourceDao<Project> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public ProjectDao() {
         super(Project.class);
     }
@@ -36,19 +40,6 @@ public class ProjectDao extends ResourceDao<Project> {
         return query.list();
     }
 
-    public List<Project> findAllOtherProjects(final Person person) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_ALL_OTHER);
-        query.setLong("personId", person.getId());
-        return query.list();
-    }
-
-    // @SuppressWarnings("unchecked")
-    // public List<Project> findViewableProjects(Person person) {
-    // Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_VIEWABLE);
-    // query.setLong("personId", person.getId());
-    // return (List<Project>) query.list();
-    // }
-
     public Boolean containsIntegratableDatasets(Project project) {
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS);
         query.setLong("projectId", project.getId());
@@ -56,8 +47,9 @@ public class ProjectDao extends ResourceDao<Project> {
     }
 
     public Boolean containsIntegratableDatasets(List<Long> projectIds) {
-        if (projectIds.isEmpty())
+        if (projectIds.isEmpty()) {
             return Boolean.FALSE;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS);
         logger.debug("setting parameter list");
         query.setParameterList("projectIdList", projectIds, StandardBasicTypes.LONG);

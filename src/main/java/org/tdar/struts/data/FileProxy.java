@@ -51,7 +51,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
     private List<FileProxy> supportingProxies = new ArrayList<FileProxy>();
 
-    private transient final static Logger LOGGER = LoggerFactory.getLogger(FileProxy.class);
+    private transient final static Logger logger = LoggerFactory.getLogger(FileProxy.class);
 
     public FileProxy() {
     }
@@ -63,12 +63,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.description = file.getDescription();
         this.fileCreatedDate = file.getFileCreatedDate();
         InformationResourceFileVersion latestVersion = file.getLatestUploadedVersion();
+        // this.informationResourceFile = file;
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
             this.filename = latestVersion.getFilename();
             this.size = latestVersion.getFileLength();
         } else {
-            LOGGER.warn("No version number available for file {}", file);
+            logger.warn("No version number available for file {}", file);
         }
     }
 
@@ -165,6 +166,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         additionalVersion.setFileId(fileId);
     }
 
+    @Override
     public String toString() {
         return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, restriction, size,
                 fileId, file, sequenceNumber);
@@ -182,10 +184,12 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         return action != FileAction.NONE;
     }
 
+    @Override
     public Integer getSequenceNumber() {
         return sequenceNumber;
     }
 
+    @Override
     public void setSequenceNumber(Integer sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }

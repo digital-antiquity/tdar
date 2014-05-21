@@ -23,8 +23,6 @@ import org.tdar.filestore.WorkflowContext;
 
 public class PDFDerivativeTask extends ImageThumbnailTask {
 
-    private static final String ENCRYPTION_WARNING = "This document is encrypted, please remove the encryption before uploading it to tDAR";
-    private static final String PROCESSING_ERROR = "An error occurred when processing your PDF";
     private static final long serialVersionUID = -1138753863662695849L;
 
     public static void main(String[] args) {
@@ -40,7 +38,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             task.run(vers);
         } catch (Throwable e) {
-            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, e);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", e);
         }
     }
 
@@ -57,6 +55,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             PDDocument document = openPDF("", originalFile);
             File imageFile = new File(extractPage(1, version, document));
+            getLogger().warn("output file is: {} {}", imageFile, imageFile.length());
             // extractText(originalFile, document);
             closePDF(document);
             if (imageFile.exists()) {
@@ -71,7 +70,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 }
             }
         } catch (Throwable t) {
-            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", t);
         }
     }
 
@@ -91,6 +90,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(getWorkflowContext().getWorkingDirectory(), outputPrefix).toString();
+        String outputFilename = outputPrefix + pageNum + "." + imageFormat;
 
         if (document != null) {
             int imageType = determineImageType(color);
@@ -103,12 +103,17 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");
                 }
+                File outputFile = new File(outputFilename);
+                getLogger().debug("output file is: {} {}", outputFile, outputFile.length());
+                // if (outputFile.exists() && outputFile.length() < 50) {
+                //
+                // }
             } catch (Throwable e) {
                 getLogger().debug("PDF image extraction failed", e);
             }
         }
 
-        return outputPrefix + pageNum + "." + imageFormat;
+        return outputFilename;
     }
 
     private void closePDF(PDDocument document) {
@@ -130,7 +135,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
                 getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException(ENCRYPTION_WARNING);
+                throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
             }
 
             // try {

@@ -44,7 +44,7 @@ public class GeoLocationController extends TdarActionSupport {
             })
     })
     public String lookup() {
-        logger.debug("beginning external latLong lookup");
+        getLogger().debug("beginning external latLong lookup");
         LatitudeLongitudeBox latLongBox = new LatitudeLongitudeBox();
         latLongBox.setMinx(minX);
         latLongBox.setMiny(minY);
@@ -55,11 +55,11 @@ public class GeoLocationController extends TdarActionSupport {
             latLongBox.addGeographicKeywords(allGeographicInfo);
             String xml = xmlService.convertToXML(latLongBox);
             setInputStream(new StringInputStream(xml));
-            logger.info(xml);
-            logger.debug("completed external latLong lookup");
+            getLogger().info(xml);
+            getLogger().debug("completed external latLong lookup");
             return SUCCESS;
         } catch (Exception e) {
-            logger.error("an error occured", e);
+            getLogger().error("an error occured", e);
         }
         return ERROR;
     }

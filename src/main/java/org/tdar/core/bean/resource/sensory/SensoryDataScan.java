@@ -11,10 +11,17 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
 
+/**
+ * Represents a sensory-data scan.
+ * 
+ * @author abrin
+ * 
+ */
 @Entity
 @Table(name = "sensory_data_scan")
 public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> implements HasResource<SensoryData> {
@@ -22,49 +29,49 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private static final long serialVersionUID = -310445034386268598L;
 
     @Column(nullable = false)
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
     @Column(name = "transformation_matrix")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String transformationMatrix;
 
     @Column(name = "monument_name")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String monumentName;
 
     @Column(name = "points_in_scan")
     private Long pointsInScan;
 
     @Column(name = "scan_notes")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String scanNotes;
 
-    @Column(name = "scanner_technology", length = 255)
+    @Column(name = "scanner_technology", length = FieldLength.FIELD_LENGTH_255)
     @Enumerated(EnumType.STRING)
     private ScannerTechnologyType scannerTechnology;
 
     @Column(name = "triangulation_details")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String triangulationDetails;
 
     @Column
     private Double resolution;
 
     @Column(name = "tof_return")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String tofReturn;
 
     @Column(name = "phase_frequency_settings")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String phaseFrequencySettings;
 
     @Column(name = "phase_noise_settings")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String phaseNoiseSettings;
 
     @Column(name = "camera_exposure_settings")
-    @Length(max = 255)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
     private String cameraExposureSettings;
 
     @Column(name = "scan_date")

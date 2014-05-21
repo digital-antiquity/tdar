@@ -9,6 +9,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.action.entity.PersonController;
 
+import com.opensymphony.xwork2.Action;
+
 /**
  * This IT attempts to simulate a non-user spoofing a person save request for a person record other than their own. Because struts modifies the fields
  * of a hibernate-managed object, there is the concern that hibernate will persist the change implicitly even if our controller action method returns an
@@ -52,9 +54,8 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
 
         Assert.assertEquals(PERSON_FIRST_NAME_EXPECTED, controller.getPerson().getFirstName());
         controller.getPerson().setFirstName(PERSON_FIRST_NAME_UPDATED);
-        controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
-        Assert.assertFalse("basic user shouldn't be able to save changes to another user's person record", TdarActionSupport.SUCCESS.equals(result));
+        Assert.assertFalse("basic user shouldn't be able to save changes to another user's person record", Action.SUCCESS.equals(result));
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {
@@ -85,11 +86,10 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
         controller.prepare();
         Assert.assertEquals(PERSON_FIRST_NAME_EXPECTED, controller.getPerson().getFirstName());
         controller.getPerson().setFirstName(PERSON_FIRST_NAME_UPDATED);
-        controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
-        Assert.assertEquals("admin user should be able to save changes to another user's person record", TdarActionSupport.SUCCESS, result);
+        Assert.assertEquals("admin user should be able to save changes to another user's person record", Action.SUCCESS, result);
         Assert.assertTrue(controller.getActionErrors().isEmpty());
-        genericService.synchronize();
+        evictCache();
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {

@@ -20,7 +20,7 @@
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
 
-    <#if creator?? && nodeModel?has_content>
+    <#if creator??&& ( keywords?has_content || collaborators?has_content)>
         <link rel="meta" type="application/rdf+xml" title="FOAF" href="/browse/creators/${creator.id?c}/rdf"/>
     </#if>
 </head>
@@ -32,75 +32,38 @@
 
     <@view.pageStatusCallout />
 
-    <#if creator??>
-        <#if nodeModel?has_content>
-            <#assign collaborators=nodeModel["creatorInfoLog/collaborators/*"] />
-            <#assign keywords= nodeModel["creatorInfoLog/keywords/*"] />
-            <#if keywords?has_content || collaborators?has_content>
-            <div id="sidebar-right" parse="true">
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-            <#-- fixme -- some of these may show the h3 w/o contents if count == 1 -->
-                <#assign num = results?size />
-                <#if (num > recordsPerPage)>
-                    <#assign num = recordsPerPage />
-                </#if>
-                <#assign sz = (num / 2)?ceiling >
-                <#if (sz < 10)>
-                    <#assign sz = 10 >
-                </#if>
-                <#assign seen_creators = 0/>
-                <#assign seen_kwds = 0/>
+    <#if creator?? >
+        <#if  keywords?has_content || collaborators?has_content >
+        <div id="sidebar-right" parse="true">
+            <div class="sidebar-spacer">
                 <#if collaborators?has_content>
                     <div id="related-creators">
-                        <!-- sz: ${sz} - num: ${num} - colab ${collaborators?size} -->
                         <h3>Related Creators</h3>
                         <ul>
                             <#list collaborators as collab>
-                                <#if (seen_creators > sz) >
-                                    <#break/>
-                                </#if>
-                                <#if (collab.@count?number >= nodeModel.creatorInfoLog.@creatorMedian?number && collab.@count?number  >1)>
-                                    <#assign seen_creators = seen_creators +1 />
-                                    <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
-                                    </li>
-                                </#if>
+                                <li><a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
+                                </li>
                             </#list>
                         </ul>
                     </div>
                 </#if>
 
                 <#if keywords?has_content>
-                    <!-- sz: ${sz} - num: ${num} - keywords ${keywords?size} -->
                     <div id="related-keywords">
                         <h3>Related Keywords</h3>
                         <ul>
                             <#list keywords as keyword>
-                                <#if (seen_kwds > sz) >
-                                    <#break/>
-                                </#if>
-                                <#if (keyword.@count?number >= nodeModel.creatorInfoLog.@keywordMedian?number && keyword.@count?number > 1)>
-
-                                    <#if keyword.@name?has_content && (!keyword.@name?contains("Country Code") && !keyword.@name?contains("Continent") && !keyword.@name?contains("Fips "))>
-                                        <#assign seen_kwds = seen_kwds +1 />
-                                        <#assign tst = keyword.@simpleClassName!"" />
-                                        <#if keywordTypeBySimpleName[tst]?? >
-                                            <#assign keywordType = keywordTypeBySimpleName[tst] />
-                                            <li>
-                                                <#assign term = keyword.@id />
-                                                <#if !keywordType.fieldName?contains("IdList")>
-                                                    <#assign term = keyword.@name?url />
-                                                </#if>
-                                                <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
-                                            </li>
-                                        </#if>
+                                <#if keyword.@name?has_content >
+                                    <#assign tst = keyword.@simpleClassName!"" />
+                                    <#if keywordTypeBySimpleName[tst]?? >
+                                        <#assign keywordType = keywordTypeBySimpleName[tst] />
+                                        <li>
+                                            <#assign term = keyword.@id />
+                                            <#if !keywordType.fieldName?contains("IdList")>
+                                                <#assign term = keyword.@name?url />
+                                            </#if>
+                                            <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
+                                        </li>
                                     </#if>
                                 </#if>
                             </#list>
@@ -112,22 +75,8 @@
                         associated with a Creator and highlighting the most commonly used.
                     </small>
                 </div>
-                <script>
-                    $(document).ready(function () {
-                        <#if seen_kwds == 0 && seen_creators == 0>
-                            $("#sidebar-right").hide();
-                            $("#articleBody").toggleClass("span9", "span12");
-                        </#if>
-                        <#if seen_kwds == 0>
-                            $("#related-keywords").hide();
-                        </#if>
-                        <#if seen_creators == 0>
-                            $("#related-creators").hide();
-                        </#if>
-                    });
-                </script>
             </div>
-            </#if>
+        </div>
         </#if>
 
     <h1><#if creator.properName??>${creator.properName}</#if></h1>
@@ -155,8 +104,90 @@
         </#if>
         <br/>
         <#if creator.creatorType.person>
-            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
+            <#if creator.url?has_content || creator.orcidId?has_content>
+                <table class='tableFormat table'>
+                    <tr>
+                        <td><b>URL:</b> <#if creator.url?has_content><a href="${creator.url}">${creator.url}</a></#if></td>
+                        <td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if>
+                        </td>
+                    </tr>
+                </table>
+            </#if>
+            <#if showBasicInfo >
+                <table class='tableFormat table'>
+                    <#assign registered = false />
+                    <#if creator.registered?has_content>
+                        <#assign registered = creator.registered>
+                    </#if>
+                    <#if showAdminInfo>
+                        <tr>
+                            <td>
+                                <B>Registered</b>: ${registered?string}
+                            </td>
+                            <td>
+                                <B>Username</b>: ${creator.username!"N/A"}
+                            </td>
+                        </tr>
+                    </#if>
+                    <tr>
+                        <td <#if !showAdminInfo>colspan=2</#if>>
+                            <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
+                        </td>
+                        <td>
+                            <#if showAdminInfo>
+                            <#if creator.lastLogin?has_content>
+                                <@_datefield "Last Login"  creator.lastLogin />
+                            <#else>
+                                <@_textfield "Last Login"  "No record" />
+                            </#if>
+                        <#else>
+                                <@_boolean "Registered User" registered />
+                            </#if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
+                            <td itemprop="email">
+                                <@_textfield "Email" creator.email />
+                            </td>
+                        <#else>
+                            <td>
+                                <@_textfield "Email" "Not Shown" />
+                            </td>
+                        </#if>
+                        <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
+                            <td itemprop="telephone">
+                                <@_textfield "Phone" creator.phone true />
+                            </td>
+                        <#else>
+                            <td>
+                                <@_textfield "Phone" "Not Shown" />
+                            </td>
+                        </#if>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <#escape x as x?html>
+                    <@_textfield "Contributor Reason" creator.contributorReason true />
+                    </#escape>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <#escape x as x?html>
+                    <@_textfield "TOS Version" creator.tosVersion true />
+                    </#escape>
+                        </td>
+                        <td>
+                            <#escape x as x?html>
+                                <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
+                                <br/>
+                                <@_textfield "Affiliation" creator.affilliation />
 
+                            </#escape>
+                        </td>
+                    </tr>
+                </table>
                 <h3>Future Contact Information</h3>
                 <#if creator.proxyInstitution?has_content>
                     <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
@@ -164,71 +195,6 @@
                     None Specified
                 </#if>
                 <p>${creator.proxyNote!""}</p>
-                <table class='tableFormat table'>
-                    <tr>
-                        <td>
-                            <B>Registered Professional Archaeologist</B>:${creator.rpaNumber!"no"}
-                        </td>
-                        <td>
-                            <#assign registered = false />
-                        <#if creator.registered?has_content>
-                            <#assign registered = creator.registered>
-                        </#if>
-                        <#if registered && (editor || id == authenticatedUser.id)>
-                            <#if creator.lastLogin?has_content>
-                                <@view.datefield "Last Login"  creator.lastLogin />
-                            <#else>
-                                <@view.textfield "Last Login"  "No record" />
-                            </#if>
-                        <#else>
-                            <@view.boolean "Registered User" registered />
-                        </#if>
-                        </td>
-                    </tr>
-                    <tr>
-                    	<td><#if creator.url?has_content><b>URL:</b> <a href="${creator.url}">${creator.urL}</a></#if></td>
-                    	<td><b>ORCID Identifier:</b> <#if creator.orcidId?has_content><a href="http://orcid.org/${creator.orcidId}">${creator.orcidId}</a></#if></td>
-                    </tr>
-                    <tr>
-                        <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
-                            <td itemprop="email">
-                                <@view.textfield "Email" creator.email />
-                            </td>
-                        <#else>
-                            <td>
-                                <@view.textfield "Email" "Not Shown" />
-                            </td>
-                        </#if>
-                        <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
-                            <td itemprop="telephone">
-                                <@view.textfield "Phone" creator.phone true />
-                            </td>
-                        <#else>
-                            <td>
-                                <@view.textfield "Phone" "Not Shown" />
-                            </td>
-                        </#if>
-                    </tr>
-                    <tr>
-                        <td colspan=2>
-                            <#escape x as x?html>
-                    <@view.textfield "Contributor Reason" creator.contributorReason true />
-                    </#escape>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <#escape x as x?html>
-                    <@view.textfield "TOS Version" creator.tosVersion true />
-                    </#escape>
-                        </td>
-                        <td>
-                            <#escape x as x?html>
-                    <@view.textfield "Agreement Version" creator.contributorAgreementVersion true />
-                    </#escape>
-                        </td>
-                    </tr>
-                </table>
 
 
                 <@common.resourceUsageInfo />
@@ -249,23 +215,37 @@
                             </div>
                         </div>
                     </#if>
-                <#if creator.addresses?has_content >
-                    <h3>Addresses</h3>
+                    <#-- Person addresses should only be viewable/editable by tdar-editor and above -->
+                    <#if creator.addresses?has_content >
+                        <h3>Addresses</h3>
 
-                    <div class="row">
-                        <#list creator.addresses  as address>
-                            <div class="span3">
-                                <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-                            </div>
-                        </#list>
-                    </div>
-                </#if>
+                        <div class="row">
+                            <#list creator.addresses  as address>
+                                <div class="span3">
+                                    <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+                                </div>
+                            </#list>
+                        </div>
+                    </#if>
                 </#if>
             </#if>
-            <br/>
+        <#else>
+            <#-- Institution addresses can be shown to anybody (but can only be edited by tdar-editor and above) -->
+            <#if creator.addresses?has_content >
+                <h3>Addresses</h3>
+
+                <div class="row">
+                    <#list creator.addresses  as address>
+                        <div class="span3">
+                            <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+                        </div>
+                    </#list>
+                </div>
+            </#if>
         </#if>
     </div>
     </#if>
+
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">
         <div class="row">
@@ -295,4 +275,30 @@
         No Resources associated with ${creator.properName}
         </#if>
     </#if>
+    <#if editor>
+    <p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
+    </#if>
+
+    <#macro _datefield _label _val="" _alwaysShow=true>
+        <#if _alwaysShow || _val?is_date>
+        <b>${_label}</b>
+            <#if _val?is_date>
+                <@view.shortDate _val true/>
+            </#if>
+        </#if>
+    </#macro>
+
+    <#macro _textfield _label _val="" _alwaysShow=true>
+        <#if _alwaysShow || _val?has_content >
+        <b>${_label}:</b> ${_val}
+        </#if>
+    </#macro>
+
+<#-- FIXME: jim: this is the worst thing you've ever written.  -->
+    <#macro _boolean _label _val _show=true trueString="Yes" falseString="No">
+        <#if _show>
+        <b>${_label}:</b>
+            <#if _val>${trueString}<#else>${falseString}</#if>
+        </#if>
+    </#macro>
 </#escape>

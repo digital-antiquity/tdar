@@ -20,7 +20,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
     public final static class PersistableMapAdapter<K extends Persistable, V> {
 
         @XmlElement
-        protected List<PersistableMapEntry<K, V>> key = new LinkedList<PersistableMapEntry<K, V>>();
+        private List<PersistableMapEntry<K, V>> key = new LinkedList<PersistableMapEntry<K, V>>();
 
         @SuppressWarnings("unused")
         private PersistableMapAdapter() {
@@ -34,16 +34,15 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
 
     }
 
-    // @XmlType
     @XmlRootElement
     public final static class PersistableMapEntry<K extends Persistable, V> {
 
         @XmlElement
         @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-        protected K key;
+        private K key;
 
         @XmlElement
-        protected V value;
+        private V value;
 
         @SuppressWarnings("unused")
         private PersistableMapEntry() {
@@ -64,7 +63,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
     @Override
     public PersistableMapAdapter<K, V> marshal(Map<K, V> arg0) throws Exception {
         // TODO Auto-generated method stub
-        return new PersistableMapAdapter<K, V>((Map<K, V>) arg0);
+        return new PersistableMapAdapter<K, V>(arg0);
     }
 
 }

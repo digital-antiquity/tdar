@@ -149,7 +149,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
 
     @SuppressWarnings("unused")
     private boolean isChildOf(OntologyNode parent, OntologyNode child) {
-        return parent != null && parent.getIntervalStart() < child.getIntervalStart() && parent.getIntervalEnd() > child.getIntervalEnd();
+        return (parent != null) && (parent.getIntervalStart() < child.getIntervalStart()) && (parent.getIntervalEnd() > child.getIntervalEnd());
     }
 
     public Map<OntologyNode, OntologyNode> getNearestParentMap() {
@@ -180,8 +180,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      */
     public DataTableColumn getColumnForTable(DataTable table) {
         for (DataTableColumn col : getColumns()) {
-            if (col.getDataTable().equals(table))
+            if (col.getDataTable().equals(table)) {
                 return col;
+            }
         }
         return null;
     }
@@ -314,8 +315,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     }
 
     public void flatten() {
-        if (sharedOntology == null || isDisplayColumn())
+        if ((sharedOntology == null) || isDisplayColumn()) {
             return;
+        }
         List<OntologyNode> ontologyNodes = sharedOntology.getSortedOntologyNodes();
         SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
 
@@ -341,7 +343,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                 List<CodingRule> rules = codingSheet.findRuleMappedToOntologyNode(ontologyNode);
                 if (CollectionUtils.isNotEmpty(rules)) {
                     for (CodingRule rule : rules) {
-                        if (rule != null && rule.isMappedToData(column)) {
+                        if ((rule != null) && rule.isMappedToData(column)) {
                             columnHasValueArray[index] = true;
                         }
                     }

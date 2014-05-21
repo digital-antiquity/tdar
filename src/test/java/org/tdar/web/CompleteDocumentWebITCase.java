@@ -34,13 +34,13 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-    public static HashMap<String, String> docValMap;
-    public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
-    public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
+    public HashMap<String, String> docValMap;
+    public HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
+    public HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
     // we will assert the presence of these values, but we don't care what order they appear
-    public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
-    public static List<String> alternateTextLookup = new ArrayList<String>();
-    public static List<String> alternateCodeLookup = new ArrayList<String>();
+    public Map<String, String> docUnorderdValMap = new HashMap<String, String>();
+    public List<String> alternateTextLookup = new ArrayList<String>();
+    public List<String> alternateCodeLookup = new ArrayList<String>();
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
     public CompleteDocumentWebITCase() {
@@ -183,7 +183,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
         assertTextPresent(ORIGINAL_START_DATE);
@@ -195,7 +195,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         submitForm();
 
         path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
         assertTextPresent(NEW_START_DATE);
         assertTextNotPresent(ORIGINAL_START_DATE);
@@ -222,7 +222,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
 
         submitForm();
@@ -237,7 +237,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // e.printStackTrace();
         // }
 
-        logger.info(getPageText());
+        logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long
@@ -286,8 +286,9 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTextPresent(docValMap.get(key));

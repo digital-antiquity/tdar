@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,7 +23,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.springframework.util.CollectionUtils;
@@ -39,9 +39,8 @@ import org.tdar.core.bean.SupportsResource;
  */
 @Entity
 @Indexed
-@Table(name = "ontology")
+@Table(name = "ontology", indexes = { @Index(name = "ontology_catvar_id", columnList = "category_variable_id") })
 @XmlRootElement(name = "ontology")
-@org.hibernate.annotations.Table(appliesTo = "ontology", indexes = {@Index(name="ontology_catvar_id", columnNames={"category_variable_id"})})
 public class Ontology extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = -5871337600253105652L;
@@ -74,10 +73,12 @@ public class Ontology extends InformationResource implements SupportsResource {
         setResourceType(ResourceType.ONTOLOGY);
     }
 
+    @Override
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
 
+    @Override
     public void setCategoryVariable(CategoryVariable categoryVariable) {
         this.categoryVariable = categoryVariable;
     }
@@ -104,8 +105,9 @@ public class Ontology extends InformationResource implements SupportsResource {
             for (String indexId : StringUtils.split(index, '.')) {
                 Integer parentId = Integer.valueOf(indexId);
                 // don't include this node if the parent id is the same as this node's interval start
-                if (parentId.equals(intervalStart))
+                if (parentId.equals(intervalStart)) {
                     continue;
+                }
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
                     children = new ArrayList<OntologyNode>();
@@ -134,7 +136,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     private void initializeNameAndIriMaps() {
-        for (OntologyNode node: getOntologyNodes()) {
+        for (OntologyNode node : getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
             iriMap.put(node.getNormalizedIri(), node);
         }
@@ -143,7 +145,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {
-            if (StringUtils.equalsIgnoreCase(node.getDisplayName(),name)) {
+            if (StringUtils.equalsIgnoreCase(node.getDisplayName(), name)) {
                 return node;
             }
         }

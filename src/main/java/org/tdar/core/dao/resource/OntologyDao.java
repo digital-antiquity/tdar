@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.Persistable;
@@ -19,6 +21,8 @@ import org.tdar.core.dao.TdarNamedQueries;
  */
 @Component
 public class OntologyDao extends ResourceDao<Ontology> {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public OntologyDao() {
         super(Ontology.class);
@@ -40,13 +44,15 @@ public class OntologyDao extends ResourceDao<Ontology> {
     public void removeReferencesToOntologyNodes(List<OntologyNode> incoming) {
         List<OntologyNode> toDelete = new ArrayList<OntologyNode>();
         for (OntologyNode node : incoming) {
-            if (Persistable.Base.isNullOrTransient(node))
+            if (Persistable.Base.isNullOrTransient(node)) {
                 continue;
+            }
             toDelete.add(node);
         }
         logger.debug("removing coding rule references to {} ", toDelete);
-        if (CollectionUtils.isEmpty(toDelete))
+        if (CollectionUtils.isEmpty(toDelete)) {
             return;
+        }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES);
         query.setParameterList("ontologyNodes", toDelete);
         query.executeUpdate();

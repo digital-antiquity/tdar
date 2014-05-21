@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 /**
  * $Id$
@@ -85,7 +85,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForType(ResourceType.ONTOLOGY);
+        return getAnalyzer().getExtensionsForType(ResourceType.ONTOLOGY);
     }
 
     public List<OntologyNode> getRootElements() {
@@ -93,7 +93,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     public List<OntologyNode> getChildElements(OntologyNode node) {
-        logger.trace("get children:" + node);
+        getLogger().trace("get children:" + node);
         return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
     }
 
@@ -107,7 +107,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public String node() throws TdarActionException {
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "Ontology Node: " + getIri() + " does not exist");
+            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
         }
         setChildren(getChildElements(node));
         setParentNode(getOntologyNodeService().getParent(node));
@@ -117,10 +117,11 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     public List<OntologyNode> getChildElements(String index) {
-        logger.trace("get children:" + index);
+        getLogger().trace("get children:" + index);
         for (OntologyNode node : getPersistable().getOntologyNodes()) {
-            if (node.getIndex().equals(index))
+            if (node.getIndex().equals(index)) {
                 return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
+            }
         }
         return null;
     }
@@ -129,6 +130,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         setPersistable(ontology);
     }
 
+    @Override
     public Class<Ontology> getPersistableClass() {
         return Ontology.class;
     }

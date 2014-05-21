@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class LatitudeLongitudeBoxTest {
 
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Should always be true.
@@ -22,7 +22,7 @@ public class LatitudeLongitudeBoxTest {
         llb.obfuscate();
         assertTrue(llb.isObfuscatedObjectDifferent());
     }
-    
+
     @SuppressWarnings("static-method")
     @Test
     public void exactLocationCanBeShown() {
@@ -34,14 +34,14 @@ public class LatitudeLongitudeBoxTest {
 
     @Test
     public void testInvalid() {
-        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox();
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
         try {
             llb.setMaximumLatitude(1000.0);
         } catch (Exception e) {
             logger.error("{}", e);
         }
     }
-    
+
     /**
      * This might seem like a silly test, but is the obfuscation is stable from one call to the next?
      * This test does not ensure that that the obfuscation is stable when the lat long box is persisted and restored, though
@@ -102,7 +102,7 @@ public class LatitudeLongitudeBoxTest {
         assertFalse(maxObfuscatedLongitude.equals(llb.getMaxObfuscatedLongitude()));
         assertFalse(minObfuscatedLongitude.equals(llb.getMinObfuscatedLongitude()));
     }
-    
+
     /**
      * and if an original xy coordinate is changed, the obfuscation for it should be redone (surely?).
      */
@@ -141,7 +141,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(maxObfuscatedLongitude.equals(llb.getMaximumLongitude()));
         assertTrue(minObfuscatedLongitude.equals(llb.getMinimumLongitude()));
     }
-    
+
     @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotObfuscateAccordingToServiceIfIsOkToShowExactCoords() {
@@ -152,10 +152,10 @@ public class LatitudeLongitudeBoxTest {
         llb.obfuscate();
         // and should be no change.
         assertFalse(llb.isObfuscatedObjectDifferent());
-        
+
     }
 
-    @SuppressWarnings({ "static-method"})
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesReturnCenterIfBoxGreaterThanOneMileByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
@@ -163,8 +163,8 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
     }
-    
-    @SuppressWarnings({ "static-method"})
+
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesReturnCenterIfBoxGreaterThanOneMileEvenIfObfuscated() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
@@ -173,8 +173,8 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
     }
-    
-    @SuppressWarnings({ "static-method"})
+
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotReturnCenterIfLessThanOneMileByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00005,
@@ -183,8 +183,8 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
         assertTrue(null == llb.getCenterLongitudeIfNotObfuscated());
     }
-    
-    @SuppressWarnings({ "static-method"})
+
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotReturnCenterIfLessThanOneMileIfObfuscated() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES - 0.00001,
@@ -194,8 +194,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
         assertTrue(null == llb.getCenterLongitudeIfNotObfuscated());
     }
-    
-    
+
     @SuppressWarnings("static-method")
     @Test
     public void doesObfuscatedCenterIfBoxLessThanOneMileByDefault() {
@@ -213,7 +212,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(0.0).equals(llb.getCenterLongitude()));
     }
 
-    @SuppressWarnings({ "static-method"})
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotObfuscateCenterIfBoxGreaterThanOneMile() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
@@ -222,7 +221,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
     }
 
-    @SuppressWarnings({ "static-method"})
+    @SuppressWarnings({ "static-method" })
     @Test
     public void doesNotObfuscateCenterIfBoxGreaterThanOneMileEvenIfNotOkToShowExactLocation() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
@@ -232,8 +231,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
     }
 
-    
-    @SuppressWarnings({ "static-method", "deprecation"})
+    @SuppressWarnings({ "static-method", "deprecation" })
     @Test
     public void doesReturnCoordsInRightPlace() {
         double minimumLongitude = 0.00001;
@@ -252,7 +250,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(maximumLatitude).equals(llb.getMaxObfuscatedLatitude()));
     }
 
-    @SuppressWarnings({ "static-method", "deprecation"})
+    @SuppressWarnings({ "static-method", "deprecation" })
     @Test
     public void doesReturnCoordsInRightPlaceIfBoxGreaterThanOneMile() {
         double minimumLongitude = 0.00001;

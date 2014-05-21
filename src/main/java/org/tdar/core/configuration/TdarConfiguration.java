@@ -31,9 +31,10 @@ import org.tdar.filestore.PairtreeFilestore;
  */
 public class TdarConfiguration {
 
+    public static final int HTTPS_PORT_DEFAULT = 443;
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
             "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not");
-    private static final String JIRA_LINK = "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
+    private static final String JIRA_LINK = "dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String DESCRIPTION = "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
     private static final String MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED = "Message Queue is enabled, but a username and password is not defined";
@@ -44,6 +45,7 @@ public class TdarConfiguration {
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final int DEFAULT_PORT = 80; // we use this in test
     public static final String DEFAULT_SMTP_HOST = "localhost";
+    private final static String FROM_EMAIL_NAME = "info@";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
@@ -52,7 +54,7 @@ public class TdarConfiguration {
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
     private final transient static Logger logger = LoggerFactory.getLogger(TdarConfiguration.class);
-
+    private String wroTempDirName;
     private ConfigurationAssistant assistant;
 
     private Filestore filestore;
@@ -80,8 +82,14 @@ public class TdarConfiguration {
         this.configurationFile = configurationFile;
         filestore = loadFilestore();
         initPersonalFilestorePath();
+    }
+
+    public void initialize() {
+        logger.debug("initializing filestore and setup");
+        // initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
+        intializeCouponCodes();
 
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
@@ -91,7 +99,16 @@ public class TdarConfiguration {
                 throw new IllegalStateException("cannot start up in production without JAI");
             }
         }
-        intializeCouponCodes();
+
+        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+        }
+
+        File filestoreLoc = new File(getFileStoreLocation());
+        if (!filestoreLoc.exists()) {
+            throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
+        }
+
     }
 
     public String getConfigurationFile() {
@@ -126,7 +143,7 @@ public class TdarConfiguration {
                     "pedology", "petrology", "pictogram", "pithos", "polis", "prehistory", "profile", "provenance", "provenience", "quem", "radiocarbon",
                     "radiometric", "reconnaissance", "sediments", "seriation", "settlement", "sherd", "site", "slip", "soils", "square", "stela", "stele",
                     "stratigraphy", "style", "stylus", "surface", "survey", "tell", "temper", "terminus", "test", "thermoluminescence", "transit", "trench",
-                    "tufa", "tumulus", "type", "typology", "varves", "ware", "ziggurat", "zone", "adovasio", "aharoni", "akbar", "akurgal", "alarcão",
+                    "tufa", "tumulus", "type", "typology", "varves", "ware", "ziggurat", "zone", "adovasio", "aharoni", "akbar", "akurgal", "alarcao",
                     "albright", "alcock", "allen", "alp", "amiran", "anderson", "andronicos", "archaeologist", "artamonov", "arık", "aston", "atkinson",
                     "australian", "aveni", "avigad", "azarnoush", "babington", "bahn", "bailey", "bandelier", "bandinelli", "bandyopadhyay", "baqir", "barkay",
                     "barker", "bateman", "batres", "beech", "belzoni", "berger", "bersu", "beule", "bey", "bicknell", "biddle", "biglari", "binford",
@@ -174,7 +191,6 @@ public class TdarConfiguration {
         String filestoreClassName = assistant.getStringProperty("file.store.class",
                 PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
-
         File filestoreLoc = new File(getFileStoreLocation());
         try {
             if (!filestoreLoc.exists()) {
@@ -229,7 +245,7 @@ public class TdarConfiguration {
 
     public String getBaseUrl() {
         String base = "http://" + getHostName();
-        if (getPort() != 80) {
+        if (getPort() != DEFAULT_PORT) {
             base += ":" + getPort();
         }
         return base;
@@ -237,14 +253,18 @@ public class TdarConfiguration {
 
     public String getBaseSecureUrl() {
         String base = "https://" + getHostName();
-        if (getHttpsPort() != 443) {
+        if (getHttpsPort() != HTTPS_PORT_DEFAULT) {
             base += ":" + getHttpsPort();
         }
         return base;
     }
 
     public String getHostName() {
-        return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
+        String host = "localhost";
+        if (isProductionEnvironment()) {
+            host = DEFAULT_HOSTNAME;
+        }
+        return assistant.getStringProperty("app.hostname", host);
     }
 
     public String getEmailHostName() {
@@ -256,7 +276,7 @@ public class TdarConfiguration {
     }
 
     public String getHelpUrl() {
-        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/User+Documentation");
+        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/Documentation+Home");
     }
 
     public String getAboutUrl() {
@@ -268,16 +288,11 @@ public class TdarConfiguration {
     }
 
     public String getFileStoreLocation() {
-        return assistant.getStringProperty("file.store.location",
-                "/home/tdar/filestore");
+        return assistant.getStringProperty("file.store.location", "/home/tdar/filestore");
     }
 
     public String getPersonalFileStoreLocation() {
-        return assistant.getStringProperty("personal.file.store.location", "/home/tdar/pfs");
-    }
-
-    public String getWebRoot() {
-        return assistant.getStringProperty("web.root", "src/main/webapp");
+        return assistant.getStringProperty("personal.file.store.location", "/home/tdar/personal-filestore");
     }
 
     public String getSmtpHost() {
@@ -415,8 +430,11 @@ public class TdarConfiguration {
      */
     public String getThemeDir() {
         String dir = assistant.getStringProperty("app.theme.dir", "includes/themes/tdar/");
-        if (dir.startsWith("/")) {
+        if (dir.startsWith("/") || dir.startsWith("\\")) {
             dir = dir.substring(1);
+        }
+        if (dir.endsWith("/") || dir.startsWith("\\")) {
+            dir = dir.substring(0, dir.length() - 1);
         }
         return dir;
     }
@@ -544,6 +562,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("site.acronym", "tDAR");
     }
 
+    public String getServiceProvider() {
+        return assistant.getStringProperty("service.provider", "Digital Antiquity");
+    }
+
     public String getSiteName() {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }
@@ -585,7 +607,7 @@ public class TdarConfiguration {
     }
 
     public Integer getHttpsPort() {
-        return assistant.getIntProperty("https.port", 443);
+        return assistant.getIntProperty("https.port", HTTPS_PORT_DEFAULT);
     }
 
     public Integer getMaxUploadFilesPerRecord() {
@@ -646,8 +668,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("is.geolocation.to.be.used", false);
     }
 
-    public String getCreatorFOAFDir() {
-        return getPersonalFileStoreLocation() + "/creatorInfo";
+    public String getFileCacheDirectory() {
+        return getPersonalFileStoreLocation() + "/fileCache";
     }
 
     public String getCulturalTermsLabel() {
@@ -691,18 +713,51 @@ public class TdarConfiguration {
     }
 
     public boolean obfuscationInterceptorDisabled() {
-        return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+        return assistant.getBooleanProperty("obfuscation.interceptor.disabled", false);
+    }
+
+    public String getDefaultFromEmail() {
+        return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
+    }
+
+    public boolean isJSCSSMergeServletEnabled() {
+        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
 
     public boolean isJaiImageJenabled() {
         return assistant.getBooleanProperty("jai.imagej.enabled", true);
     }
-    
-    public boolean isJSCSSMergeServletEnabled() {
-        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
+
+    public boolean isStaticContentEnabled() {
+        return assistant.getBooleanProperty("static.content.enabled", false);
     }
 
-    public String getEmailFromName() {
-        return assistant.getStringProperty("app.email.from", "info");
+    public int getStaticContentSSLPort() {
+        return assistant.getIntProperty("static.content.sslPort", HTTPS_PORT_DEFAULT);
     }
+
+    public int getStaticContentPort() {
+        return assistant.getIntProperty("static.content.port", DEFAULT_PORT);
+    }
+
+    public String getStaticContentHost() {
+        return assistant.getStringProperty("static.content.host", getHostName());
+    }
+
+    public String getContentSecurityPolicyAdditions() {
+        return assistant.getStringProperty("content.security.policy.additions", "");
+    }
+
+    public Boolean getContentSecurityPolicyEnabled() {
+        return assistant.getBooleanProperty("content.security.policy.enabled", true);
+    }
+
+    public boolean ignoreMissingFilesInFilestore() {
+        return assistant.getBooleanProperty("filestore.ignoreMissing", false);
+    }
+
+    public boolean shouldThrowExceptionOnConcurrentUserDownload() {
+        return assistant.getBooleanProperty("exception.on.bad.download", false);
+    }
+
 }

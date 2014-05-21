@@ -60,6 +60,7 @@ import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.ModernIntegrationDataResult;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**
@@ -73,8 +74,8 @@ import org.tdar.utils.Pair;
  */
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
-    public static final String DATATABLE_TOO_LONG = "This data table contains more columns that is allowed, please simplify the dataset before archiving";
     public static final int MAX_VARCHAR_LENGTH = 500;
+    public static final int MAX_COLUMN_NAME_SIZE = 63;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
@@ -84,8 +85,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     // private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
-    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\", count(" + TargetDatabase.TDAR_ID_COLUMN
-            + ") FROM %s group by \"%s\" ORDER BY \"%s\"";
+    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\" as val, count(" + TargetDatabase.TDAR_ID_COLUMN
+            + ") as count FROM %s group by \"%s\" ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL AND \"%s\" !='' ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
@@ -132,6 +133,11 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     }
 
     @Override
+    public int getMaxColumnNameLength() {
+        return MAX_COLUMN_NAME_SIZE;
+    }
+
+    @Override
     public DatabaseType getDatabaseType() {
         return DatabaseType.POSTGRES;
     }
@@ -161,14 +167,15 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     public void addOrExecuteBatch(DataTable dataTable, boolean force) {
         Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
         logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
-        if (statementPair == null)
+        if (statementPair == null) {
             return;
+        }
 
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
 
         statementPair.setSecond(batchNum);
-        if (batchNum < BATCH_SIZE && !force) {
+        if ((batchNum < BATCH_SIZE) && !force) {
             try {
                 statement.addBatch();
             } catch (SQLException e) {
@@ -183,21 +190,22 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                 if (numUpdates[i] == -2) {
                     logger.error("Execution " + i + ": unknown number of rows updated");
                     success = "some";
-                } else
+                } else {
                     logger.trace("Execution " + i + " successful: " + numUpdates[i] + " rows updated");
+                }
             }
             logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());
-            throw new TdarRecoverableRuntimeException("an error ocurred while processing a prepared statement ", e);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.prepared_statement_fail", e);
         } finally {
             try {
                 statement.clearBatch();
                 statement.getConnection().close();
                 preparedStatementMap.remove(dataTable);
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("could not close and clear statement", e);
+                throw new TdarRecoverableRuntimeException("postgresDatabase.could_not_close", e);
             }
         }
     }
@@ -267,7 +275,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         query(distinctSql, new RowMapper<Object>() {
             @Override
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                toReturn.put(rs.getString(0), rs.getLong(1));
+                toReturn.put(rs.getString("val"), rs.getLong("count"));
                 return null;
             }
         });
@@ -281,8 +289,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             return Collections.emptyList();
         }
         String templateSql = SELECT_DISTINCT_NOT_BLANK;
-        if (dataTableColumn.getColumnDataType().isNumeric())
+        if (dataTableColumn.getColumnDataType().isNumeric()) {
             templateSql = SELECT_DISTINCT_NOT_BLANK_NUM;
+        }
 
         String distinctSql = String.format(templateSql, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
                 dataTableColumn.getName(), dataTableColumn.getName(), dataTableColumn.getName());
@@ -437,7 +446,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
         int i = 1;
         if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
-            throw new TdarRecoverableRuntimeException(DATATABLE_TOO_LONG);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.datatable_to_long");
         }
 
         while (iterator.hasNext()) {
@@ -497,8 +506,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     @Override
     public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception {
-        if (MapUtils.isEmpty(valueColumnMap))
+        if (MapUtils.isEmpty(valueColumnMap)) {
             return;
+        }
 
         Pair<PreparedStatement, Integer> statementPair = getOrCreate(dataTable, preparedStatementMap, createPreparedStatementPairCallable(dataTable));
         PreparedStatement preparedStatement = statementPair.getFirst();
@@ -558,8 +568,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException(String.format("don't know how to parse date: %s in column '%s' of table '%s'",
-                                colValue.toString(), column.getName(), column.getDataTable().getName()));
+                        throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_parse_date",
+                                Arrays.asList(colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
                 default:
@@ -737,13 +747,13 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy) {
         ModernIntegrationDataResult result = new ModernIntegrationDataResult();
-        createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName()));
+        createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName(), ""));
         for (IntegrationColumn column : proxy.getIntegrationColumns()) {
-            String deflt = NULL_EMPTY_INTEGRATION_VALUE;
+            String deflt = MessageHelper.getMessage("database.null_empty_integration_value");
             if (column.isDisplayColumn()) {
-                deflt = NULL_EMPTY_MAPPED_VALUE;
+                deflt = MessageHelper.getMessage("database.null_empty_mapped_value");
             }
-            executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", column.getName(), deflt));
+            executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", proxy.getTempTableName(), column.getName(), deflt));
         }
 
         for (DataTable table : proxy.getDataTables()) {
@@ -773,7 +783,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String selectSql = generateModernOntologyEnhancedSelect(table, proxy);
 
         if (!selectSql.toLowerCase().contains(" where ")) {
-            throw new TdarRecoverableRuntimeException("something happend, no where clause in integration");
+            throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
         }
 
         executeUpdateOrDelete(selectSql);
@@ -811,7 +821,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {
@@ -863,7 +873,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {
@@ -928,7 +938,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public int getRowCount(DataTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
-        return jdbcTemplate.queryForInt(sql);
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public List<String> selectAllFrom(final DataTableColumn column) {
@@ -984,7 +994,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         // Not allowed this time.
         // The use case was to allow modification of existing records.
         // I am interpreting this literally as update only.
-        throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
+        throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
     }
 
     @Override

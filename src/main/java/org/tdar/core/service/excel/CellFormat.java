@@ -9,23 +9,40 @@ import org.apache.poi.ss.usermodel.Workbook;
 /*
  * An enum "helper" to simplify dealing with formatting Excel/POI Objects
  */
-public enum CellFormat {
-    NORMAL(HSSFFont.BOLDWEIGHT_NORMAL),
-    BOLD(HSSFFont.BOLDWEIGHT_BOLD);
+public class CellFormat {
+    public enum Style {
+        NORMAL(HSSFFont.BOLDWEIGHT_NORMAL),
+        BOLD(HSSFFont.BOLDWEIGHT_BOLD);
 
-    private CellFormat(short weight) {
-        boldweight = weight;
+        private short boldweight;
+
+        private Style(short weight) {
+            boldweight = weight;
+        }
+
+        public short getBoldweight() {
+            return boldweight;
+        }
+
+        public void setBoldweight(short boldweight) {
+            this.boldweight = boldweight;
+        }
+
     }
 
-    private short boldweight;
-    private transient HSSFColor color;
-    private transient HSSFColor backgroundColor;
-    private transient short fontSize = 11;
-    private transient short borderBottom;
-    private transient short borderTop;
-    private transient short borderLeft;
-    private transient short borderRight;
-    private transient boolean wrapping;
+    private Style style;
+    private HSSFColor color;
+    private HSSFColor backgroundColor;
+    private short fontSize = 11;
+    private short borderBottom;
+    private short borderTop;
+    private short borderLeft;
+    private short borderRight;
+    private boolean wrapping;
+    
+    public CellFormat(Style style) {
+        this.style = style;
+    }
 
     public short getBorderBottom() {
         return borderBottom;
@@ -60,15 +77,6 @@ public enum CellFormat {
 
     public CellFormat setBorderRight(short borderRight) {
         this.borderRight = borderRight;
-        return this;
-    }
-
-    public short getBoldweight() {
-        return boldweight;
-    }
-
-    public CellFormat setBoldweight(short boldweight) {
-        this.boldweight = boldweight;
         return this;
     }
 
@@ -108,13 +116,17 @@ public enum CellFormat {
         return this;
     }
 
+    public static CellFormat build(Style style) {
+        CellFormat format = new CellFormat(style);
+        return format;
+    }
     /*
      * Create a style that's basic
      */
     public CellStyle createStyle(Workbook workbook) {
         CellStyle summaryStyle = workbook.createCellStyle();
         Font summaryFont = workbook.createFont();
-        summaryFont.setBoldweight(this.getBoldweight());
+        summaryFont.setBoldweight(style.getBoldweight());
         summaryStyle.setFont(summaryFont);
         if (this.getColor() != null) {
             summaryStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
@@ -151,5 +163,13 @@ public enum CellFormat {
         }
 
         return summaryStyle;
+    }
+
+    public Style getStyle() {
+        return style;
+    }
+
+    public void setStyle(Style style) {
+        this.style = style;
     }
 }

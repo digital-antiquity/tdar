@@ -49,6 +49,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     private static final String NEW_TARBALL_TEMPLATE_KEY = "new_tarball";
     // in time the template/templates can be moved to a file
+    @SuppressWarnings("el-syntax")
     private static final String XML_TEMPLATE_NEW_TARBALL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lineSeparator() +
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +
@@ -140,9 +141,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
-        
-        // has the archive been assigned to a project? 
-        if (archive.getProjectId() == null || archive.getProjectId() <= 0) {
+
+        // has the archive been assigned to a project?
+        if ((archive.getProjectId() == null) || (archive.getProjectId() <= 0)) {
             recordErrorAndExit("Cannot unpack an archive that has not yet been assigned to a project!");
         }
 
@@ -189,7 +190,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     }
 
     /**
-     * @param archive that is being extracted
+     * @param archive
+     *            that is being extracted
      * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
      */
     protected String getEmailToNotify(Archive archive) {

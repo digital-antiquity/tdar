@@ -14,6 +14,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,29 +35,28 @@ import org.tdar.utils.Pair;
 @Component("genericKeywordDao")
 public class GenericKeywordDao extends GenericDao {
 
+    private static final String LABEL = "label";
+    private static final String INDEX = "index";
     public static final String NAME = "name";
     public static final String INHERITANCE_TOGGLE_FIELDNAME = "INHERITANCE_TOGGLE";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional
     public <K extends HierarchicalKeyword<K>> List<K> findAllDescendants(Class<K> cls, K keyword) {
         String index = keyword.getIndex();
-        if (StringUtils.isBlank(index))
+        if (StringUtils.isBlank(index)) {
             return Collections.emptyList();
+        }
         index += ".%";
         DetachedCriteria criteria = getDetachedCriteria(cls);
-        criteria.add(Restrictions.ilike("index", index));
+        criteria.add(Restrictions.ilike(INDEX, index));
         return findByCriteria(cls, criteria);
     }
 
     @Transactional
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
         // FIXME: turn this into a generic named query?
-        return findByProperty(cls, "label", label);
-    }
-
-    @Transactional
-    public <K extends Keyword> List<K> findAllByLabels(Class<K> cls, List<String> labels) {
-        return findAllFromList(cls, "label", labels);
+        return findByPropertyIgnoreCase(cls, LABEL, label);
     }
 
     @Transactional
@@ -150,7 +151,7 @@ public class GenericKeywordDao extends GenericDao {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
         Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

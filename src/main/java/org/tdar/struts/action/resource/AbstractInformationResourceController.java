@@ -31,13 +31,13 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.FileProxyService;
-import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.XmlService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.struts.DoNotObfuscate;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -59,16 +59,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private static final long serialVersionUID = -200666002871956655L;
 
     @Autowired
-    protected FileProxyService fileProxyService;
-
-    @Autowired
-    protected XmlService xmlService;
+    private FileProxyService fileProxyService;
 
     private List<CategoryVariable> allDomainCategories;
 
     private Project project = Project.NULL;
     private List<Resource> potentialParents;
-
     // incoming data
     private List<File> uploadedFiles;
     private List<String> uploadedFileContentTypes; // unused I think (hope)
@@ -77,12 +73,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Language metadataLanguage;
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<>();
-
-
+    private String json = "{}";
     private Long projectId;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
-    private String filesJson = "";
+    private String filesJson = null;
 
     private Boolean isAbleToUploadFiles = null;
 
@@ -97,15 +92,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     // resource availability
     // private String resourceAvailability;
     private boolean allowedToViewConfidentialFiles;
-    protected FileAnalyzer analyzer;
+    private FileAnalyzer analyzer;
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
-
-    @Autowired
-    protected PersonalFilestoreService filestoreService;
-
-    // private boolean resourceFilesHaveChanged = false;
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -122,7 +112,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      *             If there was an IO error
      */
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        throw new UnsupportedOperationException(getClass() + " didn't override properly");
+        throw new UnsupportedOperationException(getText("abstractInformationResourceController.didnt_override", getClass()));
     }
 
     public boolean isMultipleFileUploadEnabled() {
@@ -171,7 +161,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getLogger().debug("handling uploaded files for {}", getPersistable());
             proxies = getFileProxiesToProcess();
-            logger.debug("Final proxy set: {}", proxies);
+            getLogger().debug("Final proxy set: {}", proxies);
 
             for (FileProxy proxy : proxies) {
                 if (proxy != null && proxy.getAction() != FileAction.NONE) {
@@ -180,7 +170,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
 
         } catch (TdarRecoverableRuntimeException trrc) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, trrc);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), trrc);
         }
 
         if (isHasFileProxyChanges()
@@ -188,11 +178,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                         GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
+        // abstractInformationResourceController.didnt_override=%s didn't override properly
+        // abstractInformationResourceController.didnt_override=%s didn't override properly
 
         try {
             getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this, proxies);
         } catch (Exception e) {
-            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
         }
         getInformationResourceService().saveOrUpdate(getPersistable());
         getLogger().trace("done processing upload files");
@@ -277,7 +269,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         if (isCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
-            logger.debug("setting copyright holder to:  {} ", transientCreator);
+            getLogger().debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
         }
     }
@@ -358,15 +350,18 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         List<FileProxy> fileProxies = new ArrayList<>();
+        // FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
         for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
             }
         }
+
         try {
-            filesJson = xmlService.convertToJson(fileProxies);
+            filesJson = getXmlService().convertToJson(fileProxies);
+            getLogger().debug(filesJson);
         } catch (IOException e) {
-            logger.error("could not convert file list to json", e);
+            getLogger().error("could not convert file list to json", e);
             filesJson = "[]";
         }
     }
@@ -375,10 +370,18 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
         setTransientViewableStatus(getResource(), getAuthenticatedUser());
+    }
+
+    @Override
+    public String loadAddMetadata() {
+        String retval = super.loadAddMetadata();
+        resolveProject();
+        return retval;
     }
 
     protected void loadInformationResourceProperties() {
@@ -390,7 +393,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         try {
             getDatasetService().assignMappedDataForInformationResource(getResource());
         } catch (Exception e) {
-            logger.error("could not attach additional dataset data to resource", e);
+            getLogger().error("could not attach additional dataset data to resource", e);
         }
     }
 
@@ -422,14 +425,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public Project getProject() {
         return project;
     }
-    
-    
+
     protected void resolveProject() {
         project = Project.NULL;
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
-            return;
-        } 
+        }
+        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
     protected void setProject(Project project) {
@@ -446,7 +448,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setProjectId(Long projectId_) {
         // remove me?
         if (projectId_ == null) {
-            logger.trace("Tried to set null project id, no-op.");
+            getLogger().trace("Tried to set null project id, no-op.");
             return;
         }
         this.projectId = projectId_;
@@ -460,9 +462,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * The return list is mostly sorted, with the exception of Project.NULL
      * which is always the first item in the list
      */
-    @DoNotObfuscate(reason="always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
+    @DoNotObfuscate(reason = "always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
-        logger.info("get potential parents");
+        getLogger().info("get potential parents");
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
@@ -475,7 +477,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             // Collections.sort(potentialParents);
             potentialParents.add(0, Project.NULL);
         }
-        logger.trace("Returning all editable projects: {}", potentialParents);
+        getLogger().trace("Returning all editable projects: {}", potentialParents);
         return potentialParents;
     }
 
@@ -512,8 +514,35 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (getResource().isInheritingOtherInformation()) {
             setOtherKeywords(null);
         }
-        // FIXME: we need to set the project at this point to avoid getProjectId() being indexed too early
-        // see TDAR-2001
+
+        if (getResource().isInheritingIndividualAndInstitutionalCredit()) {
+            if (CollectionUtils.isNotEmpty(getCreditProxies())) {
+                getCreditProxies().clear();
+            }
+        }
+
+        if (getResource().isInheritingCollectionInformation()) {
+            if (CollectionUtils.isNotEmpty(getRelatedComparativeCollections())) {
+                getRelatedComparativeCollections().clear();
+            }
+            if (CollectionUtils.isNotEmpty(getSourceCollections())) {
+                getSourceCollections().clear();
+            }
+        }
+
+        if (getResource().isInheritingNoteInformation()) {
+            if (CollectionUtils.isNotEmpty(getResourceNotes())) {
+                getResourceNotes().clear();
+            }
+        }
+
+        if (getResource().isInheritingIdentifierInformation()) {
+            if (CollectionUtils.isNotEmpty(getResourceAnnotations())) {
+                getResourceAnnotations().clear();
+            }
+        }
+
+        // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
         super.saveBasicResourceMetadata();
@@ -551,7 +580,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getProjectAsJson() {
-        return getProject().toJSON().toString();
+        return json;
     }
 
     public Long getTicketId() {
@@ -564,10 +593,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     protected void setFileProxyAction(FileProxy proxy) {
         if (getPersistable().hasFiles()) {
-            logger.debug("Replacing existing files {} for {}", getPersistable().getInformationResourceFiles(), getPersistable());
+            getLogger().debug("Replacing existing files {} for {}", getPersistable().getInformationResourceFiles(), getPersistable());
             proxy.setAction(FileAction.REPLACE);
             proxy.setFileId(getPersistable().getFirstInformationResourceFile().getId());
-            logger.debug("set primary file proxy irf id to {}", proxy.getFileId());
+            getLogger().debug("set primary file proxy irf id to {}", proxy.getFileId());
         } else {
             proxy.setAction(FileAction.ADD);
         }
@@ -605,22 +634,22 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void validate() {
         super.validate();
         if (getPersistable().getDate() == null) {
-            logger.debug("Invalid date created for {}", getPersistable());
-            String resourceTypeLabel = getPersistable().getResourceType().getLabel();
+            getLogger().debug("Invalid date created for {}", getPersistable());
+            String resourceTypeLabel = getText(getPersistable().getResourceType().name());
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
         if (isCopyrightMandatory()) {
             // first check to see if the form has copyright holders specified
             if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
-                logger.info("{} {}", copyrightHolderProxies, transientCreator);
+                getLogger().info("{} {}", copyrightHolderProxies, transientCreator);
                 if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
-                    logger.debug("No copyright holder set for {}", getPersistable());
-                    addActionError("Please enter a copyright holder!");
+                    getLogger().debug("No copyright holder set for {}", getPersistable());
+                    addActionError(getText("abstractInformationResourceController.add_copyright_holder"));
                 }
                 // and if not on a form (the reprocess below, for example, then check the persistable itself
             } else if (getPersistable().getCopyrightHolder() == null) {
-                addActionError("The required copyright holder is missing!");
+                addActionError(getText("abstractInformationResourceController.copyright_holder_missing"));
             }
         }
     }
@@ -671,6 +700,39 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public String getFilesJson() {
         loadFilesJson();
         return filesJson;
+    }
+
+    public FileAnalyzer getAnalyzer() {
+        return analyzer;
+    }
+
+    public boolean isResourceEditPage() {
+        return true;
+    }
+
+    public List<Pair<InformationResourceFile, ExceptionWrapper>> getHistoricalFileErrors() {
+        List<Pair<InformationResourceFile, ExceptionWrapper>> toReturn = new ArrayList<>();
+        try {
+            if (isHasFileProxyChanges()) {
+                return toReturn;
+            }
+            for (InformationResourceFile file : getPersistable().getFilesWithProcessingErrors()) {
+                if (file.isDeleted()) {
+                    continue;
+                }
+                String message = file.getErrorMessage();
+                String stackTrace = file.getErrorMessage();
+                if (StringUtils.contains(message, ExceptionWrapper.SEPARATOR)) {
+                    message = message.substring(0, message.indexOf(ExceptionWrapper.SEPARATOR));
+                    stackTrace = stackTrace.substring(stackTrace.indexOf(ExceptionWrapper.SEPARATOR) + 2);
+                }
+                Pair<InformationResourceFile, ExceptionWrapper> pair = Pair.create(file, new ExceptionWrapper(message, stackTrace));
+                toReturn.add(pair);
+            }
+        } catch (Exception e) {
+            getLogger().error("got an exception while evaluating whether we should show one, should we?", e);
+        }
+        return toReturn;
     }
 
 }

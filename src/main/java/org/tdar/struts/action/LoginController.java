@@ -13,8 +13,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
-import org.tdar.struts.WriteableSession;
-import org.tdar.struts.interceptor.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
@@ -34,6 +35,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Results({
         @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD),
         @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl") })
+@CacheControl
 public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
@@ -52,12 +54,12 @@ public class LoginController extends AuthenticationAware.Base {
     })
     @HttpsOnly
     public String execute() {
-        logger.debug("Executing /login/ .");
+        getLogger().debug("Executing /login/ .");
         if (isAuthenticated()) {
-            logger.debug("already authenticated, redirecting to project listing.");
+            getLogger().debug("already authenticated, redirecting to project listing.");
             return AUTHENTICATED;
         }
-        logger.debug("Not authenticated for some reason: " + getSessionData());
+        getLogger().debug("Not authenticated for some reason: " + getSessionData());
         return SUCCESS;
     }
 
@@ -69,14 +71,14 @@ public class LoginController extends AuthenticationAware.Base {
     @HttpsOnly
     @WriteableSession
     public String authenticate() {
-        logger.debug("Trying to authenticate username:{}", getLoginUsername());
+        getLogger().debug("Trying to authenticate username:{}", getLoginUsername());
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
+            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
             addActionError("Could not authenticate");
             return INPUT;
         }
         if (!isPostRequest()) {
-            logger.warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
             return INPUT;
         }
 
@@ -90,36 +92,49 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         if (status != AuthenticationStatus.AUTHENTICATED) {
+            if (status.name() == NEW) {
+                addActionMessage("User is in crowd, but not in local db");
+            }
             return status.name().toLowerCase();
         }
 
-        if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
-            if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
-                setReturnUrl(getSessionData().getReturnUrl());
-            } else {
-                setReturnUrl(UrlUtils.urlDecode(url));
-            }
-            logger.info("url {} ", getReturnUrl());
-            if (getReturnUrl().contains("filestore/")) {
-                logger.info("download redirect");
-                if (getReturnUrl().contains("/get?") || getReturnUrl().endsWith("/get")) {
-                    setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
-                    logger.debug(getReturnUrl());
-                } else if (getReturnUrl().matches("^(.+)filestore/(\\d+)$")) {
-                    setReturnUrl(getReturnUrl() + "/confirm");
-                    logger.debug(getReturnUrl());
-                }
-                logger.info(getReturnUrl());
-            }
-            if (getReturnUrl().contains("/lookup") || getReturnUrl().contains("/check") || getReturnUrl().contains("/bookmark")) {
-                return AUTHENTICATED;
-            }
-
-            logger.debug("Redirecting to return url: " + getReturnUrl());
+        setReturnUrl(parseReturnUrl());
+        if (StringUtils.isNotBlank(getReturnUrl())) {
+            getSessionData().setReturnUrl(getReturnUrl());
             return REDIRECT;
         }
-        getSessionData().setReturnUrl(null);
         return AUTHENTICATED;
+    }
+
+    private String parseReturnUrl() {
+        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
+            return null;
+        }
+
+        String url_ = getSessionData().getReturnUrl();
+        if (StringUtils.isBlank(url_)) {
+            url_ = UrlUtils.urlDecode(url);
+        }
+
+        getLogger().info("url {} ", url_);
+        if (url_.contains("filestore/")) {
+            getLogger().info("download redirect");
+            if (url_.contains("/get?") || url_.endsWith("/get")) {
+                url_ = url_.replace("/get", "/confirm");
+            } else if (url_.matches("^(.+)filestore/(\\d+)$")) {
+                url_ = url_ + "/confirm";
+            }
+            getLogger().info(url_);
+        }
+
+        // ignore AJAX/JSON requests
+        if (url_.contains("/lookup") || url_.contains("/check")
+                || url_.contains("/bookmark")) {
+            return null;
+        }
+
+        getLogger().debug("Redirecting to return url: " + url_);
+        return url_;
     }
 
     public String getLoginUsername() {

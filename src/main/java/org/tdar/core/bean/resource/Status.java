@@ -2,8 +2,16 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
-public enum Status implements HasLabel {
+/**
+ * Status for resources within tDAR, controls permissions and how they're indexed.
+ * 
+ * @author abrin
+ * 
+ */
+public enum Status implements HasLabel, Localizable {
     DRAFT("Draft"),
     ACTIVE("Active"),
     FLAGGED("Flagged"),
@@ -17,8 +25,18 @@ public enum Status implements HasLabel {
         this.label = label;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
+    @Override
     public String getLabel() {
         return label;
+    }
+
+    public boolean isFlaggedForBilling() {
+        return equals(FLAGGED_ACCOUNT_BALANCE);
     }
 
     public static Status fromString(String string) {

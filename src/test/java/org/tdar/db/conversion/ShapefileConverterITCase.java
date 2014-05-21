@@ -27,6 +27,7 @@ public class ShapefileConverterITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     @Qualifier("tdarDataImportDataSource")
+    @Override
     public void setIntegrationDataSource(DataSource dataSource) {
         tdarDataImportDatabase.setDataSource(dataSource);
     }

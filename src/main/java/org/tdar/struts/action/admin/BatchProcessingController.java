@@ -21,7 +21,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.BatchAction;
-import org.tdar.struts.interceptor.PostOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 /**
  * $Id$

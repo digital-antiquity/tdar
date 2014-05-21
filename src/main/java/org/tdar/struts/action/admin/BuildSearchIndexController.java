@@ -25,9 +25,10 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
+import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
 @Component
@@ -46,7 +47,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
     private Long userId;
 
-    LinkedList<Throwable> errors = new LinkedList<Throwable>();
+    private LinkedList<Throwable> errors = new LinkedList<Throwable>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<LookupSource>();
 
@@ -69,12 +70,32 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         return SUCCESS;
     }
 
+    @IgnoreActivity
+    @Action(value = "checkstatusAsync", results = {
+            @Result(name = "success", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) }
+            )
+            public String checkStatusAsync() {
+        percentDone = 0;
+        phase = "Initializing";
+        Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
+        if (activity != null) {
+            String msg = activity.getMessage();
+            getLogger().debug(msg);
+            String part = msg.substring(0, msg.indexOf("%"));
+            part = part.substring(part.lastIndexOf(" "));
+            float pct = Float.parseFloat(part);
+            phase = msg;
+            percentDone = (int) pct;
+        }
+        return SUCCESS;
+    }
+
     @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
     public String build() {
         try {
-            logger.info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
+            getLogger().info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
         } catch (Exception e) {
-            logger.error("weird exception {} ", e);
+            getLogger().error("weird exception {} ", e);
         }
         return SUCCESS;
     }
@@ -82,7 +103,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private void buildIndex() {
         Date date = new Date();
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        logger.info("{}", getIndexesToRebuild());
+        getLogger().info("{}", getIndexesToRebuild());
         for (LookupSource source : getIndexesToRebuild()) {
             if (source == LookupSource.RESOURCE) {
                 toReindex.add(Resource.class);
@@ -91,7 +112,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             }
         }
 
-        logger.info("to reindex: {}", toReindex);
+        getLogger().info("to reindex: {}", toReindex);
         Person person = null;
         if (Persistable.Base.isNotNullOrTransient(getUserId())) {
             person = getEntityService().find(getUserId());
@@ -115,7 +136,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @Override
     public void setStatus(String status) {
-        logger.debug("indexing status: {}", status);
+        getLogger().debug("indexing status: {}", status);
         this.phase = "Current Status: " + status;
     }
 
@@ -131,7 +152,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public void addError(Throwable t) {
         setStatus(t.getMessage());
         errors.addFirst(t);
-        logger.error(t.getMessage(), t);
+        getLogger().error(t.getMessage(), t);
     }
 
     @Override
@@ -160,21 +181,21 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     }
 
     @Override
-    public String getAsyncErrors() {
-        StringBuilder sb = new StringBuilder();
+    public List<String> getAsyncErrors() {
+        List<String> ers = new ArrayList<>();
         for (Throwable t : errors) {
-            sb.append("\n").append(t.getMessage());
+            ers.add(t.getLocalizedMessage());
         }
-        return sb.toString();
+        return ers;
     }
 
     @Override
-    public String getHtmlAsyncErrors() {
-        StringBuilder sb = new StringBuilder();
+    public List<String> getHtmlAsyncErrors() {
+        List<String> ers = new ArrayList<>();
         for (Throwable t : errors) {
-            sb.append("<br />").append(t.getMessage());
+            ers.add("<br />" + t.getLocalizedMessage());
         }
-        return sb.toString();
+        return ers;
     }
 
     @Override

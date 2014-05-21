@@ -8,11 +8,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.utils.MessageHelper;
 
 public class PricingOption implements Serializable {
 
-    public enum PricingType implements HasLabel {
+    public enum PricingType implements HasLabel, Localizable {
         SIZED_BY_MB("Priced by MB"),
         SIZED_BY_FILE_ONLY("Priced by File"),
         SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
@@ -23,8 +25,14 @@ public class PricingOption implements Serializable {
             this.label = label;
         }
 
+        @Override
         public String getLabel() {
             return label;
+        }
+
+        @Override
+        public String getLocaleKey() {
+            return MessageHelper.formatLocalizableKey(this);
         }
     }
 
@@ -66,7 +74,7 @@ public class PricingOption implements Serializable {
         }
         for (BillingItem item : other.getItems()) {
             Integer key = compMap.get(item.getActivity().getId());
-            if (key == null || !key.equals(item.getQuantity())) {
+            if ((key == null) || !key.equals(item.getQuantity())) {
                 return false;
             }
         }
@@ -100,7 +108,7 @@ public class PricingOption implements Serializable {
     public Long getTotalMb() {
         Long mb = 0L;
         for (BillingItem item : items) {
-            if (item.getActivity().getNumberOfMb() != null && item.getQuantity() != null) {
+            if ((item.getActivity().getNumberOfMb() != null) && (item.getQuantity() != null)) {
                 mb += item.getQuantity().longValue() * item.getActivity().getNumberOfMb();
             }
         }
@@ -110,7 +118,7 @@ public class PricingOption implements Serializable {
     public Long getTotalFiles() {
         Long files = 0L;
         for (BillingItem item : items) {
-            if (item.getActivity().getNumberOfFiles() != null && item.getQuantity() != null) {
+            if ((item.getActivity().getNumberOfFiles() != null) && (item.getQuantity() != null)) {
                 files += item.getQuantity().longValue() * item.getActivity().getNumberOfFiles();
             }
         }

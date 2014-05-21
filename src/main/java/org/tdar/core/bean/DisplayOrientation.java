@@ -1,6 +1,14 @@
 package org.tdar.core.bean;
 
-public enum DisplayOrientation implements HasLabel {
+import org.tdar.utils.MessageHelper;
+
+/**
+ * Controls the display type for a collection, project, or any resource list.
+ * 
+ * @author abrin
+ * 
+ */
+public enum DisplayOrientation implements HasLabel, Localizable {
     LIST("List"),
     LIST_FULL("List (Full)"),
     GRID("Grid"),
@@ -12,8 +20,14 @@ public enum DisplayOrientation implements HasLabel {
         this.setLabel(label);
     }
 
+    @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public void setLabel(String label) {

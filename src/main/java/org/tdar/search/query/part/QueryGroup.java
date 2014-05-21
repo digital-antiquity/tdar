@@ -11,14 +11,14 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
  * @version $Revision$
  */
 public interface QueryGroup {
-    abstract void append(QueryPart<?> q);
+    void append(QueryPart<?> q);
 
-    abstract Operator getOperator();
+    Operator getOperator();
 
-    abstract void setOperator(Operator or);
+    void setOperator(Operator or);
 
-    abstract boolean isEmpty();
+    boolean isEmpty();
 
-    abstract List<QueryPart<?>> getParts();
+    List<QueryPart<?>> getParts();
 
 }

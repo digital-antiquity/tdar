@@ -12,8 +12,7 @@ import javax.persistence.Table;
 import org.hibernate.search.annotations.Indexed;
 
 /**
- * $Id$
- * 
+ * Represents a "general" or non-specific keyword
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -31,6 +30,7 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
     @JoinColumn(name = "merge_keyword_id")
     private Set<OtherKeyword> synonyms = new HashSet<OtherKeyword>();
 
+    @Override
     public Set<OtherKeyword> getSynonyms() {
         return synonyms;
     }

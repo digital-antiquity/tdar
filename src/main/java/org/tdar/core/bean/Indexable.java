@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.search.Explanation;
 
-/*     
+/**
  * The Indexable interface is way to ensure that certain additional info is available to the search interface.
  * This includes, the score and the explanation. for Lucene
  */
