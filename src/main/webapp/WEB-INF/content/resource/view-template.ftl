@@ -239,7 +239,7 @@ ${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.form
 ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
     </#assign>
     <p class="sml">
-		${citation}
+		<#noescape>${citation}</#noescape>
         <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
             <br/>
             <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
