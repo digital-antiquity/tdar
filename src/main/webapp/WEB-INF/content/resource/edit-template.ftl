@@ -222,6 +222,12 @@
             </#if>
         </#if>
 
+
+    <#if local_.afterUpload?? && local_.afterUpload?is_macro>
+        <@local_.afterUpload />
+    </#if>
+    
+
     <#-- allow for additional content after the file upload -->
         <#if local_.localSection?? && local_.localSection?is_macro>
             <@local_.localSection />
