@@ -51,7 +51,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     private transient Logger logger = LoggerFactory.getLogger(getClass());
     private String name;
     private Ontology sharedOntology;
-    private List<DataTableColumn> columns = new ArrayList<DataTableColumn>();
+    private List<DataTableColumn> columns = new ArrayList<>();
     private List<OntologyNode> filteredOntologyNodes = new ArrayList<OntologyNode>();
     private Set<OntologyNode> ontologyNodesForSelect = new HashSet<OntologyNode>();
     private HashMap<OntologyNode, OntologyNode> parentMap = new HashMap<OntologyNode, OntologyNode>();
@@ -113,7 +113,6 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlElementWrapper(name = "dataTableColumns")
     @XmlElement(name = "dataTableColumn")
     public List<DataTableColumn> getColumns() {
-        columns.removeAll(Collections.singletonList(null));
         return columns;
     }
 
