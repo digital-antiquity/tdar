@@ -4,14 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.FileUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -118,11 +113,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     @Result(name = INPUT, location = "select-columns.ftl")
             })
     public String filterDataValues() {
-
         try {
             // each column could have its own distinct ontology in the future. at the moment we assume that
             // each pair of columns has a shared common ontology
             getLogger().debug("integration columns: {}", getIntegrationColumns());
+
+            getLogger().debug("prepare integrationColumns(before):{}", integrationColumns);
+            cleanupIntegrationColumns();
+            getLogger().debug("prepare integrationColumns (after):{}", integrationColumns);
 
             for (IntegrationColumn integrationColumn : getIntegrationColumns()) {
                 if (integrationColumn.isDisplayColumn()) {
@@ -321,17 +319,28 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<IntegrationColumn> getIntegrationColumns() {
         if (integrationColumns == null) {
-            integrationColumns = new ArrayList<IntegrationColumn>();
+            integrationColumns = new ArrayList<>();
         }
-        Iterator<IntegrationColumn> iterator = integrationColumns.iterator();
+        return integrationColumns;
+    }
+
+    /**
+     * Remove null items from the integrationColumns list as well as the integrationColumn.columns lists
+     *
+     * As struts populates the object graph for integration columns, it may have introduced null list items (both in the integrationColumns list, and
+     * potentially in the individual integrationColumns[].columns list).
+     */
+    private void cleanupIntegrationColumns() {
+        Iterator<IntegrationColumn> iterator = getIntegrationColumns().iterator();
         while (iterator.hasNext()) {
             IntegrationColumn column = iterator.next();
             if ((column == null) || (column.getColumns().size() == 0)) {
                 getLogger().debug("removing null column");
                 iterator.remove();
+            } else {
+                column.getColumns().removeAll(Collections.singletonList(null));
             }
         }
-        return integrationColumns;
     }
 
     public IntegrationColumn getBlankIntegrationColumn() {
@@ -353,4 +362,11 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public void setSharedOntologies(Set<Ontology> sharedOntologies) {
         this.sharedOntologies = sharedOntologies;
     }
+
+    //ensure that the integration columns are cleaned up prior to executing an action
+//    public void prepare() {
+//        getLogger().debug("prepare integrationColumns(before):{}", integrationColumns);
+//        cleanupIntegrationColumns();
+//        getLogger().debug("prepare integrationColumns (after):{}", integrationColumns);
+//    }
 }
