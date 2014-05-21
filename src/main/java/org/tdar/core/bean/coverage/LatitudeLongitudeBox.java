@@ -21,6 +21,8 @@ import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -61,6 +63,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public static final int LONGITUDE = 2;
     
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /** used to record whether this instance has been obfuscated by the obfuscation service or not */
     private transient boolean obfuscated;
