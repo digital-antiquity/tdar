@@ -64,7 +64,7 @@
     <div class="row">
         <div class="span6 map">
             <h3>${siteAcronym} Worldwide</h3>
-            <@common.worldMap />
+        <@common.renderWorldMap />
         </div>
         <div class="span6 news">
 
