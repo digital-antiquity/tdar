@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -13,7 +14,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -29,10 +29,11 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -45,8 +46,8 @@ import org.tdar.utils.MessageHelper;
  */
 
 @Entity
-@Table(name = "latitude_longitude")
-@org.hibernate.annotations.Table( appliesTo="latitude_longitude", indexes = { @Index(name="resource_latlong", columnNames={"resource_id", "id"})})
+@Table(name = "latitude_longitude", indexes = {
+        @Index(name = "resource_latlong", columnList = "resource_id, id") })
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")
@@ -71,7 +72,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private transient boolean obfuscated;
 
     /** if true, then the location does not need to be hidden */
-    @Column(nullable = false, name = "is_ok_to_show_exact_location" , columnDefinition="boolean default false")
+    @Column(nullable = false, name = "is_ok_to_show_exact_location", columnDefinition = "boolean default false")
     private boolean isOkayToShowExactLocation;
 
     @Column(name = "min_obfuscated_lat")
@@ -174,7 +175,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * http://www.movable-type.co.uk/scripts/html
      */
     protected static Double randomizeIfNeedBe(Double num1, Double num2, int type) {
-        if (num1 == null && num2 == null) {
+        if ((num1 == null) && (num2 == null)) {
             return null;
         }
         
@@ -183,6 +184,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         double add = 0;
         
         Double numOne = (num1 != null) ? num1 : num2;
+        
+        if (num1 == null) {
+            throw new TdarRecoverableRuntimeException("latLong.one_null");
+        }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
         Double numTwo = (num2 != null) ? num2: numOne + salt / 2;
         if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) < salt) {
@@ -289,8 +294,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @param minimumLatitude the new minimum latitude
      */
     public void setMinimumLatitude(Double minimumLatitude) {
-        if (minimumLatitude != null && !isValidLatitude(minimumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("lat.invalid"));
+        if ((minimumLatitude != null) && !isValidLatitude(minimumLatitude)) {
+            throw new TdarValidationException("latLong.lat_invalid");
         }
         setMiny(minimumLatitude);
     }
@@ -314,8 +319,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @param maximumLatitude the new maximum latitude
      */
     public void setMaximumLatitude(Double maximumLatitude) {
-        if (maximumLatitude != null & !isValidLatitude(maximumLatitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("lat.invalid"));
+        if ((maximumLatitude != null) & !isValidLatitude(maximumLatitude)) {
+            throw new TdarValidationException("latLong.lat_invalid");
         }
         setMaxy(maximumLatitude);
     }
@@ -339,8 +344,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @param minimumLongitude the new minimum longitude
      */
     public void setMinimumLongitude(Double minimumLongitude) {
-        if (minimumLongitude != null && !isValidLongitude(minimumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("long.invalid"));
+        if ((minimumLongitude != null) && !isValidLongitude(minimumLongitude)) {
+            throw new TdarValidationException("latLong.long_invalid");
         }
         setMinx(minimumLongitude);
     }
@@ -369,8 +374,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * @param maximumLongitude the new maximum longitude
      */
     public void setMaximumLongitude(Double maximumLongitude) {
-        if (maximumLongitude != null && !isValidLongitude(maximumLongitude)) {
-            throw new TdarRuntimeException(MessageHelper.getMessage("long.invalid"));
+        if ((maximumLongitude != null) && !isValidLongitude(maximumLongitude)) {
+            throw new TdarValidationException("latLong.long_invalid");
         }
         setMaxx(maximumLongitude);
     }
