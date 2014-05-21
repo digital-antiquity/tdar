@@ -41,7 +41,7 @@
 
     <#macro footer>
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
-        <@edit._fileProxyRow />
+        <@edit.fileProxyRow />
     </table>
     </#macro>
 

@@ -352,46 +352,51 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-<#macro fullAccessRights tipsSelector="#divAccessRightsTips">
-<#local _authorizedUsers=authorizedUsers />
-<#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
-<#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
-<@helptext.accessRights />
+    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource">
+        <#local _authorizedUsers=authorizedUsers />
+        <#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
+        <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
+        <@helptext.accessRights />
 
-<div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
-<h2><a name="accessRights"></a>Access Rights</h2>
-<h3>Users who can view or modify this resource</h3>
-<div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
-    <div class="control-group">
-        <label class="control-label">Users</label>
-        <div class="controls">
-        <#list _authorizedUsers as authorizedUser>
-            <#if authorizedUser??>
-                <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
-                    <div class="span6">
-                        <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user" 
-                           prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
-                    </div>
-                    <div class="span1">
-                        <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=!authorizedUser.enabled />
-                    </div>
+    <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
+        <h2><a name="accessRights"></a>Access Rights</h2>
+
+        <h3>${label}</h3>
+
+        <div id="accessRightsRecords" class="<#if (ableToUploadFiles?? && ableToUploadFiles) || (!ableToUploadFiles?has_content)>repeatLastRow</#if>"
+             data-addAnother="add another user">
+            <div class="control-group">
+                <label class="control-label">Users</label>
+
+                <div class="controls">
+                    <#list _authorizedUsers as authorizedUser>
+                        <#if authorizedUser??>
+                            <div class="controls-row repeat-row" id="authorizedUsersRow_${authorizedUser_index}_">
+                                <div class="span6">
+                                    <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user"
+                                    prefix="authorizedUsers" includeRights=true includeRepeatRow=false textfieldCssClass="authuserNotSubmitter" />
+                                </div>
+                                <div class="span1">
+                                    <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=!authorizedUser.enabled />
+                                </div>
+                            </div>
+                        </#if>
+                    </#list>
                 </div>
-            </#if>
-        </#list>
-       </div>
+            </div>
+        </div>
+
+        <#nested>
+
+        <#if persistable.resourceType??>
+            <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
+            <#--Note: this does not reflect changes to resource collection you have made until you save.-->
+            </@common.resourceCollectionsRights>
+        </#if>
+
     </div>
-</div>
+    </#macro>
 
-<#nested>
-
- <#if persistable.resourceType??>
-  <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
-  <#--Note: this does not reflect changes to resource collection you have made until you save.-->
-  </@common.resourceCollectionsRights>
- </#if>
-
-</div>
-</#macro>
 
 
 <#macro categoryVariable>
@@ -1329,32 +1334,51 @@ $(function() {
     </div>
 </#macro>
 
+<#--Search valuestack for the value of the specified field name.  Starting with the controller fields, then request parameters -->
+    <#function requestValue name default="">
+    <#-- look in the request parameters -->
+        <#local parameterVal = (stack.context.parameters[name][0])!default>
 
-<#macro listMemberUsers >
-<#local _authorizedUsers=account.authorizedMembers />
-<#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
+    <#-- look in list of values set by struts on the action -->
+        <#local val = (stack.findValue(name))!>
 
-<div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
-    <div class="control-group">
-        <label class="control-label">Users</label>
-        <div class="controls">
-        <#list _authorizedUsers as user>
-            <#if user??>
-                <div class="controls-row repeat-row" id="userrow_${user_index}_">
-                    <div class="span6">
-                        <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false/>
-                    </div>
-                    <div class="span1">
-                        <@nav.clearDeleteButton id="user${user_index}"  />
-                    </div>
-                </div>
-            </#if>
-        </#list>
+    <#-- prefer the model value over the request parameter -->
+        <#if val?has_content>
+            <#return val>
+        <#else>
+            <#return parameterVal>
+        </#if>
+
+    </#function>
+
+
+    <#macro listMemberUsers >
+        <#local _authorizedUsers=account.authorizedMembers />
+        <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
+
+    <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
+        <div class="control-group">
+            <label class="control-label">Users</label>
+
+            <div class="controls">
+                <#list _authorizedUsers as user>
+                    <#if user??>
+                        <div class="controls-row repeat-row" id="userrow_${user_index}_">
+                            <div class="span6">
+                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false/>
+                            </div>
+                            <div class="span1">
+                                <@nav.clearDeleteButton id="user${user_index}"  />
+                            </div>
+                        </div>
+                    </#if>
+                </#list>
+            </div>
         </div>
     </div>
-</div>
 
-</#macro>
+    </#macro>
+
 
 <#--render person control assumed to be directly inside of a grid-sized element and inside of a control group -->
 <#macro personControl person person_index isDisabled namePrefix >
@@ -1422,42 +1446,47 @@ $(function() {
 
 
 
-<#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" 
-    includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
-<#local disabled =  isDisabled?string("disabled", "") />
-<#local readonly = isDisabled?string("readonly", "") />
-<#local lookupType="userAutoComplete notValidIfIdEmpty"/>
-<#local _index=""/>
-<#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
-<#local personPrefix="" />
-<#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
-<#local strutsPrefix="${prefix}${_index}" />
-<#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
-<#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
-<#local requiredClass><#if required>required</#if></#local>
-<#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
+<#-- emit one "row" of a registered user table.  Each row contains an text input field that will be initialized
+    with the jquery-ui autocomplete plugin
+-->
+    <#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix=""
+    includeRepeatRow=false includeRights=false  hidden=false leadTitle="" textfieldCssClass="">
+        <#local disabled =  isDisabled?string("disabled", "") />
+        <#local readonly = isDisabled?string("readonly", "") />
+        <#local lookupType="userAutoComplete notValidIfIdEmpty"/>
+        <#local _index=""/>
+        <#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
+        <#local personPrefix="" />
+        <#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
+        <#local strutsPrefix="${prefix}${_index}" />
+        <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
+        <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local requiredClass><#if required>required</#if></#local>
+        <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
-                name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
-                autocompleteIdElement="#${idIdElement}" 
-                autocompleteParentElement="#${rowIdElement}" 
-                 title="${nameTitle}"
-                dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
-                />
+            <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
+            <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} ${textfieldCssClass!}" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
+            autocompleteIdElement="#${idIdElement}"
+            autocompleteParentElement="#${rowIdElement}"
+
+            dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
+
+            />
 
             <#if includeRights>
-                    <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
-                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                    <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+            <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
             <#else>
-                <span class="span2">&nbsp;</span> 
+                <span class="span2">&nbsp;</span>
             </#if>
         </div>
     </div>
-</#macro>
+    </#macro>
 
 <#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  
     hidden=false leadTitle="">
