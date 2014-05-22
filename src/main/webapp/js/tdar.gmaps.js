@@ -567,7 +567,7 @@ TDAR.maps = function ($, TDAR) {
                         title: $("a.resourceLink", $this).text()
                     });
 
-                    $(this).click(function () {
+                    $(".icon-map-marker", $this).click(function () {
                         myMap.panTo(marker.getPosition());
                         $(infowindows).each(function () {
                             this.close(myMap);
