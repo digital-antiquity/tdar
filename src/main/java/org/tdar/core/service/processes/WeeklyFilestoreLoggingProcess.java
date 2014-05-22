@@ -1,6 +1,7 @@
 package org.tdar.core.service.processes;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,12 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.InformationResourceFileVersionProxy;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
 import org.tdar.filestore.Filestore.ObjectType;
@@ -35,6 +39,9 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Autowired
     private transient GenericService genericService;
 
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+    
     @Autowired
     private transient FreemarkerService freemarkerService;
 
@@ -59,11 +66,21 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int count = 0;
-        ScrollableResults scrollableResults = genericService.findAllScrollable(InformationResourceFileVersion.class, 10000);
+        ScrollableResults scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
 
         while (scrollableResults.next()) {
-            Object item = scrollableResults.get(0);
-            InformationResourceFileVersion version = (InformationResourceFileVersion)item;
+            try {
+            Long irId = scrollableResults.getLong(0);
+            Long irfId = scrollableResults.getLong(1);
+            Integer latestVersion = scrollableResults.getInteger(2);
+            InformationResourceFileVersionProxy versionProxy = (InformationResourceFileVersionProxy) scrollableResults.get(3);
+            InformationResourceFile irf = new InformationResourceFile();
+            irf.setLatestVersion(latestVersion);
+            irf.setId(irfId);
+            InformationResourceFileVersion version = versionProxy.generateInformationResourceFileVersion();
+            version.setInformationResourceFileId(irfId);
+            version.setInformationResourceId(irId);
+            version.setInformationResourceFile(irf);
             try {
                 if (!filestore.verifyFile(ObjectType.RESOURCE, version)) {
                     count++;
@@ -78,8 +95,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
                 tainted.add(version);
                 logger.debug("other error ", e);
             }
-//            if ((count % 10) == 0) {
-//                Thread.yield();
                 if ((count % 5_000) == 0) {
                     try {
                         Thread.sleep(1_000l);
@@ -88,6 +103,9 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
                     }
                 }
 //            }
+            } catch (IllegalAccessException | InvocationTargetException e1) {
+                logger.error("casting issue with file verify: {}", e1);
+            }
         }
         scrollableResults.close();
 
