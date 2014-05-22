@@ -743,4 +743,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("exception.on.bad.download", false);
     }
 
+    public boolean shouldUseCDN() {
+        return assistant.getBooleanProperty("use.cdn", true);
+    }
+
 }

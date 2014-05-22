@@ -592,4 +592,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void registerErrorListener(ErrorListener e) {
         this.errorListener = e;
     }
+    
+    public boolean isUseCDN() {
+        return getTdarConfiguration().shouldUseCDN();
+    }
 }

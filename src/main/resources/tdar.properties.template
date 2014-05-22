@@ -320,6 +320,8 @@ content.security.policy.enabled = true
 # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
 content.security.policy.additions = ""
 
+#whether to use a CDN for javascript and css
+use.cdn=true
 
 ###################################
 ## SPECIAL USER SETTINGS

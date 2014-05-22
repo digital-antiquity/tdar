@@ -294,7 +294,11 @@ public abstract class AbstractSeleniumWebITCase {
                 //                File dir = new File("src/test/resources/c1");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
+                
+                //http://peter.sh/experiments/chromium-command-line-switches/
+                //ignore-certificate-errors ? 
                 copts.addArguments(
+                        "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + profilePath, // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "noerrdialogs");

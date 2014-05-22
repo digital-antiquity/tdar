@@ -69,14 +69,28 @@
                 $('#fixedList').removeClass('fixed');
             }
         });
+
+        // Perform cleanup/validation on form submit
         $("#selectDTColForm").submit(function (event) {
-            if ($(".integrationColumn", $("#drplist")).size() > 0) {
-                return true;
-            }
-            $('#columnSave').modal({
-                keyboard: false
+            //remove any empty display/integration columns upon submit
+            $("#drplist").find("td").each(function(idx, td){
+                var $td = $(td);
+                console.log(td);
+                //we assume an empty column has only one div (with class .label)
+                if($td.find(">div:not(.label)").length === 0) {
+                    $td.remove();
+                }
             });
-            return false;
+
+            //must have at least one integration column
+            var isValid = $(".integrationColumn", $("#drplist")).size() > 0;
+            if(!isValid) {
+                console.warn("Must have at least one integration column selected");
+                $('#columnSave').modal({
+                    keyboard: false
+                });
+            }
+            return isValid;
         });
 
         $("#modalHide").click(function (event) {
@@ -90,13 +104,13 @@
      *
      */
     function _setStatus(msg) {
-        $(".status").html(msg);
-        $(".status").show();
-
-        $(".status").css("background-color", "lightyellow !important");
-        $(".status").css("border", "1px solid red !important");
-        $(".status").delay(3000).fadeOut(3000, function () {
-            $(".status").hide();
+        $(".status").html(msg)
+            .show()
+            .css({"background-color": "lightyellow !important",
+                    "border": "1px solid red !important"})
+                .delay(3000)
+                .fadeOut(3000, function () {
+                    $(".status").hide();
         });
     }
 
@@ -109,11 +123,11 @@
      */
     function _validateColumn(column) {
         var integrate = $(column).find("div[data-ontology]");
-        console.log(column);
-        console.log(integrate);
+        //console.log(column);
+        //console.log(integrate);
         var children = $(column).children("div");
-        console.log("children:" + children.length);
-        console.log("integrate:" + integrate.length);
+        //console.log("children:" + children.length);
+        //console.log("integrate:" + integrate.length);
 
         var ontology = -1;
         var ontologyName = "";
@@ -160,12 +174,12 @@
         var table = draggable.data("table");
         var ret = true;
         var children = $target.find("div [data-table]");
-        console.log(draggable);
-        console.log(table);
-        console.log(children);
+        //console.log(draggable);
+        //console.log(table);
+        //console.log(children);
         if (children.length > 0) {
             $(children).each(function () {
-                        console.log($(this));
+                        //console.log($(this));
                         if ($(this).data("table") == table) {
                             msg = "you cannot add more than one variable from the same table to any column";
                             _setStatus(msg);
@@ -251,10 +265,10 @@
     function _addColumn(strOntologyId) {
 
         var cols = $("#drplist tr td");
-        console.log(cols);
-        console.log(cols.last());
+        //console.log(cols);
+        //console.log(cols.last());
 
-        console.log($(".drg", cols.last()).size());
+        //console.log($(".drg", cols.last()).size());
 
         if ($(".drg", cols.last()).size() == 0 && parseInt(strOntologyId) > 0) {
             cols.last().remove();
@@ -336,7 +350,7 @@
 
         for (var match in matches) {
             if (matches.hasOwnProperty(match)) {
-                console.log(match);
+                //console.log(match);
                 if (matches[match].length == totalTables) {
                     if (!okay) {
                         $("#drplist td").remove();
