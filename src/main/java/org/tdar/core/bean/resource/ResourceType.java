@@ -292,4 +292,12 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         }
         return types.toArray(new ResourceType[0]);
     }
+
+    public static boolean isImageName(String value) {
+        ResourceType type = ResourceType.fromString(value);
+        if (type == null) {
+            return false;
+        }
+        return type.hasDemensions();
+    }
 }
