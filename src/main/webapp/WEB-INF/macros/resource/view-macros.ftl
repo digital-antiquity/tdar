@@ -538,14 +538,6 @@ View freemarker macros
     -->
         <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
             <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
-                <#if (numIndicators > 1)>
-                    <div class="carousel-indicators ">
-                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-                        <#list 1..(numIndicators -1) as x>
-                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
-                        </#list>
-                    </div>
-                </#if>
 
                 <!-- Carousel items -->
                 <div class="carousel-inner">
@@ -581,6 +573,12 @@ View freemarker macros
                 <#if (numIndicators > 1)>
                     <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
                     <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                    <div class="carousel-indicators ">
+                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
+                        <#list 1..(numIndicators -1) as x>
+                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
+                        </#list>
+                    </div>
                 </#if>
             </div>
             <!--/myCarousel-->
