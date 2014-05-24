@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,5 +94,10 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     public List<InformationResource> findInformationResourcesWithFileStatus(Person authenticatedUser, List<Status> resourceStatus, List<FileStatus> fileStatus) {
         return getDao().findInformationResourcesWithFileStatus(authenticatedUser, resourceStatus, fileStatus);
     }
+
+    public ScrollableResults findScrollableVersionsForVerification() {
+        return getDao().findScrollableVersionsForVerification();
+    }
+
 
 }

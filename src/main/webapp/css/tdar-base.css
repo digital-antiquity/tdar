@@ -1345,15 +1345,18 @@ div#ontologyTarget {
 /* Removes the default 20px margin and creates some padding space for the indicators and controls */
 .image-carousel.carousel {
     margin-bottom: 10px;
-    padding: 0 40px 40px 40px;
+    padding: 0 40px 10px 40px;
 }
 
 /* Changes the position of the indicators */
-.image-carousel .carousel-indicators {
+.carousel-indicators {
     width: 100%;
     top: auto;
     bottom: 0px;
-    margin-right: -19px;
+    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
+    /*margin-right: -19px;*/
+    position: inherit !important;
+    margin: 1em 0 0 0;
 }
 
 .image-carousel .carousel-indicators .active {

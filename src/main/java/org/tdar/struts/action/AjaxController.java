@@ -32,7 +32,7 @@ public class AjaxController extends TdarActionSupport {
     @Action("column-metadata-subcategories")
     public String columnMetadataSubcategories() {
         if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
-            getLogger().error("Invalid category variable: " + categoryVariableId);
+            getLogger().debug("Invalid category variable: " + categoryVariableId);
         }
         return SUCCESS;
     }
