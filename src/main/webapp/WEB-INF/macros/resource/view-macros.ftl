@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
 
-<#-- 
-$Id$ 
+<#--
+$Id$
 View freemarker macros
 -->
 <#-- include navigation menu in edit and view macros -->
@@ -24,8 +24,8 @@ View freemarker macros
             <div id="ontologyNodesContainer" class="ontology-nodes-container">
                 <div id="ontology-nodes">
                     <#list allNodes as node>
-			        <@_displayNode node previewSize node_index size/>
-		    </#list>
+                    <@_displayNode node previewSize node_index size/>
+            </#list>
                 </div>
                 <#if (size >= previewSize)>
                     <div id='divOntologyShowMore' class="alert">
@@ -538,14 +538,6 @@ View freemarker macros
     -->
         <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
             <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
-                <#if (numIndicators > 1)>
-                    <div class="carousel-indicators ">
-                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-                        <#list 1..(numIndicators -1) as x>
-                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
-                        </#list>
-                    </div>
-                </#if>
 
                 <!-- Carousel items -->
                 <div class="carousel-inner">
@@ -556,9 +548,9 @@ View freemarker macros
                         <div class="row-fluid">
                         </#if>
                         <div class="span3">
-				  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
-				  	<span class="thumbnail-center-spacing "></span>
-				  <img class="thumbnailLink img-polaroid"
+                  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
+                    <span class="thumbnail-center-spacing "></span>
+                  <img class="thumbnailLink img-polaroid"
                        <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
                        alt="<@_altText irfile resource.title />"<#t>
                        <#else>
@@ -569,7 +561,7 @@ View freemarker macros
                        onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"
                        data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"
                        <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
-				  	                </span>
+                                    </span>
                         </div>
                         <#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
                         </div><!--/row-fluid-->
@@ -581,6 +573,12 @@ View freemarker macros
                 <#if (numIndicators > 1)>
                     <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
                     <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
+                    <div class="carousel-indicators ">
+                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
+                        <#list 1..(numIndicators -1) as x>
+                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
+                        </#list>
+                    </div>
                 </#if>
             </div>
             <!--/myCarousel-->
@@ -592,9 +590,9 @@ View freemarker macros
         <div class="bigImage pagination-centered">
             <#list resource.visibleFilesWithThumbnails as irfile>
                 <div>
-			<span id="imageContainer">
-			<img id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
-			<span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
+            <span id="imageContainer">
+            <img id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+            <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
                 </div>
                 <div id="downloadText">
                     <@_altText irfile/>

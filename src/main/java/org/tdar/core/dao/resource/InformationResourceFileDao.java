@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.ScrollMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -135,5 +137,10 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             }
         }
         return list;
+    }
+
+    public ScrollableResults findScrollableVersionsForVerification() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION);
+        return query.setReadOnly(true).setCacheable(false).scroll(ScrollMode.FORWARD_ONLY);
     }
 }

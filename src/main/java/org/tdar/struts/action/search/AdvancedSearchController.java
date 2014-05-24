@@ -341,10 +341,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
         }
 
-        if ((ll != null) && ll.isInitializedAndValid()) {
-            setOrientation(DisplayOrientation.MAP);
-        }
-
         // legacy search by keyword
         // at the time of this writing the view layer only created links for
         // culture, site type, and siteName keywords. everything else
@@ -415,6 +411,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
             getSearchService().handleSearch(queryBuilder, this);
+            updateDisplayOrientationBasedOnSearchResults();
+            
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
@@ -431,6 +429,38 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             return INPUT;
         }
 
+    }
+
+    private void updateDisplayOrientationBasedOnSearchResults() {
+        if (orientation != null) {
+            getLogger().debug("orientation is set to: {}", orientation);
+            return;
+        }
+
+        if (CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
+            boolean allImages = true;
+            for (FacetValue val : getResourceTypeFacets()) {
+                if (val.getCount() > 0 && !ResourceType.isImageName(val.getValue())) {
+                    allImages = false;
+                }
+            }
+            // if we're only dealing with images, and an orientation has not been set
+            if (allImages) {
+                setOrientation(DisplayOrientation.GRID);
+                getLogger().debug("switching to grid orientation");
+                return;
+            }
+        }
+        LatitudeLongitudeBox map = null;
+        try {
+            map = getG().get(0).getLatitudeLongitudeBoxes().get(0);
+        } catch (Exception e) {
+            //ignore
+        }
+        if (getMap() != null && getMap().isInitializedAndValid() || map != null && map.isInitializedAndValid()) {
+            getLogger().debug("switching to map orientation");
+            setOrientation(DisplayOrientation.MAP);
+        }
     }
 
     // this is a no-op if basic search not detected
