@@ -396,6 +396,10 @@ header .welcome-drop ul {
     background-position: -24px 0;
 }
 
+.thumbnailLink {
+    max-width:100%;
+}
+
 /* homepage */
 .bucket {
     text-align: center;
