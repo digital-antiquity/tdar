@@ -226,6 +226,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public List<Resource> findSkeletonsForSearch(Long... ids) {
         Session session = getCurrentSession();
+        session.setCacheMode(CacheMode.NORMAL);
         // distinct prevents duplicates
         // left join res.informationResourceFiles
         long time = System.currentTimeMillis();
@@ -234,6 +235,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
+        query.setCacheable(true);
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 

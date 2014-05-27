@@ -209,6 +209,7 @@ public class SearchService {
         processFacets(ftq, resultHandler);
         logger.trace("completed adding facets");
         List<String> projections = setupProjectionsForSearch(resultHandler, ftq);
+        ftq.setCacheable(true);
         List list = ftq.list();
         logger.trace("completed hibernate hydration ");
 
