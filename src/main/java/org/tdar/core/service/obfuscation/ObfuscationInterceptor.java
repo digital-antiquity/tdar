@@ -18,7 +18,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @Aspect
-@Component
+//@Component
 public class ObfuscationInterceptor {
 
     private ObfuscationService obfuscationService;
