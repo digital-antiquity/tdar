@@ -1,5 +1,7 @@
 package org.tdar.core.service.obfuscation;
 
+import java.util.concurrent.TimeUnit;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,6 +14,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.AuthenticationAware;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 @Aspect
 @Component
 public class ObfuscationInterceptor {
@@ -19,18 +24,37 @@ public class ObfuscationInterceptor {
     private ObfuscationService obfuscationService;
 
     protected transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    private final Cache<Integer, Boolean> seenSet;
+    
     @Autowired
     public ObfuscationInterceptor(ObfuscationService obfuscationService) {
-        logger.debug("hi");
         this.obfuscationService = obfuscationService;
+        seenSet = CacheBuilder.newBuilder()
+                .concurrencyLevel(4)
+                .maximumSize(1000)
+                .expireAfterWrite(2, TimeUnit.MINUTES)
+                .build();
     }
 
+    /*
+     * First, match @Action or @Actions on methods and add hashCode to set.  We'll only obfuscate things after the @Action has been called
+     */
+    @Around("(@annotation(org.apache.struts2.convention.annotation.Action) || @annotation(org.apache.struts2.convention.annotation.Actions))") 
+    public Object aroundAction(ProceedingJoinPoint pjp) throws Throwable {
+        Object result = pjp.proceed();
+        seenSet.put(pjp.getTarget().hashCode(),true);
+        return result;
+    }
+    
+    /*
+     * Then we wrap all of the getters, if the hashCode is stored in our set, we remove it 
+     */
     @Around("execution( * org.tdar.struts.action..get*(..)) && !@annotation(org.tdar.struts.interceptor.annotation.DoNotObfuscate)")
     public Object obfuscate(ProceedingJoinPoint pjp) throws Throwable {
-        logger.debug("PROXY!!! {} : {}", pjp.getTarget(), pjp.getSignature() );
+        Boolean done = seenSet.getIfPresent(pjp.getTarget().hashCode());
+        logger.debug("PROXY!!! {} : {}", done, pjp.getSignature() );
         Object retVal = pjp.proceed();
-        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession()) {
+        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession() || done != Boolean.TRUE) {
             return retVal;
         }
         TdarUser user = null;

@@ -50,9 +50,13 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         controller.prepare();
+        controller.getProject();
+        controller.getId();
         controller.view();
         controller.getProject();
-        
+        controller.getId();
+        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.getId();
     }
     
     @Test
