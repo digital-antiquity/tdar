@@ -2327,6 +2327,9 @@
                                         <copy
                                             file="src/main/resources/spring-local-settings.xml.template"
                                             tofile="src/main/resources/spring-local-settings.xml" />
+                                        <copy
+                                            file="src/main/resources/hibernate-ehcache.xml.template"
+                                            tofile="src/main/resources/hibernate-ehcache.xml" />
                                         <echo
                                             message="the following can be used to grab all of the config files into a tar from an existing repo" />
                                         <echo
