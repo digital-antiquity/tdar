@@ -7,7 +7,6 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
@@ -15,7 +14,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.CacheControl;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
@@ -83,8 +81,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
         }
-
-//        response.setHeader("Access-Control-Allow-Origin", "*");
 
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
