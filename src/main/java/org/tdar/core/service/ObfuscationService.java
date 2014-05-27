@@ -136,5 +136,9 @@ public class ObfuscationService {
             }
         }
     }
+    
+    public boolean isWritableSession() {
+        return genericDao.isSessionWritable();
+    }
 
 }

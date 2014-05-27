@@ -568,4 +568,8 @@ public class GenericDao {
         return getCurrentSession().isOpen();
     }
 
+    public boolean isSessionWritable() {
+        return !getCurrentSession().isDefaultReadOnly();
+    }
+
 }

@@ -30,7 +30,7 @@ public class ObfuscationInterceptor {
     public Object obfuscate(ProceedingJoinPoint pjp) throws Throwable {
         logger.debug("PROXY!!! {} : {}", pjp.getTarget(), pjp.getSignature() );
         Object retVal = pjp.proceed();
-        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession()) {
             return retVal;
         }
         TdarUser user = null;
