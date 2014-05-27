@@ -50,7 +50,7 @@ public class ObfuscationResultListener implements PreResultListener {
             if (obj == null) {
                 continue;
             }
-            obfuscateObject(obj);
+            obfuscationService.obfuscateObject(obj, user);
             // } catch (Exception e) {
             // logger.error("{}", e);
             // }
@@ -72,24 +72,5 @@ public class ObfuscationResultListener implements PreResultListener {
         }
     }
 
-    private void obfuscateObject(Object obj) {
-        // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
-        // returns type of List<I> but we can't figure out what
-        if (Iterable.class.isAssignableFrom(obj.getClass())) {
-            for (Object obj_ : (Iterable<?>) obj) {
-                if (obj_ instanceof Obfuscatable) {
-                    obfuscationService.obfuscate((Obfuscatable) obj_, user);
-                } else {
-                    logger.warn("trying to obfsucate something we shouldn't {}", obj.getClass());
-                }
-            }
-        } else {
-            if (obj instanceof Obfuscatable) {
-                obfuscationService.obfuscate((Obfuscatable) obj, user);
-            } else {
-                logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
-            }
-        }
-    }
 
 }

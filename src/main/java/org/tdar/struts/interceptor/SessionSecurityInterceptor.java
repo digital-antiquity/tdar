@@ -97,11 +97,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
             NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
-            if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
-                if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getPerson()));
-                }
-            }
             String invoke = invocation.invoke();
             return invoke;
         } catch (TdarActionException exception) {

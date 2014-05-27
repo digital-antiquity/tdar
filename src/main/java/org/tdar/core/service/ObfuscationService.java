@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -116,6 +115,26 @@ public class ObfuscationService {
         logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
         target.setObfuscated(true);
         return target.obfuscate();
+    }
+
+    public void obfuscateObject(Object obj, TdarUser user) {
+        // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
+        // returns type of List<I> but we can't figure out what
+        if (Iterable.class.isAssignableFrom(obj.getClass())) {
+            for (Object obj_ : (Iterable<?>) obj) {
+                if (obj_ instanceof Obfuscatable) {
+                    obfuscate((Obfuscatable) obj_, user);
+                } else {
+                    logger.warn("trying to obfsucate something we shouldn't {}", obj.getClass());
+                }
+            }
+        } else {
+            if (obj instanceof Obfuscatable) {
+                obfuscate((Obfuscatable) obj, user);
+            } else {
+                logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
+            }
+        }
     }
 
 }

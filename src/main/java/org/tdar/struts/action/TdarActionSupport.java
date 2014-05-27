@@ -33,6 +33,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
@@ -158,6 +159,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return ActionContext.getContext().getName();
     }
 
+    @DoNotObfuscate(reason = "Session Object")
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
