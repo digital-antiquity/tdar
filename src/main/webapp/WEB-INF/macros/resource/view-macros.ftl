@@ -483,8 +483,11 @@ View freemarker macros
 <#-- emit an image gallery for the accessible image/video files for the current resource -->
     <#macro imageGallery>
     <div class="slider">
-        <#local numIndicatorsPerSection = 4 />
-        <#local numIndicators = ((resource.visibleFilesWithThumbnails?size!0) / numIndicatorsPerSection)?ceiling  />
+        <#local numThumbnails = resource.visibleFilesWithThumbnails?size!0 />
+        <#local numThumbnailsPerSection = 4 />
+        <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
+        <#-- /images/image_unavailable_t.gif -->
+
     <#--  from http://bootsnipp.com/snipps/thumbnail-carousel
 
     <div class="hidden">
@@ -502,27 +505,32 @@ View freemarker macros
                 <div class="carousel-inner">
 
                     <#list resource.visibleFilesWithThumbnails as irfile>
-                        <#if (irfile_index % numIndicatorsPerSection) == 0>
-                        <div class="item pagination-centered <#if irfile_index == 0>active</#if>">
-                        <div class="row-fluid">
+                        <#local lazyLoad = (irfile_index > (2 * numThumbnailsPerSection)) />
+                        <#if (irfile_index % numThumbnailsPerSection) == 0>
+                        <div class="item pagination-centered <#if irfile_index == 0>active</#if>"> <#t>
+                        <div class="row-fluid"> <#t>
                         </#if>
-                        <div class="span3">
-                  <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>">
-                    <span class="thumbnail-center-spacing "></span>
-                  <img class="thumbnailLink img-polaroid"
-                       <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
-                       alt="<@_altText irfile resource.title />"<#t>
-                       <#else>
-                       alt="<@_altText irfile />"
-                       </#if>
-                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"
-                       style="max-width:100%;"
-                       onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"
-                       data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"
-                       <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>/>
-                                    </span>
+                        <div class="span3"> <#t>
+                          <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>"> <#t>
+                              <span class="thumbnail-center-spacing "></span> <#t>
+                              <img class="thumbnailLink img-polaroid"<#t>
+                                   <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
+                                   alt="<@_altText irfile resource.title />"
+                                   <#else> <#t>
+                                   alt="<@_altText irfile />" <#t>
+                                   </#if>
+                                   <#if lazyLoad>
+                                       src="/images/image_unavailable_t.gif"
+                                       data-src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                   <#else>
+                                       src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>" <#t>
+                                   </#if>
+                                   onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" <#t>
+                                   data-url="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" <#t>
+                                   <#if !irfile.public>data-access-rights="${irfile.restriction.label}"</#if>> <#lt>
+                          </span>
                         </div>
-                        <#if ((irfile_index + 1) % numIndicatorsPerSection) == 0 || !irfile_has_next>
+                        <#if ((irfile_index + 1) % numThumbnailsPerSection) == 0 || !irfile_has_next>
                         </div><!--/row-fluid-->
                         </div><!--/item-->
                         </#if>

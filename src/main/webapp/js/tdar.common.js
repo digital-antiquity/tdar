@@ -665,7 +665,24 @@ TDAR.common = function () {
             });
         }
 
+        //init bootstrap image gallery (if found)
+        $(".image-carousel").each(function(idx, elem) {
+            _initImageGallery(elem);
+        })
     };
+
+    /**
+     * Initialize the bootstrap image gallery specified by divGallery.  Bootstrap Gallery typically doesn't require initialization, but we do extra stuff
+     * such as lazy-loading of thumbnails for big lists, and binding of analytics events.
+     * @param divGallery
+     * @private
+     */
+    var _initImageGallery = function(divGallery) {
+        //for big galleries, defer the loading of thumbnails that can't be seen yet
+        $(divGallery).find(".thumbnailLink[data-src]").each(function(idx, elem){
+            elem.src = $(elem).data("src");
+        });
+    }
 
     /**
      * Register event listener that displays generic wait message for ajax requests. If the ajaxOptions property
