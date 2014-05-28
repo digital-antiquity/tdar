@@ -59,13 +59,13 @@ public class IndexAction extends AuthenticationAware.Base {
     private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
 
     @Autowired
-    private transient ResourceService resourceService;
+    private ResourceService resourceService;
 
     @Autowired
-    private transient ObfuscationService obfuscationService;
+    private ObfuscationService obfuscationService;
 
     @Autowired
-    private transient RssService rssService;
+    private RssService rssService;
 
     private List<SyndEntry> rssEntries;
 

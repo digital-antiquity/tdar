@@ -41,6 +41,7 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -55,17 +56,22 @@ public class DownloadService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private PdfService pdfService;
+    private final PdfService pdfService;
+    private final GenericService genericService;
 
+    private final Cache<Long, List<Integer>> downloadLock;
+    
     @Autowired
-    private GenericService genericService;
-
-    private Cache<Long, List<Integer>> downloadLock = CacheBuilder.newBuilder()
-            .concurrencyLevel(4)
-            .maximumSize(10000)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build();
+    public DownloadService(PdfService pdfService, GenericService genericService) {
+        this.pdfService = pdfService;
+        this.genericService = genericService;
+        this.downloadLock = CacheBuilder.newBuilder()
+                .concurrencyLevel(4)
+                .maximumSize(10000)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .build();
+        
+    }
     
     public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);

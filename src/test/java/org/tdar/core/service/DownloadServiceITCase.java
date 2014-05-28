@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
@@ -40,7 +41,8 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
 
     // don't need injection (yet)
-    DownloadService downloadService = new DownloadService();
+    @Autowired
+    DownloadService downloadService;
     int COVER_PAGE_WIGGLE_ROOM = 155_000;
 
     @Before
