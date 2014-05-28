@@ -115,31 +115,31 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<InvestigationType> allInvestigationTypes;
 
     @Autowired
-    private transient XmlService xmlService;
+    private XmlService xmlService;
 
     @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
+    private BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
-    private transient ObfuscationService obfuscationService;
+    private ObfuscationService obfuscationService;
 
     @Autowired
-    private transient EntityService entityService;
+    private EntityService entityService;
 
     @Autowired
-    private transient GenericKeywordService genericKeywordService;
+    private GenericKeywordService genericKeywordService;
 
     @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
+    protected ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private transient AccountService accountService;
+    private AccountService accountService;
     
     @Autowired
-    private transient InformationResourceService informationResourceService;
+    private InformationResourceService informationResourceService;
 
     @Autowired
-    private transient ResourceService resourceService;
+    private ResourceService resourceService;
     
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
@@ -693,6 +693,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
+        getLogger().debug("RCS: {}", resourceCollectionService);
+        getLogger().debug("AU: {}", getAuthenticatedUser());
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());

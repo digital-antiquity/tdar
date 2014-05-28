@@ -17,7 +17,6 @@ import org.tdar.struts.action.TdarActionSupport;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
 
-    @Autowired
     ProjectController controller;
 
     @Override
@@ -25,14 +24,13 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         return controller;
     }
 
-    public void initControllerFields() {
-        controller.prepare();
-    }
 
     @Test
     @Rollback
     public void testAddSingleAnnotation() throws Exception {
-        initControllerFields();
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        controller.prepare();
+        controller.add();
         Project p = controller.getProject();
         Assert.assertNotNull(p);
         p.setTitle("project with annotations");
@@ -60,8 +58,10 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
         // simulating the view action - the resource should have one annotation
         genericService.detachFromSession(controller.getResource());
-        controller = generateNewInitializedController(ProjectController.class);
-        loadResourceFromId(controller, newId);
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
         p = controller.getResource();
         Assert.assertEquals("expecting one and only one annotation", 1, p.getResourceAnnotations().size());
         ResourceAnnotation actualAnnotation = (ResourceAnnotation) p.getResourceAnnotations().toArray()[0];
@@ -77,15 +77,18 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         testAddSingleAnnotation();
         // meta test ... does @rollback apply if we're calling a test from another test??
         Long id = controller.getResource().getId();
-        controller = generateNewInitializedController(ProjectController.class);
-        loadResourceFromId(controller, id);
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        controller.setId(id);
+        controller.prepare();
+        controller.edit();
+
         Assert.assertEquals("expecting a single annotation in project after completing test", 1, controller.getResource().getResourceAnnotations().size());
         // simulate the edit action (really no different than the view action, from controller perspective)
 
         // simulate the save action - wiping out all of the
-        controller = generateNewInitializedController(ProjectController.class);
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
         controller.setId(id);
-        loadResourceFromId(controller, id);
+        controller.prepare();
         controller.setResourceAnnotations(Collections.<ResourceAnnotation> emptyList());
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
@@ -96,7 +99,8 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         // now back to the view action - we should have an empty list of resourceAnnotations
         controller = generateNewInitializedController(ProjectController.class);
         controller.setId(id);
-        loadResourceFromId(controller, id);
+        controller.prepare();
+        controller.edit();
         Assert.assertEquals("annotations list should be empty", 0, controller.getResourceAnnotations().size());
     }
 
@@ -121,7 +125,9 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
     @Test
     @Rollback
     public void testAdd3ThenDeleteMiddle() throws Exception {
-        initControllerFields();
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        controller.prepare();
+        controller.add();
         Project p = controller.getProject();
         Assert.assertNotNull(p);
         p.setTitle("project with annotations");
@@ -151,10 +157,11 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
         // go back to the edit page
         genericService.detachFromSession(controller.getResource());
-        controller = generateNewInitializedController(ProjectController.class);
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
         controller.setAsync(false);
         controller.setId(id);
-        loadResourceFromId(controller, id);
+        controller.prepare();
+        controller.edit();
         Assert.assertEquals("the fourth annotation was incomplete and should not have saved", 3, controller.getProject().getResourceAnnotations().size());
         controller.setResourceAnnotations(list2);
         controller.setServletRequest(getServletPostRequest());
@@ -164,9 +171,10 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         Assert.assertEquals("we should only have 2 annotations now", 2, project.getResourceAnnotations().size());
 
         // back to the view page
-        controller = generateNewInitializedController(ProjectController.class);
+        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
         controller.setId(id);
-        loadResourceFromId(controller, id);
+        controller.prepare();
+        controller.edit();
         Assert.assertEquals("we should only have annotations now", 2, controller.getResourceAnnotations().size());
     }
 

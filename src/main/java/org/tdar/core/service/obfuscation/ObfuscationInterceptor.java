@@ -42,6 +42,7 @@ public class ObfuscationInterceptor {
     @Around("(@annotation(org.apache.struts2.convention.annotation.Action) || @annotation(org.apache.struts2.convention.annotation.Actions))") 
     public Object aroundAction(ProceedingJoinPoint pjp) throws Throwable {
         Object result = pjp.proceed();
+        logger.trace("seen: {} [{}]",pjp.getTarget().getClass(), pjp.getTarget().hashCode());
         seenSet.put(pjp.getTarget().hashCode(),true);
         return result;
     }
@@ -54,8 +55,10 @@ public class ObfuscationInterceptor {
         Boolean done = seenSet.getIfPresent(pjp.getTarget().hashCode());
         Object retVal = pjp.proceed();
         if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession() || done != Boolean.TRUE) {
+            logger.trace("NOT OBFUSCATING: {} {}", pjp.getSignature(), pjp.getTarget().hashCode());
             return retVal;
         }
+        logger.trace("OBFUSCATING: {} {}", pjp.getSignature(), pjp.getTarget().hashCode());
         TdarUser user = null;
         if (pjp.getTarget() instanceof AuthenticationAware) {
             user = ((AuthenticationAware)pjp.getTarget()).getAuthenticatedUser();

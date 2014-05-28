@@ -310,7 +310,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+
 
         d = controller.getResource();
         Assert.assertEquals(d.getInternalResourceCollection(), null);
@@ -326,14 +329,19 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(ResourceCreatorRole.REPOSITORY, actualCreator.getRole());
         setHttpServletRequest(getServletPostRequest());
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         controller.setDelete("delete");
         String deletionReason = "this is a test";
         controller.setDeletionReason(deletionReason);
         controller.delete();
 
-        controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
+
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
@@ -368,7 +376,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
 
         d = controller.getResource();
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
@@ -383,11 +393,15 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
         setHttpServletRequest(getServletPostRequest());
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         controller.setDelete("delete");
         controller.delete();
-        controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
@@ -433,7 +447,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
 
         d = controller.getResource();
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
@@ -450,11 +466,15 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // FIXME: issues with hydrating resources with Institutions
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         // assert my authorproxies have what i think they should have (rendering
         // edit page)
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
         controller.setAuthorshipProxies(new ArrayList<ResourceCreatorProxy>());
         // deleting all authorship resource creators
         controller.setServletRequest(getServletPostRequest());
@@ -462,7 +482,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         // loading the view page
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         logger.info("{}", controller.getAuthorshipProxies());
         Assert.assertEquals("expecting size zero", 0, controller.getAuthorshipProxies().size());
         logger.debug("{}", controller.getAuthorshipProxies().size());
@@ -514,7 +536,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.save();
         Long documentId = controller.getResource().getId();
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, documentId);
+        controller.setId(documentId);
+        controller.prepare();
+        controller.edit();
         for (int i = 0; i < controller.getCreditProxies().size(); i++) {
             ResourceCreatorProxy proxy = controller.getCreditProxies().get(i);
             assertTrue("proxy person " + proxy.getPerson() + "'s last name should end with " + i, proxy.getPerson().getLastName().endsWith("" + i));

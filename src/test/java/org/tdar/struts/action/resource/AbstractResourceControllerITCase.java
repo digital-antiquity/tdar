@@ -41,18 +41,6 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     @Autowired
     AccountService accountService;
 
-    @Deprecated()
-    // don't call this, just call edit
-    public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
-        controller.setId(id);
-        controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
-        if (controller instanceof AbstractInformationResourceController) {
-            ((AbstractInformationResourceController<?>) controller).loadInformationResourceProperties();
-        }
-    }
-
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();
         Person p = rcp.getPerson();

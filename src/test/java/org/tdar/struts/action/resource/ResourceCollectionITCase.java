@@ -1088,7 +1088,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
+
         addAuthorizedUser(controller.getDataset(), getUser(), GeneralPermissions.MODIFY_RECORD);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
@@ -1106,7 +1109,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
         assertEquals(1, controller.getAuthorizedUsers().size());
         ArrayList<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
         authorizedUsers.add(new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
@@ -1137,7 +1142,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
         controller.setServletRequest(getServletPostRequest());
         controller.save();
