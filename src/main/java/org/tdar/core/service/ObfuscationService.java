@@ -125,14 +125,14 @@ public class ObfuscationService {
                 if (obj_ instanceof Obfuscatable) {
                     obfuscate((Obfuscatable) obj_, user);
                 } else {
-                    logger.warn("trying to obfsucate something we shouldn't {}", obj.getClass());
+                    logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
                 }
             }
         } else {
             if (obj instanceof Obfuscatable) {
                 obfuscate((Obfuscatable) obj, user);
             } else {
-                logger.error("trying to obfsucate something we shouldn't {}", obj.getClass());
+                logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
             }
         }
     }

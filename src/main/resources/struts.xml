@@ -18,7 +18,10 @@
     <constant name="struts.url.includeParams" value="none"/>
     <constant name="struts.action.excludePattern" value="/services/.*"/>
     <constant name="struts.custom.i18n.resources" value="Locales/tdar-freemarker-messages,/Locales/tdar-messages" />
-
+<!--     <constant name="struts.freemarker.manager.classname" value="org.tdar.struts.TdarFreemarkerManager"/> -->
+    <constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+    <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true"/>
+    
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>

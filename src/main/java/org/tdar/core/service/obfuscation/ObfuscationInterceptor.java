@@ -18,7 +18,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @Aspect
-//@Component
+@Component
 public class ObfuscationInterceptor {
 
     private ObfuscationService obfuscationService;
@@ -52,7 +52,6 @@ public class ObfuscationInterceptor {
     @Around("execution( * org.tdar.struts.action..get*(..)) && !@annotation(org.tdar.struts.interceptor.annotation.DoNotObfuscate)")
     public Object obfuscate(ProceedingJoinPoint pjp) throws Throwable {
         Boolean done = seenSet.getIfPresent(pjp.getTarget().hashCode());
-        logger.debug("PROXY!!! {} : {}", done, pjp.getSignature() );
         Object retVal = pjp.proceed();
         if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession() || done != Boolean.TRUE) {
             return retVal;
