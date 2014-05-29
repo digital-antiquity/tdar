@@ -100,7 +100,8 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
-        AbstractResourceControllerITCase.loadResourceFromId(codingSheetController, column.getDefaultCodingSheet().getId());
+        codingSheetController.setId(column.getDefaultCodingSheet().getId());
+        codingSheetController.prepare();
         codingSheetController.loadOntologyMappedColumns();
         List<String> findAllDistinctValues = dataTableService.findAllDistinctValues(column);
         List<String> tibias = new ArrayList<String>();
@@ -217,7 +218,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getElementValueMap(), bElementOntology);
         Map<String, List<Long>> valueToOntologyNodeIdMap = elementColumn.getValueToOntologyNodeIdMap();
         elementColumn = null;
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
         controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
         controller.setServletRequest(getServletPostRequest());
@@ -241,7 +244,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetReplaceDifferentExcel() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         String filename = "evmpp-fauna.xls";
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
@@ -267,7 +272,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetReplaceDifferentMdb() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         String filename = SPITAL_DB_NAME;
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
@@ -293,7 +300,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
         InformationResourceFile file = dataset.getFirstInformationResourceFile();
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         datasetService.reprocess(dataset);
         assertEquals(file, dataset.getFirstInformationResourceFile());
         assertEquals(file.getLatestUploadedVersion(), dataset.getFirstInformationResourceFile().getLatestUploadedVersion());

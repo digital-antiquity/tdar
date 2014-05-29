@@ -174,7 +174,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
         CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, column.getDefaultCodingSheet().getId());
+        controller.setId(column.getDefaultCodingSheet().getId());
+        controller.prepare();
         controller.loadOntologyMappedColumns();
         Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
         // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
@@ -210,7 +211,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         logger.info("{}", dataTable);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setDataTableId(dataTable.getId());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
         controller.setDataTableColumns(Arrays.asList(mappings));
         controller.saveColumnMetadata();
 

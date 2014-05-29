@@ -41,7 +41,9 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
     private DocumentController controller;
 
     private void navigateTo(Long tdarId) throws TdarActionException {
-        loadResourceFromId(controller, tdarId);
+        controller.setId(tdarId);
+        controller.prepare();
+        controller.view();
     }
 
     private String getModsXml() throws TdarActionException {

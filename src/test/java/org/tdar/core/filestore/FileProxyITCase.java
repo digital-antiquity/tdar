@@ -131,7 +131,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
         String deletedFilename = controller.getFileProxies().get(0).getFilename();
         // replace the confidential file
@@ -191,7 +192,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
 
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {

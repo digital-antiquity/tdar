@@ -226,8 +226,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         assertNotNull(controller.getFileTextInput());
         assertEquals(codingText, controller.getFileTextInput());
@@ -241,8 +240,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(codingText + "abd ");
         controller.setServletRequest(getServletPostRequest());

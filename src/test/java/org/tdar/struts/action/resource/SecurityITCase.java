@@ -143,7 +143,10 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         genericService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, doc.getId());
+        controller.setId(doc.getId());
+        controller.prepare();
+        controller.edit();
+
         // assertTrue(controller.getAccessibleFiles().isEmpty());
     }
 
@@ -153,7 +156,9 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         logger.info("test embargoed");
         Document doc = setupEmbargoedDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, doc.getId());
+        controller.setId(doc.getId());
+        controller.prepare();
+        controller.edit();
         // assertTrue(controller.getAccessibleFiles().isEmpty());
     }
 
@@ -165,7 +170,9 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         genericService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, doc.getId());
+        controller.setId(doc.getId());
+        controller.prepare();
+        controller.edit();
         // assertTrue(controller.getAccessibleFiles().isEmpty());
     }
 
@@ -174,7 +181,9 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testAbstractInformationResourceControllerReadUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupReadUserDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, doc.getId());
+        controller.setId(doc.getId());
+        controller.prepare();
+        controller.edit();
         // assertFalse(controller.getAccessibleFiles().isEmpty());
     }
 
@@ -183,7 +192,9 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testAbstractInformationResourceControllerFullUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, doc.getId());
+        controller.setId(doc.getId());
+        controller.prepare();
+        controller.edit();
         // assertFalse(controller.getAccessibleFiles().isEmpty());
     }
 
