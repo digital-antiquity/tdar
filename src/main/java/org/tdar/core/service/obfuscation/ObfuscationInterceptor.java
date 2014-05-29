@@ -39,6 +39,7 @@ public class ObfuscationInterceptor {
 
     /*
      * First, match @Action or @Actions on methods and add hashCode to set.  We'll only obfuscate things after the @Action has been called
+     * http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/aop.html
      */
     @Around("(@annotation(org.apache.struts2.convention.annotation.Action) || @annotation(org.apache.struts2.convention.annotation.Actions))") 
     public Object aroundAction(ProceedingJoinPoint pjp) throws Throwable {
@@ -49,9 +50,10 @@ public class ObfuscationInterceptor {
     }
     
     /*
-     * Then we wrap all of the getters, if the hashCode is stored in our set, we remove it 
+     * Then we wrap all of the getters, if the hashCode is stored in our set, we remove it.
+     * Match anything that is one of our Controllers; that has a public Getter, and does not have a @DoNotObfuscate annotation.
+     * http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/aop.html
      */
-    //&& execution(public * get*(..) ) && !@annotation(org.tdar.struts.interceptor.annotation.DoNotObfuscate)
     @Around("(bean(*Controller) || bean (*Action)) && execution(public * get*() ) && !@annotation(org.tdar.struts.interceptor.annotation.DoNotObfuscate)")
     public Object obfuscate(ProceedingJoinPoint pjp) throws Throwable {
         Boolean done = seenSet.getIfPresent(pjp.getTarget().hashCode());
