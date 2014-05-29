@@ -84,6 +84,8 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
         // simulate the save action - wiping out all of the
         controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        flush();
+        logger.debug("{}", genericService.find(Project.class, id).isObfuscated());
         controller.setId(id);
         controller.prepare();
         controller.setResourceAnnotations(Collections.<ResourceAnnotation> emptyList());
@@ -158,7 +160,6 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         controller.setAsync(false);
         controller.setId(id);
         controller.prepare();
-        controller.edit();
         Assert.assertEquals("the fourth annotation was incomplete and should not have saved", 3, controller.getProject().getResourceAnnotations().size());
         controller.setResourceAnnotations(list2);
         controller.setServletRequest(getServletPostRequest());

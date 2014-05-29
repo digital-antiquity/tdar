@@ -44,7 +44,7 @@ public class ObfuscationInterceptor {
     @Around("(@annotation(org.apache.struts2.convention.annotation.Action) || @annotation(org.apache.struts2.convention.annotation.Actions))") 
     public Object aroundAction(ProceedingJoinPoint pjp) throws Throwable {
         Object result = pjp.proceed();
-        logger.trace("seen: {} [{}]",pjp.getTarget().getClass(), pjp.getTarget().hashCode());
+        logger.debug("seen: {} [{}]",pjp.getTarget().getClass(), pjp.getTarget().hashCode());
         seenSet.put(pjp.getTarget().hashCode(),true);
         return result;
     }
@@ -58,7 +58,13 @@ public class ObfuscationInterceptor {
     public Object obfuscate(ProceedingJoinPoint pjp) throws Throwable {
         Boolean done = seenSet.getIfPresent(pjp.getTarget().hashCode());
         Object retVal = pjp.proceed();
-        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || obfuscationService.isWritableSession() || done != Boolean.TRUE || (!Iterable.class.isAssignableFrom(retVal.getClass())) && !(retVal instanceof Obfuscatable)) {
+        if (retVal == null) {
+            return null;
+        }
+        if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() || 
+                obfuscationService.isWritableSession() || 
+                done != Boolean.TRUE || 
+                (retVal != null && !Iterable.class.isAssignableFrom(retVal.getClass())) && !(retVal instanceof Obfuscatable)) {
             logger.trace("NOT OBFUSCATING: {} {}", pjp.getSignature(), pjp.getTarget().hashCode());
             return retVal;
         }

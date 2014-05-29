@@ -602,8 +602,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();
-        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService, null, null);
-        listener.prepareResult(controller);
         assertTrue(controller.getResults().size() > 0);
         for (Indexable result : controller.getResults()) {
             assertNull(((Person) result).getEmail());
@@ -615,7 +613,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         genericService.markReadOnly();
 
         // okay now "log in" and make sure that email lookup is still working
-        controller = generateNewInitializedController(LookupController.class);
+        controller = generateNewInitializedController(LookupController.class, getAdminUser());
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         String email = "james.t.devos@asu.edu";

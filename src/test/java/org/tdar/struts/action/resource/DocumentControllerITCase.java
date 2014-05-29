@@ -51,20 +51,19 @@ import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
-    @Autowired
-    DocumentController controller;
 
-    public void initControllerFields() {
-        controller = generateNewInitializedController(DocumentController.class);
+    public DocumentController initControllerFields() {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
+        return controller;
     }
 
     @Test
     public void testShowStatuses() {
         DocumentController dc = generateNewController(DocumentController.class);
         init(dc, getUser());
-        List<Status> statuses = controller.getStatuses();
+        List<Status> statuses = dc.getStatuses();
         assertFalse(statuses.isEmpty());
     }
 
@@ -283,11 +282,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback()
     public void testInstitutionResourceCreatorNew() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // create a document with a single resource creator not currently in the
         // database, then save.
         String EXPECTED_INSTITUTION_NAME = "NewBlankInstitution";
-
         Long originalId = controller.getResource().getId();
         // FIXME: in reality, struts calls the getter, not the setter, but from
         // there I'm not sure how it's populating the elements.
@@ -352,7 +350,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback()
     public void testPersonResourceCreatorNew() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -416,14 +414,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         return rcp;
     }
 
-    public void setController(DocumentController controller) {
-        this.controller = controller;
-    }
-
     @Test
     @Rollback()
     public void testEditResourceCreators() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -490,7 +484,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
     public void testForDuplicatePersonWithNoEmail() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // get person record count.
         int expectedPersonCount = genericService.findAll(Person.class).size();
 
@@ -519,7 +513,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCreatorSortOrder() throws Exception {
         int numberOfResourceCreators = 20;
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         for (int i = 0; i < numberOfResourceCreators; i++) {
             controller.getCreditProxies().add(getNewResourceCreator("Cressey" + i, "Pamela", null, null, ResourceCreatorRole.CONTACT));
         }
@@ -545,7 +539,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
     public void testForDuplicatePersonWithDifferentInstitution() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // get person record count.
         Person person = new Person();
         person.setFirstName("Pamela");
@@ -576,7 +570,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private Long createDocument(String collectionname, String title) throws TdarActionException {
-        controller = generateNewInitializedController(DocumentController.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
         getLogger().trace("controller:" + controller);
@@ -598,9 +592,12 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback()
     public void testResourceAdhocCollection() throws Exception {
-        initControllerFields();
         String collectionname = "my collection";
         Long newId = createDocument(collectionname, "test 1");
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
         ResourceCollection collection = controller.getResource().getSharedResourceCollections().iterator().next();
         Long collectionId = collection.getId();
         logger.info("{}", collection);

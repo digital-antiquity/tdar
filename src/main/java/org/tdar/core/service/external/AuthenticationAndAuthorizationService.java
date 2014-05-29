@@ -3,6 +3,7 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -226,13 +227,19 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         reservedSearchParameters.setAuthenticatedUser(user);
         reservedSearchParameters.setTdarGroup(findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
+        List<Status> statuses = reservedSearchParameters.getStatuses();
 
-        if (CollectionUtils.isEmpty(reservedSearchParameters.getStatuses())) {
-            reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+        logger.debug("au: {} {} {} ({})", user, user.getUsername(), statuses, statuses.size());
+        if (CollectionUtils.isEmpty(statuses)) {
+            logger.debug("statuses: {} | {}",statuses, allowedSearchStatuses);
+            statuses= new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
-        reservedSearchParameters.getStatuses().retainAll(allowedSearchStatuses);
-        if (reservedSearchParameters.getStatuses().isEmpty()) {
+        logger.debug("statuses2: {}",statuses);
+        statuses.retainAll(allowedSearchStatuses);
+        logger.debug("statuses3: {}",statuses);
+        reservedSearchParameters.setStatuses(statuses);
+        if (statuses.isEmpty()) {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
         }
 

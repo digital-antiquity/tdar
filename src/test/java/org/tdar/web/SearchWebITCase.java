@@ -194,7 +194,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     @Rollback
     public void testPagination() {
-        gotoPage("/search/results?recordsPerPage=2&includedStatuses=DRAFT&includedStatuses=ACTIVE&includedStatuses=DELETED");
+        gotoPage("/search/results?recordsPerPage=2");
         boolean sawSomething = false;
         for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".pagin a")) {
             Element element = (Element) element_;
