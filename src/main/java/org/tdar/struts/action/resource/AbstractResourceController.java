@@ -665,7 +665,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getResource().getResourceCreators(), ResourceCreator.class);
     }
 
-    public final void loadBasicMetadata() {
+    public void loadBasicMetadata() {
         // load all keywords
 
         setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
@@ -693,8 +693,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getLogger().debug("RCS: {}", resourceCollectionService);
-        getLogger().debug("AU: {}", getAuthenticatedUser());
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
