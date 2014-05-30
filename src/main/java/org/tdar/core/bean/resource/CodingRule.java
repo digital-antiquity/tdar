@@ -82,11 +82,12 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     public CodingRule(CodingSheet codingSheet, String code, String term, String description, OntologyNode node) {
         setCodingSheet(codingSheet);
-        codingSheet.getCodingRules().add(this);
         setCode(code);
         setTerm(term);
         setDescription(description);
         setOntologyNode(node);
+        // FIXME: must be careful when adding "this" to collections inside a constructor to avoid NPEs from uninitialized instance variables. 
+        codingSheet.getCodingRules().add(this);
     }
 
     public CodingRule(String unmappedValue, Long count) {
