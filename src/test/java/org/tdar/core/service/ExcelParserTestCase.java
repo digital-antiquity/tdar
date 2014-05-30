@@ -93,7 +93,6 @@ public class ExcelParserTestCase {
         fis.close();
     }
     
-    @Test
     public void testTooManyColumns() throws Exception {
         FileInputStream fis = getDataIntegrationResource("too-many-columns.xlsx");
         Workbook workbook = WorkbookFactory.create(fis);
