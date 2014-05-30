@@ -37,7 +37,7 @@ import org.tdar.core.service.ExcelService;
 public class SheetEvaluator {
     private static final int DEFAULT_ROWS_TO_EVALUATE = 25;
     private static final Pattern ALPHABETIC_PATTERN = Pattern.compile("[a-zA-Z]+");
-    private static final double DATA_DENSITY_THRESHOLD = 0.70d;
+    private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.60d;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     // 0-based row index of the header, -1 if no headers found.
     private int headerRowIndex = -1;
@@ -105,7 +105,6 @@ public class SheetEvaluator {
         // analyze DataRows and score them for likelihood of being a header or data row
         int maxNumberOfDataValues = 0;
         DataRow candidateHeaderRow = null;
-        DataRow longestRow = null;
         // reset start index to be ridiculously large and then take the min of it and all data carrying rows.
         dataColumnStartIndex = Short.MAX_VALUE;
         for (DataRow dataRow : dataRows) {
@@ -113,9 +112,9 @@ public class SheetEvaluator {
             if (dataRow.hasData()) {
                 dataColumnStartIndex = Math.min(dataColumnStartIndex, dataRow.getColumnStartIndex());
                 dataColumnEndIndex = Math.max(dataColumnEndIndex, dataRow.getColumnEndIndex());
+                maxCellCount = Math.max(maxCellCount, dataRow.getMaxCellCount());
                 if (dataRow.getNumberOfDataValues() > maxNumberOfDataValues) {
                     maxNumberOfDataValues = dataRow.getNumberOfDataValues();
-                    longestRow = dataRow;
                     if (dataRow.isHeaderish()) {
                         candidateHeaderRow = dataRow;
                     }
@@ -123,7 +122,6 @@ public class SheetEvaluator {
             }
         }
         logger.trace("data column start/end: [{}, {}]", dataColumnStartIndex, dataColumnEndIndex);
-        maxCellCount = longestRow.getColumnEndIndex();
         initializeHeaders(candidateHeaderRow);
         logger.debug("initialized headers: {}", headerColumnNames);
     }
@@ -219,24 +217,12 @@ public class SheetEvaluator {
         }
     }
 
-    public int getFirstNonHeaderRow() {
-        return dataRowStartIndex;
-    }
-
     public int getMaxCellCount() {
         return maxCellCount;
     }
 
-    public void setMaxCellCount(int maxCount) {
-        this.maxCellCount = maxCount;
-    }
-
     public int getStartAt() {
         return dataRowStartIndex;
-    }
-
-    public void setStartAt(int startAt) {
-        this.dataRowStartIndex = startAt;
     }
 
     public int getHeaderRowIndex() {
@@ -313,7 +299,9 @@ public class SheetEvaluator {
         private final Row row;
         private final int columnStartIndex;
         private int columnEndIndex;
+        // number of non-blank data values in this row
         private int numberOfDataValues = 0;
+        // number of data values in this row with at least one alphabetic character
         private int numberOfAlphabeticValues = 0;
         private double averageDataValueLength = 0.0d;
 
@@ -367,6 +355,10 @@ public class SheetEvaluator {
         public boolean hasData() {
             return numberOfDataValues > 0;
         }
+        
+        public int getMaxCellCount() {
+            return row.getLastCellNum();
+        }
 
         public int getColumnEndIndex() {
             return columnEndIndex;
@@ -376,13 +368,20 @@ public class SheetEvaluator {
             return columnEndIndex - numberOfDataValues;
         }
 
-        private double alphabeticRatio() {
+        /**
+         * Returns the percentage of data values with at least one alphabetic character
+         * out of all non-blank data values in the row. For example, given H1, H2, H3, H4, 27, 29 
+         * it would report 4/6 (in double representation). 
+         *  
+         * @return
+         */
+        private double percentageOfAlphabeticDataValues() {
             return numberOfAlphabeticValues / (double) numberOfDataValues;
         }
 
         public boolean isHeaderish() {
             return hasData()
-                    && alphabeticRatio() > DATA_DENSITY_THRESHOLD
+                    && percentageOfAlphabeticDataValues() > ALPHABETIC_DATA_DENSITY_THRESHOLD
                     && averageDataValueLength < HEADER_AVG_DATA_LENGTH_THRESHOLD
                     && getNumberOfBlankValues() < HEADER_MAX_BLANKS_THRESHOLD
                     && getRowIndex() < HEADER_ROW_INDEX_THRESHOLD;
@@ -391,7 +390,7 @@ public class SheetEvaluator {
         @Override
         public String toString() {
             return String.format("row %d, column range [%d, %d], alpha values %d, data values %d, blank values %d, alphabet ratio %f, average data value length %f",
-                    getRowIndex(), columnStartIndex, columnEndIndex, numberOfAlphabeticValues, numberOfDataValues, getNumberOfBlankValues(), alphabeticRatio(), averageDataValueLength);
+                    getRowIndex(), columnStartIndex, columnEndIndex, numberOfAlphabeticValues, numberOfDataValues, getNumberOfBlankValues(), percentageOfAlphabeticDataValues(), averageDataValueLength);
 
         }
 
