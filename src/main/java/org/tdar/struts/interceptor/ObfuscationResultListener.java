@@ -1,8 +1,13 @@
 package org.tdar.struts.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.InvocationHandler;
+
+import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Obfuscatable;
@@ -44,18 +49,67 @@ public class ObfuscationResultListener implements PreResultListener {
             if (method.isAnnotationPresent(DoNotObfuscate.class)) {
                 continue;
             }
+
             logger.trace("{} <==> {}", method, cls);
             // try {
+
+            // if method has matching "setter" than call the getter, replace the object with a proxy and move on
             Object obj = method.invoke(action);
             if (obj == null) {
                 continue;
             }
-            obfuscationService.obfuscateObject(obj, user);
-            // } catch (Exception e) {
-            // logger.error("{}", e);
-            // }
+            Method setter = reflectionService.findMatchingSetter(method);
+            if (setter != null) {
+                // generate proxy wrapper
+                Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
+                Object result = Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
+                reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
+            } else {
+                obfuscationService.obfuscateObject(obj, user);
+            }
         }
         logger.trace("complete obfuscation");
+    }
+
+    static class CollectionMethodInterceptor implements InvocationHandler {
+
+        private Object object;
+        private ObfuscationService obfuscationService;
+        private TdarUser user;
+        
+        protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+        public CollectionMethodInterceptor(Object object, ObfuscationService obfuscationService, TdarUser user) {
+            this.object = object;
+            this.obfuscationService = obfuscationService;
+            this.user = user;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
+            Object invoke = method.invoke(object, arguments);
+            if (invoke != null && (method.getName().startsWith("iterator"))) {
+                if (invoke instanceof Iterator) {
+                    logger.debug("intercepting: {}", method);
+                    return new AbstractIteratorDecorator((Iterator) invoke) {
+                        @Override
+                        public Object next() {
+                            Object next = super.next();
+                            if (next instanceof Obfuscatable) {
+                                logger.debug("\tobfuscating: {} ", next);
+                                obfuscationService.obfuscate((Obfuscatable)next, user);
+                                return Enhancer.create(next.getClass(), new CollectionMethodInterceptor(next, obfuscationService, user));
+                            } else {
+                                return next;
+                            }
+                        }
+                    };
+                }
+                return Enhancer.create(invoke.getClass(), new CollectionMethodInterceptor(invoke, obfuscationService, user));
+            }
+            return invoke;
+        }
+
     }
 
     @Override
@@ -71,6 +125,5 @@ public class ObfuscationResultListener implements PreResultListener {
             }
         }
     }
-
 
 }

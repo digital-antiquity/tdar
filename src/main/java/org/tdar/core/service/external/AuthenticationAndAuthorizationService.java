@@ -229,15 +229,11 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
         List<Status> statuses = reservedSearchParameters.getStatuses();
 
-        logger.debug("au: {} {} {} ({})", user, user.getUsername(), statuses, statuses.size());
         if (CollectionUtils.isEmpty(statuses)) {
-            logger.debug("statuses: {} | {}",statuses, allowedSearchStatuses);
             statuses= new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
-        logger.debug("statuses2: {} [allowed: {}]",statuses, allowedSearchStatuses);
         statuses.retainAll(allowedSearchStatuses);
-        logger.debug("statuses3: {}",statuses);
         reservedSearchParameters.setStatuses(statuses);
         if (statuses.isEmpty()) {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));

@@ -57,6 +57,7 @@ import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
+import com.sun.tools.internal.xjc.reader.RawTypeSet.Ref;
 
 /**
  * Service to help with Reflection
@@ -221,7 +222,7 @@ public class ReflectionService {
         try {
             setter.invoke(obj, fieldValue);
         } catch (Exception e) {
-            logger.debug("cannot call field setter:", e);
+            logger.debug("cannot call field setter {} on : {} {}  {}", field, obj, fieldValue, e);
         }
 
     }
@@ -802,6 +803,18 @@ public class ReflectionService {
                 }
             }
         }
+    }
+
+    public Method findMatchingSetter(Method method) {
+        String name = cleanupMethodName(method);
+        Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
+        return ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
+    }
+
+    public Field getFieldForGetterOrSetter(Method method) {
+        String name = cleanupMethodName(method);
+        Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
+        return field;
     }
 
 }

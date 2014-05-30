@@ -20,9 +20,9 @@ import org.tdar.struts.action.AuthenticationAware;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-@Aspect
+//@Aspect
 @Order
-@Component
+//@Component
 public class ObfuscationInterceptor {
 
     private ObfuscationService obfuscationService;
