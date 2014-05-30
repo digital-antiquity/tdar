@@ -617,9 +617,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // 2. update mappings and set ontology on one column
         List<DataTableColumn> columns = new ArrayList<>();
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
+            logger.debug("dtc: {}", dtc);
+            logger.debug("coding sheet? {}", dtc.getDefaultCodingSheet());
             DataTableColumn clone = (DataTableColumn) BeanUtils.cloneBean(dtc);
             columns.add(clone);
-            if (clone.getName().equals("a")) {
+            if (clone.getName().equals("column__2")) {
                 clone.setDefaultOntology(ontology);
             }
         }
@@ -628,11 +630,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller.getDataTableColumns();
         DataTableColumn myColumn = null;
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
-            if (dtc.getName().equals("a")) {
+            if (dtc.getName().equals("column__2")) {
                 myColumn = dtc;
             }
         }
-
+        assertNotNull(myColumn);
         // 3. update coding sheet mappings to point to ontology
         CodingSheetController csc = generateNewInitializedController(CodingSheetController.class);
         csc.setId(myColumn.getDefaultCodingSheet().getId());
