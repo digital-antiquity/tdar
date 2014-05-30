@@ -235,7 +235,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             statuses= new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
-        logger.debug("statuses2: {}",statuses);
+        logger.debug("statuses2: {} [allowed: {}]",statuses, allowedSearchStatuses);
         statuses.retainAll(allowedSearchStatuses);
         logger.debug("statuses3: {}",statuses);
         reservedSearchParameters.setStatuses(statuses);
