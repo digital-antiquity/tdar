@@ -28,6 +28,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
@@ -85,6 +86,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Autowired
     private transient SearchService searchService;
 
+    @Autowired
+    ObfuscationService obfuscationService;
     private String jsonResults;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
@@ -474,6 +477,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             if (obj == null) {
                 continue;
             }
+            obfuscationService.obfuscateObject(obj, getAuthenticatedUser());
             array.add(obj , ((JsonModel)obj).getJsonConfig());
         }
         setJsonResults(array.toString());
