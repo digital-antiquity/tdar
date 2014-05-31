@@ -528,13 +528,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setTitle("HARP");
         controller.lookupResource();
 
-        JSONArray jsonArray = new JSONArray();
-        for (Indexable persistable : controller.getResults()) {
-            if (persistable instanceof JsonModel) {
-                jsonArray.add(((JsonModel) persistable).toJSON());
-            }
-        }
-        String json = jsonArray.toString();
+        String json = controller.getJsonResults();
         logger.debug("resourceLookup results:{}", json);
         // assertTrue(json.contains("iTotalRecords"));
         assertTrue(json.contains("HARP"));

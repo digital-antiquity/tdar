@@ -18,6 +18,8 @@ import org.tdar.utils.json.WhitelistFilter;
 public interface JsonModel extends Serializable {
     JSONObject toJSON();
 
+    JsonConfig getJsonConfig();
+
     @XmlTransient
     @XmlType(name = "json")
     public abstract static class Base implements JsonModel {
@@ -35,34 +37,22 @@ public interface JsonModel extends Serializable {
         }
 
         public JSONObject toJSON(String[] properties) {
+            JsonConfig config = getJsonConfig(properties);
+            JSONObject jsonObject = JSONObject.fromObject(this, config);
+            return jsonObject;
+        }
+
+        public JsonConfig getJsonConfig() {
+            return getJsonConfig(getIncludedJsonProperties());
+        }
+        
+        private JsonConfig getJsonConfig(String[] properties) {
             JsonConfig config = new JsonConfig();
             // filter out any properties not defined in the whitelist
             WhitelistFilter whitelist = new WhitelistFilter(properties);
             config.setJsonPropertyFilter(whitelist);
             config.addIgnoreFieldAnnotation(JSONTransient.class);
-            // config.registerJsonValueProcessor(String.class, new JsonValueProcessor() {
-            //
-            // @Override
-            // public Object processObjectValue(String arg0, Object arg1, JsonConfig arg2) {
-            // return process(arg0, arg1, arg2);
-            // }
-            //
-            // @Override
-            // public Object processArrayValue(Object arg0, JsonConfig arg1) {
-            // return process(null, arg0, arg1);
-            // }
-            //
-            // public Object process(String key, Object value, JsonConfig config) {
-            // if (value != null) {
-            // //StringEscapeUtils.escapeHtml()
-            // return StringEscapeUtils.escapeJavaScript(value.toString());
-            // }
-            // return value;
-            // }
-            // });
-            // config.addIgnoreFieldAnnotation(XmlTransient.class);
-            JSONObject jsonObject = JSONObject.fromObject(this, config);
-            return jsonObject;
+            return config;
         }
     }
 }

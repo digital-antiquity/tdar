@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.json.JSONArray;
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -18,6 +21,7 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -80,6 +84,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     @Autowired
     private transient SearchService searchService;
+
+    private String jsonResults;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
         searchService.handleSearch(q, this, this);
@@ -458,7 +464,19 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
+        jsonifyResult();
         return SUCCESS;
+    }
+
+    public void jsonifyResult() {
+        JSONArray array = new JSONArray();
+        for (I obj : results) {
+            if (obj == null) {
+                continue;
+            }
+            array.add(obj , ((JsonModel)obj).getJsonConfig());
+        }
+        setJsonResults(array.toString());
     }
 
     public String findInstitution(String institution) {
@@ -479,6 +497,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
+        jsonifyResult();
         return SUCCESS;
     }
 
@@ -521,6 +540,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
+    }
+
+    public String getJsonResults() {
+        return jsonResults;
+    }
+
+    public void setJsonResults(String jsonResults) {
+        this.jsonResults = jsonResults;
     }
 
 }

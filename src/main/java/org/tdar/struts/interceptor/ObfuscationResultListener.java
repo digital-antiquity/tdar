@@ -73,7 +73,7 @@ public class ObfuscationResultListener implements PreResultListener {
                         continue;
                     }
                     
-                    Object result = Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
+                    Object result = enhance(obj, obfuscationService, user);
                     reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
                 } catch (Exception e) {
                     logger.error("exception in calling: {} {} {}", method, obj, actual, e);
@@ -83,6 +83,17 @@ public class ObfuscationResultListener implements PreResultListener {
             }
         }
         logger.trace("complete obfuscation");
+    }
+
+    public static Object enhance(Object obj, ObfuscationService obfuscationService, TdarUser user) {
+        if (obj == null || obj.getClass() == null) {
+            return obj;
+        }
+        Class<? extends Object> actual = obj.getClass();
+        while (Enhancer.isEnhanced(actual)) {
+            actual = actual.getSuperclass();
+        }
+        return Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
     }
 
     static class CollectionMethodInterceptor implements InvocationHandler {
@@ -112,14 +123,14 @@ public class ObfuscationResultListener implements PreResultListener {
                             if (next instanceof Obfuscatable) {
                                 logger.debug("\tobfuscating: {} ", next);
                                 obfuscationService.obfuscate((Obfuscatable) next, user);
-                                return Enhancer.create(next.getClass(), new CollectionMethodInterceptor(next, obfuscationService, user));
+                                return enhance(next, obfuscationService, user);
                             } else {
                                 return next;
                             }
                         }
                     };
                 }
-                return Enhancer.create(invoke.getClass(), new CollectionMethodInterceptor(invoke, obfuscationService, user));
+                return enhance(invoke, obfuscationService, user);
             }
             return invoke;
         }
