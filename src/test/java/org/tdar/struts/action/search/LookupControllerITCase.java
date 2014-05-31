@@ -602,6 +602,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();
+        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService, null, null);
+        listener.prepareResult(controller);
         assertTrue(controller.getResults().size() > 0);
         for (Indexable result : controller.getResults()) {
             assertNull(((Person) result).getEmail());
