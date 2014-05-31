@@ -808,6 +808,10 @@ public class ReflectionService {
     public Method findMatchingSetter(Method method) {
         String name = cleanupMethodName(method);
         Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
+        if (field == null) {
+            logger.debug("FIELD IS NULL : {}", method);
+            return null;
+        }
         return ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
     }
 

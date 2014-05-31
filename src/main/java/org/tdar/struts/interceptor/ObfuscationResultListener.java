@@ -1,17 +1,22 @@
 package org.tdar.struts.interceptor;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.InvocationHandler;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -62,8 +67,17 @@ public class ObfuscationResultListener implements PreResultListener {
             if (setter != null) {
                 // generate proxy wrapper
                 Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
-                Object result = Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
-                reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
+                try {
+                    if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
+                        logger.debug("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
+                        continue;
+                    }
+                    
+                    Object result = Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
+                    reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
+                } catch (Exception e) {
+                    logger.error("exception in calling: {} {} {}", method, obj, actual, e);
+                }
             } else {
                 obfuscationService.obfuscateObject(obj, user);
             }
@@ -76,7 +90,7 @@ public class ObfuscationResultListener implements PreResultListener {
         private Object object;
         private ObfuscationService obfuscationService;
         private TdarUser user;
-        
+
         protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
         public CollectionMethodInterceptor(Object object, ObfuscationService obfuscationService, TdarUser user) {
@@ -97,7 +111,7 @@ public class ObfuscationResultListener implements PreResultListener {
                             Object next = super.next();
                             if (next instanceof Obfuscatable) {
                                 logger.debug("\tobfuscating: {} ", next);
-                                obfuscationService.obfuscate((Obfuscatable)next, user);
+                                obfuscationService.obfuscate((Obfuscatable) next, user);
                                 return Enhancer.create(next.getClass(), new CollectionMethodInterceptor(next, obfuscationService, user));
                             } else {
                                 return next;
