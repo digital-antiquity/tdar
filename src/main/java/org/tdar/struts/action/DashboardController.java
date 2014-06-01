@@ -238,17 +238,14 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         editableProjects = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
 
+        fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        Collections.sort(fullUserProjects);
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
+        fullUserProjects.removeAll(getAllSubmittedProjects());
         filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
         filteredFullUserProjects.removeAll(getAllSubmittedProjects());
 
-        if (fullUserProjects == null) {
-            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-            Collections.sort(fullUserProjects);
-            fullUserProjects.removeAll(getAllSubmittedProjects());
-        }
-
-        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
     }
     
     public Set<Resource> getEditableProjects() {
