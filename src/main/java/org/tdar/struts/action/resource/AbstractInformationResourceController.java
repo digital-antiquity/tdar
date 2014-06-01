@@ -464,7 +464,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
     }
 
-    protected void setProject(Project project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 

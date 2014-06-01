@@ -84,6 +84,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private transient EntityService entityService;
     @Autowired
     private transient ResourceService resourceService;
+    private List<Project> allSubmittedProjects;
 
 
     // remove when we track down what exactly the perf issue is with the dashboard;
@@ -107,6 +108,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
                 overdrawnAccounts.add(account);
             }
         }
+        prepareProjectStuff();
+        setupBookmarks();
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
 
@@ -183,6 +186,13 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     public List<Resource> getBookmarkedResources() {
+        return bookmarkedResources;
+    }
+
+    public void setBookmarkedResource(List<Resource> bookmarks) {
+        this.bookmarkedResources = bookmarks;
+    }
+    private void setupBookmarks() {
         if (bookmarkedResources == null) {
             bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
                     Arrays.asList(Status.ACTIVE, Status.DRAFT));
@@ -191,38 +201,58 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         for (Resource res : bookmarkedResources) {
             getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
         }
-        return bookmarkedResources;
     }
 
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
     public List<Resource> getFullUserProjects() {
+        return fullUserProjects;
+    }
+
+    public void setFullUserProjects(List<Resource> projects) {
+        fullUserProjects = projects;
+    }
+
+    public void setAllSubmittedProjects(List<Project> projects) {
+        allSubmittedProjects = projects;
+    }
+
+    public void setFilteredFullUserProjects(List<Resource> projects) {
+        filteredFullUserProjects = projects;
+    }
+
+    public void setEditableProjects(Set<Resource> projects) {
+        editableProjects = projects;
+    }
+
+    public List<Resource> getFilteredFullUserProjects() {
+        return filteredFullUserProjects;
+    }
+
+    private Set<Resource> editableProjects = new HashSet<>();
+
+    private void prepareProjectStuff() {
+        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        editableProjects = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
+                getAuthenticatedUser(), canEditAnything));
+
+        filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
+        filteredFullUserProjects.removeAll(getAllSubmittedProjects());
+
         if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             Collections.sort(fullUserProjects);
             fullUserProjects.removeAll(getAllSubmittedProjects());
         }
-        return fullUserProjects;
-    }
 
-    public List<Resource> getFilteredFullUserProjects() {
-        if (filteredFullUserProjects == null) {
-            filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
-            filteredFullUserProjects.removeAll(getAllSubmittedProjects());
-        }
-        return filteredFullUserProjects;
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
     }
-
+    
     public Set<Resource> getEditableProjects() {
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
-                getAuthenticatedUser(), canEditAnything));
-        return findSparseTitleIdProjectListByPerson;
+        return editableProjects;
     }
 
     public void prepare() {

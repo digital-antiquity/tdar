@@ -16,8 +16,11 @@ import org.tdar.utils.json.WhitelistFilter;
  * JACKSON JSON Conversion through JAXB
  */
 public interface JsonModel extends Serializable {
+
+    @XmlTransient
     JSONObject toJSON();
 
+    @XmlTransient
     JsonConfig getJsonConfig();
 
     @XmlTransient
@@ -42,6 +45,7 @@ public interface JsonModel extends Serializable {
             return jsonObject;
         }
 
+        @XmlTransient
         public JsonConfig getJsonConfig() {
             return getJsonConfig(getIncludedJsonProperties());
         }

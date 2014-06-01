@@ -88,6 +88,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
+    private List<Project> allSubmittedProjects;
+
     @Override
     public boolean isEditable() {
         if (isNullOrNew()) {
@@ -221,7 +223,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
-
+        prepareProjectSection();
         resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
@@ -238,6 +240,7 @@ public class CollectionController extends AbstractPersistableController<Resource
                 parentCollectionName = parent.getName();
             }
         }
+        prepareProjectSection();
         return SUCCESS;
     }
 
@@ -368,19 +371,24 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
-    // @DoNotObfuscate
+    private void prepareProjectSection() {
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
+        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        fullUserProjects.removeAll(getAllSubmittedProjects());
+    }
+    
+    public void setFullUserProjects(List<Resource> projects) {
+        this.fullUserProjects = projects;
+    }
+    
+    
     @Override
     public List<Resource> getFullUserProjects() {
-        if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-            fullUserProjects.removeAll(getAllSubmittedProjects());
-        }
         return fullUserProjects;
     }
 
