@@ -55,6 +55,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         DashboardController controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, testPerson);
+        controller.execute();
         Set<Resource> fullUserProjects = controller.getEditableProjects();
         logger.info("{}", fullUserProjects);
         assertEquals(2, fullUserProjects.size());
@@ -64,6 +65,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, getAdminUser());
+        controller.execute();
         fullUserProjects = controller.getEditableProjects();
         assertTrue(3 < fullUserProjects.size());
     }
