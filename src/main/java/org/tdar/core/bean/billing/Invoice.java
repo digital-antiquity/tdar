@@ -32,6 +32,9 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -47,10 +50,6 @@ public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
-            "calculatedCost", "total" };
 
     public enum TransactionStatus implements HasLabel, Localizable {
         PREPARED("Prepared"),
@@ -121,6 +120,7 @@ public class Invoice extends Base implements Updatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
@@ -163,6 +163,7 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "number_of_mb")
     private Long numberOfMb = 0L;
 
+    @JsonView(JsonLookupFilter.class)
     private Float total;
 
     @Length(max = 25)
@@ -172,6 +173,7 @@ public class Invoice extends Base implements Updatable {
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "transactionstatus", length = FieldLength.FIELD_LENGTH_25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
@@ -329,9 +331,13 @@ public class Invoice extends Base implements Updatable {
         initialized = false;
     }
 
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalResources = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalSpaceInMb = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalFiles = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Float calculatedCost = 0F;
     private transient boolean initialized = false;
     private transient Float couponValue = 0f;
@@ -424,11 +430,6 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactionDate(Date transactionDate) {
         this.transactionDate = transactionDate;
-    }
-
-    @Override
-    public String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
     }
 
     public Long getNumberOfFiles() {

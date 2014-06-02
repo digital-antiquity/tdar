@@ -131,12 +131,6 @@ public class Project extends Resource implements Sortable {
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        List<String> list = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        list.addAll(Arrays.asList(JSON_PROPERTIES));
-        return list.toArray(new String[list.size()]);
-    }
 
     @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)

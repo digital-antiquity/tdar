@@ -35,12 +35,12 @@ TDAR.inheritance = (function () {
             id: rawJson.id,
             resourceType: rawJson.resourceType,
             investigationInformation: {
-                investigationTypeIds: $.map(rawJson.investigationTypes, function (v) {
+                investigationTypeIds: $.map(rawJson.activeInvestigationTypes, function (v) {
                     return v.id;
                 }) || []
             },
             siteInformation: {
-                siteNameKeywords: $.map(rawJson.siteNameKeywords, function (v) {
+                siteNameKeywords: $.map(rawJson.activeSiteNameKeywords, function (v) {
                     return v.label;
                 }),
                 approvedSiteTypeKeywordIds: $.map(rawJson.approvedSiteTypeKeywords, function (v) {
@@ -51,7 +51,7 @@ TDAR.inheritance = (function () {
                 })
             },
             materialInformation: {
-                materialKeywordIds: $.map(rawJson.materialKeywords, function (v) {
+                materialKeywordIds: $.map(rawJson.activeMaterialKeywords, function (v) {
                     return v.id;
                 }) || []
             },
@@ -64,7 +64,7 @@ TDAR.inheritance = (function () {
                 })
             },
             spatialInformation: {
-                geographicKeywords: $.map(rawJson.geographicKeywords, function (v) {
+                geographicKeywords: $.map(rawJson.activeGeographicKeywords, function (v) {
                     return v.label;
                 }),
                 'p_maxy': null, // FIXME: I don't think these p_**** fields are
@@ -74,26 +74,26 @@ TDAR.inheritance = (function () {
                 'p_miny': null
             },
             temporalInformation: {
-                temporalKeywords: $.map(rawJson.temporalKeywords, function (v) {
+                temporalKeywords: $.map(rawJson.activeTemporalKeywords, function (v) {
                     return v.label;
                 }),
-                coverageDates: rawJson.coverageDates
+                coverageDates: rawJson.activeCoverageDates
             },
-            resourceAnnotations: rawJson.resourceAnnotations,
+            resourceAnnotations: rawJson.activeResourceAnnotations,
             noteInformation: {
-                resourceNotes: rawJson.resourceNotes
+                resourceNotes: rawJson.activeResourceNotes
             },
             collectionInformation: {
-                sourceCollections: rawJson.sourceCollections,
-                relatedComparativeCollections: rawJson.relatedComparativeCollections
+                sourceCollections: rawJson.activeSourceCollections,
+                relatedComparativeCollections: rawJson.activeRelatedComparativeCollections
 
             },
             otherInformation: {
-                otherKeywords: $.map(rawJson.otherKeywords, function (v) {
+                otherKeywords: $.map(rawJson.activeOtherKeywords, function (v) {
                     return v.label;
                 })
             },
-            creditProxies: $.map(rawJson.individualAndInstitutionalCredit, _convertCreator)
+            creditProxies: $.map(rawJson.activeIndividualAndInstitutionalCredit, _convertCreator)
         };
 
         // FIXME: update the parent latlong box (i.e. the red box not the brown

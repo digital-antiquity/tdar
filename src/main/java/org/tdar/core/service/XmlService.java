@@ -49,11 +49,17 @@ import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
 import org.w3c.dom.Document;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ser.BeanSerializer;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -156,14 +162,14 @@ public class XmlService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer) throws IOException {
+    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        
         mapper.registerModule(new JaxbAnnotationModule());
-        ObjectWriter objectWriter = null;
-        if (logger.isTraceEnabled()) {
-            objectWriter = mapper.writerWithDefaultPrettyPrinter();
-        } else {
-            objectWriter = mapper.writer();
+        ObjectWriter objectWriter = mapper.writer();
+        if (view != null) {
+            mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+            objectWriter = mapper.writerWithView(view);
         }
         objectWriter.writeValue(writer, object);
     }
@@ -178,7 +184,14 @@ public class XmlService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer);
+        convertToJson(object, writer, null);
+        return writer.toString();
+    }
+
+    @Transactional
+    public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
+        StringWriter writer = new StringWriter();
+        convertToJson(object, writer, view);
         return writer.toString();
     }
 

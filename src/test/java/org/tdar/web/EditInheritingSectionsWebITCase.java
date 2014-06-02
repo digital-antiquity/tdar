@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,10 +16,14 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.junit.Test;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.util.ReflectionUtils;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -31,12 +36,15 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     private Map<String, String> docValMap = new HashMap<String, String>();
 
     public EditInheritingSectionsWebITCase() {
-        for (String inherit : InformationResource.JSON_PROPERTIES) {
-            if (inherit.equals("inheritingCollectionInformation")) {
-                // not on project page
-                continue;
+        for (Field f : InformationResource.class.getDeclaredFields()) {
+            if (f.isAnnotationPresent(JsonView.class)) {
+                String inherit = f.getName();
+                if (inherit.equals("inheritingCollectionInformation")) {
+                    // not on project page
+                    continue;
+                }
+                docValMap.put("resource." + inherit, "true");
             }
-            docValMap.put("resource." + inherit, "true");
         }
     }
 

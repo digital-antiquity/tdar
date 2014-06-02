@@ -143,7 +143,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @SkipValidation
     public String getProjectAsJson() {
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback());
         return json;
     }
 

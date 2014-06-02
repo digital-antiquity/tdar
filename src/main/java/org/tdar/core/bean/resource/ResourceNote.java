@@ -21,6 +21,10 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * <p>
@@ -36,8 +40,6 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "note", "type" };
 
     // @ManyToOne(optional = false)
     // private Resource resource;
@@ -45,11 +47,13 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Column(length = FieldLength.FIELD_LENGTH_5000)
     @Field
     @Length(max = FieldLength.FIELD_LENGTH_5000)
+    @JsonView(JsonProjectLookupFilter.class)
     private String note;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    @JsonView(JsonProjectLookupFilter.class)
     private ResourceNoteType type;
 
     @Override
@@ -106,8 +110,4 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
         return true;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return super.getIncludedJsonProperties();
-    }
 }

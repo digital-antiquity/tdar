@@ -176,7 +176,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
 
-    private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException {
+    private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException, IOException {
         CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -205,7 +205,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(PaymentMethod.CREDIT_CARD, invoice.getPaymentMethod());
     }
 
-    private Invoice processTransaction(BillingItem billingItem) throws TdarActionException {
+    private Invoice processTransaction(BillingItem billingItem) throws TdarActionException, IOException {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();

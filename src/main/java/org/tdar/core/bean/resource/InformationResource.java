@@ -80,6 +80,9 @@ import org.tdar.search.index.bridge.StringMapBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -110,10 +113,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
-    public static final String[] JSON_PROPERTIES = { "inheritingCulturalInformation", "inheritingInvestigationInformation", "inheritingMaterialInformation",
-            "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
-            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation", "inheritingIndividualAndInstitutionalCredit"
-    };
 
     public InformationResource() {
 
@@ -231,25 +230,36 @@ public abstract class InformationResource extends Resource {
 
     // downward inheritance sections
     @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @JsonView(JsonLookupFilter.class)
     private boolean inheritingInvestigationInformation = false;
     @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @JsonView(JsonLookupFilter.class)
     private boolean inheritingSiteInformation = false;
     @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @JsonView(JsonLookupFilter.class)
     private boolean inheritingMaterialInformation = false;
     @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @JsonView(JsonLookupFilter.class)
     private boolean inheritingOtherInformation = false;
     @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @JsonView(JsonLookupFilter.class)
     private boolean inheritingCulturalInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingNoteInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "inheriting_identifier_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIdentifierInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCollectionInformation = false;
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIndividualAndInstitutionalCredit = false;
 
@@ -793,13 +803,6 @@ public abstract class InformationResource extends Resource {
     @IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        ArrayList<String> allProperties = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        allProperties.addAll(Arrays.asList(JSON_PROPERTIES));
-        return allProperties.toArray(new String[allProperties.size()]);
     }
 
     @Transient

@@ -20,6 +20,10 @@ import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.JSONTransient;
+import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -38,9 +42,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     private static final long serialVersionUID = 8517883471101372051L;
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "value", "resourceAnnotationKey" };
-
     public ResourceAnnotation() {
     }
 
@@ -50,11 +51,13 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @ManyToOne(optional = false, cascade = { CascadeType.DETACH, CascadeType.MERGE })
+    @JsonView(JsonProjectLookupFilter.class)
     private ResourceAnnotationKey resourceAnnotationKey;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Field
+    @JsonView( JsonLookupFilter.class)
     private String value;
 
     @Temporal(TemporalType.DATE)
@@ -129,11 +132,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Override
     public boolean isValidForController() {
         return true;
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return super.getIncludedJsonProperties();
     }
 
 }

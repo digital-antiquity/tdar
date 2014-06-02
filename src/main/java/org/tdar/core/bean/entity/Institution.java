@@ -58,9 +58,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     private static final long serialVersionUID = 892315581573902067L;
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "name", "url" };
-
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
     @Transient
@@ -140,11 +137,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @Override
     public CreatorType getCreatorType() {
         return CreatorType.INSTITUTION;
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
     }
 
     public static String[] getIgnorePropertiesForUniqueness() {

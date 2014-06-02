@@ -31,6 +31,9 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -59,12 +62,14 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
+    @JsonView(JsonLookupFilter.class)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private ResourceCreatorRole role;
 
     private transient Boolean obfuscatedObjectDifferent = false;

@@ -26,6 +26,11 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.XmlService;
+import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 /**
  * $Id$
@@ -47,6 +52,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private ObfuscationService obfuscationService;
+
+    @Autowired
+    private XmlService xmlService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).
@@ -172,7 +180,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().containsIntegratableDatasets(projectIds);
     }
 
-    public String getProjectAsJson(Project project, TdarUser user) {
+    public String getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
         String json = "{}";
         try {
@@ -181,7 +189,12 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
                 return json;
             }
 //            obfuscationService.obfuscate(project, user);
-            json = project.toJSON().toString();
+            Object wrapper = project;
+            if (StringUtils.isNotBlank(callback)) {
+                wrapper = new JSONPObject(callback, wrapper);
+            }
+
+            json = xmlService.convertToFilteredJson(wrapper, JsonProjectLookupFilter.class);
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }

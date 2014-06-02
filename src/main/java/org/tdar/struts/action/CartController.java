@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,11 +41,15 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 @Component
 @Scope("prototype")
@@ -75,6 +82,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Autowired
     private transient AccountService accountService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     @Autowired
     private transient EmailService emailService;
@@ -149,6 +159,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Long lookupMBCount = 0L;
     private Long lookupFileCount = 0L;
     private List<PricingOption> pricingOptions = new ArrayList<PricingOption>();
+    private InputStream resultJson;
 
     @SkipValidation
     @Action(value = "api",
@@ -228,11 +239,25 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = "polling-check", results = {
-            @Result(name = WAIT, type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
-    public String pollingCheck() throws TdarActionException {
-
+    @Action(value = "polling-check",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
+            params = {
+            "contentType", "application/json",
+            "inputName", "jsonInputStream"
+    })})
+    public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        Object wrapper = getInvoice();
+        if (StringUtils.isNotBlank(getCallback())) {
+            wrapper = new JSONPObject(getCallback(), getInvoice());
+        }
+
+        try {
+            setResultJson(new ByteArrayInputStream(xmlService.convertToFilteredJson(wrapper, JsonLookupFilter.class).getBytes()));
+        } catch (IOException e) {
+            getLogger().error("error: {}",e);
+        }
+
 
         return WAIT;
     }
@@ -649,6 +674,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 
 }

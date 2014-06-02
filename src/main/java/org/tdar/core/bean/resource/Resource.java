@@ -123,7 +123,11 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.jaxb.JsonProjectLookupFilter;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -158,14 +162,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
-@FetchProfiles(value = {
-        @FetchProfile(name = "resource-with-people", fetchOverrides = {
-                @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
-                @FetchOverride(association = "latitudeLongitudeBoxes", mode = FetchMode.JOIN, entity = Resource.class),
-                @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) }),
-        @FetchProfile(name = "simple", fetchOverrides = {})
-})
-public class Resource extends JsonModel.Base implements Persistable,
+public class Resource implements Persistable, JsonModel,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
         DeHydratable {
@@ -186,10 +183,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
-    @Transient
-    private static final String[] JSON_PROPERTIES = { "id", "title",
-            "resourceType", "dateCreated", "description", "status",
-            "resourceTypeLabel", "urlNamespace" };
     // properties in resourceType
     // properties in submitter (Person)
     // "firstName", "lastName", "institution", "email","label","submitter",
@@ -249,38 +242,45 @@ public class Resource extends JsonModel.Base implements Persistable,
     @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resource_sequence")
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
+    @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
+    @JsonView(JsonLookupFilter.class)
     @Length(max = 512)
     private String title;
 
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
+    @JsonView(JsonLookupFilter.class)
     private String description;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
+    @JsonView(JsonLookupFilter.class)
     private Date dateCreated;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String url;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @JsonView(JsonLookupFilter.class)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @JsonView(JsonLookupFilter.class)
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
@@ -528,21 +528,25 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return getCultureKeywords();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveResourceCreators() {
         return getResourceCreators();
     }
 
     @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getUncontrolledCultureKeywords() {
         return getUncontrolledSuggestedKeyword(getCultureKeywords());
     }
 
     @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getApprovedCultureKeywords() {
         return getApprovedSuggestedKeyword(getCultureKeywords());
     }
@@ -561,16 +565,19 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
         return getSiteTypeKeywords();
     }
 
     @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getUncontrolledSiteTypeKeywords() {
         return getUncontrolledSuggestedKeyword(getSiteTypeKeywords());
     }
 
     @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         return getApprovedSuggestedKeyword(getSiteTypeKeywords());
     }
@@ -613,6 +620,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded(targetElement = OtherKeyword.class)
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
         return getOtherKeywords();
     }
@@ -631,6 +639,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
         return getSiteNameKeywords();
     }
@@ -649,6 +658,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
         return getMaterialKeywords();
     }
@@ -667,6 +677,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<InvestigationType> getActiveInvestigationTypes() {
         return getInvestigationTypes();
     }
@@ -799,6 +810,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
     }
@@ -851,6 +863,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     // @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
     }
@@ -887,6 +900,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
         return getTemporalKeywords();
     }
@@ -921,6 +935,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     @Deprecated()
+    @JsonView(JsonLookupFilter.class)
     // removing for localization
     public String getResourceTypeLabel() {
         return MessageHelper.getMessage(resourceType.getLocaleKey());
@@ -1029,6 +1044,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      */
     @Override
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getUrlNamespace() {
         return getResourceType().getUrlNamespace();
     }
@@ -1036,11 +1052,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Transient
     public String getAbsoluteUrl() {
         return getUrlNamespace() + "/" + getId();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
     }
 
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
@@ -1216,26 +1227,31 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CoverageDate> getActiveCoverageDates() {
         return getCoverageDates();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return getResourceAnnotations();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SourceCollection> getActiveSourceCollections() {
         return getSourceCollections();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
         return getRelatedComparativeCollections();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceNote> getActiveResourceNotes() {
         return getResourceNotes();
     }
@@ -1899,6 +1915,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return getIndividualAndInstitutionalCredit();
     }

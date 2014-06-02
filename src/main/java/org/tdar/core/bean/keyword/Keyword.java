@@ -31,6 +31,9 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Interface and Abstract Class for all keywords. Unique entities managed outside of resources, and linked to them.
@@ -63,8 +66,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
-        @Transient
-        private final static String[] JSON_PROPERTIES = { "id", "label" };
 
         @Column(nullable = false, unique = true)
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
@@ -72,6 +73,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
                 @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         @Length(max = FieldLength.FIELD_LENGTH_255)
+        @JsonView(JsonLookupFilter.class)
         private String label;
 
         @Lob
@@ -143,11 +145,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Override
         public String toString() {
             return getLabel();
-        }
-
-        @Override
-        public String[] getIncludedJsonProperties() {
-            return JSON_PROPERTIES;
         }
 
         @Transient

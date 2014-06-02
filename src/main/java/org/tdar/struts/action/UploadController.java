@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -25,6 +27,9 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -67,7 +72,11 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = {"contentType", "text/plain"}),
+            @Result(name = SUCCESS, type = "stream",
+                    params = {
+                    "contentType", "application/json",
+                    "inputName", "jsonInputStream"
+            }),
             @Result(name = ERROR, type = "stream",
                     params = {
                             "contentType", "application/json",
@@ -117,6 +126,19 @@ public class UploadController extends AuthenticationAware.Base {
             }
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
+            Map<String,Object> result = new HashMap<>();
+            ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String,Object>>();
+            result.put("files",files);
+            for (int i=0;i < uploadFileFileName.size(); i++) {
+                HashMap<String,Object> file = new HashMap<>();
+                files.add(file);
+                file.put("name", uploadFileFileName.get(i));
+                file.put("size", getUploadFileSize().get(i));
+                file.put("type", getUploadFileContentType().get(i));
+                file.put("delete_type", "DELETE");
+            }
+            result.put("ticket",ticket);
+            setJsonResult(result);
             return SUCCESS;
         } else {
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -127,11 +149,31 @@ public class UploadController extends AuthenticationAware.Base {
 
     // FIXME: generate a JsonResult rather than put these in an ftl
     // @PostOnly
-    @Action(value = "grab-ticket", results = { @Result(name = "success", type = "freemarker", location = "grab-ticket.ftl",
-            params = { "contentType", "text/plain" }) })
+    @Action(value = "grab-ticket", results = { @Result(name = "success", type = "stream",
+            params = {
+            "contentType", "application/json",
+            "inputName", "jsonInputStream"
+    }) })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+        setJsonResult(personalFilestoreTicket);
+
         return SUCCESS;
+    }
+
+    private void setJsonResult(Object obj) {
+        String resultJson = "{}";
+        try {
+            Object wrapper = obj;
+            if (StringUtils.isNotBlank(callback)) {
+                wrapper = new JSONPObject(callback, wrapper);
+            }
+
+            resultJson =  xmlService.convertToFilteredJson(wrapper, JsonLookupFilter.class);
+        } catch (Exception e) {
+            getLogger().error("cannot convert actionErrors to xml", e);
+        }
+        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
     }
 
 

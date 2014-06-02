@@ -2,6 +2,7 @@ package org.tdar.core.bean;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,6 +15,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.XmlService;
 
 public class InvoiceITCase extends AbstractIntegrationTestCase {
 
@@ -22,6 +24,9 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     GenericService genericService;
+
+    @Autowired
+    XmlService xmlService;
 
     @Test
     @Rollback
@@ -82,10 +87,10 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testJsonStatus() {
+    public void testJsonStatus() throws IOException {
         Invoice invoice = new Invoice();
         invoice.setTransactionStatus(TransactionStatus.PREPARED);
-        String json = invoice.toJSON().toString();
+        String json = xmlService.convertToJson(invoice);
         assertTrue("status in json", json.indexOf(TransactionStatus.PREPARED.name()) > -1);
 
     }

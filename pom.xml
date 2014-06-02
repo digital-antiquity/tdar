@@ -643,6 +643,16 @@
             <artifactId>hibernate-search</artifactId>
             <version>${hibernate.search.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-core-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -947,6 +957,7 @@
             <artifactId>json-lib</artifactId>
             <version>2.4</version>
             <classifier>jdk15</classifier>
+            <scope>test</scope>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -954,6 +965,7 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
             <type>jar</type>
+            <scope>test</scope>
             <!-- LICENSE: BSD -->
         </dependency>
         <!-- joda time -->
@@ -978,14 +990,14 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.2.0</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>

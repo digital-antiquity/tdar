@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
-public class ResultMetadataWrapper extends JsonModel.Base {
+public class ResultMetadataWrapper implements JsonModel {
 
     private static final long serialVersionUID = 1524243095172930161L;
 
@@ -45,11 +45,6 @@ public class ResultMetadataWrapper extends JsonModel.Base {
 
     public void setTotalRecords(Integer totalRecords) {
         this.totalRecords = totalRecords;
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "sColumns", "name", "displayName", "columnEncodingType", "startRecord", "recordsPerPage", "fields", "totalRecords", "results" };
     }
 
     public List<List<String>> getResults() {

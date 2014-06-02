@@ -5,12 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import net.sf.json.JSONArray;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +67,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testCollectionLookup() {
+    public void testCollectionLookup() throws IOException {
         setupCollections();
         controller.setTerm("Kin");
         controller.lookupResourceCollection();
@@ -79,6 +81,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         initController();
         controller.setTerm("Kintigh - C");
         controller.lookupResourceCollection();
+        logger.debug(IOUtils.toString(controller.getJsonInputStream()));
         for (Indexable collection_ : controller.getResults()) {
             ResourceCollection collection = (ResourceCollection) collection_;
             logger.info("{}", collection);
@@ -523,12 +526,12 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testResourceLookup() {
+    public void testResourceLookup() throws IOException {
         initControllerFields();
         controller.setTitle("HARP");
         controller.lookupResource();
 
-        String json = controller.getJsonResults();
+        String json  = IOUtils.toString(controller.getJsonInputStream());
         logger.debug("resourceLookup results:{}", json);
         // assertTrue(json.contains("iTotalRecords"));
         assertTrue(json.contains("HARP"));

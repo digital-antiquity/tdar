@@ -1,9 +1,7 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,7 +28,6 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
@@ -39,6 +35,9 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -67,9 +66,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "tempDisplayName" };
-
-    @Transient
     private transient String tempDisplayName;
 
     public Person() {
@@ -83,6 +79,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     private transient String wildcardName;
 
+    @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
@@ -95,6 +92,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String firstName;
 
     // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
@@ -105,6 +103,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String email;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
@@ -113,6 +112,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
+    @JsonView(JsonLookupFilter.class)
     private Institution institution;
 
     // rpanet.org "number"
@@ -133,12 +133,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      */
     @Override
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return lastName + ", " + firstName;
     }
 
     @Override
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getProperName() {
         return firstName + " " + lastName;
     }
@@ -289,10 +291,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.phonePublic = toggle;
     }
 
-    @Override
-    public String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
-    }
 
     @Override
     public CreatorType getCreatorType() {
@@ -389,6 +387,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
      * */
     @Deprecated
+    @JsonView(JsonLookupFilter.class)
     public String getTempDisplayName() {
         if(StringUtils.isNotBlank(tempDisplayName)) {
             return tempDisplayName;

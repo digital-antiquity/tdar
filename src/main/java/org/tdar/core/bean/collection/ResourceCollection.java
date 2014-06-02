@@ -82,6 +82,9 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -149,6 +152,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Explanation explanation;
 
     @Column
+    @JsonView(JsonLookupFilter.class)
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
@@ -250,6 +254,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return name;
     }
@@ -261,6 +266,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     // @Boost(1.2f)
     @Field
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getDescription() {
         return description;
     }
@@ -447,10 +453,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "id", "name" };
-    }
 
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection

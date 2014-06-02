@@ -21,6 +21,9 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -43,18 +46,21 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Field(name = "startDate", store = Store.YES)
     // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @JsonView(JsonLookupFilter.class)
     private Integer startDate;
 
     @Column(name = "end_date")
     @Field(name = "endDate", store = Store.YES)
     // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @JsonView(JsonLookupFilter.class)
     private Integer endDate;
 
     @Enumerated(EnumType.STRING)
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type", length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private CoverageType dateType;
 
     @Column(name = "start_aprox", nullable = false)
@@ -64,6 +70,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     private boolean endDateApproximate;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String description;
 
     public CoverageDate() {
