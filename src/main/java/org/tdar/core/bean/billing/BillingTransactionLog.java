@@ -8,8 +8,8 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
+//import net.sf.json.JSONObject;
+//import net.sf.json.JsonConfig;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
@@ -45,12 +45,10 @@ public class BillingTransactionLog extends Base {
     public BillingTransactionLog() {
     }
 
-    public BillingTransactionLog(TransactionResponse response) {
-        JsonConfig config = new JsonConfig();
-        JSONObject jsonObject = JSONObject.fromObject(response.getValues(), config);
-        setResponseInJson(jsonObject.toString());
+    public BillingTransactionLog(String transactionId, String jsonResponse) {
+        setResponseInJson(jsonResponse);
         setDateCreated(new Date());
-        setTransactionId(response.getTransactionId());
+        setTransactionId(transactionId);
 
     }
 

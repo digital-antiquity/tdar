@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.OneToMany;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,7 +55,6 @@ import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
-import com.sun.tools.internal.xjc.reader.RawTypeSet.Ref;
 
 /**
  * Service to help with Reflection

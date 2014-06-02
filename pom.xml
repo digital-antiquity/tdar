@@ -965,7 +965,6 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
             <type>jar</type>
-            <scope>test</scope>
             <!-- LICENSE: BSD -->
         </dependency>
         <!-- joda time -->
@@ -1005,6 +1004,12 @@
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
             <version>1.5</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- OData (odata4j) Stuff: Begin -->

@@ -397,7 +397,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             if (paymentTransactionProcessor.validateResponse(response)) {
                 getGenericService().markWritable();
                 Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
-                BillingTransactionLog billingResponse = new BillingTransactionLog(response);
+                
+                BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
                 billingResponse = getGenericService().markWritable(billingResponse);
                 getGenericService().saveOrUpdate(billingResponse);
                 if (invoice != null) {
