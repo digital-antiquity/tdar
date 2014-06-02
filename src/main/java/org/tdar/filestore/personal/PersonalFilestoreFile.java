@@ -7,6 +7,13 @@ public class PersonalFilestoreFile {
     private File file;
     private String md5;
 
+    public PersonalFilestoreFile() {}
+    
+    public PersonalFilestoreFile(File file, String md5) {
+        this.file = file;
+        this.md5 = md5;
+    }
+    
     public File getFile() {
         return file;
     }

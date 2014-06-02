@@ -108,7 +108,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
             try {
                 String filename = getUploadedFilesFileName().get(0);
-                excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
+                excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename).getFile();
             } catch (Exception e) {
                 addActionErrorWithException(getText("bulkUploadController.cannot_store_manifest"), e);
             }

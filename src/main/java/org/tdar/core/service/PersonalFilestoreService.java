@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -135,7 +136,7 @@ public class PersonalFilestoreService {
      * @return
      * @throws IOException
      */
-    public synchronized File store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
+    public synchronized PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
         return getPersonalFilestore(ticket.getSubmitter()).store(ticket, file, filename);
     }
 

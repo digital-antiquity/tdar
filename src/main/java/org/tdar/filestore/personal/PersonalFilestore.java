@@ -18,7 +18,7 @@ public interface PersonalFilestore {
 
     String getStoreLocation(Person person);
 
-    File store(PersonalFilestoreTicket ticket, File originalFile, String newFileName) throws IOException;
+    PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File originalFile, String newFileName) throws IOException;
 
     void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newfileNames) throws IOException;
 

@@ -129,7 +129,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
     }
 
     @Override
-    public synchronized File store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
+    public synchronized PersonalFilestoreFile store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
         logger.debug("ticket:{}\t file:{}\t name:{}", new Object[] { personalFilestoreTicket, file, incomingFileName });
         String pathToBag = getPath(personalFilestoreTicket);
         File pathToBagFile = new File(pathToBag);
@@ -146,10 +146,13 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
         newBag.write(writer, pathToBagFile);
+   
         FileUtils.deleteQuietly(tempFileDirectory);
         for (BagFile storedBagFile : newBag.getPayload()) {
-            if (storedBagFile.getFilepath().contains(tempFileDirectoryName)) {
-                return new File(pathToBag, storedBagFile.getFilepath());
+            String filepath = storedBagFile.getFilepath();
+            if (filepath.contains(tempFileDirectoryName)) {
+                Map<Algorithm, String> checksums = newBag.getChecksums(filepath);
+                return new PersonalFilestoreFile(new File(pathToBag, filepath), checksums.get(Algorithm.MD5));
             }
         }
         List<String> names = new ArrayList<>();

@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -27,9 +26,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.utils.json.JsonLookupFilter;
-
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -74,9 +72,9 @@ public class UploadController extends AuthenticationAware.Base {
     @Action(value = "upload", results = {
             @Result(name = SUCCESS, type = "stream",
                     params = {
-                    "contentType", "application/json",
-                    "inputName", "jsonInputStream"
-            }),
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    }),
             @Result(name = ERROR, type = "stream",
                     params = {
                             "contentType", "application/json",
@@ -102,6 +100,7 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(uploadFile)) {
             addActionError(getText("uploadController.no_files"));
         }
+        List<String> hashCodes = new ArrayList<>();
         if (CollectionUtils.isEmpty(getActionErrors())) {
             TdarUser submitter = getAuthenticatedUser();
             for (int i = 0; i < uploadFile.size(); i++) {
@@ -118,7 +117,8 @@ public class UploadController extends AuthenticationAware.Base {
                     getLogger().debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                     PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                     try {
-                        filestore.store(ticket, file, fileName);
+                        PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
+                        hashCodes.add(store.getMd5());
                     } catch (Exception e) {
                         addActionErrorWithException(getText("uploadController.could_not_store"), e);
                     }
@@ -126,22 +126,25 @@ public class UploadController extends AuthenticationAware.Base {
             }
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
-            Map<String,Object> result = new HashMap<>();
-            ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String,Object>>();
-            result.put("files",files);
-            for (int i=0;i < uploadFileFileName.size(); i++) {
-                HashMap<String,Object> file = new HashMap<>();
+            Map<String, Object> result = new HashMap<>();
+            ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String, Object>>();
+            result.put("files", files);
+            for (int i = 0; i < uploadFileFileName.size(); i++) {
+                HashMap<String, Object> file = new HashMap<>();
                 files.add(file);
                 file.put("name", uploadFileFileName.get(i));
+                if (CollectionUtils.isNotEmpty(hashCodes)) {
+                file.put("hashCode", hashCodes.get(i));
+                }
                 if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
                     file.put("size", getUploadFileSize().get(i));
                 }
                 if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
-                file.put("type", getUploadFileContentType().get(i));
+                    file.put("type", getUploadFileContentType().get(i));
                 }
                 file.put("delete_type", "DELETE");
             }
-            result.put("ticket",ticket);
+            result.put("ticket", ticket);
             setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
 
             return SUCCESS;
@@ -156,20 +159,19 @@ public class UploadController extends AuthenticationAware.Base {
     // @PostOnly
     @Action(value = "grab-ticket", results = { @Result(name = "success", type = "stream",
             params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    }) })
+                    "contentType", "application/json",
+                    "inputName", "jsonInputStream"
+            }) })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback()).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
+                .getBytes()));
 
         return SUCCESS;
     }
 
-
-
-    //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
-    private void buildJsonError()  {
+    // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
+    private void buildJsonError() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
