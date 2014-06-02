@@ -99,9 +99,18 @@
 </table>
 
 <h3>Hibernate Statistics</h3>
-<pre>
-${sessionStatistics}
-</pre>
+<table class="tableFormat table" id="tblQueryStats">
+    <#assign txt = sessionStatistics?string>
+    <#assign txt = txt?substring(1+txt?index_of("["), txt?last_index_of("]")) >
+    <#list txt?split(",") as row_>
+        <#assign row = row_?split("=") />
+        <tr>
+            <th>${row[0]}</th>
+            <td>${(row[1]!"")?string}</td>
+        </tr>
+    </#list>
+</table>
+
     <#assign threshold =99/>
 <p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
 <table class="tableFormat table" id="tblQueryStats">
