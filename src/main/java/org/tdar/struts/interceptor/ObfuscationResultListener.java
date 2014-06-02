@@ -69,7 +69,7 @@ public class ObfuscationResultListener implements PreResultListener {
                 Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
                 try {
                     if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
-                        logger.debug("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
+                        logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                         continue;
                     }
                     
