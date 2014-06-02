@@ -121,7 +121,7 @@ public class ObfuscationResultListener implements PreResultListener {
                         public Object next() {
                             Object next = super.next();
                             if (next instanceof Obfuscatable) {
-                                logger.debug("\tobfuscating: {} ", next);
+                                logger.trace("\tobfuscating: {} ", next);
                                 obfuscationService.obfuscate((Obfuscatable) next, user);
                                 return enhance(next, obfuscationService, user);
                             } else {

@@ -240,10 +240,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Action(value = "polling-check",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = SUCCESS, type = "stream",
             params = {
             "contentType", "application/json",
-            "inputName", "jsonInputStream"
+            "inputName", "resultJson"
     })})
     public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -259,7 +259,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
 
-        return WAIT;
+        return SUCCESS;
     }
 
     @SkipValidation

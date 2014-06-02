@@ -981,9 +981,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
-        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage instanceof TextPage);
-        TextPage textPage = (TextPage) internalPage;
-        String json = textPage.getContent();
+        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage.getWebResponse().getContentType().contains("json"));
+        String json = getPageCode();
         logger.debug("ticket json::" + json.trim());
         JSONObject jsonObject = JSONObject.fromObject(json);
         String ticketId = jsonObject.getString("id");

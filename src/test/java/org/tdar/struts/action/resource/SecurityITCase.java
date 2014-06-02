@@ -147,7 +147,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         controller.edit();
 
-        // assertTrue(controller.getAccessibleFiles().isEmpty());
+//         assertTrue(controller.getAccessibleFiles().isEmpty());
     }
 
     // @Test

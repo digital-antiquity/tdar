@@ -806,7 +806,7 @@ public class ReflectionService {
         String name = cleanupMethodName(method);
         Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
         if (field == null) {
-            logger.debug("FIELD IS NULL : {}", method);
+            logger.trace("FIELD IS NULL : {}", method);
             return null;
         }
         return ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
