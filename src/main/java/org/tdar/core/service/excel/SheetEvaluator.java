@@ -27,17 +27,16 @@ import org.tdar.core.service.ExcelService;
  * 
  * It first reads in all the data into a List of DataRows and then analyzes and scores them
  * to compare for the highest chance of being a header row. The heuristic for determining
- * whether or not a row is a header row is still imperfect and is based on the percentage of  
- * alphabetic data in the topmost row. 
+ * whether or not a row is a header row is still imperfect and is based on the percentage of
+ * alphabetic data in the topmost row.
  * 
- * FIXME: If a sheet has no clear header row and the data is mostly alphabetic, its first row will be coerced into a header row 
- * and that data will then be converted into data table column names, which is not ideal. 
- *   
+ * FIXME: If a sheet has no clear header row and the data is mostly alphabetic, its first row will be coerced into a header row
+ * and that data will then be converted into data table column names, which is not ideal.
+ * 
  */
 public class SheetEvaluator {
     private static final int DEFAULT_ROWS_TO_EVALUATE = 25;
     private static final Pattern ALPHABETIC_PATTERN = Pattern.compile("[a-zA-Z]+");
-    private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.60d;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     // 0-based row index of the header, -1 if no headers found.
     private int headerRowIndex = -1;
@@ -110,11 +109,14 @@ public class SheetEvaluator {
         for (DataRow dataRow : dataRows) {
             logger.trace("analyzing {}", dataRow);
             if (dataRow.hasData()) {
+                // min-maxing data column start, end index bounds and maxing the total number of reported cells
                 dataColumnStartIndex = Math.min(dataColumnStartIndex, dataRow.getColumnStartIndex());
                 dataColumnEndIndex = Math.max(dataColumnEndIndex, dataRow.getColumnEndIndex());
                 maxCellCount = Math.max(maxCellCount, dataRow.getMaxCellCount());
                 if (dataRow.getNumberOfDataValues() > maxNumberOfDataValues) {
                     maxNumberOfDataValues = dataRow.getNumberOfDataValues();
+                    // assumes that the row with the most actual data values is
+                    // also a likely candidate for a header row.
                     if (dataRow.isHeaderish()) {
                         candidateHeaderRow = dataRow;
                     }
@@ -158,9 +160,10 @@ public class SheetEvaluator {
             throwTdarRecoverableRuntimeException(row.getRowNum(), lastDataCellIndex + 1, dataColumnEndIndex + 1, row.getSheet().getSheetName());
         }
     }
-    
+
     /**
-     * Returns the last cell index with data (ignores blanks) 
+     * Returns the last cell index with data (ignores blanks)
+     * 
      * @param row
      * @return
      */
@@ -177,16 +180,6 @@ public class SheetEvaluator {
     private void throwTdarRecoverableRuntimeException(int rowNumber, int numberOfDataColumns, int columnNameBound, String sheetName) {
         throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns", "sheetEvaluator.row_has_more_columns_url", Arrays.asList(rowNumber,
                 numberOfDataColumns, columnNameBound, sheetName));
-    }
-
-    private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
-        for (int j = cellCount; j >= endAt; j--) {
-            String value = getCellValueAsString(row.getCell(j));
-            if (StringUtils.isBlank(value)) {
-                cellCount--;
-            }
-        }
-        return cellCount;
     }
 
     public String getCellValueAsString(Cell cell) {
@@ -221,29 +214,21 @@ public class SheetEvaluator {
         return maxCellCount;
     }
 
-    public int getStartAt() {
-        return dataRowStartIndex;
-    }
-
-    public int getHeaderRowIndex() {
-        return headerRowIndex;
-    }
-    
     private void initializeHeaders(DataRow dataRow) {
         if (dataRow == null) {
             // generate column names given the max number of data values we need to store
             headerColumnNames = new ArrayList<String>();
             for (int i = dataColumnStartIndex; i <= dataColumnEndIndex; i++) {
-                headerColumnNames.add("Column #" + (i+ 1));
+                headerColumnNames.add("Column #" + (i + 1));
             }
         }
         else {
-            this.headerColumnNames = dataRow.extractHeaders(dataColumnStartIndex, dataColumnEndIndex);
+            this.headerColumnNames = dataRow.extractHeaders();
             setHeaderRowIndex(dataRow.getRowIndex());
         }
     }
 
-    public void setHeaderRowIndex(int headerRowIndex) {
+    private void setHeaderRowIndex(int headerRowIndex) {
         this.headerRowIndex = headerRowIndex;
         // FIXME: assumption that data rows start immediately after a header row
         dataRowStartIndex = headerRowIndex + 1;
@@ -264,37 +249,58 @@ public class SheetEvaluator {
     public int getDataColumnEndIndex() {
         return dataColumnEndIndex;
     }
-    
+
+    /**
+     * Returns true if this SheetEvaluator detected and extracted a header from the given Sheet.
+     * @return
+     */
     public boolean hasHeaders() {
         return headerRowIndex != -1 && CollectionUtils.isNotEmpty(headerColumnNames);
     }
 
+    /**
+     * Returns true if this sheet contains tabular data.
+     * @return
+     */
     public boolean hasTabularData() {
         // FIXME: this needs to be more sophisticated and based on analysis of multiple rows
         return dataColumnEndIndex > dataColumnStartIndex;
     }
-    
+
+    /**
+     * Returns true if this sheet has "issues", e.g., if any of the following conditions are true:
+     * 1. ending data index is less than the max number of reported cells
+     * 2. no headers found
+     * 3. number of header values is less than the max number of data values scanned (NOTE: this condition may never hold now that DataRow.extractHeaders() fills in blank header columns).
+     * @return
+     */
     public boolean isDegenerate() {
-        return dataColumnEndIndex < maxCellCount 
-                || ! hasHeaders()
-                || headerColumnNames.size() < dataColumnEndIndex;
+        return dataColumnEndIndex < maxCellCount
+                || !hasHeaders()
+                || headerColumnNames.size() < (dataColumnEndIndex - dataColumnStartIndex);
     }
-    
+
     @Override
     public String toString() {
-        return String.format("header row %d data row %d - [%d, %d]", headerRowIndex, dataRowStartIndex, dataColumnStartIndex, dataColumnEndIndex); 
+        return String.format("header row %d data row %d - [%d, %d]", headerRowIndex, dataRowStartIndex, dataColumnStartIndex, dataColumnEndIndex);
     }
 
     private static boolean hasAlphabeticCharacters(String value) {
         return ALPHABETIC_PATTERN.matcher(value).find();
     }
 
+    /**
+     * Utility bookkeeping class that maintains heuristics and can extract headers from a given data row in the given Sheet.
+     *
+     */
     private class DataRow {
+        // threshold ratio of alphabetic data values to total data values needed for a row to be considered headerish 
+        private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.60d;
         // maximum number of blanks allowable for a row to still be considered a header.
-        private static final int HEADER_MAX_BLANKS_THRESHOLD = 2;
-        // excludes very long strings from being considered header material  
+        private static final int HEADER_MAX_BLANKS_THRESHOLD = 3;
+        // excludes very long strings from being considered header material
         private static final double HEADER_AVG_DATA_LENGTH_THRESHOLD = 30.0d;
-        // only look for headers in rows 0 -> this threshold 
+        // only look for headers in rows 0 -> this threshold
         private static final int HEADER_ROW_INDEX_THRESHOLD = 10;
         private final Row row;
         private final int columnStartIndex;
@@ -325,14 +331,14 @@ public class SheetEvaluator {
 
         /**
          * Returns a list of Strings based on the assumption that this Row is the appropriate
-         * header for the given Sheet. If data values in a given cell are empty / missing from 
+         * header for the given Sheet. If data values in a given cell are empty / missing from
          * this row, it will generate a header name "Column #N" where N is the cell index of the missing value + 1.
-         *  
-         * @param dataColumnStartIndex 
+         * 
+         * @param dataColumnStartIndex
          * @param dataColumnEndIndex
          * @return
          */
-        public List<String> extractHeaders(int dataColumnStartIndex, int dataColumnEndIndex) {
+        public List<String> extractHeaders() {
             ArrayList<String> headers = new ArrayList<String>();
             for (int ci = dataColumnStartIndex; ci <= dataColumnEndIndex; ci++) {
                 String value = getCellValueAsString(row.getCell(ci));
@@ -355,7 +361,7 @@ public class SheetEvaluator {
         public boolean hasData() {
             return numberOfDataValues > 0;
         }
-        
+
         public int getMaxCellCount() {
             return row.getLastCellNum();
         }
@@ -363,16 +369,16 @@ public class SheetEvaluator {
         public int getColumnEndIndex() {
             return columnEndIndex;
         }
-        
+
         public int getNumberOfBlankValues() {
             return columnEndIndex - numberOfDataValues;
         }
 
         /**
          * Returns the percentage of data values with at least one alphabetic character
-         * out of all non-blank data values in the row. For example, given H1, H2, H3, H4, 27, 29 
-         * it would report 4/6 (in double representation). 
-         *  
+         * out of all non-blank data values in the row. For example, given H1, H2, H3, H4, 27, 29
+         * it would report 4/6 (in double representation).
+         * 
          * @return
          */
         private double percentageOfAlphabeticDataValues() {
@@ -389,8 +395,10 @@ public class SheetEvaluator {
 
         @Override
         public String toString() {
-            return String.format("row %d, column range [%d, %d], alpha values %d, data values %d, blank values %d, alphabet ratio %f, average data value length %f",
-                    getRowIndex(), columnStartIndex, columnEndIndex, numberOfAlphabeticValues, numberOfDataValues, getNumberOfBlankValues(), percentageOfAlphabeticDataValues(), averageDataValueLength);
+            return String.format(
+                    "row %d, column range [%d, %d], alpha values %d, data values %d, blank values %d, alphabet ratio %f, average data value length %f",
+                    getRowIndex(), columnStartIndex, columnEndIndex, numberOfAlphabeticValues, numberOfDataValues, getNumberOfBlankValues(),
+                    percentageOfAlphabeticDataValues(), averageDataValueLength);
 
         }
 
