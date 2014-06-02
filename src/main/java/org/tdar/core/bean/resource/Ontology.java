@@ -22,10 +22,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.SupportsResource;
 
 /**
@@ -121,7 +122,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByName(String name) {
-        if (CollectionUtils.isEmpty(nameMap)) {
+        if (MapUtils.isEmpty(nameMap)) {
             initializeNameAndIriMaps();
         }
         return nameMap.get(name);
@@ -129,7 +130,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByIri(String iri) {
-        if (CollectionUtils.isEmpty(iriMap)) {
+        if (MapUtils.isEmpty(iriMap)) {
             initializeNameAndIriMaps();
         }
         return iriMap.get(iri);

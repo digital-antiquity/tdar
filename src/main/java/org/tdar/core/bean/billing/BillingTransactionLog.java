@@ -45,7 +45,7 @@ public class BillingTransactionLog extends Base {
     public BillingTransactionLog() {
     }
 
-    public BillingTransactionLog(String transactionId, String jsonResponse) {
+    public BillingTransactionLog(String jsonResponse, String transactionId) {
         setResponseInJson(jsonResponse);
         setDateCreated(new Date());
         setTransactionId(transactionId);

@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -21,7 +22,6 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -133,8 +133,12 @@ public class UploadController extends AuthenticationAware.Base {
                 HashMap<String,Object> file = new HashMap<>();
                 files.add(file);
                 file.put("name", uploadFileFileName.get(i));
-                file.put("size", getUploadFileSize().get(i));
+                if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
+                    file.put("size", getUploadFileSize().get(i));
+                }
+                if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
                 file.put("type", getUploadFileContentType().get(i));
+                }
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket",ticket);
