@@ -1,5 +1,7 @@
 package org.tdar.struts.action.resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +26,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
@@ -61,7 +64,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Autowired
     private transient SearchService searchService;
-    
+
     private String callback;
     private String json;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
@@ -75,6 +78,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private PaginationHelper paginationHelper;
     private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
+
+    private InputStream jsonInputStream;
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -103,13 +108,15 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Action(value = JSON,
             results = { @Result(
                     name = SUCCESS,
-                    location = "json.ftl",
-                    params = { "contentType", "application/json" },
-                    type = "freemarker"
-                    ) }
+                    location = "json.ftl", type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    }) }
             )
             @SkipValidation
             public String json() {
+        setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;
     }
 
@@ -139,12 +146,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
                 addActionErrorWithException(getText("projectController.something_happened"), e);
             }
         }
-    }
-
-    @SkipValidation
-    public String getProjectAsJson() {
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback());
-        return json;
     }
 
     public Project getProject() {
@@ -331,6 +332,14 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
+    }
+
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(InputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
     }
 
 }

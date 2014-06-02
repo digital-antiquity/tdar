@@ -1,7 +1,9 @@
 package org.tdar.core.service.resource;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.XmlService;
 import org.tdar.utils.jaxb.JsonProjectLookupFilter;
-import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
@@ -182,23 +183,19 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     public String getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
-        String json = "{}";
-        try {
-            if ((project == null) || project.isTransient()) {
-                getLogger().trace("Trying to convert blank or null project to json: " + project);
-                return json;
-            }
-//            obfuscationService.obfuscate(project, user);
-            Object wrapper = project;
-            if (StringUtils.isNotBlank(callback)) {
-                wrapper = new JSONPObject(callback, wrapper);
-            }
+        Object result = new HashMap<String, Object>();
 
-            json = xmlService.convertToFilteredJson(wrapper, JsonProjectLookupFilter.class);
+        try {
+            if ((project != null) && !project.isTransient()) {
+                getLogger().trace("Trying to convert blank or null project to json: " + project);
+                // obfuscationService.obfuscate(project, user);
+                result = project;
+            } else {
+                result = Project.NULL;
+            }
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }
-        getLogger().trace("returning json:" + json);
-        return json;
+        return xmlService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
 }

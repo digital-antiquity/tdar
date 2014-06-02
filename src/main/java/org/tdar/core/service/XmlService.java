@@ -1,8 +1,10 @@
 package org.tdar.core.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -10,7 +12,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -52,14 +56,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.w3c.dom.Document;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.ser.BeanSerializer;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -188,6 +189,37 @@ public class XmlService {
         return writer.toString();
     }
 
+    @Transactional
+    public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
+        Object wrapper = wrapObjectIfNeeded(object, callback);
+        String result = null;
+        try {
+            result = convertToFilteredJson(wrapper, view);
+        } catch (IOException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            wrapper = wrapObjectIfNeeded(error, callback);
+            try {
+                result = convertToJson(wrapper);
+            } catch (IOException e1) {
+            }
+        } finally {
+            if (result == null) {
+                result = "{error:'unknown'}";
+            }
+        }
+
+        return result;
+
+    }
+    private Object wrapObjectIfNeeded(Object object, String callback) {
+        Object wrapper = object;
+        if (StringUtils.isNotBlank(callback)) {
+            wrapper = new JSONPObject(callback, object);
+        }
+        return wrapper;
+    }
+    
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();

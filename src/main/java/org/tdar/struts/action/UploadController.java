@@ -142,7 +142,8 @@ public class UploadController extends AuthenticationAware.Base {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket",ticket);
-            setJsonResult(result);
+            setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
+
             return SUCCESS;
         } else {
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -160,25 +161,11 @@ public class UploadController extends AuthenticationAware.Base {
     }) })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonResult(personalFilestoreTicket);
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback()).getBytes()));
 
         return SUCCESS;
     }
 
-    private void setJsonResult(Object obj) {
-        String resultJson = "{}";
-        try {
-            Object wrapper = obj;
-            if (StringUtils.isNotBlank(callback)) {
-                wrapper = new JSONPObject(callback, wrapper);
-            }
-
-            resultJson =  xmlService.convertToFilteredJson(wrapper, JsonLookupFilter.class);
-        } catch (Exception e) {
-            getLogger().error("cannot convert actionErrors to xml", e);
-        }
-        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
-    }
 
 
     //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
@@ -186,14 +173,8 @@ public class UploadController extends AuthenticationAware.Base {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
-        String resultJson = "{}";
-        try {
-            resultJson = xmlService.convertToJson(result);
-        } catch(IOException iox) {
-            getLogger().error("cannot convert actionErrors to xml", iox);
-        }
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
     }
 
     public List<File> getUploadFile() {

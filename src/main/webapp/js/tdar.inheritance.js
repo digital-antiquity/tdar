@@ -469,7 +469,7 @@ TDAR.inheritance = (function () {
 
 //return skeleton project
     function _getBlankProject() {
-        var skeleton = {
+    var skeleton = {
             "approvedCultureKeywords": [],
             "approvedSiteTypeKeywords": [],
             "cultureKeywords": [],
@@ -480,21 +480,21 @@ TDAR.inheritance = (function () {
             "id": null,
             "investigationTypes": [],
             "materialKeywords": [],
-            "otherKeywords": [],
+            "activeOtherKeywords": [],
             "resourceType": null,
-            "siteNameKeywords": [],
-            "siteTypeKeywords": [],
+            "activeSiteNameKeywords": [],
+            "activeSiteTypeKeywords": [],
             "submitter": null,
-            "temporalKeywords": [],
-            "coverageDates": [],
+            "activeTemporalKeywords": [],
+            "activeCoverageDates": [],
             "title": null,
-            "resourceNotes": [],
-            "sourceCollections": [],
-            "relatedComparativeCollections": [],
-            "resourceAnnotations": [],
+            "activeResourceNotes": [],
+            "activeSourceCollections": [],
+            "activeRelatedComparativeCollections": [],
+            "activeResourceAnnotations": [],
             "uncontrolledCultureKeywords": [],
             "uncontrolledSiteTypeKeywords": [],
-            "individualAndInstitutionalCredit": []
+            "activeIndividualAndInstitutionalCredit": []
         };
         return skeleton;
     }

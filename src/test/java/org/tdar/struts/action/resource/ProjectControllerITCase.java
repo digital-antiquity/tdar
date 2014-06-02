@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +51,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testProjectJSON() {
+    public void testProjectJSON() throws IOException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         controller.setId(3805L);
         controller.prepare();
@@ -60,7 +62,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         ResourceAnnotationKey key = new ResourceAnnotationKey();
         key.setKey("key23123");
         controller.getProject().getResourceAnnotations().add(new ResourceAnnotation(key, "21234"));
-        String projectAsJson = controller.getProjectAsJson();
+        controller.json();
+        String projectAsJson = IOUtils.toString(controller.getJsonInputStream());
         logger.info(projectAsJson);
         assertTrue(projectAsJson.contains("approved"));
         assertTrue(projectAsJson.contains("Domestic Structure or Architectural Complex"));

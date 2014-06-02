@@ -1,9 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -42,37 +39,6 @@ import org.tdar.search.query.SortOption;
 public class Project extends Resource implements Sortable {
 
     private static final long serialVersionUID = -3339534452963234622L;
-
-    // FIXME: remove redundant fields, perhaps implement jsonmodel in these other classes (keywords, coveragedate, etc..)
-    private static final String[] JSON_PROPERTIES = {
-            // keyword properties
-            "label", "approved", "id", "note", "key", "type", "value", "text",
-
-            // resource properties
-            "title", "description",
-            "cultureKeywords", "materialKeywords", "geographicKeywords", "siteNameKeywords",
-            "siteTypeKeywords", "temporalKeywords", "coverageDates",
-            "firstLatitudeLongitudeBox", "otherKeywords", "investigationTypes", "resourceType",
-
-            // derived properties
-            "approvedCultureKeywords", "approvedSiteTypeKeywords",
-            "uncontrolledCultureKeywords", "uncontrolledSiteTypeKeywords",
-
-            // CoverageDate properties
-            "dateType", "startDate", "endDate",
-
-            // latlongbox properties
-            "minObfuscatedLongitude", "maxObfuscatedLongitude",
-            "minObfuscatedLatitude", "maxObfuscatedLatitude",
-
-            "relatedComparativeCollections",
-            "sourceCollections",
-            "resourceNotes",
-            "resourceAnnotations",
-            "resourceAnnotationKey",
-            "individualAndInstitutionalCredit", "creator", "dateUpdated",
-            "role", "firstName", "lastName", "name", "institution", "email"
-    };
 
     public static final Project NULL = new Project() {
         private static final long serialVersionUID = -8849690416412685818L;

@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
@@ -400,7 +401,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
+            json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();

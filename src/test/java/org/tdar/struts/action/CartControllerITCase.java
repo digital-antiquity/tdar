@@ -170,7 +170,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
-        String msg = TdarActionSupport.WAIT;
+        String msg = TdarActionSupport.SUCCESS;
 
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
@@ -213,12 +213,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         invoice.setBillingPhone(1234567890L);
 
-        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.WAIT);
+        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
         controller.setBillingPhone("123-415-9999");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         String response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
-        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.WAIT);
+        assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
 
         String redirectUrl = controller.getRedirectUrl();
         String response2 = processMockResponse(invoice, redirectUrl, true);

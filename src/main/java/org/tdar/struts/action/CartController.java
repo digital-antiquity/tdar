@@ -163,15 +163,28 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Action(value = "api",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
+            params = {
+            "contentType", "application/json",
+            "inputName", "jsonInputStream"
+    })})
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
             addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
             addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
             addPricingOption(accountService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
+        Object wrapper = getPricingOptions();
+        if (StringUtils.isNotBlank(getCallback())) {
+            wrapper = new JSONPObject(getCallback(), getInvoice());
+        }
+
+        try {
+            setResultJson(new ByteArrayInputStream(xmlService.convertToJson(wrapper).getBytes()));
+        } catch (IOException e) {
+            getLogger().error("error: {}",e);
+        }
+
         return SUCCESS;
     }
 
@@ -247,17 +260,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     })})
     public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        Object wrapper = getInvoice();
-        if (StringUtils.isNotBlank(getCallback())) {
-            wrapper = new JSONPObject(getCallback(), getInvoice());
-        }
 
-        try {
-            setResultJson(new ByteArrayInputStream(xmlService.convertToFilteredJson(wrapper, JsonLookupFilter.class).getBytes()));
-        } catch (IOException e) {
-            getLogger().error("error: {}",e);
-        }
-
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getInvoice(), JsonLookupFilter.class, getCallback()).getBytes()));
 
         return SUCCESS;
     }

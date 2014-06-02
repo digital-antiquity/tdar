@@ -39,7 +39,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private List<List<String>> results = Collections.emptyList();
     private String callback;
     private int totalRecords;
-    private ResultMetadataWrapper resultsWrapper;
+    private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
     private InputStream jsonResult;
 
     @Autowired
@@ -49,10 +49,10 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private transient XmlService xmlService;
     
     @Action(value = "browse",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = SUCCESS, type = "stream",
             params = {
             "contentType", "application/json",
-            "inputName", "jsonInputStream"
+            "inputName", "jsonResult"
     })})
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
@@ -70,16 +70,8 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
             }
             setResultsWrapper(selectAllFromDataTable);
             setResults(getResultsWrapper().getResults());
-            Object wrapper = selectAllFromDataTable;
-            if (StringUtils.isNotBlank(getCallback())) {
-                wrapper = new JSONPObject(getCallback(), wrapper);
-            }
-            try {
-                setJsonResult(new ByteArrayInputStream(xmlService.convertToJson(getResultsWrapper()).getBytes()));
-            } catch (IOException e) {
-                getLogger().error("error: {}",e);
-            }
         }
+        setJsonResult(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResultsWrapper(), null, getCallback()).getBytes()));
         return SUCCESS;
     }
 
