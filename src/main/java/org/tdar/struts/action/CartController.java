@@ -166,7 +166,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
             params = {
             "contentType", "application/json",
-            "inputName", "jsonInputStream"
+            "inputName", "resultJson"
     })})
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
@@ -174,16 +174,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
             addPricingOption(accountService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
-        Object wrapper = getPricingOptions();
-        if (StringUtils.isNotBlank(getCallback())) {
-            wrapper = new JSONPObject(getCallback(), getInvoice());
-        }
-
-        try {
-            setResultJson(new ByteArrayInputStream(xmlService.convertToJson(wrapper).getBytes()));
-        } catch (IOException e) {
-            getLogger().error("error: {}",e);
-        }
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getPricingOptions(), null, getCallback()).getBytes()));
 
         return SUCCESS;
     }
