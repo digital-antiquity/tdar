@@ -1,5 +1,10 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -11,6 +16,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 
 /**
@@ -35,19 +41,31 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     @Autowired
     private transient ResourceService resourceService;
 
+    @Autowired
+    private transient XmlService xmlService;
+
     private Long resourceId;
     private Boolean success = Boolean.FALSE;
     private String callback;
+    private InputStream resultJson;
+
 
     @Action(
-            value = "bookmarkAjax",
-            results = {
-                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
-            }
-            )
-            public String bookmarkResourceAjaxAction() {
+            value = "bookmarkAjax", results = { @Result(name = "success", type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "resultJson"
+                    }) })
+    public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
+        processResultToJson();
         return SUCCESS;
+    }
+
+    private void processResultToJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", success);
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
     }
 
     @Action(
@@ -62,13 +80,14 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     }
 
     @Action(
-            value = "removeBookmarkAjax",
-            results = {
-                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
-            }
-            )
-            public String removeBookmarkAjaxAction() {
+            value = "removeBookmarkAjax", results = { @Result(name = "success", type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "resultJson"
+                    }) })
+    public String removeBookmarkAjaxAction() {
         success = removeBookmark();
+        processResultToJson();
         return SUCCESS;
     }
 
@@ -127,6 +146,14 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 
     public String getCallback() {
         return callback;
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 
 }

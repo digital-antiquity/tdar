@@ -49,8 +49,6 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.json.JsonLookupFilter;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")

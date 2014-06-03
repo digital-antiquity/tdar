@@ -1285,10 +1285,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
+        gotoPage("/admin/searchindex/buildIndex");
         gotoPage("/admin/searchindex/checkstatus");
-        logger.trace(getPageCode());
+        logger.debug(getPageCode());
         int count = 0;
-        while (!getPageCode().contains("\"percentDone\" : 100")) {
+        while (!getPageCode().contains("\"percentDone\":100")) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

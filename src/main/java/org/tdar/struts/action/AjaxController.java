@@ -1,15 +1,21 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
+import org.tdar.core.service.XmlService;
 
 /**
  * $Id$
@@ -28,12 +34,28 @@ public class AjaxController extends TdarActionSupport {
     private static final long serialVersionUID = -1202795099371942148L;
 
     private Long categoryVariableId;
-
-    @Action("column-metadata-subcategories")
+    private InputStream resultJson;
+    
+    @Autowired
+    private transient XmlService xmlService;
+    
+    @Action(value="column-metadata-subcategories", results = { @Result(name = "success", type = "stream",
+            params = {
+            "contentType", "application/json",
+            "inputName", "resultJson"
+    })})
     public String columnMetadataSubcategories() {
         if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
             getLogger().debug("Invalid category variable: " + categoryVariableId);
         }
+        List<CategoryVariable> subcategories = getSubcategories();
+        if (CollectionUtils.isEmpty(subcategories)) {
+            CategoryVariable e = new CategoryVariable();
+            e.setId(-1L);
+            e.setLabel("N/A");
+            subcategories.add(e);
+        }
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(subcategories, null, null).getBytes()));
         return SUCCESS;
     }
 
@@ -55,6 +77,14 @@ public class AjaxController extends TdarActionSupport {
 
     public void setCategoryVariableId(Long categoryVariableId) {
         this.categoryVariableId = categoryVariableId;
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 
 }

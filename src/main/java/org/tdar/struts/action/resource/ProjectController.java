@@ -26,7 +26,6 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;

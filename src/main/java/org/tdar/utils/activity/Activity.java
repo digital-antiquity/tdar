@@ -36,6 +36,8 @@ public class Activity implements Serializable {
 
     private boolean indexingActivity = false;
 
+    private Float percentDone;
+
     public Activity() {
         start();
     }
@@ -191,5 +193,17 @@ public class Activity implements Serializable {
 
     public boolean isIndexingActivity() {
         return indexingActivity;
+    }
+
+    public Float getPercentComplete() {
+        return getPercentDone();
+    }
+
+    public Float getPercentDone() {
+        return percentDone;
+    }
+
+    public void setPercentDone(Float percentDone) {
+        this.percentDone = percentDone;
     }
 }
