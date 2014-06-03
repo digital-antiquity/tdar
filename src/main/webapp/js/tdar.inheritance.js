@@ -472,7 +472,7 @@ TDAR.inheritance = (function () {
     var skeleton = {
             "approvedCultureKeywords": [],
             "approvedSiteTypeKeywords": [],
-            "cultureKeywords": [],
+            "activeCultureKeywords": [],
             "dateCreated": {},
             "description": null,
             "firstLatitudeLongitudeBox": null,

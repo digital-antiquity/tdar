@@ -75,7 +75,4 @@ public class ResultMetadataWrapper implements JsonModel {
         this.fields = fields;
     }
 
-    public String getsColumns() {
-        return getSColumns();
-    }
 }
