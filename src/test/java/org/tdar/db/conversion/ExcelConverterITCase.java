@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         int i = 1; // 0 is the tDAR ID Column which may not be returned
         for (DataTableColumn col : table.getSortedDataTableColumns()) {
             logger.debug("{} : {}", col.getSequenceNumber(), col);
-            assertEquals(new Integer(i), col.getSequenceNumber());
+            assertEquals(Integer.valueOf(i), col.getSequenceNumber());
             i++;
         }
     }
@@ -55,13 +56,6 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "Pundo_degenerate.xls"),
                 "Appendix 8 (2) - row #49 has more columns (6) than this sheet has column names (5)");
     }
-
-//    @Test
-//    @Rollback
-//    public void testExtraColumnAtStartThrowsException() throws IOException {
-//        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "no_first_column_name.xlsx"),
-//                "Sheet1 - row #1 has more columns (0) than this sheet has column names (1)");
-//    }
 
     private void importSpreadsheetAndConfirmExceptionIsThrown(File spreadsheet, String expectedErrorMessage) throws IOException {
         InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(spreadsheet, 529);
@@ -84,13 +78,16 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals(1, dataTables.size());
         DataTable dataTable = dataTables.iterator().next();
         assertNotNull(dataTable.getColumnByDisplayName("Period"));
-        // assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
-        // assertNotNull(dataTable.getColumnByDisplayName("1.00"));
-        // assertNotNull(dataTable.getColumnByDisplayName("ABC"));
-        // assertNotNull(dataTable.getColumnByName("period"));
-        // assertNotNull(dataTable.getColumnByName("sumofno"));
-        // assertNotNull(dataTable.getColumnByName("c1_00"));
-        // assertNotNull(dataTable.getColumnByName("abc"));
+        assertNotNull(dataTable.getColumnByName("period"));
+        assertNotNull(dataTable.getColumnByDisplayName("Stratigraphy"));
+        assertNotNull(dataTable.getColumnByDisplayName("Sites::N Coordinates"));
+        assertNotNull(dataTable.getColumnByDisplayName("Sites::E Coordinates"));
+        assertNotNull(dataTable.getColumnByDisplayName("Layers::Calibrated dates"));
+        assertNotNull(dataTable.getColumnByDisplayName("Dates::Uncalibrated date"));
+        assertNotNull(dataTable.getColumnByDisplayName("Dates::Margin of error"));
+        assertNotNull(dataTable.getColumnByDisplayName("Thesis?"));
+        assertNotNull(dataTable.getColumnByDisplayName("Dates::Cal 95% Min"));
+        
     }
 
     @Test
@@ -149,7 +146,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
-        assertTrue("table created", table.getName().indexOf("sheet1") == -1);
+        assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_ints") > 0);
 
         // confirm that all the columns in the new table are ints
@@ -159,8 +156,10 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
                     public Object extractData(ResultSet rs)
                             throws SQLException, DataAccessException {
                         ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
                         assertEquals(Types.BIGINT, meta.getColumnType(2));
                         assertEquals(Types.BIGINT, meta.getColumnType(3));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(4));
                         assertEquals(Types.BIGINT, meta.getColumnType(5));
                         return null;
                     }
@@ -177,7 +176,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
-        assertTrue("table created", table.getName().indexOf("sheet1") == -1);
+        assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_dates") > 0);
 
         // confirm that all the columns in the new table are dates
@@ -195,9 +194,14 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
                         rs.next();
                         final Date date = rs.getDate(2);
                         // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
-                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == (2003 - 1900));
-                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1);
-                        assertTrue("Day should be 1: " + date.getDate(), date.getDate() == 1);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        int year = calendar.get(Calendar.YEAR);
+                        int month = calendar.get(Calendar.MONTH);
+                        int day = calendar.get(Calendar.DAY_OF_MONTH);
+                        assertEquals("Year should be 2003: " + year, 2003, year);
+                        assertEquals("Month should be 1: " + month, 1, month);
+                        assertEquals("Day should be 1: " + day, 1, day);
                         return null;
                     }
                 }, false);
