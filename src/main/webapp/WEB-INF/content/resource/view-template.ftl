@@ -532,7 +532,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
                 var options = {
-                    "sAjaxDataProp": "results.results",
+                    "sAjaxDataProp": "results",
                     "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
                     "bProcessing": true,
                     "bServerSide": true,

@@ -16,9 +16,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.junit.Test;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.util.ReflectionUtils;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -96,7 +94,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
         }
         long actualId = jsonObj.getLong("id");
         assertEquals(PARENT_PROJECT_ID, actualId);
-        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "cultureKeywords");
+        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "activeCultureKeywords");
 
     }
 

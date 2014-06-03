@@ -1,12 +1,10 @@
 package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -22,8 +20,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
-
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 @ParentPackage("secured")
 @Component
