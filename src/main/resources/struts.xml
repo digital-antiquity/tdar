@@ -6,6 +6,7 @@
     <!-- performance enhancements -->
     <!-- freemarker cache -->
     <constant name="struts.freemarker.mru.max.strong.size" value="250"/>
+    <constant name="struts.convention.default.parent.package" value="default"/>
     <!-- 
     	set this in struts-local-settings.xml 
 	    <constant name="struts.freemarker.templatesCache.updateDelay" value="5000000"/>
