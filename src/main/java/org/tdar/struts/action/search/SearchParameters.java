@@ -318,7 +318,8 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
         if (CollectionUtils.isNotEmpty(this.getSiteNames())) {
             appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
-            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, this.getSiteNames()));
+            queryPartGroup.setOperator(Operator.OR);
+            queryPartGroup.append((new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, this.getSiteNames())).setPhraseFormatters(PhraseFormatter.ESCAPED));
 
         }
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
