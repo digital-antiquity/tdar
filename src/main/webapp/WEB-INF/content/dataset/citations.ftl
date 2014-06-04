@@ -10,6 +10,7 @@
     Source and related citations for <b>${resource.title}</b>.
 </p>
     <@s.form id='addCitationForm' method='post' action='addCitation' >
+    <@s.token name='struts.csrf.token' />
     <fieldset>
         <legend><b>Source Citations</b></legend>
         <#if resource.sourceCitations?? && ! resource.sourceCitations.isEmpty()>

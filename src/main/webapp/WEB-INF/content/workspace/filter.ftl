@@ -66,6 +66,7 @@
 
     <@s.form method='post' action='display-filtered-results' id="filterForm">
 
+        <@s.token name='struts.csrf.token' />
         <#assign totalCheckboxCount=0>
         <#list integrationColumns as integrationColumn>
             <#if integrationColumn.displayColumn >

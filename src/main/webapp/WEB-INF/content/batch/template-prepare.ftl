@@ -14,9 +14,8 @@
 <div class="row">
     <div class="span9">
     <@s.form name='BulkMetadataForm' id='BulkMetadataForm'  cssClass="span8 form-horizontal well"  method='post' enctype='multipart/form-data' action='validate-template'>
+        <@s.token name='struts.csrf.token' />
         <h2>Basic</h2>
-
-
         <@batchCommon.printTemplate />
         <@s.hidden name="projectId" value="${projectId_}" />
         <@edit.submit fileReminder=false span="span8" label="Validate Template" />

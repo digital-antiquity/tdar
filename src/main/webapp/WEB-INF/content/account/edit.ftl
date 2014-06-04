@@ -13,6 +13,7 @@
 <#assign action_ = nav.getFormUrl("/account/register") >
 
 <@s.form id="accountForm" method="post" action="${action_}" cssClass="">
+<@s.token name='struts.csrf.token' />
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
     <h4>Please correct the following issues with this submission</h4>

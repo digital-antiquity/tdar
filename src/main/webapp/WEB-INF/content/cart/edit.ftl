@@ -30,8 +30,9 @@
     </#macro>
 <body>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='save'>
+        <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
-    <h1>What would you like to put into tDAR?</h1>
+        <h1>What would you like to put into tDAR?</h1>
 
     <p>In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
         not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper

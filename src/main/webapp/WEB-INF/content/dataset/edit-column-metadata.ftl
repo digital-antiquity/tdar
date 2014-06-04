@@ -58,6 +58,7 @@
 
     <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
         <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' value='${resource.id?c}'/>
         <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
         <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />

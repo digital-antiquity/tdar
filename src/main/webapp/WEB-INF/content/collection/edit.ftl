@@ -43,7 +43,8 @@
 
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-            <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+        <@common.jsErrorLog />
         <h2>Basic Information</h2>
 
         <div class="" id="basicInformationSection" data-tiplabel="Basic Information"
