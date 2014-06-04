@@ -9,6 +9,7 @@ import org.hibernate.event.spi.PostUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
@@ -30,6 +31,13 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
 	}
 
 	private void logToXml(Object obj) {
+	    if (obj == null) {
+	        return;
+	    }
+	    if (obj instanceof Indexable && !((Indexable) obj).isReadyToIndex()) {
+	        return;
+	    }
+	    
 		if (obj instanceof Persistable) {
 			xmlLogger.logRecordXmlToFilestore((Persistable)obj);
 		}
