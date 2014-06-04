@@ -1029,6 +1029,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             webRequest.setEncodingType(FormEncodingType.MULTIPART);
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
+            logger.debug("errors: {} ; code: {} ; content: {}", assertNoErrors, code, page.getWebResponse().getContentAsString());
             Assert.assertTrue(assertNoErrors && (code == HttpStatus.OK.value()));
             if (file != null) {
                 assertFileSizes(page, Arrays.asList(new File[] { file }));

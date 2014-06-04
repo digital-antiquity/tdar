@@ -71,7 +71,7 @@ public class UploadController extends AuthenticationAware.Base {
 
     @Action(value = "upload",
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
-                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" , "statusCode","400"})
             })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
@@ -141,7 +141,6 @@ public class UploadController extends AuthenticationAware.Base {
 
             return SUCCESS;
         } else {
-            getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
             buildJsonError();
             return ERROR;
         }

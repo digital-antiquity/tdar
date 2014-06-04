@@ -53,8 +53,16 @@ public class JsonDocumentResult implements Result {
         }
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
-        resp.setStatus(statusCode );
+        resp.setStatus(getStatusCode() );
         resp.setContentType(CONTENT_TYPE);
         IOUtils.copy(inputStream, resp.getOutputStream());
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 }
