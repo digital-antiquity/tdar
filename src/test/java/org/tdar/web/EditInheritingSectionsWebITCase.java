@@ -35,7 +35,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
 
     public EditInheritingSectionsWebITCase() {
         for (Field f : InformationResource.class.getDeclaredFields()) {
-            if (f.isAnnotationPresent(JsonView.class)) {
+            if (f.getName().contains("inheriting")) {
                 String inherit = f.getName();
                 if (inherit.equals("inheritingCollectionInformation")) {
                     // not on project page
