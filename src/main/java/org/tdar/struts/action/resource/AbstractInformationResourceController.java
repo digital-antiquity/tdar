@@ -401,7 +401,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
-            json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();

@@ -198,6 +198,7 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = BulkImportField.YEAR_LABEL, required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @JsonView(JsonLookupFilter.class)
     private Integer date = -1;
 
     @Column(name = "date_created_normalized")
@@ -230,36 +231,36 @@ public abstract class InformationResource extends Resource {
 
     // downward inheritance sections
     @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    @JsonView(JsonLookupFilter.class)
+
     private boolean inheritingInvestigationInformation = false;
     @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    @JsonView(JsonLookupFilter.class)
+
     private boolean inheritingSiteInformation = false;
     @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    @JsonView(JsonLookupFilter.class)
+
     private boolean inheritingMaterialInformation = false;
     @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    @JsonView(JsonLookupFilter.class)
+
     private boolean inheritingOtherInformation = false;
     @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-    @JsonView(JsonLookupFilter.class)
+
     private boolean inheritingCulturalInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingNoteInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = "inheriting_identifier_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIdentifierInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCollectionInformation = false;
-    @JsonView(JsonLookupFilter.class)
+
     @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIndividualAndInstitutionalCredit = false;
 

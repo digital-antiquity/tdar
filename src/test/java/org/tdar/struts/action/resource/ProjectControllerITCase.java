@@ -65,7 +65,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         controller.json();
         String projectAsJson = IOUtils.toString(controller.getJsonInputStream());
         logger.info(projectAsJson);
-        assertTrue(projectAsJson.contains("approved"));
+        assertTrue(projectAsJson.contains("activeCultureKeywords"));
         assertTrue(projectAsJson.contains("Domestic Structure or Architectural Complex"));
         assertTrue(projectAsJson.contains("New Philadelphia"));
         assertTrue(projectAsJson.contains("redacted"));

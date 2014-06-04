@@ -539,13 +539,11 @@ public class Resource implements Persistable, JsonModel,
         return getResourceCreators();
     }
 
-    @Transient
     @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getUncontrolledCultureKeywords() {
         return getUncontrolledSuggestedKeyword(getCultureKeywords());
     }
 
-    @Transient
     @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getApprovedCultureKeywords() {
         return getApprovedSuggestedKeyword(getCultureKeywords());
@@ -570,13 +568,11 @@ public class Resource implements Persistable, JsonModel,
         return getSiteTypeKeywords();
     }
 
-    @Transient
     @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getUncontrolledSiteTypeKeywords() {
         return getUncontrolledSuggestedKeyword(getSiteTypeKeywords());
     }
 
-    @Transient
     @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         return getApprovedSuggestedKeyword(getSiteTypeKeywords());
@@ -933,7 +929,7 @@ public class Resource implements Persistable, JsonModel,
         return resourceType.getSortName();
     }
 
-    @Transient
+//        @Transient
     @Deprecated()
     @JsonView(JsonLookupFilter.class)
     // removing for localization
@@ -1043,7 +1039,6 @@ public class Resource implements Persistable, JsonModel,
      * @return
      */
     @Override
-    @Transient
     @JsonView(JsonLookupFilter.class)
     public String getUrlNamespace() {
         return getResourceType().getUrlNamespace();

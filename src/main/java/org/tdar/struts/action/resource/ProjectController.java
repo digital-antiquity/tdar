@@ -65,7 +65,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private transient SearchService searchService;
 
     private String callback;
-    private String json;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;

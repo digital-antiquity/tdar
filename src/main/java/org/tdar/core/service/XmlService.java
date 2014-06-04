@@ -164,8 +164,7 @@ public class XmlService {
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         
-        mapper.registerModule(new JaxbAnnotationModule());
-        mapper.registerModule(new Hibernate4Module());
+        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
 
         ObjectWriter objectWriter = mapper.writer();
         if (view != null) {

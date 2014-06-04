@@ -493,17 +493,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        Object wrapper = result;
-        if (StringUtils.isNotBlank(getCallback())) {
-            wrapper = new JSONPObject(getCallback(), result);
-        }
-        String result_ = "{}";
-        try {
-            result_ = xmlService.convertToFilteredJson(wrapper, filter);
-        } catch (Exception e) {
-            result_ = "{'error'}";
-        }
-        jsonInputStream = new ByteArrayInputStream(result_.getBytes());
+        getLogger().debug("{}", filter);
+        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {
