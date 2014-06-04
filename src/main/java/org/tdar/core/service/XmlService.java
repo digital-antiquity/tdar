@@ -87,8 +87,6 @@ public class XmlService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Class<?>[] jaxbClasses;
-
     @Autowired
     private UrlService urlService;
 
@@ -188,6 +186,10 @@ public class XmlService {
         return writer.toString();
     }
 
+    /*
+     * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
+     * Most commonly used to produce a stream.
+     */
     @Transactional
     public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
         Object wrapper = wrapObjectIfNeeded(object, callback);
