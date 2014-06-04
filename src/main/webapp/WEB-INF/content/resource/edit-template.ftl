@@ -61,6 +61,8 @@
             dynamicAttributes={"data-submitterid":"${submitterId?c}"}
             >
         <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+
 
 
     <#-- custom section ahead of the basic information -->

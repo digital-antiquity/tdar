@@ -62,6 +62,7 @@
 
 <body>
     <@s.form name='selectDTColForm' method='post' action='filter' id="selectDTColForm">
+        <@s.token name='struts.csrf.token' />
 
     <h3>Data Integration</h3>
 

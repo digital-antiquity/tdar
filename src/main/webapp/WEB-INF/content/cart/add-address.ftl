@@ -16,6 +16,7 @@
     <@invoicecommon.printInvoice />
 
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save-billing-address'>
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name="id" value="${invoice.id?c}" />
         <#assign addressId = -1 />
         <#if invoice.address?has_content && invoice.address.id?has_content>

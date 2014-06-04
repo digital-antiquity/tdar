@@ -19,6 +19,7 @@
 <body>
 
     <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
+        <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
     <div class="glide">
         <h1>Institution Information for: ${institution.name}</h1>

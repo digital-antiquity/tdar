@@ -13,11 +13,11 @@
 
 <div>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
+        <@s.token name='struts.csrf.token' />
 	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
-    <@s.hidden name="invoice.id" />
-
-<@invoicecommon.paymentMethod />
-</@s.form>
+        <@s.hidden name="invoice.id" />
+        <@invoicecommon.paymentMethod />
+    </@s.form>
 
 </div>
 

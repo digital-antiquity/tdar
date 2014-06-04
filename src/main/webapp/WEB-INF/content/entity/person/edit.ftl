@@ -23,6 +23,7 @@
 <h1>${pageTitle}</h1>
 
     <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
+        <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
     <div class="row">
         <h2>Personal Details</h2>

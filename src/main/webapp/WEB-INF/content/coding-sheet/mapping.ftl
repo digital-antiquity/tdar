@@ -54,6 +54,7 @@
 
 <div id='display' class="">
     <@s.form method='post' id="mapontologyform" action='save-mapping'>
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' value='${resource.id?c}'/>
         <#assign isLast = false/>
         <#assign count = 0/>

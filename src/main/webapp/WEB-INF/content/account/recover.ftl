@@ -20,6 +20,7 @@ vim:sts=2:sw=2:filetype=jsp
 Enter the email address you used to register with ${siteAcronym} and we will send an email containing instructions on how
 to reset your password. If you still encounter problems, <a href="<@s.url value='/contact'/>">contact us</a>.
 <@s.form id="recoverForm" method="post" action="reminder">
+  <@s.token name='struts.csrf.token' />
     <@s.textfield label='Email' size='35' id='emailAddress' label="Email" name="reminderEmail" cssClass="required email"/>
     <@s.submit value="Send password reset instructions"/>
 </@s.form>

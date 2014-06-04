@@ -1,6 +1,7 @@
 <h1>User Agreements</h1>
 
 <@s.form namespace="/" action="agreement-response" theme="simple">
+    <@s.token name='struts.csrf.token' />
     <#if tosAcceptanceRequired>
     <label class="checkbox">
         <input type="checkbox" name="acceptedAuthNotices" id="cbta" value="TOS_AGREEMENT">
