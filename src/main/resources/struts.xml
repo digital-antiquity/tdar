@@ -29,6 +29,7 @@
     <package name="default" extends="struts-default" namespace="/">
         <result-types>
             <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
+            <result-type name="jsonresult"   class="org.tdar.struts.result.JsonDocumentResult"/>
             <result-type name="freemarkerhttp" class="org.tdar.struts.result.FreemarkerHttpHeaderResult"/>
         </result-types>
         <interceptors>

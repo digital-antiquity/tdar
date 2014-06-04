@@ -104,16 +104,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
     // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
     // serialize
     @Action(value = JSON,
-            results = { @Result(
-                    name = SUCCESS,
-                    location = "json.ftl", type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonInputStream"
-                    }) }
-            )
-            @SkipValidation
-            public String json() {
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+    @SkipValidation
+    public String json() {
         setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;
     }

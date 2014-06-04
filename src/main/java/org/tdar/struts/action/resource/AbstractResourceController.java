@@ -874,7 +874,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @SkipValidation
     @Action(value = MODS, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
+            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "modsDocument", "formatOutput", "true" })
     })
     public String viewMods() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -892,7 +892,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @SkipValidation
     @Action(value = DC, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
+            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "dcDocument", "formatOutput", "true" })
     })
     public String viewDc() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);

@@ -161,11 +161,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Action(value = "api",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "resultJson"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
             addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
@@ -241,12 +238,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = "polling-check",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = SUCCESS, type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "resultJson"
-    })})
+    @Action(value = "polling-check", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
@@ -390,7 +382,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             if (paymentTransactionProcessor.validateResponse(response)) {
                 getGenericService().markWritable();
                 Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
-                
+
                 BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
                 billingResponse = getGenericService().markWritable(billingResponse);
                 getGenericService().saveOrUpdate(billingResponse);

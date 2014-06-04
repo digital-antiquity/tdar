@@ -69,18 +69,10 @@ public class UploadController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonInputStream"
-                    }),
-            @Result(name = ERROR, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonInputStream"
-                    })
-    })
+    @Action(value = "upload",
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
+                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
         getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
@@ -134,7 +126,7 @@ public class UploadController extends AuthenticationAware.Base {
                 files.add(file);
                 file.put("name", uploadFileFileName.get(i));
                 if (CollectionUtils.isNotEmpty(hashCodes)) {
-                file.put("hashCode", hashCodes.get(i));
+                    file.put("hashCode", hashCodes.get(i));
                 }
                 if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
                     file.put("size", getUploadFileSize().get(i));
@@ -155,13 +147,8 @@ public class UploadController extends AuthenticationAware.Base {
         }
     }
 
-    // FIXME: generate a JsonResult rather than put these in an ftl
-    // @PostOnly
-    @Action(value = "grab-ticket", results = { @Result(name = "success", type = "stream",
-            params = {
-                    "contentType", "application/json",
-                    "inputName", "jsonInputStream"
-            }) })
+    @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())

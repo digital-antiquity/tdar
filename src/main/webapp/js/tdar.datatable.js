@@ -74,6 +74,12 @@ TDAR.datatable = function () {
                             iTotalDisplayRecords: _data.totalRecords,
                             iTotalRecords: _data.totalRecords
                         };
+                        if (typeof _data.totalRecords === "undefined") {
+                            recordInfo = {
+                                    iTotalDisplayRecords: _data.status.totalRecords,
+                                    iTotalRecords: _data.status.totalRecords
+                                };
+                        }
                         $.extend(_data, recordInfo);
                         fnCallback(_data);
                     },

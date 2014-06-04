@@ -68,33 +68,27 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
     @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupInstitution()  {
         setMode("institutionLookup");
         return findInstitution(institution);
     }
 
     @Action(value = "resource",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         this.setLookupSource(LookupSource.RESOURCE);
@@ -135,11 +129,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupKeyword() {
         // only return results if query length has enough characters
         if (!checkMinString(this.term) && !checkMinString(keywordType)) {
@@ -171,11 +163,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "annotationkey",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);
@@ -200,11 +190,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonInputStream"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);

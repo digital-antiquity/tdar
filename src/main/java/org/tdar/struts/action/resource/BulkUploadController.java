@@ -210,11 +210,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
     }
 
     @SkipValidation
-    @Action(value = "checkstatus", results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "resultJson"
-    }) })
+    @Action(value = "checkstatus", 
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
         if (reciever != null) {

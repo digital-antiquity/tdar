@@ -51,11 +51,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 
 
     @Action(
-            value = "bookmarkAjax", results = { @Result(name = "success", type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "resultJson"
-                    }) })
+            value = "bookmarkAjax", results = {  @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson"}) })
     public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
         processResultToJson();
@@ -80,11 +76,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     }
 
     @Action(
-            value = "removeBookmarkAjax", results = { @Result(name = "success", type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "resultJson"
-                    }) })
+            value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson"}) })
     public String removeBookmarkAjaxAction() {
         success = removeBookmark();
         processResultToJson();

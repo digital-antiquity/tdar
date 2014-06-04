@@ -45,11 +45,9 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private transient XmlService xmlService;
     
     @Action(value = "browse",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { @Result(name = SUCCESS, type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "jsonResult"
-    })})
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results={@Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonResult"}) })
+
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;

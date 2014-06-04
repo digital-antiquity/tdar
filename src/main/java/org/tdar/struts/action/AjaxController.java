@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -27,6 +28,7 @@ import org.tdar.core.service.XmlService;
  * @version $Rev$
  */
 @Component
+@ParentPackage("secured")
 @Scope("prototype")
 @Namespace("/resource/ajax")
 public class AjaxController extends TdarActionSupport {
@@ -39,11 +41,8 @@ public class AjaxController extends TdarActionSupport {
     @Autowired
     private transient XmlService xmlService;
     
-    @Action(value="column-metadata-subcategories", results = { @Result(name = "success", type = "stream",
-            params = {
-            "contentType", "application/json",
-            "inputName", "resultJson"
-    })})
+    @Action(value="column-metadata-subcategories", results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params={"stream","resultJson"})})
     public String columnMetadataSubcategories() {
         if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
             getLogger().debug("Invalid category variable: " + categoryVariableId);

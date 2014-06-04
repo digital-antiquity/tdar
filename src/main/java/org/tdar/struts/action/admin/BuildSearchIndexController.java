@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -35,7 +36,6 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
-
 
 @Component
 @Scope("prototype")
@@ -68,15 +68,12 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Autowired
     private transient EmailService emailService;
 
-    private InputStream jsonForStream;
+    private InputStream jsonInputStream;
 
     @IgnoreActivity
     @Action(value = "buildIndex", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonForStream"
-                    }) })
+            @Result(name = SUCCESS, type = JSONRESULT)
+    })
     public String startIndex() {
         if (!isReindexing()) {
             Date date = new Date();
@@ -90,7 +87,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
                 person = getGenericService().find(Person.class, getUserId());
             }
 
-            
             List<Class<? extends Indexable>> clss = searchIndexService.getDefaultClassesToIndex();
             if (CollectionUtils.isNotEmpty(toReindex)) {
                 clss = toReindex;
@@ -116,17 +112,12 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonForStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 
     @IgnoreActivity
-    @Action(value = "checkstatus", results = {
-            @Result(name = SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonForStream"
-                    }) })
+    @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = JSONRESULT) })
     public String checkStatusAsync() {
         Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         if (activity != null) {
@@ -137,7 +128,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonForStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 
@@ -158,7 +149,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @Override
     public void setStatus(String status) {
-     //   getLogger().debug("indexing status: {}", status);
+        // getLogger().debug("indexing status: {}", status);
         this.phase = "Current Status: " + status;
     }
 
@@ -257,12 +248,12 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         this.userId = userId;
     }
 
-    public InputStream getJsonForStream() {
-        return jsonForStream;
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
     }
 
-    public void setJsonForStream(InputStream jsonForStream) {
-        this.jsonForStream = jsonForStream;
+    public void setJsonInputStream(InputStream jsonForStream) {
+        this.jsonInputStream = jsonForStream;
     }
 
     public boolean isAsyncSave() {

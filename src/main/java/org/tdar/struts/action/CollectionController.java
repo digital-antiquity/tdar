@@ -244,15 +244,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
-    @SkipValidation
-    @Action(value = "listChildren", results = { @Result(name = SUCCESS, location = "list-children.ftl", params = { "contentType", "application/json" },
-            type = "freemarker") })
-    public String listChildren() {
-        setCollections(resourceCollectionService.findDirectChildCollections(getId(), Boolean.TRUE, CollectionType.SHARED));
-        // FIXME: make this "json"
-        return SUCCESS;
-    }
-
     @Override
     @SkipValidation
     @Action(value = EDIT, results = {
