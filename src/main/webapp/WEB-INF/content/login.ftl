@@ -51,6 +51,7 @@ vim:sts=2:sw=2:filetype=jsp
 <#assign formAction = nav.getFormUrl("/login/process") >
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal}">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
+    <@s.token name='struts.csrf.token' />
     <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
 

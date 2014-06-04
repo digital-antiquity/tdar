@@ -186,6 +186,7 @@
                     </tr>
                 </#list>
             </table>
+            </#list>
                 <#if dataset.relationships?size != 0>
                 <h4>Data Table Relationships:</h4>
                 <table class="tableFormat table table-striped table-bordered">
@@ -212,7 +213,6 @@
                 </table>
                 </#if>
 
-            </#list>
         </#if>
     </#if>
 
