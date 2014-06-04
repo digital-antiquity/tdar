@@ -21,7 +21,7 @@
 <!--     <constant name="struts.freemarker.manager.classname" value="org.tdar.struts.TdarFreemarkerManager"/> -->
     <constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
     <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true"/>
-    <constant name="struts.objectFactory.spring.autoWire" value="type"/>
+    <constant name="struts.objectFactory.spring.autoWire" value="name"/>
     
     <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
@@ -48,7 +48,7 @@
                 <interceptor-ref name="store">
                     <param name="operationMode">AUTOMATIC</param>
                 </interceptor-ref>
-                 <interceptor-ref name="i18n"/> 
+                <interceptor-ref name="i18n"/> 
                 <interceptor-ref name="checkbox"/>
                 <interceptor-ref name="multiselect"/>
                 <interceptor-ref name="params">
@@ -83,6 +83,10 @@
             <interceptor-stack name="unauthenticatedStack">
                 <interceptor-ref name="tdarDefaultStack"/>
             </interceptor-stack>
+            <interceptor-stack name='csrfDefaultStack'>
+                <interceptor-ref name='tokenSession'/>
+                <interceptor-ref name='tdarDefaultStack'/>
+            </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="unauthenticatedStack"/>
         <global-results>
@@ -116,10 +120,10 @@
             		thus a redirect clears the stack (values match IndexAction)-->
 			<result name="unauthorized" type="redirect">
 				<param name="location">/unauthorized</param>
-			</result>
-			<result name="invalid.token" type="redirect">
-				<param name="location">/invalid-token</param>
-			</result>
+            </result>
+            <result name="invalid.token" type="redirect">
+                <param name="location">/invalid-token</param>
+            </result>
             <result name="user_agreement" type="redirect">/show-notices</result>
             <result name="login" type="redirect">/login</result>
         </global-results>
@@ -137,6 +141,10 @@
                 <interceptor-ref name="tdarDefaultStack">
                     <param name="validation.validateAnnotatedMethodOnly">true</param>
                 </interceptor-ref>
+            </interceptor-stack>
+            <interceptor-stack name='csrfAuthenticatedStack'>
+                <interceptor-ref name='tokenSession' />
+                <interceptor-ref name='editAuthenticatedStack' />
             </interceptor-stack>
         </interceptors>
         <default-interceptor-ref name="editAuthenticatedStack"/>

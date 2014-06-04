@@ -90,7 +90,7 @@ public interface DatasetConverter {
         protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
         private File indexedContentsFile;
         private Set<String> dataTableNames = new HashSet<String>();
-        private Map<String,List<String>> dataTableColumnNames = new HashMap<>();
+        private Map<String, List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
 
@@ -202,11 +202,10 @@ public interface DatasetConverter {
                 throw new TdarRecoverableRuntimeException("datasetService.io_exception", e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
-                // message
-                // with a friendly-yet-generic error message.
+                // message with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
+                logger.error("unable to process file:  " + getInformationResourceFileVersion().getFilename(), e);
                 throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion()
                         .getFilename()));
             }
@@ -242,9 +241,8 @@ public interface DatasetConverter {
         }
 
         protected void alterTableColumnTypes(DataTable dataTable, Map<DataTableColumn, List<ColumnAnalyzer>> statistics) {
-            logger.debug("altering table column types for " + dataTable.getDisplayName());
-            for (Map.Entry<DataTableColumn, List<ColumnAnalyzer>> entry : statistics
-                    .entrySet()) {
+            logger.debug("altering table column types for {}", dataTable.getDisplayName());
+            for (Map.Entry<DataTableColumn, List<ColumnAnalyzer>> entry : statistics.entrySet()) {
                 DataTableColumn column = entry.getKey();
                 // the first item in the list is our "most desired" conversion choice
                 ColumnAnalyzer best = entry.getValue().get(0);

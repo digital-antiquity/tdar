@@ -192,13 +192,13 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             int[] numUpdates = statement.executeBatch();
             for (int i = 0; i < numUpdates.length; i++) {
                 if (numUpdates[i] == -2) {
-                    logger.error("Execution " + i + ": unknown number of rows updated");
+                    logger.error("Execution {} : unknown number of rows updated", i);
                     success = "some";
                 } else {
-                    logger.trace("Execution " + i + " successful: " + numUpdates[i] + " rows updated");
+                    logger.trace("Execution {} successful: {} rows updated", i, numUpdates[i]);
                 }
             }
-            logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
+            logger.debug("{} inserts/updates committed, {} successful", numUpdates.length, success);
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());

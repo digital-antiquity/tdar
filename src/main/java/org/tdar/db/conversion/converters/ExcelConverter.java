@@ -4,17 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -42,10 +40,13 @@ import org.tdar.utils.MessageHelper;
  */
 public class ExcelConverter extends DatasetConverter.Base {
 
+    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "excelConverter.error_corrupt_file_try_resaving";
+    private static final String ERROR_POI_MISSING_ROWS = "excelConverter.poi_error_missing_rows";
+    public static final String ERROR_WRONG_EXCEL_FORMAT = "excelConverter.error_wrong_excel_format";
     private static final String DEFAULT_SHEET_NAME = "Sheet1";
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
-    private DataFormatter formatter = new HSSFDataFormatter();
+//    private DataFormatter formatter = new HSSFDataFormatter();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -56,10 +57,11 @@ public class ExcelConverter extends DatasetConverter.Base {
     public ExcelConverter() {
     }
 
-    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... version) {
+    // FIXME: what is the point of these constructors? Just for tests?
+    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
         setTargetDatabase(targetDatabase);
-        this.setInformationResourceFileVersion(version[0]);
-        this.setFilename(version[0].getFilename());
+        setInformationResourceFileVersion(versions[0]);
+        setFilename(versions[0].getFilename());
     }
 
     @Override
@@ -73,7 +75,6 @@ public class ExcelConverter extends DatasetConverter.Base {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
         }
-
         try {
             // XSSFReaderHelper helper = new XSSFReaderHelper();
             // helper.openFile(excelFile);
@@ -88,12 +89,11 @@ public class ExcelConverter extends DatasetConverter.Base {
             throw new TdarRecoverableRuntimeException(errorMessage, exception);
         } catch (IllegalArgumentException exception) {
             logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.", exception);
-            throw new TdarRecoverableRuntimeException(
-                    MessageHelper.getMessage("excelConverter.error_wrong_excel_format"), exception);
+            throw new TdarRecoverableRuntimeException(ERROR_WRONG_EXCEL_FORMAT, exception);
         } catch (RuntimeException rex) {
             // if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
-            if (rex.getMessage().equals(MessageHelper.getMessage("excelConverter.poi_error_missing_rows"))) {
-                throw new TdarRecoverableRuntimeException("excelConverter.error_corrupt_file_try_resaving");
+            if (rex.getMessage().equals(MessageHelper.getMessage(ERROR_POI_MISSING_ROWS))) {
+                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_FILE_TRY_RESAVING);
             } else {
                 throw rex;
             }
@@ -132,27 +132,11 @@ public class ExcelConverter extends DatasetConverter.Base {
             }
         }
         if (exceptions.size() > 0) {
-            throw exceptions.get(0);
-        }
-    }
-
-    private void generateDataTableColumns(Row columnNamesRow, DataTable dataTable) {
-        // FIXME: this is this column only, it is NOT the max # of columns for the workbook
-        // right now, if this differs, we throw an exception
-        int endColumnIndex = columnNamesRow.getLastCellNum();
-        // create the table and insert the tuples
-        for (int i = 0; i < endColumnIndex; i++) {
-            String columnName = "Column #" + (i + 1);
-            try {
-                FormulaEvaluator evaluator = columnNamesRow.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                String cellValue = formatter.formatCellValue(columnNamesRow.getCell(i), evaluator);
-                if (StringUtils.isNotBlank(cellValue)) {
-                    columnName = cellValue;
-                }
-            } catch (NullPointerException npe) {
-                logger.trace("assigning arbitrary column name to blank column");
+            for (Exception e: exceptions) {
+                logger.warn("Exception while processing excel workbook sheets", e);
             }
-            createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable);
+            // FIXME: why reraise?
+            throw exceptions.get(0);
         }
     }
 
@@ -171,27 +155,32 @@ public class ExcelConverter extends DatasetConverter.Base {
          * more specific datatype.
          */
 
-        DataTable dataTable = createDataTable(sheetName);
-        logger.info("processing Worksheet:" + sheetName);
+        logger.info("processing Worksheet: {}", sheetName);
         // extract schema from the current sheet.
         // assume first row contains column names
 
-        SheetEvaluator sheetEvalator = new SheetEvaluator();
-        sheetEvalator.evaluateBeginning(currentSheet, 25);
-
-        Row columnNamesRow = currentSheet.getRow(sheetEvalator.getFirstNonHeaderRow());
-        if (columnNamesRow == null) {
-            throw new TdarRecoverableRuntimeException("excelConverter.could_not_find_header_row");
+        SheetEvaluator sheetEvaluator = new SheetEvaluator(currentSheet);
+        // sheetEvalator.evaluateBeginning(currentSheet, 25);
+        if (! sheetEvaluator.hasTabularData()) {
+            // FIXME: shouldn't use exceptions for flow control
+//            throw new TdarRecoverableRuntimeException("excelConverter.no_tabular_data", Arrays.asList(sheetName));
+            logger.warn("no tabular data found for sheet {}", sheetName);
+            return;
         }
-        generateDataTableColumns(columnNamesRow, dataTable);
-
+        // create the data table + columns based on the SheetEvaluator's reported headers.
+        DataTable dataTable = createDataTable(sheetName);
+        for (String columnName: sheetEvaluator.getHeaderColumnNames()) {
+            createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable);
+        }
+        // FIXME: will this conditional ever happen?
         if ((dataTable.getDataTableColumns() == null) || dataTable.getDataTableColumns().isEmpty()) {
-            logger.info(sheetName + " appears to be empty or have non-tabular data, skipping data table");
+            logger.info("{} appears to be empty or have non-tabular data, skipping data table", sheetName);
             dataTables.remove(dataTable);
+            // FIXME: why were we continuing on in this situation if there is no tabular data?
+            return;
         }
-
-        final int startColumnIndex = columnNamesRow.getFirstCellNum();
-        int endColumnIndex = columnNamesRow.getLastCellNum();
+        final int startColumnIndex = sheetEvaluator.getDataColumnStartIndex();
+        final int endColumnIndex = sheetEvaluator.getDataColumnEndIndex();
 
         logger.debug("{}", dataTable.getDataTableColumns());
         targetDatabase.createTable(dataTable);
@@ -200,29 +189,25 @@ public class ExcelConverter extends DatasetConverter.Base {
         ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
         // insert data into the table.
-
-        int startRow = sheetEvalator.getFirstNonHeaderRow() + 1;
+        final int startRow = sheetEvaluator.getDataRowStartIndex();
         // the last row is the size of the column names list instead of
         // currentSheet.getLastRowNum()
         // we ignore data that doesn't have a column heading).
-        int endRow = currentSheet.getLastRowNum();
+        final int endRow = currentSheet.getLastRowNum();
         // we also assume that no blanks exist between any consecutive
         // columns.
 
-        for (int rowIndex = startRow; rowIndex <= endRow; ++rowIndex) {
+        for (int rowIndex = startRow; rowIndex <= endRow; rowIndex++) {
             Row currentRow = currentSheet.getRow(rowIndex);
             if (currentRow == null) {
                 continue;
             }
-
             if (currentRow.getFirstCellNum() < 0) {
                 continue;
             }
-
-            sheetEvalator.evaluateForBlankCells(currentRow, startColumnIndex);
-
+            sheetEvaluator.validate(currentRow);
             Map<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
-            for (int columnIndex = startColumnIndex; columnIndex < endColumnIndex; ++columnIndex) {
+            for (int columnIndex = startColumnIndex; columnIndex <= endColumnIndex; columnIndex++) {
                 Cell currentCell = currentRow.getCell(columnIndex);
                 if (currentCell != null) {
                     // XXX: adding all Excel types as the String representation
@@ -230,12 +215,14 @@ public class ExcelConverter extends DatasetConverter.Base {
                     // in order to avoid issues with parsing numeric fields.
                     // Otherwise currentCell.getNumericCellValue()
                     // will return a double like 3.0 instead of the number 3
-                    String cellValue = sheetEvalator.getCellValueAsString(currentCell);
+                    String cellValue = sheetEvaluator.getCellValueAsString(currentCell);
                     if (StringUtils.isEmpty(cellValue)) {
                         cellValue = null;
                     }
-                    valueColumnMap.put(dataTable.getDataTableColumns().get(columnIndex), cellValue);
-                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(columnIndex), cellValue, rowIndex);
+                    // make sure to offset by the startColumnIndex. sheet data starts at startColumnIndex but DataTableColumns are zero-based
+                    DataTableColumn column = dataTable.getDataTableColumns().get(columnIndex - startColumnIndex);
+                    valueColumnMap.put(column, cellValue);
+                    statisticsManager.updateStatistics(column, cellValue, rowIndex);
                 }
             }
             logger.trace("inserting {} into {}", valueColumnMap, dataTable.getName());
