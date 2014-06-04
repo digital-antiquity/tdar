@@ -62,11 +62,13 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
 
     @Autowired
-    private SearchIndexService searchIndexService;
+    private transient SearchIndexService searchIndexService;
     @Autowired
-    private GenericService genericService;
+    private transient GenericService genericService;
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationService;
+    private transient RssService rssService;
+    @Autowired
+    private transient AuthenticationAndAuthorizationService authenticationService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -94,6 +96,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         if (!authenticationService.getProvider().isConfigured()) {
             logger.error("Unconfigured provider: {}", authenticationService.getProvider());
         }
+        rssService.evictRssCache();
     }
 
     /**

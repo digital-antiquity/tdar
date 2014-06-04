@@ -673,7 +673,7 @@ public class ResourceService extends GenericService {
     public void setupWorldMap(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         Long countryTotal = 0l;
         Double countryLogTotal = 0d;
-        for (HomepageGeographicKeywordCache item : findAll(HomepageGeographicKeywordCache.class)) {
+        for (HomepageGeographicKeywordCache item : findAllWithL2Cache(HomepageGeographicKeywordCache.class)) {
             Long count = item.getCount();
             Double logCount = item.getLogCount();
             if (logCount > countryLogTotal) {

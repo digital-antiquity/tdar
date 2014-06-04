@@ -17,6 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -41,11 +45,11 @@ import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.web.SessionData;
 
 @Configuration
-@ComponentScan(basePackages = {"org.tdar"})
+@ComponentScan(basePackages = { "org.tdar" })
 @EnableTransactionManagement
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableScheduling
-//@PropertySource(value = {  "classpath:/tdar.properties" }, ignoreResourceNotFound = true)
+@EnableCaching
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
 public class TdarAppConfiguration implements Serializable, SchedulingConfigurer {
 
@@ -56,19 +60,19 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
     public TdarAppConfiguration() {
         logger.debug("Initializing tDAR Application Context");
     }
-    
-    @Bean(name="sessionFactory")
-    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource)  {
+
+    @Bean(name = "sessionFactory")
+    public SessionFactory getSessionFactory(@Qualifier("tdarMetadataDataSource") DataSource dataSource) {
         Properties properties = new Properties();
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
-        builder.scanPackages(new String[] {"org.tdar.core"});
-        builder.addPackages(new String[] {"org.tdar.core"});
+        builder.scanPackages(new String[] { "org.tdar.core" });
+        builder.addPackages(new String[] { "org.tdar.core" });
         builder.addProperties(properties);
         return builder.buildSessionFactory();
     }
 
-    @Bean(name="mailSender")
+    @Bean(name = "mailSender")
     public JavaMailSender getJavaMailSender(@Value("${mail.smtp.host:localhost}") String hostname) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(hostname);
@@ -76,7 +80,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
     }
 
     @Bean
-    //@Value("#{'${my.list.of.strings}'.split(',')}") 
+    // @Value("#{'${my.list.of.strings}'.split(',')}")
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
         FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
         List<String> templateLoaderPaths = new ArrayList<>();
@@ -92,7 +96,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         return freemarkerConfig;
     }
 
-    @Bean(name="sessionData")
+    @Bean(name = "sessionData")
     @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public SessionData getSessionData() {
         return new SessionData();
@@ -104,13 +108,28 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         return hibernateTransactionManager;
     }
 
-    
-    @Bean(name="AuthenticationProvider")
+    @Bean
+    public SimpleCacheManager cacheManager() {
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+        List<Cache> caches = new ArrayList<>();
+        caches.add(cacheBean());
+        caches.add(new ConcurrentMapCache("rssFeed"));
+        cacheManager.setCaches(caches);
+        return cacheManager;
+    }
+
+    @Bean
+    public Cache cacheBean() {
+        Cache cache = new ConcurrentMapCache("default");
+        return cache;
+    }
+
+    @Bean(name = "AuthenticationProvider")
     public AuthenticationProvider getAuthProvider() throws IOException {
         return new CrowdRestDao();
     }
 
-    @Bean(name="DoiProvider")
+    @Bean(name = "DoiProvider")
     public ExternalIDProvider getIdProvider() throws IOException {
         return new EZIDDao();
     }
@@ -120,12 +139,9 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         taskRegistrar.setScheduler(taskScheduler());
     }
 
-    @Bean(destroyMethod="shutdown")
+    @Bean(destroyMethod = "shutdown")
     public Executor taskScheduler() {
         return Executors.newScheduledThreadPool(2);
     }
-
-    
-
 
 }

@@ -1,9 +1,12 @@
 package org.tdar.core.bean.cache;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 
@@ -15,6 +18,8 @@ import org.tdar.core.bean.resource.InformationResource;
  */
 @Entity
 @Table(name = "homepage_featured_item_cache")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class HomepageFeaturedItemCache extends Persistable.Base implements Comparable<HomepageFeaturedItemCache>, ResourceCache<InformationResource> {
 
     private static final long serialVersionUID = 4401314235170180736L;
