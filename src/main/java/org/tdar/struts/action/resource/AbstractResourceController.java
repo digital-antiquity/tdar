@@ -330,7 +330,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() == null) {
             return ERROR;
         }
-        
         // loadBasicMetadata();
         initializeResourceCreatorProxyLists(true);
         loadCustomMetadata();

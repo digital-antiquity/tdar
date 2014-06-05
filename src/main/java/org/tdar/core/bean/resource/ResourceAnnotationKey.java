@@ -3,6 +3,7 @@ package org.tdar.core.bean.resource;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,6 +14,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.search.Explanation;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
@@ -41,6 +44,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_annotation_key")
 @Indexed(index = "AnnotationKey")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class ResourceAnnotationKey extends Persistable.Base implements Indexable, HasLabel {
 
     private static final long serialVersionUID = 6596067112791213904L;

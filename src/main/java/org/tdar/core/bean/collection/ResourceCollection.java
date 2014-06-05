@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -43,10 +44,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -110,17 +109,9 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
-@FetchProfiles(value = {
-        @FetchProfile(name = "simple", fetchOverrides = {
-                @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
-                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
-        })
-})
 @XmlRootElement(name = "ResourceCollection")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
 
@@ -193,6 +184,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })

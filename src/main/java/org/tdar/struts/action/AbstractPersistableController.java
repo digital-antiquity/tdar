@@ -150,6 +150,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
+        getLogger().debug("to Freemarker");
         return resultName;
     }
 

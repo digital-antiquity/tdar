@@ -6,6 +6,7 @@
  */
 package org.tdar.core.bean.entity;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +19,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -38,6 +41,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "authorized_user_user_id_idx", columnList = "user_id")
 })
 @Entity
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;

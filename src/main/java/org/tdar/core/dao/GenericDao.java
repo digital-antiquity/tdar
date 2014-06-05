@@ -583,4 +583,8 @@ public class GenericDao {
         return !getCurrentSession().isDefaultReadOnly();
     }
 
+    public boolean cacheContains(Class<?> cls, Long id) {
+        return sessionFactory.getCache().containsEntity(cls, id);
+    }
+
 }

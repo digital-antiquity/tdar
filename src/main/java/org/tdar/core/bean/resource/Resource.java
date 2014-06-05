@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -51,10 +52,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
@@ -140,6 +139,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Revision$
  */
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Table(name = "resource", indexes = {
         @Index(name = "resource_active", columnList = "id, submitter_id, status"),
         @Index(name = "resource_title_index", columnList = "title"),
@@ -152,7 +153,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "res_uploaderid", columnList = "uploader_id"),
         @Index(name = "res_updaterid", columnList = "updater_id"),
         @Index(name = "resource_type_index", columnList = "resource_type"),
-        @Index(name = "idx_created", columnList= "date_registered")
+        @Index(name = "idx_created", columnList = "date_registered")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
@@ -170,7 +171,7 @@ public class Resource implements Persistable, JsonModel,
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
-    private transient boolean obfuscated =  false;
+    private transient boolean obfuscated = false;
     @Transient
     private transient boolean bookmarked = false;
 
@@ -291,11 +292,13 @@ public class Resource implements Persistable, JsonModel,
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser submitter;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser uploader;
 
     // @Boost(.5f)
@@ -303,6 +306,7 @@ public class Resource implements Persistable, JsonModel,
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser updatedBy;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
@@ -316,92 +320,109 @@ public class Resource implements Persistable, JsonModel,
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @BulkImportField
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @OrderColumn(name = "id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceNote> resourceNotes = new LinkedHashSet<ResourceNote>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceAnnotation> resourceAnnotations = new LinkedHashSet<ResourceAnnotation>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SourceCollection> sourceCollections = new LinkedHashSet<SourceCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<RelatedComparativeCollection> relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "geographic_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
                     name = "geographic_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_temporal_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "temporal_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> temporalKeywords = new LinkedHashSet<TemporalKeyword>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CoverageDate> coverageDates = new LinkedHashSet<CoverageDate>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "culture_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_other_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "other_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<OtherKeyword> otherKeywords = new LinkedHashSet<OtherKeyword>();
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_name_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "site_name_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteNameKeyword> siteNameKeywords = new LinkedHashSet<SiteNameKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_material_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "material_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> materialKeywords = new LinkedHashSet<MaterialKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_investigation_type", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "investigation_type_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> investigationTypes = new LinkedHashSet<InvestigationType>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_type_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "site_type_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
     @JoinColumn(name = "resource_id")
     @ForeignKey(name = "none")
     @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
     // FIXME: do we really want cascade all here? even delete?
@@ -410,6 +431,7 @@ public class Resource implements Persistable, JsonModel,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 2)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;
@@ -784,6 +806,7 @@ public class Resource implements Persistable, JsonModel,
      */
     public void setLatitudeLongitudeBox(
             LatitudeLongitudeBox latitudeLongitudeBox) {
+        logger.debug("calling lat setter");
         if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
             getLatitudeLongitudeBoxes().clear();
             return;
@@ -929,7 +952,7 @@ public class Resource implements Persistable, JsonModel,
         return resourceType.getSortName();
     }
 
-//        @Transient
+    // @Transient
     @Deprecated()
     @JsonView(JsonLookupFilter.class)
     // removing for localization

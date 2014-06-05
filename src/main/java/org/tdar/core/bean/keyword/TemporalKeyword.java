@@ -3,12 +3,15 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 
@@ -23,6 +26,8 @@ import org.hibernate.search.annotations.Indexed;
 @Table(name = "temporal_keyword")
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     private static final long serialVersionUID = -626136232824053935L;
@@ -31,6 +36,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();
 
     @Override

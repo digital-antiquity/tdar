@@ -1,5 +1,6 @@
 package org.tdar.core.bean.coverage;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.Range;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -38,6 +41,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(name = "coverage_date", indexes = {
         @Index(name = "coverage_resid", columnList = "resource_id, id")
 })
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
 public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;
