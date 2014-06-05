@@ -163,6 +163,13 @@ public class AuthorizedUser extends Base implements Persistable {
         this.test = test;
     }
 
+    /**
+     * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation.  When enabled is false,
+     * the system should not allow operations which would alter the fields in this object, and also should not allow operations that would add or remove the
+     * object to/from an authorized user list.
+     *
+     * @return
+     */
     public boolean isEnabled() {
         if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
             return true;
