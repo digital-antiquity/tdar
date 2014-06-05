@@ -733,7 +733,7 @@
         <dependency>
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
+            <artifactId>cglib-nodep</artifactId>
             <!-- seems to be somewhat incompatible with jetty 8 -->
             <version>3.1</version>
             <!-- <scope>runtime</scope> -->
