@@ -31,8 +31,8 @@ import org.tdar.core.bean.FieldLength;
 @Entity
 @Immutable
 @Table(name = "information_resource_file_version")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
+//@Cacheable
+//@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
 public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

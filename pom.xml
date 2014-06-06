@@ -730,15 +730,13 @@
             <artifactId>spring-aop</artifactId>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <dependency>
-            <!-- needed by spring for @Transactional calls -->
+        <!--  <dependency>
+            <!- needed by spring for @Transactional calls ->
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <!-- seems to be somewhat incompatible with jetty 8 -->
             <version>3.1</version>
-            <!-- <scope>runtime</scope> -->
-            <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
+            <!- LICENSE: APACHE 1.1 ->
+        </dependency> -->
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>

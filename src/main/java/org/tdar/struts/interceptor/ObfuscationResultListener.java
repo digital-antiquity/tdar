@@ -1,7 +1,6 @@
 package org.tdar.struts.interceptor;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
