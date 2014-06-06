@@ -194,6 +194,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param canModify
      */
     private void applyTransientEnabledPermission(Person authenticatedUser, ResourceCollection resourceCollection, boolean canModify) {
+        if(authenticatedUser == null || resourceCollection == null) return;
+
         Set<AuthorizedUser> authorizedUsers = resourceCollection.getAuthorizedUsers();
         for (AuthorizedUser au : authorizedUsers) {
             //enable if:  permission is irrelevant (authuser is owner)
