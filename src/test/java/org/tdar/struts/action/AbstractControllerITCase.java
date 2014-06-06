@@ -205,21 +205,19 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return ticketId;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
+    @SuppressWarnings("unchecked")
     public <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws TdarActionException {
         AbstractInformationResourceController<?> controller = null;
         Long ticketId = -1L;
