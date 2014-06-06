@@ -339,7 +339,11 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 logger.info("{} {}", cs, cs.getCategoryVariable().getId());
                 sheets.add(cs);
             }
+            genericService.synchronize();
+
         }
+        genericService.synchronize();
+
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
@@ -367,6 +371,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupResource();
         logger.info("{}", controller.getResults());
         assertTrue(controller.getResults().containsAll(sheets));
+        genericService.synchronize();
+
     }
 
     @Test
