@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -113,8 +112,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
@@ -138,7 +135,6 @@ public abstract class InformationResource extends Resource {
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.DETACH })
     // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Project project;
 
     @Transient

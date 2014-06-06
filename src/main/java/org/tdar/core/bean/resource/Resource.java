@@ -140,7 +140,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource")
 @Table(name = "resource", indexes = {
         @Index(name = "resource_active", columnList = "id, submitter_id, status"),
         @Index(name = "resource_title_index", columnList = "title"),
@@ -292,13 +292,11 @@ public class Resource implements Persistable, JsonModel,
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser submitter;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser uploader;
 
     // @Boost(.5f)
@@ -306,7 +304,6 @@ public class Resource implements Persistable, JsonModel,
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private TdarUser updatedBy;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)

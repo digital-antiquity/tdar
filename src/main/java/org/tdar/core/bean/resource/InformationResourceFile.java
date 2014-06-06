@@ -65,7 +65,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 indexes = {
         @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
 })
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
 @Cacheable
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
