@@ -25,6 +25,18 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.PreResultListener;
 
+/**
+ * 
+ * This ResultListener is executed after the Action has been invoked and is ready to get passed into the template layer.
+ * It scans for all bean properties implementing Obfuscatable (or collections) and replaces them on the Action with a lazy proxy. 
+ * A setter is not required but a backing instance variable must be present.
+ * 
+ * FIXME: Consider replacing using reflection to implicitly harvest all obfuscatable beans with a more explicit model where the Action
+ * specifies directly which beans should be obfuscated. For simplicity!
+ * 
+ *
+ * @author Adam Brin
+ */
 public class ObfuscationResultListener implements PreResultListener {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
