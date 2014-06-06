@@ -163,7 +163,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @Action(value = DELETE,
-            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+// FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
+//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")

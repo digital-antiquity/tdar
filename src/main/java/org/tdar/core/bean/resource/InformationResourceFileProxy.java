@@ -40,8 +40,8 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 @Entity
 @Immutable
 @Table(name = "information_resource_file")
-//@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.InformationResourceFile")
-//@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Cacheable
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
@@ -85,7 +85,7 @@ public class InformationResourceFileProxy implements Serializable {
     @OneToMany()
     @SortNatural
     @JoinColumn(name = "information_resource_file_id")
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 
     @Enumerated(EnumType.STRING)

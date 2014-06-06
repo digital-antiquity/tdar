@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,8 +26,6 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 @Immutable
 @Table(name = "information_resource")
 @Inheritance(strategy = InheritanceType.JOINED)
-//@Cacheable
-//@Cache(usage=CacheConcurrencyStrategy.READ_ONLY, region="org.tdar.core.bean.resource.InformationResource")
 public class InformationResourceProxy extends ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -6093387188157752280L;
@@ -40,13 +37,13 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "project_id")
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.Resource")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
     private ResourceProxy projectProxy;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
     @JoinColumn(name = "information_resource_id")
     @Immutable
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")

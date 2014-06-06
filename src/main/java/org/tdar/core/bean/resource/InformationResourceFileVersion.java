@@ -42,7 +42,7 @@ import org.tdar.filestore.FileStoreFileProxy;
  * @author abrin
  *
  */
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
 @Cacheable
 public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension,
         FileStoreFileProxy {

@@ -31,6 +31,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.util.Version;
+import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextQuery;
 import org.hibernate.search.FullTextSession;
@@ -379,6 +380,7 @@ public class SearchService {
         if (projectionModel != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
             projections.remove(ProjectionConstants.THIS);
             projections.addAll(resultHandler.getProjectionModel().getProjections());
+            ftq.setCacheMode(CacheMode.GET);
         }
 
         projections.add(ProjectionConstants.SCORE);

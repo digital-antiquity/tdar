@@ -65,8 +65,8 @@ import org.tdar.core.bean.entity.TdarUser;
 @Immutable
 @Table(name="resource")
 @Inheritance(strategy = InheritanceType.JOINED)
-//@Cacheable
-//@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.Resource")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
@@ -75,7 +75,7 @@ public class ResourceProxy implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     @Immutable
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @Column(name = "date_registered")
@@ -126,14 +126,14 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 1)
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable
     @Fetch(FetchMode.JOIN)
-//    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<>();
 
     @Override
