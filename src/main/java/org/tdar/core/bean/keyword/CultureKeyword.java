@@ -3,6 +3,7 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +16,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -32,6 +35,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;
@@ -41,9 +46,11 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private CultureKeyword parent;
 
     @XmlAttribute

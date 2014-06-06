@@ -220,8 +220,15 @@
         }
     });
 
+    /**
+     * Submitter shouldn't appear in authuser list (because submitters already have full-access)
+     */
     $.validator.addMethod("authuserNotSubmitter",
         function(value, element) {
+            //skip validation if the user is not allowed to remove the element that would otherwise fail validation
+            if($(element).is(':disabled,[readonly]')) {
+                return true;
+            }
             var authuserId = $($(element).attr("autocompleteidelement")).val();
             if(authuserId === "-1") {return true;}
             var submitterId = $(element.form).data("submitterid");

@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
@@ -38,6 +41,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_annotation", indexes = {
         @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;

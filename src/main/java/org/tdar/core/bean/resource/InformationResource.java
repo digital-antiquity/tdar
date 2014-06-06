@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,6 +37,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -110,6 +113,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
@@ -133,6 +138,7 @@ public abstract class InformationResource extends Resource {
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.DETACH })
     // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Project project;
 
     @Transient
@@ -154,6 +160,7 @@ public abstract class InformationResource extends Resource {
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
@@ -211,12 +218,14 @@ public abstract class InformationResource extends Resource {
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
     @BulkImportField(label = "Publisher Location")
@@ -227,6 +236,7 @@ public abstract class InformationResource extends Resource {
     @JoinColumn(name = "copyright_holder_id")
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator copyrightHolder;
 
     // downward inheritance sections
@@ -264,6 +274,7 @@ public abstract class InformationResource extends Resource {
     @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIndividualAndInstitutionalCredit = false;
 
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     @ManyToOne(optional = true)
     private DataTableColumn mappedDataKeyColumn;
 

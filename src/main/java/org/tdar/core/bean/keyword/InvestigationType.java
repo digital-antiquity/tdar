@@ -3,12 +3,15 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 
@@ -22,6 +25,8 @@ import org.hibernate.search.annotations.Indexed;
 @Table(name = "investigation_type")
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class InvestigationType extends Keyword.Base<InvestigationType> implements ControlledKeyword {
 
     private static final long serialVersionUID = 2557655317256194003L;
@@ -30,6 +35,7 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();
 
     @Override

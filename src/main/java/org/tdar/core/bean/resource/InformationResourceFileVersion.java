@@ -3,6 +3,7 @@ package org.tdar.core.bean.resource;
 import java.io.File;
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,6 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,8 @@ import org.tdar.filestore.FileStoreFileProxy;
  * @author abrin
  *
  */
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cacheable
 public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension,
         FileStoreFileProxy {
 
@@ -51,6 +56,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @ManyToOne()
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResourceFile informationResourceFile;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)

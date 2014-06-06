@@ -3,6 +3,7 @@ package org.tdar.core.bean.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +19,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.slf4j.Logger;
@@ -50,6 +53,8 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "creatorid", columnList = "creator_id"),
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
@@ -63,6 +68,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
     @JsonView(JsonLookupFilter.class)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
