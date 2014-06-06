@@ -36,7 +36,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "bookmarked_resource",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"person", "resource"}),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"person_id", "resource_id"}),
         indexes = {
                 @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
                 @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")

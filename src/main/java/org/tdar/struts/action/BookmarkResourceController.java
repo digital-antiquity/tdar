@@ -49,9 +49,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     private String callback;
     private InputStream resultJson;
 
-
-    @Action(
-            value = "bookmarkAjax", results = {  @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson"}) })
+    @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
         processResultToJson();
@@ -64,32 +62,27 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
         setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
     }
 
-    @Action(
-            value = "bookmark",
+    @Action(value = "bookmark",
             results = {
                     @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
-            }
-            )
-            public String bookmarkResourceAction() {
+            })
+    public String bookmarkResourceAction() {
         success = bookmarkResource();
         return SUCCESS;
     }
 
-    @Action(
-            value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson"}) })
+    @Action(value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String removeBookmarkAjaxAction() {
         success = removeBookmark();
         processResultToJson();
         return SUCCESS;
     }
 
-    @Action(
-            value = "removeBookmark",
+    @Action(value = "removeBookmark",
             results = {
                     @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
-            }
-            )
-            public String removeBookmarkAction() {
+            })
+    public String removeBookmarkAction() {
         success = removeBookmark();
         return SUCCESS;
     }
