@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.json.JSONArray;
+import javax.transaction.Transactional;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -21,7 +21,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -325,6 +324,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 null, null, 11, 11, 36, null, 53, 52, 56, 85, 85 };
 
         List<CodingSheet> sheets = new ArrayList<CodingSheet>();
+
         List<CodingSheet> allSheets = new ArrayList<CodingSheet>();
         for (int i = 0; i < titles.length; i++) {
             String title = titles[i];
@@ -339,19 +339,22 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 logger.info("{} {}", cs, cs.getCategoryVariable().getId());
                 sheets.add(cs);
             }
+            cs = null;
             genericService.synchronize();
 
         }
+        List<Long> sheetIds = Persistable.Base.extractIds(sheets);
+        sheets = null;
         genericService.synchronize();
-
+        genericService.findAll(CodingSheet.class);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
         controller.setRecordsPerPage(10);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        logger.info("{}", sheets);
-        assertTrue(controller.getResults().containsAll(sheets));
+        logger.info("{}", sheetIds);
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
 
         controller = generateNewInitializedController(LookupController.class, getBasicUser());
         controller.setRecordsPerPage(10);
@@ -360,7 +363,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(controller.getResults().containsAll(sheets));
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
         Resource col = ((Resource) controller.getResults().get(0));
         assertEquals("Taxonomic Level 1", col.getName());
 
@@ -370,7 +373,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(controller.getResults().containsAll(sheets));
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
         genericService.synchronize();
 
     }
@@ -537,7 +540,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setTitle("HARP");
         controller.lookupResource();
 
-        String json  = IOUtils.toString(controller.getJsonInputStream());
+        String json = IOUtils.toString(controller.getJsonInputStream());
         logger.debug("resourceLookup results:{}", json);
         // assertTrue(json.contains("iTotalRecords"));
         assertTrue(json.contains("HARP"));

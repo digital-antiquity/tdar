@@ -614,13 +614,13 @@ View freemarker macros
                 <#if showNotice>
                 <span class="label label-inverse">Restricted Access</span>
                 Some or all of this resource's attached file(s) are <b>not</b> publicly accessible.
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             <#else>
                 <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
                 <span class="label label-inverse">Restricted Access</span>
                 <em>This resource is restricted from general view; however, you have been granted access to it.</em>
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             </#if>
             <#nested/>

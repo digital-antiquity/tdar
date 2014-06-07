@@ -57,6 +57,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
@@ -131,7 +132,7 @@ import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
-@ContextConfiguration(classes=TdarAppConfiguration.class)
+@ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests implements ErrorListener {
 
@@ -212,7 +213,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
-        ((MockMailSender)emailService.getMailSender()).getMessages().clear();
+        ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/xml/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
@@ -229,11 +230,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @After
     public void announceTestOver() {
-
         int errorCount = 0;
         if (!isIgnoreActionErrors() && CollectionUtils.isNotEmpty(getActionErrors())) {
-                logger.error("action errors {}", getActionErrors());
-                errorCount = getActionErrors().size();
+            logger.error("action errors {}", getActionErrors());
+            errorCount = getActionErrors().size();
         }
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
@@ -374,12 +374,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
     }
 
+    @Transactional
     public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, TdarUser persistentPerson, String resourceTitle) {
-        // Project project = new Project();
-        // project.markUpdated(persistentPerson);
-        // project.setTitle("PROJECT " + resourceTitle);
-        // project.setDescription("test description");
-        // projectService.save(project);
         return createAndSaveNewInformationResource(cls, null, persistentPerson, resourceTitle);
     }
 
@@ -428,7 +424,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     public <R extends Resource> R createAndSaveNewResource(Class<R> cls) {
-        TdarUser persistentPerson = (TdarUser)entityService.findByEmail("test@user.com");
+        TdarUser persistentPerson = (TdarUser) entityService.findByEmail("test@user.com");
         if (persistentPerson == null) {
             persistentPerson = createAndSaveNewPerson("test@user.com", "");
         }
