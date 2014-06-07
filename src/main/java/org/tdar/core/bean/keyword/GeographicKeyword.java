@@ -36,7 +36,7 @@ import org.tdar.core.bean.FieldLength;
 @Table(name = "geographic_keyword")
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
 public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 

@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.InformationResource;
 @Entity
 @Table(name = "homepage_featured_item_cache")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="org.tdar.core.bean.cache.HomepageFeaturedItemCache")
 public class HomepageFeaturedItemCache extends Persistable.Base implements Comparable<HomepageFeaturedItemCache>, ResourceCache<InformationResource> {
 
     private static final long serialVersionUID = 4401314235170180736L;

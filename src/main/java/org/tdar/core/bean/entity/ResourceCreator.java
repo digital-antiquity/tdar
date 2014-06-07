@@ -54,7 +54,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
@@ -68,7 +68,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
     @JsonView(JsonLookupFilter.class)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)

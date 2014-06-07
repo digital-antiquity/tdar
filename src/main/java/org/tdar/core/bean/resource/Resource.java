@@ -344,21 +344,21 @@ public class Resource implements Persistable, JsonModel,
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.core.tdar.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.core.tdar.bean.resource.Reosurce.geographicKeywords")
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
                     name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.core.tdar.bean.resource.Reosurce.managedGeographicKeywords")
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
@@ -428,7 +428,7 @@ public class Resource implements Persistable, JsonModel,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 2)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;

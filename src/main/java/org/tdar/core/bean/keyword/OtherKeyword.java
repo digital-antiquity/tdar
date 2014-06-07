@@ -25,7 +25,7 @@ import org.hibernate.search.annotations.Indexed;
 @Table(name = "other_keyword")
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.OtherKeyword")
 @Cacheable
 public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
 

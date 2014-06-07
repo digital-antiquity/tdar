@@ -42,7 +42,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 @Entity
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.AuthorizedUser")
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;

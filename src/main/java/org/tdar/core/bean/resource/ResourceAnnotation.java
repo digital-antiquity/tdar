@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_annotation", indexes = {
         @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.resource.ResourceAnnotation")
 @Cacheable
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 

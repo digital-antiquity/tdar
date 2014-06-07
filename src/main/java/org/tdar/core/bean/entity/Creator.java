@@ -86,7 +86,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso({ Person.class, Institution.class, TdarUser.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider, JsonModel,
         Obfuscatable, Validatable, Addressable {
 

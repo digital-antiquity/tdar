@@ -34,7 +34,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "sitetype_appr", columnList = "approved, id") })
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.SiteTypeKeyword")
 @Cacheable
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 

@@ -26,7 +26,7 @@ import org.hibernate.search.annotations.Indexed;
 @Table(name = "temporal_keyword")
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.TemporalKeyword")
 @Cacheable
 public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 

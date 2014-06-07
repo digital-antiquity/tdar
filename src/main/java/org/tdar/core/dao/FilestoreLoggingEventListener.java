@@ -43,8 +43,12 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
             return;
         }
 
+        try {
         if (obj instanceof Persistable) {
             xmlLogger.logRecordXmlToFilestore((Persistable) obj);
+        }
+        } catch (Exception e) {
+            logger.error("error ocurred when serializing to XML: {}", e.getMessage(), e);
         }
     }
 

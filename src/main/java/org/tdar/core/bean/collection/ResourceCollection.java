@@ -111,7 +111,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement(name = "ResourceCollection")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
 
@@ -161,6 +161,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)

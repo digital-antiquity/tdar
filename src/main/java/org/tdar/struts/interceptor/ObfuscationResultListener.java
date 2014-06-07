@@ -83,7 +83,6 @@ public class ObfuscationResultListener implements PreResultListener {
                         logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                         continue;
                     }
-                    
                     Object result = enhance(obj, obfuscationService, user);
                     reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
                 } catch (Exception e) {

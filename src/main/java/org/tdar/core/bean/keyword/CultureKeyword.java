@@ -35,7 +35,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.CultureKeyword")
 @Cacheable
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 

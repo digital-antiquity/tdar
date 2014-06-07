@@ -53,7 +53,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.coverage.LatitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 2605563277326422859L;
