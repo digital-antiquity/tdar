@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
@@ -404,6 +403,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
+        setTransientViewableStatus(getResource(), getAuthenticatedUser());
+    }
+
+    @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        super.loadCustomViewMetadata();
+        
+        try {
+            datasetService.assignMappedDataForInformationResource(getResource());
+        } catch (Exception e) {
+            getLogger().error("could not attach additional dataset data to resource", e);
+        }
+
         setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
 

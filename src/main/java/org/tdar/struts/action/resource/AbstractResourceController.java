@@ -343,15 +343,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() == null) {
             return ERROR;
         }
-        // loadBasicMetadata();
-        initializeResourceCreatorProxyLists(true);
-        loadCustomMetadata();
+        loadBasicViewMetadata();
+        loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());
         // don't count if we're an admin
         if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
             resourceService.incrementAccessCounter(getPersistable());
         }
-        loadEffectiveResourceCollections();
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
         if (isEditor()) {
@@ -709,6 +707,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
+        loadEffectiveResourceCollections();
+    }
+    
+
+    public void loadBasicViewMetadata() {
+        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
+        initializeResourceCreatorProxyLists(true);
         loadEffectiveResourceCollections();
     }
 
@@ -1322,6 +1327,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
         return Persistable.Base.extractIds(persistables);
+    }
+
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        // TODO Auto-generated method stub
+        
     }
 
 }
