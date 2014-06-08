@@ -59,7 +59,6 @@ public class TdarUser extends Person {
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     /* who to contact when owner is no longer 'reachable' */
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution proxyInstitution;
 
     @Lob

@@ -803,13 +803,8 @@ public class ReflectionService {
     }
 
     public Method findMatchingSetter(Method method) {
-        String name = cleanupMethodName(method);
-        Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
-        if (field == null) {
-            logger.trace("FIELD IS NULL : {}", method);
-            return null;
-        }
-        return ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
+        String name = "set" + method.getName().substring(3);
+        return ReflectionUtils.findMethod(method.getDeclaringClass(), name, method.getReturnType());
     }
 
     public Field getFieldForGetterOrSetter(Method method) {

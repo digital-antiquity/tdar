@@ -116,7 +116,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     @JsonView(JsonLookupFilter.class)
     private Institution institution;
 

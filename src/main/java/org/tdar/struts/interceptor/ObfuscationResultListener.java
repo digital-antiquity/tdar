@@ -66,7 +66,6 @@ public class ObfuscationResultListener implements PreResultListener {
                 continue;
             }
 
-            logger.trace("{} <==> {}", method, cls);
             // try {
 
             // if method has matching "setter" than call the getter, replace the object with a proxy and move on
@@ -75,6 +74,7 @@ public class ObfuscationResultListener implements PreResultListener {
                 continue;
             }
             Method setter = reflectionService.findMatchingSetter(method);
+            logger.trace("{} <==> {} {}", method, cls, setter);
             if (setter != null) {
                 // generate proxy wrapper
                 Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
@@ -83,8 +83,8 @@ public class ObfuscationResultListener implements PreResultListener {
                         logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                         continue;
                     }
-                    Object result = enhance(obj, obfuscationService, user);
-                    reflectionService.callFieldSetter(action, reflectionService.getFieldForGetterOrSetter(setter), actual.cast(result));
+                    Object result = result = enhance(obj, obfuscationService, user);
+                    setter.invoke(action,actual.cast(result));
                 } catch (Exception e) {
                     logger.error("exception in calling: {} {} {}", method, obj, actual, e);
                 }

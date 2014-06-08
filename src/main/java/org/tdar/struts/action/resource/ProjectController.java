@@ -117,6 +117,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        loadCustomMetadata();
+    }
+    
+    @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
             ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
