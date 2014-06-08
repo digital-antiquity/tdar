@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.hibernate.CacheMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -56,6 +58,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @Autowired
     private transient SearchIndexService searchIndexService;
+
+    @Autowired
+    private transient GenericService genericService;
 
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
@@ -148,6 +153,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         String resultName = SUCCESS;
 
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
+        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
+
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
         getLogger().debug("to Freemarker");
@@ -218,6 +225,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         try {
             if (isPostRequest()) {
                 checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
+                genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
 
                 if (isNullOrNew()) {
                     isNew = true;
@@ -382,6 +390,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();

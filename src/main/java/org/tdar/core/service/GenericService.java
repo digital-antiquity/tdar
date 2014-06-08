@@ -16,9 +16,9 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
-import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,6 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -89,6 +88,10 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        genericDao.setCacheModeForCurrentSession(mode);
+    }
+    
     /**
      * Find all ids given a specified class
      * 

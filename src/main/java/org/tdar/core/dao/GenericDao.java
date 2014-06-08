@@ -72,6 +72,10 @@ public class GenericDao {
         return obj;
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        getCurrentSession().setCacheMode(mode);
+    }
+    
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<T> ret = findAll(class1, ids);
