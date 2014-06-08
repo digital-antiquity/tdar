@@ -507,7 +507,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
-        getServletResponse().setStatus(statusCode.getHttpStatusCode());
         throw new TdarActionException(statusCode, errorMessage);
     }
 
