@@ -1,7 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 
     <#macro sidebarDataTop>
-    ${resource.documentType}
         <#if resource.seriesName?has_content>
         <li><strong>Series Name</strong><br>${resource.seriesName}</li>
         </#if>
