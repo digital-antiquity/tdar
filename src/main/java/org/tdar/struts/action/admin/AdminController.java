@@ -41,6 +41,7 @@ import org.tdar.core.service.processes.UpgradeResourceCollectionPermissions;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
 
 /**
@@ -198,6 +199,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action("keyword-stats")
+    @WriteableSession
     public String viewKeywordStats() {
         return SUCCESS;
     }
