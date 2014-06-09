@@ -30,11 +30,6 @@ import com.opensymphony.xwork2.Action;
 
 public class BillingAccountControllerITCase extends AbstractResourceControllerITCase {
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
-
     @Autowired
     AccountService accountService;
 

@@ -15,11 +15,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -34,6 +32,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$
@@ -69,24 +68,27 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
     @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
-    public String lookupInstitution() {
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
+    public String lookupInstitution()  {
         setMode("institutionLookup");
         return findInstitution(institution);
     }
 
     @Action(value = "resource",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         this.setLookupSource(LookupSource.RESOURCE);
@@ -112,21 +114,24 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-//            if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
-//                setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
-//            }
             getLogger().trace("jsonResults:" + getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
-
+        
+        if (isIncludeCompleteRecord()) {
+            jsonifyResult(null);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
         return SUCCESS;
     }
 
     @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupKeyword() {
         // only return results if query length has enough characters
         if (!checkMinString(this.term) && !checkMinString(keywordType)) {
@@ -153,11 +158,14 @@ public class LookupController extends AbstractLookupController<Indexable> {
             return ERROR;
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
     @Action(value = "annotationkey",
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);
@@ -177,12 +185,14 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
     @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
@@ -208,6 +218,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 

@@ -88,11 +88,6 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         }
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
-
     @Test
     @Rollback(true)
     public void testCountrySearch() {

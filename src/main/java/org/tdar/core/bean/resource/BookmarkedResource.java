@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -34,10 +35,12 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 
 @Entity
-@Table(name = "bookmarked_resource", indexes = {
-        @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
-        @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
-})
+@Table(name = "bookmarked_resource",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"person_id", "resource_id"}),
+        indexes = {
+                @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
+                @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
+        })
 public class BookmarkedResource extends Persistable.Base {
 
     private static final long serialVersionUID = -5112227003063546552L;

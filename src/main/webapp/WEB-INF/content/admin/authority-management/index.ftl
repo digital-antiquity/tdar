@@ -52,6 +52,7 @@
 
 <div class="glide" id="divSearchControl">
     <form method="get" action="#" id="frm">
+        <@s.token name='struts.csrf.token' />
         <div id="divKeywordSearchControl" class="searchControl">
             <h3>Keyword Search</h3>
         <@s.textfield name="keyword" id="txtKeyword" cssClass="longfield" label="Keyword value" />
@@ -85,6 +86,7 @@
 <div class="glide" id="divSelectAuthority">
     <h3>Selected Duplicates</h3>
 <@s.form id="frmDupes" method="post" action="select-authority">
+    <@s.token name='struts.csrf.token' />
     <p id="pDupeInfo" style="display:none">
         <span id="spanDupeCount">0</span>
         item(s) selected. <span class="button">Clear</span>

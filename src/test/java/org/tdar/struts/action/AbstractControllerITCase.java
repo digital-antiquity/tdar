@@ -16,7 +16,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
@@ -64,12 +63,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public static final String REASON = "because";
 
-    @Before
-    public void init() {
-        init(getController());
-    }
-
-    protected abstract TdarActionSupport getController();
 
     public void bookmarkResource(Resource r, TdarUser user) {
         bookmarkResource(r, false, user);
@@ -212,21 +205,19 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return ticketId;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
+    @SuppressWarnings("unchecked")
     public <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws TdarActionException {
         AbstractInformationResourceController<?> controller = null;
         Long ticketId = -1L;

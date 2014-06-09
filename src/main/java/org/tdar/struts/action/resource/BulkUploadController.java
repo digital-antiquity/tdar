@@ -1,11 +1,15 @@
 package org.tdar.struts.action.resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +37,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -61,16 +66,21 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private static final long serialVersionUID = -6419692259588266839L;
 
     @Autowired
-    private BulkUploadService bulkUploadService;
+    private transient BulkUploadService bulkUploadService;
 
     @Autowired
-    private PersonalFilestoreService filestoreService;
+    private transient PersonalFilestoreService filestoreService;
 
     @Autowired
-    private FileAnalyzer analyzer;
+    private transient FileAnalyzer analyzer;
 
     @Autowired
-    private BulkUploadTemplateService bulkUploadTemplateService;
+    private transient BulkUploadTemplateService bulkUploadTemplateService;
+    
+    @Autowired
+    private transient XmlService xmlService;
+
+    private InputStream resultJson;
     private String bulkFileName;
     private long bulkContentLength;
     private FileInputStream templateInputStream;
@@ -108,7 +118,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
             try {
                 String filename = getUploadedFilesFileName().get(0);
-                excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
+                excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename).getFile();
             } catch (Exception e) {
                 addActionErrorWithException(getText("bulkUploadController.cannot_store_manifest"), e);
             }
@@ -200,8 +210,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
     }
 
     @SkipValidation
-    @Action(value = "checkstatus", results = {
-            @Result(name = WAIT, type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
+    @Action(value = "checkstatus", 
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
         if (reciever != null) {
@@ -219,13 +229,17 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 setDetails(details);
                 // should create revision log
             }
-            return WAIT;
         } else {
             setAsyncErrors("");
             phase = "starting up...";
             percentDone = 0.0f;
-            return WAIT;
         }
+        Map<String,Object> result = new HashMap<>();
+        result.put("percentDone", percentDone);
+        result.put("phase", phase);
+        result.put("errors", asyncErrors);
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, null).getBytes()));
+        return SUCCESS;
     }
 
     @SkipValidation
@@ -383,5 +397,13 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Override
     protected void postSaveCleanup(String returnString) {
         // don't clean up personal filestore -- we have called async methods that need access to them and will handle cleanup.
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 }

@@ -24,11 +24,6 @@ import com.opensymphony.xwork2.Action;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     PersonController controller;
 
     @Before

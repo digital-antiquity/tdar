@@ -1,11 +1,15 @@
 package org.tdar.struts.action.admin;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -20,11 +24,11 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AuthenticationAware;
@@ -46,11 +50,11 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     private static final long serialVersionUID = -8927970945627420725L;
 
-    private int percentDone;
-    private String phase;
+    private int percentDone = -1;
+    private String phase = "Initializing";
     private String callback;
     private Long userId;
-
+    private boolean asyncSave = true;
     private LinkedList<Throwable> errors = new LinkedList<Throwable>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<LookupSource>();
@@ -59,41 +63,72 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private transient SearchIndexService searchIndexService;
 
     @Autowired
+    private transient XmlService xmlService;
+
+    @Autowired
     private transient EmailService emailService;
-    
-    public void setSearchIndexService(SearchIndexService searchIndexService) {
-        this.searchIndexService = searchIndexService;
-    }
+
+    private InputStream jsonInputStream;
 
     @IgnoreActivity
-    @Action(value = "checkstatus", results = {
-            @Result(name = WAIT, type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }),
-            @Result(name = "success", type = "freemarker", location = "checkstatus-done.ftl", params = { "contentType", "application/json" }) },
-            interceptorRefs = { @InterceptorRef(value = "editAuthenticatedStack"), @InterceptorRef(value = "execAndWait") })
-    public String checkStatus() {
-        percentDone = 0;
-        phase = "Initializing";
-        buildIndex();
+    @Action(value = "buildIndex", results = {
+            @Result(name = SUCCESS, type = JSONRESULT)
+    })
+    public String startIndex() {
+        if (!isReindexing()) {
+            Date date = new Date();
+            List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
+            getLogger().info("{}", getIndexesToRebuild());
+            searchIndexService.getClassessToReindex(getIndexesToRebuild().toArray(new LookupSource[0]));
+
+            getLogger().info("to reindex: {}", toReindex);
+            Person person = null;
+            if (Persistable.Base.isNotNullOrTransient(getUserId())) {
+                person = getGenericService().find(Person.class, getUserId());
+            }
+
+            List<Class<? extends Indexable>> clss = searchIndexService.getDefaultClassesToIndex();
+            if (CollectionUtils.isNotEmpty(toReindex)) {
+                clss = toReindex;
+            }
+
+            if (isProduction()) {
+                Email email = new Email();
+                email.setSubject(INDEXING_COMPLETED);
+                email.setMessage(String.format(INDEXING_STARTED, clss, getHostName(), date, new Date()));
+                emailService.send(email);
+            }
+            getLogger().info("reindexing");
+            if (isAsyncSave()) {
+                getLogger().info("reindexing async");
+                searchIndexService.indexAllAsync(null, clss, person);
+            } else {
+                getLogger().info("reindexing sync");
+                searchIndexService.indexAll(this, clss, person);
+            }
+        }
+        getLogger().info("return");
+        Map<String, Object> map = new HashMap<>();
+        map.put("phase", phase);
+        map.put("percentDone", percentDone);
+        getLogger().debug("phase: {} [{}%]", phase, percentDone);
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 
     @IgnoreActivity
-    @Action(value = "checkstatusAsync", results = {
-            @Result(name = "success", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) }
-            )
-            public String checkStatusAsync() {
-        percentDone = 0;
-        phase = "Initializing";
+    @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = JSONRESULT) })
+    public String checkStatusAsync() {
         Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         if (activity != null) {
-            String msg = activity.getMessage();
-            getLogger().debug(msg);
-            String part = msg.substring(0, msg.indexOf("%"));
-            part = part.substring(part.lastIndexOf(" "));
-            float pct = Float.parseFloat(part);
-            phase = msg;
-            percentDone = (int) pct;
+            phase = activity.getMessage();
+            percentDone = activity.getPercentComplete().intValue();
         }
+        Map<String, Object> map = new HashMap<>();
+        map.put("phase", phase);
+        map.put("percentDone", percentDone);
+        getLogger().debug("phase: {} [{}%]", phase, percentDone);
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
 
@@ -107,32 +142,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         return SUCCESS;
     }
 
-    private void buildIndex() {
-        Date date = new Date();
-        List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        getLogger().info("{}", getIndexesToRebuild());
-        searchIndexService.getClassessToReindex(getIndexesToRebuild().toArray(new LookupSource[0]));
-
-        getLogger().info("to reindex: {}", toReindex);
-        Person person = null;
-        if (Persistable.Base.isNotNullOrTransient(getUserId())) {
-            person = getGenericService().find(Person.class, getUserId());
-        }
-
-        if (CollectionUtils.isEmpty(toReindex)) {
-            searchIndexService.indexAll(this, person);
-        } else {
-            searchIndexService.indexAll(this, toReindex, person);
-        }
-        if (isProduction()) {
-            Email email = new Email();
-            email.setSubject(INDEXING_COMPLETED);
-            email.setMessage(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()));
-            emailService.send(email);
-        }
-        percentDone = 100;
-    }
-
     @Override
     public void setPercentComplete(float pct) {
         percentDone = pct < 1f ? pct > 0 ? (int) (pct * 100) : 0 : 100; // this is so wrong, but I couldn't resist
@@ -140,7 +149,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @Override
     public void setStatus(String status) {
-        getLogger().debug("indexing status: {}", status);
+        // getLogger().debug("indexing status: {}", status);
         this.phase = "Current Status: " + status;
     }
 
@@ -237,6 +246,22 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(InputStream jsonForStream) {
+        this.jsonInputStream = jsonForStream;
+    }
+
+    public boolean isAsyncSave() {
+        return asyncSave;
+    }
+
+    public void setAsyncSave(boolean asyncSave) {
+        this.asyncSave = asyncSave;
     }
 
 }

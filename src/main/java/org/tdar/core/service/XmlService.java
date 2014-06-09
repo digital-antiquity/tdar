@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -52,8 +54,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -81,8 +86,6 @@ public class XmlService {
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    private Class<?>[] jaxbClasses;
 
     @Autowired
     private UrlService urlService;
@@ -156,14 +159,15 @@ public class XmlService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer) throws IOException {
+    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JaxbAnnotationModule());
-        ObjectWriter objectWriter = null;
-        if (logger.isTraceEnabled()) {
-            objectWriter = mapper.writerWithDefaultPrettyPrinter();
-        } else {
-            objectWriter = mapper.writer();
+        
+        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
+
+        ObjectWriter objectWriter = mapper.writer();
+        if (view != null) {
+            mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+            objectWriter = mapper.writerWithView(view);
         }
         objectWriter.writeValue(writer, object);
     }
@@ -178,7 +182,49 @@ public class XmlService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer);
+        convertToJson(object, writer, null);
+        return writer.toString();
+    }
+
+    /*
+     * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
+     * Most commonly used to produce a stream.
+     */
+    @Transactional
+    public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
+        Object wrapper = wrapObjectIfNeeded(object, callback);
+        String result = null;
+        try {
+            result = convertToFilteredJson(wrapper, view);
+        } catch (IOException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            wrapper = wrapObjectIfNeeded(error, callback);
+            try {
+                result = convertToJson(wrapper);
+            } catch (IOException e1) {
+            }
+        } finally {
+            if (result == null) {
+                result = "{error:'unknown'}";
+            }
+        }
+
+        return result;
+
+    }
+    private Object wrapObjectIfNeeded(Object object, String callback) {
+        Object wrapper = object;
+        if (StringUtils.isNotBlank(callback)) {
+            wrapper = new JSONPObject(callback, object);
+        }
+        return wrapper;
+    }
+    
+    @Transactional
+    public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
+        StringWriter writer = new StringWriter();
+        convertToJson(object, writer, view);
         return writer.toString();
     }
 

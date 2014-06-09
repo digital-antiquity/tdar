@@ -152,7 +152,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login();
 
         gotoPage(browseDataUrl);
-        assertTextPresentInCode("{}");
+        assertTextPresentInCode("{\"recordsPerPage\":50,\"startRecord\":0,\"totalRecords\":0,\"results\":[],\"fields\":[],\"sColumns\":\"\",\"scolumns\":\"\"}");
     }
 
     @Test

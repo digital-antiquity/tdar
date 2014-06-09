@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,6 +25,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
@@ -62,6 +65,8 @@ import org.tdar.core.bean.entity.TdarUser;
 @Immutable
 @Table(name="resource")
 @Inheritance(strategy = InheritanceType.JOINED)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
 public class ResourceProxy implements Serializable {
 
     private static final long serialVersionUID = -2574871889110727564L;
@@ -70,6 +75,7 @@ public class ResourceProxy implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
     @Immutable
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @Column(name = "date_registered")
@@ -120,12 +126,14 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 1)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable
     @Fetch(FetchMode.JOIN)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<>();
 
     @Override

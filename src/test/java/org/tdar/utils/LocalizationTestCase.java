@@ -154,7 +154,7 @@ public class LocalizationTestCase {
                 if (m.matches()) {
                     logger.trace(line);
                     String key = m.group(4);
-                    logger.debug(key);
+                    logger.trace(key);
                     if (matchingMap.get(key) == null) {
                         matchingMap.put(key, new ArrayList<String>());
                     }

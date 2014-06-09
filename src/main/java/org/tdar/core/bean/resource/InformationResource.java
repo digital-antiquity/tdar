@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -80,6 +82,9 @@ import org.tdar.search.index.bridge.StringMapBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -110,10 +115,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
-    public static final String[] JSON_PROPERTIES = { "inheritingCulturalInformation", "inheritingInvestigationInformation", "inheritingMaterialInformation",
-            "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
-            "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation", "inheritingIndividualAndInstitutionalCredit"
-    };
 
     public InformationResource() {
 
@@ -155,6 +156,7 @@ public abstract class InformationResource extends Resource {
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
@@ -199,6 +201,7 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = BulkImportField.YEAR_LABEL, required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @JsonView(JsonLookupFilter.class)
     private Integer date = -1;
 
     @Column(name = "date_created_normalized")
@@ -211,12 +214,14 @@ public abstract class InformationResource extends Resource {
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
     @BulkImportField(label = "Publisher Location")
@@ -227,32 +232,45 @@ public abstract class InformationResource extends Resource {
     @JoinColumn(name = "copyright_holder_id")
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator copyrightHolder;
 
     // downward inheritance sections
     @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+
     private boolean inheritingInvestigationInformation = false;
     @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+
     private boolean inheritingSiteInformation = false;
     @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+
     private boolean inheritingMaterialInformation = false;
     @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+
     private boolean inheritingOtherInformation = false;
     @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+
     private boolean inheritingCulturalInformation = false;
+
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
+
     @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation = false;
+
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingNoteInformation = false;
+
     @Column(name = "inheriting_identifier_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIdentifierInformation = false;
+
     @Column(name = "inheriting_collection_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCollectionInformation = false;
+
     @Column(name = "inheriting_individual_institutional_credit", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingIndividualAndInstitutionalCredit = false;
 
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     @ManyToOne(optional = true)
     private DataTableColumn mappedDataKeyColumn;
 
@@ -793,13 +811,6 @@ public abstract class InformationResource extends Resource {
     @IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        ArrayList<String> allProperties = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        allProperties.addAll(Arrays.asList(JSON_PROPERTIES));
-        return allProperties.toArray(new String[allProperties.size()]);
     }
 
     @Transient

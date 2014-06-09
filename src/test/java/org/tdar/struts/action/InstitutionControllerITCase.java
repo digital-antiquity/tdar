@@ -14,12 +14,6 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
 
     InstitutionController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return controller;
-    }
-
     @Before
     public void setup() {
         controller = generateNewInitializedController(InstitutionController.class);

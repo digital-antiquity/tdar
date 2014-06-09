@@ -6,6 +6,7 @@
     <!-- performance enhancements -->
     <!-- freemarker cache -->
     <constant name="struts.freemarker.mru.max.strong.size" value="250"/>
+    <constant name="struts.convention.default.parent.package" value="default"/>
     <!-- 
     	set this in struts-local-settings.xml 
 	    <constant name="struts.freemarker.templatesCache.updateDelay" value="5000000"/>
@@ -29,12 +30,15 @@
     <package name="default" extends="struts-default" namespace="/">
         <result-types>
             <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
+            <result-type name="xmldocument" class="org.tdar.struts.result.XMLDocumentResult"/>
+            <result-type name="jsonresult"   class="org.tdar.struts.result.JsonDocumentResult"/>
             <result-type name="freemarkerhttp" class="org.tdar.struts.result.FreemarkerHttpHeaderResult"/>
         </result-types>
         <interceptors>
             <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
             <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
             <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
+            <interceptor name="cacheControl" class="org.tdar.struts.interceptor.CacheControlInterceptor"/>
             <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
             <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">

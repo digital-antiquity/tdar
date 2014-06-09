@@ -26,7 +26,7 @@ import org.tdar.core.bean.FieldLength;
 @Indexed
 @Table(name = "audio")
 @XmlRootElement(name = "audio")
-public final class Audio extends InformationResource {
+public class Audio extends InformationResource {
 
     private static final long serialVersionUID = -5207630181373559506L;
 

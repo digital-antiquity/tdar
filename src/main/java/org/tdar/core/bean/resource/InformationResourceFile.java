@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +30,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.WordUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -62,6 +65,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 indexes = {
         @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
 })
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Cacheable
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
     private static final long serialVersionUID = -6957336216505367012L;
@@ -160,6 +165,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @ManyToOne(optional = false)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResource informationResource;
 
     private transient Long transientDownloadCount;
@@ -190,9 +196,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
-    // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @SortNatural
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
@@ -276,14 +282,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
 
-    // @Transient
-    // public File getFile(VersionType type, int version) {
-    // for (InformationResourceFileVersion irfv : getVersions(version)) {
-    // if (irfv.getFileVersionType() == type)
-    // return irfv.getFile();
-    // }
-    // return null;
-    // }
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);

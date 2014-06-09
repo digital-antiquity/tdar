@@ -55,9 +55,5 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
 }

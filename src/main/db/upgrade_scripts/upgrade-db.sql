@@ -137,3 +137,9 @@ alter table culture_keyword add constraint culture_keyword_label_notempty check 
 delete from resource_site_type_keyword rk where exists (select * from site_type_keyword k where k.id = rk.site_type_keyword_id and k.label = '');
 delete from site_type_keyword where label = '';
 alter table site_type_keyword add constraint site_type_keyword_label_notempty check (label <> '');
+
+-- alllee bookmarked resource unique constraints 6/6/2014
+-- deletes most recent duplicate bookmarked resource
+delete from bookmarked_resource where id in (select b.id from bookmarked_resource b, bookmarked_resource bb where b.person_id=bb.person_id and b.resource_id=bb.resource_id and b.timestamp > bb.timestamp);
+-- create unique index on bookmarked_resource's person/resource combination
+create unique index bookmarked_resource_unique_idx on bookmarked_resource (person_id, resource_id);

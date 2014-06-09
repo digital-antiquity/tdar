@@ -107,13 +107,4 @@ public class CachingServiceITCase extends AbstractControllerITCase {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 }

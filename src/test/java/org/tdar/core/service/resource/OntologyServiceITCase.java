@@ -109,16 +109,6 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         assertEquals("Not Recorded", nodes.get(nodes.size() - 1).getDisplayName());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Test
     public void testTimeFormat() {

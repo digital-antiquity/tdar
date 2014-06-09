@@ -92,9 +92,4 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         });
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

@@ -6,6 +6,7 @@
  */
 package org.tdar.core.bean.entity;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +19,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -38,6 +41,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "authorized_user_user_id_idx", columnList = "user_id")
 })
 @Entity
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.AuthorizedUser")
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
@@ -163,6 +168,13 @@ public class AuthorizedUser extends Base implements Persistable {
         this.test = test;
     }
 
+    /**
+     * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation.  When enabled is false,
+     * the system should not allow operations which would alter the fields in this object, and also should not allow operations that would add or remove the
+     * object to/from an authorized user list.
+     *
+     * @return
+     */
     public boolean isEnabled() {
         if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
             return true;

@@ -41,7 +41,6 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
@@ -56,10 +55,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {

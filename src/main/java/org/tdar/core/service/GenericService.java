@@ -16,6 +16,7 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
@@ -35,7 +36,6 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -88,6 +88,10 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        genericDao.setCacheModeForCurrentSession(mode);
+    }
+    
     /**
      * Find all ids given a specified class
      * 
@@ -756,6 +760,10 @@ public class GenericService {
 
     public <T> boolean sessionContains(T entity) {
         return genericDao.sessionContains(entity);
+    }
+
+    public <T> List<T> findAllWithL2Cache(Class<T> persistentClass) {
+        return genericDao.findAllWithL2Cache(persistentClass, null);
     }
 
 }

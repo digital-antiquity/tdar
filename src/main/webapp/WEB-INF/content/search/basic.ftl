@@ -9,12 +9,14 @@
     </ul>
     <div id="resource" style="display:none;">
     <@s.form action="results" method="GET" id='searchForm'>
+        <@s.token name='struts.csrf.token' />
         <@search.queryField showLimits=true />
         <@s.submit value="Search" />
     </@s.form>
     </div>
     <div id="collection" style="display:none;">
     <@s.form action="collections" method="GET" id='searchForm2'>
+        <@s.token name='struts.csrf.token' />
         <@search.queryField showLimits=false showAdvancedLink=false />
     </@s.form>
     </div>

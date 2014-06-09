@@ -1,7 +1,9 @@
 package org.tdar.core.service.resource;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +28,10 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.XmlService;
+import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 /**
  * $Id$
@@ -47,6 +53,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private ObfuscationService obfuscationService;
+
+    @Autowired
+    private XmlService xmlService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).
@@ -172,20 +181,21 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().containsIntegratableDatasets(projectIds);
     }
 
-    public String getProjectAsJson(Project project, TdarUser user) {
+    public String getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
-        String json = "{}";
+        Object result = new HashMap<String, Object>();
+
         try {
-            if ((project == null) || project.isTransient()) {
+            if ((project != null) && !project.isTransient()) {
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
-                return json;
+                // obfuscationService.obfuscate(project, user);
+                result = project;
+            } else {
+                result = Project.NULL;
             }
-//            obfuscationService.obfuscate(project, user);
-            json = project.toJSON().toString();
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }
-        getLogger().trace("returning json:" + json);
-        return json;
+        return xmlService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
 }

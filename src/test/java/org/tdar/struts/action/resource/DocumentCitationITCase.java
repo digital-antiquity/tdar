@@ -152,8 +152,4 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         assertXpathEvaluatesTo(DOC_TITLE, "/ns2:dc/dcd:title[1]", xml);
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 }

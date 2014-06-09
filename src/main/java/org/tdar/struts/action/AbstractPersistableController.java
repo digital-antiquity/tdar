@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.hibernate.CacheMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -56,7 +58,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @Autowired
     private transient SearchIndexService searchIndexService;
-    
+
+    @Autowired
+    private transient GenericService genericService;
+
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -148,8 +153,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         String resultName = SUCCESS;
 
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
+        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
+
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
+        getLogger().debug("to Freemarker");
         return resultName;
     }
 
@@ -161,9 +169,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE, results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
-            @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
+    @Action(value = DELETE,
+// FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
+//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+                    @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
+            })
     public String delete() throws TdarActionException {
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
@@ -195,11 +207,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return SUCCESS;
     }
 
-    @Action(value = SAVE, results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
-            @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
-            @Result(name = INPUT, location = "edit.ftl")
-    })
+    @Action(value = SAVE,
+            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
+                    @Result(name = INPUT, location = "edit.ftl")
+            })
     @WriteableSession
     @HttpsOnly
     public String save() throws TdarActionException {
@@ -211,6 +225,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         try {
             if (isPostRequest()) {
                 checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
+                genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
 
                 if (isNullOrNew()) {
                     isNew = true;
@@ -245,12 +260,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     actionReturnStatus = INPUT;
                 }
             } else {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, getText("abstactPersistableController.bad_request"));
+                throw new TdarActionException(StatusCode.BAD_REQUEST, getText("abstractPersistableController.bad_request"));
             }
         } catch (TdarActionException exception) {
             throw exception;
         } catch (Exception exception) {
-            addActionErrorWithException(getText("abstactPersistableController.unable_to_save", getPersistable()), exception);
+            addActionErrorWithException(getText("abstractPersistableController.unable_to_save", getPersistable()), exception);
             return INPUT;
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
@@ -355,7 +370,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (!isContributor()) {
             // FIXME: The html here could benefit from link to the prefs page. Devise a way to hint to the view-layer that certain messages can be decorated
             // and/or replaced.
-            addActionMessage(getText("abstactPersistableController.change_profile"));
+            addActionMessage(getText("abstractPersistableController.change_profile"));
         }
     }
 
@@ -375,6 +390,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();
@@ -427,12 +443,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (userAction.isAuthenticationRequired()) {
             try {
                 if (!getSessionData().isAuthenticated()) {
-                    addActionError(getText("abstactPersistableController.must_authenticate"));
-                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstactPersistableController.must_authenticate"));
+                    addActionError(getText("abstractPersistableController.must_authenticate"));
+                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
                 }
             } catch (Exception e) {
-                addActionErrorWithException(getText("abstactPersistableController.session_not_initialized"), e);
-                abort(StatusCode.OK.withResultName(LOGIN), getText("abstactPersistableController.could_not_load"));
+                addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
+                abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
             }
         }
 
@@ -451,10 +467,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 default:
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
-                        abort(StatusCode.NOT_FOUND, getText("abstactPersistableController.not_found"));
+                        abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
                     } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
-                        abort(StatusCode.BAD_REQUEST, getText("abstactPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
+                        abort(StatusCode.BAD_REQUEST, getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
                     }
             }
         }
@@ -494,13 +510,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             default:
                 break;
         }
-        addActionError(getText("abstactPersistableController.no_permissions"));
-        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), getText("abstactPersistableController.no_permissions"));
-
+        String errorMessage = getText("abstractPersistableController.no_permissions"); 
+        addActionError(errorMessage);
+        abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
     }
 
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
-        getServletResponse().setStatus(statusCode.getHttpStatusCode());
         throw new TdarActionException(statusCode, errorMessage);
     }
 
@@ -617,7 +632,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             setPersistable(p);
         }
 
-        if( !ADD.equals(getActionName())) {
+        if (!ADD.equals(getActionName())) {
             getLogger().info("id:{}, persistable:{}", getId(), p);
         }
     }
@@ -720,7 +735,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         getLogger().debug("validating resource {} - {}", getPersistable(), getPersistableClass().getSimpleName());
         if (getPersistable() == null) {
             getLogger().warn("Null being validated.");
-            addActionError(getText("abstactPersistableController.could_not_find"));
+            addActionError(getText("abstractPersistableController.could_not_find"));
             return;
         }
         // String resourceTypeLabel = getPersistable().getResourceType().getLabel();
@@ -728,7 +743,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             try {
                 boolean valid = ((Validatable) getPersistable()).isValidForController();
                 if (!valid) {
-                    addActionError(getText("abstactPersistableController.could_not_validate", getPersistable()));
+                    addActionError(getText("abstractPersistableController.could_not_validate", getPersistable()));
                 }
             } catch (Exception e) {
                 addActionError(e.getMessage());

@@ -18,9 +18,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.annotations.EvaluateAllEndpoints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
@@ -127,6 +130,11 @@ public class RssService implements Serializable {
         return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
+    @CacheEvict(allEntries=true, value="rssFeed")
+    public void evictRssCache() {
+        
+    }
+    
     /**
      * Parse a RSS feed
      * 
@@ -136,8 +144,10 @@ public class RssService implements Serializable {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Cacheable(value = "rssFeed")
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
+        logger.debug("requesting rss");
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();

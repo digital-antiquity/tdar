@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -43,10 +44,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -82,6 +81,9 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -107,17 +109,9 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
-@FetchProfiles(value = {
-        @FetchProfile(name = "simple", fetchOverrides = {
-                @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
-                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
-        })
-})
 @XmlRootElement(name = "ResourceCollection")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
 
@@ -149,6 +143,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Explanation explanation;
 
     @Column
+    @JsonView(JsonLookupFilter.class)
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
@@ -166,6 +161,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
@@ -189,6 +185,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
@@ -250,6 +247,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return name;
     }
@@ -261,6 +259,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     // @Boost(1.2f)
     @Field
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getDescription() {
         return description;
     }
@@ -447,10 +446,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "id", "name" };
-    }
 
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection

@@ -4,15 +4,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 
 /**
@@ -24,8 +22,6 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
 @Transactional
 @Service
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional(readOnly = true)
     public <R extends Resource> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
@@ -51,20 +47,23 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
     @Transactional(readOnly=false)
     public boolean bookmarkResource(Resource resource, TdarUser person) {
         getDao().markWritableOnExistingSession(person);
-        if (isAlreadyBookmarked(resource, person)) {
-            logger.trace(String.format("person %s already bookmarked resource %s", person, resource.getId()));
+        if (getDao().isAlreadyBookmarked(resource, person)) {
+            getLogger().trace("person {} already bookmarked resource {}s", person, resource.getId());
             return false;
         }
-        logger.trace("Creating bookmark for :" + person + " of " + resource.getId() + "[" + resource.getResourceType() + "]");
+        getLogger().trace("{} creating bookmark for {}", person, resource);
         BookmarkedResource bookmark = new BookmarkedResource();
         bookmark.setResource(resource);
-        // FIXME: names should be editable by the user, and have a better default.
-        // not sure why names are constructed this way, was in previous bookmarking code.
-        bookmark.setName("Bookmark for " + TdarConfiguration.getInstance().getSiteAcronym() + " resource:" + resource.getId());
         bookmark.setTimestamp(new Date());
         bookmark.setPerson(person);
-        getDao().save(bookmark);
-        return true;
+        try {
+            getDao().save(bookmark);
+            return true;
+        }
+        catch (ConstraintViolationException exception) {
+            getLogger().error("Didn't save duplicate bookmark {}", bookmark, exception);
+            return false;
+        }
     }
 
     /**

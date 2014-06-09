@@ -1,9 +1,9 @@
 package org.tdar.core.bean.coverage;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -14,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -50,7 +52,8 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
         @Index(name = "resource_latlong", columnList = "resource_id, id") })
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
-// (name="latitudeLongitudeBox")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.coverage.LatitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 2605563277326422859L;

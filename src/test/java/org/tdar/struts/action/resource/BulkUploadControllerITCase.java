@@ -658,9 +658,4 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         return col.size();
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
-
 }

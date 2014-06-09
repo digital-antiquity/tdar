@@ -27,17 +27,6 @@ import org.tdar.struts.action.TdarActionSupport;
  */
 public class DashboardControllerITCase extends AbstractResourceControllerITCase {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Test
     @Rollback
     public void testProjectLists() throws InstantiationException, IllegalAccessException {
@@ -66,6 +55,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         DashboardController controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, testPerson);
+        controller.execute();
         Set<Resource> fullUserProjects = controller.getEditableProjects();
         logger.info("{}", fullUserProjects);
         assertEquals(2, fullUserProjects.size());
@@ -75,6 +65,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, getAdminUser());
+        controller.execute();
         fullUserProjects = controller.getEditableProjects();
         assertTrue(3 < fullUserProjects.size());
     }

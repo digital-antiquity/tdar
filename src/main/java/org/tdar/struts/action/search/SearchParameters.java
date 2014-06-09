@@ -32,6 +32,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
@@ -317,9 +318,17 @@ public class SearchParameters {
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
         if (CollectionUtils.isNotEmpty(this.getSiteNames())) {
-            appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
-            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, this.getSiteNames()));
-
+            logger.debug("site names: {}", getSiteNames());
+            QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
+            for (String q : getSiteNames()) {
+                if (SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
+                    FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
+                    siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+                    subgroup.append(siteCodePart.setBoost(5f));
+                }
+            }
+            appendKeywordQueryParts(subgroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
+            queryPartGroup.append(subgroup);
         }
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
                 Arrays.asList(this.getUncontrolledCultureKeywords()));

@@ -40,11 +40,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     private DocumentController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     public void initControllerFields() {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
@@ -140,9 +135,9 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
         Pair<String, Exception> tdae = setupResource(d);
-        assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
-        logger.info("errors {}", getController().getActionErrors());
-        assertTrue(getController().getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
+        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
+        logger.info("errors {}", controller.getActionErrors());
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
         Long newId = controller.getResource().getId();
 
         Assert.assertNotNull(entityService.findByEmail("new@email.com"));

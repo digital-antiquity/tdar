@@ -40,6 +40,7 @@
 
         <#else>
             <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
+                <@s.token name='struts.csrf.token' />
                 <h4>Please explain why you are deleting this record</h4>
                 <textarea name="deletionReason" cols='60' rows='3' class="input-xxlarge" maxlength='255'></textarea>
 

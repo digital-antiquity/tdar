@@ -402,8 +402,6 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <hr/>
     </#if>
 
-<#-- <@_relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
-<#-- <@_relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
     <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
@@ -532,7 +530,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
                 var options = {
-                    "sAjaxDataProp": "results.results",
+                    "sAjaxDataProp": "results",
                     "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
                     "bProcessing": true,
                     "bServerSide": true,

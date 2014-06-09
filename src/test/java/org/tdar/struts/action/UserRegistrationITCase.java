@@ -456,11 +456,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     }
 
     @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
-
-    @Override
     protected TdarUser getUser() {
         return null;
     }

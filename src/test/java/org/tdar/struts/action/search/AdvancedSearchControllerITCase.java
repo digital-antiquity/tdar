@@ -1128,10 +1128,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         return null;
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     protected boolean resultsContainId(Long id) {
         boolean found = false;

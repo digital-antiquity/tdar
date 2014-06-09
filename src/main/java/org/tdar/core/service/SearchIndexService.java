@@ -10,13 +10,14 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.SearchFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ import org.tdar.utils.activity.Activity;
 @Transactional(readOnly = true)
 public class SearchIndexService {
 
-    private static final Logger log = Logger.getLogger(SearchIndexService.class);
+    private static final Logger log = LoggerFactory.getLogger(SearchIndexService.class);
 
     @Autowired
     private HibernateSearchDao hibernateSearchDao;
@@ -75,7 +76,7 @@ public class SearchIndexService {
      * 
      * @return
      */
-    private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
+    public List<Class<? extends Indexable>> getDefaultClassesToIndex() {
         LookupSource[] values = LookupSource.values();
         return getClassessToReindex(values);
     }
@@ -119,21 +120,21 @@ public class SearchIndexService {
 
         try {
             genericService.synchronize();
-            updateReceiver.setPercentComplete(0);
-
             FullTextSession fullTextSession = getFullTextSession();
             FlushMode previousFlushMode = fullTextSession.getFlushMode();
             fullTextSession.setFlushMode(FlushMode.MANUAL);
             fullTextSession.setCacheMode(CacheMode.IGNORE);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
+            updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / classesToIndex.size()) * 100f;
             for (Class<?> toIndex : classesToIndex) {
                 fullTextSession.purgeAll(toIndex);
                 sf.optimize(toIndex);
                 Number total = genericService.count(toIndex);
                 ScrollableResults scrollableResults = genericService.findAllScrollable(toIndex);
-                updateReceiver.setStatus(total + " " + toIndex.getSimpleName() + "(s) to be indexed");
+                String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
+                updateAllStatuses(updateReceiver, activity, message, 0f);
                 int divisor = getDivisor(total);
                 float currentProgress = 0f;
                 int numProcessed = 0;
@@ -145,44 +146,49 @@ public class SearchIndexService {
                     index(fullTextSession, item);
                     numProcessed++;
                     float totalProgress = ((currentProgress * maxPer) + percent);
-                    String message = "";
                     if ((numProcessed % divisor) == 0) {
                         message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
-                        updateReceiver.setStatus(message);
-                        updateReceiver.setPercentComplete(totalProgress / 100f);
+                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
                     }
                     if ((numProcessed % FLUSH_EVERY) == 0) {
                         message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
-                        updateReceiver.setStatus(message);
+                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
                         log.trace("flushing search index");
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
                         log.trace("flushed search index");
-                    }
-                    if (StringUtils.isNotBlank(message)) {
-                        activity.setMessage(message);
                     }
                 }
                 scrollableResults.close();
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
-                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
-                updateReceiver.setStatus(message);
-                activity.setMessage(message);
+                message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                updateAllStatuses(updateReceiver, activity, message, percent);
             }
 
             fullTextSession.flushToIndexes();
             fullTextSession.clear();
-            updateReceiver.setStatus("index all complete");
-            updateReceiver.setPercentComplete(100f);
+            updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
             fullTextSession.setFlushMode(previousFlushMode);
             activity.end();
         } catch (Throwable ex) {
-            log.warn(ex);
-            updateReceiver.addError(ex);
+            log.warn("exception: {}", ex);
+            if (updateReceiver != null) {
+                updateReceiver.addError(ex);
+            }
         }
         activity.end();
+    }
+
+    private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
+        if (updateReceiver != null) {
+            updateReceiver.setPercentComplete(complete);
+            updateReceiver.setStatus(status);
+        }
+        activity.setMessage(status);
+        activity.setPercentDone(complete);
+        log.debug("status: {} [{}%]", status, complete);
     }
 
     /**
@@ -401,11 +407,6 @@ public class SearchIndexService {
         }
     }
 
-    @Autowired
-    public void setGenericService(GenericService genericService) {
-        this.genericService = genericService;
-    }
-
     /**
      * Indexes a @link Project and it's contents. It loads the project's child @link Resource entries before indexing
      * 
@@ -433,5 +434,11 @@ public class SearchIndexService {
     @Transactional(readOnly = true)
     public boolean indexProject(Long id) {
         return indexProject(genericService.find(Project.class, id));
+    }
+
+    @Async
+    public void indexAllAsync(final AsyncUpdateReceiver reciever,  final List<Class<? extends Indexable>> toReindex, final Person person) {
+        log.info("reindexing indexall");
+        indexAll(reciever, toReindex, person);
     }
 }

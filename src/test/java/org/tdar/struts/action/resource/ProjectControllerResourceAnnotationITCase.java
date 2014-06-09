@@ -7,28 +7,24 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.TdarActionException;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
-
-    ProjectController controller;
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
 
     @Test
     @Rollback
     public void testAddSingleAnnotation() throws Exception {
-        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        loadAddSingle();
+    }
+
+    private ProjectController loadAddSingle() throws TdarActionException {
+        ProjectController controller = generateNewInitializedController(ProjectController.class, getBasicUser());
         controller.prepare();
         controller.add();
         Project p = controller.getProject();
@@ -68,13 +64,14 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         Assert.assertEquals("checking annotation key", expectedKey, actualAnnotation.getResourceAnnotationKey().getKey());
         Assert.assertEquals("checking annotation type", expectedType, actualAnnotation.getResourceAnnotationKey().getResourceAnnotationType());
         Assert.assertEquals("checking annotation value", expectedValue, actualAnnotation.getValue());
+        return controller;
     }
 
     @Test
     @Rollback
     // try to delete the single annotation added by testAddSingleAnnotation
     public void testDeleteFromSingleAnnotation() throws Exception {
-        testAddSingleAnnotation();
+        ProjectController controller = loadAddSingle();
         // meta test ... does @rollback apply if we're calling a test from another test??
         Long id = controller.getResource().getId();
         controller = generateNewInitializedController(ProjectController.class, getBasicUser());
@@ -87,6 +84,8 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
         // simulate the save action - wiping out all of the
         controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        flush();
+        logger.debug("{}", genericService.find(Project.class, id).isObfuscated());
         controller.setId(id);
         controller.prepare();
         controller.setResourceAnnotations(Collections.<ResourceAnnotation> emptyList());
@@ -125,7 +124,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
     @Test
     @Rollback
     public void testAdd3ThenDeleteMiddle() throws Exception {
-        controller = generateNewInitializedController(ProjectController.class, getBasicUser());
+        ProjectController controller = generateNewInitializedController(ProjectController.class, getBasicUser());
         controller.prepare();
         controller.add();
         Project p = controller.getProject();
@@ -161,7 +160,6 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         controller.setAsync(false);
         controller.setId(id);
         controller.prepare();
-        controller.edit();
         Assert.assertEquals("the fourth annotation was incomplete and should not have saved", 3, controller.getProject().getResourceAnnotations().size());
         controller.setResourceAnnotations(list2);
         controller.setServletRequest(getServletPostRequest());

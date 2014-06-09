@@ -52,8 +52,8 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         return SUCCESS;
     }
 
-    @Action(value = "lookup", results = { @Result(name = "success", location = "../../lookup/lookup.ftl", type = "freemarker", params = { "contentType",
-            "application/json" }) })
+    @Action(value = "lookup", 
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String lookup() {
         QueryBuilder q = null;
         switch (queryBuilder) {
@@ -85,7 +85,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
             addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
             return ERROR;
         }
-
+        jsonifyResult(null);
         return SUCCESS;
     }
 

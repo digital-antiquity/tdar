@@ -31,6 +31,9 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -54,7 +57,6 @@ import org.tdar.core.configuration.JSONTransient;
 public class CodingSheet extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = 7782805674943954511L;
-    public static final String[] JSON_PROPERTIES = { "defaultOntology" };
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
@@ -70,6 +72,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
+    @JsonView(JsonLookupFilter.class)
     private Ontology defaultOntology;
 
     @Field
@@ -286,13 +289,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
             }
         }
         return sb.toString();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        ArrayList<String> allProperties = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
-        allProperties.addAll(Arrays.asList(JSON_PROPERTIES));
-        return allProperties.toArray(new String[allProperties.size()]);
     }
 
 }

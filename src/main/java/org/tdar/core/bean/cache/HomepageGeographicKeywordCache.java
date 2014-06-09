@@ -1,11 +1,14 @@
 package org.tdar.core.bean.cache;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
@@ -19,6 +22,8 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
  */
 @Entity
 @Table(name = "homepage_cache_geographic_keyword")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="org.tdar.core.bean.cache.HomepageGeographicKeywordCache")
 public class HomepageGeographicKeywordCache extends Base implements ResourceCache<String> {
 
     private static final long serialVersionUID = -8037868535122993612L;

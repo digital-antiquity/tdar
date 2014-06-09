@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.SortNatural;
 import org.slf4j.Logger;
@@ -36,7 +39,9 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
  */
 @Entity
 @Immutable
-@Table(name= "information_resource_file")
+@Table(name = "information_resource_file")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Cacheable
 public class InformationResourceFileProxy implements Serializable {
 
     private static final long serialVersionUID = -1321714940676599837L;
@@ -80,6 +85,7 @@ public class InformationResourceFileProxy implements Serializable {
     @OneToMany()
     @SortNatural
     @JoinColumn(name = "information_resource_file_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
     private List<InformationResourceFileVersionProxy> informationResourceFileVersionProxies = new ArrayList<InformationResourceFileVersionProxy>();
 
     @Enumerated(EnumType.STRING)
@@ -177,7 +183,7 @@ public class InformationResourceFileProxy implements Serializable {
             InformationResourceFileVersion version = prox.generateInformationResourceFileVersion();
             file.getInformationResourceFileVersions().add(version);
             version.setInformationResourceFile(file);
-            
+
         }
         return file;
     }

@@ -89,7 +89,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.findAllWithProfile(ResourceCollection.class, Arrays.asList(collectionId), "simple").get(0);
+        collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
@@ -309,13 +309,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         authorizedUserDao.clearUserPermissionsCache();
         assertFalse("user can no longer edit",
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-    }
-
-    @Override
-    protected TdarActionSupport getController()
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Test

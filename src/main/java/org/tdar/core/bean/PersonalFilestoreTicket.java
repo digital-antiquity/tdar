@@ -12,6 +12,9 @@ import javax.persistence.Table;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.filestore.personal.PersonalFileType;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -28,9 +31,9 @@ import org.tdar.filestore.personal.PersonalFileType;
 public class PersonalFilestoreTicket extends Persistable.Base {
 
     private static final long serialVersionUID = 3712388159075958666L;
-    private final static String[] JSON_PROPERTIES = { "id", "dateGenerated", "submitter" };
 
     @Column(nullable = false, name = "date_generated")
+    @JsonView(JsonLookupFilter.class)
     private Date dateGenerated = new Date();
 
     @Enumerated(EnumType.STRING)
@@ -39,6 +42,7 @@ public class PersonalFilestoreTicket extends Persistable.Base {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "submitter_id")
+    @JsonView(JsonLookupFilter.class)
     private TdarUser submitter;
 
     @Column(length = FieldLength.FIELD_LENGTH_500)
@@ -66,11 +70,6 @@ public class PersonalFilestoreTicket extends Persistable.Base {
 
     public void setDateGenerated(Date dateGenerated) {
         this.dateGenerated = dateGenerated;
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
     }
 
     /**

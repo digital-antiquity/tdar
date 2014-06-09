@@ -400,7 +400,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
         setProjectId(getPersistable().getProjectId());
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();
@@ -408,9 +407,23 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        super.loadCustomViewMetadata();
+        
+        try {
+            datasetService.assignMappedDataForInformationResource(getResource());
+        } catch (Exception e) {
+            getLogger().error("could not attach additional dataset data to resource", e);
+        }
+
+        setTransientViewableStatus(getResource(), getAuthenticatedUser());
+    }
+
+    @Override
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
         resolveProject();
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
         return retval;
     }
 
@@ -461,10 +474,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser());
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
     }
 
-    protected void setProject(Project project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 

@@ -1,5 +1,6 @@
 package org.tdar.struts.action.admin;
 
+import java.io.ByteArrayInputStream;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -28,10 +28,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
+import org.tdar.utils.json.JsonLookupFilter;
 
 @Component
 @Scope("prototype")
@@ -44,8 +46,11 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 6261948544478872563L;
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+    private transient ScheduledProcessService scheduledProcessService;
 
+    @Autowired
+    private transient XmlService xmlService;
+    
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;
 
@@ -58,17 +63,13 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private HashMap<String, Integer> counters;
     private List<Person> activePeople;
 
-    @Action(value = "active-users",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, location = "list-users.ftl",
-                            params = { "contentType", "application/json" },
-                            type = "freemarker"
-                    )
-            })
+    private ByteArrayInputStream jsonInputStream;
+
+    @Action(value = "active-users", results = { 
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    })
     public String listActiveUsers() {
-        // FIXME: filter for localhost before enabling
-        // setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null).getBytes()));
         return SUCCESS;
     }
 
@@ -194,6 +195,14 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     public void setMoreInfo(HashMap<String, Object> moreInfo) {
         this.moreInfo = moreInfo;
+    }
+
+    public ByteArrayInputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(ByteArrayInputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
     }
 
 }

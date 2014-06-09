@@ -1,5 +1,8 @@
 package org.tdar.struts.action.cart;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -38,12 +41,15 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
+import org.tdar.core.service.AccountService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.json.JsonLookupFilter;
 
 @Component
 @Scope("prototype")
@@ -69,12 +75,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private String callback;
     private PricingType pricingType = null;
     private String code;
+    private InputStream resultJson;
+
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
     private transient InvoiceService cartService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     @Autowired
     private transient EmailService emailService;
@@ -149,13 +160,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = "polling-check", results = {
-            @Result(name = WAIT, type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
-    public String pollingCheck() throws TdarActionException {
-
+    @Action(value = "polling-check", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
-        return WAIT;
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getInvoice(), JsonLookupFilter.class, getCallback()).getBytes()));
+
+        return SUCCESS;
     }
 
     @SkipValidation
@@ -293,7 +304,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             if (paymentTransactionProcessor.validateResponse(response)) {
                 getGenericService().markWritable();
                 Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
-                BillingTransactionLog billingResponse = new BillingTransactionLog(response);
+
+                BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
                 billingResponse = getGenericService().markWritable(billingResponse);
                 getGenericService().saveOrUpdate(billingResponse);
                 if (invoice != null) {
@@ -550,6 +562,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 
 }

@@ -3,8 +3,10 @@ package org.tdar.core.bean.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,10 +33,13 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         }
         return dataset;
     }
+    
+    private BookmarkedResource[] createNewUnsavedBookmarkedResources() {
+        return createNewUnsavedBookmarkedResources(10);
+    }
 
     // using arrays to avoid contamination with hashcode/equals
-    private BookmarkedResource[] createNewUnsavedBookmarkedResources() {
-        int numberOfBookmarks = 10;
+    private BookmarkedResource[] createNewUnsavedBookmarkedResources(int numberOfBookmarks) {
         Dataset dataset = getDataset();
         BookmarkedResource[] array = new BookmarkedResource[numberOfBookmarks];
         savedPersons = new TdarUser[numberOfBookmarks];
@@ -51,9 +56,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
     }
 
     private void saveAll(BookmarkedResource... resources) {
-        for (BookmarkedResource br : resources) {
-            genericService.save(br);
-        }
+        genericService.save(Arrays.asList(resources));
     }
 
     @Test
@@ -61,7 +64,6 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
     public void testTransientCollections() {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         verifyCollectionOperations(array);
-
     }
 
     public TdarUser[] getSavedPersons() {
@@ -103,6 +105,22 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         assertTrue(set.isEmpty());
         assertTrue(list.isEmpty());
         assertTrue(map.isEmpty());
+    }
+    
+    @Test
+    @Rollback
+    public void testDuplicateBookmarks() {
+        BookmarkedResource[] bookmarks = createNewUnsavedBookmarkedResources();
+        assertEquals(10, bookmarks.length);
+        saveAll(bookmarks);
+        try {
+            saveAll(createNewUnsavedBookmarkedResources());
+            fail("Should not be able to save duplicate bookmarked resources.");
+        }
+        catch (Exception exception) {
+            // expected exception
+            logger.debug("{}", exception);
+        }
     }
 
     @Test

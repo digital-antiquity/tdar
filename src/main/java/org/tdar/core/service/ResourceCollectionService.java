@@ -54,9 +54,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
-    @Autowired
-    private SearchService searchService;
-
     /**
      * Reconcile an existing set of @link Resource entities on a @link ResourceCollection with a set of incomming @link Resource entities, remove unmatching
      * 
@@ -176,35 +173,34 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
-        List<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
-
-        for (ResourceCollection collection : resource.getResourceCollections()) {
-            if (collection.getType() == CollectionType.INTERNAL) {
-                authorizedUsers.addAll(collection.getAuthorizedUsers());
-            }
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        if(resource.getInternalResourceCollection() != null) {
+            boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
+            ResourceCollection resourceCollection = resource.getInternalResourceCollection();
+            applyTransientEnabledPermission(authenticatedUser, resourceCollection, canModify);
+            authorizedUsers.addAll(resourceCollection.getAuthorizedUsers());
         }
-
-        boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
-
-        applyTransientEnabledPermission(authenticatedUser, authorizedUsers, canModify);
-
         return authorizedUsers;
     }
 
     /**
      * Set the transient @link enabled boolean on a @link AuthorizedUser
+     *
+     * Generally speaking, we use the enabled property to indicate to the UI whether removing the authorizedUser from the authorizedUser is "safe". An operation
+     * is "safe" if it doesnt remove the permissions that enabled the user to modify the resource collection in the first place.
      * 
      * @param authenticatedUser
      * @param authorizedUsers
      * @param canModify
      */
-    private void applyTransientEnabledPermission(Person authenticatedUser, List<AuthorizedUser> authorizedUsers, boolean canModify) {
+    private void applyTransientEnabledPermission(Person authenticatedUser, ResourceCollection resourceCollection, boolean canModify) {
+        Set<AuthorizedUser> authorizedUsers = resourceCollection.getAuthorizedUsers();
         for (AuthorizedUser au : authorizedUsers) {
-            if (ObjectUtils.equals(au.getUser(), authenticatedUser) || !canModify) {
-                au.setEnabled(false);
-            } else {
-                au.setEnabled(true);
-            }
+            //enable if:  permission is irrelevant (authuser is owner)
+            //    or if:  user has modify permission but is not same as authuser
+            au.setEnabled(
+                    resourceCollection.getOwner().equals(au.getUser())
+                            || (canModify && !au.getUser().equals(authenticatedUser)));
         }
     }
 
@@ -605,7 +601,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, TdarUser authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
-        applyTransientEnabledPermission(authenticatedUser, users, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
+        applyTransientEnabledPermission(authenticatedUser, persistable, authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
         return users;
     }
 

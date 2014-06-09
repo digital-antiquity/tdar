@@ -19,10 +19,6 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     private SensoryDataController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     public void initControllerFields() {
         controller.prepare();

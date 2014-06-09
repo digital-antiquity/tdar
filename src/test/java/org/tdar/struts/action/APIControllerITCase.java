@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -69,11 +70,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Autowired
     GenericKeywordService genericKeywordService;
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     public final static Long TEST_ID = 3794L;
 

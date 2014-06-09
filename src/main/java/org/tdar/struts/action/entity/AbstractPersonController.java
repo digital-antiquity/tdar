@@ -99,7 +99,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     @Override
     public boolean isViewable() throws org.tdar.struts.action.TdarActionException {
         if (!isEditable()) {
-            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("abstactPersistableController.unable_to_view_edit"));
+            throw new TdarActionException(StatusCode.UNAUTHORIZED, getText("abstractPersistableController.unable_to_view_edit"));
         }
         return true;
     };

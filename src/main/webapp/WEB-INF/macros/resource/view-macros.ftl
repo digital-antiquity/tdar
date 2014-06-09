@@ -267,7 +267,7 @@ View freemarker macros
                             <td <#if twoRow>rowspan=2</#if>><@fileIcon irfile=irfile /></td>
                             <td><@createFileLink irfile false false false /></td>
                             <td><@common.convertFileSize version.fileLength /></td>
-                            <td><#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if></td>
+                            <td><#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if></td>
                             <td>${irfile.latestUploadedVersion.dateCreated} </td>
                             <td>${irfile.restriction.label}</td>
 
@@ -589,7 +589,7 @@ View freemarker macros
     </#macro>
     <#macro _altText irfile description = irfile.description!"">
     ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if>
-        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?string("yyyy-MM-dd")}</#if>
+        <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if>
     </#macro>
 
 <#--emit the unapi 'link' for the specified resource (see: http://unapi.info/specs/) -->
@@ -614,13 +614,13 @@ View freemarker macros
                 <#if showNotice>
                 <span class="label label-inverse">Restricted Access</span>
                 Some or all of this resource's attached file(s) are <b>not</b> publicly accessible.
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             <#else>
                 <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
                 <span class="label label-inverse">Restricted Access</span>
                 <em>This resource is restricted from general view; however, you have been granted access to it.</em>
-                    <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if>
+                    <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             </#if>
             <#nested/>
@@ -633,7 +633,7 @@ View freemarker macros
         <#if includeTime>
         ${_date?string.medium}<#t>
         <#else>
-        ${_date?string('MM/dd/yyyy')}<#t>
+        ${_date?date}<#t>
         </#if>
     </#macro>
 

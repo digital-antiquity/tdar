@@ -21,11 +21,6 @@ import org.tdar.core.configuration.TdarConfiguration;
  */
 public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
-    @Override
-    protected TdarActionSupport getController() {
-        return new BookmarkResourceController();
-    }
-
     @Test
     @Rollback
     public void testBookmarkedResource() {

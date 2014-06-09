@@ -2,15 +2,17 @@ package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -19,12 +21,13 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.utils.json.JsonLookupFilter;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -66,14 +69,10 @@ public class UploadController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = {"contentType", "text/plain"}),
-            @Result(name = ERROR, type = "stream",
-                    params = {
-                            "contentType", "application/json",
-                            "inputName", "jsonInputStream"
-                    })
-    })
+    @Action(value = "upload",
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
+                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" , "statusCode","400"})
+            })
     public String upload() {
         PersonalFilestoreTicket ticket = null;
         getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
@@ -93,6 +92,7 @@ public class UploadController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(uploadFile)) {
             addActionError(getText("uploadController.no_files"));
         }
+        List<String> hashCodes = new ArrayList<>();
         if (CollectionUtils.isEmpty(getActionErrors())) {
             TdarUser submitter = getAuthenticatedUser();
             for (int i = 0; i < uploadFile.size(); i++) {
@@ -109,7 +109,8 @@ public class UploadController extends AuthenticationAware.Base {
                     getLogger().debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                     PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                     try {
-                        filestore.store(ticket, file, fileName);
+                        PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
+                        hashCodes.add(store.getMd5());
                     } catch (Exception e) {
                         addActionErrorWithException(getText("uploadController.could_not_store"), e);
                     }
@@ -117,37 +118,51 @@ public class UploadController extends AuthenticationAware.Base {
             }
         }
         if (CollectionUtils.isEmpty(getActionErrors())) {
+            Map<String, Object> result = new HashMap<>();
+            ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String, Object>>();
+            result.put("files", files);
+            for (int i = 0; i < uploadFileFileName.size(); i++) {
+                HashMap<String, Object> file = new HashMap<>();
+                files.add(file);
+                file.put("name", uploadFileFileName.get(i));
+                if (CollectionUtils.isNotEmpty(hashCodes)) {
+                    file.put("hashCode", hashCodes.get(i));
+                }
+                if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
+                    file.put("size", getUploadFileSize().get(i));
+                }
+                if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
+                    file.put("type", getUploadFileContentType().get(i));
+                }
+                file.put("delete_type", "DELETE");
+            }
+            result.put("ticket", ticket);
+            setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback()).getBytes()));
+
             return SUCCESS;
         } else {
-            getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
             buildJsonError();
             return ERROR;
         }
     }
 
-    // FIXME: generate a JsonResult rather than put these in an ftl
-    // @PostOnly
-    @Action(value = "grab-ticket", results = { @Result(name = "success", type = "freemarker", location = "grab-ticket.ftl",
-            params = { "contentType", "text/plain" }) })
+    @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class, getCallback())
+                .getBytes()));
+
         return SUCCESS;
     }
 
-
-    //construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
-    private void buildJsonError()  {
+    // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
+    private void buildJsonError() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
-        String resultJson = "{}";
-        try {
-            resultJson = xmlService.convertToJson(result);
-        } catch(IOException iox) {
-            getLogger().error("cannot convert actionErrors to xml", iox);
-        }
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        jsonInputStream = new ByteArrayInputStream(resultJson.getBytes());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
     }
 
     public List<File> getUploadFile() {

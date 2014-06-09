@@ -591,16 +591,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         return codingSheet;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {

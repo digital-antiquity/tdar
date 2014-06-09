@@ -53,7 +53,6 @@ public class IndexAction extends AuthenticationAware.Base {
     private Project featuredProject;
     
 
-    // private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
@@ -136,7 +135,7 @@ public class IndexAction extends AuthenticationAware.Base {
             params = { "contentType","text/html" }) })
     public String featuredItems() {
         try {
-            for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
+            for (HomepageFeaturedItemCache cache : getGenericService().findAllWithL2Cache(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
                     getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
@@ -155,7 +154,7 @@ public class IndexAction extends AuthenticationAware.Base {
     @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = "freemarker", 
             params = { "contentType", "text/html" }) })
     public String resourceStats() {
-        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
+        setHomepageResourceCountCache(getGenericService().findAllWithL2Cache(HomepageResourceCountCache.class));
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getResourceType().isSupporting()) {

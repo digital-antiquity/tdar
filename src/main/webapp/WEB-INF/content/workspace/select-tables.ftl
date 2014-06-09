@@ -110,6 +110,7 @@
             <div class="span12">
                 <h3>Step 1: Select Datasets to Integrate or Display</h3>
                 <@s.form name='selectDTForm' method='post' action='select-columns'>
+                    <@s.token name='struts.csrf.token' />
                     <@listDatasets bookmarkedDatasets />
 
                     <div class="form-actions">

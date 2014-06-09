@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.OneToMany;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -221,7 +219,7 @@ public class ReflectionService {
         try {
             setter.invoke(obj, fieldValue);
         } catch (Exception e) {
-            logger.debug("cannot call field setter:", e);
+            logger.debug("cannot call field setter {} on : {} {}  {}", field, obj, fieldValue, e);
         }
 
     }
@@ -802,6 +800,17 @@ public class ReflectionService {
                 }
             }
         }
+    }
+
+    public Method findMatchingSetter(Method method) {
+        String name = "set" + method.getName().substring(3);
+        return ReflectionUtils.findMethod(method.getDeclaringClass(), name, method.getReturnType());
+    }
+
+    public Field getFieldForGetterOrSetter(Method method) {
+        String name = cleanupMethodName(method);
+        Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
+        return field;
     }
 
 }

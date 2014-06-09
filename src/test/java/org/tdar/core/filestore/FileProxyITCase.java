@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
@@ -236,16 +235,4 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         return document;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

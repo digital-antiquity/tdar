@@ -154,12 +154,6 @@ public class ResourceTestCase {
     }
 
     @Test
-    public void testNullProject() {
-        String json = Project.NULL.toJSON().toString();
-        Assert.assertNotNull(json);
-    }
-
-    @Test
     @SuppressWarnings("deprecation")
     public void testCoreProjectTitle() {
         Project app = new Project(-5L, "The Alan Parsons Project"); // What goes up, must come down. An insightful lyric, as ever...

@@ -3,6 +3,7 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +16,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -31,6 +34,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "sitetype_appr", columnList = "approved, id") })
 @Indexed(index = "Keyword")
 @Check(constraints="label <> ''")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.SiteTypeKeyword")
+@Cacheable
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = 4043710177198125088L;
@@ -38,6 +43,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     private boolean approved;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private SiteTypeKeyword parent;
 
     @XmlAttribute
@@ -64,6 +70,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
 
     @Override

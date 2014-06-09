@@ -14,8 +14,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -27,10 +25,8 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.service.obfuscation.ObfuscationInterceptor;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.DocumentController;
-import org.tdar.utils.TestConfiguration;
 
 /**
  * @author Adam Brin

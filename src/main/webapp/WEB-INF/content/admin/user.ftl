@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "admin-common.ftl" as admin>
 <head>
     <title>User Info Pages</title>
@@ -76,7 +77,9 @@
             <tr>
                 <td><a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></td>
                 <td> ${user.email}</td>
-                <td> ${user.dateCreated!""}</td>
+                <td> <#if user.dateCreated?has_content>
+						<@view.shortDate user.dateCreated?datetime true />
+			</#if></td>
             </tr>
             <tr>
                 <td colspan=3>

@@ -1,9 +1,12 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
@@ -31,13 +35,19 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private List<List<String>> results = Collections.emptyList();
     private String callback;
     private int totalRecords;
-    private ResultMetadataWrapper resultsWrapper;
+    private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
+    private InputStream jsonResult;
 
     @Autowired
     private transient DatasetService datasetService;
     
+    @Autowired
+    private transient XmlService xmlService;
+    
     @Action(value = "browse",
-            results = { @Result(name = "success", location = "browse.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results={@Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonResult"}) })
+
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
@@ -55,6 +65,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
             setResultsWrapper(selectAllFromDataTable);
             setResults(getResultsWrapper().getResults());
         }
+        setJsonResult(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResultsWrapper(), null, getCallback()).getBytes()));
         return SUCCESS;
     }
 
@@ -112,6 +123,14 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
 
     public void setTotalRecords(int totalRecords) {
         this.totalRecords = totalRecords;
+    }
+
+    public InputStream getJsonResult() {
+        return jsonResult;
+    }
+
+    public void setJsonResult(InputStream jsonResult) {
+        this.jsonResult = jsonResult;
     }
 
 }

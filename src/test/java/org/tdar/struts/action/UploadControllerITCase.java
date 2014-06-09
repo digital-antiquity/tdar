@@ -7,10 +7,6 @@ public class UploadControllerITCase extends AbstractAdminControllerITCase {
 
     UploadController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     @Before
     public void setup() {

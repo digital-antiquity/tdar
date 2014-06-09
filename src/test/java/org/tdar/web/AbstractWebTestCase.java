@@ -982,9 +982,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
-        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage instanceof TextPage);
-        TextPage textPage = (TextPage) internalPage;
-        String json = textPage.getContent();
+        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage.getWebResponse().getContentType().contains("json"));
+        String json = getPageCode();
         logger.debug("ticket json::" + json.trim());
         JSONObject jsonObject = JSONObject.fromObject(json);
         String ticketId = jsonObject.getString("id");
@@ -1031,6 +1030,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             webRequest.setEncodingType(FormEncodingType.MULTIPART);
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
+            logger.debug("errors: {} ; code: {} ; content: {}", assertNoErrors, code, page.getWebResponse().getContentAsString());
             Assert.assertTrue(assertNoErrors && (code == HttpStatus.OK.value()));
             if (file != null) {
                 assertFileSizes(page, Arrays.asList(new File[] { file }));
@@ -1291,10 +1291,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
+        gotoPage("/admin/searchindex/buildIndex");
         gotoPage("/admin/searchindex/checkstatus");
-        logger.trace(getPageCode());
+        logger.debug(getPageCode());
         int count = 0;
-        while (!getPageCode().contains("\"percentDone\" : 100")) {
+        while (!getPageCode().contains("\"percentDone\":100")) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

@@ -37,11 +37,6 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller = generateNewInitializedController(AuthorityManagementController.class);
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
     @Test
     public void testIndex() {
         // not much to do here, other than check out the getters and make sure we are skipping validation

@@ -46,12 +46,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
-    @Override
-    @Autowired
-    public TdarActionSupport getController() {
-        return controller;
-    }
-
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired

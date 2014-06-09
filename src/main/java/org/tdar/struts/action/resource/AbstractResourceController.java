@@ -130,17 +130,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private GenericKeywordService genericKeywordService;
 
     @Autowired
-    protected ResourceCollectionService resourceCollectionService;
+    public ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private AccountService accountService;
-    
+
     @Autowired
     private InformationResourceService informationResourceService;
 
     @Autowired
     private ResourceService resourceService;
-    
+
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
@@ -226,7 +226,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void loadCustomMetadata() throws TdarActionException {
-    };
+    }
 
     @Override
     public String loadAddMetadata() {
@@ -261,14 +261,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return accounts;
     }
 
-    @Action(value = SAVE, results = {
-            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
-            @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
-            @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
-    })
+    @Action(value = SAVE,
+            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
+                    @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
+            })
     @WriteableSession
     @HttpsOnly
     @Override
+    /**
+     * FIXME: appears to only override the INPUT result type compared to AbstractPersistableController's declaration,
+     * see if it's possible to do this with less duplicatiousness
+     * @see org.tdar.struts.action.AbstractPersistableController#save()
+     */
     public String save() throws TdarActionException {
         return super.save();
     }
@@ -283,6 +290,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                     @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
                     @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
             })
+    /**
+     * FIXME: appears to only override the SUCCESS result type compared to AbstractPersistableController's declaration,
+     * see if it's possible to do this with less duplicatiousness
+     * 
+     * @see org.tdar.struts.action.AbstractPersistableController#save()
+     */
     public String view() throws TdarActionException {
         return super.view();
     }
@@ -290,7 +303,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
-			@Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
             @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
@@ -299,11 +312,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
-		if (!isContributor()) {
-			addActionMessage(getText("resourceController.must_be_contributor"));
-			return CONTRIBUTOR;
-		}
-		return super.add();
+        if (!isContributor()) {
+            addActionMessage(getText("resourceController.must_be_contributor"));
+            return CONTRIBUTOR;
+        }
+        return super.add();
     }
 
     @SkipValidation
@@ -330,16 +343,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() == null) {
             return ERROR;
         }
-        
-        // loadBasicMetadata();
-        initializeResourceCreatorProxyLists(true);
-        loadCustomMetadata();
+        loadBasicViewMetadata();
+        loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());
         // don't count if we're an admin
         if (!Persistable.Base.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
             resourceService.incrementAccessCounter(getPersistable());
         }
-        loadEffectiveResourceCollections();
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
         if (isEditor()) {
@@ -549,7 +559,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, latitudeLongitudeBoxes,
                 getResource().getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
 
-        if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController) && !(this instanceof AbstractSupportingInformationResourceController)) {
+        if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)
+                && !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(getResource().getResourceType().getLabel())));
         }
         Persistable.Base.reconcileSet(getPersistable().getGeographicKeywords(),
@@ -665,7 +676,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getResource().getResourceCreators(), ResourceCreator.class);
     }
 
-    public final void loadBasicMetadata() {
+    public void loadBasicMetadata() {
         // load all keywords
 
         setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
@@ -693,11 +704,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getLogger().debug("RCS: {}", resourceCollectionService);
-        getLogger().debug("AU: {}", getAuthenticatedUser());
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
+        loadEffectiveResourceCollections();
+    }
+    
+
+    public void loadBasicViewMetadata() {
+        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
+        initializeResourceCreatorProxyLists(true);
         loadEffectiveResourceCollections();
     }
 
@@ -876,7 +892,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @SkipValidation
     @Action(value = MODS, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "modsDocument", "formatOutput", "true" })
+            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "modsDocument", "formatOutput", "true" })
     })
     public String viewMods() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -894,7 +910,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @SkipValidation
     @Action(value = DC, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = "jaxbdocument", params = { "documentName", "dcDocument", "formatOutput", "true" })
+            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "dcDocument", "formatOutput", "true" })
     })
     public String viewDc() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
@@ -1311,6 +1327,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
         return Persistable.Base.extractIds(persistables);
+    }
+
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        // TODO Auto-generated method stub
+        
     }
 
 }

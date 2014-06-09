@@ -70,11 +70,16 @@ TDAR.datatable = function () {
                     data: _convertRequest(aoData, options.aoColumns, options.requestCallback),
                     success: function (_data) {
                         // intercept data returned by server, translate to client format
-
                         var recordInfo = {
-                            iTotalDisplayRecords: _data.status.totalRecords,
-                            iTotalRecords: _data.status.totalRecords
+                            iTotalDisplayRecords: _data.totalRecords,
+                            iTotalRecords: _data.totalRecords
                         };
+                        if (typeof _data.totalRecords === "undefined") {
+                            recordInfo = {
+                                    iTotalDisplayRecords: _data.status.totalRecords,
+                                    iTotalRecords: _data.status.totalRecords
+                                };
+                        }
                         $.extend(_data, recordInfo);
                         fnCallback(_data);
                     },

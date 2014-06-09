@@ -161,16 +161,4 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
             fail("controller action was expected to throw an exception, but didn't");
         }
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return new ImageController();
-    }
-
 }

@@ -223,6 +223,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             assertTrue(file.isProcessed());
             genericService.save(file);
             flush();
+            genericService.synchronize();
 
         }
     }

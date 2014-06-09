@@ -23,14 +23,12 @@ import org.tdar.utils.MessageHelper;
 public class RedirectMessageITCase extends AbstractControllerITCase {
 
     @Autowired
-    private UserAccountController controller;
-
-    @Autowired
     private AuthenticationAndAuthorizationService authService;
 
     @Test
     @Rollback
     public void testMessageStore() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
         TdarUser p = controller.getPerson();
@@ -46,8 +44,4 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 }

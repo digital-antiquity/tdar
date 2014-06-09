@@ -78,13 +78,9 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         logger.debug("<< activity begin: {} ", activity);
 
         HttpServletResponse response = ServletActionContext.getResponse();
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
-            response.setHeader("Cache-Control", "no-store,no-Cache");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
-        }
 
         SessionType mark = SessionType.READ_ONLY;
+        setCachingHeaders(invocation, response);
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = SessionType.WRITEABLE;
@@ -124,6 +120,14 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 NDC.pop();
             }
 
+        }
+    }
+
+    private void setCachingHeaders(ActionInvocation invocation, HttpServletResponse response) throws NoSuchMethodException {
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
+            response.setHeader("Cache-Control", "no-store,no-Cache");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
         }
     }
 

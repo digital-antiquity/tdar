@@ -49,10 +49,5 @@ public class UnAPIITCase extends AbstractControllerITCase {
         assertEquals(TdarActionSupport.NOT_FOUND, unapiController.execute());
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return new UnapiController();
-    }
 
 }

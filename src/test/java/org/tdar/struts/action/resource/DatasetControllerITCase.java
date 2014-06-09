@@ -331,9 +331,4 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
 }

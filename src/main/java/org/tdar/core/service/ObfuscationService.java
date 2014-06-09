@@ -120,6 +120,10 @@ public class ObfuscationService {
     public void obfuscateObject(Object obj, TdarUser user) {
         // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
         // returns type of List<I> but we can't figure out what
+        if (obj == null) {
+            return;
+        }
+        
         if (Iterable.class.isAssignableFrom(obj.getClass())) {
             for (Object obj_ : (Iterable<?>) obj) {
                 if (obj_ instanceof Obfuscatable) {

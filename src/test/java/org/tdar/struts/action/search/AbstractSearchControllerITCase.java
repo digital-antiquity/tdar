@@ -76,11 +76,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Autowired
     protected GenericKeywordService genericKeywordService;
 
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
-
     @Before
     public void reset() {
         searchIndexService.purgeAll();

@@ -230,7 +230,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
         InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
-        flush();
+        genericService.synchronize();
+
+//        flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);
         Map<AggregateStatistic.StatisticType, AggregateStatistic> map = new HashMap<AggregateStatistic.StatisticType, AggregateStatistic>();
         for (AggregateStatistic stat : allStats) {
@@ -253,5 +255,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertEquals(ontologies.longValue() + 1, map.get(StatisticType.NUM_ONTOLOGY).getValue().longValue());
         assertEquals(people.longValue() + 1, map.get(StatisticType.NUM_USERS).getValue().longValue());
         assertFalse(map.get(StatisticType.REPOSITORY_SIZE).getValue().longValue() == 0);
+        genericService.synchronize();
     }
 }

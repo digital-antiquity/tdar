@@ -149,15 +149,15 @@ public class SheetEvaluator {
     }
 
     public void validate(Row row) {
-        // is the first cell before the first column with a heading?
+        // is the first data cell index before the first header column index?
         if (row.getFirstCellNum() < dataColumnStartIndex) {
             // FIXME: an inappropriate exception message will be generated in this case.
-            throwTdarRecoverableRuntimeException(row.getRowNum(), row.getFirstCellNum(), dataColumnStartIndex, row.getSheet().getSheetName());
+            throwInvalidColumnCountException(row.getRowNum(), row.getFirstCellNum(), dataColumnStartIndex, row.getSheet().getSheetName());
         }
-        // is the last cell after the last column with a heading?
+        // is the last data cell column index > the header's last column index?
         short lastDataCellIndex = getLastDataCellIndex(row);
         if (dataColumnEndIndex < lastDataCellIndex) {
-            throwTdarRecoverableRuntimeException(row.getRowNum(), lastDataCellIndex + 1, dataColumnEndIndex + 1, row.getSheet().getSheetName());
+            throwInvalidColumnCountException(row.getRowNum(), lastDataCellIndex + 1, dataColumnEndIndex + 1, row.getSheet().getSheetName());
         }
     }
 
@@ -169,15 +169,14 @@ public class SheetEvaluator {
      */
     public short getLastDataCellIndex(Row row) {
         for (short ci = row.getLastCellNum(); ci >= row.getFirstCellNum(); --ci) {
-            if (StringUtils.isBlank(getCellValueAsString(row.getCell(ci)))) {
-                continue;
+            if (StringUtils.isNotBlank(getCellValueAsString(row.getCell(ci)))) {
+                return ci;
             }
-            return ci;
         }
         return row.getFirstCellNum();
     }
 
-    private void throwTdarRecoverableRuntimeException(int rowNumber, int numberOfDataColumns, int columnNameBound, String sheetName) {
+    private void throwInvalidColumnCountException(int rowNumber, int numberOfDataColumns, int columnNameBound, String sheetName) {
         throw new TdarRecoverableRuntimeException("sheetEvaluator.row_has_more_columns", "sheetEvaluator.row_has_more_columns_url", Arrays.asList(rowNumber,
                 numberOfDataColumns, columnNameBound, sheetName));
     }
@@ -223,7 +222,7 @@ public class SheetEvaluator {
             }
         }
         else {
-            this.headerColumnNames = dataRow.extractHeaders();
+            headerColumnNames = dataRow.extractHeaders();
             setHeaderRowIndex(dataRow.getRowIndex());
         }
     }
@@ -295,12 +294,12 @@ public class SheetEvaluator {
      */
     private class DataRow {
         // threshold ratio of alphabetic data values to total data values needed for a row to be considered headerish 
-        private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.60d;
-        // maximum number of blanks allowable for a row to still be considered a header.
-        private static final int HEADER_MAX_BLANKS_THRESHOLD = 3;
+        private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.6d;
+        // maximum percentage of blanks data values that a potential header row can have, currently set to 30%
+        private static final double HEADER_MAX_BLANKS_THRESHOLD = 0.3d;
         // excludes very long strings from being considered header material
         private static final double HEADER_AVG_DATA_LENGTH_THRESHOLD = 30.0d;
-        // only look for headers in rows 0 -> this threshold
+        // only look for headers in rows 0 -> 10
         private static final int HEADER_ROW_INDEX_THRESHOLD = 10;
         private final Row row;
         private final int columnStartIndex;
@@ -313,7 +312,7 @@ public class SheetEvaluator {
 
         public DataRow(Row row) {
             this.row = row;
-            columnStartIndex = Math.max(-1, row.getFirstCellNum());
+            columnStartIndex = row.getFirstCellNum();
             int totalDataValueLength = 0;
             for (Cell cell : row) {
                 String value = getCellValueAsString(cell);
@@ -369,9 +368,13 @@ public class SheetEvaluator {
         public int getColumnEndIndex() {
             return columnEndIndex;
         }
+        
+        public int getTotalNumberOfCells() {
+            return columnEndIndex - columnStartIndex;
+        }
 
         public int getNumberOfBlankValues() {
-            return columnEndIndex - numberOfDataValues;
+            return getTotalNumberOfCells() - numberOfDataValues;
         }
 
         /**
@@ -384,13 +387,17 @@ public class SheetEvaluator {
         private double percentageOfAlphabeticDataValues() {
             return numberOfAlphabeticValues / (double) numberOfDataValues;
         }
+        
+        private double percentageOfBlankValues() {
+            return getNumberOfBlankValues() / (double) getTotalNumberOfCells();
+        }
 
         public boolean isHeaderish() {
             return hasData()
                     && percentageOfAlphabeticDataValues() > ALPHABETIC_DATA_DENSITY_THRESHOLD
                     && averageDataValueLength < HEADER_AVG_DATA_LENGTH_THRESHOLD
-                    && getNumberOfBlankValues() < HEADER_MAX_BLANKS_THRESHOLD
-                    && getRowIndex() < HEADER_ROW_INDEX_THRESHOLD;
+                    && percentageOfBlankValues() <= HEADER_MAX_BLANKS_THRESHOLD
+                    && getRowIndex() <= HEADER_ROW_INDEX_THRESHOLD;
         }
 
         @Override

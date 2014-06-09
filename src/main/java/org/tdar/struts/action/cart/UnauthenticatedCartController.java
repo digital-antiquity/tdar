@@ -1,5 +1,7 @@
 package org.tdar.struts.action.cart;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +25,9 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
@@ -75,9 +79,44 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     @Autowired
     private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
+    @Autowired
+    private transient XmlService xmlService;
+
+
+    @Autowired
+    private transient AccountService accountService;
+
+
+
+
+
+
+
+
+
+
+
     private Long lookupMBCount = 0L;
     private Long lookupFileCount = 0L;
     private List<PricingOption> pricingOptions = new ArrayList<PricingOption>();
+    private InputStream resultJson;
+
+    @SkipValidation
+    @Action(value = "api",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    public String api2() {
+        if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
+            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+            addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+        }
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getPricingOptions(), null, getCallback()).getBytes()));
+
+        return SUCCESS;
+    }
+
+
 
     @Actions(value = { @Action(value = "new",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
@@ -125,19 +164,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         return SUCCESS;
     }
 
-    @SkipValidation
-    @Action(value = "api",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
-    public String api() {
-        if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-            addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
-        }
-        return SUCCESS;
-    }
 
     public boolean isNotNullOrZero(Long num) {
         if ((num == null) || (num < 1)) {
@@ -322,5 +348,14 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
+    }
+
 
 }

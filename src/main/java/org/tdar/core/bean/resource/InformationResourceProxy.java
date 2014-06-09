@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 
 @Entity
 @Immutable
-@Table(name="information_resource")
+@Table(name = "information_resource")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class InformationResourceProxy extends ResourceProxy implements Serializable {
 
@@ -35,11 +37,13 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "project_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
     private ResourceProxy projectProxy;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
     @JoinColumn(name = "information_resource_id")
     @Immutable
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
@@ -50,7 +54,6 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
         return String.format("%s %s %s %s %s %s %s", getId(), getTitle(), getLatitudeLongitudeBoxes(), getResourceCreators(), getProjectProxy(),
                 getInformationResourceFileProxies(), getSubmitter());
     }
-
 
     public ResourceProxy getProjectProxy() {
         return projectProxy;
@@ -73,12 +76,12 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
     public <T extends Resource> T generateResource() throws IllegalAccessException, InvocationTargetException, InstantiationException {
         logger.trace("begin bean generation: {}", getId());
         T res_ = super.generateResource();
-        InformationResource res = (InformationResource)res_;
+        InformationResource res = (InformationResource) res_;
 
         res.setDate(getDate());
         logger.trace("recursing down");
         if (projectProxy != null) {
-            res.setProject((Project)getProjectProxy().generateResource());
+            res.setProject((Project) getProjectProxy().generateResource());
         }
         res.setInheritingSpatialInformation(isInheritingSpatialInformation());
         if (res instanceof InformationResource) {
@@ -95,7 +98,7 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
 
         }
         logger.trace("done generation");
-        return (T)res;
+        return (T) res;
     }
 
     public Integer getDate() {
@@ -105,7 +108,6 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
     public void setDate(Integer date) {
         this.date = date;
     }
-
 
     public boolean isInheritingSpatialInformation() {
         return inheritingSpatialInformation;

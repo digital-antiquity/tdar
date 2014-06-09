@@ -57,15 +57,6 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     public final static String TAB_ONTOLOGY_FILE = "/ontology/tabOntologyFile.txt";
     public final static String UPDATED_TAB_ONTOLOGY_FILE = "/ontology/updatedTabOntologyFile.txt";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     @Test
     @Rollback
@@ -87,8 +78,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         Collection<InformationResourceFileVersion> currentVersions = ont.getLatestVersions();
         controller.setId(id);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         assertEquals(ontText, controller.getFileTextInput());
         controller.setServletRequest(getServletPostRequest());
@@ -97,8 +87,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(OntologyController.class);
         controller.setId(id);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(controller.getFileTextInput() + "a");
         controller.setServletRequest(getServletPostRequest());

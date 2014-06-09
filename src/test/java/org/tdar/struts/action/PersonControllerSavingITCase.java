@@ -29,10 +29,6 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
     Long personId;
     PersonController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     @Test
     @Rollback(false)

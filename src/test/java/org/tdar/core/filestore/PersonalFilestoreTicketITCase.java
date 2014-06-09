@@ -65,9 +65,9 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
 
         PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getUser());
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getUser());
-        File storedFile = filestore.store(ticket, new File(PATH + "images/handbook_of_archaeology.jpg"), "handbook_of_archaeology.jpg");
+        File storedFile = filestore.store(ticket, new File(PATH + "images/handbook_of_archaeology.jpg"), "handbook_of_archaeology.jpg").getFile();
         Assert.assertTrue("filestore exists", storedFile.exists());
-        storedFile = filestore.store(ticket, new File(PATH + "documents/schoenwetter1963a with space.pdf"), "schoenwetter1963a with space.pdf");
+        storedFile = filestore.store(ticket, new File(PATH + "documents/schoenwetter1963a with space.pdf"), "schoenwetter1963a with space.pdf").getFile();
         logger.info("{}", storedFile);
         Assert.assertTrue("filestore exists", storedFile.exists());
 

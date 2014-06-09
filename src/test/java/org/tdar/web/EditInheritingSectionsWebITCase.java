@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";
@@ -31,12 +34,15 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     private Map<String, String> docValMap = new HashMap<String, String>();
 
     public EditInheritingSectionsWebITCase() {
-        for (String inherit : InformationResource.JSON_PROPERTIES) {
-            if (inherit.equals("inheritingCollectionInformation")) {
-                // not on project page
-                continue;
+        for (Field f : InformationResource.class.getDeclaredFields()) {
+            if (f.getName().contains("inheriting")) {
+                String inherit = f.getName();
+                if (inherit.equals("inheritingCollectionInformation")) {
+                    // not on project page
+                    continue;
+                }
+                docValMap.put("resource." + inherit, "true");
             }
-            docValMap.put("resource." + inherit, "true");
         }
     }
 
@@ -88,7 +94,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
         }
         long actualId = jsonObj.getLong("id");
         assertEquals(PARENT_PROJECT_ID, actualId);
-        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "cultureKeywords");
+        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "activeCultureKeywords");
 
     }
 

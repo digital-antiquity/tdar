@@ -146,10 +146,6 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         return false;
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Test
     @Rollback(true)
