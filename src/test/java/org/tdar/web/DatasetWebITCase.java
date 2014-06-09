@@ -75,8 +75,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // upload a file ahead of submitting the form
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
         uploadDataset();
-
         Long datasetId = extractTdarIdFromCurrentURL();
+        String datasetUrl = "/dataset/" + datasetId;
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
         String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1", datasetId, datatable.getId());
@@ -87,7 +87,13 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         } else {
             assertTextNotPresentIgnoreCase("Row number 1");
         }
+        gotoPage(datasetUrl);
+        clickLinkOnPage("duplicate");
+        assertPageTitleContains(" (Copy)");
+        assertNotEquals(datasetUrl, getCurrentUrlPath());
+        assertNoErrorTextPresent();
     }
+    
 
     @Test
     @Rollback(true)
