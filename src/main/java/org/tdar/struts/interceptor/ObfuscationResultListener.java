@@ -28,13 +28,13 @@ import com.opensymphony.xwork2.interceptor.PreResultListener;
 /**
  * 
  * This ResultListener is executed after the Action has been invoked and is ready to get passed into the template layer.
- * It scans for all bean properties implementing Obfuscatable (or collections) and replaces them on the Action with a lazy proxy. 
+ * It scans for all bean properties implementing Obfuscatable (or collections) and replaces them on the Action with a lazy proxy.
  * A setter is not required but a backing instance variable must be present.
  * 
  * FIXME: Consider replacing using reflection to implicitly harvest all obfuscatable beans with a more explicit model where the Action
  * specifies directly which beans should be obfuscated. For simplicity!
  * 
- *
+ * 
  * @author Adam Brin
  */
 public class ObfuscationResultListener implements PreResultListener {
@@ -73,23 +73,28 @@ public class ObfuscationResultListener implements PreResultListener {
             if (obj == null) {
                 continue;
             }
-            Method setter = reflectionService.findMatchingSetter(method);
-            logger.trace("{} <==> {} {}", method, cls, setter);
-            if (setter != null) {
-                // generate proxy wrapper
-                Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
-                try {
-                    if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
-                        logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
-                        continue;
-                    }
-                    Object result = result = enhance(obj, obfuscationService, user);
-                    setter.invoke(action,actual.cast(result));
-                } catch (Exception e) {
-                    logger.error("exception in calling: {} {} {}", method, obj, actual, e);
-                }
-            } else {
+            boolean old = true;
+            if (old) {
                 obfuscationService.obfuscateObject(obj, user);
+            } else {
+                Method setter = reflectionService.findMatchingSetter(method);
+                logger.trace("{} <==> {} {}", method, cls, setter);
+                if (setter != null) {
+                    // generate proxy wrapper
+                    Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
+                    try {
+                        if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
+                            logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
+                            continue;
+                        }
+                        Object result = result = enhance(obj, obfuscationService, user);
+                        setter.invoke(action, actual.cast(result));
+                    } catch (Exception e) {
+                        logger.error("exception in calling: {} {} {}", method, obj, actual, e);
+                    }
+                } else {
+                    obfuscationService.obfuscateObject(obj, user);
+                }
             }
         }
         logger.trace("complete obfuscation");
