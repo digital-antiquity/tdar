@@ -83,6 +83,21 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
+    <div class="actions">
+    <h3>Actions</h3>
+     <button name="requestAccess" class="button btn">email</button>
+     <div class="email-form">
+     <form>
+        <@s.select theme="tdar" name='type'  emptyOption='false' listValue='name()' list='%{emailTypes}' label='Email Type'/>
+        <@s.hidden name="toId" value="${resource.submitter.id?c}" />
+        <#-- <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" />--> 
+        <@s.textarea name="messageBody" rows="4" label="Message" />
+        <@common.antiSpam />
+     <button name="send" class="button btn btn-primary">send</button>
+     <button name="cancel" class="button btn btn-cancel">cancel</button>
+     </form>
+     </div>
+    </div>
 <hr/>
     <#noescape>
         <#if resource.url! != ''>

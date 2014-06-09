@@ -31,6 +31,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -55,6 +56,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
+    private AntiSpamHelper h = new AntiSpamHelper();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -815,6 +817,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public List<Status> getStatuses() {
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 
 }

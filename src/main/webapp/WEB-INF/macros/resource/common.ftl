@@ -1197,4 +1197,18 @@ search page associated with the datapoint -->
         </#if>
     </#macro>
 
+    <#macro antiSpam>
+        <#if h.recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="h.timeCheck"/>
+        <textarea name="h.comment" class="tdarCommentDescription"></textarea>
+    
+        <#if h.reCaptchaText?has_content>
+        ${h.reCaptchaText}
+        </#if>
+        
+    </#macro>
+
 </#escape>

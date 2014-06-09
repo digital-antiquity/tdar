@@ -714,7 +714,7 @@ public class TdarConfiguration {
         List<String> baseUrls = new ArrayList<>();
         baseUrls.add(getBaseSecureUrl());
         baseUrls.add(getBaseUrl());
-        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com","netda.bootstrapcdn.com","ajax.aspnetcdn.com","typekit.com"));
+        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com","netda.bootstrapcdn.com","ajax.aspnetcdn.com","typekit.com","api.recaptcha.net"));
         for (String term : StringUtils.split(getContentSecurityPolicyAdditions(), " ") ) {
             term = StringUtils.trim(term);
             if (StringUtils.isBlank(term)) {

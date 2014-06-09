@@ -8,17 +8,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
+
+import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/email")
 @Component
 @Scope("prototype")
-public class EmailController extends AuthenticationAware.Base {
+public class EmailController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 2598289601940169922L;
 
-    private AntiSpamHelper h;
+    private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
     private Long toId;
     private String subject;
@@ -29,8 +32,8 @@ public class EmailController extends AuthenticationAware.Base {
     private EmailService emailService;
 
     @Action("deliver")
+    @PostOnly
     public String execute() {
-        h.checkForSpammers();
         emailService.constructEmail(fromId, toId, subject, messageBody, type);
         return SUCCESS;
     }
@@ -81,6 +84,11 @@ public class EmailController extends AuthenticationAware.Base {
 
     public void setType(EmailMessageType type) {
         this.type = type;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        h.checkForSpammers();
     }
 
 }
