@@ -69,6 +69,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
@@ -119,7 +120,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     @Autowired
     private transient UrlService urlService;
-    
+
     private InputStream inputStream;
 
     private DisplayOrientation orientation;
@@ -127,13 +128,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
 
-
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
     // basic searches go in "query"
     private String query = "";
 
     private List<SearchParameters> groups = new ArrayList<SearchParameters>();
-
+    private List<ResourceCollection> collectionResults = new ArrayList<>();
+    private int collectionTotalRecords = 0;
     private Operator topLevelOperator = Operator.AND;
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
@@ -185,6 +186,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
             boolean resetSearch = processLegacySearchParameters();
 
+            searchCollectionsToo();
             if (StringUtils.isNotBlank(query) && !resetSearch) {
                 getLogger().trace("running basic search");
                 return basicSearch();
@@ -195,6 +197,36 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             getLogger().error("an error happened", trex);
             addActionError(trex.getMessage());
             return INPUT;
+        }
+    }
+
+    private void searchCollectionsToo() {
+        QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        buildResourceCollectionQuery(queryBuilder);
+
+        try {
+            getLogger().trace("queryBuilder: {}", queryBuilder);
+            SearchResult result = new SearchResult();
+            result.setSortField(getSortField());
+            result.setSecondarySortField(getSecondarySortField());
+            result.setAuthenticatedUser(getAuthenticatedUser());
+            result.setStartRecord(0);
+            result.setRecordsPerPage(10);
+
+            result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+            searchService.handleSearch(queryBuilder, result, this);
+            setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
+            for (ResourceCollection col : getCollectionResults()) {
+                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(col, getAuthenticatedUser());
+            }
+            getLogger().debug("RESULST: {}", result.getResults());
+            setCollectionTotalRecords(result.getTotalRecords());
+        } catch (TdarRecoverableRuntimeException tdre) {
+            getLogger().warn("search parse exception: {}", tdre.getMessage());
+            addActionError(tdre.getMessage());
+        } catch (ParseException e) {
+            getLogger().warn("search parse exception: {}", e.getMessage());
+            addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
         }
     }
 
@@ -250,6 +282,27 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         setLookupSource(LookupSource.COLLECTION);
         determineCollectionSearchTitle();
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        buildResourceCollectionQuery(queryBuilder);
+
+        try {
+            getLogger().trace("queryBuilder: {}", queryBuilder);
+            searchService.handleSearch(queryBuilder, this, this);
+        } catch (TdarRecoverableRuntimeException tdre) {
+            getLogger().warn("search parse exception: {}", tdre.getMessage());
+            addActionError(tdre.getMessage());
+        } catch (ParseException e) {
+            getLogger().warn("search parse exception: {}", e.getMessage());
+            addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
+        }
+
+        if (getActionErrors().isEmpty()) {
+            return SUCCESS;
+        } else {
+            return INPUT;
+        }
+    }
+
+    private void buildResourceCollectionQuery(QueryBuilder queryBuilder) {
         queryBuilder.setOperator(Operator.AND);
         if (StringUtils.isNotBlank(query)) {
             queryBuilder.append(new GeneralSearchQueryPart(query));
@@ -268,23 +321,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
 
         queryBuilder.append(qpg);
-
-        try {
-            getLogger().trace("queryBuilder: {}", queryBuilder);
-            searchService.handleSearch(queryBuilder, this, this);
-        } catch (TdarRecoverableRuntimeException tdre) {
-            getLogger().warn("search parse exception: {}", tdre.getMessage());
-            addActionError(tdre.getMessage());
-        } catch (ParseException e) {
-            getLogger().warn("search parse exception: {}", e.getMessage());
-            addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
-        }
-
-        if (getActionErrors().isEmpty()) {
-            return SUCCESS;
-        } else {
-            return INPUT;
-        }
     }
 
     @Action(value = "rss", results = { @Result(name = "success", type = "stream", params = {
@@ -471,7 +507,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             map = getG().get(0).getLatitudeLongitudeBoxes().get(0);
         } catch (Exception e) {
-            //ignore
+            // ignore
         }
         if (getMap() != null && getMap().isInitializedAndValid() || map != null && map.isInitializedAndValid()) {
             getLogger().debug("switching to map orientation");
@@ -1095,6 +1131,22 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
      */
     public boolean isContextualSearch() {
         return (collectionId != null) || (projectId != null);
+    }
+
+    public List<ResourceCollection> getCollectionResults() {
+        return collectionResults;
+    }
+
+    public void setCollectionResults(List<ResourceCollection> collectionResults) {
+        this.collectionResults = collectionResults;
+    }
+
+    public int getCollectionTotalRecords() {
+        return collectionTotalRecords;
+    }
+
+    public void setCollectionTotalRecords(int collectionTotalRecords) {
+        this.collectionTotalRecords = collectionTotalRecords;
     }
 
 }

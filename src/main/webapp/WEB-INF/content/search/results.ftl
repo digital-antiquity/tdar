@@ -148,6 +148,19 @@
         </div>
     </div>
 
+    <#if ( lookupSource='RESOURCE' && collectionTotalRecords > 0)>
+    <div class="collectionResultsBox">
+        <h4>matching collections</h4>
+        <ul>
+            <#list collectionResults as col>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+            </#list>
+        </ul>
+        <#if ( collectionTotalRecords < 10)>
+            <span class""><a href="<@s.url value="/search/collections?query=${query}"/>">See all ${collectionTotalRecords?c} collections</a></span>
+        </#if>
+    </div>
+    </#if>
     <div class="tdarresults">
         <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
         <#--fixme: replace explicit map sizes with css names -->
