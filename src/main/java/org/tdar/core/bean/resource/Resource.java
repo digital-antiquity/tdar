@@ -140,7 +140,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Cacheable
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
 @Table(name = "resource", indexes = {
         @Index(name = "resource_active", columnList = "id, submitter_id, status"),
         @Index(name = "resource_title_index", columnList = "title"),
@@ -344,21 +344,21 @@ public class Resource implements Persistable, JsonModel,
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.core.tdar.bean.resource.Resource.latitudeLongitudeBoxes")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.core.tdar.bean.resource.Reosurce.geographicKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.geographicKeywords")
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
                     name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.core.tdar.bean.resource.Reosurce.managedGeographicKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.managedGeographicKeywords")
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
@@ -377,7 +377,7 @@ public class Resource implements Persistable, JsonModel,
     @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "culture_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.core.tdar.bean.resource.Resource.cultureKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.cultureKeywords")
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
