@@ -66,6 +66,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
             activity.end();
             logger.debug(">> activity end: {} ", activity);
         }
+        NDC.pop();
         return invoke;
     }
 
