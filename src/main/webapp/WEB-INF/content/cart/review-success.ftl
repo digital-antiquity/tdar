@@ -12,10 +12,9 @@
 </head>
 <body>
 <h1>Invoice <span class="small">{${invoice.transactionStatus.label}}</span></h1>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
-        <@s.hidden name="id" value="${invoice.id?c!-1}" />
+    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-payment-request}'>
+        <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
         <@s.token name='struts.csrf.token' />
-        <#--    <@s.hidden name="invoice.id" /> -->
         <@invoicecommon.proxyNotice />
 
         <@invoicecommon.printInvoice />
@@ -33,7 +32,7 @@
         <h3>Choose Payment Method</h3>
             <@invoicecommon.paymentMethod includePhone=false />
         <#else>
-            <#assign return="/cart/finalreview?id=${invoice.id?c}">
+            <#assign return="/cart/finalreview">
             <a href="<@s.url value="/account/new?url=${return?url}" />" class="button" rel="nofollow">Sign Up</a>
             <@common.loginButton class="button" returnUrl=return />
             
