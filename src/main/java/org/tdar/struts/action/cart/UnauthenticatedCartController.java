@@ -1,21 +1,15 @@
 package org.tdar.struts.action.cart;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.opensymphony.xwork2.ValidationAware;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
@@ -25,20 +19,14 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
-import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Component
-@Scope("prototype")
-@ParentPackage("default")
 @Namespace("/cart")
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable {
 
@@ -53,12 +41,25 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
      *  - finalreview
      *  - payment processing ...
      */
+
+    /*
+    Workflow pt. 2
+
+            cart/add
+                "success" => cart/confirm
+                "success-login" => cart/confirm
+                "input" => cart/add
+
+     */
+
+
+
     
     private static final long serialVersionUID = -9156927670405819626L;
 
     public static final String SIMPLE = "simple";
 
-    private List<BillingActivity> activities = new ArrayList<BillingActivity>();
+    private List<BillingActivity> activities = new ArrayList<>();
     private Long id;
     private Long accountId;
 
@@ -66,7 +67,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     private List<Long> extraItemIds = new ArrayList<Long>();
     private List<Integer> extraItemQuantities = new ArrayList<Integer>();
     private TdarUser owner;
-    private String callback;
     private PricingType pricingType = null;
     private String code;
 
@@ -79,116 +79,57 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     @Autowired
     private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
-    @Autowired
-    private transient XmlService xmlService;
-
-
-    @Autowired
-    private transient AccountService accountService;
-
-
-
-
-
-
-
-
-
-
-
-    private Long lookupMBCount = 0L;
-    private Long lookupFileCount = 0L;
-    private List<PricingOption> pricingOptions = new ArrayList<PricingOption>();
-    private InputStream resultJson;
-
-    @SkipValidation
-    @Action(value = "api",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
-    public String api2() {
-        if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-            addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
-        }
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getPricingOptions(), null, getCallback()).getBytes()));
-
+    /**
+     * Show buyable items and pricing
+     * @return
+     */
+    @Action(value = "new", results = {@Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") })
+    public String execute()
+    {
+        setupActivities();
         return SUCCESS;
     }
 
-
-
-    @Actions(value = { @Action(value = "new",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") }),
-            @Action(value = "modify",
-                    interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-                    results = {
-                            @Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") }),
-                    }
-            )
-            public String execute() {
-        setActivities(cartService.getActiveBillingActivities());
-        return SUCCESS;
-    }
-
+    /**
+     * Process cart selection
+     *
+     * @return
+     */
+    //todo: this should be 'save' or 'add-item'
     @Action(value = "preview",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = INPUT, type = "freemarker", location = "edit.ftl"),
-                    @Result(name = SUCCESS, type=TYPE_REDIRECT, location = "review?id=${invoice.id}") })
+                    @Result(name = SUCCESS, type=REDIRECT, location = "review?id=${invoice.id}") })
     public String preview() {
+        setupActivities();
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
-        setActivities(cartService.getActiveBillingActivities());
         try {
             cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
         }
 
+
+        //TODO: if we put error during validate(), workflow interceptor will set result to be INPUT without calling this method
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
     }
 
+    //TODO: try out convention result naming convention
     @Action(value = "review",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "freemarker", location = "simple.ftl") })
-    public String modify() {
+                    @Result(name = "success", type = "freemarker", location = "simple.ftl"),
+                    @Result(name = "authenticate", type="freemarker", location = "simple-with-auth.ftl")
+            })
+    public String showConfirmation() {
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
-        setActivities(cartService.getActiveBillingActivities());
+        setupActivities();
         return SUCCESS;
     }
 
-
-    public boolean isNotNullOrZero(Long num) {
-        if ((num == null) || (num < 1)) {
-            return false;
-        }
-        return true;
-    }
-
-    private void addPricingOption(PricingOption incoming) {
-        if (incoming == null) {
-            return;
-        }
-        boolean add = true;
-
-        for (PricingOption option : pricingOptions) {
-            if ((option == null) || option.sameAs(incoming)) {
-                add = false;
-            }
-        }
-        if (add) {
-            pricingOptions.add(incoming);
-        }
-    }
-
-    @SkipValidation
     @Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") })
     public String simplePaymentProcess() throws TdarActionException {
         if (!getInvoice().isModifiable()) {
@@ -217,41 +158,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         return activities;
     }
 
-    public void setActivities(List<BillingActivity> activities) {
-        this.activities = activities;
-    }
-
-    public String getCallback() {
-        return callback;
-    }
-
-    public void setCallback(String callback) {
-        this.callback = callback;
-    }
-
-    public Long getLookupMBCount() {
-        return lookupMBCount;
-    }
-
-    public void setLookupMBCount(Long lookupMBCount) {
-        this.lookupMBCount = lookupMBCount;
-    }
-
-    public Long getLookupFileCount() {
-        return lookupFileCount;
-    }
-
-    public void setLookupFileCount(Long lookupFileCount) {
-        this.lookupFileCount = lookupFileCount;
-    }
-
-    public List<PricingOption> getPricingOptions() {
-        return pricingOptions;
-    }
-
-    public void setPricingOptions(List<PricingOption> pricingOptions) {
-        this.pricingOptions = pricingOptions;
-    }
 
     public PricingType getPricingType() {
         return pricingType;
@@ -349,12 +255,12 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         this.accountId = accountId;
     }
 
-    public InputStream getResultJson() {
-        return resultJson;
-    }
+    void setupActivities() {
+        //we only care about the production+active activities
+        for(BillingActivity activity : cartService.getActiveBillingActivities()) {
+            getActivities().add(activity);
+        }
 
-    public void setResultJson(InputStream resultJson) {
-        this.resultJson = resultJson;
     }
 
 

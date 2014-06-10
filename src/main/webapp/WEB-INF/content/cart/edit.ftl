@@ -187,18 +187,14 @@
                 <th>Cost</th>
             </tr>
             <#list activities as act>
-                <#if act.production >
-                    <tr>
-                        <td>${act.name}</td>
-                        <td>${act.price} ${act.currency!"USD"}</td>
-                    </tr>
-                </#if>
+            <tr>
+                <td>${act.name}</td>
+                <td>${act.price} ${act.currency!"USD"}</td>
+            </tr>
             </#list>
         </table>
         <p><em>* All files come with 10 MB of space</em></p>
     </div>
-
-
     </#macro>
 
 </#escape>

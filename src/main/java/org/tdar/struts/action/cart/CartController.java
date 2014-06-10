@@ -62,7 +62,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long accountId = -1L;
     private String billingPhone;
-    public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private Account account;
     public static final String SUCCESS_ADD_ADDRESS = "add-address";
