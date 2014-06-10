@@ -258,7 +258,9 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     void setupActivities() {
         //we only care about the production+active activities
         for(BillingActivity activity : cartService.getActiveBillingActivities()) {
-            getActivities().add(activity);
+            if(activity.isProduction()) {
+                getActivities().add(activity);
+            }
         }
 
     }
