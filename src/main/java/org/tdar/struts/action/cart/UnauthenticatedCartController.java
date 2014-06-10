@@ -111,7 +111,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
      * @return
      */
     @Action("review")
-    @WriteableSession
     public String showInvoice() {
         String result = "redirect-start";
         //todo: check for transient invoice in session. If not found, add actionError and redirect to starting page
@@ -122,7 +121,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         } else {
             result = "success";
         }
-
         return result;
     }
 
