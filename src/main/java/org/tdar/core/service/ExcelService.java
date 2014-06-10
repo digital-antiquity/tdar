@@ -505,6 +505,7 @@ public class ExcelService {
         Workbook workbook = proxy.getWorkbook();
         proxy.preProcess();
         Iterator<Object[]> data = proxy.getData();
+
         // if the startRow is something other than 0, we assume that the caller was working on this sheet prior
         boolean newSheetNeeded = startRow == 0;
         if (newSheetNeeded) {
@@ -522,7 +523,7 @@ public class ExcelService {
             try {
                 row = data.next();
             } catch (RuntimeException re) {
-                logger.error("RuntimeException, table empty?", re);
+                logger.warn("RuntimeException, table empty?", re);
                 break;
             }
             rowNum++;
