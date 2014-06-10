@@ -7,6 +7,8 @@ import java.util.List;
 import com.opensymphony.xwork2.ValidationAware;
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
@@ -24,6 +26,8 @@ import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
 
+@Component
+@Scope("prototype")
 @Results({@Result(name="redirect-start", location="/cart/new", type="redirect")})
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable {
 

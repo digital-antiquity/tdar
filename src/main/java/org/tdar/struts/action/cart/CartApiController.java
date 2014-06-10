@@ -3,6 +3,8 @@ package org.tdar.struts.action.cart;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.PricingOption;
@@ -18,6 +20,8 @@ import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 /**
  * Implementation of pricing api
  */
+@Component
+@Scope("prototype")
 public class CartApiController extends ActionSupport {
 
     private Long lookupMBCount = 0L;
