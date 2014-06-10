@@ -97,10 +97,10 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             })
     //FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     //FIXME: we want to avoid writeable sessions on unauthenticated requests. Consider storing transient invoice in httpSession, and persist only after we authenticate
-    @WriteableSession
+//    @WriteableSession
     public String preview() {
         try {
-            cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
+            invoice = cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
         } catch(TdarRecoverableRuntimeException trex) {
             addActionError(trex.getMessage());
             return "input";
@@ -195,14 +195,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         //p = getGenericService().find(Invoice.class, getId());
         invoice = loadPendingInvoice();
     }
-
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public AuthorizedUser getBlankAuthorizedUser() {
         AuthorizedUser user = new AuthorizedUser();
