@@ -39,6 +39,7 @@ public interface TestConstants {
     // public static String ADMIN_PASSWORD = "admin";
     public static Long ADMIN_INDEPENDENT_PROJECT_ID = 1L;
     public static final String TEST_DOCUMENT_NAME = "pia-09-lame-1980.pdf";
+    public static final String TEST_DOCUMENT_NAME_SMALL = "pia-09-lame-1980-small.pdf";
     public static final String TEST_DOCUMENT = TEST_DOCUMENT_DIR + TEST_DOCUMENT_NAME;
 
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
