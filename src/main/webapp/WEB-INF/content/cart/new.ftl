@@ -29,7 +29,7 @@
     </div>
     </#macro>
 <body>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='preview'>
+    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <h1>What would you like to put into tDAR?</h1>
@@ -117,7 +117,7 @@
                     <div class="span6">
                         <@s.hidden name="id" value="${invoice.id?c!-1}" />
                         <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
-                        <#if !production || administrator || editor >
+                        <#if administrator || editor >
                             <hr>
                             <p><b>For Admin Use Only:</b></p>
                             <table class="table tableFormat">

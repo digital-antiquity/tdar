@@ -18,7 +18,6 @@ import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 /**
  * Implementation of pricing api
  */
-@Namespace("/cart")
 public class CartApiController extends ActionSupport {
 
     private Long lookupMBCount = 0L;

@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.opensymphony.xwork2.ValidationAware;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
@@ -27,34 +24,22 @@ import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespace("/cart")
+@Results({@Result(name="redirect-start", location="/cart/new", type="redirect")})
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable {
 
     /*
      * Workflow:
-     * 
      *  - add
-     *  - api -- AJAX call for calculations
-     *  - preview (save / POST) ==> review
-     *  - login
-     *  - CartController:
-     *  - finalreview
-     *  - payment processing ...
+     *  - api (AJAX call for calculations)
+     *  - review
+     *  - finalReview
+     *  - poll-order
+     *  - order-complete [success: order-complete-success, cancel:order-complete-cancel]
+     *  - process-choice ==> [input:add, success:review]
+     *  - register => [input:review, success:finalReview]
+     *  - login => [input:review, success:finalReview]
      */
 
-    /*
-    Workflow pt. 2
-
-            cart/add
-                "success" => cart/confirm
-                "success-login" => cart/confirm
-                "input" => cart/add
-
-     */
-
-
-
-    
     private static final long serialVersionUID = -9156927670405819626L;
 
     public static final String SIMPLE = "simple";
@@ -83,25 +68,22 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
      * Show buyable items and pricing
      * @return
      */
-    @Action(value = "new", results = {@Result(name = SUCCESS, type = "freemarker", location = "edit.ftl") })
+    @Action("new")
     public String execute()
     {
-        setupActivities();
         return SUCCESS;
     }
 
     /**
-     * Process cart selection
+     * Process cart selection.  If successful, display the pending invoice.
      *
      * @return
      */
-    //todo: this should be 'save' or 'add-item'
-    @Action(value = "preview",
+    @Action(value = "process-choice",
             results = {
-                    @Result(name = INPUT, type = "freemarker", location = "edit.ftl"),
+                    @Result(name = INPUT, location = "new.ftl"),
                     @Result(name = SUCCESS, type=REDIRECT, location = "review?id=${invoice.id}") })
     public String preview() {
-        setupActivities();
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
         }
@@ -110,37 +92,27 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
         }
-
-
-        //TODO: if we put error during validate(), workflow interceptor will set result to be INPUT without calling this method
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
     }
 
-    //TODO: try out convention result naming convention
-    @Action(value = "review",
-            results = {
-                    @Result(name = "success", type = "freemarker", location = "simple.ftl"),
-                    @Result(name = "authenticate", type="freemarker", location = "simple-with-auth.ftl")
-            })
-    public String showConfirmation() {
-        if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
+    /**
+     * Show the pending invoice.
+     * @return
+     */
+    @Action("review")
+    public String showInvoice() {
+        String result = "redirect-start";
+        //todo: check for transient invoice in session. If not found, add actionError and redirect to starting page
+        //todo: if authenticated, load existing billing accounts then render review page w/ billing-account-edit form
+        //todo: if not authenticated, render the review page w/ signup/login form
+        if(isAuthenticated() ) {
+            result = "authenticated";
+        } else {
+            result = "success";
         }
-        setupActivities();
-        return SUCCESS;
+        return result;
     }
 
-    @Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") })
-    public String simplePaymentProcess() throws TdarActionException {
-        if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
-        }
-        if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
-            return ERROR;
-        }
-
-        return SUCCESS;
-    }
 
     public Invoice getInvoice() {
         if (invoice == null) {
@@ -209,6 +181,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     @Override
     public void prepare() {
         Invoice p = null;
+        setupActivities();
         if (Persistable.Base.isNotNullOrTransient(getInvoice())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getInvoice().getId(), getId());
         }

@@ -54,7 +54,6 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
     public static final String SIMPLE = "simple";
