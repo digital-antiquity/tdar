@@ -462,10 +462,10 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
         }
         invoice.markUpdated(authenticatedUser);
-        genericDao.markWritable(invoice);
-        for (BillingItem item : invoice.getItems()) {
-            genericDao.markWritable(item);
-        }
+//        genericDao.markWritable(invoice);
+//        for (BillingItem item : invoice.getItems()) {
+//            genericDao.markWritable(item);
+//        }
         getDao().saveOrUpdate(invoice);
         if (Persistable.Base.isNotNullOrTransient(accountId)) {
             Account account = genericDao.find(Account.class, accountId);

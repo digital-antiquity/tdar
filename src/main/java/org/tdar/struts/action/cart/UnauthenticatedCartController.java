@@ -95,6 +95,9 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
                     @Result(name = SUCCESS, type=REDIRECT, location = "review"),
 
             })
+    //FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
+    //FIXME: we want to avoid writeable sessions on unauthenticated requests. Consider storing transient invoice in httpSession, and persist only after we authenticate
+    @WriteableSession
     public String preview() {
         try {
             cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
