@@ -83,21 +83,43 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
+    <#if sessionData.person?has_content>
     <div class="actions">
     <h3>Actions</h3>
      <button name="requestAccess" class="button btn">email</button>
      <div class="email-form">
-     <form>
+     <form id="followup">
         <@s.select theme="tdar" name='type'  emptyOption='false' listValue='name()' list='%{emailTypes}' label='Email Type'/>
         <@s.hidden name="toId" value="${resource.submitter.id?c}" />
-        <#-- <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" />--> 
+        <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" /> 
         <@s.textarea name="messageBody" rows="4" label="Message" />
         <@common.antiSpam />
-     <button name="send" class="button btn btn-primary">send</button>
+     <button name="send" id="followup-send" class="button btn btn-primary">send</button>
      <button name="cancel" class="button btn btn-cancel">cancel</button>
+     <script>
+        $("#followup-send").click(function(e) {
+
+         var url = "/email/deliver"; // the script where you handle the form input.
+
+    $.ajax({
+           type: "POST",
+           url: url,
+           data: $("#followup").serialize(), // serializes the form's elements.
+           success: function(data)
+           {
+               alert("success"); // show response from the php script.
+           },
+           error: function(data) {
+               alert(JSON.stringify(data));
+           }
+        });
+        e.preventDefault();
+        });
+     </script>
      </form>
      </div>
     </div>
+    </#if>
 <hr/>
     <#noescape>
         <#if resource.url! != ''>

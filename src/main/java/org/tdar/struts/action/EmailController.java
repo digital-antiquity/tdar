@@ -1,11 +1,19 @@
 package org.tdar.struts.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -24,17 +32,28 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
     private Long toId;
+    private TdarUser from;
+    private TdarUser to;
     private String subject;
     private String messageBody;
     private EmailMessageType type;
+    private Map<String, Object> jsonResult = new HashMap<>();
 
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
-    @Action("deliver")
+    @Autowired
+    private transient GenericService genericService;
+
+    @Action(value = "deliver", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
+            @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
+    })
     @PostOnly
     public String execute() {
         emailService.constructEmail(fromId, toId, subject, messageBody, type);
+        jsonResult.put("status", "QUEUED");
+        
         return SUCCESS;
     }
 
@@ -89,6 +108,49 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Override
     public void prepare() throws Exception {
         h.checkForSpammers();
+        from = genericService.find(TdarUser.class, fromId);
+        to = genericService.find(TdarUser.class, toId);
+    }
+
+    @Override
+    public void validate() {
+        if (Persistable.Base.isTransient(from)) {
+            addActionError("emailController.from_not_found");
+        }
+        if (Persistable.Base.isTransient(to)) {
+            addActionError("emailController.to_not_found");
+        }
+        if (StringUtils.isBlank(messageBody)) {
+            addActionError("emailController.no_message");
+        }
+        if (type == null) {
+            addActionError("emailController.no_type");
+        }
+
+    }
+
+    public TdarUser getTo() {
+        return to;
+    }
+
+    public void setTo(TdarUser to) {
+        this.to = to;
+    }
+
+    public TdarUser getFrom() {
+        return from;
+    }
+
+    public void setFrom(TdarUser from) {
+        this.from = from;
+    }
+
+    public Map<String, Object> getJsonResult() {
+        return jsonResult;
+    }
+
+    public void setJsonResult(Map<String, Object> jsonResult) {
+        this.jsonResult = jsonResult;
     }
 
 }

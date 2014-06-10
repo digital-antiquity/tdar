@@ -1,29 +1,51 @@
 package org.tdar.struts.result;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.XmlService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 
+@Component
 public class JsonDocumentResult implements Result {
 
+    private static final String FIELD_ERRORS = "fieldErrors";
+    private static final String ACTION_ERRORS = "actionErrors";
+    private static final String ERRORS_KEY = "errors";
     private static final long serialVersionUID = -869094415533475014L;
     public static final String UTF_8 = "UTF-8";
     public static final String CONTENT_TYPE = "application/json";
-    public static final String DEFAULT_PARAM = "jsonInputStream";
+    public static final String DEFAULT_STREAM_PARAM = "jsonInputStream";
+    public static final String DEFAULT_OBJECT_PARAM = "jsonResult";
+    public static final String CALLBACK_PARAM = "callback";
+    public static final String JSON_VIEW_PARAM = "jsonView";
 
     private Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-    private String stream = DEFAULT_PARAM;
+    private String stream = DEFAULT_STREAM_PARAM;
+    private Class<?> jsonView;
+    private String callback;
+    private String jsonObject = DEFAULT_OBJECT_PARAM;
     private int statusCode = StatusCode.OK.getHttpStatusCode();
+
+    @Autowired
+    private transient XmlService xmlService;
 
     public JsonDocumentResult() {
         super();
@@ -44,18 +66,61 @@ public class JsonDocumentResult implements Result {
 
     @Override
     public void execute(ActionInvocation invocation) throws Exception {
-        InputStream inputStream = (InputStream) invocation.getStack().findValue(stream);
-        if (inputStream == null) {
+        InputStream inputStream = getInputStream(invocation);
+        Object jsonObject_ = getJsonObject(invocation);
+
+        if (inputStream == null && jsonObject_ == null) {
             String msg = MessageHelper.getMessage("jsonDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(),
                     Arrays.asList(stream).toArray());
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
+
+        if (jsonObject_ != null) {
+            if (jsonObject_ instanceof Map && invocation.getAction() instanceof TdarActionSupport) {
+                TdarActionSupport tas = (TdarActionSupport)invocation.getAction();
+                Map<String, Object> result = (Map<String, Object>)jsonObject_;
+                Map<String, Object> errors = (Map<String, Object>)result.get(ERRORS_KEY);
+                if (errors == null) {
+                    errors = new HashMap<>();
+                    result.put(ERRORS_KEY, errors);
+                }
+
+                if (tas.hasActionErrors()) {
+                    List<String> actionErrors = new ArrayList<>();
+                    for (String actionError : tas.getActionErrors()) {
+                        actionErrors.add(tas.getText(actionError));
+                    }
+                    errors.put(ACTION_ERRORS, actionErrors);
+                }
+                if (tas.hasFieldErrors()) {
+                    errors.put(FIELD_ERRORS, tas.getFieldErrors());
+                }
+            }
+            
+            String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonView(), getCallback());
+            inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
+        }
+        
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
-        resp.setStatus(getStatusCode() );
+        resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         IOUtils.copy(inputStream, resp.getOutputStream());
+    }
+
+    private Object getJsonObject(ActionInvocation invocation) {
+        Object object_ = invocation.getStack().findValue(jsonObject);
+        return object_;
+    }
+
+    private InputStream getInputStream(ActionInvocation invocation) {
+        Object stream_ = invocation.getStack().findValue(stream);
+        InputStream inputStream = null;
+        if (stream_ instanceof InputStream) {
+            inputStream = (InputStream) stream_;
+        }
+        return inputStream;
     }
 
     public int getStatusCode() {
@@ -64,5 +129,29 @@ public class JsonDocumentResult implements Result {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public Class<?> getJsonView() {
+        return jsonView;
+    }
+
+    public void setJsonView(Class<?> jsonView) {
+        this.jsonView = jsonView;
+    }
+
+    public String getJsonObject() {
+        return jsonObject;
+    }
+
+    public void setJsonObject(String jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }
