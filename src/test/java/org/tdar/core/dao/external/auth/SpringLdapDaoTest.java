@@ -21,6 +21,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 /**
  * We know that the Spring LDAP code is tested by SpringSource. We simply need to test that our interface between tdar and that code works as we expect it to.
@@ -74,7 +75,7 @@ public class SpringLdapDaoTest {
         final String username = "name";
         final String ldapFilter = "(&(objectclass=inetOrgPerson)(uid=" + username + "))";
         context.checking(getAuthenticationExpectation(password, ldapFilter, true));
-        assertTrue(AuthenticationResult.VALID.equals(dao.authenticate(null, null, username, password)));
+        assertTrue(AuthenticationResultType.VALID.equals(dao.authenticate(null, null, username, password).getType()));
         context.assertIsSatisfied();
     }
 
@@ -84,7 +85,7 @@ public class SpringLdapDaoTest {
         String username = "name";
         String ldapFilter = "(&(objectclass=inetOrgPerson)(uid=" + username + "))";
         context.checking(getAuthenticationExpectation(password, ldapFilter, false));
-        assertTrue(AuthenticationResult.INVALID_PASSWORD.equals(dao.authenticate(null, null, username, password)));
+        assertTrue(AuthenticationResultType.INVALID_PASSWORD.equals(dao.authenticate(null, null, username, password).getType()));
         context.assertIsSatisfied();
     }
 
@@ -105,7 +106,7 @@ public class SpringLdapDaoTest {
                 will(returnValue(person));
             }
         });
-        assertEquals(AuthenticationResult.ACCOUNT_EXISTS, dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResultType.ACCOUNT_EXISTS, dao.addUser(person, password, TdarGroup.TDAR_USERS).getType());
         context.assertIsSatisfied();
     }
 
@@ -123,7 +124,7 @@ public class SpringLdapDaoTest {
                 oneOf(template).modifyAttributes(with(any(DirContextOperations.class))); // add the group
             }
         });
-        assertEquals(AuthenticationResult.VALID, dao.addUser(person, password, TdarGroup.TDAR_USERS));
+        assertEquals(AuthenticationResultType.VALID, dao.addUser(person, password, TdarGroup.TDAR_USERS).getType());
         context.assertIsSatisfied();
     }
 
