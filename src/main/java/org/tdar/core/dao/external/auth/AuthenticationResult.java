@@ -2,6 +2,10 @@ package org.tdar.core.dao.external.auth;
 
 import org.tdar.core.bean.entity.TdarUser;
 
+/**
+ * FIXME: localize messages
+ * 
+ */
 public enum AuthenticationResult {
     VALID(""),
     INVALID_PASSWORD("Authentication failed.  Please check that your username and password were entered correctly."),
@@ -11,7 +15,7 @@ public enum AuthenticationResult {
     ACCOUNT_EXISTS("The account already exists");
 
     private final String message;
-    private TdarUser person;
+    private ThreadLocal<TdarUser> threadLocalPerson = new ThreadLocal<>();
     private transient ThreadLocal<Throwable> threadLocalThrowable = new ThreadLocal<>();
 
     AuthenticationResult(String message) {
@@ -41,11 +45,12 @@ public enum AuthenticationResult {
     }
 
     public TdarUser getPerson() {
-        return person;
+        return threadLocalPerson.get();
     }
 
-    public void setPerson(TdarUser person) {
-        this.person = person;
+    public AuthenticationResult withUser(TdarUser person) {
+        threadLocalPerson.set(person);
+        return this;
     }
 
 }

@@ -3,7 +3,6 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,6 +89,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     private InstitutionDao institutionDao;
 
     private AuthenticationProvider provider;
+
     // @Override
     // public boolean isServiceRequired() {
     // return true;
@@ -230,7 +230,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         List<Status> statuses = reservedSearchParameters.getStatuses();
 
         if (CollectionUtils.isEmpty(statuses)) {
-            statuses= new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
+            statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         statuses.retainAll(allowedSearchStatuses);
@@ -851,7 +851,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     /**
      * Authenticate a user, and optionally create the user account prior to authentication.
      * 
-     * @param person_
+     * FIXME: handling of transient reconciliation needs refactoring
+     * 
+     * @param person
      * @param password
      * @param institutionName
      * @param request
@@ -861,8 +863,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @return
      */
     @Transactional(readOnly = false)
-    public synchronized AuthenticationResult addAnAuthenticateUser(TdarUser person_, String password, String institutionName, HttpServletRequest request,
+    public synchronized AuthenticationResult addAndAuthenticateUser(TdarUser person_, String password, String institutionName, HttpServletRequest request,
             HttpServletResponse response, SessionData sessionData, boolean contributor) {
+        // FIXME: pointless alias?
         TdarUser person = person_;
         TdarUser findByUsername = personDao.findByUsername(person.getUsername());
         TdarUser findByEmail = personDao.findUserByEmail(person.getEmail());
@@ -877,7 +880,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
                 logger.warn("could not authenticate", e);
             }
         }
+        // FIXME: refactor overwritten reconciliations
         person = reconcilePersonWithTransient(person, findByUsername, MessageHelper.getMessage("userAccountController.error_username_already_registered"));
+        // if there's a user with this email, that takes precedence
         person = reconcilePersonWithTransient(person, findByEmail, MessageHelper.getMessage("userAccountController.error_duplicate_email"));
         if (Persistable.Base.isTransient(person)) {
             Person findByEmail2 = personDao.findByEmail(person.getEmail());
@@ -921,8 +926,12 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // }
         // log person in.
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), password);
-        result.setPerson(person);
-        return result;
+        if (result.isValid()) {
+            logger.debug("Authenticated successfully with auth service, registering login and creating authentication token");
+            personDao.registerLogin(person);
+            createAuthenticationToken(person, sessionData);
+        }
+        return result.withUser(person);
 
     }
 
@@ -977,13 +986,13 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         return provider;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-      AuthenticationToken token = sessionData.getAuthenticationToken();
-      token.setSessionEnd(new Date());
-      personDao.update(token);
-      sessionData.clearAuthenticationToken();
-      getAuthenticationProvider().logout(servletRequest, servletResponse);
+        AuthenticationToken token = sessionData.getAuthenticationToken();
+        token.setSessionEnd(new Date());
+        personDao.update(token);
+        sessionData.clearAuthenticationToken();
+        getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
 
 }

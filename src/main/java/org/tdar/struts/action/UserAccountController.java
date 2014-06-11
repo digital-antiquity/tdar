@@ -190,16 +190,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
 
         person.setContributorReason(contributorReason);
-        person.setAffilliation(getAffilliation());
+        person.setAffiliation(getAffilliation());
         try {
-            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
+            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(person, password, institutionName,
                     getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
             if (result.isValid()) {
                 setPerson(result.getPerson());
-                getLogger().debug("Authenticated successfully with auth service.");
-                entityService.registerLogin(person);
-
-                getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
                 if (StringUtils.isNotBlank(url)) {
                     return REDIRECT;

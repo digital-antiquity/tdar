@@ -24,6 +24,7 @@ import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 @Scope("prototype")
 public class CartApiController extends ActionSupport {
 
+    private static final long serialVersionUID = -1870193105271895297L;
     private Long lookupMBCount = 0L;
     private Long lookupFileCount = 0L;
     private List<PricingOption> pricingOptions = new ArrayList<>();

@@ -74,7 +74,7 @@ public class TdarUser extends Person {
     @Column(name = "affilliation", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    private UserAffiliation affilliation;
+    private UserAffiliation affiliation;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "penultimate_login")
@@ -229,11 +229,11 @@ public class TdarUser extends Person {
         this.tosVersion = tosVersion;
     }
 
-    public UserAffiliation getAffilliation() {
-        return affilliation;
+    public UserAffiliation getAffiliation() {
+        return affiliation;
     }
 
-    public void setAffilliation(UserAffiliation affilliation) {
-        this.affilliation = affilliation;
+    public void setAffiliation(UserAffiliation affilliation) {
+        this.affiliation = affilliation;
     }
 }
