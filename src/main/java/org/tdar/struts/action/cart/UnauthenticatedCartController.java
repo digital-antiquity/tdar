@@ -17,18 +17,12 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.ValidationAware;
@@ -64,12 +58,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     private List<Long> extraItemIds = new ArrayList<>();
     private List<Integer> extraItemQuantities = new ArrayList<>();
     private TdarUser owner;
-    private TdarUser person = new TdarUser();
-    private String password;
-    private String confirmPassword;
-    private String confirmEmail;
-    private String institutionName;
-    private UserAffiliation affiliation;
 
     private PricingType pricingType = null;
     private String code;
@@ -140,29 +128,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             return "authenticated";
         }
         return SUCCESS;
-    }
-
-    @Action(value = "register",
-            results = {
-                    @Result(name = SUCCESS, type = "redirect", location = "/cart/finalreview"),
-                    @Result(name = INPUT, location = "review.ftl")
-            })
-    @HttpsOnly
-    @PostOnly
-    @WriteableSession
-    @DoNotObfuscate(reason = "no reason")
-    public String processRegistration() {
-        if (isValid(person)) {
-            person.setAffiliation(getAffiliation());
-            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(person, password, institutionName,
-                    getServletRequest(), getServletResponse(), getSessionData(), true);
-            if (result.isValid()) {
-                setPerson(result.getPerson());
-                addActionMessage(getText("userAccountController.successful_registration_message"));
-                return SUCCESS;
-            }
-        }
-        return INPUT;
     }
 
     private boolean isValid(TdarUser person) {
@@ -314,58 +279,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     void clearPendingInvoice() {
         invoice = null;
         session.remove(PENDING_INVOICE_ID_KEY);
-    }
-
-    public TdarUser getPerson() {
-        return person;
-    }
-
-    public void setPerson(TdarUser person) {
-        this.person = person;
-    }
-
-    public UserAffiliation getAffiliation() {
-        return affiliation;
-    }
-
-    public void setAffiliation(UserAffiliation affiliation) {
-        this.affiliation = affiliation;
-    }
-
-    public List<UserAffiliation> getUserAffiliations() {
-        return Arrays.asList(UserAffiliation.values());
-    }
-
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
-    }
-
-    public String getConfirmEmail() {
-        return confirmEmail;
-    }
-
-    public void setConfirmEmail(String confirmEmail) {
-        this.confirmEmail = confirmEmail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getInstitutionName() {
-        return institutionName;
-    }
-
-    public void setInstitutionName(String institutionName) {
-        this.institutionName = institutionName;
     }
 
 }
