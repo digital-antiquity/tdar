@@ -20,6 +20,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
+import com.hp.hpl.jena.sparql.pfunction.library.str;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 
@@ -117,7 +118,7 @@ public class JsonDocumentResult implements Result {
     private InputStream getInputStream(ActionInvocation invocation) {
         Object stream_ = invocation.getStack().findValue(stream);
         InputStream inputStream = null;
-        if (stream_ instanceof InputStream) {
+        if (stream_ != null && InputStream.class.isAssignableFrom(stream_.getClass())) {
             inputStream = (InputStream) stream_;
         }
         return inputStream;
