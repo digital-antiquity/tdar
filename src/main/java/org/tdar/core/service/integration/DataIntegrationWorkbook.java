@@ -25,7 +25,6 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -34,8 +33,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.excel.CellFormat.Style;
+import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
@@ -52,8 +51,8 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class DataIntegrationWorkbook implements Serializable {
 
-    private static final int MAX_FILENAME_LENGTH = 250;
     private static final long serialVersionUID = -2452046179173301666L;
+    
     private transient ExcelService excelService;
     private Workbook workbook;
     private List<IntegrationColumn> integrationColumns;

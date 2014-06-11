@@ -83,20 +83,25 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
-    private transient OntologyNode parentNode;
-
-    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
-
     private String index;
 
     private String iri;
 
-    private transient boolean synonym = false;
     // @Column(unique=true)
     private String uri;
 
     @Column(name = "import_order")
     private Long importOrder;
+
+    // is this ontology node a synonym of another ontology node?
+    private transient boolean synonym;
+    // true if this ontology node or its children doesn't have any mapped data
+    private transient boolean mappedDataValues;
+    private transient boolean parent;
+    private transient boolean[] columnHasValueArray;
+    private transient OntologyNode parentNode;
+    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
+
 
     public OntologyNode() {
     }
@@ -183,10 +188,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return ObjectUtils.compare(index, other.getIndex());
     }
 
-    private transient boolean parent = false;
-
-    private transient boolean[] columnHasValueArray;
-
     @Transient
     public String getIndentedLabel() {
         StringBuilder builder = new StringBuilder(index).append(' ').append(iri);
@@ -213,9 +214,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.importOrder = importOrder;
     }
 
-    /**
-     * @return the importOrder
-     */
     public Long getImportOrder() {
         return importOrder;
     }
@@ -262,7 +260,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         for (String displayName_ : getEquivalenceSet()) {
             for (String existingDisplayName : existing.getEquivalenceSet()) {
                 if (existingDisplayName.equalsIgnoreCase(displayName_)) {
-                    logger.trace("\tcomparing " + displayName_ + "<>" + existingDisplayName + " --> equivalent");
+                    logger.trace("\tcomparing {} <> {}", displayName, existingDisplayName);
                     return true;
                 }
             }
@@ -331,4 +329,20 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
             return getDisplayName();
         }
     }
+    
+    @Transient
+    @XmlTransient
+    public boolean isDisabled() {
+        return hasMappedDataValues();
+    }
+
+    @Transient
+    public boolean hasMappedDataValues() {
+        return mappedDataValues;
+    }
+
+    public void setMappedDataValues(boolean mappedDataValues) {
+        this.mappedDataValues = mappedDataValues;
+    }
+
 }

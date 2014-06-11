@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     private static final String DEFAULT_SHEET_NAME = "Sheet1";
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
-//    private DataFormatter formatter = new HSSFDataFormatter();
+    // private DataFormatter formatter = new HSSFDataFormatter();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -132,7 +131,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             }
         }
         if (exceptions.size() > 0) {
-            for (Exception e: exceptions) {
+            for (Exception e : exceptions) {
                 logger.warn("Exception while processing excel workbook sheets", e);
             }
             // FIXME: why reraise?
@@ -140,43 +139,37 @@ public class ExcelConverter extends DatasetConverter.Base {
         }
     }
 
-    // convert a single excel sheet to a database table in the target database
+    /**
+     * Converts a single excel sheet to a database table in the target database.
+     * 
+     * 1) Initially create a table with all TEXT(nullable) columns
+     * 2) For each record in the sheet, store a row in our all-text table, but analyze the text being inserted into each cell, and maintain statistics to see if
+     * we can ultimately convert the column of that cell to a more desirable dataype (for example, if every value in a column can safely convert
+     * to an int, we deem it more desirable for that column to be BIGINT than TEXT)
+     * 3) After all inserts have been made, check final statistics to see if we can safely convert the table columns to a
+     * more specific datatype.
+     */
     private void processSheet(Sheet currentSheet, String sheetName) throws Exception {
-        /**
-         * Our conversion approach will go like this: 1) Initially we create a
-         * table with all TEXT(nullable) columns 2) For each record in the
-         * sheet, store a row in our all-text table, but analyze the text being
-         * inserted into each cell, and maintain statistics to see if we can
-         * ultimately convert the column of that cell to a more desirable
-         * dataype (for example, if every value in a column can safely convert
-         * to an int, we deem it more desirable for thaty column to be BIGINT
-         * than TEXT) 3) After all inserts have been made, we check our final
-         * statistics to see if we can safely convert the table columns to a
-         * more specific datatype.
-         */
-
         logger.info("processing Worksheet: {}", sheetName);
-        // extract schema from the current sheet.
-        // assume first row contains column names
-
+        // evaluate schema from the current sheet.
         SheetEvaluator sheetEvaluator = new SheetEvaluator(currentSheet);
         // sheetEvalator.evaluateBeginning(currentSheet, 25);
-        if (! sheetEvaluator.hasTabularData()) {
+        if (!sheetEvaluator.hasTabularData()) {
             // FIXME: shouldn't use exceptions for flow control
-//            throw new TdarRecoverableRuntimeException("excelConverter.no_tabular_data", Arrays.asList(sheetName));
+            // throw new TdarRecoverableRuntimeException("excelConverter.no_tabular_data", Arrays.asList(sheetName));
             logger.warn("no tabular data found for sheet {}", sheetName);
             return;
         }
         // create the data table + columns based on the SheetEvaluator's reported headers.
         DataTable dataTable = createDataTable(sheetName);
-        for (String columnName: sheetEvaluator.getHeaderColumnNames()) {
+        for (String columnName : sheetEvaluator.getHeaderColumnNames()) {
             createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable);
         }
         // FIXME: will this conditional ever happen?
         if ((dataTable.getDataTableColumns() == null) || dataTable.getDataTableColumns().isEmpty()) {
             logger.info("{} appears to be empty or have non-tabular data, skipping data table", sheetName);
             dataTables.remove(dataTable);
-            // FIXME: why were we continuing on in this situation if there is no tabular data?
+            // FIXME: old code used to continue in this situation if there was no tabular data
             return;
         }
         final int startColumnIndex = sheetEvaluator.getDataColumnStartIndex();
