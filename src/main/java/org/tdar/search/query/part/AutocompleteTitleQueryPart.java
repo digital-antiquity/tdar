@@ -27,7 +27,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
 
     public AutocompleteTitleQueryPart(String title) {
         if (StringUtils.isBlank(title)) {
-            throw new TdarRecoverableRuntimeException("autocomplete term was empty, should never happen");
+            throw new TdarRecoverableRuntimeException("autocompleteTitleQueryPart.never_empty");
         }
         this.title = title;
     }
