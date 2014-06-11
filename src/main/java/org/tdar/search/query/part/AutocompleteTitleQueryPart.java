@@ -7,7 +7,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -26,9 +25,6 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     private final String title;
 
     public AutocompleteTitleQueryPart(String title) {
-        if (StringUtils.isBlank(title)) {
-            throw new TdarRecoverableRuntimeException("autocompleteTitleQueryPart.never_empty");
-        }
         this.title = title;
     }
 
@@ -69,7 +65,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
 
     @Override
     public String generateQueryString() {
-        return getQueryPart().generateQueryString();
+        return isEmpty() ? "" : getQueryPart().generateQueryString();
     }
 
     @Override

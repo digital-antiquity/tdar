@@ -91,7 +91,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
-        this.setLookupSource(LookupSource.RESOURCE);
+        setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
@@ -114,7 +114,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-            getLogger().trace("jsonResults:" + getResults());
+            getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
@@ -134,12 +134,12 @@ public class LookupController extends AbstractLookupController<Indexable> {
             })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(this.term) && !checkMinString(keywordType)) {
+        if (!checkMinString(term) && !checkMinString(keywordType)) {
             return SUCCESS;
         }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        this.setLookupSource(LookupSource.KEYWORD);
+        setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
@@ -171,8 +171,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMinLookupLength(2);
         setMode("annotationLookup");
 
-        this.setLookupSource(LookupSource.KEYWORD);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.KEYWORD);
+        getLogger().trace("looking up:'{}'", term);
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
@@ -196,16 +196,12 @@ public class LookupController extends AbstractLookupController<Indexable> {
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
-
-        this.setLookupSource(LookupSource.COLLECTION);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.COLLECTION);
+        getLogger().trace("looking up: '{}'", term);
         setMode("collectionLookup");
-
         // only return results if query length has enough characters
         if (checkMinString(term)) {
-            if (StringUtils.isNotBlank(getTerm())) {
-                q.append(new AutocompleteTitleQueryPart(getTerm()));
-            }
+            q.append(new AutocompleteTitleQueryPart(getTerm()));
             boolean admin = false;
             if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 admin = true;
@@ -334,7 +330,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
      *            the title to set
      */
     public void setTitle(String title) {
-
         this.title = StringUtils.trim(title);
     }
 
