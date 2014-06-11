@@ -3,49 +3,8 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
     <title>Match column values to ontology nodes</title>
-
-    <style type='text/css'>
-        .ui-autocomplete {
-            max-height: 144pt;
-            overflow-y: auto;
-            overflow-x: hidden;
-            line-height: 1em;
-        }
-
-        .ui-menu-item {
-            font-family: courier !Important;
-            white-space: pre !important;
-        }
-
-        .ui-widget {
-            font-family: courier;
-        }
-
-        /* IE 6 doesn't support max-height
-         * we use height instead, but this forces the menu to always be this tall
-         */
-        * html .ui-autocomplete {
-            height: 144pt;
-            overflow-x: hidden;
-        }
-
-        .ui-menu .ui-menu-item {
-            border: 0px;
-            margin: 0px !important;
-            padding: 0px !important;
-        }
-
-        .ui-menu-item a {
-            border: 1px solid transparent;
-            min-height: 1em;
-            margin: 0px !important;
-            padding: 0px !important;
-        }
-
-    </style>
-
 </head>
-<body>
+<body class="ontology-mapping">
 
     <@nav.toolbar "coding-sheet" "mapping" />
 

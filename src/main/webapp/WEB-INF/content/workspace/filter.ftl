@@ -5,28 +5,8 @@
 <head>
     <title>Filter Ontology Values</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <style type='text/css'>
-        /
-        /
-        input + label {
-            position: relative;
-        }
-
-        input[disabled] + label {
-            font-weight: normal !important;
-        }
-
-        .inline-label {
-            clear: none;
-            display: inline-block;
-        }
-
-        .wf-loading {
-            visibility: visible !important;
-        }
-    </style>
 </head>
-<body>
+<body class="filter-ontology">
 <h1>Filter Ontology Values</h1>
 
 <div class="row">
