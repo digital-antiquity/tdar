@@ -68,27 +68,27 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
     @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
-    public String lookupInstitution()  {
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
+    public String lookupInstitution() {
         setMode("institutionLookup");
         return findInstitution(institution);
     }
 
     @Action(value = "resource",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         this.setLookupSource(LookupSource.RESOURCE);
@@ -119,7 +119,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
-        
+
         if (isIncludeCompleteRecord()) {
             jsonifyResult(null);
         } else {
@@ -129,9 +129,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupKeyword() {
         // only return results if query length has enough characters
         if (!checkMinString(this.term) && !checkMinString(keywordType)) {
@@ -163,9 +163,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "annotationkey",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);
@@ -190,9 +190,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
@@ -203,7 +203,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
-            q.append(new AutocompleteTitleQueryPart(getTerm()));
+            if (StringUtils.isNotBlank(getTerm())) {
+                q.append(new AutocompleteTitleQueryPart(getTerm()));
+            }
             boolean admin = false;
             if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 admin = true;
