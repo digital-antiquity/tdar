@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -53,10 +54,10 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient File transientFile;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResourceFile informationResourceFile;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
