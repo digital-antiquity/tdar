@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.AntiSpamHelper;
@@ -32,8 +34,10 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
     private Long toId;
-    private TdarUser from;
-    private TdarUser to;
+    private Person from;
+    private Resource resource;
+    private Long resourceId;
+    private Person to;
     private String subject;
     private String messageBody;
     private EmailMessageType type;
@@ -51,9 +55,9 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     })
     @PostOnly
     public String execute() {
-        emailService.constructEmail(fromId, toId, subject, messageBody, type);
+        emailService.constructEmail(from, to, subject, messageBody, type);
         jsonResult.put("status", "QUEUED");
-        
+
         return SUCCESS;
     }
 
@@ -108,8 +112,9 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Override
     public void prepare() throws Exception {
         h.checkForSpammers();
-        from = genericService.find(TdarUser.class, fromId);
-        to = genericService.find(TdarUser.class, toId);
+        from = genericService.find(Person.class, fromId);
+        to = genericService.find(Person.class, toId);
+        resource = genericService.find(Resource.class, resourceId);
     }
 
     @Override
@@ -126,22 +131,25 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
         if (type == null) {
             addActionError("emailController.no_type");
         }
+        if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
+            addActionError("emailController.no_resource");
+        }
 
     }
 
-    public TdarUser getTo() {
+    public Person getTo() {
         return to;
     }
 
-    public void setTo(TdarUser to) {
+    public void setTo(Person to) {
         this.to = to;
     }
 
-    public TdarUser getFrom() {
+    public Person getFrom() {
         return from;
     }
 
-    public void setFrom(TdarUser from) {
+    public void setFrom(Person from) {
         this.from = from;
     }
 
@@ -151,6 +159,22 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     public void setJsonResult(Map<String, Object> jsonResult) {
         this.jsonResult = jsonResult;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
 }

@@ -2,6 +2,8 @@ package org.tdar.core.service.external;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.Email.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -146,17 +149,19 @@ public class EmailService {
     }
 
     @Transactional(readOnly=false)
-    public void constructEmail(Long fromId, Long toId, String subject, String messageBody, EmailMessageType type) {
-        Person from = genericService.find(Person.class, fromId);
-        Person to = genericService.find(Person.class, toId);
+    public void constructEmail(Person from, Person to, String subject, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericService.markWritable(email);
         email.setFrom(from.getEmail());
         email.setTo(to.getEmail());
         email.setSubject(type.name() +  " " + subject);
+        Map<String,Object> map = new HashMap<>();
+        map.put("from",from);
+        map.put("to",to);
+        map.put("messageBody",messageBody);
+        map.put("type",type);
         email.setMessage(messageBody);
-        genericService.saveOrUpdate(email);
-        queue(email);
+        queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
         
     }
 
