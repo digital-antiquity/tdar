@@ -40,8 +40,8 @@ public class JsonDocumentResult implements Result {
 
     private Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
     private String stream = DEFAULT_STREAM_PARAM;
-    private Class<?> jsonView;
-    private String callback;
+    private String jsonView = JSON_VIEW_PARAM;
+    private String callback = CALLBACK_PARAM;
     private String jsonObject = DEFAULT_OBJECT_PARAM;
     private int statusCode = StatusCode.OK.getHttpStatusCode();
 
@@ -64,11 +64,14 @@ public class JsonDocumentResult implements Result {
     public void setStream(String stream) {
         this.stream = stream;
     }
+    
+    private ActionInvocation invocation;
 
     @Override
     public void execute(ActionInvocation invocation) throws Exception {
-        InputStream inputStream = getInputStream(invocation);
-        Object jsonObject_ = getJsonObject(invocation);
+        this.invocation = invocation;
+        InputStream inputStream = getInputStream();
+        Object jsonObject_ = getJsonObjectValue();
 
         if (inputStream == null && jsonObject_ == null) {
             String msg = MessageHelper.getMessage("jsonDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(),
@@ -99,7 +102,7 @@ public class JsonDocumentResult implements Result {
                 }
             }
             
-            String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonView(), getCallback());
+            String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
         }
         
@@ -110,12 +113,23 @@ public class JsonDocumentResult implements Result {
         IOUtils.copy(inputStream, resp.getOutputStream());
     }
 
-    private Object getJsonObject(ActionInvocation invocation) {
+    private String getCallbackValue() {
+        String object_ = (String) invocation.getStack().findValue(callback);
+        return object_;
+    }
+
+
+    private Class<?> getJsonViewValue() {
+        Class<?> object_ = (Class<?>)invocation.getStack().findValue(jsonView);
+        return object_;
+    }
+
+    private Object getJsonObjectValue() {
         Object object_ = invocation.getStack().findValue(jsonObject);
         return object_;
     }
 
-    private InputStream getInputStream(ActionInvocation invocation) {
+    private InputStream getInputStream() {
         Object stream_ = invocation.getStack().findValue(stream);
         InputStream inputStream = null;
         if (stream_ != null && InputStream.class.isAssignableFrom(stream_.getClass())) {
@@ -140,11 +154,11 @@ public class JsonDocumentResult implements Result {
         this.callback = callback;
     }
 
-    public Class<?> getJsonView() {
+    public String getJsonView() {
         return jsonView;
     }
 
-    public void setJsonView(Class<?> jsonView) {
+    public void setJsonView(String jsonView) {
         this.jsonView = jsonView;
     }
 
