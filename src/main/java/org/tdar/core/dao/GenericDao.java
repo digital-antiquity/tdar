@@ -86,12 +86,13 @@ public class GenericDao {
     
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
-        if (CollectionUtils.isEmpty(ids)) {
-            return Collections.emptyList();
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
+        if (CollectionUtils.isNotEmpty(ids)) {
+            query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
+            query.setParameterList("ids", ids);
         }
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
         query.setCacheable(true);
-        return query.setParameterList("ids", ids).list();
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")

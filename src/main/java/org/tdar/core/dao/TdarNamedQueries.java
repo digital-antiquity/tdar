@@ -138,6 +138,7 @@ public interface TdarNamedQueries {
                     "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
+    String QUERY_FIND_ALL = "FROM %s";
     String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
     String QUERY_FIND_ALL_WITH_STATUS = "FROM %s WHERE status in (:statuses)";
     String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE' and resourceType='%2$s' ";
