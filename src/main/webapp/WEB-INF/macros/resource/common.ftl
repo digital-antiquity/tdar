@@ -348,72 +348,15 @@ with that datapoint -->
     <div id="graph${id}" style="width:${graphWidth}px;height:${graphHeight}px;"></div>
 
     <script>
+            var props = {
+            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            title: "${graphLabel?js_string}",
+            searchKey:"${searchKey}",
+            context:"${context?string}"
+        };
+
         $(document).ready(function () {
-
-            var defaults_ = {
-                fontSize: 10,
-                seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                title: "${graphLabel?js_string}",
-                seriesDefaults: {
-                    renderer: jQuery.jqplot.PieRenderer,
-                    rendererOptions: {
-                        fill: true,
-                        animate: !$.jqplot.use_excanvas,
-                        showDataLabels: true,
-                        // Add a margin to seperate the slices.
-                        sliceMargin: 4,
-                        // stroke the slices with a little thicker line.
-                        lineWidth: 5,
-                        padding: 5,
-                        dataLabels: 'value'
-                    }
-                },
-                grid: {
-                    background: 'rgba(0,0,0,0)',
-                    drawBorder: false,
-                    shadow: false,
-                    gridLineColor: 'none',
-                    borderWidth: 0,
-                    gridLineWidth: 0,
-                    drawGridlines: false
-                },
-                legend: {
-                    renderer: $.jqplot.EnhancedLegendRenderer,
-                    show: true,
-                    location: 'e',
-                    fontSize: 10,
-                    showSwatch: true
-                },
-                cursor: {
-                    style: "pointer",
-                    showTooltip: false,
-                    useAxesFormatters: false
-                },
-                highlighter: {
-                    show: true,
-                    formatString: '%s (%s)',
-                    tooltipLocation: 'ne',
-                    useAxesFormatters: false
-                }
-            };
-
-
-            <#if config?has_content>
-                $.extend(true, defaults_,${config});
-            </#if>
-
-            if (${data}.
-            length > 1
-            )
-            {
-                var plot${data} = jQuery.jqplot('graph${id}', [${data}], defaults_);
-                <@clickPlot id searchKey context />
-            }
-            else
-            {
-                $("#graph${data}").hide();
-                console.log("hiding ${data} graph");
-            }
+            TDAR.charts.pieChart(props, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
         });
 
     </script>
@@ -459,108 +402,9 @@ with that datapoint -->
             </#list>
     </script>
         <#if seen>
-            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354  config="resourceConfig">
-            var resourceConfig = {
-            axes: {
-            yaxis: {
-            renderer: $.jqplot.LogAxisRenderer
-            }
-            }
-            };
-            </@barGraph>
+            <@barGraph data="resourceGraphData" graphLabel="${siteAcronym} by the Numbers" graphHeight=354 yaxis="log" />
         </#if>
     </#macro>
-
-<#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
-<#-- Emit the container and script for a line graph -->
-<#-- @param data:string? name of the global object that contains the data for the chart (see #generatePieJson) -->
-<#-- @param graphWidth:number? width of chart container in pixels -->
-<#-- @param graphHeight:number? height of chart container in pixels -->
-<#-- @param graphLabel:string? title for this graph -->
-<#-- @param searchKey:string? name of the datapoint key querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-<#-- @param id:string? value of the ID attribute for the graph container DIV -->
-<#-- @param config:string  json containing specific parameters to use for the jqPlot initialization function -->
-<#-- @param context:boolean? value of the 'context'  querystring parameter used by the clickhandler (see #clickPlot for more info) -->
-    <#macro lineChart data="data" graphWidth=360 graphHeight=800 graphLabel="" searchKey="resourceTypes" id="" config="" context=false>
-        <#noescape>
-            <#if id == "">
-                <#local id=data+"id" />
-            </#if>
-        <script>
-            $(document).ready(function () {
-                $.jqplot.config.enablePlugins = true;
-                var labels_ = [];
-                try {
-                    labels_ = eval('labels');
-                } catch (e) {
-                    labels_ = [];
-                }
-                var _defaults = {
-                    // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
-                    title: "${graphLabel?js_string}",
-                    animate: !$.jqplot.use_excanvas,
-                    seriesDefaults: {
-                        pointLabels: {
-                            show: true,
-                            location: 'n',
-                            edgeTolerance: -25
-                        },
-                        rendererOptions: {
-                            // Set varyBarColor to tru to use the custom colors on the bars.
-                            varyBarColor: true
-                        }
-                    },
-                    seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                    grid: {
-                        background: 'rgba(0,0,0,0)',
-                        drawBorder: false,
-                        shadow: false,
-                        gridLineColor: 'none',
-                        borderWidth: 0,
-                        gridLineWidth: 0,
-                        drawGridlines: false
-                    },
-                    axes: {
-                        xaxis: {
-                            renderer: $.jqplot.DateAxisRenderer,
-                            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
-                            tickOptions: {
-                                fontFamily: 'Georgia',
-                                fontSize: '8pt',
-                                showGridline: false
-                            }
-                        },
-                        yaxis: {
-                            showTicks: false,
-                            show: false,
-                            showGridline: false
-                        }
-                    },
-                    highlighter: {
-                        show: true,
-                        sizeAdjust: 7.5
-                    },
-                    legend: {
-                        show: true,
-                        placement: 'outsideGrid',
-                        labels: labels_,
-                        location: 'ne',
-                        rowSpacing: '0px'
-                    }
-                };
-
-                <#if config?has_content>
-                    $.extend(true, _defaults,${config});
-                </#if>
-
-                var plot${id} = $.jqplot('graph${id}', ${data}, _defaults);
-
-            });
-        </script>
-        <div id="graph${id}" style="height:120px"></div>
-        </#noescape>
-    </#macro>
-
 
 <#-- FIXME: move the function definition to en external js file.  (part of TDAR-3415)  -->
 <#-- Emit the container and script for a line graph -->
@@ -578,106 +422,27 @@ with that datapoint -->
         <#if id == "">
             <#local id=data+"id" />
         </#if>
-    <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;"></div>
-
-    <script>
+    <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" data-title="${graphLabel?html}">
+       <script>
+            var props = {
+            seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+            xaxis: "${xaxis}",
+            yaxis: "${yaxis}",
+            rotate: "${rotate}",
+            title: "${graphLabel?js_string}",
+            searchKey:"${searchKey}",
+            context:"${context?string}"
+        };
         $(document).ready(function () {
-            $.jqplot.config.enablePlugins = true;
-
-            var _defaults = {
-                // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
-                title: "${graphLabel?js_string}",
-                animate: !$.jqplot.use_excanvas,
-                seriesDefaults: {
-                    renderer: $.jqplot.BarRenderer,
-                    pointLabels: {
-                        show: true,
-                        location: 'n',
-                        edgeTolerance: -35
-                    },
-                    rendererOptions: {
-                        // Set varyBarColor to tru to use the custom colors on the bars.
-                        varyBarColor: true
-                    }
-                },
-                seriesColors: [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
-                grid: {
-                    background: 'rgba(0,0,0,0)',
-                    drawBorder: false,
-                    shadow: false,
-                    gridLineColor: 'none',
-                    borderWidth: 0,
-                    gridLineWidth: 0,
-                    drawGridlines: false
-                },
-                axes: {
-                    xaxis: {
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                        renderer: $.jqplot.CategoryAxisRenderer,
-                            <#if xaxis == "log">renderer: $.jqplot.LogAxisRenderer,</#if>
-                            <#if xaxis == "date">renderer: $.jqplot.DateAxisRenderer,</#if>
-
-                            <#if rotate !=0>tickRenderer: $.jqplot.CanvasAxisTickRenderer,</#if>
-                        tickOptions: {
-                            fontFamily: 'Georgia',
-                            fontSize: '8pt',
-                                <#if rotate != 0>angle:${rotate},</#if>
-                            showGridline: false
-                        }
-                    },
-                    yaxis: {
-                            <#if yaxis== "log">renderer: $.jqplot.LogAxisRenderer,</#if>
-                            <#if yaxis== "date">renderer: $.jqplot.DateAxisRenderer,</#if>
-
-                        showTicks: false,
-                        show: false,
-                        showGridline: false
-                    }
-                },
-                highlighter: { show: false },
-                cursor: {
-                    style: "pointer",
-                    showTooltip: false,
-                    useAxesFormatters: false
-                }
-
-            };
-            <#nested/>
-
-            <#if config?has_content>
-                $.extend(true, _defaults,${config});
-            </#if>
-
-
-            if (${data}.
-            length > 1
-            )
-            {
-                var plot${id} = $.jqplot('graph${id}', [${data}], _defaults);
-                <@clickPlot id searchKey context />
-            }
-            else
-            {
-                $("#graph${id}").hide();
-                console.log("hiding ${id} bar graph");
-            }
+            TDAR.charts.barGraph(props, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
         });
-    </script>
+        <#nested />
+        
+        </script>        
+        </div>
+
     </#macro>
 
-<#-- Emit a partial javascript that registers a datapoint click handler.  The handler redirects the browser to a tdar
-search page associated with the datapoint -->
-<#-- @param id:string name of the graph that, when appended with "graph", forms the id of the graph container -->
-<#-- @param searchKey:string name of the datapoint querystring parameter key -->
-<#-- @param context:boolean if true, search results page will limit results to resources that extend modification rights to the currently-authenticated user -->
-    <#macro clickPlot id searchKey context>
-    $('#graph${id}').bind('jqplotDataClick',
-    function (ev, seriesIndex, pointIndex, data) {
-    $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data+ ', pageX: '+ev.pageX+', pageY: '+ev.pageY);
-    window.location.href="<@s.url value="/search/results?${searchKey}="/>" +data[2] <#if context>+  "&amp;useSubmitterContext=true"</#if>;
-    }
-    );
-    </#macro>
 
 
 
@@ -690,48 +455,10 @@ search page associated with the datapoint -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false>
     <div class="mapcontainer" style="">
         <script type="text/javascript">
+
             $(function () {
-
-                $('.worldmap').maphilight({
-                    fade: true,
-                    groupBy: "alt",
-                    strokeColor: '#ffffff'
-                });
-
-                $(".worldmap").delegate('area', 'mouseover', function (e) {
-                    $('[iso=' + $(this).attr('iso') + ']').each(function (index, val) {
-                        hightlight(true, val);
-                    });
-                });
-
-                $(".worldmap").delegate('area', 'mouseout', function (e) {
-                    $('[iso=' + $(this).attr('iso') + ']').each(function (index, val) {
-                        hightlight(false, val);
-                    });
-                });
-
+                TDAR.charts.worldMap();
             });
-
-            function hightlight(on, element) {
-                var data = $(element).data('maphilight') || {};
-                if (on) {
-                    data.oldFillColor = data.fillColor;
-                    data.oldFillOpacity = data.fillOpacity;
-                    data.oldStrokeColor = data.strokeColor;
-                    data.oldStrokeWidth = data.strokeWidth;
-
-                    data.fillColor = '4B514D';
-                    data.fillOpacity = .5;
-                    data.strokeColor = '111111';
-                    data.strokeWidth = '.6';
-                } else {
-                    data.fillColor = data.oldFillColor;
-                    data.fillOpacity = data.oldFillOpacity;
-                    data.strokeColor = data.oldStrokeColor;
-                    data.strokeWidth = data.oldStrokeWidth;
-                }
-                $(element).data('maphilight', data).trigger('alwaysOn.maphilight');
-            }
         </script>
 
         <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->

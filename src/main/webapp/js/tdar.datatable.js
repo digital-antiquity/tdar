@@ -501,11 +501,43 @@ TDAR.datatable = function () {
         jQuery.fn.dataTableExt.oSort['tdar-currency-desc'] = _fnCurrencySortDesc;
     }
 
+    function _fnRenderPersonId(oObj) {
+        //in spite of name, aData is an object containing the resource record for this row
+        var objResource = oObj.aData;
+        var html = '<a href="' + getURI('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
+        return html;
+    }
+    function _registerUserLookupDatatable() {
+        var settings = {
+            tableSelector: '#dataTable',
+            sAjaxSource: '/lookup/person',
+            "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+            sPaginationType: "bootstrap",
+            "bLengthChange": true,
+            "bFilter": true,
+            sAjaxDataProp: 'people',
+            selectableRows: false,
+            aoColumns: [
+                {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID', bSortable: false, fnRender: TDAR.datatable.renderPersonId},
+                {sTitle: "First", mDataProp: "firstName", tdarSortOption: 'FIRST_NAME', bSortable: false},
+                {sTitle: "Last", mDataProp: "lastName", tdarSortOption: 'LAST_NAME', bSortable: false},
+                {sTitle: "Email", mDataProp: "email", tdarSortOption: 'CREATOR_EMAIL', bSortable: false}
+            ],
+            requestCallback: function () {
+                return {minLookupLength: 0, registered: 'true', term: $("#dataTable_filter input").val()};
+            }
+        };
+
+        TDAR.datatable.registerLookupDataTable(settings);
+    }
+    
     return {
         extendSorting: _extendSorting,
         registerLookupDataTable: _registerLookupDataTable,
+        initUserDataTable: _registerUserLookupDatatable,
         setupDashboardDataTable: _setupDashboardDataTable,
         removeResourceClicked: _removeResourceClicked,
-        registerResourceCollectionDataTable: _registerResourceCollectionDataTable
+        registerResourceCollectionDataTable: _registerResourceCollectionDataTable,
+        renderPersonId: _fnRenderPersonId
     };
 }();
