@@ -153,7 +153,9 @@
         <h4>matching collections</h4>
         <ul>
             <#list collectionResults as col>
+                <#if col?has_content>
                 <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                </#if>
             </#list>
         </ul>
         <#if ( collectionTotalRecords < 10)>

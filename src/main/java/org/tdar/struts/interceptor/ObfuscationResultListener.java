@@ -74,7 +74,7 @@ public class ObfuscationResultListener implements PreResultListener {
             if (obj == null) {
                 continue;
             }
-            boolean old = true;
+            boolean old = false;
             // old way -- obfuscate everything
             if (old) {
                 obfuscationService.obfuscateObject(obj, user);
