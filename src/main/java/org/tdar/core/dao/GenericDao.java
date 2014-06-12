@@ -320,12 +320,12 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
-        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+        return getCriteria(persistentClass).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
     }
 
     @SuppressWarnings("unchecked")
@@ -566,7 +566,6 @@ public class GenericDao {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
             if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
-                getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);
                 return merge(obj);
