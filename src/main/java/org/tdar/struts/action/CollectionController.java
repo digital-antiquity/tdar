@@ -380,6 +380,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     
     @Override
     public List<Resource> getFullUserProjects() {
+        if (fullUserProjects == null) {
+            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        }
         return fullUserProjects;
     }
 

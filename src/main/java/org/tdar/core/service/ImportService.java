@@ -32,6 +32,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -144,14 +145,14 @@ public class ImportService {
         TdarUser blessedAuthorizedUser = genericService.merge(authorizedUser);
         incomingResource.markUpdated(blessedAuthorizedUser);
 
-        reconcilePersistableChildBeans(authorizedUser, incomingResource);
-        logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(authorizedUser));
+        reconcilePersistableChildBeans(blessedAuthorizedUser, incomingResource);
+        logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(blessedAuthorizedUser));
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
             ((InformationResource) incomingResource).setDate(((InformationResource) incomingResource).getDate());
         }
 
-        processFiles(authorizedUser, proxies, incomingResource);
+        processFiles(blessedAuthorizedUser, proxies, incomingResource);
 
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
@@ -465,6 +466,12 @@ public class ImportService {
                 ResourceCollection collection = (ResourceCollection) toReturn;
                 collection.getResources().add((Resource) resource);
                 ((Resource) resource).getResourceCollections().add(collection);
+            }
+            if (toReturn instanceof Person) {
+                Institution inst = ((Person) toReturn).getInstitution();
+                if (Persistable.Base.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
+                    ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
+                }
             }
         }
         else // otherwise, reconcile appropriately

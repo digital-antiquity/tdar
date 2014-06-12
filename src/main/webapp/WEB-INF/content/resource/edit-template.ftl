@@ -366,17 +366,21 @@
             'use strict';
 
         TDAR.filesJson = ${filesJson!"false"};
-        TDAR.inheritance.project = ${projectAsJson};
+        TDAR.inheritance.project = ${projectAsJson!"{}"};
         var props = {
             formSelector: "#metadataForm",
             includeInheritance : ${inheritanceEnabled?string},
             acceptFileTypes : /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i,
+            <#if multipleUpload??>
             multipleUpload : ${multipleUpload?string},
+        </#if>
         <#if validFileExtensions??>
             validExtensions : "<@edit.join sequence=validFileExtensions delimiter="|"/>",
             validExtensionsWarning : "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)",
         </#if>
+        <#if ableToUploadFiles??>
             ableToUpload : ${ableToUploadFiles?string},
+        </#if>
              dataTableEnabled : ${resource.resourceType.dataTableSupported?string}
          };
         var form = $(props.formSelector)[0];
