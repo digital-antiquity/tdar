@@ -58,7 +58,7 @@ public class CartProcessRegistrationAction extends AbstractRegistrationControlle
         getPerson().setAffiliation(getAffilliation());
         AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(getPerson(), getPassword(), getInstitutionName(),
                 getServletRequest(), getServletResponse(), getSessionData(), true);
-        if (result.isValid()) {
+        if (result.getType().isValid()) {
             setPerson(result.getPerson());
             addActionMessage(getText("userAccountController.successful_registration_message"));
             return SUCCESS;

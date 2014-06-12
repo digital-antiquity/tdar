@@ -927,12 +927,13 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // }
         // log person in.
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), password);
-        if (result.isValid()) {
+        if (result.getType().isValid()) {
             logger.debug("Authenticated successfully with auth service, registering login and creating authentication token");
             personDao.registerLogin(person);
             createAuthenticationToken(person, sessionData);
         }
-        return result.withUser(person);
+        result.setPerson(person);
+        return result;
 
     }
 
