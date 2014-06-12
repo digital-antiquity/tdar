@@ -192,7 +192,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         try {
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
                     getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
-            if (result.isValid()) {
+            if (result.getType().isValid()) {
                 setPerson(result.getPerson());
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
