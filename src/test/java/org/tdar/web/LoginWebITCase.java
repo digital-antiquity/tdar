@@ -5,7 +5,7 @@ package org.tdar.web;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.MessageHelper;
@@ -52,7 +52,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testInvalidLogin() {
         logout();
         login("BAD_USERNAME", "BAD_PASSWORD", true);
-        assertTextPresent(AuthenticationResult.INVALID_PASSWORD.getMessage());
+        assertTextPresent(AuthenticationResultType.INVALID_PASSWORD.getMessage());
         assertTextNotPresent("Your submitted projects");
     }
 

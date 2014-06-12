@@ -182,7 +182,7 @@ public class UserAccountController extends AbstractRegistrationController implem
         try {
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(getPerson(), getPassword(), getInstitutionName(),
                     getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
-            if (result.isValid()) {
+            if (result.getType().isValid()) {
                 setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
                 if (StringUtils.isNotBlank(url)) {
