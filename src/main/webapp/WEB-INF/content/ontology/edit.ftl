@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#global itemPrefix="ontology"/>
+    <#global multipleUpload=multipleFileUploadEnabled!false />
     <#global inheritanceEnabled=true />
     <#global hideAuthors=true/>
     <#global hideRelatedCollections=true/>

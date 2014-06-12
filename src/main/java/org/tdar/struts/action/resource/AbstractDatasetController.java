@@ -59,7 +59,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Autowired
     private transient DatasetService datasetService;
-
     
     @Autowired
     private transient DataTableService dataTableService;
