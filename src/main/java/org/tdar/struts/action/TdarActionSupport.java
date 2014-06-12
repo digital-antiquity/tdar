@@ -62,10 +62,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
     // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
     private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
+
     public static final String JAXBRESULT = "jaxbdocument";
     public static final String JSONRESULT = "jsonresult";
-
+    public static final String HTTPHEADER = "httpheader";
     public static final String REDIRECT = "redirect";
+
     public static final String WAIT = "wait";
     public static final String THUMBNAIL = "thumbnail";
     public static final String SM = "sm";
@@ -80,7 +82,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String UNAUTHORIZED = "unauthorized";
 
-    // TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
     public static final String AUTHENTICATED = "authenticated";
 
     /**

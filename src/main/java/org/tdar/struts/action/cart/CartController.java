@@ -17,10 +17,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
-import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.ParameterAware;
+import org.apache.struts2.interceptor.SessionAware;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -33,7 +33,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
@@ -41,7 +40,6 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -56,11 +54,11 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Scope("prototype")
 @ParentPackage("secured")
 @HttpsOnly
-public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
+public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware, SessionAware {
 
     public static final String SIMPLE = "simple";
     private static final long serialVersionUID = 1592977664145682926L;
-    private List<BillingActivity> activities = new ArrayList<BillingActivity>();
+    private List<BillingActivity> activities = new ArrayList<>();
     private Long accountId = -1L;
     private String billingPhone;
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
@@ -69,13 +67,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_ADD_PAY = "add-payment";
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
-    private List<Long> extraItemIds = new ArrayList<Long>();
-    private List<Integer> extraItemQuantities = new ArrayList<Integer>();
+    private List<Long> extraItemIds = new ArrayList<>();
+    private List<Integer> extraItemQuantities = new ArrayList<>();
     private Person owner;
     private String callback;
     private PricingType pricingType = null;
     private String code;
     private InputStream resultJson;
+    private Map<String, Object> session;
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
@@ -135,12 +134,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return SUCCESS;
     }
 
+    /**
+     * I have no idea what this action does and where it fits within the larger process.
+     * @return
+     * @throws TdarActionException
+     */
     @SkipValidation
-    @Actions(
-            {@Action(SIMPLE),
-            @Action(value = "finalreview", results = { @Result(name = SUCCESS, location = "simple.ftl") })
-            }
-            )
+    @Action("simple", results={@Result(name="simple", location="review-authenticated.ftl")})
     @WriteableSession
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -154,7 +154,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
-
         return SUCCESS;
     }
 
@@ -326,7 +325,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                     invoice.setResponse(billingResponse);
                     getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
                     map.put("invoice", invoice);
                     map.put("date", new Date());
                     try {
@@ -417,6 +416,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         return false;
+    }
+
+    @Override
+    public void prepare() {
+        //Grab the invoice id from the session. Otherwise,  grab id from request params.
+        Long invoiceId = (Long) session.get(UnauthenticatedCartController.PENDING_INVOICE_ID_KEY);
+        setId(invoiceId);
+        super.prepare();
     }
 
     public void setInvoice(Invoice invoice) {
@@ -571,4 +578,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.resultJson = resultJson;
     }
 
+    @Override
+    public void setSession(Map<String, Object> session) {
+        this.session = session;
+    }
 }
