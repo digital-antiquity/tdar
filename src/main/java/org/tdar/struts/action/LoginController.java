@@ -44,7 +44,6 @@ public class LoginController extends AuthenticationAware.Base {
     private String loginUsername;
     private String loginPassword;
     private Person person;
-    private boolean userCookieSet;
     private String url;
     private String comment; // for simple spam protection
     private String returnUrl;
@@ -64,12 +63,23 @@ public class LoginController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "process",
-            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
-            results = {
-                    @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
-                    @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
-            })
+    @Actions(
+            {
+                    @Action(value = "process",
+                            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
+                            results = {
+                                    @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
+                                    @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
+                            }),
+                    @Action(value = "process-cart-login",
+                            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
+                            results = {
+                                    @Result(name = SUCCESS, type = REDIRECT, location = "/cart/finalreview"),
+                                    @Result(name = REDIRECT, type = "httpheader", params = {"error", BAD_REQUEST, "errorMessage", "returnUrl not expected"}),
+                                    @Result(name = INPUT, type =  "redirect", location = "/cart/review?loginUsername=${loginUsername}")
+                            })
+            }
+    )
     @HttpsOnly
     @WriteableSession
     public String authenticate() {
@@ -107,6 +117,7 @@ public class LoginController extends AuthenticationAware.Base {
         }
         return AUTHENTICATED;
     }
+
 
     private String parseReturnUrl() {
         if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
@@ -157,20 +168,6 @@ public class LoginController extends AuthenticationAware.Base {
     @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your password.")
     public void setLoginPassword(String password) {
         this.loginPassword = password;
-    }
-
-    /**
-     * Returns true if the user wants to have a cookie with their email set.
-     * FIXME: currently not implemented.
-     * 
-     * @return
-     */
-    public boolean isUserCookieSet() {
-        return userCookieSet;
-    }
-
-    public void setUserCookieSet(boolean storeUserCookie) {
-        this.userCookieSet = storeUserCookie;
     }
 
     public Person getPerson() {

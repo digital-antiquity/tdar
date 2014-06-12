@@ -26,10 +26,12 @@ import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.ValidationAware;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Component
 @Scope("prototype")
 @Results({ @Result(name = "redirect-start", location = "/cart/new", type = "redirect") })
+@HttpsOnly  //FIXME: add class-level support for @HttpsOnly and @PostOnly
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable, ValidationAware, SessionAware {
 
     /*
@@ -64,6 +66,8 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
     // todo: for consistency it would be better to use spring to either a) autowire a session-scoped invoice, or b) put the pending invoice in sessionData
     private Map<String, Object> session;
+
+
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;

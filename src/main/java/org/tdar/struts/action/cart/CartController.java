@@ -47,6 +47,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -54,6 +55,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@HttpsOnly
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
     public static final String SIMPLE = "simple";
@@ -74,7 +76,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private PricingType pricingType = null;
     private String code;
     private InputStream resultJson;
-
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
@@ -136,7 +137,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Actions(
-            {@Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") }),
+            {@Action(SIMPLE),
             @Action(value = "finalreview", results = { @Result(name = SUCCESS, location = "simple.ftl") })
             }
             )
