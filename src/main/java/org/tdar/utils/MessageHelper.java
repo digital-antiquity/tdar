@@ -14,16 +14,15 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import com.opensymphony.xwork2.TextProvider;
 import com.opensymphony.xwork2.util.ValueStack;
 
-/*
+/**
  * A Singleton helper class for managing Localization and Messages
  */
 public class MessageHelper implements Serializable, TextProvider {
 
     private static final long serialVersionUID = 3633016404256878510L;
-    private static MessageHelper instance;
+    private final static MessageHelper INSTANCE = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+    private final static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
     private ResourceBundle bundle;
-
-    private static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
 
     protected MessageHelper() {
         // Exists only to defeat instantiation.
@@ -34,10 +33,7 @@ public class MessageHelper implements Serializable, TextProvider {
     }
 
     public static MessageHelper getInstance() {
-        if (instance == null) {
-            instance = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
-        }
-        return instance;
+        return INSTANCE;
     }
 
     /*

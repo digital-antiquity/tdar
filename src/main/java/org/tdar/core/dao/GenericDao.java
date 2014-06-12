@@ -75,15 +75,14 @@ public class GenericDao {
     public void setCacheModeForCurrentSession(CacheMode mode) {
         getCurrentSession().setCacheMode(mode);
     }
-    
+
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<T> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
     }
-    
-    
+
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
@@ -540,7 +539,6 @@ public class GenericDao {
     public <T> void markReadOnly(T obj) {
         if (getCurrentSession().contains(obj)) {
             // mark as read only
-            getCurrentSession().setCacheMode(CacheMode.GET);
             // dump it off the cache so that future searches don't find the updated version
             getCurrentSession().setReadOnly(obj, true);
         }
@@ -567,7 +565,6 @@ public class GenericDao {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
             if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
-                getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);
                 return merge(obj);

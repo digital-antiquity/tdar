@@ -79,6 +79,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
+    @Autowired
+    private transient GenericService genericService;
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);

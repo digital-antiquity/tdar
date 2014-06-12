@@ -530,7 +530,17 @@ TDAR.datatable = function () {
 
         TDAR.datatable.registerLookupDataTable(settings);
     }
-    
+
+    function _checkAllToggle() {
+        var unchecked = $('#resource_datatable td input[type=checkbox]:unchecked');
+        var checked = $('#resource_datatable td input[type=checkbox]:checked');
+        if (unchecked.length > 0) {
+            $(unchecked).click();
+        } else {
+            $(checked).click();
+        }
+    }
+
     return {
         extendSorting: _extendSorting,
         registerLookupDataTable: _registerLookupDataTable,
@@ -538,6 +548,7 @@ TDAR.datatable = function () {
         setupDashboardDataTable: _setupDashboardDataTable,
         removeResourceClicked: _removeResourceClicked,
         registerResourceCollectionDataTable: _registerResourceCollectionDataTable,
-        renderPersonId: _fnRenderPersonId
+        renderPersonId: _fnRenderPersonId,
+        checkAllToggle: _checkAllToggle
     };
 }();

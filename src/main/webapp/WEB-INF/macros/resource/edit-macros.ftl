@@ -1074,7 +1074,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <thead>
                 <tr>
                     <#if selectable>
-                        <th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
+                        <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
                     <th>Title</th>
                     <th>Type</th>
                 </tr>
@@ -1091,17 +1091,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
     </div>
     <br/>
-    <script>
-        function checkAllToggle() {
-            var unchecked = $('#resource_datatable td input[type=checkbox]:unchecked');
-            var checked = $('#resource_datatable td input[type=checkbox]:checked');
-            if (unchecked.length > 0) {
-                $(unchecked).click();
-            } else {
-                $(checked).click();
-            }
-        }
-    </script>
     </#macro>
 
 <#-- emit $.ready javascript snippet that registers is responsible for wiring up a table element as a datatable widget -->

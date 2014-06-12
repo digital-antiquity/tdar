@@ -1,10 +1,10 @@
 package org.tdar.struts.data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import net.tanesha.recaptcha.ReCaptcha;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,8 +146,8 @@ public class AntiSpamHelper implements Serializable {
         }
         try {
             if (getPerson().getEmail().endsWith("\\r") ||
-                    (ObjectUtils.equals(getPerson().getFirstName(), getPerson().getLastName())
-                    && ObjectUtils.equals(getPerson().getPhone(), "123456"))) {
+                    (Objects.equals(getPerson().getFirstName(), getPerson().getLastName())
+                    && Objects.equals(getPerson().getPhone(), "123456"))) {
                 logger.debug(String.format("we think this user was a spammer: %s  -- %s", getPerson().getEmail(), getComment()));
                 throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
             }

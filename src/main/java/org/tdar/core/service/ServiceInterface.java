@@ -188,7 +188,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
      */
     public static abstract class TypedDaoBase<E, D extends Dao<E>> implements ServiceInterface<E, D> {
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
 
         private D dao;
 

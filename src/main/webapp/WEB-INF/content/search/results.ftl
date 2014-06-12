@@ -128,20 +128,8 @@
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
                         list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                     </label>
-                    <script type='text/javascript'>
-                        $("#recordsPerPage").change(function () {
-                            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
-                            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                            var prefix = "";
-                            if (url.indexOf("?") != 0) {
-                                prefix = "?";
-                            }
-                            url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-                            window.location = url;
-                        });
-                    </script>
                     <#if !hideFacetsAndSort>
-                        <@search.sortFields true/>
+                        <@search.sortFields />
                     </#if>
                 </div>
             </div>
@@ -153,7 +141,9 @@
         <h4>matching collections</h4>
         <ul>
             <#list collectionResults as col>
+                <#if col?has_content>
                 <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                </#if>
             </#list>
         </ul>
         <#if ( collectionTotalRecords < 10)>
@@ -195,6 +185,7 @@
     //pretty controls for sort options, sidebar options (pulled from main.js)
     $(function () {
         TDAR.common.initializeView();
+        TDAR.advancedSearch.initializeResultsPage();
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />

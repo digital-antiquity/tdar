@@ -1,9 +1,3 @@
-/**
- * $Id$
- * 
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.service;
 
 import java.lang.annotation.Annotation;
@@ -23,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +26,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +54,6 @@ import com.opensymphony.xwork2.ActionProxy;
  * Service to help with Reflection
  * 
  * @author Adam Brin
- * 
  */
 @Service
 public class ReflectionService {
@@ -75,8 +68,8 @@ public class ReflectionService {
     private Map<String, Class<Persistable>> persistableLookup;
 
     @Autowired
-    GenericDao genericDao;
-    
+    private GenericDao genericDao;
+
     /**
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
@@ -113,7 +106,6 @@ public class ReflectionService {
         logger.debug("Fields in {} that refer to {}:{}", new Object[] { classToInspect.getSimpleName(), ancestorToFind.getSimpleName(), matchingFields });
         return matchingFields;
     }
-
 
     /**
      * Take the method name and try and replace it with the same
@@ -568,9 +560,9 @@ public class ReflectionService {
                 }
 
                 Class<?> type = field.getType();
-                if (ObjectUtils.equals(field, runAsField)) {
+                if (Objects.equals(field, runAsField)) {
                     type = runAs;
-                    logger.trace(" ** overriding type with " + type.getSimpleName());
+                    logger.trace(" ** overriding type with {}", type.getSimpleName());
                 }
 
                 if (Collection.class.isAssignableFrom(type))
@@ -587,12 +579,12 @@ public class ReflectionService {
                 // handle more primative fields private String ...
                 else {
                     logger.trace("adding {} ({})", field, stack);
-                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
+                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && Objects.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
                         continue;
                     }
 
                     if ((TdarConfiguration.getInstance().getLicenseEnabled() == false)
-                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText"))) {
+                            && (Objects.equals(field.getName(), "licenseType") || Objects.equals(field.getName(), "licenseText"))) {
                         continue;
                     }
                     set.add(new CellMetadata(field, annotation, class2, stack, prefix));
@@ -616,7 +608,7 @@ public class ReflectionService {
     public void validateAndSetProperty(Object beanToProcess, String name, String value) {
         List<String> errorValueList = Arrays.asList(name, value);
         try {
-            logger.trace("processing: " + beanToProcess + " - " + name + " --> " + value);
+            logger.trace("processing: {} - {} --> {}", beanToProcess, name, value);
             Class propertyType = PropertyUtils.getPropertyType(beanToProcess, name);
 
             // handle types should we be testing column length?
@@ -729,7 +721,7 @@ public class ReflectionService {
         }
         return result;
     }
-    
+
     public static List<Field> findAnnotatedFieldsOfClass(Class<?> cls, Class<? extends Annotation> annotationClass) {
         List<Field> result = new ArrayList<>();
         // iterate up the package hierarchy
@@ -753,25 +745,25 @@ public class ReflectionService {
     public void walkObject(Persistable p) {
         logger.debug("{} {}", p.getClass().getCanonicalName(), p);
         Set<String> seen = new HashSet<>();
-        walkObject(p,0,seen);
+        walkObject(p, 0, seen);
     }
-    
+
     private String makeKey(Persistable p) {
-        return String.format("%s-%s",p.getClass().getSimpleName(), p.getId());
+        return String.format("%s-%s", p.getClass().getSimpleName(), p.getId());
     }
-    
+
     private void walkObject(Persistable p, int indent, Set<String> seen) {
         List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields = findAllPersistableFields(p.getClass());
         String key = makeKey(p);
         if (seen.contains(key)) {
-            logger.debug("{}[{}] {}",StringUtils.repeat("| ", indent +1),"seen", p); 
+            logger.debug("{}[{}] {}", StringUtils.repeat("| ", indent + 1), "seen", p);
             return;
         }
         seen.add(key);
         for (Pair<Field, Class<? extends Persistable>> pair : findAllPersistableFields) {
             Object content = callFieldGetter(p, pair.getFirst());
             if (content == null) {
-                logger.trace("{}{}", StringUtils.repeat("| ", indent+1), pair.getFirst());
+                logger.trace("{}{}", StringUtils.repeat("| ", indent + 1), pair.getFirst());
                 continue;
             }
             logger.trace("{}, {}", content, pair.getFirst());
@@ -781,22 +773,22 @@ public class ReflectionService {
                 Collection<Persistable> contents = new ArrayList<Persistable>(originalList);
                 // using a separate collection to avoid concurrent modification of bi-directional double-lists
                 if (CollectionUtils.isNotEmpty(contents)) {
-                    logger.debug("{}{}",StringUtils.repeat("| ", indent +1),pair.getFirst().getName()); 
+                    logger.debug("{}{}", StringUtils.repeat("| ", indent + 1), pair.getFirst().getName());
                 }
                 Iterator<Persistable> iterator = contents.iterator();
                 while (iterator.hasNext()) {
                     Persistable p_ = iterator.next();
                     boolean sessionContains = genericDao.sessionContains(p_);
-                    logger.debug("{}[{}] {}",StringUtils.repeat("| ", indent +2),sessionContains, p_);
+                    logger.debug("{}[{}] {}", StringUtils.repeat("| ", indent + 2), sessionContains, p_);
                     if (sessionContains) {
                         walkObject(p_, indent + 2, seen);
                     }
                 }
             } else {
                 boolean sessionContains = genericDao.sessionContains(content);
-                logger.debug("{}[{}] {} {}",StringUtils.repeat("| ", indent +1), sessionContains, pair.getFirst().getName(), content);
+                logger.debug("{}[{}] {} {}", StringUtils.repeat("| ", indent + 1), sessionContains, pair.getFirst().getName(), content);
                 if (sessionContains) {
-                    walkObject((Persistable)content, indent + 1, seen);
+                    walkObject((Persistable) content, indent + 1, seen);
                 }
             }
         }

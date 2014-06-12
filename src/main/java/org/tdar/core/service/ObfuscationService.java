@@ -1,10 +1,10 @@
 package org.tdar.core.service;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +89,7 @@ public class ObfuscationService {
         }
 
         // don't obfuscate someone for themself
-        if ((target instanceof Person) && ObjectUtils.equals(user, target)) {
+        if ((target instanceof Person) && Objects.equals(user, target)) {
             logger.trace("not obfuscating person: {}", user);
             return;
         }

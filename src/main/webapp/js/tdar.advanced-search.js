@@ -273,8 +273,34 @@ TDAR.advancedSearch = (function () {
         });
     }
 
+    function _initializeResultsPage() {
+        $("#recordsPerPage").change(function () {
+            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
+            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+            var prefix = "";
+            if (url.indexOf("?") != 0) {
+                prefix = "?";
+            }
+            url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
+            window.location = url;
+        });
+
+        $("#sortField").change(function () {
+            var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
+            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+            var prefix = "";
+            if (url.indexOf("?") != 0) {
+                prefix = "?";
+            }
+            url = prefix + url + "&sortField=" + $('#sortField').val();
+            window.location = url;
+        });
+
+    }
+    
     return {
         serializeFormState: _serializeFormState,
-        initAdvancedSearch: _initAdvancedSearch
+        initAdvancedSearch: _initAdvancedSearch,
+        "initializeResultsPage" : _initializeResultsPage
     };
 })();

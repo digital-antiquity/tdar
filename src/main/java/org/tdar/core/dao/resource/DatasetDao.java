@@ -150,7 +150,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
         query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
-        query.setCacheMode(CacheMode.IGNORE);
         return query.list();
     }
 
@@ -226,7 +225,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public List<Resource> findSkeletonsForSearch(Long... ids) {
         Session session = getCurrentSession();
-        session.setCacheMode(CacheMode.GET);
         // distinct prevents duplicates
         // left join res.informationResourceFiles
         long time = System.currentTimeMillis();

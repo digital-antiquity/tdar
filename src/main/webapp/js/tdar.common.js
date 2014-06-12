@@ -326,96 +326,6 @@ TDAR.common = function () {
 
     };
 
-    //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
-    /**
-     * Further initialization for tdar "edit" pages
-     *
-     * @param form
-     */
-    var _setupEditForm = function (form) {
-        var $form = $(form);
-        //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
-        var formid = $form.attr("id");
-
-        // prevent "enter" from submitting
-        $form.delegate('input,select', "keypress", function (event) {
-            return event.keyCode != 13;
-        });
-
-        //initialize form validation
-        _setupFormValidate(form);
-
-        //prepwork prior to form submit (trimming fields)
-        $form.submit(function (f) {
-            try {
-                $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function (idx, elem) {
-                    if ($(elem).val() !== undefined) {
-                        $(elem).val($.trim($(elem).val()));
-                    }
-                });
-            } catch (err) {
-                console.error("unable to trim:" + err);
-            }
-
-            var $button = $('input[type=submit]', f);
-            $button.siblings(".waitingSpinner").show();
-
-            //warn user about leaving before saving
-            $("#jserror").val("");
-            return true;
-        });
-
-        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
-            _prepareDateFields(elem);
-        });
-
-        var $uploaded = $(formid + '_uploadedFiles');
-        if ($uploaded.length > 0) {
-            var validateUploadedFiles = function () {
-                if ($uploaded.val().length > 0) {
-                    $("#reminder").hide();
-                }
-            };
-            $uploaded.change(validateUploadedFiles);
-            validateUploadedFiles();
-        }
-
-        Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
-
-        if (!Modernizr.cssresize) {
-            $('textarea.resizable:not(.processed)').TextAreaResizer();
-        }
-
-        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
-            _prepareDateFields(this);
-        });
-        _showAccessRightsLinkIfNeeded();
-        $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
-
-        //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
-        //       tell you how to delegate to selectors but I couldn't figure it out.
-        //$(form).find('label[title]').tooltip();
-
-        if ($('#explicitCoordinatesDiv').length > 0) {
-            $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
-
-        }
-        $(".latLong").each(function (index, value) {
-            $(this).hide();
-            //copy value of hidden original to the visible text input
-            var id = $(this).attr('id');
-            $('#d_' + id).val($('#' + id).val());
-        });
-
-        $("#jserror").val("SAVE");
-
-        // delete/clear .repeat-row element and fire event
-        $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
-            var rowElem = $(this).parents(".repeat-row")[0];
-            TDAR.repeatrow.deleteRow(rowElem);
-        });
-
-    };
 
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
@@ -520,7 +430,37 @@ TDAR.common = function () {
      * @param form the form to initialize
      * @private
      */
-    var _initEditPage = function (form) {
+    var _initEditPage = function (form, props) {
+
+
+        //FIXME: other init stuff that is separate function for some reason 
+        var $form = $(form);
+        //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
+        var formid = $form.attr("id");
+        
+
+        //information needed re: existing file uploads - needed by TDAR.upload library
+
+        if (props.multipleUpload) {
+            //init fileupload
+            var id = $('input[name=id]').val();
+            if (props.ableToUpload && props.multipleUpload) {
+                TDAR.fileupload.registerUpload({
+                    informationResourceId: id,
+                    acceptFileTypes: props.acceptFileTypes,
+                    formSelector: props.formSelector,
+                    inputSelector: '#fileAsyncUpload',
+                    fileuploadSelector: '#divFileUpload'
+                });
+
+                var fileValidator = new FileuploadValidator("metadataForm");
+                fileValidator.addRule("nodupes");
+                TDAR.fileupload.validator = fileValidator;
+            }
+        }
+
+        //wire up jquery-ui datepicker to our date fields
+        $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
 
         //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it.
         _submitButtonStopWait();
@@ -607,8 +547,83 @@ TDAR.common = function () {
         TDAR.contexthelp.initializeTooltipContent(form);
         _applyWatermarks(form);
 
-        //FIXME: other init stuff that is separate function for some reason 
-        _setupEditForm(form);
+        // prevent "enter" from submitting
+        $form.delegate('input,select', "keypress", function (event) {
+            return event.keyCode != 13;
+        });
+
+        //initialize form validation
+        _setupFormValidate(form);
+
+        //prepwork prior to form submit (trimming fields)
+        $form.submit(function (f) {
+            try {
+                $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function (idx, elem) {
+                    if ($(elem).val() !== undefined) {
+                        $(elem).val($.trim($(elem).val()));
+                    }
+                });
+            } catch (err) {
+                console.error("unable to trim:" + err);
+            }
+
+            var $button = $('input[type=submit]', f);
+            $button.siblings(".waitingSpinner").show();
+
+            //warn user about leaving before saving
+            $("#jserror").val("");
+            return true;
+        });
+
+        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
+            _prepareDateFields(elem);
+        });
+
+        var $uploaded = $(formid + '_uploadedFiles');
+        if ($uploaded.length > 0) {
+            var validateUploadedFiles = function () {
+                if ($uploaded.val().length > 0) {
+                    $("#reminder").hide();
+                }
+            };
+            $uploaded.change(validateUploadedFiles);
+            validateUploadedFiles();
+        }
+
+        Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
+
+        if (!Modernizr.cssresize) {
+            $('textarea.resizable:not(.processed)').TextAreaResizer();
+        }
+
+        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
+            _prepareDateFields(this);
+        });
+        _showAccessRightsLinkIfNeeded();
+        $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
+
+        //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
+        //       tell you how to delegate to selectors but I couldn't figure it out.
+        //$(form).find('label[title]').tooltip();
+
+        if ($('#explicitCoordinatesDiv').length > 0) {
+            $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
+
+        }
+        $(".latLong").each(function (index, value) {
+            $(this).hide();
+            //copy value of hidden original to the visible text input
+            var id = $(this).attr('id');
+            $('#d_' + id).val($('#' + id).val());
+        });
+
+        $("#jserror").val("SAVE");
+
+        // delete/clear .repeat-row element and fire event
+        $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
+            var rowElem = $(this).parents(".repeat-row")[0];
+            TDAR.repeatrow.deleteRow(rowElem);
+        });
 
         _applyTreeviews();
 
@@ -633,6 +648,47 @@ TDAR.common = function () {
             customEvents: "repeatrowdeleted fileuploadstarted",
             cleanOnSubmit: false
         });
+
+        
+        
+
+        //register maps, if any
+        if ($('#divSpatialInformation').length) {
+            $(function () {
+                //fixme: implicitly init when necessary
+                TDAR.maps.initMapApi();
+                var mapdiv = $('#editmapv3')[0];
+                var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
+                TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
+            });
+        }
+
+        if (props.includeInheritance) {
+            TDAR.inheritance.applyInheritance(props.formSelector);
+        }
+
+
+        if (props.validExtensions != undefined) {
+            var validate = $('.validateFileType');
+            if ($(validate).length > 0) {
+                $(validate).rules("add", {
+                    extension: props.validExtensions,
+                    messages: {
+                        extension: props.validExtensionsWarning
+                    }
+                });
+            }
+        }
+        if (props.dataTableEnabled) {
+            TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+        }
+        
+        $("#fileUploadField").change(function () {
+            if ($("#fileUploadField").val().length > 0) {
+                $("#reminder").hide();
+            }
+        }).change();
+
 
     };
 
@@ -1108,6 +1164,7 @@ TDAR.common = function () {
         return bytes.toFixed(1) + ' ' + units[u];
     };
 
+    
     $.extend(self, {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,

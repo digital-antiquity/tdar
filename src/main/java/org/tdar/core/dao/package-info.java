@@ -389,7 +389,6 @@
                 query = "from InformationResourceFile file where status in (:statuses)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_STATUS,
-                cacheMode=org.hibernate.annotations.CacheModeType.GET,
                 query = "from ResourceProxy res fetch all properties left join fetch res.informationResourceFileProxies file  where res.status in (:statuses) and res.submitter.id=:submitterId and file.status in (:fileStatuses)"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -397,12 +396,10 @@
                 query = "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROXY_RESOURCE_SHORT,
-                        cacheMode=org.hibernate.annotations.CacheModeType.GET,
                 query = "select res from ResourceProxy res where res.id in (:ids)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROXY_RESOURCE_FULL,
-                        cacheMode=org.hibernate.annotations.CacheModeType.GET,
                 query = "select res from ResourceProxy res fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies left join fetch res.resourceCollections col left join fetch col.authorizedUsers user where res.id in (:ids)"
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -447,7 +444,6 @@
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
-                cacheMode=org.hibernate.annotations.CacheModeType.GET,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv")
 })
 package org.tdar.core.dao;

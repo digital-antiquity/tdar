@@ -10,9 +10,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
@@ -40,7 +40,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -55,7 +54,6 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -74,8 +72,7 @@ import freemarker.ext.dom.NodeModel;
 /**
  * $Id$
  * 
- * <p>
- * Action for the root namespace.
+ * Controller for browsing resources.
  * 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
@@ -136,7 +133,7 @@ public class BrowseController extends AbstractLookupController {
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-    
+
     @Autowired
     private transient EntityService entityService;
 
@@ -189,7 +186,7 @@ public class BrowseController extends AbstractLookupController {
         try {
             getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
         } catch (ParseException pe) {
-            getLogger().debug("error", pe);
+            getLogger().debug("parse exception", pe);
         }
         return SUCCESS;
     }
@@ -232,8 +229,7 @@ public class BrowseController extends AbstractLookupController {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             FileStoreFile object = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
-
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, object);
+            File file = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, object);
             if (file.exists()) {
                 setInputStream(new FileInputStream(file));
                 setContentLength(file.length());
@@ -243,6 +239,7 @@ public class BrowseController extends AbstractLookupController {
         return ERROR;
     }
 
+    @SuppressWarnings("unchecked")
     @Action(value = CREATORS, results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
@@ -255,7 +252,7 @@ public class BrowseController extends AbstractLookupController {
                     try {
                         getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
                     } catch (Throwable e) {
-                        getLogger().error("problem communicating with crowd getting user info for {} ", creator, e);
+                        getLogger().error("problem communicating with crowd getting user info for {} {}", creator, e);
                     }
                     getAccounts().addAll(
                             accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
@@ -263,7 +260,7 @@ public class BrowseController extends AbstractLookupController {
                 try {
                     setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
                 } catch (Exception e) {
-                    getLogger().error("error: {}", e);
+                    getLogger().error("unable to set resource access statistics", e);
                 }
                 setViewCount(entityService.getCreatorViewCount(creator));
             }
@@ -289,15 +286,15 @@ public class BrowseController extends AbstractLookupController {
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {
-                    getLogger().warn("search parse exception: {}", tdre.getMessage());
+                    getLogger().warn("search parse exception", tdre);
                     addActionError(tdre.getMessage());
                 } catch (ParseException e) {
-                    getLogger().warn("search parse exception: {}", e.getMessage());
+                    getLogger().warn("search parse exception", e);
                 }
             }
             FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
             try {
-                File foafFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
+                File foafFile = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
                 if (foafFile.exists()) {
                     dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
                     getKeywords();
@@ -310,9 +307,9 @@ public class BrowseController extends AbstractLookupController {
                     setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
                 }
             } catch (FileNotFoundException fnf) {
-                getLogger().debug(personInfo.getFilename() + " does not exist in filestore");
+                getLogger().debug("{} does not exist in filestore", personInfo.getFilename());
             } catch (Exception e) {
-                getLogger().debug("{}", e);
+                getLogger().debug("error", e);
             }
 
         }
@@ -537,11 +534,11 @@ public class BrowseController extends AbstractLookupController {
     }
 
     public boolean isShowAdminInfo() {
-        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
+        return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
     }
 
     public boolean isShowBasicInfo() {
-        return isAuthenticated() && (isEditor() || ObjectUtils.equals(getId(), getAuthenticatedUser().getId()));
+        return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
     }
 
     public List<Resource> getFeaturedResources() {
