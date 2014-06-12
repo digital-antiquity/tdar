@@ -83,6 +83,42 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
+    <#if sessionData.person?has_content>
+    <div class="actions">
+    <h3>Actions</h3>
+     <button name="requestAccess" id="emailButton" class="button btn">email</button>
+     <div id="email-form" class="hide">
+        <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
+          <div class="modal-header">
+            <h3 class="success">Success</h3>
+            <h3 class="error">Error</h3>
+           </div>
+           <div class="modal-body">
+                <span class="success">
+                    <p>Your message has been sent</p>
+                </span>
+                <span class="error">
+                    <p>An error ocurred:
+                    <ul id="emailErrorContainer">
+                    </ul></p>
+                </span>
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Close</a>
+            </div>
+        </div>
+     <form id="followup">
+        <@s.select theme="tdar" name='type'  emptyOption='false' listValue='name()' list='%{emailTypes}' label='Email Type'/>
+        <@s.hidden name="toId" value="${resource.submitter.id?c}" />
+        <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" /> 
+        <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" />
+        <@common.antiSpam />
+     <button name="send" id="followup-send" class="button btn btn-primary">send</button>
+     <button name="cancel" id="followup-cancel" class="button btn btn-cancel">cancel</button>
+     </form>
+     </div>
+    </div>
+    </#if>
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
@@ -576,6 +612,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <@local_.localJavascript />
         </#if>
 
+        TDAR.internalEmailForm.init();    
     });
 </script>
 

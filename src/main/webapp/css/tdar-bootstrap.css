@@ -1443,3 +1443,134 @@ are governed by several media queries and thus easy to screw up the formatting o
     color: #000;
 }
 
+.filter-ontology input + label {
+    position: relative;
+}
+
+.filter-ontology input[disabled] + label {
+    font-weight: normal !important;
+}
+
+.filter-ontology .inline-label {
+    clear: none;
+    display: inline-block;
+}
+
+.filter-ontology .wf-loading {
+    visibility: visible !important;
+}
+
+
+
+.select-columns .showhide {
+    display: inline;
+    font-size: 80%;
+    right: 0px;
+}
+
+.select-columns .collapse {
+    overflow: visible !important;
+}
+
+.select-columns .fixed {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    border: 1px solid #AAA;
+    background-color: #DEDEDE;
+    padding: 4px;
+    margin: 0px;
+    opacity: .95;
+}
+
+.select-columns .buttontable .integrationTableNumber {
+    display: none;
+    visibility: hidden;
+}
+
+.select-columns .integrationColumn div[table] .ontology {
+    display: none !important;
+}
+
+.select-columns .status {
+    color: #660033;
+    font-weight: bold;
+}
+
+.select-columns #drplist {
+    border: 1px solid #ccc;
+}
+
+
+.select-columns .addAnother {
+    margin-left: 1em !important;
+    font-weight: bold;
+}
+
+.select-columns .addAnother img {
+    bottom: 2px !important;
+    position: relative !important;
+}
+
+
+div.orgChart div.hasChildren {
+    background-color: #${settings.barColors[1]};
+}
+
+div.orgChart div.node {
+    background-color: #${settings.barColors[0]};
+}
+
+div.orgChart div.node.level1 {
+    background-color: ${settings.barColors[0]};
+}
+
+div.orgChart div.node.level1.special {
+    background-color: white;
+}
+
+div.orgChart div.node.level2 {
+    background-color: ${settings.barColors[3]};
+}
+
+div.orgChart div.node.level3 {
+    background-color: ${settings.barColors[4]};
+}
+
+
+.ontology-mapping .ui-autocomplete {
+    max-height: 144pt;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 1em;
+}
+
+.ontology-mapping .ui-menu-item {
+    font-family: courier !Important;
+    white-space: pre !important;
+}
+
+.ontology-mapping .ui-widget {
+    font-family: courier;
+}
+
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ontology-mapping .ui-autocomplete {
+    height: 144pt;
+    overflow-x: hidden;
+}
+
+.ontology-mapping .ui-menu .ui-menu-item {
+    border: 0px;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+.ontology-mapping .ui-menu-item a {
+    border: 1px solid transparent;
+    min-height: 1em;
+    margin: 0px !important;
+    padding: 0px !important;
+}

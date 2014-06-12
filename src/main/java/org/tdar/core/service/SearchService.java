@@ -518,7 +518,7 @@ public class SearchService {
                 pair = newPair;
             }
         }
-        QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_35, pair.getFirst(), pair.getSecond());
+        QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_36, pair.getFirst(), pair.getSecond());
         qb.setQueryParser(parser);
     }
 

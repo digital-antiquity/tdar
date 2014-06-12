@@ -12,10 +12,10 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
     private SortOption secondarySortField;
-    private int resultSize;
-    private int totalRecords;
-    private int startRecord;
-    private int recordsPerPage;
+    private int resultSize = 0;
+    private int totalRecords = 0;
+    private int startRecord = 0;
+    private int recordsPerPage = 20;
     private boolean debug;
     private boolean showAll;
     private List<Indexable> results;

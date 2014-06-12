@@ -8,14 +8,6 @@
 <head>
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
-    <style>
-        /
-        /
-        ul.resource-list {
-            list-style: none;
-            margin-left: 0px !important
-        }
-    </style>
 
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 

@@ -57,6 +57,7 @@ public class ObfuscationResultListener implements PreResultListener {
     public void prepareResult(Action action) throws Exception {
         logger.trace("begin obfuscation");
         Class<? extends Object> controllerClass = action.getClass();
+        // get a list of the getters that are either a Collection<?> or <? extends Obfuscatable>
         List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);
 
         for (Pair<Method, Class<? extends Obfuscatable>> pair : testReflection) {
@@ -74,43 +75,57 @@ public class ObfuscationResultListener implements PreResultListener {
                 continue;
             }
             boolean old = true;
+            // old way -- obfuscate everything
             if (old) {
                 obfuscationService.obfuscateObject(obj, user);
             } else {
+                // call the setter, if exists
                 Method setter = reflectionService.findMatchingSetter(method);
                 logger.trace("{} <==> {} {}", method, cls, setter);
                 if (setter != null) {
-                    // generate proxy wrapper
-                    Class<?> actual = obj.getClass(); // method.getReturnType().getDeclaringClass();
+                    // if the setter exists, generate proxy wrapper
+                    Class<?> actual = obj.getClass();
                     try {
+                        // if the object is a collection, and the collection is empty, or the object is one of our static types, skip
                         if (obj instanceof Collection && CollectionUtils.isEmpty((Collection) obj) || obj == Project.NULL || obj == DataTableColumn.TDAR_ROW_ID) {
                             logger.trace("SKIPPING: {} EMPTY COLLECTION | FINAL OBJECT", obj);
                             continue;
                         }
+                        // otherwise create a CGLIB proxy of the object
                         Object result = result = enhance(obj, obfuscationService, user);
+                        // call the setter on the object
                         setter.invoke(action, actual.cast(result));
                     } catch (Exception e) {
                         logger.error("exception in calling: {} {} {}", method, obj, actual, e);
                     }
                 } else {
+                    // if there's no setter, obfuscate the object directly
                     obfuscationService.obfuscateObject(obj, user);
                 }
             }
         }
-        logger.trace("complete obfuscation");
+        logger.debug("complete obfuscation");
     }
 
+    /*
+     * Create a CGLIB enhanced version of the object
+     */
     public static Object enhance(Object obj, ObfuscationService obfuscationService, TdarUser user) {
         if (obj == null || obj.getClass() == null) {
             return obj;
         }
         Class<? extends Object> actual = obj.getClass();
+        // if we're dealing with a CGLIB proxy already, get the first class that's not a cglib proxy, and use that as our base-class
+        // NOTE: this can mean that we're actually proxying a proxy we created, try and see if we can figure out if we've touched this instance in the future
         while (Enhancer.isEnhanced(actual)) {
             actual = actual.getSuperclass();
         }
         return Enhancer.create(actual, new CollectionMethodInterceptor(obj, obfuscationService, user));
     }
 
+    /*
+     * A wrapper for our method proxy -- if we deal with a collection, wrap the iterator. otherwise, continue recursive proxying
+     */
     static class CollectionMethodInterceptor implements InvocationHandler {
 
         private Object object;
@@ -125,9 +140,14 @@ public class ObfuscationResultListener implements PreResultListener {
             this.user = user;
         }
 
+        /*
+         * Proxy all methods
+         * @see net.sf.cglib.proxy.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+         */
         @Override
         public Object invoke(Object proxy, Method method, Object[] arguments) throws Throwable {
             Object invoke = method.invoke(object, arguments);
+            // if we're proxying an iterator, then, wrap it with an IteratorDecorator
             if (invoke != null && (method.getName().startsWith("iterator"))) {
                 if (invoke instanceof Iterator) {
                     logger.debug("intercepting: {}", method);
@@ -135,6 +155,7 @@ public class ObfuscationResultListener implements PreResultListener {
                         @Override
                         public Object next() {
                             Object next = super.next();
+                            // if we're dealing wtih an obfuscatable, call obfuscate when next() is called, otherwise, return the base object
                             if (next instanceof Obfuscatable) {
                                 logger.trace("\tobfuscating: {} ", next);
                                 obfuscationService.obfuscate((Obfuscatable) next, user);
@@ -145,8 +166,10 @@ public class ObfuscationResultListener implements PreResultListener {
                         }
                     };
                 }
+                // otherwise enahnce the returned object
                 return enhance(invoke, obfuscationService, user);
             }
+            // default
             return invoke;
         }
 

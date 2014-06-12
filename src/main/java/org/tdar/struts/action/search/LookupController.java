@@ -68,30 +68,30 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
     @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
-    public String lookupInstitution()  {
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
+    public String lookupInstitution() {
         setMode("institutionLookup");
         return findInstitution(institution);
     }
 
     @Action(value = "resource",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
-        this.setLookupSource(LookupSource.RESOURCE);
+        setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
@@ -114,12 +114,12 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-            getLogger().trace("jsonResults:" + getResults());
+            getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
-        
+
         if (isIncludeCompleteRecord()) {
             jsonifyResult(null);
         } else {
@@ -129,17 +129,17 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(this.term) && !checkMinString(keywordType)) {
+        if (!checkMinString(term) && !checkMinString(keywordType)) {
             return SUCCESS;
         }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        this.setLookupSource(LookupSource.KEYWORD);
+        setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
@@ -163,16 +163,16 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "annotationkey",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);
         setMode("annotationLookup");
 
-        this.setLookupSource(LookupSource.KEYWORD);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.KEYWORD);
+        getLogger().trace("looking up:'{}'", term);
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
@@ -190,17 +190,15 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
-
-        this.setLookupSource(LookupSource.COLLECTION);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.COLLECTION);
+        getLogger().trace("looking up: '{}'", term);
         setMode("collectionLookup");
-
         // only return results if query length has enough characters
         if (checkMinString(term)) {
             q.append(new AutocompleteTitleQueryPart(getTerm()));
@@ -332,7 +330,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
      *            the title to set
      */
     public void setTitle(String title) {
-
         this.title = StringUtils.trim(title);
     }
 

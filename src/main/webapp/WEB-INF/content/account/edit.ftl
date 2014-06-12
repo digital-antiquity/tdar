@@ -1,4 +1,5 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
     <title>Register with ${siteName}</title>
     <style type="text/css">
@@ -188,18 +189,7 @@
     </div>
 
 
-    <#if h.recaptcha_public_key??>
-        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
-    </#if>
-
-    <@s.hidden name="h.timeCheck"/>
-    <textarea name="h.comment" class="tdarCommentDescription"></textarea>
-
-    <#if h.reCaptchaText?has_content>
-    ${h.reCaptchaText}
-    </#if>
-
-
+    <@common.antiSpam />
 
     <div class="form-actions">
         <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Register">

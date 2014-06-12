@@ -71,6 +71,7 @@
         <js>/js/tdar.advanced-search.js</js>
         <js>/js/tdar.authority-management.js</js>
         <js>/js/tdar.inheritance.js</js>
+        <js>/js/tdar.internalemail.js</js>
         <js>/js/tdar.pricing.js</js>
         <js>/js/tdar.heightevents.js</js>
         <js>/js/tdar.contexthelp.js</js><js>/js/tdar.formValidateExtensions.js</js><js>/js/tdar.jquery-upload-validation.js</js>

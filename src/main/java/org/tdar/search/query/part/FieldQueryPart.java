@@ -9,8 +9,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.SimpleSearch;
@@ -26,9 +24,8 @@ import com.opensymphony.xwork2.TextProvider;
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
-    private static final String NOT = " NOT ";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String NOT = " NOT ";
 
     private String fieldName;
     private String displayName;
@@ -40,7 +37,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     private Operator operator = Operator.AND;
     private boolean inverse;
     private boolean descriptionVisible = true;
-
     private boolean allowInvalid = false;
 
     public FieldQueryPart() {
@@ -65,13 +61,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = oper;
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, String displayName, Operator oper, C... incomingValues) {
         this(fieldName, displayName, Arrays.asList(incomingValues));
         this.operator = oper;
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, C... incomingValues) {
         this(fieldName, "", Arrays.asList(incomingValues));
     }
@@ -84,7 +80,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", oper, incomingValues);
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, Operator oper, C... incomingValues) {
         this(fieldName, "", oper, incomingValues);
     }
@@ -110,7 +106,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     @Override
     public String toString() {
         return generateQueryString();
-    };
+    }
 
     @Override
     public String generateQueryString() {
@@ -121,9 +117,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (sb.length() == 0) {
             return "";
         }
-
         constructQueryPhrase(sb, getFieldName());
-
         return sb.toString();
     }
 
@@ -133,12 +127,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (StringUtils.isNotBlank(fieldName)) {
             startPhrase.append(fieldName).append(":");
         }
-        startPhrase.append("(");
+        startPhrase.append('(');
         sb.insert(0, startPhrase);
-        sb.append(")");
+        sb.append(')');
 
         if (getBoost() != null) {
-            sb.append("^").append(getBoost());
+            sb.append('^').append(getBoost());
         }
     }
 
@@ -146,7 +140,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         String value = "";
         value = formatValueAsStringForQuery(index);
 
-        if ((value == null) || StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return;
         }
         if (CollectionUtils.isNotEmpty(phraseFormatters)) {
@@ -161,11 +155,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         sb.append(value);
 
         if (getFuzzy() != null) {
-            sb.append("~").append(getFuzzy());
+            sb.append('~').append(getFuzzy());
         }
 
         if (getProximity() != null) {
-            sb.append("~").append(getProximity());
+            sb.append('~').append(getProximity());
         }
     }
 
@@ -277,16 +271,17 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
         List<Object> vals = new ArrayList<Object>();
         for (int i = 0; i < getFieldValues().size(); i++) {
-            Object val = getFieldValues().get(i);
-            if (SimpleSearch.class.isAssignableFrom(val.getClass())) {
-                val = ((SimpleSearch) val).getTitle();
-            } else if (val instanceof Localizable) {
-                val = provider.getText(((Localizable) val).getLocaleKey());
-            } else if (val instanceof HasLabel) {
-                val = ((HasLabel) val).getLabel();
+            Object fieldValue = getFieldValues().get(i);
+            StringBuilder builder = new StringBuilder();
+            if (SimpleSearch.class.isAssignableFrom(fieldValue.getClass())) {
+                builder.append(((SimpleSearch) fieldValue).getTitle());
+            } else if (fieldValue instanceof Localizable) {
+                builder.append(provider.getText(((Localizable) fieldValue).getLocaleKey()));
+            } else if (fieldValue instanceof HasLabel) {
+                builder.append(((HasLabel) fieldValue).getLabel());
             }
-            val = " " + val + " ";
-            vals.add(val);
+            builder.append(' ').append(fieldValue).append(' ');
+            vals.add(builder.toString());
         }
 
         return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
@@ -401,12 +396,15 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     public String getDescriptionOperator(TextProvider provider) {
-        String delim = " " + provider.getText("fieldQueryPart.and");
+        StringBuilder builder = new StringBuilder(" ");
         if (getOperator() == Operator.OR) {
-            delim = provider.getText("fieldQueryPart.or");
+            builder.append(provider.getText("fieldQueryPart.or"));
         }
-        delim += " ";
-        return delim;
+        else {
+            builder.append(provider.getText("fieldQueryPart.and"));
+        }
+        builder.append(' ');
+        return builder.toString();
     }
 
 }

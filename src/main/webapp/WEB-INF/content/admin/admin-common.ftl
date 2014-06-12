@@ -94,10 +94,9 @@
 
         <#noescape>
             <script>
-                $(function () {
 
                     <#list 0..numSets as i>
-                        var d${i} = [];
+                        var d${cssid}${i} = [];
                     </#list>
                     <#assign ticks = "" />
                     <#assign total = (totalRows / 10 )?ceiling />
@@ -106,32 +105,21 @@
                         <#assign vals = statsObj.get(key) />
                         <#assign valsKeys = vals?keys />
                         <#list valsKeys as key_>
-                            d${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
-                            d${key__index}.label = "${key_.label}";
+                            d${cssid}${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
+                            d${cssid}${key__index}.label = "${key_.label}";
                         </#list>
                     </#list>
 
-                    var labels = [<#list 0..numSets as i><#if i != 0>,</#if>d${i}.label</#list> ];
-                    var plot${cssid} = $.jqplot('graph${cssid}', [<#list 0..numSets as i><#if i != 0>,</#if>d${i}</#list> ], {
-                        axes: {
-                            xaxis: {
-                                renderer: $.jqplot.DateAxisRenderer
-                            },
-                            yaxis: {min: 0}
-                        },
-                        highlighter: {
-                            show: true,
-                            sizeAdjust: 7.5
-                        },
-                        legend: {
-                            show: true,
-                            placement: 'outsideGrid',
-                            labels: labels,
-                            location: 'ne',
-                            rowSpacing: '0px'
-                        },
-                        seriesDefaults: {lineWidth: 1, showLabel: true, showMarker: false}
-                    });
+                    var labels${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}.label</#list> ];
+                    var data${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}</#list> ];
+                    var props${cssid} = {
+                        seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+                        xaxis: "date",
+                        title: "${header?js_string}"
+                    };
+                $(function () {
+                    TDAR.charts.lineChart(props${cssid}, labels${cssid}, data${cssid},"${cssid}");
+                    
                 });
             </script>
         </#noescape>

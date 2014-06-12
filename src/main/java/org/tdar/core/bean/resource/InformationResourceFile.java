@@ -15,6 +15,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -61,11 +62,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "information_resource_file", 
-indexes = {
-        @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
-})
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Table(name = "information_resource_file",
+        indexes = {
+                @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
+        })
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
 @Cacheable
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
@@ -162,10 +163,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         PROCESSING_WARNING;
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResource informationResource;
 
     private transient Long transientDownloadCount;
@@ -281,7 +282,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getIndexableVersion() {
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
-
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);

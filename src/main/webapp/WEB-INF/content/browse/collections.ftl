@@ -12,17 +12,6 @@
     <h1>Browsing <span>All Collections</span></h1>
 </div>
 
-<#--
-<div id="sidebar-left" parse="true" class="options hidden-phone">
-    <div id="searchOptions">
-        <h3 class="totalRecords">Search Options</h3>
-        <ul class="tools media-list">
-            <li class="media"><a href="/search/collection"><i class="search-magnify-icon-red" ></i> Find specific collections &raquo;</a></li>
-        </ul>
-    </div>
-
-</div>
--->
 
     <#if results?has_content>
     <div id="divResultsSortControl">

@@ -1,8 +1,7 @@
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -36,18 +35,19 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private String callback;
     private int totalRecords;
     private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
-    private InputStream jsonResult;
+    private Object jsonResult = new HashMap<String, Object>();
 
     @Autowired
     private transient DatasetService datasetService;
-    
+
     @Autowired
     private transient XmlService xmlService;
-    
-    @Action(value = "browse",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results={@Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonResult"}) })
 
+    @Action(value = "browse",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" })
+            })
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
@@ -65,7 +65,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
             setResultsWrapper(selectAllFromDataTable);
             setResults(getResultsWrapper().getResults());
         }
-        setJsonResult(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResultsWrapper(), null, getCallback()).getBytes()));
+        setJsonResult(getResultsWrapper());
         return SUCCESS;
     }
 
@@ -125,11 +125,11 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
         this.totalRecords = totalRecords;
     }
 
-    public InputStream getJsonResult() {
+    public Object getJsonResult() {
         return jsonResult;
     }
 
-    public void setJsonResult(InputStream jsonResult) {
+    public void setJsonResult(Object jsonResult) {
         this.jsonResult = jsonResult;
     }
 

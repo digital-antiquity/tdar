@@ -48,7 +48,6 @@ import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonLookupFilter;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
@@ -170,11 +169,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * Return true if the specified string meets the minimum length requirement (or if there is no minimum length requirement). Not to be confused w/
      * checking if the specified string is blank.
      */
-    public boolean checkMinString(String look) {
+    public boolean checkMinString(String value) {
         if (getMinLookupLength() == 0) {
             return true;
         }
-        return (!StringUtils.isEmpty(look) && (look.trim().length() >= getMinLookupLength()));
+        return StringUtils.isNotEmpty(value) && (value.trim().length() >= getMinLookupLength());
     }
 
     // return true if ALL of the specified strings meet the minimum length. Otherwise false;
@@ -189,7 +188,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
-            getLogger().trace(field + ":" + value);
+            getLogger().trace("{}:{}", field, value);
             FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
@@ -198,7 +197,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
-            getLogger().trace(field + ":" + value);
+            getLogger().trace("{}:{}", field, value);
             FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);

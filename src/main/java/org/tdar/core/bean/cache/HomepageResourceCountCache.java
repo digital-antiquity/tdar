@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.ResourceType;
 @Entity
 @Table(name = "homepage_cache_resource_type")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="org.tdar.core.bean.cache.HomepageResourceCountCache")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.cache.HomepageResourceCountCache")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
 
     private static final long serialVersionUID = 4401314235170180736L;

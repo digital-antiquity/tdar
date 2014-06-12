@@ -85,6 +85,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
+import org.tdar.utils.EmailMessageType;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
@@ -113,6 +114,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
+    private List<EmailMessageType> emailTypes = Arrays.asList(EmailMessageType.values());
 
     @Autowired
     private XmlService xmlService;
@@ -1332,6 +1334,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void loadCustomViewMetadata() throws TdarActionException {
         // TODO Auto-generated method stub
         
+    }
+
+    public List<EmailMessageType> getEmailTypes() {
+        return emailTypes;
+    }
+
+    public void setEmailTypes(List<EmailMessageType> emailTypes) {
+        this.emailTypes = emailTypes;
     }
 
 }

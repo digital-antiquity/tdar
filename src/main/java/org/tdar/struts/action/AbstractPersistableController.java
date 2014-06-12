@@ -13,7 +13,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.hibernate.CacheMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
@@ -31,6 +30,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -55,12 +55,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
+    private AntiSpamHelper h = new AntiSpamHelper();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
-
-    @Autowired
-    private transient GenericService genericService;
 
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
@@ -153,7 +151,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         String resultName = SUCCESS;
 
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
 
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
@@ -225,7 +222,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         try {
             if (isPostRequest()) {
                 checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
-                genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
 
                 if (isNullOrNew()) {
                     isNew = true;
@@ -390,7 +386,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();
@@ -815,6 +810,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public List<Status> getStatuses() {
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 
 }

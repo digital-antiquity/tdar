@@ -1,37 +1,63 @@
 package org.tdar.struts.action;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
+
+import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/email")
 @Component
 @Scope("prototype")
-public class EmailController extends AuthenticationAware.Base {
+public class EmailController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 2598289601940169922L;
 
-    private AntiSpamHelper h;
+    private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
     private Long toId;
+    private Person from;
+    private Resource resource;
+    private Long resourceId;
+    private Person to;
     private String subject;
     private String messageBody;
     private EmailMessageType type;
+    private Map<String, Object> jsonResult = new HashMap<>();
 
     @Autowired
-    private EmailService emailService;
+    private transient EmailService emailService;
 
-    @Action("deliver")
+    @Autowired
+    private transient GenericService genericService;
+
+    @Action(value = "deliver", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
+            @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
+    })
+    @PostOnly
     public String execute() {
-        h.checkForSpammers();
-        emailService.constructEmail(fromId, toId, subject, messageBody, type);
+        emailService.constructEmail(from, to, subject, messageBody, type);
+        jsonResult.put("status", "QUEUED");
+
         return SUCCESS;
     }
 
@@ -81,6 +107,74 @@ public class EmailController extends AuthenticationAware.Base {
 
     public void setType(EmailMessageType type) {
         this.type = type;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        h.checkForSpammers();
+        from = genericService.find(Person.class, fromId);
+        to = genericService.find(Person.class, toId);
+        resource = genericService.find(Resource.class, resourceId);
+    }
+
+    @Override
+    public void validate() {
+        if (Persistable.Base.isTransient(from)) {
+            addActionError("emailController.from_not_found");
+        }
+        if (Persistable.Base.isTransient(to)) {
+            addActionError("emailController.to_not_found");
+        }
+        if (StringUtils.isBlank(messageBody)) {
+            addActionError("emailController.no_message");
+        }
+        if (type == null) {
+            addActionError("emailController.no_type");
+        }
+        if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
+            addActionError("emailController.no_resource");
+        }
+
+    }
+
+    public Person getTo() {
+        return to;
+    }
+
+    public void setTo(Person to) {
+        this.to = to;
+    }
+
+    public Person getFrom() {
+        return from;
+    }
+
+    public void setFrom(Person from) {
+        this.from = from;
+    }
+
+    public Map<String, Object> getJsonResult() {
+        return jsonResult;
+    }
+
+    public void setJsonResult(Map<String, Object> jsonResult) {
+        this.jsonResult = jsonResult;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
 }

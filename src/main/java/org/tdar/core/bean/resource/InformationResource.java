@@ -484,9 +484,6 @@ public abstract class InformationResource extends Resource {
     @XmlElement(name = "informationResourceFile")
     @JSONTransient
     public Set<InformationResourceFile> getInformationResourceFiles() {
-        if (informationResourceFiles == null) {
-            informationResourceFiles = new HashSet<InformationResourceFile>();
-        }
         return informationResourceFiles;
     }
 
