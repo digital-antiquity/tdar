@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -385,7 +385,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
         logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
         return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
+                Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && Objects.equals(isMappingColumn(), column.isMappingColumn()));
     }
 
     @Transient
@@ -396,9 +396,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public List<String> getMappedDataValues(OntologyNode node) {
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
-            if (ObjectUtils.equals(node, rule.getOntologyNode())) {
+            if (Objects.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }
         }

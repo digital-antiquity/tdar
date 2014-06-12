@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -120,11 +121,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             }
             getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
             for (Creator creator : resource.getRelatedCreators()) {
-
                 if (creator == null) {
                     continue;
                 }
-
                 if (creator.isDuplicate()) {
                     creator = entityService.findAuthorityFromDuplicate(creator);
                 }
@@ -132,7 +131,6 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                     continue;
                 }
                 ids.add(creator.getId());
-
             }
         }
         return new ArrayList<>(ids);
@@ -156,9 +154,9 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
         boolean seen = false;
         for (Creator creator : creators) {
-            getLogger().trace("~~~~~ " + creator + " ~~~~~~");
+            getLogger().trace("~~~~~ {} ~~~~~~", creator);
             if (!seen) {
-                getLogger().debug("~~~~~ " + creator + " ~~~~~~");
+                getLogger().debug("~~~~~ {} ~~~~~~", creator);
                 seen = true;
             }
             if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
@@ -184,7 +182,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                     incrementCreators(creator, collaborators, resource, userIdsToIgnoreInLargeTasks);
                 }
             } catch (Exception e) {
-                getLogger().warn("Exception {}", e);
+                getLogger().warn("Exception", e);
             }
 
             CreatorInfoLog log = new CreatorInfoLog();
@@ -231,8 +229,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
                 xmlService.generateFOAF(creator, log);
                 xmlService.generateCreatorLog(creator, log);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                getLogger().error("exception: {} ", e);
+                getLogger().error("exception: ", e);
             }
         }
     }
@@ -396,7 +393,7 @@ public class CreatorAnalysisProcess extends ScheduledBatchProcess<Creator> {
             if (creator.isDuplicate()) {
                 creator = entityService.findAuthorityFromDuplicate(creator);
             }
-            if (ObjectUtils.equals(creator.getId(), current.getId()) || !creator.isActive()) {
+            if (Objects.equals(creator.getId(), current.getId()) || !creator.isActive()) {
                 continue;
             }
 

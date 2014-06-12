@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
@@ -85,7 +85,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
         if ((latestUploadedTextVersion != null)
                 && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR)) {
-            if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
+            if (Objects.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
                 getLogger().info("incoming and current file input text is the same, skipping further actions");
                 return null;
             } else {
@@ -220,7 +220,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return false;
-    };
+    }
 
     public String getFileInputMethod() {
         return fileInputMethod;

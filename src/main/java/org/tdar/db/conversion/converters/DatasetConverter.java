@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,10 +86,10 @@ public interface DatasetConverter {
         protected InformationResourceFileVersion informationResourceFileVersion;
         protected TargetDatabase targetDatabase;
         protected Connection connection;
-        protected Set<DataTable> dataTables = new HashSet<DataTable>();
-        protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
+        protected Set<DataTable> dataTables = new HashSet<>();
+        protected Set<DataTableRelationship> dataTableRelationships = new HashSet<>();
         private File indexedContentsFile;
-        private Set<String> dataTableNames = new HashSet<String>();
+        private Set<String> dataTableNames = new HashSet<>();
         private Map<String, List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
@@ -138,20 +138,20 @@ public interface DatasetConverter {
             return dataTable;
         }
 
-        private String extractAndIncrementIfDuplicate(String name_, Collection<String> existingNames, int maxTableLength) {
+        private String extractAndIncrementIfDuplicate(String name, Collection<String> existingNames, int maxTableLength) {
             int add = 1;
 
-            if ((name_.length() + 1) > maxTableLength) {
-                name_ = name_.substring(0, maxTableLength - 2);
+            if ((name.length() + 1) > maxTableLength) {
+                name = name.substring(0, maxTableLength - 2);
             }
 
-            while (existingNames.contains(name_ + add)) {
+            while (existingNames.contains(name + add)) {
                 add++;
             }
-            String tmpName = name_ + add;
-            logger.debug("renaming from " + name_ + " to " + tmpName);
-            name_ = tmpName;
-            return name_;
+            String rename = name + add;
+            logger.debug("renaming from {} to {}", name, rename);
+            name = rename;
+            return name;
         }
 
         public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
@@ -233,7 +233,7 @@ public interface DatasetConverter {
         @Override
         public DataTable getDataTableByOriginalName(String name) {
             for (DataTable table : dataTables) {
-                if (ObjectUtils.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
+                if (Objects.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
                     return table;
                 }
             }

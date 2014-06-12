@@ -30,7 +30,6 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 /**
  * $Id$
- * <p>
  * Manages CRUD requests for OntologyS.
  * 
  * 

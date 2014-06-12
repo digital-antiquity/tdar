@@ -66,8 +66,6 @@ public interface Persistable extends Serializable {
     @MappedSuperclass
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "base")
-    @SuppressWarnings({
-            "PMD.ShortVariable" })
     public abstract static class Base implements Persistable, JsonModel {
 
         private static final long serialVersionUID = -458438238558572364L;
@@ -75,7 +73,7 @@ public interface Persistable extends Serializable {
         protected final static String[] DEFAULT_JSON_PROPERTIES = { "id" };
 
         @Transient
-        private final transient Logger logger = LoggerFactory.getLogger(getClass());
+        protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
         /**
          * Uses GenerationType.IDENTITY, which translates to the (big)serial column type for

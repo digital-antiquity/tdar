@@ -24,8 +24,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -84,8 +82,6 @@ import com.opensymphony.xwork2.TextProvider;
  */
 @Service
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
@@ -178,7 +174,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * well
      * as the code. The translated version is stored on the @link InformationResourceFileVersion as a derivative
      */
-    @SuppressWarnings("deprecation")
     @Transactional
     public InformationResourceFile createTranslatedFile(Dataset dataset) {
         // assumes that Datasets only have a single file
@@ -226,7 +221,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
     public void reprocess(Dataset dataset) {
-        logger.debug("Reprocessing {}", dataset);
+        getLogger().debug("Reprocessing {}", dataset);
         if (CollectionUtils.isEmpty(dataset.getInformationResourceFiles())) {
             return;
         }
@@ -277,7 +272,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
-            logger.debug(tableName);
+            getLogger().debug(tableName);
             proxy.setName(tableName);
             ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
                 @Override
@@ -285,7 +280,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     List<String> headerLabels = getColumnNames(resultSet, dataTable);
                     proxy.setHeaderLabels(headerLabels);
                     proxy.setData(new ResultSetIterator(resultSet));
-                    logger.debug("column names: " + headerLabels);
+                    getLogger().debug("column names: " + headerLabels);
                     excelService.addSheets(proxy);
                     return true;
                 }
@@ -309,7 +304,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * DataTableColunn on import such that if the old DataTables and Columns match the incomming, then we'll re-use the mappings. If they're different, their
      * either added or dropped respectively.
      */
-    @SuppressWarnings("deprecation")
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
     public void reconcileDataset(InformationResourceFile datasetFile, Dataset dataset, Dataset transientDatasetToPersist) {
         // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
@@ -320,11 +314,11 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         cleanupUnusedTablesAndColumns(dataset, tablesToRemove);
 
-        logger.debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
+        getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
-            logger.debug("dataTable: {}", dataTable);
+            getLogger().debug("dataTable: {}", dataTable);
             List<DataTableColumn> columns = dataTable.getDataTableColumns();
-            logger.debug("dataTableColumns: {}", columns);
+            getLogger().debug("dataTableColumns: {}", columns);
             for (DataTableColumn column : columns) {
                 translate(column);
             }
@@ -345,10 +339,10 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         HashMap<String, DataTable> existingTablesMap = new HashMap<String, DataTable>();
         for (DataTable existingDataTable : dataset.getDataTables()) {
             existingTablesMap.put(existingDataTable.getInternalName(), existingDataTable);
-            logger.debug("existingTableName: {}", existingDataTable.getInternalName());
+            getLogger().debug("existingTableName: {}", existingDataTable.getInternalName());
         }
         dataset.getDataTables().clear();
-        logger.debug("Existing name to table map: {}", existingTablesMap);
+        getLogger().debug("Existing name to table map: {}", existingTablesMap);
         for (DataTable tableToPersist : transientDatasetToPersist.getDataTables()) {
             // first check that the incoming data table has data table columns.
             String internalTableName = tableToPersist.getInternalName();
@@ -364,7 +358,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             } else {
                 // continue with the for loop, tableToPersist does not require any metadata merging because
                 // we can't find an existing table to merge it with
-                logger.trace("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
+                getLogger().trace("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
             }
             tableToPersist.setDataset(dataset);
             dataset.getDataTables().add(tableToPersist);
@@ -398,7 +392,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             for (DataTableColumn existingColumn : existingTable.getDataTableColumns()) {
                 existingColumnsMap.put(existingColumn.getName().toLowerCase().trim(), existingColumn);
             }
-            logger.debug("existing columns: {}", existingColumnsMap);
+            getLogger().debug("existing columns: {}", existingColumnsMap);
             List<DataTableColumn> columnsToPersist = tableToPersist.getDataTableColumns();
             // for each incoming data table column, try to match it with an equivalent column
             // from existingTable using the existingNameToColumnMap
@@ -406,12 +400,12 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 DataTableColumn incomingColumn = columnsToPersist.get(i);
                 String normalizedColumnName = incomingColumn.getName().toLowerCase().trim();
                 DataTableColumn existingColumn = existingColumnsMap.get(normalizedColumnName);
-                logger.debug("Reconciling existing {} with incoming column {}", existingColumn, incomingColumn);
+                getLogger().debug("Reconciling existing {} with incoming column {}", existingColumn, incomingColumn);
                 reconcileColumn(tableToPersist, existingColumnsMap, normalizedColumnName, incomingColumn, existingColumn);
             }
 
-            logger.debug("deleting unmerged columns: {}", existingColumnsMap);
-            logger.debug("result: {}", columnsToPersist);
+            getLogger().debug("deleting unmerged columns: {}", existingColumnsMap);
+            getLogger().debug("result: {}", columnsToPersist);
             tableToPersist.setId(existingTable.getId());
 
             // get rid of all the old existing columns that don't have an analogous column (by name)
@@ -419,8 +413,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
             getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToRemove);
 
-            logger.debug("merged data table is now {}", tableToPersist);
-            logger.debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), columnsToPersist);
+            getLogger().debug("merged data table is now {}", tableToPersist);
+            getLogger().debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), columnsToPersist);
         }
         return tableToPersist;
     }
@@ -448,7 +442,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
          * if we've gotten this far, we know that the incoming column should be saved onto the existing table instead of the transient table that it was
          * originally set on. copy all values that should be retained
          */
-        logger.trace("Merging incoming column with existing column");
+        getLogger().trace("Merging incoming column with existing column");
         incomingColumn.setDataTable(incomingTable);
         incomingColumn.setId(existingColumn.getId());
         incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
@@ -478,9 +472,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             StringWriter writer = new StringWriter();
             xmlService.convertToXML(dataTable, writer);
             resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
-            logger.trace("{} - xml {}", message, writer);
+            getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
-            logger.error("could not serialize to XML:", e);
+            getLogger().error("could not serialize to XML:", e);
         }
     }
 
@@ -551,7 +545,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, resultSetExtractor, includeGenerated));
         } catch (BadSqlGrammarException e) {
-            logger.trace("order column did not exist", e);
+            getLogger().trace("order column did not exist", e);
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated));
         }
         return wrapper;
@@ -592,7 +586,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated, query));
         } catch (BadSqlGrammarException e) {
-            logger.trace("order column did not exist", e);
+            getLogger().trace("order column did not exist", e);
         }
         return wrapper;
     }
@@ -604,7 +598,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
         List<DataTableRelationship> relationships = new ArrayList<>();
         Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
-        logger.trace("All relationships: {}", allDatasetRelationships);
+        getLogger().trace("All relationships: {}", allDatasetRelationships);
         for (DataTableRelationship relationship : allDatasetRelationships) {
             for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
                 if (column.equals(columnRelationship.getLocalColumn())) {
@@ -658,7 +652,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         getDao().unmapAllColumnsInProject(project, columns);
         for (DataTableColumn column : columns) {
-            logger.info("mapping dataset to resources using column: {} ", column);
+            getLogger().info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
             if (dataset == null) {
                 throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(column));
@@ -697,7 +691,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      */
     @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
-        logger.info("remapping columns: {} in {} ", columns, project);
+        getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
             getDao().refresh(project);
@@ -731,7 +725,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
             boolean needToRemap = false;
-            logger.debug("incoming data table column: {}", incomingColumn);
+            getLogger().debug("incoming data table column: {}", incomingColumn);
             DataTableColumn existingColumn = dataTable.getColumnById(incomingColumn.getId());
             if (existingColumn == null) {
                 existingColumn = dataTable.getColumnByName(incomingColumn.getName());
@@ -757,8 +751,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 // check if the incoming column had an ontology set
                 defaultOntology = getDao().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
             }
-            logger.debug("default ontology: {}", defaultOntology);
-            logger.debug("incoming coding sheet: {}", incomingCodingSheet);
+            getLogger().debug("default ontology: {}", defaultOntology);
+            getLogger().debug("incoming coding sheet: {}", incomingCodingSheet);
             incomingColumn.setDefaultOntology(defaultOntology);
             if ((defaultOntology != null) && Base.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
@@ -777,13 +771,13 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 }
                 else {
                     incomingColumn.setDefaultOntology(null);
-                    logger.debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
+                    getLogger().debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
             }
             if ((incomingColumn.getDefaultCodingSheet() != null) && !incomingColumn.getColumnEncodingType().isSupportsCodingSheet()
                     && (defaultOntology == null)) {
                 incomingColumn.setDefaultCodingSheet(null);
-                logger.debug("column encoding type didn't support coding sheets - setting default coding sheet to null on column {} (encoding type: {})",
+                getLogger().debug("column encoding type didn't support coding sheets - setting default coding sheet to null on column {} (encoding type: {})",
                         incomingColumn, incomingColumn.getColumnEncodingType());
             }
 
@@ -806,15 +800,15 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
 
             if (needToRemap) {
-                logger.debug("remapping {}", existingColumn);
+                getLogger().debug("remapping {}", existingColumn);
                 columnsToMap.add(existingColumn);
             }
             // if there is a change in coding sheet a column may need to be retranslated or untranslated.
             if (isRetranslationNeeded(incomingCodingSheet, existingCodingSheet)) {
-                logger.debug("retranslating {} for incoming coding sheet {}", existingColumn, incomingCodingSheet);
+                getLogger().debug("retranslating {} for incoming coding sheet {}", existingColumn, incomingCodingSheet);
                 columnsToTranslate.add(existingColumn);
             }
-            logger.trace("{}", existingColumn);
+            getLogger().trace("{}", existingColumn);
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
@@ -822,12 +816,12 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         save(dataset);
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
-            logger.debug("creating translated file");
+            getLogger().debug("creating translated file");
             retranslate(columnsToTranslate);
             createTranslatedFile(dataset);
         }
         logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser);
-        logger.info("hasOntology: {} , mappingColumns: {} ", toReturn.getFirst(), toReturn.getSecond());
+        getLogger().info("hasOntology: {} , mappingColumns: {} ", toReturn.getFirst(), toReturn.getSecond());
         return toReturn;
     }
 
@@ -835,7 +829,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
      * Checks whether based on an incoming and an existing @link CodingSheet, whether retranslation is necessary
      */
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
-        logger.info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet,
+        getLogger().info("coding(incoming):{} coding(existing):{} equals?:{}", incomingCodingSheet, existingCodingSheet,
                 ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
         if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
