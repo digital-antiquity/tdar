@@ -2,42 +2,59 @@ package org.tdar.core.dao.external.auth;
 
 import org.tdar.core.bean.entity.TdarUser;
 
-public enum AuthenticationResult {
-    VALID(""),
-    INVALID_PASSWORD("Authentication failed.  Please check that your username and password were entered correctly."),
-    INACTIVE_ACCOUNT("This account is inactive."),
-    ACCOUNT_DOES_NOT_EXIST("This account does not exist"),
-    REMOTE_EXCEPTION("The authentication server is currently down.  Please try authenticating again in a few minutes."),
-    ACCOUNT_EXISTS("The account already exists");
+public class AuthenticationResult {
+    public enum AuthenticationResultType {
+        VALID(""),
+        INVALID_PASSWORD("Authentication failed.  Please check that your username and password were entered correctly."),
+        INACTIVE_ACCOUNT("This account is inactive."),
+        ACCOUNT_DOES_NOT_EXIST("This account does not exist"),
+        REMOTE_EXCEPTION("The authentication server is currently down.  Please try authenticating again in a few minutes."),
+        ACCOUNT_EXISTS("The account already exists");
 
-    private final String message;
+        private final String message;
+
+        AuthenticationResultType(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public boolean isValid() {
+            return this == VALID;
+        }
+    }
+
     private TdarUser person;
-    private transient ThreadLocal<Throwable> threadLocalThrowable = new ThreadLocal<>();
+    private Throwable throwable;
+    private AuthenticationResultType type;
 
-    AuthenticationResult(String message) {
-        this.message = message;
+    public AuthenticationResult(AuthenticationResultType type, TdarUser person) {
+        this.setType(type);
+        this.person = person;
+    }
+
+    public AuthenticationResult(AuthenticationResultType type) {
+        this.setType(type);
+    }
+
+    public AuthenticationResult(AuthenticationResultType type, Throwable t) {
+        this.setType(type);
+        this.throwable = t;
     }
 
     public AuthenticationResult exception(Throwable throwable) {
-        threadLocalThrowable.set(throwable);
+        this.throwable = throwable;
         return this;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     @Override
     public String toString() {
-        Throwable throwable = threadLocalThrowable.get();
         if (throwable == null) {
-            return message;
+            return getType().getMessage();
         }
-        return message + " Exception: " + throwable.getLocalizedMessage();
-    }
-
-    public boolean isValid() {
-        return this == VALID;
+        return getType().getMessage() + " Exception: " + throwable.getLocalizedMessage();
     }
 
     public TdarUser getPerson() {
@@ -46,6 +63,14 @@ public enum AuthenticationResult {
 
     public void setPerson(TdarUser person) {
         this.person = person;
+    }
+
+    public AuthenticationResultType getType() {
+        return type;
+    }
+
+    public void setType(AuthenticationResultType type) {
+        this.type = type;
     }
 
 }

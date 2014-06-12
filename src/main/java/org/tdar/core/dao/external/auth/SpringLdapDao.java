@@ -28,6 +28,7 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -103,13 +104,16 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             HttpServletResponse response, String name, String password) {
         try {
             PersonLdapDao ldapDAO = new PersonLdapDao();
-            return ldapDAO.authenticate(name, password) == true ? AuthenticationResult.VALID : AuthenticationResult.INVALID_PASSWORD;
+            if (ldapDAO.authenticate(name, password) == true) {
+                return new AuthenticationResult(AuthenticationResultType.VALID);
+            }
+            return new AuthenticationResult(AuthenticationResultType.INVALID_PASSWORD);
         } catch (AuthenticationException e) {
             logger.debug("Invalid authentication for " + name, e);
-            return AuthenticationResult.INVALID_PASSWORD;
+            return new AuthenticationResult(AuthenticationResultType.INVALID_PASSWORD);
         } catch (Exception e) {
             logger.error("could not authenticate against ldap server", e);
-            return AuthenticationResult.REMOTE_EXCEPTION.exception(e);
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION, e);
         }
     }
 
@@ -153,14 +157,15 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                     + person.toString()
                     + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
-            return AuthenticationResult.ACCOUNT_EXISTS;
+            return new AuthenticationResult(AuthenticationResultType.ACCOUNT_EXISTS);
         } catch (NameNotFoundException e) {
             logger.debug("Object not found, as expected.");
         }
 
         logger.debug("Adding LDAP user : " + username);
         ldapDAO.create(person, password);
-        return AuthenticationResult.VALID;
+        return new AuthenticationResult(AuthenticationResultType.VALID);
+
     }
 
     /*

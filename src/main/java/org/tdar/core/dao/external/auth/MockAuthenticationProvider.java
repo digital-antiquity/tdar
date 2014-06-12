@@ -1,10 +1,5 @@
 package org.tdar.core.dao.external.auth;
 
-import static org.tdar.core.dao.external.auth.AuthenticationResult.ACCOUNT_DOES_NOT_EXIST;
-import static org.tdar.core.dao.external.auth.AuthenticationResult.INVALID_PASSWORD;
-import static org.tdar.core.dao.external.auth.AuthenticationResult.REMOTE_EXCEPTION;
-import static org.tdar.core.dao.external.auth.AuthenticationResult.VALID;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.service.EntityService;
 
 /*
@@ -53,22 +49,23 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name,
             String password) {
         if (!isEnabled() || !isConfigured()) {
-            return REMOTE_EXCEPTION;
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
         if (TdarConfiguration.getInstance().isProductionEnvironment()) {
             logger.error("Mock Authentication is not allowed in production.");
-            return REMOTE_EXCEPTION;
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
 
-        AuthenticationResult result = ACCOUNT_DOES_NOT_EXIST;
+        AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.ACCOUNT_DOES_NOT_EXIST);
+
         logger.debug("trying to authenticate:: user: {}  groupname:{}", name, password);
         if (users.containsKey(name)) {
             TdarGroup group = TdarGroup.fromString(password);
             logger.debug("user found:{}  group:{}", name, group);
             users.put(name, group.getGroupName());
-            result = VALID;
+            result.setType(AuthenticationResultType.VALID);
             if (group == TdarGroup.UNAUTHORIZED) {
-                result = INVALID_PASSWORD;
+                result.setType(AuthenticationResultType.INVALID_PASSWORD);
             }
         } else {
             logger.debug("user not found: {}", name);
@@ -85,10 +82,10 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
         if (users.containsKey(person.getEmail())) {
-            return AuthenticationResult.REMOTE_EXCEPTION;
+            return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {
             users.put(person.getEmail(), password);
-            return AuthenticationResult.VALID;
+            return new AuthenticationResult(AuthenticationResultType.VALID);
         }
     }
 

@@ -50,6 +50,7 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -700,9 +701,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         }
 
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
-        if (!result.isValid()) {
+        if (!result.getType().isValid()) {
             logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
-            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getMessage()));
+            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
         }
 
         TdarUser person = personDao.findByUsername(loginUsername);
@@ -871,7 +872,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             try {
                 AuthenticationStatus status = authenticatePerson(findByUsername.getUsername(), password, request, response, sessionData);
                 if (status == AuthenticationStatus.AUTHENTICATED) {
-                    return AuthenticationResult.VALID;
+                    return new AuthenticationResult(AuthenticationResultType.VALID);
                 }
             } catch (Exception e) {
                 logger.warn("could not authenticate", e);
@@ -895,8 +896,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         person.setInstitution(institution);
 
         AuthenticationResult addResult = getAuthenticationProvider().addUser(person, password);
-        if (!addResult.isValid()) {
-            throw new TdarRecoverableRuntimeException(addResult.getMessage());
+        if (!addResult.getType().isValid()) {
+            throw new TdarRecoverableRuntimeException(addResult.getType().getMessage());
         }
         personDao.saveOrUpdate(person);
         // after the person has been saved, create a contributor request for
