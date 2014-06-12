@@ -66,25 +66,11 @@
     </div>
     </#macro>
 
-    <#macro sortFields javascriptOn=false label="Sort By">
+    <#macro sortFields label="Sort By">
     <label>${label}
         <@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
         emptyOption='false' listValue='label' list='%{sortOptions}'/>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
-        <#if javascriptOn>
-            <script type='text/javascript'>
-                $("#sortField").change(function () {
-                    var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
-                    //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                    var prefix = "";
-                    if (url.indexOf("?") != 0) {
-                        prefix = "?";
-                    }
-                    url = prefix + url + "&sortField=" + $('#sortField').val();
-                    window.location = url;
-                });
-            </script>
-        </#if>
     </label>
     </#macro>
 

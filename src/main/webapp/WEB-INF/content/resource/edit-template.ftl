@@ -357,85 +357,34 @@
 <script type='text/javascript'>
         <#noescape>
 
-        var formSelector = "#metadataForm";
-        var includeInheritance = ${inheritanceEnabled?string("true", "false")};
-        var acceptFileTypes = /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i;
+        
         /*
 
          * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.
          */
         $(function () {
             'use strict';
-            var form = $(formSelector)[0];
 
-            //information needed re: existing file uploads - needed by TDAR.upload library
-            TDAR.filesJson = ${filesJson!"false"};
-
-            <#if multipleUpload??>
-                //init fileupload
-                var id = $('input[name=id]').val();
-                <#if ableToUploadFiles && multipleUpload>
-                    TDAR.fileupload.registerUpload({
-                        informationResourceId: id,
-                        acceptFileTypes: acceptFileTypes,
-                        formSelector: formSelector,
-                        inputSelector: '#fileAsyncUpload',
-                        fileuploadSelector: '#divFileUpload'
-                    });
-
-                    var fileValidator = new FileuploadValidator("metadataForm");
-                    fileValidator.addRule("nodupes");
-                    TDAR.fileupload.validator = fileValidator;
-                </#if>
-            </#if>
-
-            //wire up jquery-ui datepicker to our date fields
-            $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
-
-            TDAR.common.initEditPage(form);
-
-            //register maps, if any
-            if ($('#divSpatialInformation').length) {
-                $(function () {
-                    //fixme: implicitly init when necessary
-                    TDAR.maps.initMapApi();
-                    var mapdiv = $('#editmapv3')[0];
-                    var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-                    TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-                });
-            }
-
-            <#if inheritanceEnabled>
-                TDAR.inheritance.project = ${projectAsJson};
-                TDAR.inheritance.applyInheritance(formSelector);
-            </#if>
-
-
-            <#if validFileExtensions??>
-                var validate = $('.validateFileType');
-                if ($(validate).length > 0) {
-                    $(validate).rules("add", {
-                        extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-                        messages: {
-                            extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-                        }
-                    });
-                }
-            </#if>
-
-            <#if resource.resourceType.dataTableSupported>
-                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-            </#if>
-
-            <#if local_.localJavascript?? && local_.localJavascript?is_macro>
-                <@local_.localJavascript />
-            </#if>
-
-            $("#fileUploadField").change(function () {
-                if ($("#fileUploadField").val().length > 0) {
-                    $("#reminder").hide();
-                }
-            }).change();
+        TDAR.filesJson = ${filesJson!"false"};
+        TDAR.inheritance.project = ${projectAsJson};
+        var props = {
+            formSelector: "#metadataForm",
+            includeInheritance : ${inheritanceEnabled?string},
+            acceptFileTypes : /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i,
+            multipleUpload : ${multipleUpload?string},
+        <#if validFileExtensions??>
+            validExtensions : "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            validExtensionsWarning : "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)",
+        </#if>
+            ableToUpload : ${ableToUploadFiles?string},
+             dataTableEnabled : ${resource.resourceType.dataTableSupported?string}
+         };
+        var form = $(props.formSelector)[0];
+        TDAR.common.initEditPage(form, props);
+            
+        <#if local_.localJavascript?? && local_.localJavascript?is_macro>
+            <@local_.localJavascript />
+        </#if>
 
         });
         </#noescape>
