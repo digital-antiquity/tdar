@@ -75,15 +75,14 @@ public class GenericDao {
     public void setCacheModeForCurrentSession(CacheMode mode) {
         getCurrentSession().setCacheMode(mode);
     }
-    
+
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<T> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
     }
-    
-    
+
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
@@ -320,12 +319,12 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
     public <T> ScrollableResults findAllScrollable(Class<T> persistentClass, int batchSize) {
-        return getCriteria(persistentClass).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
+        return getCriteria(persistentClass).setCacheMode(CacheMode.IGNORE).setFetchSize(batchSize).scroll(ScrollMode.FORWARD_ONLY);
     }
 
     @SuppressWarnings("unchecked")
