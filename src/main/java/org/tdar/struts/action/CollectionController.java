@@ -65,7 +65,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient ResourceService resourceService;
-    
+
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new ArrayList<>();
@@ -130,16 +130,20 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
 
-        getGenericService().saveOrUpdate(persistable);
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
-                getAuthenticatedUser());
-        getLogger().trace("resources (original):{}", resources);
-        getLogger().trace("resources (retained):{}", getRetainedResources());
         resources.addAll(getRetainedResources());
         List<Resource> rehydratedIncomingResources = resourceCollectionService.reconcileIncomingResourcesForCollection(persistable,
                 getAuthenticatedUser(), resources);
         getLogger().trace("{}", rehydratedIncomingResources);
         getLogger().debug("RESOURCES {}", persistable.getResources());
+        getLogger().trace("resources (original):{}", resources);
+        getLogger().trace("resources (retained):{}", getRetainedResources());
+        getGenericService().saveOrUpdate(persistable);
+        // resetting for "error" state -- if authorizedUsersForCollection fails, we make sure that resources is properly hydrated and setup so we can produce a
+        // nicer "input" page
+        resources = rehydratedIncomingResources;
+        resources.removeAll(getRetainedResources());
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
+                getAuthenticatedUser());
         return SUCCESS;
     }
 
@@ -372,12 +376,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
     }
-    
+
     public void setFullUserProjects(List<Resource> projects) {
         this.fullUserProjects = projects;
     }
-    
-    
+
     @Override
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {

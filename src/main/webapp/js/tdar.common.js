@@ -432,7 +432,9 @@ TDAR.common = function () {
      */
     var _initEditPage = function (form, props) {
 
-
+        if (props == undefined) {
+            props = {};
+        }
         //FIXME: other init stuff that is separate function for some reason 
         var $form = $(form);
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.

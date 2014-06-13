@@ -215,7 +215,10 @@ public class ImportService {
             if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, GeneralPermissions.MODIFY_RECORD)) {
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
-
+            if (incomingResource instanceof InformationResource) {
+                // when we bring an object onto the session, 
+                ((InformationResource) incomingResource).getInformationResourceFiles().clear();
+            }
             incomingResource.copyImmutableFieldsFrom(existing);
             // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);

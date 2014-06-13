@@ -34,6 +34,8 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
+import com.gargoylesoftware.htmlunit.WebConsole.Logger;
+
 @SuppressWarnings("serial")
 @Namespace("/api")
 @Component
@@ -146,6 +148,7 @@ public class APIController extends AuthenticationAware.Base {
 
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
             xmlResultObject.put("message", "success");
+            getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
             message = "";

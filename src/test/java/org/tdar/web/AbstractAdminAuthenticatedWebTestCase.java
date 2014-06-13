@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -59,6 +61,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         List<Person> allNonUsers = entityService.findAll();
         allNonUsers.removeAll(entityService.findAllRegisteredUsers());
         List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10, allNonUsers.size()));
+        logger.debug("non-users: {}", someNonUsers);
+        if (CollectionUtils.isEmpty(someNonUsers)) {
+            Assert.fail("expecting users");
+        }
         return someNonUsers;
     }
 

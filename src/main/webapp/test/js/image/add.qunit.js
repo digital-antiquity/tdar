@@ -44,7 +44,18 @@
     function _pageinit() {
         //hack:  mimic the one-time initialization that happens on the edit page.
         console.log("running initEditPage");
-        common.initEditPage($(fileuploadModule.formSelector)[0]);
+        var props = {
+                formSelector: "#metadataForm",
+                includeInheritance : true,
+                acceptFileTypes : /\.(jpg|bmp|pict|tif|jpeg|png|gif|tiff)$/i,
+                multipleUpload : true,
+                validExtensions : "jpg|bmp|pict|tif|jpeg|png|gif|tiff",
+                validExtensionsWarning : "Please enter a valid file (jpg, bmp, pict, tif, jpeg, png, gif, tiff)",
+                ableToUpload : true,
+                dataTableEnabled : false
+             };
+
+        common.initEditPage($(fileuploadModule.formSelector)[0], props);
 
         var helper = TDAR.fileupload.registerUpload({
             informationResourceId: -1,
@@ -154,7 +165,17 @@
     });
 
     module("JQUERY-VALIDATION", {setup: function(){
-        common.initEditPage(document.metadataForm);
+        var props = {
+                formSelector: "#metadataForm",
+                includeInheritance : true,
+                acceptFileTypes : /\.(jpg|bmp|pict|tif|jpeg|png|gif|tiff)$/i,
+                multipleUpload : true,
+                validExtensions : "jpg|bmp|pict|tif|jpeg|png|gif|tiff",
+                validExtensionsWarning : "Please enter a valid file (jpg, bmp, pict, tif, jpeg, png, gif, tiff)",
+                ableToUpload : true,
+                dataTableEnabled : false
+             };
+        common.initEditPage(document.metadataForm, props);
         //supress the modal error dialog, form submit
         var validator = $("#metadataForm").data("validator");
         var $form = $("#metadataForm");

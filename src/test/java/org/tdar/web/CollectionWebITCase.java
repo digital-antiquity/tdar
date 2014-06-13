@@ -1,8 +1,6 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -228,16 +226,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         submitForm();
 
-        assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/add"));
-        assertFalse("expecting to be on the view page", getCurrentUrlPath().contains("/collection/save.action"));
+        assertTrue(getPageText().contains("User does not exist"));
+        assertTrue(getCurrentUrlPath().contains("/collection/save"));
 
         assertTextPresent("my fancy collection");
-        for (Person person : nonUsers) {
-            if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
-                continue;
-            }
-            assertTextNotPresent(person.getLastName());
-        }
-
     }
 }
