@@ -293,8 +293,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, TdarUser actor,
             ResourceCollection resourceCollection, HasSubmitter source) {
-        if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
-            TdarUser user = getDao().find(TdarUser.class, incomingUser.getUser().getId());
+        TdarUser transientUser = incomingUser.getUser();
+        if (Persistable.Base.isNotNullOrTransient(transientUser)) {
+            TdarUser user = null;
+            try {
+                user = getDao().find(TdarUser.class, transientUser.getId());
+            } catch (Exception e) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists",e, Arrays.asList(transientUser));
+            }
             if (user != null) {
                 // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
                 // may evaluate fields that aren't set in the proxy object.
@@ -303,9 +309,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     return;
                 }
 
-                if (actor.equals(incomingUser.getUser()) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
+                if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
                     if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, incomingUser.getGeneralPermission())) {
-                        throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(incomingUser.getUser(),
+                        throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
                                 incomingUser.getGeneralPermission()));
                     }
                     // find highest permission for actor
@@ -315,6 +321,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 currentUsers.add(incomingUser);
                 if (shouldSaveResource)
                     getDao().saveOrUpdate(incomingUser);
+            } else {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(transientUser));
             }
         }
     }
