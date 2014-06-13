@@ -140,7 +140,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
      * @throws TdarActionException
      */
     @SkipValidation
-    @Action("simple", results={@Result(name="simple", location="review-authenticated.ftl")})
+    @Action(value="simple", results={@Result(name="simple", location="review-authenticated.ftl")})
     @WriteableSession
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
