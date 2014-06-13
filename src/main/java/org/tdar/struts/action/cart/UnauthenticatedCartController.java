@@ -35,16 +35,30 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable, ValidationAware, SessionAware {
 
     /*
-     * Workflow:
-     * - add
-     * - api (AJAX call for calculations)
-     * - review
-     * - finalReview
-     * - poll-order
-     * - order-complete [success: order-complete-success, cancel:order-complete-cancel]
-     * - process-choice ==> [input:add, success:review]
-     * - register => [input:review, success:finalReview]
-     * - login => [input:review, success:finalReview]
+        Actions:
+            new:get  (show pricing options)
+            api:post (facilitates the ajax request on the pricing options page)
+            process-choice:post (create/update invoice)
+                => success:@review, input:new.ftl
+            review:get
+                => success:review.ftl, authenticated:review-authenticated.ftl
+            /login/process-login:post
+                =>input:/login/login.ftl, success:@/billing/choose
+            process-registration:post
+                => input:review, success:@/billing/choose
+            /billing/choose:get  (choose/create billing account)
+            /billing/save:post (save billing account, assign new invoice?)
+                => success:@/billing/view.ftl
+
+            process-payment-request:post (currently: final validation before showing payment launchpad or redirecting to billing address page)
+            polling-check:post
+            process-external-payment-response:post
+
+        Actions (todo):
+            show-billing-accounts:get               (similar to /billing/choose)
+            process-billing-account-choice:post     (similar to /billing/save)
+            show-payment-launchpad                  the redirect result for billing account choice (or redirect result for process-registration => success)
+
      */
 
     private static final long serialVersionUID = -9156927670405819626L;

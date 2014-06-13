@@ -63,8 +63,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private String billingPhone;
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private Account account;
-    public static final String SUCCESS_ADD_ADDRESS = "add-address";
-    public static final String SUCCESS_ADD_PAY = "add-payment";
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
     private List<Long> extraItemIds = new ArrayList<>();
@@ -108,31 +106,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
 
-    @Actions({
-            @Action(value = SUCCESS_ADD_ADDRESS),
-            @Action(value = SUCCESS_ADD_PAY)
-    })
-    public String chooseAddress() throws TdarActionException {
-        return super.view();
-    }
-
-    @SkipValidation
-    @Action(value = "credit", results = { @Result(name = SUCCESS, location = "credit-info.ftl") })
-    public String addPaymentMethod() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
-        }
-        if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
-            return ERROR;
-        }
-
-        if (getInvoice().getAddress() == null) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.enter_a_billing_adderess"));
-        }
-
-        return SUCCESS;
-    }
 
     /**
      * I have no idea what this action does and where it fits within the larger process.
@@ -161,32 +134,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "polling-check", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String pollingCheck() throws TdarActionException, IOException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
+        
         setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getInvoice(), JsonLookupFilter.class, getCallback()).getBytes()));
 
         return SUCCESS;
-    }
-
-    @SkipValidation
-    @WriteableSession
-    @Action(value = "save-billing-address", results = {
-            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}"),
-            @Result(name = SUCCESS_ADD_ADDRESS, type = "redirect", location = "add-address?id=${id}")
-    })
-    public String saveAddress() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.cannot_modify"));
-        }
-
-        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            addActionError(getText("cartController.choose_address"));
-            return SUCCESS_ADD_ADDRESS;
-        }
-        getGenericService().saveOrUpdate(getInvoice());
-
-        return SUCCESS_ADD_PAY;
     }
 
     private String redirectUrl;
@@ -480,6 +431,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.callback = callback;
     }
 
+    /**
+     * Build a URL to the 'choose billing account' page.  If accountId is set, append as ID value in querystring. (used in add-invoice-to-account workflow.. i think)
+     * @return
+     */
     public String getSuccessPathForPayment() {
         successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
         Account account = getGenericService().find(Account.class, accountId);
