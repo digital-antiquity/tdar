@@ -540,7 +540,11 @@ public class GenericDao {
         if (getCurrentSession().contains(obj)) {
             // mark as read only
             // dump it off the cache so that future searches don't find the updated version
-            getCurrentSession().setReadOnly(obj, true);
+            boolean readOnly = getCurrentSession().isReadOnly(obj);
+            logger.trace("object read only?: {}", readOnly);
+            if (!readOnly) {
+                getCurrentSession().setReadOnly(obj, true);
+            }
         }
     }
 
