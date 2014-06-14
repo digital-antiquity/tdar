@@ -26,6 +26,7 @@ import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.ValidationAware;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Component
@@ -115,9 +116,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
-    // FIXME: we want to avoid writeable sessions on unauthenticated requests. Consider storing transient invoice in httpSession, and persist only after we
-    // authenticate
-    // @WriteableSession
+    @DoNotObfuscate(reason="unnecessary")
     public String preview() {
         try {
             invoice = cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);

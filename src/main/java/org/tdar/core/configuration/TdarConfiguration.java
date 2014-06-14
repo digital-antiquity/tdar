@@ -81,6 +81,7 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
     }
 
+    //FIXME: This function needs javadoc -- I assume there is a reason why initialize() cant/shouldn't happen in constructor (or lazy-init in getInstance()).
     public void initialize() {
         logger.debug("initializing filestore and setup");
         // initPersonalFilestorePath();

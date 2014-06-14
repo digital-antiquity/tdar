@@ -565,6 +565,12 @@ public class GenericDao {
         return obj;
     }
 
+    /**
+     * Evict a read-only entity from the current session return an equivalent, writeable enity.
+     * @param obj read-only entity.
+     * @param <T>
+     * @return writeable entity instance.
+     */
     public <T> T markWritable(T obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
@@ -575,6 +581,43 @@ public class GenericDao {
             }
         }
         return obj;
+    }
+
+    /**
+     *  Set a read-only entity to be writeable.  This method applies any pending (i.e. non-flushed) changes to the object. Note that this operation does
+     *  not cascade.  Any pending, non-flushed modifications to entity children will be lost, <i>even if they are marked CASCADE_UPDATE</i>
+     *  Similar to {@link #markWritable(Object)}, however, this method does not evict the supplied entity.
+     * @param entity read-only, persistent entity
+     * @param <T>
+     *
+     *  @see <a href="https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#readonly-api-entity">Making a persistent entity read-only</a>
+     *  Which covers how to make a read-only entity writeable again
+     */
+    public <T> void markUpdatable(T entity) {
+        if(!getCurrentSession().contains(entity)) { return; }
+        if(logger.isTraceEnabled()) {
+            if(getCurrentSession().isReadOnly(entity)) {
+                logger.warn("Unnecessary call to markUpdatable:{}", entity);
+            }
+        }
+        getCurrentSession().setReadOnly(entity, false);
+        //FIXME: feel free to clean up this declaration.  I'm copying from the hibernate 4.3 docs exactly even though it has a small typo.
+        Session session = getCurrentSession(), s = session;
+
+        // evict the read-only entity so it is detached
+        session.evict( entity );
+
+        // make the detached entity (with the non-flushed changes) persistent
+        session.update( entity );
+
+        // now entity is no longer read-only and its changes can be flushed
+        s.flush();
+    }
+
+    public <T> void markUpdatable(Collection<T> entities) {
+        for(T t : entities) {
+            markUpdatable(t);
+        }
     }
 
     public Statistics getSessionStatistics() {

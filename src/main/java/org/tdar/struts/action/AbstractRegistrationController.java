@@ -28,7 +28,7 @@ public abstract class AbstractRegistrationController extends AuthenticationAware
     private UserAffiliation affilliation;
 
     public boolean isUsernameRegistered(String username) {
-        getLogger().trace("testing username:", username);
+        getLogger().debug("testing username:", username);
         if (StringUtils.isBlank(username)) {
             addActionError(getText("userAccountController.error_missing_username"));
             return true;
@@ -39,7 +39,8 @@ public abstract class AbstractRegistrationController extends AuthenticationAware
 
     @Override
     public void validate() {
-        getLogger().trace("calling validate");
+        getLogger().debug("calling validate");
+
 
         if (person.getUsername() != null) {
             String normalizedUsername = getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
