@@ -65,8 +65,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Account account;
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
-    private List<Long> extraItemIds = new ArrayList<>();
-    private List<Integer> extraItemQuantities = new ArrayList<>();
     private Person owner;
     private String callback;
     private PricingType pricingType = null;
@@ -493,21 +491,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.owner = owner;
     }
 
-    public List<Long> getExtraItemIds() {
-        return extraItemIds;
-    }
-
-    public void setExtraItemIds(List<Long> extraItemIds) {
-        this.extraItemIds = extraItemIds;
-    }
-
-    public List<Integer> getExtraItemQuantities() {
-        return extraItemQuantities;
-    }
-
-    public void setExtraItemQuantities(List<Integer> extraItemQuantities) {
-        this.extraItemQuantities = extraItemQuantities;
-    }
 
     public String getCode() {
         return code;

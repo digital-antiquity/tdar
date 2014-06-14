@@ -1,11 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -38,6 +32,8 @@ import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
+
+import static org.junit.Assert.*;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
@@ -137,6 +133,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPrematurePayment() throws TdarActionException {
+        fail("this test should be updated for new cart workflow");
         UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
@@ -154,11 +151,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(invoiceId);
         controller.prepare();
         msg = null;
-        try {
-            assertEquals(Action.ERROR, controller.addPaymentMethod());
-        } catch (Exception e) {
-            msg = e.getMessage();
-        }
+//        try {
+//            ///////// assertEquals(Action.ERROR, controller.addPaymentMethod());
+//        } catch (Exception e) {
+//            msg = e.getMessage();
+//        }
         assertEquals(MessageHelper.getMessage("cartController.enter_a_billing_adderess"), msg);
     }
 
@@ -389,14 +386,16 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(MessageHelper.getMessage("cartController.valid_phone_number_is_required"), msg);
     }
 
+
     private CartController setupPaymentTests() throws TdarActionException {
+        fail("this test should be updated for new cart workflow");
         UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
         Long invoiceId = setupAndTestBillingAddress(controller_);
         CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
-        String response = controller.addPaymentMethod();
-        assertEquals(Action.SUCCESS, response);
+        //String response = controller.addPaymentMethod();
+        //assertEquals(Action.SUCCESS, response);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -420,7 +419,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
+    //FIXME: I don't see billing address fields in our forms. do we directly collect address info?, does our payment processor send it to us, or is this feature not used?
     private Long setupAndTestBillingAddress(UnauthenticatedCartController controller_) throws TdarActionException {
+        fail("this test should be updated for new cart workflow");
         Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
         Address address2 = new Address(AddressType.MAILING, "2street", "notsurewhere", "california", "q234", "united states");
         Person user = getUser();
@@ -432,11 +433,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
-        controller.chooseAddress();
+        ///////// controller.chooseAddress();
         assertNull(controller.getInvoice().getAddress());
         controller.getInvoice().setAddress(address);
-        String saveAddress = controller.saveAddress();
-        assertEquals(CartController.SUCCESS_ADD_PAY, saveAddress);
+        ///////// String saveAddress = controller.saveAddress();
+        ///////// assertEquals(CartController.SUCCESS_ADD_PAY, saveAddress);
         Invoice invoice = genericService.find(Invoice.class, controller.getId());
         assertNotNull(invoice);
         assertNotNull(invoice.getAddress());
