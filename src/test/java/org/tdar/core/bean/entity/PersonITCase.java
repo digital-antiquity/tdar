@@ -182,4 +182,25 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNotNull("should have a date created", person.getDateCreated());
     }
 
+    @Test(expected=org.hibernate.NonUniqueObjectException.class)
+    @Rollback
+    public void testPersonBecomesWritable() {
+        Person person = createAndSaveNewPerson("robert.loblaw@mailinator.org", "");
+        Institution institution = new Institution();
+        institution.setName("Loblaw At Law");
+        genericService.save(institution);
+        person.setInstitution(institution);
+        genericService.saveOrUpdate(person);
+
+        //object wasn't read-only to begin with, but who cares
+
+        Institution inst = person.getInstitution();
+        //markWritable detaches person, but we re-assign it so we're cool.... OR ARE WE??
+        person = genericService.markWritable(person);
+        //... later in the code
+        institution.setName("Bob Loblaw and Associates");
+        //This call will fail. some jerk done detached our institution!
+        genericService.saveOrUpdate(institution);
+    }
+
 }

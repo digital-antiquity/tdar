@@ -1,11 +1,16 @@
 package org.tdar.struts.action.cart;
 
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.SessionAware;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.struts.action.AuthenticationAware;
 
 import java.util.Map;
 
+@Results({
+        @Result(name = "redirect-start", location = "/cart/new", type = "redirect")
+})
 public abstract class AbstractCartController extends AuthenticationAware.Base implements SessionAware{
 
     private Map<String, Object> session;

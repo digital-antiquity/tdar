@@ -594,15 +594,14 @@ public class GenericDao {
      *  Which covers how to make a read-only entity writeable again
      */
     public <T> void markUpdatable(T entity) {
-        if(!getCurrentSession().contains(entity)) { return; }
+        Session session = getCurrentSession();
         if(logger.isTraceEnabled()) {
-            if(getCurrentSession().isReadOnly(entity)) {
-                logger.warn("Unnecessary call to markUpdatable:{}", entity);
+            if(!session.isReadOnly(entity)) {
+                logger.warn("Unnecessary call to markUpdatable - object was not read-only:{}", entity);
             }
         }
-        getCurrentSession().setReadOnly(entity, false);
-        //FIXME: feel free to clean up this declaration.  I'm copying from the hibernate 4.3 docs exactly even though it has a small typo.
-        Session session = getCurrentSession(), s = session;
+        //mark entity writable
+        session.setReadOnly(entity, false);
 
         // evict the read-only entity so it is detached
         session.evict( entity );
@@ -611,7 +610,6 @@ public class GenericDao {
         session.update( entity );
 
         // now entity is no longer read-only and its changes can be flushed
-        s.flush();
     }
 
     public <T> void markUpdatable(Collection<T> entities) {

@@ -33,6 +33,9 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 
+import static org.tdar.core.bean.Persistable.Base.isNotNullOrTransient;
+import static org.tdar.core.bean.Persistable.Base.isTransient;
+
 @Transactional(readOnly = true)
 @Service
 public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
@@ -376,7 +379,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
         }
-        if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
+        if (isNotNullOrTransient(invoice.getCoupon())) {
             if (Persistable.Base.isEqual(coupon, invoice.getCoupon())) {
                 return;
             } else {
@@ -458,14 +461,17 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         invoice.setTransactedBy(authenticatedUser);
-        if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
+        if (billingManager && isNotNullOrTransient(owner)) {
             invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
         }
         invoice.markUpdated(authenticatedUser);
-        genericDao.markUpdatable(invoice);
-        genericDao.markUpdatable(invoice.getItems());
+        //if invoice is persisted it will be read-only, so make it writable
+        if(isNotNullOrTransient(invoice)) {
+            genericDao.markUpdatable(invoice);
+            genericDao.markUpdatable(invoice.getItems());
+        }
         getDao().saveOrUpdate(invoice);
-        if (Persistable.Base.isNotNullOrTransient(accountId)) {
+        if (isNotNullOrTransient(accountId)) {
             Account account = genericDao.find(Account.class, accountId);
             account.getInvoices().add(invoice);
         }

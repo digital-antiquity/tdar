@@ -614,6 +614,10 @@ public class GenericService {
         return genericDao.markWritable(obj);
     }
 
+    public <O> void markUpdatable(O obj) {
+        genericDao.markUpdatable(obj);
+    }
+
     /**
      * Check to see if the object is already writable, if not, mark it as such
      * 
