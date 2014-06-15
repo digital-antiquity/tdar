@@ -74,7 +74,7 @@ public class LoginController extends AuthenticationAware.Base {
                     @Action(value = "process-cart-login",
                             interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
                             results = {
-                                    @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/process-payment-request"),
+                                    @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/show-billing-accounts"),
                                     @Result(name = REDIRECT, type = HTTPHEADER, params = {"error", BAD_REQUEST, "errorMessage", "returnUrl not expected"}),
                                     @Result(name = INPUT, type =  REDIRECT, location = "/cart/review?loginUsername=${loginUsername}")
                             })

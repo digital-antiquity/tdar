@@ -26,7 +26,9 @@ import java.util.Map;
 @Scope("prototype")
 @Results({
         @Result(name=INPUT, location="review.ftl"),
-        @Result(name=SUCCESS, location="/cart/finalreview", type="redirect")
+
+        //no need to take user to billing account selection if we no they don't have one
+        @Result(name=SUCCESS, location="/cart/process-payment-request", type="redirect")
 })
 @Namespace("/cart")
 @ParentPackage("default")

@@ -44,9 +44,9 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             review:get
                 => success:review.ftl, authenticated:review-authenticated.ftl
             /login/process-login:post
-                =>input:/login/login.ftl, success:@/billing/choose
+                =>input:/login/login.ftl, show-accounts:@/cart/show-billing-accounts, success:@/cart/process-payment-request
             process-registration:post
-                => input:review, success:@/billing/choose
+                => input:review, success:@/cart/process-payment-request  (nelnet landing page)
             /billing/choose:get  (choose/create billing account)
             /billing/save:post (save billing account, assign new invoice?)
                 => success:@/billing/view.ftl
