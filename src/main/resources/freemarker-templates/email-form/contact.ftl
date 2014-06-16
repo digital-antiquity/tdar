@@ -1,5 +1,7 @@
 Dear ${to.properName},
-${from.properName} discovered ${resource.title} (${resource.id?c})  in tDAR, and is interested in getting in touch with you.  They have sent the following message:
+${from.properName} discovered ${resource.title} (${resource.id?c})  in tDAR, 
+and is interested in getting in touch with you.  They have sent the following 
+message:
 
 ${message}
 
