@@ -3,7 +3,7 @@ package org.tdar.utils;
 public enum EmailMessageType {
 
     CONTACT("email-form/contact.ftl"),
-    REQUEST_ACCESS("email-form/request-access.ftl"),
+    REQUEST_ACCESS("email-form/access-request.ftl"),
     SUGGEST_CORRECTION("email-form/correction.ftl"),
     OTHER("email-form/other.ftl");
     
