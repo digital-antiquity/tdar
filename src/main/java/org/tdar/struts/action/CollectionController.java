@@ -114,6 +114,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         return isEditable() || getAuthenticationAndAuthorizationService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
+    
+    
     @Override
     protected String save(ResourceCollection persistable) {
         if (persistable.getType() == null) {
