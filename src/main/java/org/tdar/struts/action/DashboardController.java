@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -33,6 +33,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
@@ -69,7 +70,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
     private List<InformationResource> resourcesWithErrors;
-    
+
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
@@ -81,18 +82,33 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     @Autowired
     private transient AccountService accountService;
     @Autowired
+    private transient SearchService searchService;
+    @Autowired
     private transient EntityService entityService;
     @Autowired
     private transient ResourceService resourceService;
     private List<Project> allSubmittedProjects;
-
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<Resource> recentResources = new ArrayList<Resource>();
 
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
 
+    private void setupRecentResources() {
+        int count = 10;
+        try {
+            getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
+        } catch (ParseException pe) {
+            getLogger().debug("parse exception", pe);
+        }
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+
+    }
+
     @Override
     @Action("dashboard")
     public String execute() {
+        setupRecentResources();
         getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         getLogger().trace("find empty projects");
@@ -192,6 +208,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     public void setBookmarkedResource(List<Resource> bookmarks) {
         this.bookmarkedResources = bookmarks;
     }
+
     private void setupBookmarks() {
         if (bookmarkedResources == null) {
             bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
@@ -247,7 +264,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         filteredFullUserProjects.removeAll(getAllSubmittedProjects());
 
     }
-    
+
     public Set<Resource> getEditableProjects() {
         return editableProjects;
     }
@@ -373,6 +390,22 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     public void setResourcesWithErrors(List<InformationResource> resourcesWithErrors) {
         this.resourcesWithErrors = resourcesWithErrors;
+    }
+
+    public List<Resource> getRecentResources() {
+        return recentResources;
+    }
+
+    public void setRecentResources(List<Resource> recentResources) {
+        this.recentResources = recentResources;
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
     }
 
 }

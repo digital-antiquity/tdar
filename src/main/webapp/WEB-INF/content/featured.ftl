@@ -9,7 +9,9 @@
         <!-- Carousel items -->
         <div class="carousel-inner">
             <#list featuredResources as featuredResource>
+            <#if featuredResource?has_content>
                 <@view.tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+            </#if>
             </#list>
         </div>
         <!-- Carousel nav -->

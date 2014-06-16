@@ -28,7 +28,6 @@ import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
-import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -163,26 +162,8 @@ public class BrowseController extends AbstractLookupController {
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         resourceService.setupWorldMap(worldMapData);
 
-        Long count = 10L;
-        try {
-            int cacheCount = 0;
-            for (WeeklyPopularResourceCache cache : getGenericService().findAll(WeeklyPopularResourceCache.class)) {
-                Resource key = cache.getKey();
-                if (key instanceof Resource) {
-                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
-                }
-                if (key.isActive()) {
-                    if (cacheCount == count) {
-                        break;
-                    }
-                    cacheCount++;
-                    getFeaturedResources().add(key);
-                }
-            }
-        } catch (IndexOutOfBoundsException ioe) {
-            getLogger().debug("no featured resources found");
-        }
-
+        int count = 10;
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
         try {
             getRecentResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
         } catch (ParseException pe) {

@@ -27,6 +27,7 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -50,6 +51,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.data.AggregateDownloadStatistic;
@@ -76,6 +78,8 @@ public class ResourceService extends GenericService {
     @Autowired
     private DatasetDao datasetDao;
 
+    @Autowired
+    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
     @Autowired
     private GeoSearchService geoSearchService;
 
@@ -693,5 +697,29 @@ public class ResourceService extends GenericService {
     @Transactional(readOnly=true)
     public List<Resource> findByTdarYear(SearchResultHandler resultHandler, int year) {
         return datasetDao.findByTdarYear(resultHandler, year);
+    }
+
+    @Transactional(readOnly=true)
+    public List<Resource> getWeeklyPopularResources(int count) {
+        List<Resource> featured = new ArrayList<>();
+        try {
+            int cacheCount = 0;
+            for (WeeklyPopularResourceCache cache : datasetDao.findAll(WeeklyPopularResourceCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof Resource) {
+                    authenticationAndAuthorizationService.applyTransientViewableFlag(key, null);
+                }
+                if (key.isActive()) {
+                    if (cacheCount == count) {
+                        break;
+                    }
+                    cacheCount++;
+                    featured.add(key);
+                }
+            }
+        } catch (IndexOutOfBoundsException ioe) {
+            logger.debug("no featured resources found");
+        }
+        return featured;
     }
 }

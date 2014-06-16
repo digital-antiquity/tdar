@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+    <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
 
@@ -16,65 +17,7 @@
 <div id="titlebar" parse="true">
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
 
-    <#if payPerIngestEnabled>
-        <div class="news alert" id="alert-charging">
-            <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
-            <B>${siteAcronym} Update:</B>
-            Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing">the website</a> for
-            more information.
-            <br/>
-            <br/>
-            <#if (authenticatedUser.id < 145165 )>
-                If you are a contributor who uploaded files to tDAR during the free period, we've generated an account for those files. As a thank you for your
-                support, we have credited your account with one additional file (up to 10 MB, a $50 value) to get your next project started.  </#if>
-            <br/>
-        </div>
-    </#if>
-</div>
-
-
-    <#if resourcesWithErrors?has_content>
-    <div class="alert-error alert">
-        <h3><@s.text name="dashboard.archiving_heading"/></h3>
-
-        <p><@common.localText "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
-        <ul>
-            <#list resourcesWithErrors as resource>
-                <li>
-                    <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}" />">${resource.title}:
-                        <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
-                    </a>
-                </li>
-            </#list>
-        </ul>
-    </div>
-    </#if>
-
-
-    <#if overdrawnAccounts?has_content>
-    <div class="alert-error alert">
-        <h3><@s.text name="dashboard.overdrawn_title"/></h3>
-
-        <p><@s.text name="dashboard.overdrawn_description" />
-            <a href="<@s.url value="/cart/add"/>"><@s.text name="dashboard.overdrawn_purchase_link_text" /></a>
-        </p>
-        <ul>
-            <#list overdrawnAccounts as account>
-                <li>
-                    <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
-                </li>
-            </#list>
-        </ul>
-    </div>
-    </#if>
-
-<div id="messages" style="margin:2px" class="hidden lt-ie8">
-    <div id="message-ie-obsolete" class="message-error">
-        <@common.localText "dashboard.ie_warning", siteAcronym />
-        <a href="http://www.microsoft.com/ie" target="_blank">
-            <@common.localText "dashboard.ie_warning_link_text" />
-        </a>.
-    </div>
+        <@headerNotifications />
 </div>
 
 <div id="sidebar-right" parse="true">
@@ -84,6 +27,30 @@
                 <@resourcePieChart />
                 <hr/>
             </#if>
+        <#else>
+        <div id="myCarousel" class="carousel slide" data-interval="5000">
+                <#assign showBuy = (!accounts?has_content) />
+        
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <#if showBuy><li data-target="#myCarousel" data-slide-to="1"></li></#if>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+  </ol>
+  <!-- Carousel items -->
+  <div class="carousel-inner">
+    <div class="active item">Manual</div>
+        <#if (showBuy)>
+        <div class="item">
+            Buy tDAR now
+        </div>
+        </#if>
+    <div class="item">content</div>
+  </div>
+  <#-- Carousel nav 
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+  -->
+</div>
         </#if>
         <@collectionsSection />
     </div>
@@ -91,16 +58,16 @@
 
 <div class="row">
     <div class="span9">
-        Welcome back, ${authenticatedUser.firstName}!
+        Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
         <#if contributor>
             The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
             <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
             above.
-        </#if>
         <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a>
             | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
         </p>
         <hr/>
+        </#if>
     </div>
 </div>
 
@@ -115,6 +82,14 @@
 
         <@emptyProjectsSection />
         <@browseResourceSection />
+    <#else>
+    <@searchSection />
+    <#if featuredResources?has_content  >
+    <hr/>
+    <div class="row">
+        <#include "../featured.ftl" />
+    </div>
+    </#if>
     </#if>
 <hr/>
     <@accountSection />
@@ -123,6 +98,23 @@
     <@bookmarksSection />
 
 
+<#macro searchSection>
+    <div class="row">
+    <div class="span9">
+        <form name="searchheader" action="<@s.url value="/search/results"/>">
+                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
+                <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
+        <#-- 
+        <h2>Sorting Options and Submit</h2>
+        <@search.sortFields /> -->
+        <@s.submit value="Search" cssClass="btn btn-primary" />
+        
+            </form>
+    
+    </div>    
+    </div>
+
+</#macro>
 
 
 
@@ -278,12 +270,13 @@
 
     <#macro bookmarksSection>
     <div class="row">
-        <div class="span9">
-            <h2 id="bookmarks">Bookmarks</h2>
-            <#if bookmarkedResources??>
-            <#--	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE'  bookmarkable=true  orientation='LIST_LONG' listTag='ol' headerTag="h3" /> -->
-
+        <div class="span9" id="bookmarks">
+            <#if ( bookmarkedResources?size > 0)>
+            <h2 >Bookmarks</h2>
                 <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" />
+            <#else>
+            <h3>Bookmarked resources appear in this section</h3>
+            Bookmarks are a quick and useful way to access resources from your dashboard. To bookmark a resource, click on the star <i class="icon-star"></i> icon next to any resource's title.
             </#if>
         </div>
     </div>
@@ -306,4 +299,69 @@
         TDAR.common.collectionTreeview();
     });
 </script>
+
+
+
+<#macro headerNotifications>
+    <#if payPerIngestEnabled>
+        <div class="news alert" id="alert-charging">
+            <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
+            <B>${siteAcronym} Update:</B>
+            Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing">the website</a> for
+            more information.
+            <br/>
+            <br/>
+            <#if (authenticatedUser.id < 145165 )>
+                If you are a contributor who uploaded files to tDAR during the free period, we've generated an account for those files. As a thank you for your
+                support, we have credited your account with one additional file (up to 10 MB, a $50 value) to get your next project started.  </#if>
+            <br/>
+        </div>
+    </#if>
+
+
+    <#if resourcesWithErrors?has_content>
+    <div class="alert-error alert">
+        <h3><@s.text name="dashboard.archiving_heading"/></h3>
+
+        <p><@common.localText "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
+        <ul>
+            <#list resourcesWithErrors as resource>
+                <li>
+                    <a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}" />">${resource.title}:
+                        <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
+                    </a>
+                </li>
+            </#list>
+        </ul>
+    </div>
+    </#if>
+
+
+    <#if overdrawnAccounts?has_content>
+    <div class="alert-error alert">
+        <h3><@s.text name="dashboard.overdrawn_title"/></h3>
+
+        <p><@s.text name="dashboard.overdrawn_description" />
+            <a href="<@s.url value="/cart/add"/>"><@s.text name="dashboard.overdrawn_purchase_link_text" /></a>
+        </p>
+        <ul>
+            <#list overdrawnAccounts as account>
+                <li>
+                    <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+                </li>
+            </#list>
+        </ul>
+    </div>
+    </#if>
+
+<div id="messages" style="margin:2px" class="hidden lt-ie8">
+    <div id="message-ie-obsolete" class="message-error">
+        <@common.localText "dashboard.ie_warning", siteAcronym />
+        <a href="http://www.microsoft.com/ie" target="_blank">
+            <@common.localText "dashboard.ie_warning_link_text" />
+        </a>.
+    </div>
+</div>
+</#macro>
+
 </#escape>
