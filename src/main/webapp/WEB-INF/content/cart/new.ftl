@@ -3,6 +3,7 @@
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
 <head>
     <title>Your Cart</title>
     <meta name="lastModifiedDate" content="$Date$"/>
@@ -136,6 +137,12 @@
                                     </#if>
                                 </#list>
                             </table>
+
+                            <#if (billingManager && allPaymentMethods?size > 1)>
+                                <h3>Choose Payment Method</h3>
+                                <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
+                                listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />
+                            </#if>
 
                         </#if>
                     </div>

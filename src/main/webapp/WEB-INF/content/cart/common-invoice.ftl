@@ -84,7 +84,7 @@
                 }
             });
 
-            if (${((invoice.calculatedCost!0) <= 0)?string}) {
+            if (${(((invoice.calculatedCost)!0) <= 0)?string}) {
                 $(".fadeIfZeroed").fadeTo('fast', .5);
             }
 

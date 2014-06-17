@@ -328,10 +328,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public Invoice getInvoice() {
-        if (getPersistable() == null) {
-            setPersistable(createPersistable());
-        }
-
         return getPersistable();
     }
 
@@ -369,10 +365,20 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public void prepare() {
-        //Grab the invoice id from the session. Otherwise,  grab id from request params.
+        //Normally prepare() would get the persistable ID from the queryString. So we need to also look in the httpsession.
         Long invoiceId = (Long) session.get(UnauthenticatedCartController.PENDING_INVOICE_ID_KEY);
         setId(invoiceId);
+        //now we can load the persistable
         super.prepare();
+
+        //if an unauthenticated user created this invoice, we have some fields left to fill-in
+        if(getInvoice().getOwner() == null) {
+            getInvoice().setOwner(getAuthenticatedUser());
+            //todo: need to also set this CartBillingAccountController if admin is creating an invoice
+            getInvoice().setTransactedBy(getAuthenticatedUser());
+        }
+
+
     }
 
     public void setInvoice(Invoice invoice) {

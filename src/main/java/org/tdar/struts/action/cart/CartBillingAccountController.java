@@ -67,6 +67,12 @@ public class CartBillingAccountController extends AbstractCartController {
             } else if(selectedAccount == null) {
                 addActionError("Invalid account selection");
             }
+
+            //rule: payment method required
+            if(getInvoice().getPaymentMethod() == null) {
+                addActionError(getText("cartController.valid_payment_method_is_required"));
+            }
+
         }
     }
 
@@ -85,7 +91,7 @@ public class CartBillingAccountController extends AbstractCartController {
         return SUCCESS;
     }
 
-    @Action("process-billing-account-choice")
+    @Action(value="process-billing-account-choice", results={@Result(name=SUCCESS, location="process-payment-request", type="redirect")})
     @PostOnly
     @WriteableSession
     public String processBillingAccountChoice() {
@@ -118,5 +124,9 @@ public class CartBillingAccountController extends AbstractCartController {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public TdarUser getBlankPerson()  {
+        return new TdarUser();
     }
 }

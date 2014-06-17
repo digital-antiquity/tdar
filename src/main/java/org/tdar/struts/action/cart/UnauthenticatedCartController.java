@@ -31,7 +31,9 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Component
 @Scope("prototype")
-@Results({ @Result(name = "redirect-start", location = "/cart/new", type = "redirect") })
+@Results({
+        @Result(name = "redirect-start", location = "/cart/new", type = "redirect"),
+})
 @HttpsOnly  //FIXME: add class-level support for @HttpsOnly and @PostOnly
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable, ValidationAware, SessionAware {
 
@@ -114,17 +116,35 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
                     // @Result(name = SUCCESS, type=REDIRECT, location = "review?id=${invoice.id}"),
                     @Result(name = SUCCESS, type = REDIRECT, location = "review"),
 
+                    @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
+
+
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason="unnecessary")
     public String preview() {
+        //payment method: if only one choice is available we assume that it wont get passed to the request
+        if(invoice != null) {
+            if(invoice.getPaymentMethod() == null && getAllPaymentMethods().size() == 1) {
+                invoice.setPaymentMethod(getAllPaymentMethods().get(0));
+            }
+        }
+
         try {
             invoice = cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionError(trex.getMessage());
             return "input";
         }
+
+
         storePendingInvoice(invoice);
+
+        //if user is authenticated, redirect them to billing account selection (todo: or go w/ adam's idea of having a review-part-2 page, which has billing account selection)
+        if (isAuthenticated()) {
+            return "authenticated";
+        }
+
         return SUCCESS;
     }
 
@@ -266,6 +286,8 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     public void validate() {
         if (invoice == null)
             return;
+
+        //rule: invoice must not be finalized
         if (!getInvoice().isModifiable()) {
             addActionError(getText("cartController.cannot_modify"));
         }

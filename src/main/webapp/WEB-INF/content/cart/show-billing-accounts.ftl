@@ -14,7 +14,7 @@
 <h1>Select a Billing Account</h1>
 
 <div>
-    <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+    <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-billing-account-choice'>
         <@s.token name='struts.csrf.token' />
         <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="true"
         list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
