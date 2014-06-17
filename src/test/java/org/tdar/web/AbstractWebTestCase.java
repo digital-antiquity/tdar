@@ -1127,11 +1127,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
 //        assertCurrentUrlContains("/simple");
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        //setInput("invoice.paymentMethod", "CREDIT_CARD");
 
         String invoiceid = getInput("id").getAttribute("value");
         logger.info("TOTAL::: " + total);
-        submitForm();
+        //submitForm();
         if (!total.equals("0")) {
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("click here");

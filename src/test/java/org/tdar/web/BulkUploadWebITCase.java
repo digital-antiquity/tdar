@@ -124,7 +124,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            //setInput("invoice.paymentMethod", "CREDIT_CARD");
             String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
             accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
         }
@@ -225,10 +225,12 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            //setInput("invoice.paymentMethod", "CREDIT_CARD");
+            //accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+            //we should be at the 'payment processing' launchpad page now
+            assertCurrentUrlContains("/cart/process-payment-request");
             String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
-            extra.put("accountId", accountId);
+            //extra.put("accountId", accountId);
         }
 
         ResourceType rt = ResourceType.PROJECT;
