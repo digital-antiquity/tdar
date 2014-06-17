@@ -174,7 +174,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
-        if(resource.getInternalResourceCollection() != null) {
+        if (resource.getInternalResourceCollection() != null) {
             boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
             ResourceCollection resourceCollection = resource.getInternalResourceCollection();
             applyTransientEnabledPermission(authenticatedUser, resourceCollection, canModify);
@@ -185,7 +185,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     /**
      * Set the transient @link enabled boolean on a @link AuthorizedUser
-     *
+     * 
      * Generally speaking, we use the enabled property to indicate to the UI whether removing the authorizedUser from the authorizedUser is "safe". An operation
      * is "safe" if it doesnt remove the permissions that enabled the user to modify the resource collection in the first place.
      * 
@@ -196,8 +196,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private void applyTransientEnabledPermission(Person authenticatedUser, ResourceCollection resourceCollection, boolean canModify) {
         Set<AuthorizedUser> authorizedUsers = resourceCollection.getAuthorizedUsers();
         for (AuthorizedUser au : authorizedUsers) {
-            //enable if:  permission is irrelevant (authuser is owner)
-            //    or if:  user has modify permission but is not same as authuser
+            // enable if: permission is irrelevant (authuser is owner)
+            // or if: user has modify permission but is not same as authuser
             au.setEnabled(
                     resourceCollection.getOwner().equals(au.getUser())
                             || (canModify && !au.getUser().equals(authenticatedUser)));
@@ -299,7 +299,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             try {
                 user = getDao().find(TdarUser.class, transientUser.getId());
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists",e, Arrays.asList(transientUser));
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", e, Arrays.asList(transientUser));
             }
             if (user != null) {
                 // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
@@ -694,5 +694,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
         return getDao().getAllChildCollections(persistable);
+    }
+
+    @Transactional
+    public void addUserToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
+        ResourceCollection internal = resource.getInternalResourceCollection();
+        if (internal == null) {
+            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
+        }
+        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
+        saveOrUpdate(internal);
     }
 }

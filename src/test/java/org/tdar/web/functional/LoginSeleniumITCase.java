@@ -32,7 +32,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Test
     public void testAbstractLogin() {
-        assertTrue(getText().contains("Welcome back,"));
+        assertTrue(getText().contains("Welcome"));
     }
 
     @Test
