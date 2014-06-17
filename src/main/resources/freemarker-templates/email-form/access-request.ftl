@@ -5,9 +5,7 @@ may reply to this email to request additional information from ${from.properName
 tDAR allows you to extend view and download privileges for confidential 
 records to registered tDAR users.  If you decide to share this resource 
 with ${from.properName}, you may log-in to tDAR, and visit 
-${baseUrl}/${resource.url_namespace}/${resource.id?c}.  
-Select edit, and scroll to the bottom of the page where you may add 
-${from.properName} to the Access Rights for this resource.  
+${baseUrl}/resource/request-access?resourceId=${resource.id?c}&requestorId=${from.id?c} .  
 
 Below is the detailed request from the User.
 

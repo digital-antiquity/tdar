@@ -82,6 +82,7 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
@@ -230,6 +231,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void loadCustomMetadata() throws TdarActionException {
     }
 
+
+    
+    
     @Override
     public String loadAddMetadata() {
         if (Persistable.Base.isNotNullOrTransient(getResource())) {

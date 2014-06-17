@@ -12,8 +12,10 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.web.SessionDataAware;
@@ -63,6 +65,107 @@ public interface AuthenticationAware extends SessionDataAware {
                 return null;
             }
         }
+        
+        /**
+         * This method centralizes a lot of the logic around rights checking ensuring a valid session and rights if needed
+         * 
+         * @param userAction
+         *            -- the type of request the user is making
+         * @param action
+         *            <P extends Persistable>
+         *            -- the action that we're going to call the check on
+         * @param adminRightsCheck
+         *            -- the adminRights associated with the basicCheck enabling an effective override
+         * @throws TdarActionException
+         *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
+         */
+        // FIXME: revies and consolidate status codes where possible
+        protected <P extends Persistable> void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
+                throws TdarActionException {
+            // first check the session
+            Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
+            getLogger().info("user {} is TRYING to {} a {}", msg);
+
+            if (userAction.isAuthenticationRequired()) {
+                try {
+                    if (!getSessionData().isAuthenticated()) {
+                        addActionError(getText("abstractPersistableController.must_authenticate"));
+                        abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.must_authenticate"));
+                    }
+                } catch (Exception e) {
+                    addActionErrorWithException(getText("abstractPersistableController.session_not_initialized"), e);
+                    abort(StatusCode.OK.withResultName(LOGIN), getText("abstractPersistableController.could_not_load"));
+                }
+            }
+
+            Persistable persistable = action.getPersistable();
+            if (Persistable.Base.isNullOrTransient(persistable)) {
+                // deal with the case that we have a new or not found resource
+                getLogger().debug("Dealing with transient persistable {}", persistable);
+                switch (userAction) {
+                    case CREATE:
+                    case SAVE:
+                        if (action.isCreatable()) {
+                            return;
+                        }
+                        // (intentional fall-through)
+                    case EDIT:
+                    default:
+                        if (persistable == null) {
+                            // persistable is null, so the lookup failed (aka not found)
+                            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+                        } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
+                            // id not specified or not a number, so this is an invalid request
+                            abort(StatusCode.BAD_REQUEST, getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
+                        }
+                }
+            }
+
+            // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
+            if (getAuthenticationAndAuthorizationService().can(adminRightsCheck, action.getAuthenticatedUser())) {
+                return;
+            }
+
+            switch (userAction) {
+                case CREATE:
+                    if (action.isCreatable()) {
+                        return;
+                    }
+                    break;
+                case EDIT:
+                case MODIFY_EXISTING:
+                    if (action.isEditable()) {
+                        return;
+                    }
+                    break;
+                case VIEW:
+                    if (action.isViewable()) {
+                        return;
+                    }
+                    break;
+                case SAVE:
+                    if (action.isSaveable()) {
+                        return;
+                    }
+                    break;
+                case DELETE:
+                    if (action.isDeleteable()) {
+                        return;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            String errorMessage = getText("abstractPersistableController.no_permissions"); 
+            addActionError(errorMessage);
+            abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
+        }
+
+        protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
+            throw new TdarActionException(statusCode, errorMessage);
+        }
+
+
 
         public boolean isAdministrator() {
             return isAuthenticated() && authenticationAndAuthorizationService.isAdministrator(getAuthenticatedUser());
