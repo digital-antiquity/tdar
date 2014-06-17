@@ -29,7 +29,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -302,11 +301,13 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (List<E>) findAll(ids);
     }
 
+    @SuppressWarnings("unchecked")
     public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
         Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
         query.setMaxResults(max.intValue());
@@ -358,16 +359,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query;
     }
 
+    @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        List<AggregateDownloadStatistic> toReturn = new ArrayList<AggregateDownloadStatistic>();
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
         return query.list();
-//        for (Object obj_ : query.list()) {
-//            Object[] obj = (Object[]) obj_;
-//            InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
-//            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFilename(), irf.getId(), irf.getInformationResource().getId()));
-//        }
-//        return toReturn;
     }
 
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,

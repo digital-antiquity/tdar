@@ -59,6 +59,9 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
             DateTime.parse(dateStart);
         }
         setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        for (AggregateViewStatistic stat : getUsageStats()) {
+        getLogger().debug("usage: {}", stat);
+        }
         setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         for (AggregateDownloadStatistic download : getDownloadStats()) {
             InformationResourceFile irf = getGenericService().find(InformationResourceFile.class, download.getInformationResourceFileId());

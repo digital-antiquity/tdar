@@ -101,7 +101,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
             Set<Long> seen = new HashSet<>();
             for (AggregateViewStatistic avs : aggregateUsageStats) {
-                Long resourceId = avs.getResourceId();
+                Long resourceId = avs.getResource().getId();
                 // handling unique resource ids across the timeperiod
                 if (seen.contains(resourceId)) {
                     continue;
