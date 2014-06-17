@@ -18,24 +18,24 @@
 >
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='person.firstName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='reg.person.firstName' cssClass="required input-xlarge" />
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='person.lastName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='reg.person.lastName' cssClass="required input-xlarge" />
     </div>
 </div>
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="person.email" cssClass="required email input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="reg.person.email" cssClass="required email input-xlarge" />
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="confirmEmail" cssClass="required email input-xlarge"/>
+        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="reg.confirmEmail" cssClass="required email input-xlarge"/>
     </div>
 </div>
 
 <div class="row">
     <div class="span8">
-        <@s.textfield labelposition='left' label='Organization' name='institutionName' id='institutionName' cssClass="input-xlarge"/>
+        <@s.textfield labelposition='left' label='Organization' name='reg.institutionName' id='institutionName' cssClass="input-xlarge"/>
     </div>
 </div>
 <div class="row">
@@ -43,17 +43,17 @@
     <div class="span8">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
 
-                        <@s.select list="userAffiliations" name="affilliation" label="Affiliation / Interest" listValue="label" headerKey=""
+                        <@s.select list="userAffiliations" name="reg.affilliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
     </div>
 </div>
-    <@s.textfield spellcheck="false" required=true id='username' label="Username" name="person.username" cssClass="required username input-xlarge" />
+    <@s.textfield spellcheck="false" required=true id='username' label="Username" name="reg.person.username" cssClass="required username input-xlarge" />
 <div class="row">
     <div class="span4">
-        <@s.password required=true label='Password' name='password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Password' name='reg.password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
     </div>
     <div class="span4">
-        <@s.password required=true label='Confirm password' name='confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Confirm password' name='reg.confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
     </div>
 </div>
 <div class="row">
@@ -63,7 +63,7 @@
             <div class="controls">
                 <span class="help-block">  </span>
                 <label class="checkbox">
-                    <@s.checkbox theme="simple" name="acceptTermsOfUse" id="tou-id"  />
+                    <@s.checkbox theme="simple" name="reg.acceptTermsOfUse" id="tou-id"  />
                     I have read and accept the ${siteAcronym}
                     <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
                 </label>
@@ -75,7 +75,7 @@
             <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
             </span>
                 <label class="checkbox">
-                    <@s.checkbox theme="simple" name="requestingContributorAccess" id="contributor-id"  />
+                    <@s.checkbox theme="simple" name="reg.requestingContributorAccess" id="contributor-id"  />
                     I accept the ${siteAcronym}
                     <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                     and wish to add ${siteAcronym} content.
@@ -90,7 +90,7 @@
                     Please briefly describe the geographical areas, time periods, or other subjects for which you
                     would like to contribute information
                 </span>
-                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId' />
+                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='reg.contributorReason' id='contributorReasonId' />
                 </div>
             </div>
         </div>

@@ -371,7 +371,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return stackTraces;
     }
 
-    protected HttpServletRequest getServletRequest() {
+    public HttpServletRequest getServletRequest() {
         return servletRequest;
     }
 
@@ -380,7 +380,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.servletRequest = servletRequest;
     }
 
-    protected HttpServletResponse getServletResponse() {
+    public HttpServletResponse getServletResponse() {
         return servletResponse;
     }
 

@@ -1,18 +1,15 @@
 package org.tdar.struts.action.cart;
 
 import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.ValidationAware;
 import org.apache.struts2.convention.annotation.*;
-import org.apache.struts2.interceptor.SessionAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.struts.action.AbstractRegistrationController;
-import org.tdar.struts.action.UserAccountController;
+import org.tdar.core.service.external.RegistrationControllerService;
+import org.tdar.struts.action.auth.RegistrationInfo;
+import org.tdar.struts.action.auth.RegistrationInfoProvider;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import static com.opensymphony.xwork2.Action.INPUT;
 import static com.opensymphony.xwork2.Action.SUCCESS;
@@ -32,45 +29,35 @@ import java.util.Map;
 })
 @Namespace("/cart")
 @ParentPackage("default")
-public class CartProcessRegistrationAction extends AbstractRegistrationController implements SessionAware, Preparable {
+public class CartProcessRegistrationAction extends AbstractCartController implements RegistrationInfoProvider{
 
-    private Invoice invoice;
-    Map<String, Object> session;
+    @Autowired
+    private RegistrationControllerService controllerService;
 
-    @Override
-    public void setSession(Map<String, Object> session) {
-        this.session = session;
-    }
-
-    public void prepare() {
-        Long invoiceId = (Long) session.get(UnauthenticatedCartController.PENDING_INVOICE_ID_KEY);
-        invoice =  getGenericService().find(Invoice.class, invoiceId);
-    }
+    private RegistrationInfo registrationInfo = new RegistrationInfo();
 
     @Override
     public void validate() {
-        getLogger().debug("validate{}", 1);
-        super.validate();
+        controllerService.validateAction(this);
     }
 
     @WriteableSession
     @DoNotObfuscate(reason = "not needed")
     @Action("process-registration")
     public String processRegistration() {
-        getPerson().setAffiliation(getAffilliation());
-        AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(getPerson(), getPassword(), getInstitutionName(),
-                getServletRequest(), getServletResponse(), getSessionData(), true);
-        if (result.getType().isValid()) {
-            setPerson(result.getPerson());
-            addActionMessage(getText("userAccountController.successful_registration_message"));
-            return SUCCESS;
-        } else {
-            return INPUT;
-        }
+        return controllerService.executeAction(this);
     }
 
-    public Invoice getInvoice() {
-        return invoice;
+    @Override
+    public RegistrationInfo getRegistrationInfo() {
+        return registrationInfo;
     }
 
+    /**
+     * convenience getter for view-layer
+     * @return
+     */
+    public RegistrationInfo getReg() {
+        return registrationInfo;
+    }
 }

@@ -15,6 +15,8 @@ import java.util.WeakHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.opensymphony.xwork2.TextProvider;
+import com.opensymphony.xwork2.ValidationAware;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,6 +55,8 @@ import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResult
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.action.auth.RegistrationInfo;
+import org.tdar.struts.action.auth.RegistrationInfoProvider;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
@@ -987,5 +991,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         sessionData.clearAuthenticationToken();
         getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
+
+
+
 
 }
