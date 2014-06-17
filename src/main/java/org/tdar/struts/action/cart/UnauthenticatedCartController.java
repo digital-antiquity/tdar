@@ -122,13 +122,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason="unnecessary")
     public String preview() {
-        //payment method: if only one choice is available we assume that it wont get passed to the request
-        if(invoice != null) {
-            if(invoice.getPaymentMethod() == null && getAllPaymentMethods().size() == 1) {
-                invoice.setPaymentMethod(getAllPaymentMethods().get(0));
-            }
-        }
-
         try {
             invoice = cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
         } catch (TdarRecoverableRuntimeException trex) {
@@ -241,9 +234,19 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     @Override
     public void prepare() {
         setupActivities();
-        // look for pending invoice in the session
-        // p = getGenericService().find(Invoice.class, getId());
-        invoice = loadPendingInvoice();
+        // look for pending invoice in the session.
+        Invoice persistedInvoice = loadPendingInvoice();
+        if(persistedInvoice != null) {
+            invoice = persistedInvoice;
+        }
+
+        //payment method: if only one choice is available we assume that it wont get passed to the request
+        if(invoice != null) {
+            if(getAllPaymentMethods().size() == 1) {
+                invoice.setPaymentMethod(getAllPaymentMethods().get(0));
+            }
+        }
+
     }
 
     public AuthorizedUser getBlankAuthorizedUser() {
@@ -289,6 +292,11 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         //rule: invoice must not be finalized
         if (!getInvoice().isModifiable()) {
             addActionError(getText("cartController.cannot_modify"));
+        }
+
+        //rule: invoice.paymentMethod required (prepare() should set automatically if only one option exists)
+        if(invoice.getPaymentMethod() == null) {
+            addActionError(getText("cartController.valid_payment_method_is_required"));
         }
     }
 
