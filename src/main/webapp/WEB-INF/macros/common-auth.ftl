@@ -7,6 +7,7 @@
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
 <#macro registrationFormFields detail="verbose" cols=12>
+    <@s.hidden name="h.timeCheck"/>
 <#local
     level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
     showMinimal = true,

@@ -22,6 +22,7 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.PricingOption.PricingType;
 
 import com.opensymphony.xwork2.Preparable;
@@ -84,15 +85,13 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     // todo: for consistency it would be better to use spring to either a) autowire a session-scoped invoice, or b) put the pending invoice in sessionData
     private Map<String, Object> session;
 
-
-
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
     private transient InvoiceService cartService;
 
-
+    private AntiSpamHelper antiSpamHelper= new AntiSpamHelper();
 
     /**
      * Show buyable items and pricing
@@ -320,4 +319,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
         session.remove(PENDING_INVOICE_ID_KEY);
     }
 
+    public AntiSpamHelper getH() {
+        return antiSpamHelper;
+    }
 }
