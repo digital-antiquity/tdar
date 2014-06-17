@@ -20,10 +20,10 @@ import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.AggregateViewStatistic;
 
 /**
  * $Id$

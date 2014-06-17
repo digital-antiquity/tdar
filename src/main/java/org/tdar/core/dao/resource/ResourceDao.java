@@ -35,12 +35,12 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.struts.data.AggregateDownloadStatistic;
-import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
@@ -303,32 +303,14 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     }
 
     public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
-        for (Object obj_ : query.list()) {
-            Object[] obj = (Object[]) obj_;
-            @SuppressWarnings("deprecation")
-            Resource res = new Resource((Long) obj[0], (String) obj[1], (ResourceType) obj[2]);
-            AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], res);
-            markReadOnly(view.getResource());
-            toReturn.add(view);
-        }
-        return toReturn;
+        return query.list();
     }
 
     public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-        List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
         Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
         query.setMaxResults(max.intValue());
-        for (Object obj_ : query.list()) {
-            Object[] obj = (Object[]) obj_;
-            @SuppressWarnings("deprecation")
-            Resource res = new Resource((Long) obj[0], (String) obj[1], (ResourceType) obj[2]);
-            AggregateViewStatistic view = new AggregateViewStatistic(null, (Number) obj[3], res);
-            markReadOnly(view.getResource());
-            toReturn.add(view);
-        }
-        return toReturn;
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")
@@ -379,12 +361,13 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateDownloadStatistic> toReturn = new ArrayList<AggregateDownloadStatistic>();
         Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
-        for (Object obj_ : query.list()) {
-            Object[] obj = (Object[]) obj_;
-            InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
-            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFilename(), irf.getId(), irf.getInformationResource().getId()));
-        }
-        return toReturn;
+        return query.list();
+//        for (Object obj_ : query.list()) {
+//            Object[] obj = (Object[]) obj_;
+//            InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
+//            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFilename(), irf.getId(), irf.getInformationResource().getId()));
+//        }
+//        return toReturn;
     }
 
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,

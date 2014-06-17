@@ -124,6 +124,10 @@ public interface TdarNamedQueries {
     String CREATOR_VIEW = "creator.views";
     String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
     String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
+    String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
+    String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
+    String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
+    String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
     // raw SQL/HQL queries
 
     /**
@@ -190,8 +194,6 @@ public interface TdarNamedQueries {
             + ")  ";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
-    String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
-    String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
     String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
     String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
@@ -214,7 +216,7 @@ public interface TdarNamedQueries {
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
 
     String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
-    String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
-    String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
+    String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, date_accessed, count) select resource_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from resource_access_statistics where date_accessed='%1$tF' group by resource_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
+    String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_accessed='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
 
 }
