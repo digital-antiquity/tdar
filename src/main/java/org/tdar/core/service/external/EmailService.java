@@ -16,7 +16,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.Email.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -43,7 +43,7 @@ public class EmailService {
 
     @Autowired
     private GenericService genericService;
-    
+
     @Autowired
     private FreemarkerService freemarkerService;
 
@@ -76,7 +76,7 @@ public class EmailService {
     private void enforceFromAndTo(Email email) {
         if (StringUtils.isBlank(email.getTo())) {
             email.addToAddress(getTdarConfiguration().getSystemAdminEmail());
-        } 
+        }
         if (StringUtils.isBlank(email.getFrom())) {
             email.setFrom(getFromEmail());
         }
@@ -115,12 +115,11 @@ public class EmailService {
         } catch (MailException me) {
             email.setNumberOfTries(email.getNumberOfTries() - 1);
             email.setErrorMessage(me.getMessage());
-            logger.error("email error: {} {}", email,me);
+            logger.error("email error: {} {}", email, me);
         }
         genericService.saveOrUpdate(email);
     }
 
-    
     public String getFromEmail() {
         return getTdarConfiguration().getDefaultFromEmail();
     }
@@ -148,21 +147,25 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    @Transactional(readOnly=false)
-    public void constructEmail(Person from, Person to, String subject, String messageBody, EmailMessageType type) {
+    @Transactional(readOnly = false)
+    public void constructEmail(Person from, Person to, Resource resource, String subject, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericService.markWritable(email);
         email.setFrom(from.getEmail());
         email.setTo(to.getEmail());
-        email.setSubject(type.name() +  " " + subject);
-        Map<String,Object> map = new HashMap<>();
-        map.put("from",from);
-        map.put("to",to);
-        map.put("messageBody",messageBody);
-        map.put("type",type);
+        email.setSubject(type.name() + " " + subject);
+        Map<String, Object> map = new HashMap<>();
+        map.put("from", from);
+        map.put("to", to);
+        map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
+        if (resource != null) {
+            map.put("resource", resource);
+        }
+        map.put("messageBody", messageBody);
+        map.put("type", type);
         email.setMessage(messageBody);
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
-        
+
     }
 
 }

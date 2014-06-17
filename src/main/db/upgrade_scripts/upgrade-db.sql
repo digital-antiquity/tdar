@@ -143,3 +143,35 @@ alter table site_type_keyword add constraint site_type_keyword_label_notempty ch
 delete from bookmarked_resource where id in (select b.id from bookmarked_resource b, bookmarked_resource bb where b.person_id=bb.person_id and b.resource_id=bb.resource_id and b.timestamp > bb.timestamp);
 -- create unique index on bookmarked_resource's person/resource combination
 create unique index bookmarked_resource_unique_idx on bookmarked_resource (person_id, resource_id);
+
+
+
+-- abrin 6/16/2014 -- resource aggregate statistics
+create table resource_access_day_agg (
+    id bigserial,
+    resource_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+    
+create index agg_res_date on resource_access_day_agg (resource_id, date_accessed);
+create index agg_res_year on resource_access_day_agg (resource_id, year);
+
+insert into resource_access_day_agg (resource_id, count, date_accessed)  select resource_id, count(id), date_trunc('day', date_accessed) from resource_access_statistics group by resource_id, date_trunc('day', date_accessed);
+update resource_access_day_agg set year = date_part('year', date_accessed);
+alter table resource_access_day_agg add constraint view_per_day UNIQUE(date_accessed, resource_id);
+
+create table file_download_day_agg (
+    id bigserial,
+    information_resource_file_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+
+create index agg_dwnld_date on file_download_day_agg (information_resource_file_id, date_accessed);
+create index agg_dwnld_year on file_download_day_agg (information_resource_file_id, year);
+alter table file_download_day_agg add constraint file_per_day UNIQUE(date_accessed, information_resource_file_id);
+
+
+insert into file_download_day_agg (information_resource_file_id, count, date_accessed)  select information_resource_file_id, count(id), date_trunc('day', date_accessed) from information_resource_file_download_statistics group by information_resource_file_id, date_trunc('day', date_accessed);
+update file_download_day_agg set year = date_part('year', date_accessed);

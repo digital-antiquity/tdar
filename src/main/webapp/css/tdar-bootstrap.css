@@ -1555,3 +1555,11 @@ div.orgChart div.node.level1.special {
     margin: 0px !important;
     padding: 0px !important;
 }
+
+
+.collectionResultsBox {
+    border:1px solid #999 !important;
+    padding:10px !important;
+    margin-top:1em;
+    margin-bottom:1em;
+}

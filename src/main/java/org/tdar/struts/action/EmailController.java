@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
@@ -55,7 +54,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     })
     @PostOnly
     public String execute() {
-        emailService.constructEmail(from, to, subject, messageBody, type);
+        emailService.constructEmail(from, to, resource, subject, messageBody, type);
         jsonResult.put("status", "QUEUED");
 
         return SUCCESS;

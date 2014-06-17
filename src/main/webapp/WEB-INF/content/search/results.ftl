@@ -136,22 +136,43 @@
         </div>
     </div>
 
+    <div class="tdarresults">
+
     <#if ( lookupSource='RESOURCE' && collectionTotalRecords > 0)>
     <div class="collectionResultsBox">
         <h4>matching collections</h4>
+        <div class="row">
+        <div class="span4">
         <ul>
+        <#assign current = 0>
             <#list collectionResults as col>
+                <#if (col_index >= collectionResults?size / 2)><#assign current = col_index/><#break></#if> 
                 <#if col?has_content>
                 <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
                 </#if>
             </#list>
         </ul>
-        <#if ( collectionTotalRecords < 10)>
-            <span class""><a href="<@s.url value="/search/collections?query=${query}"/>">See all ${collectionTotalRecords?c} collections</a></span>
-        </#if>
+        </div>
+        <div class="span4">
+        <ul>
+            <#list collectionResults as col>
+                <#if (col_index >= current)> 
+                <#if col?has_content>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                </#if>
+                </#if>
+            </#list>
+        </ul>
+        </div>
+
+        </div>
+        <#if ( collectionTotalRecords > 10)>
+            <p><span class="pull-right"><a href="<@s.url value="/search/collections?query=${query}"/>">&raquo; See all ${collectionTotalRecords?c} collections</a></span></p>
+       <br/> </#if>
     </div>
     </#if>
-    <div class="tdarresults">
+
+
         <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
         <#--fixme: replace explicit map sizes with css names -->
             <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
