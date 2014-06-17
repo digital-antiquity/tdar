@@ -84,9 +84,6 @@
     <@common.description resource.description />
 
     <#if sessionData.person?has_content>
-    <div class="actions">
-    <h3>Actions</h3>
-     <button name="requestAccess" id="emailButton" class="button btn">email</button>
      <div id="email-form" class="hide">
         <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
           <div class="modal-header">
@@ -111,12 +108,11 @@
         <@s.select theme="tdar" name='type'  emptyOption='false' listValue='name()' list='%{emailTypes}' label='Email Type'/>
         <@s.hidden name="toId" value="${resource.submitter.id?c}" />
         <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" /> 
-        <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" />
+        <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span9"/>
         <@common.antiSpam />
      <button name="send" id="followup-send" class="button btn btn-primary">send</button>
      <button name="cancel" id="followup-cancel" class="button btn btn-cancel">cancel</button>
      </form>
-     </div>
     </div>
     </#if>
 <hr/>
@@ -496,6 +492,19 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
     </#if>
+         
+        <ul class="inline">
+            <#assign txt>Request Access, Submit Correction</#assign>
+            <li class="media"><i class="icon-envelope pull-left"></i>
+            <div class="media-body">
+            <#if sessionData.person?has_content>
+                    <a href="#" name="requestAccess" id="emailButton" class="">${txt}</a>
+            <#else>
+                    <a href="/login?returnUrl=${currentUrl}">${txt} (requires login)</a>
+            </#if>
+            </div>            
+            </li>
+        </ul>
     <h3>Basic Information</h3>
 
     <p>
