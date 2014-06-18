@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.RegistrationControllerService;
 import org.tdar.struts.action.auth.RegistrationInfo;
 import org.tdar.struts.action.auth.RegistrationInfoProvider;
@@ -14,6 +15,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import static com.opensymphony.xwork2.Action.INPUT;
 import static com.opensymphony.xwork2.Action.SUCCESS;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,20 +34,21 @@ import java.util.Map;
 public class CartProcessRegistrationAction extends AbstractCartController implements RegistrationInfoProvider{
 
     @Autowired
-    private RegistrationControllerService controllerService;
+    private EntityService entityService;
 
     private RegistrationInfo registrationInfo = new RegistrationInfo();
 
     @Override
     public void validate() {
-        controllerService.validateAction(this);
+       List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(),entityService);
+       getActionErrors().addAll(errors);
     }
 
     @WriteableSession
     @DoNotObfuscate(reason = "not needed")
     @Action("process-registration")
     public String processRegistration() {
-        return controllerService.executeAction(this);
+        return "error"; //not implemented
     }
 
     @Override
