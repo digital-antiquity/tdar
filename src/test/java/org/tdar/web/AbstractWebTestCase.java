@@ -617,8 +617,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertButtonPresentWithText(buttonText);
         try {
             HtmlElement buttonByName = getButtonWithName(buttonText);
-            changePage(buttonByName.click());
-        } catch (IOException iox) {
+            changePage(buttonByName.click(), true);
+        } catch (FailingHttpStatusCodeException | IOException iox) {
             logger.error("exception while trying to submit from via button labeled " + buttonText, iox);
         }
     }
@@ -720,6 +720,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void changePage(Page page) {
+        changePage(page, false);
+    }
+    public void changePage(Page page, boolean expectErrors) {
         if (page == null) {
             fail("changed to a null page for some reason");
             return;
@@ -730,8 +733,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (internalPage instanceof HtmlPage) {
             htmlPage = (HtmlPage) internalPage;
             documentElement = htmlPage.getDocumentElement();
-            assertNoEscapeIssues();
-            assertPageValidHtml();
+            if (!expectErrors) {
+                assertNoEscapeIssues();
+                assertPageValidHtml();
+            }
         }
     }
 

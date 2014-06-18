@@ -60,7 +60,11 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
 
     @Action(value = "request-access",
             results = {
-                    @Result(name = SUCCESS, location = "../resource/request-access.ftl")
+                    @Result(name = SUCCESS, location = "../resource/request-access.ftl"),
+                    @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                            params = { "status", "500" }),
+                    @Result(name = INPUT, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                            params = { "status", "500" })
             })
     @HttpsOnly
     public String requestAccess() throws TdarActionException {
@@ -72,7 +76,11 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     @Action(value = "process-access-request",
             interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}")
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}"),
+                    @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                            params = { "status", "500" }),
+                    @Result(name = INPUT, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                            params = { "status", "500" })
             })
     @PostOnly
     @WriteableSession
@@ -81,9 +89,10 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (getPermission() == null) {
             addActionError("requestPermissionsController.specify_permission");
+            return ERROR;
         }
         resourceCollectionService.addUserToInternalCollection(getResource(), requestor, getPermission());
-        addActionMessage(getText("requestPermissionsController.success",Arrays.asList(requestor.getProperName(), permission.getLabel())));
+        addActionMessage(getText("requestPermissionsController.success", Arrays.asList(requestor.getProperName(), permission.getLabel())));
         return SUCCESS;
     }
 

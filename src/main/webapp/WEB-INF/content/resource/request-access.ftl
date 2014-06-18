@@ -9,6 +9,6 @@
         
         <@s.select theme="tdar" name="permission" emptyOption='false'
         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-    <@s.submit />
+    <@s.submit name="submit" />
 </@s.form>
 </#escape>
