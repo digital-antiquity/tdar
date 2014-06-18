@@ -13,7 +13,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
@@ -50,7 +49,6 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
-
 
     public DocumentController initControllerFields() {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
@@ -307,7 +305,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         controller.view();
 
-
         d = controller.getResource();
         Assert.assertEquals(d.getInternalResourceCollection(), null);
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
@@ -334,7 +331,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(newId);
         controller.prepare();
         controller.view();
-
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());

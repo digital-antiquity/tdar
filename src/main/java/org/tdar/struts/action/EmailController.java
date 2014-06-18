@@ -127,10 +127,12 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
         if (StringUtils.isBlank(messageBody)) {
             addActionError(getText("emailController.no_message"));
         }
+        if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
+            addActionError(getText("emailController.no_resource"));
+        }
         if (type == null) {
             addActionError(getText("emailController.no_type"));
-        }
-        if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
+        } else if (getType().requiresResource() && Persistable.Base.isNullOrTransient(resource)) {
             addActionError(getText("emailController.no_resource"));
         }
 

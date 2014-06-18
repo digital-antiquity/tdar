@@ -10,7 +10,7 @@ ${message}
 ---
 
 You may reply to this email to correspond with ${from.properName}.  To make 
-edits to your tDAR resource, log-in to tDAR and visit ${baseUrl}/${resource.url_namespace}/${resource.id?c}.  
+edits to your tDAR resource, log-in to tDAR and visit ${baseUrl}/${resource.urlNamespace}/${resource.id?c}.  
 Select the edit tab at the top of the page, make any changes, and press save. 
 
 Kind regards,

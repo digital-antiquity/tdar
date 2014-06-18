@@ -10,6 +10,10 @@ public enum EmailMessageType implements Localizable, HasLabel {
     SUGGEST_CORRECTION("email-form/correction.ftl");
 
     private String templateName;
+    
+    public boolean requiresResource() {
+        return true;
+    }
 
     private EmailMessageType(String templateName) {
         this.setTemplateName(templateName);

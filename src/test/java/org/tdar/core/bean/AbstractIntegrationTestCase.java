@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -988,5 +989,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public void setActionErrors(List<String> actionErrors) {
         this.actionErrors = actionErrors;
+    }
+
+    public SimpleMailMessage checkMailAndGetLatest() {
+        sendEmailProcess.execute();
+        sendEmailProcess.cleanup();
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
+        assertTrue("should have a mail in our 'inbox'", messages.size() > 0);
+
+        SimpleMailMessage received = messages.remove(0);
+        return received;
     }
 }

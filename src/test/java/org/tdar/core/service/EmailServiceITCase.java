@@ -28,15 +28,14 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         email.setSubject(subject);
         emailService.send(email);
 
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
-        assertTrue("should have a mail in our 'inbox'", messages.size() > 0);
-        SimpleMailMessage received = messages.get(0);
+        SimpleMailMessage received = checkMailAndGetLatest();
 
         assertEquals(received.getSubject(), subject);
         assertEquals(received.getText(), mailBody);
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], to.getEmail());
     }
+
 
     @Test
     public void testSendTemplate() {
