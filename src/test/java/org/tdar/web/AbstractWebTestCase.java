@@ -1227,11 +1227,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @Autowired
     private AuthenticationAndAuthorizationService authService;
 
-    public void testLogin(Map<String, String> values, boolean deleteFirst) {
-        testLogin(values, deleteFirst, false, false);
+    public void testRegister(Map<String, String> values, boolean deleteFirst) {
+        testRegister(values, deleteFirst, false, false);
     }
 
-    public void testLogin(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
+    public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
 
         String username = values.get("person.username");
         if (deleteFirst) {

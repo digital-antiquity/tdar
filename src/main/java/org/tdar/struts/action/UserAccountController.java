@@ -87,14 +87,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Action(value = "new",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-                    @Result(name = "success", location = "edit.ftl"),
-                    @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD) })
+                    @Result(name = SUCCESS, location = "edit.ftl"),
+                    @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) })
     @SkipValidation
     @Override
     @HttpsOnly
     public String execute() {
         if (isAuthenticated()) {
-            return "authenticated";
+            return AUTHENTICATED;
         }
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
@@ -105,7 +105,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action(value = "recover",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = SUCCESS, type = "redirect", location = "${passwordResetURL}") })
+            results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${passwordResetURL}") })
     @SkipValidation
     @HttpsOnly
     public String recover() {
@@ -113,7 +113,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return SUCCESS;
     }
 
-    @Action(value = "edit", results = { @Result(name = SUCCESS, type = "redirect", location = "/entity/person/${person.id}/edit") })
+    @Action(value = "edit", results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/entity/person/${person.id}/edit") })
     @SkipValidation
     @HttpsOnly
     public String edit() {
@@ -123,39 +123,11 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return "new";
     }
 
-    @Action(value = VIEW)
-    @SkipValidation
-    @HttpsOnly
-    public String view() {
-        if (!isAuthenticated()) {
-            return "new";
-        }
-        if (getAuthenticatedUser().equals(person)) {
-            return SUCCESS;
-        }
-        getLogger().warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
-                getAuthenticatedUser().getId(), person, personId });
-        return UNAUTHORIZED;
-    }
-
-    @Action(value = "welcome", results = {
-            @Result(name = SUCCESS, location = "view.ftl")
-    })
-    @SkipValidation
-    @HttpsOnly
-    public String welcome() {
-        if (!isAuthenticated()) {
-            return "new";
-        }
-        person = getAuthenticatedUser();
-        personId = person.getId();
-        return SUCCESS;
-    }
 
     // FIXME: not implemented yet.
     @Action(value = "reminder",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }
-            , results = { @Result(name = "success", location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
+            , results = { @Result(name = SUCCESS, location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
     @SkipValidation
     @HttpsOnly
     public String sendNewPassword() {
@@ -174,8 +146,8 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action(value = "register",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", type = "redirect", location = "welcome"),
-                    @Result(name = ADD, type = "redirect", location = "/account/add"),
+            results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+                    @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
                     @Result(name = INPUT, location = "edit.ftl") })
     @HttpsOnly
     @PostOnly
