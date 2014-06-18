@@ -13,7 +13,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 public class RegistrationInfo {
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
     private AntiSpamHelper h = new AntiSpamHelper();
-    private TdarUser person;
+    private TdarUser person = new TdarUser();
     private String password;
     private String confirmPassword;
     private String institutionName;
