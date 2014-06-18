@@ -3,12 +3,12 @@ package org.tdar.struts.action;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -49,22 +49,33 @@ public class LoginController extends AuthenticationAware.Base {
     private String returnUrl;
 
     @Override
-    @Actions({
-            @Action("/login/")
-    })
     @HttpsOnly
+    @Action(value = "login", results = {
+            @Result(name = TdarActionSupport.SUCCESS, location = "/WEB-INF/content/login.ftl")
+    })
+    @SkipValidation
     public String execute() {
-        getLogger().debug("Executing /login/ .");
         if (isAuthenticated()) {
-            getLogger().debug("already authenticated, redirecting to project listing.");
-            return AUTHENTICATED;
+            return TdarActionSupport.AUTHENTICATED;
         }
-        getLogger().debug("Not authenticated for some reason: " + getSessionData());
+        return SUCCESS;
+
+    }
+
+    @Action(value = "logout",
+            results = {
+                    @Result(name = SUCCESS, type = "redirect", location = "/")
+            })
+    @SkipValidation
+    public String logout() {
+        if (getSessionData().isAuthenticated()) {
+            getAuthenticationAndAuthorizationService().logout(getSessionData(), getServletRequest(), getServletResponse());
+        }
         return SUCCESS;
     }
 
     @Action(value = "process",
-            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
+            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                     @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")

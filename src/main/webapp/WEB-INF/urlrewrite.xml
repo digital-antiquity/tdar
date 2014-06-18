@@ -265,6 +265,24 @@
         <to>/$1</to>
     </outbound-rule>
 
+    <rule>
+        <from>^/(login)/?$</from>
+        <to>/$1/$1</to>
+    </rule>
+    <outbound-rule>
+        <from>^/(login)/login/?$</from>
+        <to>/$1</to>
+    </outbound-rule>
+
+    <rule>
+        <from>^/(logout)/?$</from>
+        <to>/login/$1</to>
+    </rule>
+    <outbound-rule>
+        <from>^/login/logout/?$</from>
+        <to>/logout</to>
+    </outbound-rule>
+
     <outbound-rule>
         <from>^/browse/creators\?id=(\d+)(.*)</from>
         <to>/browse/creators/$1?$2</to>
