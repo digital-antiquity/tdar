@@ -113,7 +113,7 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         String url_ = getSessionData().getReturnUrl();
-        if (!StringUtils.isBlank(url_)) {
+        if (StringUtils.isBlank(url_)) {
             url_ = UrlUtils.urlDecode(returnUrl);
         }
 
