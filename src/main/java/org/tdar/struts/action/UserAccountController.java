@@ -159,7 +159,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
 
         person.setContributorReason(contributorReason);
-        person.setAffilliation(getAffilliation());
+        person.setAffiliation(getAffilliation());
         try {
             AuthenticationResult result = getAuthenticationAndAuthorizationService().addAnAuthenticateUser(person, password, institutionName,
                     getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());

@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,33 +54,24 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
-@Check(constraints="email <> ''")
+@Check(constraints = "email <> ''")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
 
-    @Transient
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", 
-            "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
-
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "merge_creator_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<Person> synonyms = new HashSet<Person>();
-
     private static final long serialVersionUID = -3863573773250268081L;
+
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated",
+            "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
 
     @Transient
     private transient String tempDisplayName;
 
-    public Person() {
-    }
-
-    public Person(String firstName, String lastName, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-    }
-
+    @Transient
     private transient String wildcardName;
+
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "merge_creator_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private Set<Person> synonyms = new HashSet<Person>();
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
@@ -129,6 +119,15 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
     private Boolean phonePublic = Boolean.FALSE;
+
+    public Person() {
+    }
+
+    public Person(String firstName, String lastName, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 
     /**
      * Returns the person's name in [last name, first name] format.
@@ -245,10 +244,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public String toString() {
-        if ((institution != null) && !StringUtils.isBlank(institution.toString())) {
-            return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
-        }
-        return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
+        Institution i = getInstitution();
+        String institutionName = (i != null && StringUtils.isNotBlank(i.toString())) ? i.toString() : "No institution specified.";
+        return String.format("%s [%s | %s | %s]", getName(), getId(), email, institutionName);
     }
 
     /**
@@ -278,7 +276,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.rpaNumber = rpaNumber;
     }
 
-
     public String getPhone() {
         return phone;
     }
@@ -291,10 +288,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return phonePublic;
     }
 
-    public void setPhonePublic(Boolean toggle) {
-        this.phonePublic = toggle;
+    public void setPhonePublic(Boolean phonePublic) {
+        this.phonePublic = phonePublic;
     }
-
 
     @Override
     public CreatorType getCreatorType() {
@@ -347,11 +343,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     @Override
     public boolean hasNoPersistableValues() {
-        if (StringUtils.isBlank(email) && ((institution == null) || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
-                StringUtils.isBlank(firstName) && Persistable.Base.isNullOrTransient(getId())) {
-            return true;
-        }
-        return false;
+        Institution i = getInstitution();
+        return StringUtils.isBlank(email)
+                && ((i == null) || StringUtils.isBlank(i.getName()))
+                && StringUtils.isBlank(lastName)
+                && StringUtils.isBlank(firstName)
+                && Persistable.Base.isNullOrTransient(getId());
     }
 
     @Override
@@ -368,7 +365,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.synonyms = synonyms;
     }
 
-    @Transient
     @XmlTransient
     public String getWildcardName() {
         return wildcardName;
@@ -393,7 +389,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Deprecated
     @JsonView(JsonLookupFilter.class)
     public String getTempDisplayName() {
-        if(StringUtils.isNotBlank(tempDisplayName)) {
+        if (StringUtils.isNotBlank(tempDisplayName)) {
             return tempDisplayName;
         }
         if (StringUtils.isBlank(firstName)) {
