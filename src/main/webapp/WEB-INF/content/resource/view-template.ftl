@@ -498,7 +498,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
             <#if sessionData.person?has_content>
-                    <a href="#" name="requestAccess" id="emailButton" class="">${txt}</a>
+                    <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
                     <a href="/login?returnUrl=${currentUrl}">${txt} (requires login)</a>
             </#if>
