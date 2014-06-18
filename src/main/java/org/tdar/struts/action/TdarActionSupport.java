@@ -588,6 +588,15 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         return false;
     }
+    
+    public void addActionErrors(List<String> errors) {
+        if (CollectionUtils.isEmpty(errors)) {
+            return;
+        }
+        for (String error: errors) {
+            addActionError(error);
+        }
+    }
 
     public String getWroTempDirName() {
         return filesystemResourceService.getWroDir();

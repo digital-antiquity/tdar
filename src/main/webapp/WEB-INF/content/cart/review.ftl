@@ -25,7 +25,7 @@
         "real" registration form -->
     <div class="row">
         <div class="span9" id="divRegistrationSection">
-            <@s.form name='registrationForm' id='registrationForm'  method="post" cssClass=" disableFormNavigate"
+            <@s.form name='registrationForm' id='registrationForm' method="post" cssClass=" disableFormNavigate"
                     enctype='multipart/form-data' action="process-registration">
                 <@s.token name='struts.csrf.token' />
                 <fieldset>

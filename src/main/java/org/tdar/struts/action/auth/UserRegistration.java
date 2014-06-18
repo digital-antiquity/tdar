@@ -1,8 +1,10 @@
 package org.tdar.struts.action.auth;
 
-import com.opensymphony.xwork2.TextProvider;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.tdar.core.bean.FieldLength;
@@ -13,19 +15,18 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.data.AntiSpamHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import com.opensymphony.xwork2.TextProvider;
+import com.opensymphony.xwork2.util.logging.Logger;
+import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 /**
  * Created by jimdevos on 6/17/14.
  */
-public class RegistrationInfo {
+public class UserRegistration {
+    
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
-
-    private Logger logger =  LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private AntiSpamHelper h = new AntiSpamHelper();
     private TdarUser person = new TdarUser();
     private String password;
@@ -34,19 +35,18 @@ public class RegistrationInfo {
     private String contributorReason;
     private String confirmEmail;
     private boolean requestingContributorAccess;
-    private UserAffiliation affilliation;
+    private boolean acceptTermsOfUse;
+    private UserAffiliation affiliation;
 
+    // private final TextProvider textProvider;
+    // private final AuthenticationAndAuthorizationService authService;
+    // private final EntityService entityService;
 
-//    private final TextProvider textProvider;
-//    private final AuthenticationAndAuthorizationService authService;
-//    private final EntityService entityService;
-
-//    public RegistrationInfo(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService) {
-//        this.textProvider = textProvider;
-//        this.authService = authService;
-//        this.entityService = entityService;
-//    }
-
+    // public RegistrationInfo(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService) {
+    // this.textProvider = textProvider;
+    // this.authService = authService;
+    // this.entityService = entityService;
+    // }
 
     public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService) {
 
@@ -72,7 +72,8 @@ public class RegistrationInfo {
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             getLogger().debug("contributor reason too long");
-            errors.add(String.format(textProvider.getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason", MAXLENGTH_CONTRIBUTOR));
+            errors.add(String.format(textProvider.getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason",
+                    MAXLENGTH_CONTRIBUTOR));
         }
 
         // firstName required
@@ -92,14 +93,14 @@ public class RegistrationInfo {
             // username must not be claimed
         } else {
             TdarUser existingUser = entityService.findByUsername(person.getUsername());
-            if(existingUser != null && existingUser.isRegistered()) {
+            if (existingUser != null && existingUser.isRegistered()) {
                 getLogger().debug("username was already registered: ", person.getUsername());
                 errors.add(textProvider.getText("userAccountController.error_username_already_registered"));
             }
         }
 
         // confirmation email required
-        if(isBlank(confirmEmail)) {
+        if (isBlank(confirmEmail)) {
             errors.add(textProvider.getText("userAccountController.error_confirm_email"));
 
             // email + confirmation email must match
@@ -131,7 +132,6 @@ public class RegistrationInfo {
             errors.add(textProvider.getText(tre.getMessage()));
         }
     }
-
 
     private Logger getLogger() {
         return logger;
@@ -201,11 +201,19 @@ public class RegistrationInfo {
         this.requestingContributorAccess = requestingContributorAccess;
     }
 
-    public UserAffiliation getAffilliation() {
-        return affilliation;
+    public boolean isAcceptTermsOfUse() {
+        return acceptTermsOfUse;
     }
 
-    public void setAffilliation(UserAffiliation affilliation) {
-        this.affilliation = affilliation;
+    public void setAcceptTermsOfUse(boolean acceptTermsOfUse) {
+        this.acceptTermsOfUse = acceptTermsOfUse;
+    }
+
+    public UserAffiliation getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(UserAffiliation affiliation) {
+        this.affiliation = affiliation;
     }
 }

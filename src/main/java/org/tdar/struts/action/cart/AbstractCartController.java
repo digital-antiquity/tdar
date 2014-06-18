@@ -1,6 +1,7 @@
 package org.tdar.struts.action.cart;
 
-import com.opensymphony.xwork2.Preparable;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.SessionAware;
@@ -8,25 +9,27 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.action.AuthenticationAware;
 
-import java.util.Map;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
 @Results({
         @Result(name = "redirect-start", location = "/cart/new", type = "redirect")
 })
-public abstract class AbstractCartController extends AuthenticationAware.Base implements SessionAware, Preparable{
+public abstract class AbstractCartController extends AuthenticationAware.Base implements SessionAware, Preparable, ValidationWorkflowAware {
 
-    //FIXME: should use session-scoped bean instead, but I don't like the idea of stuffing everything in SessionData object either. (http://docs.oracle.com/cd/A97688_16/generic.903/bp/j2ee.htm#1010654). Figure it out.
+    // FIXME: should use session-scoped bean instead, but I don't like the idea of stuffing everything in SessionData object either.
+    // (http://docs.oracle.com/cd/A97688_16/generic.903/bp/j2ee.htm#1010654). Figure it out.
 
-    //Session map provided by struts (because we implement SessionAware)
+    // Session map provided by struts (because we implement SessionAware)
     private Map<String, Object> session;
 
-    //Key that we use for storing the invoice ID in the session map
+    // Key that we use for storing the invoice ID in the session map
     public static final String PENDING_INVOICE_ID_KEY = "pending_invoice_id";
 
-    //Invoice sitting in the user's 'cart'.  This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
+    // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice;
 
-    //Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
+    // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
     private TdarUser owner;
     private Long ownerId;
 
@@ -37,7 +40,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     /**
      * Return a pending invoice if found in session scope
-     *
+     * 
      * @return
      */
     protected final Invoice loadPendingInvoice() {
@@ -75,7 +78,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         return owner;
     }
 
-    //subclasses may set the owner, but we don't want this coming from struts
+    // subclasses may set the owner, but we don't want this coming from struts
     protected final void setOwner(TdarUser owner) {
         this.owner = owner;
     }
@@ -86,5 +89,14 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     public final void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
+    }
+    
+    @Override
+    public String getInputResultName() {
+        if (getInvoice() == null) {
+            addActionError(getText("Please select an invoice (and change this message)."));
+            return "redirect-start";
+        }
+        return INPUT;
     }
 }
