@@ -3,12 +3,14 @@ package org.tdar.core.bean.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.service.resource.DatasetService;
 
 public class DatasetITCase extends AbstractIntegrationTestCase {
