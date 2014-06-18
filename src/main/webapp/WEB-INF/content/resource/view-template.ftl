@@ -95,18 +95,26 @@
                     <p>Your message has been sent</p>
                 </span>
                 <span class="error">
-                    <p>An error ocurred:
+                    <p>An error occurred:
                     <ul id="emailErrorContainer">
                     </ul></p>
                 </span>
             </div>
             <div class="modal-footer">
-                <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Close</a>
+                <a href="#" data-dismiss="modal" aria-hidden="true" id="emai-close-button" class="btn">Close</a>
             </div>
         </div>
      <form id="followup">
-        <@s.select theme="tdar" name='type'  emptyOption='false' listValue='name()' list='%{emailTypes}' label='Email Type'/>
-        <@s.hidden name="toId" value="${resource.submitter.id?c}" />
+        <@s.select theme="tdar" name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
+        <#assign contactId = resource.submitter.id />
+        <#if contactProxies?has_content>
+        <#list contactProxies as prox>
+        <#assign contactId = prox.person.id />
+        <#break/>
+        </#list>
+        </#if>
+        <@s.hidden name="toId" value="${contactId?c}" />
+        <@s.hidden name="resourceId" value="${resource.id?c}" />
         <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" /> 
         <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span9"/>
         <@common.antiSpam />

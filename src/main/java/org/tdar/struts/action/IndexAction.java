@@ -56,7 +56,7 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private HashMap<String, HomepageGeographicKeywordCache> worldMapData = new HashMap<>();
-
+    private String returnUrl;
     @Autowired
     private ResourceService resourceService;
 
@@ -231,6 +231,14 @@ public class IndexAction extends AuthenticationAware.Base {
 
     public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         this.worldMapData = worldMapData;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 
 }

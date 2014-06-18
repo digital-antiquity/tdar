@@ -119,19 +119,19 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Override
     public void validate() {
         if (Persistable.Base.isTransient(from)) {
-            addActionError("emailController.from_not_found");
+            addActionError(getText("emailController.from_not_found"));
         }
         if (Persistable.Base.isTransient(to)) {
-            addActionError("emailController.to_not_found");
+            addActionError(getText("emailController.to_not_found"));
         }
         if (StringUtils.isBlank(messageBody)) {
-            addActionError("emailController.no_message");
+            addActionError(getText("emailController.no_message"));
         }
         if (type == null) {
-            addActionError("emailController.no_type");
+            addActionError(getText("emailController.no_type"));
         }
         if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
-            addActionError("emailController.no_resource");
+            addActionError(getText("emailController.no_resource"));
         }
 
     }

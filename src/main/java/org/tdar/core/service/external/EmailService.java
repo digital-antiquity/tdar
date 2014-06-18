@@ -161,7 +161,7 @@ public class EmailService {
         if (resource != null) {
             map.put("resource", resource);
         }
-        map.put("messageBody", messageBody);
+        map.put("message", messageBody);
         map.put("type", type);
         email.setMessage(messageBody);
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);

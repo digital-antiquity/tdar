@@ -45,7 +45,6 @@ public class LoginController extends AuthenticationAware.Base {
     private String loginPassword;
     private Person person;
     private boolean userCookieSet;
-    private String url;
     private String comment; // for simple spam protection
     private String returnUrl;
 
@@ -109,13 +108,13 @@ public class LoginController extends AuthenticationAware.Base {
     }
 
     private String parseReturnUrl() {
-        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
+        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(returnUrl)) {
             return null;
         }
 
         String url_ = getSessionData().getReturnUrl();
-        if (StringUtils.isBlank(url_)) {
-            url_ = UrlUtils.urlDecode(url);
+        if (!StringUtils.isBlank(url_)) {
+            url_ = UrlUtils.urlDecode(returnUrl);
         }
 
         getLogger().info("url {} ", url_);
@@ -179,14 +178,6 @@ public class LoginController extends AuthenticationAware.Base {
 
     public void setPerson(Person person) {
         this.person = person;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     /**

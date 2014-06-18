@@ -1,14 +1,16 @@
 package org.tdar.utils;
 
-public enum EmailMessageType {
+import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+
+public enum EmailMessageType implements Localizable, HasLabel {
 
     CONTACT("email-form/contact.ftl"),
     REQUEST_ACCESS("email-form/access-request.ftl"),
-    SUGGEST_CORRECTION("email-form/correction.ftl"),
-    OTHER("email-form/other.ftl");
-    
+    SUGGEST_CORRECTION("email-form/correction.ftl");
+
     private String templateName;
-    
+
     private EmailMessageType(String templateName) {
         this.setTemplateName(templateName);
     }
@@ -20,4 +22,15 @@ public enum EmailMessageType {
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
+
+    @Override
+    public String getLabel() {
+        return MessageHelper.getMessage(getLocaleKey());
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
 }
