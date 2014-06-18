@@ -94,7 +94,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     @Override
     public String getInputResultName() {
         if (getInvoice() == null) {
-            addActionError(getText("Please select an invoice (and change this message)."));
+            addActionError(getText("abstractCartController.select_invoice"));
             return "redirect-start";
         }
         return INPUT;
