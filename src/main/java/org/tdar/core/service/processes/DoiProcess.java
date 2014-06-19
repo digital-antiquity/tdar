@@ -107,7 +107,8 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
-                resource.setExternalId(createdIds.get(DOI_KEY));
+                String externalId = createdIds.get(DOI_KEY);
+                resource.setExternalId(externalId);
                 datasetDao.saveOrUpdate(resource);
                 batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             } else {
