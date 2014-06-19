@@ -34,18 +34,16 @@
 </div>
 
 <div class="row">
-    <div class="span8">
+    <div class="span4">
         <@s.textfield labelposition='left' label='Organization' name='reg.institutionName' id='institutionName' cssClass="input-xlarge"/>
     </div>
-</div>
-<div class="row">
-
-    <div class="span8">
+    <div class="span4">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
-
-                        <@s.select list="userAffiliations" name="reg.affilliation" label="Affiliation / Interest" listValue="label" headerKey=""
+            <@s.select list="userAffiliations" name="reg.affilliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
-    </div>
+
+</div>
+
 </div>
     <@s.textfield spellcheck="false" required=true id='username' label="Username" name="reg.person.username" cssClass="required username input-xlarge" />
 <div class="row">
@@ -82,6 +80,7 @@
                 </label>
             </div>
         </div>
+        <#if (level > 1)> 
         <div id='contributorReasonTextArea'>
             <label class="control-label">Contributor information</label>
             <div class="control-group">
@@ -94,6 +93,7 @@
                 </div>
             </div>
         </div>
+        </#if>
         <div class="form-actions">
             <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Register">
         </div>
