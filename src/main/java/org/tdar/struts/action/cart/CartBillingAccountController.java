@@ -30,6 +30,8 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 })
 public class CartBillingAccountController extends AbstractCartController {
 
+    private static final long serialVersionUID = 563992082346864102L;
+
     // list of billing accounts that the user may choose from when assigning the invoice
     private List<Account> accounts = new ArrayList<>();
 

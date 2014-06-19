@@ -36,6 +36,8 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @ParentPackage("default")
 public class CartProcessRegistrationAction extends AbstractCartController {
 
+    private static final long serialVersionUID = -191583172083241851L;
+
     @Autowired
     private EntityService entityService;
 

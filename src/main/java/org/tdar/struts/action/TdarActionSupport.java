@@ -111,6 +111,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * updated Terms Of Service)
      */
     public static final String USER_AGREEMENT = "user_agreement";
+    public static final String RESULT_REDIRECT_START = "redirect-start";
+    public static final String LOCATION_START = "/cart/new";
 
     private String javascriptErrorLog;
 

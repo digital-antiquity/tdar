@@ -26,7 +26,8 @@ public class SessionData implements Serializable {
 
     private String returnUrl;
     private String[] parameters;
-
+    private Long invoiceId;
+    
     public TdarUser getPerson() {
         if (authenticationToken == null) {
             return null;
@@ -95,6 +96,14 @@ public class SessionData implements Serializable {
             return false;
         }
         return person.getContributor();
+    }
+
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
 }

@@ -1,5 +1,12 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -34,8 +41,6 @@ import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
-import static org.junit.Assert.*;
-
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -43,7 +48,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     AccountService accountService;
-
 
     @Autowired
     private SendEmailProcess sendEmailProcess;
@@ -152,11 +156,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setId(invoiceId);
         controller.prepare();
         msg = null;
-//        try {
-//            ///////// assertEquals(Action.ERROR, controller.addPaymentMethod());
-//        } catch (Exception e) {
-//            msg = e.getMessage();
-//        }
+        // try {
+        // ///////// assertEquals(Action.ERROR, controller.addPaymentMethod());
+        // } catch (Exception e) {
+        // msg = e.getMessage();
+        // }
         assertEquals(MessageHelper.getMessage("cartController.enter_a_billing_adderess"), msg);
     }
 
@@ -182,10 +186,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException, IOException {
         CartApiController controller = generateNewInitializedController(CartApiController.class);
-        Map<String, Object>  session = new HashMap<>();
-        //fixme: remove this once we put move this value to sessionData/session-scope (somehow)
-        session.put(controller.PENDING_INVOICE_ID_KEY, invoiceId);
-        controller.setSession(session);
+        controller.getSessionData().setInvoiceId(invoiceId);
         controller.prepare();
         String pollingCheck = controller.pollingCheck();
         assertEquals(msg, pollingCheck);
@@ -242,7 +243,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
+        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("cartController.subject")));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -390,7 +391,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(MessageHelper.getMessage("cartController.valid_phone_number_is_required"), msg);
     }
 
-
     private CartController setupPaymentTests() throws TdarActionException {
         fail("this test should be updated for new cart workflow");
         UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
@@ -398,8 +398,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
-        //String response = controller.addPaymentMethod();
-        //assertEquals(Action.SUCCESS, response);
+        // String response = controller.addPaymentMethod();
+        // assertEquals(Action.SUCCESS, response);
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
@@ -423,7 +423,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
-    //FIXME: I don't see billing address fields in our forms. do we directly collect address info?, does our payment processor send it to us, or is this feature not used?
+    // FIXME: I don't see billing address fields in our forms. do we directly collect address info?, does our payment processor send it to us, or is this
+    // feature not used?
     private Long setupAndTestBillingAddress(UnauthenticatedCartController controller_) throws TdarActionException {
         fail("this test should be updated for new cart workflow");
         Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
@@ -433,15 +434,15 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         user.getAddresses().add(address2);
         genericService.saveOrUpdate(user);
         evictCache();
-        Long invoiceId = createAndTestInvoiceQuantity(controller_ , 10L, null);
+        Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
-        ///////// controller.chooseAddress();
+        // /////// controller.chooseAddress();
         assertNull(controller.getInvoice().getAddress());
         controller.getInvoice().setAddress(address);
-        ///////// String saveAddress = controller.saveAddress();
-        ///////// assertEquals(CartController.SUCCESS_ADD_PAY, saveAddress);
+        // /////// String saveAddress = controller.saveAddress();
+        // /////// assertEquals(CartController.SUCCESS_ADD_PAY, saveAddress);
         Invoice invoice = genericService.find(Invoice.class, controller.getId());
         assertNotNull(invoice);
         assertNotNull(invoice.getAddress());
@@ -462,7 +463,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String save = controller.preview();
 
         assertEquals(Action.SUCCESS, save);
-//        assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
+        // assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
         return controller.getInvoice().getId();
     }
 
