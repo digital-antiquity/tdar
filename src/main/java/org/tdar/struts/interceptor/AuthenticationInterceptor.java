@@ -1,5 +1,8 @@
 package org.tdar.struts.interceptor;
 
+import java.lang.reflect.Method;
+import java.util.WeakHashMap;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
@@ -41,6 +44,9 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     public static final String SKIP_REDIRECT = "(.*)/(lookup|page-not-found|unauthorized|datatable\\/browse)/(.*)";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    
+    private final WeakHashMap<Class<?>, RequiresTdarUserGroup> requiredGroupClassCache = new WeakHashMap<>();
+    private final WeakHashMap<Method, RequiresTdarUserGroup> requiredGroupMethodCache = new WeakHashMap<>();
 
     @Autowired
     private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
@@ -68,6 +74,31 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     public void init() {
         // we don't do anything here, yet...
     }
+    
+    private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Class<?> clazz) {
+        return checkAndUpdateCache(clazz, requiredGroupClassCache);
+    }
+    
+    private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Method method) {
+        return checkAndUpdateCache(method, requiredGroupMethodCache);
+    }
+    
+    private <K> RequiresTdarUserGroup checkAndUpdateCache(K key, WeakHashMap<K, RequiresTdarUserGroup> cache) {
+        synchronized (cache) {
+            if (cache.containsKey(key)) {
+                return cache.get(key);
+            }
+            RequiresTdarUserGroup requiredGroup = null;
+            if (key instanceof Method) {
+                requiredGroup = AnnotationUtils.findAnnotation((Method) key, RequiresTdarUserGroup.class);
+            }
+            else if (key instanceof Class<?>) {
+                requiredGroup = AnnotationUtils.findAnnotation((Class<?>) key, RequiresTdarUserGroup.class);
+            }
+            cache.put(key, requiredGroup);
+            return requiredGroup;
+        }
+    }
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
@@ -79,10 +110,12 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             methodName = "execute";
         }
         if (sessionData.isAuthenticated()) {
+            // FIXME: consider caching these in a local Map
             // check for group authorization
-            RequiresTdarUserGroup classLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass(), RequiresTdarUserGroup.class);
-            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName),
-                    RequiresTdarUserGroup.class);
+            RequiresTdarUserGroup classLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass());
+            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass().getMethod(methodName));
+                    
+                    
             TdarGroup group = TdarGroup.TDAR_USERS;
             if (methodLevelRequiresGroupAnnotation != null) {
                 group = methodLevelRequiresGroupAnnotation.value();
