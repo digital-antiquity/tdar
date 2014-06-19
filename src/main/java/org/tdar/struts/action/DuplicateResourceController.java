@@ -32,7 +32,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base {
     private Resource copy;
 
     @Action(value = "duplicate", results = {
-            @Result(name = "confirm-duplicate"),
+            @Result(name = "confirm-duplicate", type = "freemarker"),
             @Result(name = INPUT, type = "freemarker", location = "duplicate_error.ftl")
     })
     public String execute() {
