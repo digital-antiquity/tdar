@@ -125,6 +125,14 @@ public class GenericDao {
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
     }
+    
+    public Query createQuery(String queryString) {
+        return getCurrentSession().createQuery(queryString);
+    }
+    
+    public Query getNamedQuery(String queryName) {
+        return getCurrentSession().getNamedQuery(queryName);
+    }
 
     public Number count(Class<?> persistentClass) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()));

@@ -2,16 +2,16 @@ package org.tdar.core.service;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.UserNotification;
 import org.tdar.core.bean.util.UserNotificationType;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.TdarNamedQueries;
 
 /**
  * Handles requests to create or dismiss user notifications.
@@ -23,28 +23,34 @@ public class UserNotificationService {
 
     @Autowired
     private GenericDao genericDao;
+    
+    @Transactional(readOnly = true)
+    public List<UserNotification> findAll() {
+        return genericDao.findAll(UserNotification.class);
+    }
+
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+    public List<UserNotification> getCurrentNotifications(TdarUser user) {
+        return genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).list();
+    }
 
     @Transactional
-    public List<UserNotification> getNotificationsFor(TdarUser user) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
     public UserNotification broadcast(String messageKey) {
-        UserNotification notification = new UserNotification();
-        notification.setMessageKey(messageKey);
-        notification.setMessageType(UserNotificationType.SYSTEM_BROADCAST);
-        genericDao.save(notification);
-        return notification;
+        return createUserNotification(null, messageKey, UserNotificationType.SYSTEM_BROADCAST);
     }
 
+    @Transactional
     public UserNotification info(TdarUser user, String messageKey) {
         return createUserNotification(user, messageKey, UserNotificationType.INFO);
     }
 
+    @Transactional
     public UserNotification error(TdarUser user, String messageKey) {
         return createUserNotification(user, messageKey, UserNotificationType.ERROR);
     }
 
+    @Transactional
     public UserNotification warning(TdarUser user, String messageKey) {
         return createUserNotification(user, messageKey, UserNotificationType.WARNING);
     }
@@ -58,6 +64,7 @@ public class UserNotificationService {
         return notification;
     }
 
+    @Transactional
     public void dismiss(TdarUser user, UserNotification notification) {
         switch (notification.getMessageType()) {
             case SYSTEM_BROADCAST:

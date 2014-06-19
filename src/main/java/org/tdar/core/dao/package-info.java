@@ -427,11 +427,15 @@
                 //select c.id, c.name from collection c left join collection_parents as p on c.id=p.collection_id left join authorized_user auth on c.id=auth.resource_collection_id where auth.general_permission_int>399 and auth.user_id=8092 or p.parent_id in (select resource_collection_id from authorized_user where authorized_user.general_permission_int>399 and authorized_user.user_id=8092);
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
                 query = " SELECT distinct new Resource(res.id, res.title, res.resourceType) " + org.tdar.core.dao.TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX
-                        +
-                        " order by res.title, res.id"),
+                        + " order by res.title, res.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY,
                 query = "DELETE InformationResourceFileVersion WHERE id = :id"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
+                query = "SELECT n from UserNotification n LEFT JOIN n.tdarUser u "
+                        + "WHERE (n.messageType = 'SYSTEM_BROADCAST' AND (u.dismissedNotificationsDate is null or (u.dismissedNotificationsDate < n.dateCreated))) OR n.tdarUser.id = :userId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
@@ -443,10 +447,9 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
-        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
 })
-
 package org.tdar.core.dao;
-
 
