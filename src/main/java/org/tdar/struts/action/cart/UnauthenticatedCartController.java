@@ -1,5 +1,10 @@
 package org.tdar.struts.action.cart;
 
+/* It's unnecessarty to static import symbols to your own class, but this is the only way I know to use constants in
+type-level annotation values */
+import static org.tdar.struts.action.cart.UnauthenticatedCartController.LOCATION_START;
+import static org.tdar.struts.action.cart.UnauthenticatedCartController.RESULT_REDIRECT_START;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,18 +29,12 @@ import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.PricingOption.PricingType;
-
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.ValidationAware;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
-/* It's unnecessarty to static import symbols to your own class, but this is the only way I know to use constants in
-type-level annotation values */
-import static org.tdar.struts.action.cart.UnauthenticatedCartController.LOCATION_START;
-import static org.tdar.struts.action.cart.UnauthenticatedCartController.RESULT_REDIRECT_START;
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.ValidationAware;
 
 @Component
 @Scope("prototype")
@@ -221,7 +220,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
      * @return
      */
     @Action("new")
-    @GetOnly
+//    @GetOnly
     public String execute() {
         return SUCCESS;
     }
@@ -268,7 +267,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
      * @return
      */
     @Action("review")
-    @GetOnly
+//    @GetOnly
     public String showInvoice() {
         // todo: if not authenticated, render the review page w/ signup/login form
         if (invoice == null) {

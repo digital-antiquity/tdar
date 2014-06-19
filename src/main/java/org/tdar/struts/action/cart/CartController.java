@@ -1,7 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +13,6 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -45,11 +42,9 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.json.JsonLookupFilter;
 
 @Component
 @Scope("prototype")
@@ -120,7 +115,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @Action(value = "simple", results = {@Result(name = "simple", location = "review-authenticated.ftl")})
     @WriteableSession
-    @GetOnly
+//    @GetOnly
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
@@ -165,7 +160,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
      */
     @SkipValidation
     @WriteableSession
-    @GetOnly
+//    @GetOnly
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
