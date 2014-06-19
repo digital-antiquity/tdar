@@ -14,6 +14,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -28,6 +29,7 @@ import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 @Component
 @Scope("prototype")
@@ -204,7 +206,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
      */
     @Actions(value = {
             @Action("new"),
-            @Action(value="modify", results={@Result(name=SUCCESS, location="new.ftl")})
+            @Action(value = "modify", results = { @Result(name = SUCCESS, location = "new.ftl") })
     })
     // @GetOnly
     public String execute() {
@@ -220,7 +222,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
             results = {
                     @Result(name = INPUT, location = "new.ftl"),
                     @Result(name = SUCCESS, type = REDIRECT, location = "review")
-//                    @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
+            // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason = "unnecessary")
@@ -238,9 +240,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
 
         // if user is authenticated, redirect them to billing account selection (todo: or go w/ adam's idea of having a review-part-2 page, which has billing
         // account selection)
-//        if (isAuthenticated()) {
-//            return "authenticated";
-//        }
+        // if (isAuthenticated()) {
+        // return "authenticated";
+        // }
 
         return SUCCESS;
     }
@@ -252,6 +254,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
      */
     @Action("review")
     // @GetOnly
+//    @WriteableSession
     public String showInvoice() {
         // todo: if not authenticated, render the review page w/ signup/login form
         if (getInvoice() == null) {
@@ -262,6 +265,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
         }
 
         getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+        Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts());
+        setAccountId(account.getId());
         return SUCCESS;
     }
 

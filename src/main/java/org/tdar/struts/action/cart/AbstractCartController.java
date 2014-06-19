@@ -1,8 +1,9 @@
 package org.tdar.struts.action.cart;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
@@ -29,7 +30,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice = new Invoice();
     // list of billing accounts that the user may choose from when assigning the invoice
-    private List<Account> accounts = new ArrayList<>();
+    private Set<Account> accounts = new HashSet<>();
 
     // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
     private TdarUser owner = new TdarUser();
@@ -125,11 +126,11 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         this.h = h;
     }
 
-    public List<Account> getAccounts() {
+    public Set<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(Set<Account> accounts) {
         this.accounts = accounts;
     }
 }

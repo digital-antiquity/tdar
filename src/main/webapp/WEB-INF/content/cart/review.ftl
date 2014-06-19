@@ -80,7 +80,7 @@ FIXME:: allow user to select value that shows this section
     <#if !accounts?has_content>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
         <@s.hidden name="invoiceId" value="${invoice.id?c}" />    
-        <@s.hidden name="accountId" value="${account.id?c}" />    
+        <@s.hidden name="accountId" value="${accountId?c}" />    
         <@s.submit name="submit" value="submit" />
         </@s.form>
     </#if>
