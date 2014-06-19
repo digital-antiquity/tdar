@@ -54,7 +54,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     /**
      * Used in testing
-     * 
+     *
      * @return the providers
      */
     public ConfigurableService<ExternalIDProvider> getProviders() {
@@ -108,9 +108,11 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
                 String externalId = createdIds.get(DOI_KEY);
-                resource.setExternalId(externalId);
-                datasetDao.saveOrUpdate(resource);
-                batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                if (StringUtils.isNotBlank(externalId)) {
+                    resource.setExternalId(externalId);
+                    datasetDao.saveOrUpdate(resource);
+                    batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                }
             } else {
                 idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(UPDATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
