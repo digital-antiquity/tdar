@@ -5,10 +5,13 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.data.AntiSpamHelper;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
@@ -16,6 +19,7 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 @Results({
         @Result(name = "redirect-start", location = "/cart/new", type = "redirect")
 })
+
 public abstract class AbstractCartController extends AuthenticationAware.Base implements Preparable, ValidationWorkflowAware {
 
     private static final long serialVersionUID = -8162270388197212817L;
@@ -27,6 +31,9 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     private TdarUser owner;
     private Long ownerId;
 
+    @Autowired
+    private transient RecaptchaService recaptchaService; 
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
     /**
      * Return a pending invoice if found in session scope
      * 
@@ -104,5 +111,13 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     public List<UserAffiliation> getUserAffiliations() {
         return Arrays.asList(UserAffiliation.values());
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 }

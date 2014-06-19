@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.util.logging.LoggerFactory;
  * Created by jimdevos on 6/17/14.
  */
 public class UserRegistration {
-    
+
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -38,7 +38,7 @@ public class UserRegistration {
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
-    
+
     public UserRegistration(RecaptchaService recaptchaService) {
         this.h = new AntiSpamHelper(recaptchaService);
     }
@@ -53,7 +53,8 @@ public class UserRegistration {
     // this.entityService = entityService;
     // }
 
-    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService) {
+    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService,
+            boolean requireContributor) {
 
         List<String> errors = new ArrayList<>();
 
@@ -73,6 +74,14 @@ public class UserRegistration {
             }
         }
 
+        if (acceptTermsOfUse == false) {
+            errors.add(textProvider.getText("userAccountController.require_tos"));
+        }
+
+        if (requireContributor && requestingContributorAccess == false) {
+            errors.add(textProvider.getText("userAccountController.require_contributor_agreement"));
+        }
+        
         // contributorReason
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?

@@ -24,6 +24,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.ParameterAware;
+import org.hibernate.metamodel.relational.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -82,6 +83,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
 
     private void sendResponse() throws TdarActionException {
         String url = String.format("http://%s:%s/cart/process-external-payment-response", getHostName(), getHostPort());
+        getLogger().debug("sending response to: {}", url);
         HttpPost postReq = new HttpPost(url);
         getLogger().info(url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -110,6 +112,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
             }
             getLogger().info("response: {} ", httpresponse);
         } catch (Exception e) {
+            getLogger().error("exception: {}", e);
             throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
         }
 

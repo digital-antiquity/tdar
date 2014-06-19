@@ -1,5 +1,6 @@
 <#-- common authentication/authorization macros and functions -->
 <#escape _untrusted as _untrusted?html>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <#--
  registrationForm:  render a user registration form
@@ -7,7 +8,7 @@
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
 <#macro registrationFormFields detail="verbose" cols=12>
-    <@s.hidden name="h.timeCheck"/>
+    <@common.antiSpam />
 <#local
     level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
     showMinimal = true,
@@ -39,7 +40,7 @@
     </div>
     <div class="span4">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
-            <@s.select list="userAffiliations" name="reg.affilliation" label="Affiliation / Interest" listValue="label" headerKey=""
+            <@s.select list="userAffiliations" name="reg.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
 
 </div>

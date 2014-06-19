@@ -18,13 +18,14 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.auth.UserRegistration;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
  * Process the user registration. This action subclasses AbstractCartAction so that it can
- * gracefully render  INPUT result,  e.g.  continue to show invoice detail, owner, subtotal, etc.
+ * gracefully render INPUT result, e.g. continue to show invoice detail, owner, subtotal, etc.
  */
 @Component
 @Scope("prototype")
@@ -45,11 +46,12 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     private RecaptchaService recaptchaService;
 
     private UserRegistration registrationInfo = new UserRegistration(recaptchaService);
+    private AntiSpamHelper h = registrationInfo.getH();
 
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(), entityService);
+        List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(), entityService, true);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
@@ -60,8 +62,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @PostOnly
     public String processRegistration() {
         AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
-                registrationInfo.getPerson(), registrationInfo.getPassword(), registrationInfo.getInstitutionName(),
-                getServletRequest(), getServletResponse(), getSessionData(), true);
+                registrationInfo, getServletRequest(), getServletResponse(), getSessionData(), true);
         if (result.getType().isValid()) {
             registrationInfo.setPerson(result.getPerson());
             addActionMessage(getText("userAccountController.successful_registration_message"));
@@ -77,10 +78,18 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     /**
      * convenience getter for view-layer
-     *
+     * 
      * @return
      */
     public UserRegistration getReg() {
         return registrationInfo;
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 }

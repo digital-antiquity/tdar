@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,7 +187,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Autowired
     private transient InvoiceService cartService;
 
-
     /**
      * This is the first step of the purchase process. The user specifies the number of files/mb or chooses a
      * predefined small/medium/large bundle. The user may also specify a voucher/discount code.
@@ -196,7 +196,10 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * 
      * @return
      */
-    @Action("new")
+    @Actions(value = {
+            @Action("new"),
+            @Action(value="modify", results={@Result(name=SUCCESS, location="new.ftl")})
+    })
     // @GetOnly
     public String execute() {
         return SUCCESS;
@@ -305,13 +308,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
         this.code = code;
     }
 
-    /**
-     * This method is invoked when the paramsPrepareParamsInterceptor stack is
-     * applied. It allows us to fetch an entity from the database based on the
-     * incoming resourceId param, and then re-apply params on that resource.
-     * 
-     * @see <a href="http://blog.mattsch.com/2011/04/14/things-discovered-in-struts-2/">Things discovered in Struts 2</a>
-     */
     @Override
     public void prepare() {
         setupActivities();
@@ -322,9 +318,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
             ;
         }
 
-        // payment method: if only one choice is available we assume that it wont get passed to the request
-        if (getInvoice() != null && getAllPaymentMethods().size() == 1) {
-            getInvoice().setPaymentMethod(getAllPaymentMethods().get(0));
+        // set default
+        if (getInvoice() != null && getInvoice().getPaymentMethod() == null) {
+            getInvoice().setPaymentMethod(PaymentMethod.CREDIT_CARD);
         }
 
     }

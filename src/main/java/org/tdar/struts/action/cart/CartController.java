@@ -49,7 +49,6 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@HttpsOnly
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
     public static final String SIMPLE = "simple";
@@ -113,6 +112,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @Action(value = "simple", results = { @Result(name = "simple", location = "review-authenticated.ftl") })
     @WriteableSession
+    @HttpsOnly
     // @GetOnly
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -161,9 +161,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
+            @Result(name = ADD, type = TYPE_REDIRECT, location = "add"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "${successPath}")
     })
+    @HttpsOnly
     public String processPayment() throws TdarActionException {
+        if (Persistable.Base.isNullOrTransient(getInvoice())) {
+            return ADD;
+        }
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Invoice invoice = getInvoice();
         if (!invoice.isModifiable()) {
@@ -376,8 +381,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     public void prepare() {
         // Normally prepare() would get the persistable ID from the queryString. So we need to also look in the httpsession.
-        Long invoiceId = (Long) session.get(UnauthenticatedCartController.PENDING_INVOICE_ID_KEY);
-        setId(invoiceId);
+        if (Persistable.Base.isNotNullOrTransient(getSessionData().getInvoiceId())) {
+            setId(getSessionData().getInvoiceId());
+        }
         // now we can load the persistable
         super.prepare();
 

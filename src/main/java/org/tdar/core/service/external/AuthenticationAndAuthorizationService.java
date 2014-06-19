@@ -53,6 +53,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResult
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.action.auth.UserRegistration;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
@@ -840,6 +841,14 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
+    @Transactional(readOnly = false)
+    public AuthenticationResult addAndAuthenticateUser(UserRegistration registrationInfo, HttpServletRequest servletRequest,
+            HttpServletResponse servletResponse, SessionData sessionData, boolean contributor) {
+        return addAndAuthenticateUser(registrationInfo.getPerson(), registrationInfo.getPassword(), registrationInfo.getInstitutionName(),
+                servletRequest, servletResponse, sessionData, true);
+
+    }
+
     /**
      * Authenticate a user, and optionally create the user account prior to authentication.
      * 
@@ -895,12 +904,13 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         if (!addResult.getType().isValid()) {
             throw new TdarRecoverableRuntimeException(addResult.getType().getMessage());
         }
-        personDao.saveOrUpdate(person);
         // after the person has been saved, create a contributor request for
         // them as needed.
         if (contributor) {
             person.setContributor(true);
             satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
+        } else {
+            person.setContributor(false);
         }
         satisfyPrerequisite(person, AuthNotice.TOS_AGREEMENT);
 
