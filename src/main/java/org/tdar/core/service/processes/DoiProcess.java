@@ -2,6 +2,7 @@ package org.tdar.core.service.processes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,9 +71,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     }
 
     private void initializeBatchResults() {
-        batchResults.put(DELETED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(UPDATED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(CREATED, new ArrayList<Pair<Long, String>>());
+        for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+            batchResults.put(key, new ArrayList<Pair<Long, String>>());
+        }
     }
 
     @Override
@@ -135,14 +136,10 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         if (batchResults != null) {
             long total = 0;
             Map<String, Object> map = new HashMap<>();
-            map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
-            map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
-            map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
-            map.put(DoiProcess.ERRORS, batchResults.get(DoiProcess.ERRORS));
-            total += batchResults.get(DoiProcess.CREATED).size();
-            total += batchResults.get(DoiProcess.ERRORS).size();
-            total += batchResults.get(DoiProcess.UPDATED).size();
-            total += batchResults.get(DoiProcess.DELETED).size();
+            for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+                map.put(key, batchResults.get(key));
+                total += batchResults.get(key).size();
+            }
             map.put("total", total);
             map.put("date", new Date());
             if (total > 0) {
