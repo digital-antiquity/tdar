@@ -45,6 +45,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
+import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -104,15 +105,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
 
-
     /**
-     * I have no idea what this action does and where it fits within the larger process.
+     * fixme:  Not sure what this action does (or did).  I think it's obviated by /cart/review
+     * method: get
+     * results:
+     *    success: (unmapped - no result specified)
+     *    simple: (unmapped - result value never returned by action)
+     *    error: freemarkerhttp("/content/errors/error.ftl")
+     *    exception (via uncaught TdarRecoverableRuntimeException):  freemarkerhttp("/content/errors/error.ftl)
+     *
      * @return
      * @throws TdarActionException
      */
     @SkipValidation
-    @Action(value="simple", results={@Result(name="simple", location="review-authenticated.ftl")})
+    @Action(value = "simple", results = {@Result(name = "simple", location = "review-authenticated.ftl")})
     @WriteableSession
+    @GetOnly
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
@@ -128,28 +136,36 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return SUCCESS;
     }
 
-    @SkipValidation
-    @Action(value = "polling-check", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
-    public String pollingCheck() throws TdarActionException, IOException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getInvoice(), JsonLookupFilter.class, getCallback()).getBytes()));
-
-        return SUCCESS;
-    }
-
     private String redirectUrl;
     private Map<String, String[]> parameters;
     private String successPath;
     private boolean phoneRequired = false;
     private boolean addressRequired = false;
 
-    /*
+    //FIXME: This action (and client-side functionality) is incomplete!  These comments describe the desired behavior.
+    /**
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
      * will open in a "new  frame" or window and the resulting window will poll for a response.
+     * <p/>
+     * <p/>
+     * This is the 'launchpad' page were we hand-off control to the external payment processor.  The action itself
+     * does very little -- most of functionality exists client-side via javascript and ajax.
+     * <p/>
+     * The user initiates the payment process by clicking on a button that spawns a child window/tab. This child window
+     * points to an external url hosted by the payment processing company (i.e. Nelnet) and this host facilitates
+     * the entire payment process.  Once the process is complete,  the child window prompts the user to close the
+     * child window.
+     * <p/>
+     * Meanwhile, the tdar-hosted parent page  ("/cart/process-payment-request") polls the  "/cart/polling-check"
+     * action to determine if the transaction is complete (successful, cancelled, or failed). When complete, the
+     * page performs a "client-side redirect" to change browser location to an appropriate landing page.
+     *
+     * @return
+     * @throws TdarActionException
      */
     @SkipValidation
     @WriteableSession
+    @GetOnly
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
@@ -232,15 +248,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return SUCCESS;
     }
 
-    /*
-     * This method will function under an exec-and-wait response model whereby once this is called, the transaction can move forward to the next step in the
-     * process
+    /**
+     * this is the endpoint used by the external payment processor to indicate the result of the
+     * pending transaction.
      */
+    //fixme: move to CartApiController
     @SkipValidation
     @PostOnly
     @Action(value = "process-external-payment-response",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            interceptorRefs = {@InterceptorRef("unauthenticatedStack")},
             results = {
+                    //fixme: change to streamResult. all this ever returns is "success"
                     @Result(name = INVOICE, location = "cc-result.ftl")
             })
     public String processPaymentResponse() throws TdarActionException {

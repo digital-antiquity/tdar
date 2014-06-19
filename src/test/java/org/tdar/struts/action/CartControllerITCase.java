@@ -26,6 +26,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
+import org.tdar.struts.action.cart.CartApiController;
 import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.UnauthenticatedCartController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
@@ -180,8 +181,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException, IOException {
-        CartController controller = generateNewInitializedController(CartController.class);
-        controller.setId(invoiceId);
+        CartApiController controller = generateNewInitializedController(CartApiController.class);
+        Map<String, Object>  session = new HashMap<>();
+        //fixme: remove this once we put move this value to sessionData/session-scope (somehow)
+        session.put(controller.PENDING_INVOICE_ID_KEY, invoiceId);
+        controller.setSession(session);
         controller.prepare();
         String pollingCheck = controller.pollingCheck();
         assertEquals(msg, pollingCheck);
