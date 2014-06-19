@@ -30,38 +30,150 @@ import com.opensymphony.xwork2.ValidationAware;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
+/* It's unnecessarty to static import symbols to your own class, but this is the only way I know to use constants in
+type-level annotation values */
+import static org.tdar.struts.action.cart.UnauthenticatedCartController.LOCATION_START;
+import static org.tdar.struts.action.cart.UnauthenticatedCartController.RESULT_REDIRECT_START;
+
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "redirect-start", location = "/cart/new", type = "redirect"),
+        @Result(name = RESULT_REDIRECT_START, location = LOCATION_START, type = "redirect"),
 })
 @HttpsOnly  //FIXME: add class-level support for @HttpsOnly and @PostOnly
 public class UnauthenticatedCartController extends AuthenticationAware.Base implements Preparable, ValidationAware, SessionAware {
 
+    public static final String RESULT_REDIRECT_START = "redirect-start";
+    public static final String LOCATION_START = "/cart/new";
+
     /*
-        Actions:
-            new:get  (show pricing options)
-            api:post (facilitates the ajax request on the pricing options page)
-            process-choice:post (create/update invoice)
-                => success:@review, input:new.ftl
-            review:get
-                => success:review.ftl, authenticated:review-authenticated.ftl
-            /login/process-login:post
-                =>input:/login/login.ftl, show-accounts:@/cart/show-billing-accounts, success:@/cart/process-payment-request
-            process-registration:post
-                => input:review, success:@/cart/process-payment-request  (nelnet landing page)
-            /billing/choose:get  (choose/create billing account)
-            /billing/save:post (save billing account, assign new invoice?)
-                => success:@/billing/view.ftl
 
-            process-payment-request:post (currently: final validation before showing payment launchpad or redirecting to billing address page)
-            polling-check:post
-            process-external-payment-response:post
+     Overview of Con
 
-        Actions (todo):
-            show-billing-accounts:get               (similar to /billing/choose)
-            process-billing-account-choice:post     (similar to /billing/save)
-            show-payment-launchpad                  the redirect result for billing account choice (or redirect result for process-registration => success)
+
+        AbstractCartController results:
+            redirect-start: @"/cart/new"
+
+        UnauthenticatecCartController actions:
+
+            new
+                notes:
+                    This is the first step of the purchase process.  The user specifies the number of files/mb or chooses a
+                    predefined small/medium/large bundle.  The user may also specify a voucher/discount code.
+
+                    Re: the client page.  This is actually a form. You can submit the form by clicking the "Next/Save" button.
+                    or by clicking on one  of the  small/medium/large buttons. In either case the form submits a POST request to
+                    /cart/process-choice.
+                method: get
+                results:
+                    success: new.ftl
+
+            process-choice
+                notes: process new/updated invoice request
+                method: post
+                results:
+                    success: review,
+                    input: new.ftl
+
+            review
+                notes: review invoice selection,  potentially show login/auth form
+                method: get
+                results: (note that results are implicitly mapped by convention plugin)
+                    success: review.ftl
+                    authenticated: review-authenticated.ftl
+
+        CartApiController actions:
+
+            api
+                notes: calculate estimated price when user specifies custom files/mb
+                method: post (fixme: could be GET to allow for caching, or ported to javascript outright)
+                results:
+                    success: jsonResult
+                    input: jsonResult(code: BAD_REQUEST)
+
+
+            polling-check
+                notes:
+                    Indicates whether the external payment process is complete. When complete,  the calling
+                    page should update the display and/or do a "client-side redirect" to landing page.
+                method: post
+                results:
+                    success: jsonResult
+                    input: jsonResult(code: BAD_REQUEST)
+
+        LoginController actions:
+
+            /login/process-login
+                notes: centralized login handling. Redirect back to cart page upon success
+                method: post
+                results:
+                    input: @"/cart/review?loginUsername"
+                    authenticated: @"/cart/show-billing-accounts"
+                    redirect: httpHeader( code: BAD_REQUEST, errorMessage:"returnUrl not expected for login from cart")
+
+        CartRegistrationAction:
+
+            process-registration
+                notes:
+                    Process the user registration. This action subclasses AbstractCartAction so that it can
+                    gracefully render  INPUT result.  e.g.  continue to show invoice detail, owner, subtotal, etc.
+                method: post
+                results:
+                    input:review.ftl
+                    success:@"/cart/process-payment-request"
+
+        CartBillingAccountController actions:
+
+            show-billing-accounts
+                notes:
+                    A form which allows the user to assign the pending invoice to an existing billing account
+                    or to specify a new billing account. If the user has no existing billing account, skip
+                    this step (assign to implicitly created account)  and redirect to the payment page
+                    fixme:  httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
+                method: get
+                results:
+                    success: show-billing-accounts.ftl (if user has exiting billing accounts)
+                    redirect-payment: @"/cart/process-payment-request"  (if use has no pre-existing accounts)
+
+            process-billing-account-choice
+                notes: assign invoice to (pre-existing or new) billing account.
+                method: post
+                results:
+                    success: @"/cart/process-payment-request"
+                    input: show-billing-accounts.ftl
+
+
+
+        CartController actions:
+
+            simple
+                notes: fixme:  Not sure what this action does (or did).  I think it's obviated by /cart/review
+                method: get
+                results:
+                    success: (unmapped - no result specified)
+                    simple: (unmapped - result value never returned by action)
+                    error: freemarkerhttp("/content/errors/error.ftl")
+                    exception (via uncaught TdarRecoverableRuntimeException):  freemarkerhttp("/content/errors/error.ftl)
+
+            process-payment-request
+                FIXME: This action (and client-side functionality) is incomplete!  These comments describe the desired behavior.
+                notes:
+                    This is the 'launchpad' page were we hand-off control to the external payment processor.  The action itself
+                    does very little -- most of functionality exists client-side via javascript and ajax.
+
+                    The user initiates the payment process by clicking on a button that spawns a child window/tab. This child window
+                    points to an external url hosted by the payment processing company (i.e. Nelnet) and this host facilitates
+                    the entire payment process.  Once the process is complete,  the child window prompts the user to close the
+                    child window.
+
+                    Meanwhile, the tdar-hosted parent page  ("/cart/process-payment-request") polls the  "/cart/polling-check"
+                    action to determine if the transaction is complete (successful, cancelled, or failed). When complete, the
+                    page performs a "client-side redirect" to change browser location to an appropriate landing page.
+
+
+
+
+
 
      */
 
@@ -94,7 +206,11 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     private AntiSpamHelper antiSpamHelper= new AntiSpamHelper();
 
     /**
-     * Show buyable items and pricing
+     * Show cart pricing options suggested choices.
+     *
+     * This is the "start" of the purchase process.  Unsuccessful actions (result != "success") that cannot gracefully
+     * recover should consider redirecting to this step by returning RESULT_REDIRECT_START or redirest result to
+     * LOCATION_START
      * 
      * @return
      */

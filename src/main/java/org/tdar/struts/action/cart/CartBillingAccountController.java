@@ -31,7 +31,7 @@ public class CartBillingAccountController extends AbstractCartController {
     //list of billing accounts that the user may choose from when assigning the invoice
     private List<Account> accounts = new ArrayList<>();
 
-    //id of one of the account chosen from the dropdown llit
+    //id of one of the account chosen from the dropdown list
     private long id = -1L;
 
     //account chosen from the dropdown list
@@ -81,6 +81,7 @@ public class CartBillingAccountController extends AbstractCartController {
             addActionError("Account name required");
         }
     }
+
 
     @Action("show-billing-accounts")
     public String showBillingAccounts() {

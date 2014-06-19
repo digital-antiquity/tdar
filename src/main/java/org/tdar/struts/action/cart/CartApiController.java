@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.opensymphony.xwork2.ActionSupport.*;
 import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 
@@ -22,6 +23,7 @@ import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
  */
 @Component
 @Scope("prototype")
+@Results({@Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
 public class CartApiController extends ActionSupport {
 
     private static final long serialVersionUID = -1870193105271895297L;
@@ -37,16 +39,14 @@ public class CartApiController extends ActionSupport {
     @Autowired
     private transient InvoiceService cartService;
 
-    @Action(value = "api", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
-    public String api() {
+    @Action("api")
+    public String execute() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
             addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
             addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
             addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
         setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getPricingOptions(), null, getCallback()).getBytes()));
-
         return SUCCESS;
     }
 

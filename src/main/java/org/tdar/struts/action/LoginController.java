@@ -75,7 +75,9 @@ public class LoginController extends AuthenticationAware.Base {
                             interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
                             results = {
                                     @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/show-billing-accounts"),
-                                    @Result(name = REDIRECT, type = HTTPHEADER, params = {"error", BAD_REQUEST, "errorMessage", "returnUrl not expected"}),
+                                    @Result(name = REDIRECT, type = HTTPHEADER, params = {"error", BAD_REQUEST, "errorMessage", "returnUrl not expected for login from cart"}),
+
+                                    //FIXME: this is not a graceful way to handle unsuccessful login, but it works for now
                                     @Result(name = INPUT, type =  REDIRECT, location = "/cart/review?loginUsername=${loginUsername}")
                             })
             }

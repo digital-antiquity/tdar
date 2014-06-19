@@ -92,6 +92,17 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     }
     
     @Override
+    /*  FIXME: I'm having second thoughts about this.  The only alternative allen and I could think of was to
+        bypass validate()  (i.e. don't add actionErrors to ensure the workflow interceptor calls execute), set a special
+        "thisActionIsCorrupt" flag, and check for that flag in execute() (returning "redirect-start").  That's a pretty hacky
+        solution but arguably much easier to follow than this oneif you're familar w/ the struts workflow.  This is pretty opaque.
+
+        I think a better idea would be to have struts continue to short-ciruit with an "input" if it detects actionErrors
+        after validate(), but allow for customizing the result name to use  (e.g. "unprepared") when struts detects actionErrors
+        after prepare()   but *before* validate().
+
+         That's much less opaque,  but now sure how to go about implementing that behavior.
+     */
     public String getInputResultName() {
         if (getInvoice() == null) {
             addActionError(getText("abstractCartController.select_invoice"));
