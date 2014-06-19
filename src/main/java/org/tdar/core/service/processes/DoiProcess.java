@@ -35,7 +35,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     public static final String DELETED = "deleted";
     public static final String UPDATED = "updated";
     public static final String CREATED = "created";
+    public static final String ERRORS = "errors";
     public static final String DOI_KEY = "DOI";
+    
 
     @Autowired
     private transient UrlService urlService;
@@ -54,7 +56,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     /**
      * Used in testing
-     *
+     * 
      * @return the providers
      */
     public ConfigurableService<ExternalIDProvider> getProviders() {
@@ -112,6 +114,8 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
                     resource.setExternalId(externalId);
                     datasetDao.saveOrUpdate(resource);
                     batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                } else {
+                    batchResults.get(ERRORS).add(new Pair<>(resource.getId(), resource.getExternalId()));
                 }
             } else {
                 idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
@@ -134,7 +138,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
             map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
             map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
+            map.put(DoiProcess.ERRORS, batchResults.get(DoiProcess.ERRORS));
             total += batchResults.get(DoiProcess.CREATED).size();
+            total += batchResults.get(DoiProcess.ERRORS).size();
             total += batchResults.get(DoiProcess.UPDATED).size();
             total += batchResults.get(DoiProcess.DELETED).size();
             map.put("total", total);
