@@ -8,6 +8,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
+import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -83,15 +84,28 @@ public class CartBillingAccountController extends AbstractCartController {
     }
 
 
+    /**
+     * A form which allows the user to assign the pending invoice to an existing billing account
+     * or to specify a new billing account. If the user has no existing billing account, skip
+     * this step (assign to implicitly created account)  and redirect to the payment page
+     *
+     * @return
+     */
+    //FIXME: httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
     @Action("show-billing-accounts")
+    @GetOnly
     public String showBillingAccounts() {
         //skip this form if user has no assignable billing accounts
-        if(accounts.isEmpty() ) {
+        if(accounts.isEmpty()) {
             return "redirect-payment";
         }
         return SUCCESS;
     }
 
+    /**
+     * Assign invoice to (pre-existing or new) billing account.
+     * @return
+     */
     @Action(value="process-billing-account-choice", results={@Result(name=SUCCESS, location="process-payment-request", type="redirect")})
     @PostOnly
     @WriteableSession

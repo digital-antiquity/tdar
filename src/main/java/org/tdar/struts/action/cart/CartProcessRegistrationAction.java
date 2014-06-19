@@ -18,10 +18,12 @@ import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.auth.UserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
- * Created by jimdevos on 6/11/14.
+ * Process the user registration. This action subclasses AbstractCartAction so that it can
+ * gracefully render  INPUT result,  e.g.  continue to show invoice detail, owner, subtotal, etc.
  */
 @Component
 @Scope("prototype")
@@ -50,6 +52,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @WriteableSession
     @DoNotObfuscate(reason = "not needed")
     @Action("process-registration")
+    @PostOnly
     public String processRegistration() {
         AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
                 registrationInfo.getPerson(), registrationInfo.getPassword(), registrationInfo.getInstitutionName(),
@@ -69,7 +72,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     /**
      * convenience getter for view-layer
-     * 
+     *
      * @return
      */
     public UserRegistration getReg() {
