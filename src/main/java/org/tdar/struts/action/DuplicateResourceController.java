@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -11,6 +12,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 @ParentPackage("secured")
 @Namespace("/resource/duplicate")
@@ -29,13 +31,28 @@ public class DuplicateResourceController extends AuthenticationAware.Base {
     private Resource resource;
     private Resource copy;
 
-    @Action(value="duplicate",results= {
-            @Result(name = SUCCESS, type=TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/view?id=${copy.id}"),
-            @Result(name = INPUT, type="freemarker", location = "/resource/duplicate_error.ftl")
+    @Action(value = "duplicate", results = {
+            @Result(name = "confirm-duplicate"),
+            @Result(name = INPUT, type = "freemarker", location = "duplicate_error.ftl")
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {
-            addActionError("resourceController.must_be_contribytor");
+            addActionError(getText("resourceController.must_be_contributor"));
+            return INPUT;
+        }
+        return "duplicate-confirm";
+    }
+
+    @Action(value = "duplicate-final",
+            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            results = {
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
+                    @Result(name = INPUT, type = "freemarker", location = "duplicate_error.ftl")
+            })
+    @PostOnly
+    public String duplicate() {
+        if (!getAuthenticatedUser().isContributor()) {
+            addActionError(getText("resourceController.must_be_contributor"));
             return INPUT;
         }
         try {
