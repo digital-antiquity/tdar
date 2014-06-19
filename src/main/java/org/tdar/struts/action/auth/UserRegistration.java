@@ -13,6 +13,7 @@ import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -27,7 +28,7 @@ public class UserRegistration {
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private AntiSpamHelper h = new AntiSpamHelper();
+    private AntiSpamHelper h;
     private TdarUser person = new TdarUser();
     private String password;
     private String confirmPassword;
@@ -37,6 +38,10 @@ public class UserRegistration {
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
+    
+    public UserRegistration(RecaptchaService recaptchaService) {
+        this.h = new AntiSpamHelper(recaptchaService);
+    }
 
     // private final TextProvider textProvider;
     // private final AuthenticationAndAuthorizationService authService;

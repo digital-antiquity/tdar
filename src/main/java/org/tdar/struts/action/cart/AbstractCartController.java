@@ -1,9 +1,13 @@
 package org.tdar.struts.action.cart;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.struts.action.AuthenticationAware;
 
 import com.opensymphony.xwork2.Preparable;
@@ -97,4 +101,8 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         return INPUT;
     }
 
+
+    public List<UserAffiliation> getUserAffiliations() {
+        return Arrays.asList(UserAffiliation.values());
+    }
 }

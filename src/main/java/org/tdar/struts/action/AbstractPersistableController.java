@@ -30,6 +30,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -55,11 +56,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
-    private AntiSpamHelper h = new AntiSpamHelper();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
+    @Autowired
+    private transient RecaptchaService recaptchaService;
 
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;

@@ -8,14 +8,23 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 
 /**
  * Created by jimdevos on 6/11/14.
  */
 public abstract class AbstractRegistrationController extends AuthenticationAware.Base {
+
+    private static final long serialVersionUID = 1712219737471831319L;
+
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
-    private AntiSpamHelper h = new AntiSpamHelper();
+
+    @Autowired
+    private transient RecaptchaService recaptchaService;
+
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+
     private TdarUser person;
     private String password;
     private String confirmPassword;

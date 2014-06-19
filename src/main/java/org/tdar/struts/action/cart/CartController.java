@@ -29,6 +29,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;

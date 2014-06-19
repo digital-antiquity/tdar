@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.auth.UserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -40,8 +41,10 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @Autowired
     private EntityService entityService;
+    @Autowired
+    private RecaptchaService recaptchaService;
 
-    private UserRegistration registrationInfo = new UserRegistration();
+    private UserRegistration registrationInfo = new UserRegistration(recaptchaService);
 
     @Override
     public void validate() {

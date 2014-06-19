@@ -34,9 +34,6 @@ public class AntiSpamHelper implements Serializable {
 
     private RecaptchaService recaptchaService;
 
-    public AntiSpamHelper() {
-    }
-
     public AntiSpamHelper(RecaptchaService recaptchaService) {
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             setRecaptcha(recaptchaService.generateRecaptcha());

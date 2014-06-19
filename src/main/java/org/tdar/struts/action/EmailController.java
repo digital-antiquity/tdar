@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
@@ -30,7 +31,10 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     private static final long serialVersionUID = 2598289601940169922L;
 
-    private AntiSpamHelper h = new AntiSpamHelper();
+    @Autowired
+    private transient RecaptchaService recaptchaService;
+
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
     private Long fromId;
     private Long toId;
     private Person from;

@@ -20,7 +20,6 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -187,7 +186,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Autowired
     private transient InvoiceService cartService;
 
-    private AntiSpamHelper antiSpamHelper = new AntiSpamHelper();
 
     /**
      * This is the first step of the purchase process. The user specifies the number of files/mb or chooses a
@@ -382,7 +380,4 @@ public class UnauthenticatedCartController extends AbstractCartController {
         }
     }
 
-    public AntiSpamHelper getH() {
-        return antiSpamHelper;
-    }
 }
