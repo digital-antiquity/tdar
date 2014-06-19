@@ -38,10 +38,12 @@
         <from>^/register</from>
         <to>/account/new</to>
     </rule>
+
     <rule>
-        <from>^/account/add</from>
-        <to>/account/new</to>
+        <from>^/(account|cart)/add</from>
+        <to>/$1/new</to>
     </rule>
+
 
     <rule>
         <from>^/(document)s?/?$</from>
