@@ -30,7 +30,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user124");
         testRegister(personmap, true);
-        assertTextPresent("Create a new project");
+        assertTextPresent("Start a new Project");
 
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "20");
@@ -56,7 +56,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user1124");
         testRegister(personmap, true);
-        assertTextPresent("Create a new project");
+        assertTextPresent("Start a new Project");
 
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "20");

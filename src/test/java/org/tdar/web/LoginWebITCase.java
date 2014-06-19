@@ -45,7 +45,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void testSecondLogin() {
         gotoPage("/login");
-        assertTextPresentInPage("Featured Content");
+        assertTextPresentInPage("test user's Dashboard");
     }
 
     @Test
