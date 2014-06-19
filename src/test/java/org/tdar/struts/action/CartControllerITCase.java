@@ -277,7 +277,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         response = controller.processPayment();
         assertEquals(CartController.SUCCESS_ADD_ACCOUNT, response);
         Long invoiceId = invoice.getId();
-        assertFalse(controller.getSuccessPath().contains("&id="));
         invoice = null;
         controller = null;
         invoice = genericService.find(Invoice.class, invoiceId);
@@ -301,7 +300,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setAccountId(account.getId());
         response = controller.processPayment();
         assertEquals(CartController.SUCCESS_ADD_ACCOUNT, response);
-        assertTrue(controller.getSuccessPath().endsWith("&id=" + account.getId()));
 
         Long invoiceId = invoice.getId();
         invoice = null;

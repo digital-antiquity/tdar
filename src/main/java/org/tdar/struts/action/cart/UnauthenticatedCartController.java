@@ -1,10 +1,12 @@
 package org.tdar.struts.action.cart;
 
+import static org.tdar.core.bean.resource.Status.ACTIVE;
+import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
@@ -19,6 +21,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.PricingOption.PricingType;
@@ -187,6 +190,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Autowired
     private transient InvoiceService cartService;
 
+    @Autowired
+    private transient AccountService accountService;
+
     /**
      * This is the first step of the purchase process. The user specifies the number of files/mb or chooses a
      * predefined small/medium/large bundle. The user may also specify a voucher/discount code.
@@ -213,10 +219,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "new.ftl"),
-                    @Result(name = SUCCESS, type = REDIRECT, location = "review"),
-
-                    @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
-
+                    @Result(name = SUCCESS, type = REDIRECT, location = "review")
+//                    @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason = "unnecessary")
@@ -227,16 +231,16 @@ public class UnauthenticatedCartController extends AbstractCartController {
                     accountId));
         } catch (TdarRecoverableRuntimeException trex) {
             addActionError(trex.getMessage());
-            return "input";
+            return INPUT;
         }
 
         storePendingInvoice(getInvoice());
 
         // if user is authenticated, redirect them to billing account selection (todo: or go w/ adam's idea of having a review-part-2 page, which has billing
         // account selection)
-        if (isAuthenticated()) {
-            return "authenticated";
-        }
+//        if (isAuthenticated()) {
+//            return "authenticated";
+//        }
 
         return SUCCESS;
     }
@@ -253,23 +257,12 @@ public class UnauthenticatedCartController extends AbstractCartController {
         if (getInvoice() == null) {
             return "redirect-start";
         }
-        if (isAuthenticated()) {
-            return "authenticated";
+        if (getInvoice().getOwner() == null) {
+            setOwner(getAuthenticatedUser());
         }
-        return SUCCESS;
-    }
 
-    private boolean isValid(TdarUser person) {
-        boolean valid = true;
-        if (person == null) {
-            addActionMessage(getText("cartController.no_person"));
-            valid = false;
-        }
-        if (StringUtils.isEmpty(person.getUsername())) {
-            valid = false;
-        }
-        // FIXME: add more server-side validation
-        return valid;
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+        return SUCCESS;
     }
 
     public List<BillingActivity> getActivities() {

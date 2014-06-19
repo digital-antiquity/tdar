@@ -61,7 +61,7 @@
                 } else {
                     $("#polling-status").html("done: " + data.transactionStatus);
                     if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
-                        window.document.location = "${successPath}";
+                        window.document.location = "/dashboard";
                     }
                 }
                 if (data.errors != undefined && data.errors != "") {

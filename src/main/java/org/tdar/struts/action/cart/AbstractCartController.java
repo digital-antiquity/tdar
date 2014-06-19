@@ -1,11 +1,13 @@
 package org.tdar.struts.action.cart;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
@@ -26,9 +28,11 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice;
+    // list of billing accounts that the user may choose from when assigning the invoice
+    private List<Account> accounts = new ArrayList<>();
 
     // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
-    private TdarUser owner;
+    private TdarUser owner = new TdarUser();
     private Long ownerId;
 
     @Autowired
@@ -39,28 +43,28 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
      * 
      * @return
      */
-    protected final Invoice loadPendingInvoice() {
+    protected Invoice loadPendingInvoice() {
         Long invoiceId = getSessionData().getInvoiceId();
         return getGenericService().find(Invoice.class, invoiceId);
     }
 
-    protected final void storePendingInvoice(Invoice invoice) {
+    protected void storePendingInvoice(Invoice invoice) {
         getSessionData().setInvoiceId(invoice.getId());
     }
 
     /**
      * Remove invoice from session and this object but don't remove it from the database
      */
-    protected final void clearPendingInvoice() {
+    protected void clearPendingInvoice() {
         invoice = null;
         getSessionData().setInvoiceId(null);
     }
 
-    public final Invoice getInvoice() {
+    public Invoice getInvoice() {
         return invoice;
     }
 
-    public final void setInvoice(Invoice invoice) {
+    public void setInvoice(Invoice invoice) {
         getLogger().debug("set invoice called");
         this.invoice = invoice;
     }
@@ -70,20 +74,20 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         invoice = loadPendingInvoice();
     }
 
-    public final TdarUser getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
     // subclasses may set the owner, but we don't want this coming from struts
-    protected final void setOwner(TdarUser owner) {
+    protected void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
-    public final Long getOwnerId() {
+    public Long getOwnerId() {
         return ownerId;
     }
 
-    public final void setOwnerId(Long ownerId) {
+    public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -119,5 +123,13 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     public void setH(AntiSpamHelper h) {
         this.h = h;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }

@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.AccountService;
@@ -32,9 +33,6 @@ public class CartBillingAccountController extends AbstractCartController {
 
     private static final long serialVersionUID = 563992082346864102L;
 
-    // list of billing accounts that the user may choose from when assigning the invoice
-    private List<Account> accounts = new ArrayList<>();
-
     // id of one of the account chosen from the dropdown list
     private long id = -1L;
 
@@ -50,15 +48,12 @@ public class CartBillingAccountController extends AbstractCartController {
     @Override
     public void prepare() {
         super.prepare();
-        // if we created the invoice prior to authentication the owner wont exist (if it does, that's a problem) So set the owner to be the authuser
-        // FIXME: need to figure out which postback action will save the owner (if it wasn't set during /cart/process-choice): e.g. login, process-registration,
-        // process-cart-choice, REST endpoint
         if (getInvoice().getOwner() == null) {
             setOwner(getAuthenticatedUser());
         }
         selectedAccount = getGenericService().find(Account.class, id);
-        accounts.addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
-        getLogger().debug("owner:{}\t accounts:{}", getOwner(), accounts);
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+        getLogger().debug("owner:{}\t accounts:{}", getOwner(), getAccount());
     }
 
     @Override
@@ -67,7 +62,7 @@ public class CartBillingAccountController extends AbstractCartController {
             addActionError("No invoice found");
         }
         if (isPostRequest()) {
-            if (id == -1L) {
+            if (Persistable.Base.isNullOrTransient(getId())) {
                 validate(account);
             } else if (selectedAccount == null) {
                 addActionError("Invalid account selection");
@@ -87,23 +82,19 @@ public class CartBillingAccountController extends AbstractCartController {
         }
     }
 
-    /**
-     * A form which allows the user to assign the pending invoice to an existing billing account
-     * or to specify a new billing account. If the user has no existing billing account, skip
-     * this step (assign to implicitly created account) and redirect to the payment page
-     * 
-     * @return
-     */
-    // FIXME: httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
-    @Action("show-billing-accounts")
-    // @GetOnly
-    public String showBillingAccounts() {
-        // skip this form if user has no assignable billing accounts
-        if (accounts.isEmpty()) {
-            return "redirect-payment";
-        }
-        return SUCCESS;
-    }
+//    /**
+//     * A form which allows the user to assign the pending invoice to an existing billing account
+//     * or to specify a new billing account. If the user has no existing billing account, skip
+//     * this step (assign to implicitly created account) and redirect to the payment page
+//     * 
+//     * @return
+//     */
+//    // FIXME: httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
+//    @Action("show-billing-accounts")
+//    // @GetOnly
+//    public String showBillingAccounts() {
+//        return SUCCESS;
+//    }
 
     /**
      * Assign invoice to (pre-existing or new) billing account.
@@ -122,10 +113,6 @@ public class CartBillingAccountController extends AbstractCartController {
         acct.getInvoices().add(getInvoice());
         getGenericService().saveOrUpdate(acct);
         return SUCCESS;
-    }
-
-    public List<Account> getAccounts() {
-        return accounts;
     }
 
     public Account getSelectedAccount() {
