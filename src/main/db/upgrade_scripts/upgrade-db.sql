@@ -189,3 +189,4 @@ create table user_notification (
 );
 
 alter table tdar_user add column dismissed_notifications_date date;
+alter table tdar_user rename column affilliation to affiliation;

@@ -92,7 +92,7 @@ public class TdarUser extends Person {
     private Integer contributorAgreementVersion = 0;
     
     @Temporal(TemporalType.DATE)
-    @Column(name = "dismissed_notifications_date")
+    @Column(name = "dismissed_notifications_date", nullable=true)
     private Date dismissedNotificationsDate;
 
     public TdarUser() {
