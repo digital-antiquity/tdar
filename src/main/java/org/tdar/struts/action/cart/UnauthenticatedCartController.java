@@ -28,7 +28,9 @@ import org.tdar.struts.data.PricingOption.PricingType;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.ValidationAware;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 /* It's unnecessarty to static import symbols to your own class, but this is the only way I know to use constants in
 type-level annotation values */
@@ -48,7 +50,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
     /*
 
-     Overview of Con
+     *** Overview of Cart controller actions & results ***
 
 
         AbstractCartController results:
@@ -111,7 +113,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
                     authenticated: @"/cart/show-billing-accounts"
                     redirect: httpHeader( code: BAD_REQUEST, errorMessage:"returnUrl not expected for login from cart")
 
-        CartRegistrationAction:
+        CartProcessRegistrationAction:
 
             process-registration
                 notes:
@@ -142,8 +144,6 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
                     success: @"/cart/process-payment-request"
                     input: show-billing-accounts.ftl
 
-
-
         CartController actions:
 
             simple
@@ -170,10 +170,14 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
                     action to determine if the transaction is complete (successful, cancelled, or failed). When complete, the
                     page performs a "client-side redirect" to change browser location to an appropriate landing page.
 
-
-
-
-
+            process-external-payment-response
+                notes:
+                    this is the endpoint used by the external payment processor to indicate the result of the
+                    pending transaction.
+                    fixme: move to CartApiController
+                method: post
+                results:
+                    invoice:cc-result.ftl (fixme: should be streamResult)
 
      */
 
@@ -205,30 +209,31 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
 
     private AntiSpamHelper antiSpamHelper= new AntiSpamHelper();
 
+
     /**
-     * Show cart pricing options suggested choices.
+     * This is the first step of the purchase process.  The user specifies the number of files/mb or chooses a
+     * predefined small/medium/large bundle.  The user may also specify a voucher/discount code.
+     * <p/>
+     * Re: the client page.  This is actually a form. You can submit the form by clicking the "Next/Save" button.
+     * or by clicking on one  of the  small/medium/large buttons. In either case the form submits a POST request to
+     * /cart/process-choice.
      *
-     * This is the "start" of the purchase process.  Unsuccessful actions (result != "success") that cannot gracefully
-     * recover should consider redirecting to this step by returning RESULT_REDIRECT_START or redirest result to
-     * LOCATION_START
-     * 
      * @return
      */
     @Action("new")
-    public String execute()
-    {
+    @GetOnly
+    public String execute() {
         return SUCCESS;
     }
 
     /**
-     * Process cart selection. If successful, display the pending invoice.
+     * process new/updated invoice request
      * 
      * @return
      */
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "new.ftl"),
-                    // @Result(name = SUCCESS, type=REDIRECT, location = "review?id=${invoice.id}"),
                     @Result(name = SUCCESS, type = REDIRECT, location = "review"),
 
                     @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
@@ -237,6 +242,7 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason="unnecessary")
+    @PostOnly
     public String preview() {
         try {
             invoice = cartService.processInvoice(invoice, getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType, accountId);
@@ -257,14 +263,13 @@ public class UnauthenticatedCartController extends AuthenticationAware.Base impl
     }
 
     /**
-     * Show the pending invoice.
+     * Show the pending invoice review page,  potentially show login/auth form.
      * 
      * @return
      */
     @Action("review")
+    @GetOnly
     public String showInvoice() {
-        // todo: check for transient invoice in session. If not found, add actionError and redirect to starting page
-        // todo: if authenticated, load existing billing accounts then render review page w/ billing-account-edit form
         // todo: if not authenticated, render the review page w/ signup/login form
         if (invoice == null) {
             return "redirect-start";
