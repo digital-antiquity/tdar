@@ -25,7 +25,10 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -33,6 +36,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
@@ -45,6 +49,8 @@ import org.tdar.junit.RunWithTdarConfiguration;
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private static final String CART_NEW = "/cart/new";
+    @Autowired
+    InvoiceService invoiceService;
 
     @Test
     public void testInvalidBulkUpload() {
@@ -228,8 +234,10 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             //setInput("invoice.paymentMethod", "CREDIT_CARD");
             //accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
             //we should be at the 'payment processing' launchpad page now
-            assertCurrentUrlContains("/cart/process-payment-request");
             String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            Account account  = invoiceService.getAccountForInvoice(genericService.find(Invoice.class, Long.parseLong(invoiceId)));
+            accountId = account.getId().toString();
+            
             //extra.put("accountId", accountId);
         }
 

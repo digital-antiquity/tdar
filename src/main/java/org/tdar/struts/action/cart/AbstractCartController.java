@@ -27,7 +27,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     private static final long serialVersionUID = -8162270388197212817L;
 
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
-    private Invoice invoice;
+    private Invoice invoice = new Invoice();
     // list of billing accounts that the user may choose from when assigning the invoice
     private List<Account> accounts = new ArrayList<>();
 

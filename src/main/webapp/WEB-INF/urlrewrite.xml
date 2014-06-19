@@ -356,7 +356,7 @@
         <to>$1$2$3</to>
     </outbound-rule>
 
-    <!--  be careful with this where possible (it could have issues with things like the TAG Gateway) -->
+    <!--  be careful with this where possible (it could have issues with things like the TAG Gateway)
     <outbound-rule>
         <from>^/(search|project|collection)/(.+)\.action\?(.*)$</from>
         <to>/$1/$2?$3</to>
@@ -365,6 +365,6 @@
         <from>^/(search|project|collection)/(.+)\.action$</from>
         <to>/$1/$2</to>
     </outbound-rule>
-
+ -->
 
 </urlrewrite>

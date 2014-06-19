@@ -138,7 +138,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPrematurePayment() throws TdarActionException {
-        fail("this test should be updated for new cart workflow");
         UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
@@ -390,7 +389,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private CartController setupPaymentTests() throws TdarActionException {
-        fail("this test should be updated for new cart workflow");
         UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
         Long invoiceId = setupAndTestBillingAddress(controller_);
         CartController controller = generateNewInitializedController(CartController.class);
@@ -424,7 +422,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     // FIXME: I don't see billing address fields in our forms. do we directly collect address info?, does our payment processor send it to us, or is this
     // feature not used?
     private Long setupAndTestBillingAddress(UnauthenticatedCartController controller_) throws TdarActionException {
-        fail("this test should be updated for new cart workflow");
         Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
         Address address2 = new Address(AddressType.MAILING, "2street", "notsurewhere", "california", "q234", "united states");
         Person user = getUser();

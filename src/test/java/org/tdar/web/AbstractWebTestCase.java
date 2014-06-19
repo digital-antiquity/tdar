@@ -1129,10 +1129,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 //        assertCurrentUrlContains("/simple");
         //setInput("invoice.paymentMethod", "CREDIT_CARD");
 
-        String invoiceid = getInput("id").getAttribute("value");
+        String invoiceid = getInput("invoiceId").getAttribute("value");
+        String accountid = getInput("accountId").getAttribute("value");
+        logger.debug("INVOICE ID: {} ACCOUNT ID: {}", invoiceid, accountid);
         logger.info("TOTAL::: " + total);
-        //submitForm();
         if (!total.equals("0")) {
+            submitForm("submit");
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("click here");
             URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);

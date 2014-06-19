@@ -184,28 +184,33 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
 
-        Account account = null;
         if (createAccountIfNeeded) {
-            List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
-            logger.info("unassigned invoices: {} ", unassignedInvoices);
-            if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-                if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
-                    account = accounts.iterator().next();
-                } else {
-                    account = new Account();
-                    account.setName("Generated account for " + user.getProperName());
-                    account.markUpdated(user);
-                    genericDao.saveOrUpdate(account);
-                }
-
-                for (Invoice invoice : unassignedInvoices) {
-                    account.getInvoices().add(invoice);
-                }
-                genericDao.saveOrUpdate(account);
-                return true;
-            }
+            createAccountForUserIfNeeded(user, accounts);
+            return true;
         }
         return false;
+    }
+
+    public Account createAccountForUserIfNeeded(TdarUser user, Set<Account> accounts) {
+        Account account = null;
+        List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
+        logger.info("unassigned invoices: {} ", unassignedInvoices);
+        if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
+            if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
+                account = accounts.iterator().next();
+            } else {
+                account = new Account();
+                account.setName("Generated account for " + user.getProperName());
+                account.markUpdated(user);
+                genericDao.saveOrUpdate(account);
+            }
+
+            for (Invoice invoice : unassignedInvoices) {
+                account.getInvoices().add(invoice);
+            }
+            genericDao.saveOrUpdate(account);
+        }
+        return account;
     }
 
     /**

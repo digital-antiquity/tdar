@@ -3,6 +3,7 @@ package org.tdar.struts.action.cart;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
@@ -73,6 +75,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Autowired
     private transient InvoiceService cartService;
+
+    @Autowired
+    private transient AccountService accountService;
 
     @Autowired
     private transient XmlService xmlService;
@@ -174,7 +179,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!invoice.isModifiable()) {
             return SUCCESS;
         }
-
+        if (cartService.getAccountForInvoice(invoice) == null) {
+            account = accountService.createAccountForUserIfNeeded(getAuthenticatedUser(), Collections.<Account> emptySet());
+        }
         if (invoice.getTransactionStatus().isComplete()) {
             return ERROR;
         }

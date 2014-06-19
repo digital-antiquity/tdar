@@ -76,8 +76,13 @@ FIXME:: allow user to select value that shows this section
         </div>
     </div>
     <#else>
+
     <#if !accounts?has_content>
-        <a href="<@s.url value="process-payment-request"/>" class="button btn btn-primary">Next</a>
+        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
+        <@s.hidden name="invoiceId" value="${invoice.id?c}" />    
+        <@s.hidden name="accountId" value="${account.id?c}" />    
+        <@s.submit name="submit" value="submit" />
+        </@s.form>
     </#if>
 </#if>
 </body>
