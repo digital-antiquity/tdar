@@ -1,10 +1,8 @@
 package org.tdar.core.bean.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,7 +13,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -33,7 +30,6 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
-import org.tdar.core.bean.util.UserNotification;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
@@ -48,10 +44,6 @@ public class TdarUser extends Person {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tdarUser", orphanRemoval=true)
-    @OrderBy("dateCreated DESC")
-    private List<UserNotification> notifications = new ArrayList<>();
 
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
@@ -98,9 +90,9 @@ public class TdarUser extends Person {
     // version of the latest Creator Agreement that the user has accepted
     @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
     private Integer contributorAgreementVersion = 0;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "dismissed_notifications_date", nullable=true)
+    @Column(name = "dismissed_notifications_date", nullable = true)
     private Date dismissedNotificationsDate;
 
     public TdarUser() {
@@ -248,7 +240,7 @@ public class TdarUser extends Person {
     public Date getDismissedNotificationsDate() {
         return dismissedNotificationsDate;
     }
-    
+
     public void updateDismissedNotificationsDate() {
         setDismissedNotificationsDate(new Date());
     }
@@ -257,11 +249,4 @@ public class TdarUser extends Person {
         this.dismissedNotificationsDate = dismissedNotificationsDate;
     }
 
-    public List<UserNotification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(List<UserNotification> notifications) {
-        this.notifications = notifications;
-    }
 }

@@ -82,16 +82,15 @@ public class UserNotificationService {
         switch (notification.getMessageType()) {
             case SYSTEM_BROADCAST:
                 user.updateDismissedNotificationsDate();
+                genericDao.update(user);
                 break;
             case INFO:
-                user.getNotifications().remove(notification);
                 genericDao.delete(notification);
                 break;
             default:
                 logger.warn("user {} trying to delete error/warning notification {} - ignoring", user, notification);
                 break;
         }
-        genericDao.saveOrUpdate(user);
     }
 
 }

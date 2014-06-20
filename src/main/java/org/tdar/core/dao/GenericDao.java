@@ -407,7 +407,7 @@ public class GenericDao {
     public <T> void update(T entity) {
         Session session = getCurrentSession();
         if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
-            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
+            throw new TdarRecoverableRuntimeException(String.format("trying to update an obfuscated object %s ", entity));
         }
         session.update(entity);
     }
