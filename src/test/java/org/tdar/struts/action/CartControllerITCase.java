@@ -1,11 +1,9 @@
 package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -57,19 +55,22 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     public void testCartBasicInvalid() throws TdarActionException {
         setIgnoreActionErrors(true);
         UnauthenticatedCartController controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        controller.setInvoice(new Invoice());
         controller.prepare();
         String result = controller.execute();
         assertEquals(Action.SUCCESS, result);
         controller = generateNewInitializedController(UnauthenticatedCartController.class);
-        controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         String message = MessageHelper.getMessage("invoiceService.specify_something");
-        try {
-            String save = controller.preview();
-            assertEquals(Action.INPUT, save);
-        } catch (Exception e) {
-            assertEquals(message, e.getMessage());
-        }
+        // try {
+        controller.setInvoice(new Invoice());
+        controller.prepare();
+        controller.validate();
+        String save = controller.preview();
+        assertEquals(Action.INPUT, save);
+        // } catch (Exception e) {
+        // assertEquals(message, e.getMessage());
+        // }
 
         assertTrue(controller.getActionErrors().contains(message));
     }
@@ -151,16 +152,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         assertEquals(MessageHelper.getMessage("cartController.valid_payment_method_is_required"), msg);
 
-        controller = generateNewInitializedController(CartController.class);
-        controller.setId(invoiceId);
-        controller.prepare();
-        msg = null;
-        // try {
-        // ///////// assertEquals(Action.ERROR, controller.addPaymentMethod());
-        // } catch (Exception e) {
-        // msg = e.getMessage();
-        // }
-        assertEquals(MessageHelper.getMessage("cartController.enter_a_billing_adderess"), msg);
     }
 
     @Test
@@ -453,6 +444,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         if (StringUtils.isNotBlank(code)) {
             controller.setCode(code);
         }
+        controller.setInvoice(new Invoice());
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.preview();

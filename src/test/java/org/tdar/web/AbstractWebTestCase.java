@@ -64,6 +64,7 @@ import org.w3c.css.sac.ErrorHandler;
 import org.w3c.tidy.Tidy;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
@@ -90,7 +91,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.ibm.icu.util.Currency;
 
 /**
  * @author Adam Brin
@@ -804,6 +804,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
         webClient.getOptions().setUseInsecureSSL(true);
         webClient.getOptions().setJavaScriptEnabled(false);
+        CookieManager cookieMan = new CookieManager();
+        cookieMan = webClient.getCookieManager();
+        cookieMan.setCookiesEnabled(true);
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
@@ -1126,6 +1129,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
+        return testAccountPollingResponse(total, expectedResponse, false);
+    }
+    
+    protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse, boolean returnAccount) throws MalformedURLException {
 //        assertCurrentUrlContains("/simple");
         //setInput("invoice.paymentMethod", "CREDIT_CARD");
 
@@ -1147,6 +1154,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             clickElementWithId("process-payment_0");
             response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(expectedResponse.name()));
+        }
+        if (returnAccount) {
+            return accountid;
         }
         return invoiceid;
     }

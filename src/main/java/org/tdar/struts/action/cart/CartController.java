@@ -390,8 +390,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getInvoice().getOwner() == null) {
             getInvoice().setOwner(getAuthenticatedUser());
             // todo: need to also set this CartBillingAccountController if admin is creating an invoice
-            getInvoice().setTransactedBy(getAuthenticatedUser());
         }
+        getInvoice().setTransactedBy(getAuthenticatedUser());
 
     }
 

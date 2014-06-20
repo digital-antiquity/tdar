@@ -28,7 +28,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     private static final long serialVersionUID = -8162270388197212817L;
 
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
-    private Invoice invoice = new Invoice();
+    private Invoice invoice;
     // list of billing accounts that the user may choose from when assigning the invoice
     private Set<Account> accounts = new HashSet<>();
 
@@ -46,6 +46,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
      */
     protected Invoice loadPendingInvoice() {
         Long invoiceId = getSessionData().getInvoiceId();
+        getLogger().debug("INVOICE ID: {}", invoiceId);
         return getGenericService().find(Invoice.class, invoiceId);
     }
 
@@ -66,7 +67,6 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     }
 
     public void setInvoice(Invoice invoice) {
-        getLogger().debug("set invoice called");
         this.invoice = invoice;
     }
 

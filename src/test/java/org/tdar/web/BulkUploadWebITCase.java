@@ -40,7 +40,6 @@ import org.tdar.core.service.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
-
 /**
  * @author Adam Brin
  * 
@@ -79,27 +78,14 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUpload() throws MalformedURLException {
-        String accountId = "";
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
-            setInput("invoice.numberOfMb", "200");
-            setInput("invoice.numberOfFiles", "20");
-            submitForm();
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
-            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
-        }
-
         Map<String, String> extra = new HashMap<String, String>();
+        String accountId = setupAccount(extra, 200, 20);
         extra.put("investigationTypeIds", "1");
         extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
         extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            extra.put("accountId", accountId);
-        }
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
@@ -130,9 +116,8 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
-            //setInput("invoice.paymentMethod", "CREDIT_CARD");
-            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+            // setInput("invoice.paymentMethod", "CREDIT_CARD");
+            accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         }
 
         Map<String, String> extra = new HashMap<String, String>();
@@ -142,40 +127,24 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
         extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            extra.put("accountId", accountId);
-        }
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest_simple.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
     }
-    
+
     @Test
-//    @Ignore("dup")
+    // @Ignore("dup")
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithDataset() throws MalformedURLException {
-        String accountId = "";
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
-            setInput("invoice.numberOfMb", "200");
-            setInput("invoice.numberOfFiles", "20");
-            submitForm();
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
-            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
-        }
-
         Map<String, String> extra = new HashMap<String, String>();
+        String accountId = setupAccount(extra, 200, 20);
         extra.put("creditProxies[0].person.id", getUserId().toString());
         extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
         extra.put("creditProxies[0].person.lastName", getUser().getLastName());
         extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
         extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            extra.put("accountId", accountId);
-        }
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         assertTrue(file.exists());
         testBulkUploadController("dataset_manifest.xlsx", Arrays.asList(file), extra, true);
@@ -184,18 +153,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {
-        String accountId = "";
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
-            setInput("invoice.numberOfMb", "200");
-            setInput("invoice.numberOfFiles", "20");
-            submitForm();
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
-            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
-        }
-
         Map<String, String> extra = new HashMap<String, String>();
+        String accountId = setupAccount(extra, 200, 20);
+
         extra.put("investigationTypeIds", "1");
         extra.put("status", "DRAFT");
         extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
@@ -208,9 +168,6 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
         extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            extra.put("accountId", accountId);
-        }
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
@@ -226,20 +183,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
         String accountId = "";
         Map<String, String> extra = new HashMap<String, String>();
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
-            setInput("invoice.numberOfMb", "200");
-            setInput("invoice.numberOfFiles", "20");
-            submitForm();
-            //setInput("invoice.paymentMethod", "CREDIT_CARD");
-            //accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
-            //we should be at the 'payment processing' launchpad page now
-            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            Account account  = invoiceService.getAccountForInvoice(genericService.find(Invoice.class, Long.parseLong(invoiceId)));
-            accountId = account.getId().toString();
-            
-            //extra.put("accountId", accountId);
-        }
+        accountId = setupAccount(extra, 200, 20);
 
         ResourceType rt = ResourceType.PROJECT;
         final String path = "/" + rt.getUrlNamespace() + "/add";
@@ -282,6 +226,23 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     }
 
+    private String setupAccount(Map<String, String> extra, int numberOfMb, int numberOfFiles) throws MalformedURLException {
+        String accountId = null;
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage(CART_NEW);
+            setInput("invoice.numberOfMb", numberOfMb);
+            setInput("invoice.numberOfFiles", numberOfFiles);
+            submitForm();
+            // setInput("invoice.paymentMethod", "CREDIT_CARD");
+            // accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+            // we should be at the 'payment processing' launchpad page now
+            accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
+            logger.debug("ACCOUNTID SET: {}", accountId);
+            extra.put("accountId", accountId);
+        }
+        return accountId;
+    }
+
     public void testBulkUploadController(String filename, Collection<File> listFiles, Map<String, String> extra, boolean expectSuccess) {
 
         String ticketId = getPersonalFilestoreTicketId();
@@ -319,7 +280,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         }
         setInput("ticketId", ticketId);
         submitForm();
-        assertTrue(internalPage.getUrl().toString().contains("save.action"));
+        assertTrue(internalPage.getUrl().toString().contains("save"));
         assertTextPresentIgnoreCase("Bulk Upload Status");
         // logger.info(getPageCode());
         assertTextPresentInCode("The upload process is complete");
@@ -345,7 +306,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             Assert.fail(getPageBodyCode());
         }
     }
-    
+
     @Override
     public TdarUser getUser() {
         TdarUser user = super.getUser();

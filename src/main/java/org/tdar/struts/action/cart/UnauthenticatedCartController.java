@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -231,8 +232,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
         try {
             setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType,
                     accountId));
-        } catch (TdarRecoverableRuntimeException trex) {
-            addActionError(trex.getMessage());
+        } catch (Exception trex) {
+            addActionError(trex.getLocalizedMessage());
             return INPUT;
         }
 
@@ -254,19 +255,21 @@ public class UnauthenticatedCartController extends AbstractCartController {
      */
     @Action("review")
     // @GetOnly
-//    @WriteableSession
+    @WriteableSession
     public String showInvoice() {
         // todo: if not authenticated, render the review page w/ signup/login form
         if (getInvoice() == null) {
             return "redirect-start";
         }
-        if (getInvoice().getOwner() == null) {
-            setOwner(getAuthenticatedUser());
-        }
 
-        getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
-        Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts());
-        setAccountId(account.getId());
+        if (getAuthenticatedUser() != null) {
+            if (getInvoice().getOwner() == null) {
+                getInvoice().setOwner(getAuthenticatedUser());
+            }
+            getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+            Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());
+            setAccountId(account.getId());
+        }
         return SUCCESS;
     }
 
@@ -313,7 +316,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
             setInvoice(persistedInvoice);
-            ;
         }
 
         // set default
@@ -348,9 +350,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
     void setupActivities() {
         // we only care about the production+active activities
         for (BillingActivity activity : cartService.getActiveBillingActivities()) {
-            if (activity.isProduction()) {
+//            if (activity.isProduction()) {
                 getActivities().add(activity);
-            }
+//            }
         }
     }
 

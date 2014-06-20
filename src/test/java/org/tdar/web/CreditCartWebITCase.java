@@ -1,6 +1,5 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
@@ -15,7 +14,6 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.cart.CartController;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 
@@ -46,7 +44,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "0");
         submitForm();
-        assertCurrentUrlContains("preview");
+        assertCurrentUrlContains("process-choice");
         assertTextPresentInCode("55 USD");
         assertTextPresentInCode(MessageHelper.getMessage("invoiceService.specify_something"));
     }
@@ -69,6 +67,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
             clickLinkOnPage("Log In");
             logger.debug(getCurrentUrlPath());
             completeLoginForm(CFG.getUsername(), CFG.getPassword(), false);
+            gotoPage("/cart/review");
         }
     }
 
@@ -117,16 +116,14 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "10");
         submitForm();
         loginAndSpecifyCC();
-        String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, null);
+        String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         assertTrue(accountId != "-1");
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String account = addInvoiceToNewAccount(invoiceId2, accountId, null);
-        assertEquals(account, accountId);
+        String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL, false);
+//        assertEquals(account, accountId);
         assertTextPresent("10,020");
         assertTextPresent("2,000");
         assertTextPresent("10");
@@ -167,6 +164,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartError() throws MalformedURLException {
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
@@ -177,12 +175,12 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.21");
-        loginAndSpecifyCC();
         testAccountPollingResponse("140521", TransactionStatus.TRANSACTION_FAILED);
     }
 
     @Test
     public void testCartUnknown() throws MalformedURLException {
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
@@ -193,7 +191,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.31");
-        loginAndSpecifyCC();
+//        loginAndSpecifyCC();
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
 
@@ -219,6 +217,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartDecline() throws MalformedURLException {
+        login(CFG.getAdminUsername(), CFG.getAdminPassword());
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
@@ -230,7 +229,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.11");
-        loginAndSpecifyCC();
         testAccountPollingResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }
 

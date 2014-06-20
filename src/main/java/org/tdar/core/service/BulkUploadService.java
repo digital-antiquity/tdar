@@ -223,7 +223,7 @@ public class BulkUploadService {
         processFileProxiesIntoResources(manifestProxy);
 
         Collection<Resource> remainingResources =  manifestProxy.getResourcesCreated().values();
-        logger.info("bulk: applying manifest file data to resources");
+        logger.info("bulk: applying account: {}", accountId);
         updateAccountQuotas(accountId, remainingResources, updateReciever);
 
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);

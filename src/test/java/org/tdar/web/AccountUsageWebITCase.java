@@ -38,8 +38,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "2");
         submitForm();
         setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         assertTrue(accountId != "-1");
 
         createDocumentAndUploadFile("my first document");
@@ -64,8 +63,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "2");
         submitForm();
         setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         assertTrue(accountId != "-1");
         logger.info(getCurrentUrlPath());
 
@@ -77,7 +75,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "1");
         setInput("code", code);
         submitForm();
-        invoiceId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
 
         gotoPage("/logout");
     }
@@ -93,9 +91,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "2");
         submitForm();
         setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountName = "loblaw account";
-        String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
 
         createDocumentAndUploadFile("my first document");
         logger.debug("page url is: {}", internalPage.getUrl());
@@ -107,7 +103,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
 
         gotoPage("/document/" + docid + "/edit");
-        assertTextPresent(accountName);
+        assertTextPresent("Generated");
     }
 
     @Test
@@ -143,8 +139,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", mb);
         submitForm();
         setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         return Integer.parseInt(accountId);
     }
 

@@ -175,7 +175,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param createAccountIfNeeded
      * @return
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public boolean hasSpaceInAnAccount(TdarUser user, ResourceType type, boolean createAccountIfNeeded) {
         Set<Account> accounts = listAvailableAccountsForUser(user);
         for (Account account : accounts) {
@@ -190,7 +190,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
             logger.info("unassigned invoices: {} ", unassignedInvoices);
             if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-                Account account = createAccountForUserIfNeeded(user, accounts);
+                Account account = createAccountForUserIfNeeded(user, accounts, null);
                 for (Invoice invoice : unassignedInvoices) {
                     account.getInvoices().add(invoice);
                 }
@@ -201,8 +201,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return false;
     }
 
-    @Transactional(readOnly=false)
-    public Account createAccountForUserIfNeeded(TdarUser user, Set<Account> accounts) {
+    @Transactional(readOnly = false)
+    public Account createAccountForUserIfNeeded(TdarUser user, Set<Account> accounts, Invoice invoice) {
         Account account = null;
         if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
             account = accounts.iterator().next();
@@ -212,7 +212,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.markUpdated(user);
             genericDao.saveOrUpdate(account);
         }
-
+        if (invoice != null) {
+            account.getInvoices().add(invoice);
+            genericDao.saveOrUpdate(account);
+        }
         return account;
     }
 
