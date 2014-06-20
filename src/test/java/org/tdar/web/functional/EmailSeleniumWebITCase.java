@@ -26,6 +26,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         Thread.sleep(2000);
         find(By.name("send")).click();
         Thread.sleep(2000);
+        reportJavascriptErrors();
         assertTrue(getText().contains("Your message has been sent"));
         find(By.id("emai-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
@@ -58,6 +59,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         find(By.name("messageBody")).sendKeys("This is a test email");
         find(By.name("send")).click();
         Thread.sleep(2000);
+        reportJavascriptErrors();
         assertTrue(getText().contains("An error occurred"));
         find(By.id("emai-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
