@@ -122,7 +122,6 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         return latest;
     }
 
-
     /**
      * Iterate through all active @link BillingActivity entries and find the first that is only MB.
      * 
@@ -414,22 +413,23 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     @Transactional(readOnly = true)
     public Coupon locateRedeemableCoupon(String code, TdarUser user) {
-        logger.debug("locate coupon: {} for: {} ",code, user);
+        logger.debug("locate coupon: {} for: {} ", code, user);
         if (StringUtils.isBlank(code)) {
             return null;
         }
         return getDao().findCoupon(code, user);
     }
-    
-    @Transactional(readOnly=false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, TdarUser owner, String code, List<Long> extraItemIds, List<Integer> extraItemQuantities, PricingType pricingType, Long accountId) {
+
+    @Transactional(readOnly = false)
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, TdarUser owner, String code, List<Long> extraItemIds,
+            List<Integer> extraItemQuantities, PricingType pricingType, Long accountId) {
         boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
         if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
             throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
         }
 
         invoice.getItems().clear();
-        
+
         Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
         for (int i = 0; i < extraItemIds.size(); i++) {
             BillingActivity act = actIdMap.get(extraItemIds.get(i));
@@ -465,8 +465,8 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
         }
         invoice.markUpdated(authenticatedUser);
-        //if invoice is persisted it will be read-only, so make it writable
-        if(isNotNullOrTransient(invoice)) {
+        // if invoice is persisted it will be read-only, so make it writable
+        if (isNotNullOrTransient(invoice)) {
             genericDao.markUpdatable(invoice);
             genericDao.markUpdatable(invoice.getItems());
         }
@@ -479,13 +479,13 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         return invoice;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateOwner(Invoice invoice, TdarUser authenticatedUser) {
         if (invoice.getOwner() == null) {
-        invoice.setOwner(authenticatedUser);
+            invoice.setOwner(authenticatedUser);
         }
         if (invoice.getTransactedBy() == null) {
-        invoice.setTransactedBy(authenticatedUser);
+            invoice.setTransactedBy(authenticatedUser);
         }
         getDao().saveOrUpdate(invoice);
     }

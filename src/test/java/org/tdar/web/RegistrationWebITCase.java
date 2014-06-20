@@ -20,8 +20,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterNormalUser() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user");
-        personmap.put("requestingContributorAccess", "false");
-        testLogin(personmap, true, false, true);
+        testLogin(personmap, true, false, false);
         assertTextNotPresent("Create a new project");
         gotoPage("/logout");
     }
