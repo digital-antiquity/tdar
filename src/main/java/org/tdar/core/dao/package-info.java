@@ -435,7 +435,8 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
                 query = "SELECT n from UserNotification n LEFT JOIN n.tdarUser u "
-                        + "WHERE (n.messageType = 'SYSTEM_BROADCAST' AND (u.dismissedNotificationsDate is null or (u.dismissedNotificationsDate < n.dateCreated))) OR n.tdarUser.id = :userId"
+                        + "WHERE n.messageType = 'SYSTEM_BROADCAST' OR n.tdarUser.id = :userId "
+                        + "ORDER BY n.dateCreated DESC"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,

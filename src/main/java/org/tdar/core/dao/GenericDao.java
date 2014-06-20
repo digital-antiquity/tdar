@@ -61,7 +61,7 @@ public class GenericDao {
     private transient SessionFactory sessionFactory;
 
     public <T> T find(Class<T> cls, Long id) {
-        // FIXME: push guard checks into Service layer.
+        // FIXME: push guard checks into Service layer?
         if (id == null) {
             return null;
         }
@@ -125,11 +125,11 @@ public class GenericDao {
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
     }
-    
+
     public Query createQuery(String queryString) {
         return getCurrentSession().createQuery(queryString);
     }
-    
+
     public Query getNamedQuery(String queryName) {
         return getCurrentSession().getNamedQuery(queryName);
     }
@@ -218,7 +218,12 @@ public class GenericDao {
     }
 
     public <T> List<T> findAllSorted(Class<T> cls) {
-        return findAllSorted(cls, getDefaultOrderingProperty() + " asc");
+        return findAllSorted(cls, true);
+    }
+
+    public <T> List<T> findAllSorted(Class<T> cls, boolean ascending) {
+        String ordering = ascending ? " asc" : " desc";
+        return findAllSorted(cls, getDefaultOrderingProperty() + ordering);
     }
 
     @SuppressWarnings("unchecked")

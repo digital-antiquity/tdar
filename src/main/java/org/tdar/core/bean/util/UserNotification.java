@@ -30,7 +30,7 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     private static final long serialVersionUID = -644485386619012665L;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created")
+    @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -51,13 +51,13 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     @Override
     public int compareTo(UserNotification other) {
         return new CompareToBuilder().append(messageType, other.messageType)
-                .append(dateCreated, other.dateCreated)
+                .append(other.dateCreated, dateCreated)
                 .toComparison();
     }
-    
+
     @Override
     public String toString() {
-        return String.format("%s for %s: %s", getMessageType(), getTdarUser(), getMessageKey());
+        return String.format("%s for %s: %s (%s)", getMessageType(), getTdarUser(), getMessageKey(), getDateCreated());
     }
 
     public Date getDateCreated() {

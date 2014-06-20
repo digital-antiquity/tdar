@@ -1,5 +1,8 @@
 package org.tdar.core.service;
 
+
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -31,8 +34,17 @@ public class UserNotificationService {
 
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
-    public List<UserNotification> getCurrentNotifications(TdarUser user) {
-        return genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).list();
+    public List<UserNotification> getCurrentNotifications(final TdarUser user) {
+        List<UserNotification> notifications = genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).list();
+        Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
+        if (dismissedNotificationsDate != null) {
+            for (Iterator<UserNotification> iter = notifications.iterator(); iter.hasNext(); ) {
+                if (dismissedNotificationsDate.after(iter.next().getDateCreated())) {
+                    iter.remove();
+                }
+            }
+        }
+        return notifications;
     }
 
     @Transactional
@@ -58,7 +70,7 @@ public class UserNotificationService {
     private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType) {
         UserNotification notification = new UserNotification();
         notification.setMessageKey(messageKey);
-        notification.setMessageType(UserNotificationType.SYSTEM_BROADCAST);
+        notification.setMessageType(messageType);
         notification.setTdarUser(user);
         genericDao.save(notification);
         return notification;
@@ -66,13 +78,14 @@ public class UserNotificationService {
 
     @Transactional(readOnly=false)
     public void dismiss(TdarUser user, UserNotification notification) {
+        logger.debug("user {} dismissing {}", user, notification);
         switch (notification.getMessageType()) {
             case SYSTEM_BROADCAST:
                 user.updateDismissedNotificationsDate();
                 break;
             case INFO:
-                logger.debug("user {} deleting {}", user, notification);
                 user.getNotifications().remove(notification);
+                genericDao.delete(notification);
                 break;
             default:
                 logger.warn("user {} trying to delete error/warning notification {} - ignoring", user, notification);

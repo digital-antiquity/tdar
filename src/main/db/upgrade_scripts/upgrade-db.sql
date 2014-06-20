@@ -180,7 +180,7 @@ update file_download_day_agg set year = date_part('year', date_accessed);
 -- alllee user_notifications for TDAR-3908
 create table user_notification (
     id  bigserial not null,
-    date_created timestamp,
+    date_created timestamp not null,
     expiration_date timestamp,
     message_key varchar(255) not null,
     message_type varchar(32) not null,
