@@ -62,7 +62,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return Collections.emptySet();
         }
         Set<Account> results = getDao().findAccountsForUser(user, statuses);
-        results.add(new Account("Add an account"));
         return results;
     }
 
@@ -195,8 +194,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                     account.getInvoices().add(invoice);
                 }
                 genericDao.saveOrUpdate(account);
+                return true;
             }
-            return true;
         }
         return false;
     }

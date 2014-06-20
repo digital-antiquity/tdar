@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.TdarActionSupport;
@@ -267,6 +266,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
                 getInvoice().setOwner(getAuthenticatedUser());
             }
             getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+            if (CollectionUtils.isNotEmpty(getAccounts())) {
+            getAccounts().add(new Account("Add an account"));
+            }
             Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());
             setAccountId(account.getId());
         }

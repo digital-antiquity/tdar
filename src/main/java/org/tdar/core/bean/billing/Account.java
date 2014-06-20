@@ -497,4 +497,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setFilesUsed(0L);
         initTotals();
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getName(), getId());
+    }
 }

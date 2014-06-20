@@ -217,7 +217,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertFalse("An error ocurred @ " +path + " ==> " + internalPage.getWebResponse().getContentAsString(), statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertFalse("An error ocurred @ " + path + " ==> " + internalPage.getWebResponse().getContentAsString(),
+                statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
         return statusCode;
@@ -1095,6 +1096,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void createDocumentAndUploadFile(String title) {
+        createDocumentAndUploadFile(title, null);
+    }
+
+    public void createDocumentAndUploadFile(String title, Long accountId) {
         clickLinkWithText("UPLOAD");
         gotoPage("/resource/add");
         String ticketId = getPersonalFilestoreTicketId();
@@ -1110,6 +1115,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextPresentInPage("Create a new Document");
         setInput("document.title", title);
         setInput("document.description", title + " (ABSTRACT)");
+        if (accountId != null) {
+            try {
+                getInput("accountId");
+                setInput("accountId", accountId);
+            } catch (Exception e) {
+                logger.debug("e:{}", e.getMessage());
+            }
+        }
         setInput("document.date", "1934");
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
@@ -1131,10 +1144,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         return testAccountPollingResponse(total, expectedResponse, false);
     }
-    
+
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse, boolean returnAccount) throws MalformedURLException {
-//        assertCurrentUrlContains("/simple");
-        //setInput("invoice.paymentMethod", "CREDIT_CARD");
+        // assertCurrentUrlContains("/simple");
+        // setInput("invoice.paymentMethod", "CREDIT_CARD");
 
         String invoiceid = getInput("invoiceId").getAttribute("value");
         String accountid = getInput("accountId").getAttribute("value");
@@ -1261,7 +1274,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // setInput("acceptedAuthNotices", "TOS_AGREEMENT");
         // }
         if (includeUserAgreement) {
-            setInput("requestingContributorAccess", "CONTRIBUTOR_AGREEMENT");
+            setInput("requestingContributorAccess", "true");
         }
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
@@ -1280,7 +1293,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         personmap.put("institutionName", "institution");
         personmap.put("person.phone", "1234567890");
         personmap.put("contributorReason", "there is a reason");
-//        personmap.put("contributor", "true");
+        // personmap.put("contributor", "true");
         personmap.put("affilliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");

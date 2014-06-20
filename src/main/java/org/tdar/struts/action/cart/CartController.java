@@ -239,6 +239,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 getGenericService().saveOrUpdate(invoice);
                 return SUCCESS_ADD_ACCOUNT;
         }
+        getSessionData().setInvoiceId(null);
         // validate transaction
         // run transaction
         return SUCCESS;

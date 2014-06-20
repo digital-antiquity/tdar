@@ -248,7 +248,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
-            getLogger().info("setting active accounts to {} ", getActiveAccounts());
+            for (Account account : getActiveAccounts()) {
+                getLogger().info(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
+            }
         }
         return SUCCESS;
     }
@@ -425,6 +427,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isAbleToCreateBillableItem() {
+        getLogger().debug("PAY: {} {} ", isContributor(), getTdarConfiguration().isPayPerIngestEnabled());
         if (!getTdarConfiguration().isPayPerIngestEnabled() || ((isContributor() == true)
                 && accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true))) {
             return true;
