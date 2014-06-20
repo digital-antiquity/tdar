@@ -29,11 +29,11 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
 
     private static final long serialVersionUID = -644485386619012665L;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created")
     private Date dateCreated = new Date();
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expiration_date")
     private Date expirationDate;
 

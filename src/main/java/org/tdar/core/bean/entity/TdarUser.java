@@ -49,7 +49,7 @@ public class TdarUser extends Person {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tdarUser")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tdarUser", orphanRemoval=true)
     @OrderBy("dateCreated DESC")
     private List<UserNotification> notifications = new ArrayList<>();
 
@@ -99,7 +99,7 @@ public class TdarUser extends Person {
     @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
     private Integer contributorAgreementVersion = 0;
     
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dismissed_notifications_date", nullable=true)
     private Date dismissedNotificationsDate;
 

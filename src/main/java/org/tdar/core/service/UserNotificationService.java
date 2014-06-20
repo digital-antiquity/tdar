@@ -64,7 +64,7 @@ public class UserNotificationService {
         return notification;
     }
 
-    @Transactional
+    @Transactional(readOnly=false)
     public void dismiss(TdarUser user, UserNotification notification) {
         switch (notification.getMessageType()) {
             case SYSTEM_BROADCAST:
@@ -72,13 +72,13 @@ public class UserNotificationService {
                 break;
             case INFO:
                 logger.debug("user {} deleting {}", user, notification);
-                genericDao.delete(notification);
+                user.getNotifications().remove(notification);
                 break;
             default:
                 logger.warn("user {} trying to delete error/warning notification {} - ignoring", user, notification);
                 break;
         }
-
+        genericDao.saveOrUpdate(user);
     }
 
 }
