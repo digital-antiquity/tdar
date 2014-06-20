@@ -214,7 +214,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testRangeSearch() {
         gotoPage(SEARCH_RESULTS_BASE_URL
-                + ".action?&groups%5B0%5D.fieldTypes%5B1%5D=DATE_CREATED&groups%5B0%5D.createdDates%5B1%5D.start=2007&groups%5B0%5D.createdDates%5B1%5D.end=2009&__multiselect_includedStatuses=");
+                + "?&groups%5B0%5D.fieldTypes%5B1%5D=DATE_CREATED&groups%5B0%5D.createdDates%5B1%5D.start=2007&groups%5B0%5D.createdDates%5B1%5D.end=2009&__multiselect_includedStatuses=");
         assertTextPresent("Value is between 2007 and 2009");
     }
 

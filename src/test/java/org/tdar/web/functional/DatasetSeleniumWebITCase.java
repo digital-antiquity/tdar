@@ -41,7 +41,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public static String REGEX_DATASET_VIEW = ".+\\/dataset\\/\\d+$";
     public static Pattern PATTERN_DOCUMENT_VIEW = Pattern.compile(REGEX_DATASET_VIEW);
     public static String REGEX_DATASET_EDIT = ".+\\/dataset\\/\\d+$";
-    public static String REGEX_RESOURCE_SAVE = ".+save.action$";
+    public static String REGEX_RESOURCE_SAVE = ".+save$";
     public static String REGEX_DATASET_COLUMNS = ".+\\/dataset\\/\\d+/columns$";
     public static Pattern PATTERN_DOCUMENT_EDIT = Pattern.compile(REGEX_DATASET_EDIT);
 
