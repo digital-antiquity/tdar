@@ -117,17 +117,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * 
      * CartBillingAccountController actions:
      * 
-     * show-billing-accounts
-     * notes:
-     * A form which allows the user to assign the pending invoice to an existing billing account
-     * or to specify a new billing account. If the user has no existing billing account, skip
-     * this step (assign to implicitly created account) and redirect to the payment page
-     * fixme: httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
-     * method: get
-     * results:
-     * success: show-billing-accounts.ftl (if user has exiting billing accounts)
-     * redirect-payment: @"/cart/process-payment-request" (if use has no pre-existing accounts)
-     * 
      * process-billing-account-choice
      * notes: assign invoice to (pre-existing or new) billing account.
      * method: post

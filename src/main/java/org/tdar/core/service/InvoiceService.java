@@ -1,8 +1,12 @@
 package org.tdar.core.service;
 
+import static org.tdar.core.bean.Persistable.Base.isNotNullOrTransient;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,20 +25,27 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.Email;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
+import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
-
-import static org.tdar.core.bean.Persistable.Base.isNotNullOrTransient;
-import static org.tdar.core.bean.Persistable.Base.isTransient;
+import org.tdar.utils.MessageHelper;
 
 @Transactional(readOnly = true)
 @Service
@@ -46,6 +57,11 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Autowired
     private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    private transient XmlService xmlService;
+
+    @Autowired
+    private transient EmailService emailService;
 
     /**
      * Find the account (if exists) associated with the invoice
@@ -489,4 +505,101 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         getDao().saveOrUpdate(invoice);
     }
+
+    @Transactional(readOnly = false)
+    public Invoice processPayment(String billingPhone, boolean isPhoneRequired, Invoice invoice_, boolean isAddressRequired, PaymentMethod paymentMethod) {
+        Long phone = null;
+        if (StringUtils.isNotBlank(billingPhone)) {
+            phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
+        }
+
+        if (isPhoneRequired && ((phone == null) || (phone.toString().length() < 10))) {
+            throw new TdarRecoverableRuntimeException("cartController.valid_phone_number_is_required");
+        }
+
+        invoice_.setAddress(getDao().loadFromSparseEntity(invoice_.getAddress(), Address.class));
+        if (isAddressRequired && Persistable.Base.isNullOrTransient(invoice_.getAddress())) {
+            throw new TdarRecoverableRuntimeException("cartController.a_biling_address_is_required");
+        }
+
+        String otherReason = invoice_.getOtherReason();
+        Invoice invoice = getDao().loadFromSparseEntity(invoice_, Invoice.class);
+        invoice.setPaymentMethod(paymentMethod);
+        invoice.setOtherReason(otherReason);
+        invoice.setBillingPhone(phone);
+        // finalize the cost and cache it
+        invoice.markFinal();
+        getDao().saveOrUpdate(invoice);
+        getLogger().info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice_.getId(), invoice_.getTotal());
+
+        // if the discount brings the total cost down to 0, then skip the credit card process
+        if ((invoice.getTotal() <= 0) && CollectionUtils.isNotEmpty(invoice.getItems())) {
+            if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
+                // accountService.redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
+                checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
+            }
+            invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+            getDao().saveOrUpdate(invoice);
+        } else {
+            invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
+        }
+
+        return invoice;
+    }
+    
+    @Transactional(readOnly = false)
+    public void processTransactionResponse(TransactionResponse response, PaymentTransactionProcessor paymentTransactionProcessor) throws IOException {
+        if (paymentTransactionProcessor.validateResponse(response)) {
+            getDao().markWritable();
+            Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
+
+            BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
+            billingResponse = getDao().markWritable(billingResponse);
+            getDao().saveOrUpdate(billingResponse);
+            if (invoice != null) {
+                invoice = getDao().markWritable(invoice);
+                Person p = invoice.getOwner();
+                boolean found = false;
+                Address addressToSave = response.getAddress();
+                for (Address address : p.getAddresses()) {
+                    if (address.isSameAs(addressToSave)) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    p.getAddresses().add(addressToSave);
+                    getLogger().info(addressToSave.getAddressSingleLine());
+                    getDao().saveOrUpdate(addressToSave);
+                    invoice.setAddress(addressToSave);
+                }
+                paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+                invoice.setResponse(billingResponse);
+                getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                Map<String, Object> map = new HashMap<>();
+                map.put("invoice", invoice);
+                map.put("date", new Date());
+                try {
+                    List<Person> people = new ArrayList<>();
+                    for (String email : StringUtils.split(TdarConfiguration.getInstance().getBillingAdminEmail(), ";")) {
+                        if (StringUtils.isBlank(email)) {
+                            continue;
+                        }
+                        Person person = new Person("Billing", "Info", email.trim());
+                        getDao().markReadOnly(person);
+                        people.add(person);
+                    }
+                    Email email = new Email();
+                    email.setSubject(MessageHelper.getMessage("cartController.subject"));
+                    for (Person person : people) {
+                        email.addToAddress(person.getEmail());
+                    }
+                    emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
+                } catch (Exception e) {
+                    getLogger().error("could not send email: {} ", e);
+                }
+                getDao().saveOrUpdate(invoice);
+            }
+        }
+    }
+
 }
