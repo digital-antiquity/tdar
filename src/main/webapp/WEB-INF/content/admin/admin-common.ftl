@@ -1,7 +1,6 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/${themeDir}/settings.ftl" as settings>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "admin-common.ftl" as admin>
 
 
 <title>Admin Pages</title>
@@ -9,7 +8,7 @@
 
     <#setting url_escaping_charset="UTF-8">
     <#macro header>
-    <div class="glide">
+    <div>
         <h3> Menu</h3>
         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
             <li class="tab-pane"><a href="<@s.url value="/admin/"/>">Admin Home</a></li>
@@ -19,7 +18,6 @@
             <li class="tab-pane"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
             <li class="tab-pane"><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
-
             <#if billingManager || editor>
                 <li class="tab-pane"><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
                 <li class="tab-pane"><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
@@ -27,6 +25,7 @@
             <#if administrator >
                 <li class="tab-pane"><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
                 <li class="tab-pane"><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
+                <li class="tab-pane"><a href="<@s.url value="/admin/notifications/"/>">Notifications</a></li>
             </#if>
         </ul>
     </div>
