@@ -9,9 +9,7 @@
         <ul class="nav nav-tabs">
             <li><a href="<@s.url value="/admin/"/>">Admin Home</a></li>
             <li class='dropdown'>
-            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics
-            <b class='caret'></b>
-            </a>
+            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
             <ul class='dropdown-menu'>
             <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
             <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
