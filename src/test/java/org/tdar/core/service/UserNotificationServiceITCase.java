@@ -19,12 +19,29 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private UserNotificationService userNotificationService;
+    
+    @Autowired
+    private XmlService xmlService;
 
     private TdarUser user;
 
     @Before
     public void setUp() {
         user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
+    }
+
+    @Test
+    @Rollback
+    public void testJsonSerialization() {
+        List<UserNotification> notifications = Arrays.asList(
+                userNotificationService.info(user, "1st info"),
+                userNotificationService.info(user, "2nd info"),
+                userNotificationService.error(user, "1st error"),
+                userNotificationService.warning(user, "1st warning"),
+                userNotificationService.broadcast("broadcast message")
+                );
+        String json = xmlService.convertFilteredJsonForStream(notifications, null, null);
+        getLogger().debug("json: {}", json);
     }
 
     @Test

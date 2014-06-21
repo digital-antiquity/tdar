@@ -28,6 +28,11 @@ public class UserNotificationService {
     private GenericDao genericDao;
     
     @Transactional(readOnly = true)
+    public UserNotification find(Long id) {
+        return genericDao.find(UserNotification.class, id);
+    }
+    
+    @Transactional(readOnly = true)
     public List<UserNotification> findAll() {
         return genericDao.findAll(UserNotification.class);
     }

@@ -181,7 +181,7 @@ update file_download_day_agg set year = date_part('year', date_accessed);
 create table user_notification (
     id  bigserial not null,
     date_created timestamp not null,
-    expiration_date timestamp,
+    expiration_date date,
     message_key varchar(255) not null,
     message_type varchar(32) not null,
     user_id int8 references tdar_user,

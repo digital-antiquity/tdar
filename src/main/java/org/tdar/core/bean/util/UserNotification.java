@@ -16,6 +16,8 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Provides targeted and system broadcast notifications for users.
  * SYSTEM_BROADCAST messages are sent to every user and can be dismissed via TdarUser.updateDismissedNotificationsDate()
@@ -33,7 +35,7 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     @Column(name = "expiration_date")
     private Date expirationDate;
 
@@ -46,6 +48,7 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     private UserNotificationType messageType;
 
     @Column(name = "message_key", nullable = false)
+    @JsonProperty
     private String messageKey;
 
     @Override

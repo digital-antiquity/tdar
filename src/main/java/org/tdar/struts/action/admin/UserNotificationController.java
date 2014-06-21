@@ -1,21 +1,34 @@
 package org.tdar.struts.action.admin;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.util.TokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.util.UserNotification;
+import org.tdar.core.bean.util.UserNotificationType;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.UserNotificationService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
+
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * Manages admin CRUD requests for UserNotifications.
@@ -25,43 +38,126 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @ParentPackage("secured")
 @Namespace("/admin/notifications")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
-public class UserNotificationController extends AuthenticationAware.Base {
+public class UserNotificationController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 5844268857719107949L;
-    
-    private UserNotification notification = new UserNotification();
+
     private List<UserNotification> allNotifications;
-    
+    private String notificationsJson;
+    private String allMessageTypesJson;
+    private InputStream resultJson;
+
+    // incoming notification fields
+    private Long id;
+    private UserNotification notification;
+
     @Autowired
-    private UserNotificationService userNotificationService;
-    
-    
+    private transient UserNotificationService userNotificationService;
+
+    @Autowired
+    private transient XmlService xmlService;
+
+    @Override
+    public void prepare() {
+        getLogger().debug("preparing with id {}", getId());
+        notification = userNotificationService.find(getId());
+        if (notification == null) {
+            notification = new UserNotification();
+        }
+        getLogger().debug("now has notification: {}", notification);
+    }
+
     @Actions({
-        @Action("index"),
-        @Action("/admin/notifications")
+            @Action("index"),
+            @Action("/admin/notifications")
     })
     public String execute() {
         allNotifications = userNotificationService.findAll();
         Collections.sort(allNotifications);
+        notificationsJson = xmlService.convertFilteredJsonForStream(allNotifications, null, null);
+        allMessageTypesJson = xmlService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
+        getLogger().debug("notifications: {}, allMessageTypes: {}", notificationsJson, allMessageTypesJson);
         return SUCCESS;
     }
-    
-    @Action("update")
+
+    // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
+    @Action(value = "update",
+            // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
+            })
+    @WriteableSession    
     @PostOnly
     public String update() {
+        getLogger().debug("updating notification {} with id {}", notification, notification.getId());
+        notification = getGenericService().merge(notification);
+        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(notification, null, null).getBytes());
         return SUCCESS;
     }
-    
-    @Action("delete")
+
+    // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
+    @Action(value = "delete",
+            // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
+            })
+    @WriteableSession
     @PostOnly
     public String delete() {
+        getLogger().debug("deleting notification {}", notification);
+        getGenericService().delete(notification);
+        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(notification, null, null).getBytes());
         return SUCCESS;
+    }
+
+    @Action(value = "generate-token",
+            results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
+            })
+    public String generateToken() {
+        Map<String, Object> context = ActionContext.getContext().getValueStack().getContext();
+        Object token = context.get("token");
+        if (token == null) {
+            token = TokenHelper.setToken("token");
+            context.put("token", token);
+        }
+        try {
+            this.resultJson = new ByteArrayInputStream(xmlService.convertToJson(token).getBytes());
+        } catch (IOException exception) {
+            getLogger().debug("couldn't convert token {} to json", token);
+        }
+        return SUCCESS;
+
     }
 
     @Action("add")
     @PostOnly
     public String add() {
         return SUCCESS;
+    }
+
+    public List<UserNotification> getAllNotifications() {
+        return allNotifications;
+    }
+
+    public String getNotificationsJson() {
+        return notificationsJson;
+    }
+
+    public String getAllMessageTypesJson() {
+        return allMessageTypesJson;
+    }
+
+    public void setAllMessageTypesJson(String allMessageTypesJson) {
+        this.allMessageTypesJson = allMessageTypesJson;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public UserNotification getNotification() {
@@ -72,8 +168,8 @@ public class UserNotificationController extends AuthenticationAware.Base {
         this.notification = notification;
     }
 
-    public List<UserNotification> getAllNotifications() {
-        return allNotifications;
+    public InputStream getResultJson() {
+        return resultJson;
     }
 
 }
