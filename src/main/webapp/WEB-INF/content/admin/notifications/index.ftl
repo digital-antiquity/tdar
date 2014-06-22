@@ -1,72 +1,79 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/content/admin/admin-common.ftl" as admin>
 <head>
-    <title>Administrator Dashboard: User Notifications</title>
-    <meta name="lastModifiedDate" content="$Date$"/>
+<title>Administrator Dashboard: User Notifications</title>
+<meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <@admin.header/>
 <h2>User Notifications</h2>
 <div id='notifications'>
-<table class="table table-striped table-bordered table-condensed">
-    <thead>
-    <tr>
-        <th>User</th>
-        <th>Date Created</th>
-        <th>Expiration Date</th>
-        <th>Type</th>
-        <th>Message</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody data-bind='foreach: notifications'>
-    <tr>
-    <td data-bind='text: tdarUser'></td>
-    <td data-bind='text: creationDate'></td>
-    <td data-bind='text: expirationDate'></td>
-    <td data-bind='text: messageType'></td>
-    <td data-bind='text: messageKey'></td>
-    <td>
-    <input type='hidden' name='id' data-bind='value: id()'>
-    <a class='btn btn-info' data-bind='click: $parent.editNotification.bind($data, false)'><i class='icon-edit'></i>Edit</a>
-    <button data-bind='click: sendDelete' type='submit' class='btn btn-danger'><i class='icon-trash'></i> Delete</button>
-    </td>
-    </tr>
-    </tbody>
-</table>
-<a data-bind='click: editNotification.bind($data, true)' role='button' class='btn btn-success'><i class='icon-plus-sign'></i> add a notification</a>
-<#-- modal form -->
-<div id='modalNotificationForm' class='modal hide fade' data-bind='showModal: selectedNotification, with: selectedNotification' tabindex='-1' role='dialog' aria-labelledby='createNotificationFormLabel' aria-hidden='true'>
-    <div class='modal-header'>
-    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-    <h3 id='createNotificationFormLabel'>Create User Notification</h3>
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Date Created</th>
+                <th>Expiration Date</th>
+                <th>Type</th>
+                <th>Message</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody data-bind='foreach: notifications'>
+        <tr>
+            <td data-bind='text: tdarUser'></td>
+            <td data-bind='text: creationDate'></td>
+            <td data-bind='text: shortFormatExpirationDate'></td>
+            <td data-bind='text: messageType'></td>
+            <td data-bind='text: messageKey'></td>
+            <td data-bind='text: message'></td>
+            <td>
+                <input type='hidden' name='id' data-bind='value: id()'>
+                <a class='btn btn-info' data-bind='click: $parent.editNotification.bind($data, false)'><i class='icon-edit'></i>Edit</a>
+                <button data-bind='click: sendDelete' type='submit' class='btn btn-danger'><i class='icon-trash'></i> Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a data-bind='click: editNotification.bind($data, true)' role='button' class='btn btn-success'><i class='icon-plus-sign'></i> add a notification</a>
+    <#-- modal form -->
+    <div id='modalNotificationForm' class='modal hide fade' data-bind='showModal: selectedNotification, with: selectedNotification' tabindex='-1' role='dialog' aria-labelledby='createNotificationFormLabel' aria-hidden='true'>
+        <div class='modal-header'>
+            <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+            <h3 id='createNotificationFormLabel'>Create User Notification</h3>
+        </div>
+        <div class='modal-body'>
+            <form id='notificationForm' class='form-horizontal'>
+                <input type='hidden' name='id' data-bind='value: id'>
+                <input type='hidden' name='notification.id' data-bind='value: id'>
+                <input type='hidden' name='notification.expirationDate' data-bind='value: shortFormatExpirationDate'>
+                <div class='control-group'>
+                    <label class='control-label'>Expiration date</label>
+                    <div class='controls'><input type='date' data-bind='value: expirationDate' placeholder='Expires on'></div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label'>Type</label>
+                    <div class='controls'><select name='notification.messageType' data-bind='options: $root.messageTypes, value: messageType'></select></div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label'>Message Key</label>
+                    <div class='controls'><input type='text' name='notification.messageKey' data-bind='value: messageKey' placeholder='Message key'></div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label'>Message</label>
+                    <div class='controls'><textarea readonly data-bind='value: message'></textarea></div>
+                </div>
+            </form>
+        </div>
+        <div class='modal-footer'>
+            <button class='btn' data-dismiss='modal' aria-hidden='true'>Cancel</button>
+            <button class='btn btn-primary' data-dismiss='modal' data-bind='click: $parent.sendSave'>Save</button>
+        </div>
     </div>
-    <div class='modal-body'>
-    <form id='notificationForm' class='form-horizontal'>
-    <input type='hidden' name='id' data-bind='value: id'>
-    <input type='hidden' name='notification.id' data-bind='value: id'>
-    <div class='control-group'>
-        <label class='control-label'>Expiration date</label>
-        <div class='controls'><input name='notification.expirationDate' type='date' data-bind='value: expirationDate' placeholder='Expires on'></div>
-    </div>
-    <div class='control-group'>
-        <label class='control-label'>Type</label>
-        <div class='controls'><select name='notification.messageType' data-bind='options: $root.messageTypes, value: messageType'></select></div>
-    </div>
-    <div class='control-group'>
-        <label class='control-label'>Message</label>
-        <div class='controls'><input type='text' name='notification.messageKey' data-bind='value: messageKey' placeholder='Message key'></div>
-    </div>
-    </form>
-    </div>
-    <div class='modal-footer'>
-    <button class='btn' data-dismiss='modal' aria-hidden='true'>Cancel</button>
-    <button class='btn btn-primary' data-dismiss='modal' data-bind='click: $parent.sendSave'>Save</button>
-    </div>
-</div>
 </div>
 </#escape>
 <#-- FIXME: how to place these in the footer? -->
 <script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js'></script>
 <script src='/includes/knockout.mapping.js'></script>
 <script>
 ko.bindingHandlers.showModal = {
@@ -85,7 +92,7 @@ ko.bindingHandlers.showModal = {
 function UserNotificationModel(data) {
     var self = this;
     if (data) {
-        self = ko.mapping.fromJS(data);
+        ko.mapping.fromJS(data, {}, self);
     }
     else {
         self.id = ko.observable(-1);
@@ -95,9 +102,35 @@ function UserNotificationModel(data) {
         self.messageType = ko.observable("SYSTEM_BROADCAST");
         self.messageKey = ko.observable();
     }
+    self.message = ko.observable("Not found");
+    self.lookupMessageKey = function() {
+        if (! self.messageKey()) {
+            console.debug("no message key, aborting");
+            self.message();
+            return;
+        }
+        // cache ajax lookup?
+        $.get("/admin/notifications/lookup", { "notification.messageKey": self.messageKey() }, function(response) {
+            console.debug("SUCCESSFUL LOOKUP");
+            console.debug(response);
+            self.message(response.message);
+        })
+        .fail(function (response) {
+            console.debug("FAILED LOOKUP: ");
+            console.debug(response);
+            self.message("Not found");
+        });
+    };
     self.creationDate = ko.computed(function() {
         return new Date(self.dateCreated());
     });
+    self.shortFormatExpirationDate = ko.computed(function() {
+        var d = self.expirationDate();
+        if (d) {
+            return moment(d).format('L');
+        }
+    });
+    self.messageKey.subscribe(self.lookupMessageKey);
     return self;
 }
 function NotificationsViewModel(initialModelData) {

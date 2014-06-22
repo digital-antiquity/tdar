@@ -4,15 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.apache.struts2.util.TokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -72,21 +73,33 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             @Action("/admin/notifications")
     })
     public String execute() {
-        allNotifications = userNotificationService.findAll();
-        Collections.sort(allNotifications);
+        initializeAllNotifications();
         notificationsJson = xmlService.convertFilteredJsonForStream(allNotifications, null, null);
         allMessageTypesJson = xmlService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
         getLogger().debug("notifications: {}, allMessageTypes: {}", notificationsJson, allMessageTypesJson);
         return SUCCESS;
     }
 
+    @Action(value = "lookup",
+            results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
+            })
+    @SkipValidation
+    public String lookup() {
+        getLogger().debug("looking up " + notification.getMessageKey());
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("message", getText(notification.getMessageKey()));
+        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(jsonMap, null, null).getBytes());
+        return SUCCESS;
+
+    }
     // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
     @Action(value = "update",
             // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
             })
-    @WriteableSession    
+    @WriteableSession
     @PostOnly
     public String update() {
         getLogger().debug("updating notification {} with id {}", notification, notification.getId());
@@ -134,6 +147,14 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     @PostOnly
     public String add() {
         return SUCCESS;
+    }
+    
+    private void initializeAllNotifications() {
+        allNotifications = userNotificationService.findAll(); 
+        Collections.sort(allNotifications);
+        for (UserNotification notification: allNotifications) {
+            notification.setMessage(getText(notification.getMessageKey()));
+        }
     }
 
     public List<UserNotification> getAllNotifications() {

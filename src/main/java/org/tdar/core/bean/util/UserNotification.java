@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.tdar.core.bean.Persistable;
@@ -50,6 +51,8 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     @Column(name = "message_key", nullable = false)
     @JsonProperty
     private String messageKey;
+
+    private transient String message;
 
     @Override
     public int compareTo(UserNotification other) {
@@ -101,6 +104,15 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
 
     public void setTdarUser(TdarUser tdarUser) {
         this.tdarUser = tdarUser;
+    }
+
+    @Transient
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }
