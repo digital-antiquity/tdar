@@ -19,7 +19,7 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private UserNotificationService userNotificationService;
-    
+
     @Autowired
     private XmlService xmlService;
 
@@ -50,19 +50,21 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         UserNotification infoNotification = userNotificationService.info(user, "info");
         UserNotification broadcastNotification = userNotificationService.broadcast("broadcast");
         List<UserNotification> notifications = Arrays.asList(broadcastNotification, infoNotification);
-        assertEquals(notifications, userNotificationService.getCurrentNotifications(user));
+        List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
+        Collections.sort(currentNotifications);
+        assertEquals(notifications, currentNotifications);
         List<UserNotification> allNotifications = userNotificationService.findAll();
         Collections.sort(allNotifications);
         assertEquals(notifications, allNotifications);
         assertNull(user.getDismissedNotificationsDate());
         userNotificationService.dismiss(user, infoNotification);
         assertNull(user.getDismissedNotificationsDate());
-        assertEquals(1, userNotificationService.findAll().size());
         userNotificationService.dismiss(user, broadcastNotification);
         assertNotNull(user.getDismissedNotificationsDate());
         assertEquals(1, user.getDismissedNotificationsDate().compareTo(broadcastNotification.getDateCreated()));
         assertTrue("Test user dismissed notification, notification set should be empty",
                 userNotificationService.getCurrentNotifications(user).isEmpty());
+        assertEquals("broadcast notification should still exist even after dismissed", broadcastNotification, userNotificationService.findAll().get(0));
     }
 
     @Test

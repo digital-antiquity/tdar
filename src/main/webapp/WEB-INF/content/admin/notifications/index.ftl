@@ -18,23 +18,6 @@
         <th>Action</th>
     </tr>
     </thead>
-    <#--
-    <tbody>
-        <#list allNotifications as notification>
-        <@s.form id='notificationForm_${notification.id}'>
-        <@s.token name='struts.csrf.token' />
-        <@s.hidden name='notificationId' value='${notification.id}' />
-        <tr>
-            <td>${notification.tdarUser!"None"}</td>
-            <td>${notification.dateCreated}</td>
-            <td>${notification.messageType}</td>
-            <td>${notification.messageKey}</td>
-            <td><a class='btn btn-info'><i class='icon-edit'></i>Edit</a> <button type='submit' class='btn btn-danger'><i class='icon-trash'></i> sendDelete</button></td>
-        </tr>
-        </@s.form>
-        </#list>
-    </tbody>
-    -->
     <tbody data-bind='foreach: notifications'>
     <tr>
     <td data-bind='text: tdarUser'></td>
@@ -43,16 +26,15 @@
     <td data-bind='text: messageType'></td>
     <td data-bind='text: messageKey'></td>
     <td>
-<#--    <form data-bind='attr: { id: "deleteNotificationForm_" + id() }'> -->
     <input type='hidden' name='id' data-bind='value: id()'>
     <a class='btn btn-info' data-bind='click: $parent.editNotification.bind($data, false)'><i class='icon-edit'></i>Edit</a>
     <button data-bind='click: sendDelete' type='submit' class='btn btn-danger'><i class='icon-trash'></i> Delete</button>
-<#--    </form> -->
     </td>
     </tr>
     </tbody>
 </table>
 <a data-bind='click: editNotification.bind($data, true)' role='button' class='btn btn-success'><i class='icon-plus-sign'></i> add a notification</a>
+<#-- modal form -->
 <div id='modalNotificationForm' class='modal hide fade' data-bind='showModal: selectedNotification, with: selectedNotification' tabindex='-1' role='dialog' aria-labelledby='createNotificationFormLabel' aria-hidden='true'>
     <div class='modal-header'>
     <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
@@ -68,7 +50,7 @@
     </div>
     <div class='control-group'>
         <label class='control-label'>Type</label>
-        <div class='controls'><select name='notification.messageType' data-bind='options: $root.messageTypes, label, value: messageType'></select></div>
+        <div class='controls'><select name='notification.messageType' data-bind='options: $root.messageTypes, value: messageType'></select></div>
     </div>
     <div class='control-group'>
         <label class='control-label'>Message</label>
@@ -118,7 +100,7 @@ function UserNotificationModel(data) {
     });
     return self;
 }
-function NotificationsViewModel(viewModelJson) {
+function NotificationsViewModel(initialModelData) {
     var mapping = {
         'notifications': {
             create: function(options) {
@@ -126,7 +108,7 @@ function NotificationsViewModel(viewModelJson) {
             }
         }
     }
-    var model = ko.mapping.fromJS(viewModelJson, mapping);
+    var model = ko.mapping.fromJS(initialModelData, mapping);
     model.selectedNotification = ko.observable();
     model.editNotification = function(isNew, notification) {
         if (isNew) {
@@ -173,7 +155,7 @@ function NotificationsViewModel(viewModelJson) {
     return model;
 }
 $(function() {
-    var initialModelData = { "notifications": ${notificationsJson!"[]"}, "messageTypes": ${allMessageTypesJson} };
+    var initialModelData = { notifications: ${notificationsJson!"[]"}, messageTypes: ${allMessageTypesJson} };
     ko.applyBindings(new NotificationsViewModel(initialModelData), document.getElementById("notifications"));
 });
 </script>
