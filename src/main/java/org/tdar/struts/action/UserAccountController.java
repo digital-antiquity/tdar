@@ -14,16 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -51,26 +50,33 @@ import com.opensymphony.xwork2.Preparable;
 // @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
 @CacheControl
-public class UserAccountController extends AbstractRegistrationController implements Preparable {
+public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 1147098995283237748L;
 
     public static final long ONE_HOUR_IN_MS = 3_600_000;
 
-    private Long personId;
     private String url;
     private String passwordResetURL;
 
     @Autowired
     private transient RecaptchaService reCaptchaService;
+    private UserRegistration registration = new UserRegistration(reCaptchaService); 
 
     @Autowired
     private EntityService entityService;
-
-    private String reCaptchaText;
-
     private String reminderEmail;
+    private AntiSpamHelper h;
 
+    public boolean isUsernameRegistered(String username) {
+        getLogger().debug("testing username:", username);
+        if (StringUtils.isBlank(username)) {
+            addActionError(getText("userAccountController.error_missing_username"));
+            return true;
+        }
+        TdarUser person = entityService.findByUsername(username);
+        return ((person != null) && person.isRegistered());
+    }
 
     // interceptorRefs = @InterceptorRef("basicStack"),
     @Action(value = "new",
@@ -142,52 +148,36 @@ public class UserAccountController extends AbstractRegistrationController implem
     @WriteableSession
     @DoNotObfuscate(reason = "getPerson() may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
-        if ((getPerson() == null) || !isPostRequest()) {
+        if (registration == null || registration.getPerson() == null || !isPostRequest()) {
             return ADD;
         }
-
-        person.setContributorReason(contributorReason);
-        person.setAffiliation(getAffilliation());
-        try {
-            AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(getPerson(), getPassword(), getInstitutionName(),
-                    getServletRequest(), getServletResponse(), getSessionData(), isRequestingContributorAccess());
-            if (result.getType().isValid()) {
-                setPerson(result.getPerson());
-                addActionMessage(getText("userAccountController.successful_registration_message"));
-                if (StringUtils.isNotBlank(url)) {
-                    return REDIRECT;
-                }
-                return SUCCESS;
-            }
-
-            // pushing error lower for unsuccessful add to CROWD, there could be
-            // mulitple reasons for this failure including the fact that the
-            // user is already in CROWD
-            getLogger().error("Unable to authenticate with the auth service.");
-            addActionError(result.toString());
-            return ERROR;
-        } catch (Throwable t) {
-            addActionErrorWithException(getText("userAccountController.could_not_create_account"), t);
+        AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
+                registration, getServletRequest(), getServletResponse(), getSessionData(), true);
+        if (result.getType().isValid()) {
+            registration.setPerson(result.getPerson());
+            addActionMessage(getText("userAccountController.successful_registration_message"));
+            return TdarActionSupport.SUCCESS;
+        } else {
+            return TdarActionSupport.INPUT;
         }
-        return ERROR;
     }
 
-    public void setPersonId(Long personId) {
-        this.personId = personId;
-    }
+//    public void setPersonId(Long personId) {
+//        this.personId = personId;
+//    }
 
     @Override
     public void prepare() {
-        if (Persistable.Base.isNullOrTransient(personId)) {
-            getLogger().debug("prepare: creating new person");
-            setPerson(new TdarUser());
-        } else {
-            getLogger().debug("prepare: loading new person with person id: " + personId);
-            setPerson(getGenericService().find(TdarUser.class, personId));
-            if (getPerson() == null) {
-                getLogger().error("Couldn't load person with id: " + personId);
-            }
-        }
+//        if (Persistable.Base.isNullOrTransient(personId)) {
+//            getLogger().debug("prepare: creating new person");
+//            setPerson(new TdarUser());
+//        } else {
+//            getLogger().debug("prepare: loading new person with person id: " + personId);
+//            setPerson(getGenericService().find(TdarUser.class, personId));
+//            if (getPerson() == null) {
+//                getLogger().error("Couldn't load person with id: " + personId);
+//            }
+//        }
     }
 
     public String getPasswordResetURL()
@@ -200,18 +190,10 @@ public class UserAccountController extends AbstractRegistrationController implem
         this.passwordResetURL = url;
     }
 
-    public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPerson())
-                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    }
-
-    public String getReCaptchaText() {
-        return reCaptchaText;
-    }
-
-    public void setReCaptchaText(String reCaptchaText) {
-        this.reCaptchaText = reCaptchaText;
-    }
+//    public boolean isEditable() {
+//        return getAuthenticatedUser().equals(getPerson())
+//                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+//    }
 
     public String getTosUrl() {
         return getTdarConfiguration().getTosUrl();
@@ -240,6 +222,26 @@ public class UserAccountController extends AbstractRegistrationController implem
 
     public void setReminderEmail(String reminderEmail) {
         this.reminderEmail = reminderEmail;
+    }
+
+    public UserRegistration getRegistration() {
+        return registration;
+    }
+
+    public UserRegistration getReg() {
+        return registration;
+    }
+
+    public void setRegistration(UserRegistration registration) {
+        this.registration = registration;
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 
 

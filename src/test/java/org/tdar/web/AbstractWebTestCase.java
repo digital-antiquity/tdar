@@ -1307,20 +1307,20 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
-        personmap.put("person.firstName", prefix + "firstName");
-        personmap.put("person.lastName", prefix + "lastName");
-        personmap.put("person.email", prefix + "aaaaa@bbbbb.com");
-        personmap.put("confirmEmail", prefix + "aaaaa@bbbbb.com");
-        personmap.put("person.username", prefix + "aaaaa@bbbbb.com");
-        personmap.put("password", "secret");
-        personmap.put("confirmPassword", "secret");
-        personmap.put("institutionName", "institution");
-        personmap.put("person.phone", "1234567890");
-        personmap.put("contributorReason", "there is a reason");
+        personmap.put("registration.person.firstName", prefix + "firstName");
+        personmap.put("registration.person.lastName", prefix + "lastName");
+        personmap.put("registration.person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.password", "secret");
+        personmap.put("registration.confirmPassword", "secret");
+        personmap.put("registration.institutionName", "institution");
+        personmap.put("registration.person.phone", "1234567890");
+        personmap.put("registration.contributorReason", "there is a reason");
         // personmap.put("contributor", "true");
-        personmap.put("affilliation", UserAffiliation.GRADUATE_STUDENT.name());
+        personmap.put("registration.affilliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
-        personmap.put("requestingContributorAccess", "true");
+        personmap.put("registration.requestingContributorAccess", "true");
     }
 
     @Override
@@ -1374,6 +1374,28 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @Override
     public String toString() {
         return getPageText();
+    }
+
+    public void selectAnyAccount() {
+        try {
+            HtmlElement input = getInput("id");
+            if (input instanceof HtmlSelect) {
+                HtmlOption opt = null;
+                for (HtmlOption option : ((HtmlSelect) input).getOptions()) {
+                    String valueAttribute = option.getValueAttribute();
+                    if (StringUtils.isNotBlank(valueAttribute) && Long.parseLong(valueAttribute.trim()) > -1) {
+                        logger.debug("accountId: " + valueAttribute );
+                        opt = option;
+                        break;
+                    }
+                }
+                if (opt != null) {
+                    setInput("id", opt.getValueAttribute());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("{}",e);
+        }
     }
 
 }

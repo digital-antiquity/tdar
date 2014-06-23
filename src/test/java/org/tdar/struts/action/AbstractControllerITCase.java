@@ -378,8 +378,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
-        controller.setRequestingContributorAccess(true);
-        controller.setContributorReason(REASON);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setContributorReason(REASON);
         p.setRpaNumber("214");
 
         return setupValidUserInController(controller, p);
@@ -392,12 +392,12 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public String setupValidUserInController(UserAccountController controller, TdarUser p, String password) {
         // cleanup crowd if we need to...
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
-        controller.setRequestingContributorAccess(true);
-        controller.setInstitutionName(TESTING_AUTH_INSTIUTION);
-        controller.setPassword(password);
-        controller.setConfirmPassword(password);
-        controller.setConfirmEmail(p.getEmail());
-        controller.setPerson(p);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setInstitutionName(TESTING_AUTH_INSTIUTION);
+        controller.getRegistration().setPassword(password);
+        controller.getRegistration().setConfirmPassword(password);
+        controller.getRegistration().setConfirmEmail(p.getEmail());
+        controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();

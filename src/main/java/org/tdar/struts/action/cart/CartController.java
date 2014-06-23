@@ -142,7 +142,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             return SUCCESS_COMPLETE;
         }
         setAccount(cartService.getAccountForInvoice(invoice));
-        setAccountId(getAccount().getId());
+        if (getAccount() != null) {
+            setAccountId(getAccount().getId());
+        }
         switch (paymentMethod) {
             case CHECK:
                 break;

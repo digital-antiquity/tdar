@@ -168,11 +168,11 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
 
         // create account, making sure the controller knows we're legit.
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
-        controller.setRequestingContributorAccess(true);
-        controller.setPassword(password);
-        controller.setConfirmPassword(password);
-        controller.setConfirmEmail(person.getEmail());
-        controller.setPerson(person);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setPassword(password);
+        controller.getRegistration().setConfirmPassword(password);
+        controller.getRegistration().setConfirmEmail(person.getEmail());
+        controller.getRegistration().setPerson(person);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();

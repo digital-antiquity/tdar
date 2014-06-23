@@ -205,27 +205,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
 
-    private void selectAnyAccount() {
-        try {
-            HtmlElement input = getInput("id");
-            if (input instanceof HtmlSelect) {
-                HtmlOption opt = null;
-                for (HtmlOption option : ((HtmlSelect) input).getOptions()) {
-                    String valueAttribute = option.getValueAttribute();
-                    if (StringUtils.isNotBlank(valueAttribute) && Long.parseLong(valueAttribute.trim()) > -1) {
-                        logger.debug("accountId: " + valueAttribute );
-                        opt = option;
-                        break;
-                    }
-                }
-                if (opt != null) {
-                    setInput("id", opt.getValueAttribute());
-                }
-            }
-        } catch (Exception e) {
-            logger.error("{}",e);
-        }
-    }
 
     private void setExtraItem(String name, String val) {
         for (int i = 0; i < 100; i++) {

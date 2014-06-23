@@ -77,7 +77,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(p.getEmail());
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.setPerson(p);
+        controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
@@ -114,7 +114,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setFirstName("Allen");
         p.setLastName("lee");
         p.setEmail("allen.lee@asu.edu");
-        controller.setPerson(p);
+        controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
@@ -136,8 +136,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         // cleanup crowd if we need to...
         authService.getAuthenticationProvider().deleteUser(p);
         genericService.synchronize();
-        controller.setPassword("password");
-        controller.setPerson(p);
+        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         String execute = controller.create();
@@ -185,8 +185,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         authService.getAuthenticationProvider().deleteUser(p);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        controller.setPassword("password");
-        controller.setPerson(p);
+        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         String execute = controller.create();
@@ -208,7 +208,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
-        TdarUser p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());
@@ -281,7 +281,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         }
         evictCache();
         String execute = setupValidUserInController(controller, email);
-        final TdarUser p = controller.getPerson();
+        final TdarUser p = controller.getRegistration().getPerson();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
         assertEquals(p, token.getPerson());
         assertEquals("expecting result to be 'success'", "success", execute);
@@ -360,7 +360,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
-        Person p = controller.getPerson();
+        Person p = controller.getRegistration().getPerson();
 
         p.setEmail("test@tdar.org");
         assertTrue(p.getId().equals(-1L));
@@ -379,9 +379,9 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
-        TdarUser p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
-        controller.setPerson(p);
+        controller.getRegistration().setPerson(p);
         controller.validate();
         assertTrue("expecting password", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
     }
@@ -393,10 +393,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        TdarUser p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
-        controller.setPassword("password");
+        controller.getRegistration().setPassword("password");
         controller.validate();
         assertTrue("expecting confirm email", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
     }
@@ -408,10 +408,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        Person p = controller.getPerson();
+        Person p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
-        controller.setConfirmEmail(TESTING_EMAIL);
-        controller.setPassword("password");
+        controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
+        controller.getRegistration().setPassword("password");
         controller.validate();
         assertTrue("expecting confirm password", controller.getActionErrors()
                 .contains(MessageHelper.getMessage("userAccountController.error_confirm_password")));
@@ -424,11 +424,11 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        Person p = controller.getPerson();
+        Person p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
-        controller.setConfirmEmail(TESTING_EMAIL);
-        controller.setPassword("password");
-        controller.setConfirmPassword("password_");
+        controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
+        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setConfirmPassword("password_");
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
@@ -441,15 +441,15 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        TdarUser p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
         p.setFirstName("First");
         p.setLastName("last");
         controller.getH().setTimeCheck(System.currentTimeMillis() - 5000);
-        controller.setConfirmEmail(TESTING_EMAIL.toUpperCase());
-        controller.setPassword("password");
-        controller.setConfirmPassword("password_");
+        controller.getRegistration().setConfirmEmail(TESTING_EMAIL.toUpperCase());
+        controller.getRegistration().setPassword("password");
+        controller.getRegistration().setConfirmPassword("password_");
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
@@ -477,8 +477,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setLastName("User");
         p.setPhone("212 000 0000");
         
-        controller.setRequestingContributorAccess(true);
-        controller.setContributorReason(REASON);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setContributorReason(REASON);
         p.setRpaNumber("234");
 
         // create account, making sure the controller knows we're legit.

@@ -31,7 +31,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
-        TdarUser p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());

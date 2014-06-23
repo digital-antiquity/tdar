@@ -25,13 +25,13 @@ public abstract class AbstractRegistrationController extends AuthenticationAware
 
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
 
-    protected TdarUser person;
+    private TdarUser person;
     private String password;
     private String confirmPassword;
     private String institutionName;
     @Autowired
     private transient EntityService entityService;
-    protected String contributorReason;
+    private String contributorReason;
     private String confirmEmail;
     private boolean requestingContributorAccess;
     private UserAffiliation affilliation;

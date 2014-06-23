@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -116,6 +114,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
+            selectAnyAccount();
             // setInput("invoice.paymentMethod", "CREDIT_CARD");
             accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         }
@@ -233,6 +232,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("invoice.numberOfMb", numberOfMb);
             setInput("invoice.numberOfFiles", numberOfFiles);
             submitForm();
+            selectAnyAccount();
             // setInput("invoice.paymentMethod", "CREDIT_CARD");
             // accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
             // we should be at the 'payment processing' launchpad page now
