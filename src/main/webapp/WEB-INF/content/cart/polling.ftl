@@ -29,7 +29,12 @@
         <img alt="nelnet exmaple" src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image"/>
     </div>
 </div>
-
+<form>
+        <@s.hidden name="invoiceId" value="${invoice.id?c}" />
+        <#if accountId?has_content>    
+        <@s.hidden name="accountId" value="${accountId?c}" />
+        </#if>    
+</form>
 <div class="" id="polling-status">
 
 </div>

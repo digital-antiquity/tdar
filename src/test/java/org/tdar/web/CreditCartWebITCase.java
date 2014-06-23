@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlOption;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
@@ -58,6 +61,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("50-500:100:$31:$3,100");
         assertTextPresent("total:$3,100");
         loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("310000", TransactionStatus.TRANSACTION_SUCCESSFUL);
 
     }
@@ -80,6 +84,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("100 mb:1:$50:$50");
         assertTextPresent("total:$50");
         loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
@@ -94,6 +99,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,350");
         loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
@@ -104,6 +110,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "10");
         submitForm();
         loginAndSpecifyCC();
+        selectAnyAccount();
         String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountId = addInvoiceToNewAccount(invoiceId, null, null);
         assertTrue(accountId != "-1");
@@ -116,14 +123,16 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "10");
         submitForm();
         loginAndSpecifyCC();
-        String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        selectAnyAccount();
+        String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         assertTrue(accountId != "-1");
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
+        setInput("id", accountId);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL, false);
-//        assertEquals(account, accountId);
+        gotoPage("/billing/"+ accountId);
         assertTextPresent("10,020");
         assertTextPresent("2,000");
         assertTextPresent("10");
@@ -149,6 +158,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
+        setInput("id", accountId);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String accountName2 = "test account 2";
         String account = addInvoiceToNewAccount(invoiceId2, null, accountName2);
@@ -171,10 +181,10 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setExtraItem("error", "1");
 
         submitForm();
-
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.21");
+        selectAnyAccount();
         testAccountPollingResponse("140521", TransactionStatus.TRANSACTION_FAILED);
     }
 
@@ -191,8 +201,30 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.31");
-//        loginAndSpecifyCC();
+        selectAnyAccount();
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
+    }
+
+    private void selectAnyAccount() {
+        try {
+            HtmlElement input = getInput("id");
+            if (input instanceof HtmlSelect) {
+                HtmlOption opt = null;
+                for (HtmlOption option : ((HtmlSelect) input).getOptions()) {
+                    String valueAttribute = option.getValueAttribute();
+                    if (StringUtils.isNotBlank(valueAttribute) && Long.parseLong(valueAttribute.trim()) > -1) {
+                        logger.debug("accountId: " + valueAttribute );
+                        opt = option;
+                        break;
+                    }
+                }
+                if (opt != null) {
+                    setInput("id", opt.getValueAttribute());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("{}",e);
+        }
     }
 
     private void setExtraItem(String name, String val) {

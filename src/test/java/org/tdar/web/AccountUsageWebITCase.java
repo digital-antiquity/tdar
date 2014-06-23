@@ -66,7 +66,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         assertTrue(accountId != "-1");
         logger.info(getCurrentUrlPath());
-
+        gotoPage("/billing/"+ accountId);
         setInput("numberOfFiles", "1");
         submitForm("Create Voucher");
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
@@ -138,11 +138,9 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
         submitForm();
-        try {
-            getInput("invoice.paymentMethod");
-            setInput("invoice.paymentMethod", "CREDIT_CARD");
-        } catch (Exception e) {
-        }
+        setInputIfExists("invoice.paymentMethod", "CREDIT_CARD");
+        setInputIfExists("account.id", "-1");
+        setInputIfExists("account.name", "generated account (2)");
         logger.debug(getCurrentUrlPath());
         logger.debug(getPageText());
         String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
@@ -159,7 +157,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("document.description", "Abstract");
         setInput("document.date", "2012");
         setInput("projectId", TestConstants.NO_ASSOCIATED_PROJECT);
-        setInput("accountId", accountId);
+        setInputIfExists("accountId", Integer.toString(accountId));
         setInput("status", Status.DRAFT);
         submitForm();
         String url = getCurrentUrlPath();
@@ -170,7 +168,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         clickLinkWithText("edit");
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);
-        setInput("accountId", accountId);
+        setInputIfExists("accountId", Integer.toString(accountId));
         submitForm();
 
         // make sure we're on the view page

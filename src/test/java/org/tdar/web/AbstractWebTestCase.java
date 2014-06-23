@@ -1116,12 +1116,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("document.title", title);
         setInput("document.description", title + " (ABSTRACT)");
         if (accountId != null) {
-            try {
-                getInput("accountId");
-                setInput("accountId", accountId);
-            } catch (Exception e) {
-                logger.debug("e:{}", e.getMessage());
-            }
+            setInputIfExists("accountId", accountId.toString());
         }
         setInput("document.date", "1934");
         setInput("ticketId", ticketId);
@@ -1140,6 +1135,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextPresentInPage(title + " (ABSTRACT)");
         assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
     }
+    
+    public void setInputIfExists(String name, String value) {
+        try {
+            getInput(name);
+            setInput(name, value);
+        } catch (Exception e) {
+        }
+    }
+
+
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         return testAccountPollingResponse(total, expectedResponse, false);
@@ -1149,12 +1154,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // assertCurrentUrlContains("/simple");
         // setInput("invoice.paymentMethod", "CREDIT_CARD");
 
-        String invoiceid = getInput("invoiceId").getAttribute("value");
-        String accountid = getInput("accountId").getAttribute("value");
+        String invoiceid = getValue("invoiceId");
+        String accountid = getValue("accountId");
         logger.debug("INVOICE ID: {} ACCOUNT ID: {}", invoiceid, accountid);
         logger.info("TOTAL::: " + total);
         if (!total.equals("0")) {
             submitForm("submit");
+            invoiceid = getValue("invoiceId");
+            accountid = getValue("accountId");
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("click here");
             URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
@@ -1167,11 +1174,19 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             clickElementWithId("process-payment_0");
             response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(expectedResponse.name()));
+            gotoPage("/dashboard");
         }
         if (returnAccount) {
             return accountid;
         }
         return invoiceid;
+    }
+
+    private String getValue(String key) {
+        try {
+            return getInput(key).getAttribute("value");    
+        } catch (Exception e) {}
+        return null;
     }
 
     protected String getAccountPollingRequest(URL polingUrl) {

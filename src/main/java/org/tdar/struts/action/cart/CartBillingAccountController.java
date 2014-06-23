@@ -3,9 +3,7 @@ package org.tdar.struts.action.cart;
 import static org.tdar.core.bean.resource.Status.ACTIVE;
 import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -27,7 +26,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @ParentPackage("secured")
 @Results({
         @Result(name = "redirect-payment", type = "redirect", location = "/cart/process-payment-request"),
-        @Result(name = "input", location = "show-billing-accounts.ftl")
+        @Result(name = "input", location = "review.ftl")
 })
 public class CartBillingAccountController extends AbstractCartController {
 
@@ -48,12 +47,13 @@ public class CartBillingAccountController extends AbstractCartController {
     @Override
     public void prepare() {
         super.prepare();
-        if (getInvoice().getOwner() == null) {
-            setOwner(getAuthenticatedUser());
-        }
         selectedAccount = getGenericService().find(Account.class, id);
-        getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
-        getLogger().debug("owner:{}\t accounts:{}", getOwner(), getAccount());
+        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+        getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccount());
+        if (CollectionUtils.isNotEmpty(getAccounts())) {
+            getAccounts().add(new Account("Add an account"));
+        }
+
     }
 
     @Override
@@ -82,20 +82,6 @@ public class CartBillingAccountController extends AbstractCartController {
         }
     }
 
-//    /**
-//     * A form which allows the user to assign the pending invoice to an existing billing account
-//     * or to specify a new billing account. If the user has no existing billing account, skip
-//     * this step (assign to implicitly created account) and redirect to the payment page
-//     * 
-//     * @return
-//     */
-//    // FIXME: httpget actions should not change state. this implicit account creation needs to happen in the authentication postback (registration or login).
-//    @Action("show-billing-accounts")
-//    // @GetOnly
-//    public String showBillingAccounts() {
-//        return SUCCESS;
-//    }
-
     /**
      * Assign invoice to (pre-existing or new) billing account.
      * 
@@ -111,6 +97,10 @@ public class CartBillingAccountController extends AbstractCartController {
             acct = selectedAccount;
         }
         acct.getInvoices().add(getInvoice());
+        if (Persistable.Base.isTransient(acct)) {
+            acct.markUpdated(getInvoice().getOwner());
+            acct.setStatus(Status.ACTIVE);
+        }
         getGenericService().saveOrUpdate(acct);
         return SUCCESS;
     }

@@ -21,7 +21,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user");
         testLogin(personmap, true, false, false);
-        assertTextNotPresent("Create a new project");
+        assertTextNotPresent("Start a new Project");
         gotoPage("/logout");
     }
 

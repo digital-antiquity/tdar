@@ -1,5 +1,8 @@
 package org.tdar.core.service;
 
+import static org.tdar.core.bean.resource.Status.ACTIVE;
+import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,12 +60,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param statuses
      * @return
      */
-    public Set<Account> listAvailableAccountsForUser(Person user, Status... statuses) {
+    public Set<Account> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptySet();
         }
-        Set<Account> results = getDao().findAccountsForUser(user, statuses);
-        return results;
+        return getDao().findAccountsForUser(user, statuses);
     }
 
     /**
@@ -205,13 +207,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Account account = null;
         if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
             account = accounts.iterator().next();
-        } else {
+        } else if (CollectionUtils.isEmpty(accounts)) {
             account = new Account();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
             genericDao.saveOrUpdate(account);
         }
-        if (invoice != null) {
+        if (invoice != null && account != null) {
             account.getInvoices().add(invoice);
             genericDao.saveOrUpdate(account);
         }
@@ -666,5 +668,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         updateQuota(account, account.getResources());
         getLogger().debug("<<<<<< F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
 
+    }
+
+    public Collection<? extends Account> listAvailableAccountsForCartAccountSelection(TdarUser owner, Status... status) {
+        Set<Account> accounts = listAvailableAccountsForUser(owner, status);
+        return accounts;
     }
 }

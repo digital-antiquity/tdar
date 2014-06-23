@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
@@ -32,6 +33,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.resource.InformationResourceFileService;
@@ -73,6 +75,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient GenericService genericService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -123,6 +127,15 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
             }
+        }
+        
+        Long invoiceId = getSessionData().getInvoiceId();
+        if (invoiceId != null) {
+            Invoice invoice = genericService.find(Invoice.class, invoiceId);
+            if (!invoice.isModifiable()) {
+                getSessionData().setInvoiceId(null);
+            }
+            
         }
         prepareProjectStuff();
         setupBookmarks();

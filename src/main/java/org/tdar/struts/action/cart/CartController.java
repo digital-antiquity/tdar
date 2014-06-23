@@ -43,6 +43,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @ParentPackage("secured")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
     public static final String SUCCESS_COMPLETE = "success-complete";
     public static final String PROCESS_PAYMENT_REQUEST = "process-payment-request";
     public static final String SIMPLE = "simple";
@@ -140,7 +141,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (invoice.getTransactionStatus() == TransactionStatus.TRANSACTION_SUCCESSFUL) {
             return SUCCESS_COMPLETE;
         }
-
+        setAccount(cartService.getAccountForInvoice(invoice));
+        setAccountId(getAccount().getId());
         switch (paymentMethod) {
             case CHECK:
                 break;
@@ -170,7 +172,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     // fixme: move to CartApiController
     @SkipValidation
     @PostOnly
-    @Action(value = "process-external-payment-response",
+    @Action(value = PROCESS_EXTERNAL_PAYMENT_RESPONSE,
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = INVOICE, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })

@@ -160,6 +160,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * invoice:cc-result.ftl (fixme: should be streamResult)
      */
 
+    private static final String REVIEW = "review";
+
     private static final long serialVersionUID = -9156927670405819626L;
 
     public static final String SIMPLE = "simple";
@@ -210,7 +212,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "new.ftl"),
-                    @Result(name = SUCCESS, type = REDIRECT, location = "review")
+                    @Result(name = SUCCESS, type = REDIRECT, location = REVIEW)
             // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
@@ -241,7 +243,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * 
      * @return
      */
-    @Action("review")
+    @Action(REVIEW)
     // @GetOnly
     @WriteableSession
     public String showInvoice() {
@@ -254,12 +256,16 @@ public class UnauthenticatedCartController extends AbstractCartController {
             if (getInvoice().getOwner() == null) {
                 getInvoice().setOwner(getAuthenticatedUser());
             }
-            getAccounts().addAll(accountService.listAvailableAccountsForUser(getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
-            if (CollectionUtils.isNotEmpty(getAccounts())) {
-            getAccounts().add(new Account("Add an account"));
-            }
+            getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+            getLogger().debug("accounts; {}", getAccounts());
             Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());
-            setAccountId(account.getId());
+            if (CollectionUtils.isNotEmpty(getAccounts())) {
+                getAccounts().add(new Account("Add an account"));
+            }
+
+            if (account != null) {
+                setAccountId(account.getId());
+            }
         }
         return SUCCESS;
     }
@@ -341,9 +347,9 @@ public class UnauthenticatedCartController extends AbstractCartController {
     void setupActivities() {
         // we only care about the production+active activities
         for (BillingActivity activity : cartService.getActiveBillingActivities()) {
-//            if (activity.isProduction()) {
-                getActivities().add(activity);
-//            }
+            // if (activity.isProduction()) {
+            getActivities().add(activity);
+            // }
         }
     }
 

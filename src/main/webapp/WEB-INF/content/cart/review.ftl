@@ -16,28 +16,44 @@
 <h1>Invoice <span class="small">{${invoice.transactionStatus.label}}</span></h1>
         <div class="row">
             <div class="span6">
+            <#if authenticatedUser?has_content>
+            <p>prepared for: ${authenticatedUser.properName}</p>
+            </#if>
                 <@invoicecommon.proxyNotice />
                 <@invoicecommon.printInvoice />
                 <p><b>Payment by:</b><@s.text name="${invoice.paymentMethod.localeKey}"/></p>
             </div>
             <div class="span6">
     <#if accounts?has_content>
-        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-billing-account-choice'>
+        <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-billing-account-choice'>
         <@s.token name='struts.csrf.token' />
-        <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="true"
+        <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="false" id="select-existing-account"
         list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
-
-FIXME:: allow user to select value that shows this section
-        <h3>Or... create a new one</h3>
-        <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
-        <@s.textfield name="name" cssClass="input-xlarge" label="Account Name"/>
-        <@s.textarea name="description" cssClass="input-xlarge" label="Account Description"/>
-        <p>Note: you can modify this account later to change the name, description, or specify who can charge it</p>
+        <script>
+            $(document).ready(function () {
+                var $slct = $("#select-existing-account");
+                $slct.change(function() {
+                var $addnew = $(".add-new");
+                    if ($slct.val() == -1) {
+                        $addnew.removeClass("hidden");
+                    } else {
+                        $addnew.addClass("hidden");
+                    }
+                });
+            });
         
-        <@s.submit name="submit" value="submit" />
+        </script>  
+        <div class="add-new hidden">
+            <h3>Create a new account</h3>
+            <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
+            <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
+            <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
+            <p>Note: you can modify this account later to change the name, description, or specify who can charge it</p>
+        </div>        
+        <@s.submit name="submit" value="submit" cssClass="button btn btn-primary"/>
         </@s.form>
     </#if>
-            
+ 
             </div>
         </div>
 
@@ -79,9 +95,11 @@ FIXME:: allow user to select value that shows this section
 
     <#if !accounts?has_content>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
-        <@s.hidden name="invoiceId" value="${invoice.id?c}" />    
-        <@s.hidden name="accountId" value="${accountId?c}" />    
-        <@s.submit name="submit" value="submit" />
+        <@s.hidden name="invoiceId" value="${invoice.id?c}" />
+        <#if accountId?has_content>    
+        <@s.hidden name="accountId" value="${accountId?c}" />
+        </#if>    
+        <@s.submit name="submit" value="submit" cssClass="button btn btn-primary"/>
         </@s.form>
     </#if>
 </#if>
