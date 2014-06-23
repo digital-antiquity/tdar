@@ -18,6 +18,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Provides targeted and system broadcast notifications for users.
@@ -49,10 +50,11 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     private UserNotificationType messageType;
 
     @Column(name = "message_key", nullable = false)
-    @JsonProperty
     private String messageKey;
 
-    private transient String message;
+    @JsonProperty
+    @Transient
+    private String message;
 
     @Override
     public int compareTo(UserNotification other) {
@@ -106,13 +108,16 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
         this.tdarUser = tdarUser;
     }
 
-    @Transient
     public String getMessage() {
         return message;
     }
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public void setMessage(TextProvider textProvider) {
+        setMessage(textProvider.getText(getMessageKey()));
     }
 
 }

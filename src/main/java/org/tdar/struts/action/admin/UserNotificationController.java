@@ -1,9 +1,7 @@
 package org.tdar.struts.action.admin;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +71,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             @Action("/admin/notifications")
     })
     public String execute() {
-        initializeAllNotifications();
+        allNotifications = userNotificationService.findAll(this);
         notificationsJson = xmlService.convertFilteredJsonForStream(allNotifications, null, null);
         allMessageTypesJson = xmlService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
         getLogger().debug("notifications: {}, allMessageTypes: {}", notificationsJson, allMessageTypesJson);
@@ -86,13 +84,16 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             })
     @SkipValidation
     public String lookup() {
-        getLogger().debug("looking up " + notification.getMessageKey());
+        String messageKey = notification.getMessageKey();
         Map<String, Object> jsonMap = new HashMap<>();
-        jsonMap.put("message", getText(notification.getMessageKey()));
-        this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(jsonMap, null, null).getBytes());
+        jsonMap.put("message", getText(messageKey));
+        String json = xmlService.convertFilteredJsonForStream(jsonMap, null, null);
+        this.resultJson = new ByteArrayInputStream(json.getBytes());
+        getLogger().debug("resultJson: {}", json);
         return SUCCESS;
 
     }
+
     // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
     @Action(value = "update",
             // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
@@ -103,7 +104,8 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     @PostOnly
     public String update() {
         getLogger().debug("updating notification {} with id {}", notification, notification.getId());
-        notification = getGenericService().merge(notification);
+        getGenericService().saveOrUpdate(notification);
+        notification.setMessage(this);
         this.resultJson = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(notification, null, null).getBytes());
         return SUCCESS;
     }
@@ -134,11 +136,9 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             token = TokenHelper.setToken("token");
             context.put("token", token);
         }
-        try {
-            this.resultJson = new ByteArrayInputStream(xmlService.convertToJson(token).getBytes());
-        } catch (IOException exception) {
-            getLogger().debug("couldn't convert token {} to json", token);
-        }
+        String json = xmlService.convertFilteredJsonForStream(context, null, null);
+        this.resultJson = new ByteArrayInputStream(json.getBytes());
+        getLogger().debug("json: {}", json);
         return SUCCESS;
 
     }
@@ -147,14 +147,6 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     @PostOnly
     public String add() {
         return SUCCESS;
-    }
-    
-    private void initializeAllNotifications() {
-        allNotifications = userNotificationService.findAll(); 
-        Collections.sort(allNotifications);
-        for (UserNotification notification: allNotifications) {
-            notification.setMessage(getText(notification.getMessageKey()));
-        }
     }
 
     public List<UserNotification> getAllNotifications() {

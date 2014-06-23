@@ -1,6 +1,6 @@
 package org.tdar.core.service;
 
-
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +16,8 @@ import org.tdar.core.bean.util.UserNotificationType;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
 
+import com.opensymphony.xwork2.TextProvider;
+
 /**
  * Handles requests to create or dismiss user notifications.
  */
@@ -26,24 +28,40 @@ public class UserNotificationService {
 
     @Autowired
     private GenericDao genericDao;
-    
+
     @Transactional(readOnly = true)
     public UserNotification find(Long id) {
         return genericDao.find(UserNotification.class, id);
     }
-    
+
     @Transactional(readOnly = true)
     public List<UserNotification> findAll() {
         return genericDao.findAll(UserNotification.class);
     }
 
+    /**
+     * Returns all UserNotifications with initialized message fields. Messages are looked up their messageKey via the given TextProvider.
+     * 
+     * @param provider
+     */
+    @Transactional(readOnly = true)
+    public List<UserNotification> findAll(TextProvider provider) {
+        List<UserNotification> allNotifications = findAll();
+        Collections.sort(allNotifications);
+        for (UserNotification notification : allNotifications) {
+            notification.setMessage(provider);
+        }
+        return allNotifications;
+    }
+
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> getCurrentNotifications(final TdarUser user) {
-        List<UserNotification> notifications = genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).list();
+        List<UserNotification> notifications = genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId())
+                .list();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
         if (dismissedNotificationsDate != null) {
-            for (Iterator<UserNotification> iter = notifications.iterator(); iter.hasNext(); ) {
+            for (Iterator<UserNotification> iter = notifications.iterator(); iter.hasNext();) {
                 if (dismissedNotificationsDate.after(iter.next().getDateCreated())) {
                     iter.remove();
                 }
@@ -81,7 +99,7 @@ public class UserNotificationService {
         return notification;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void dismiss(TdarUser user, UserNotification notification) {
         logger.debug("user {} dismissing {}", user, notification);
         switch (notification.getMessageType()) {

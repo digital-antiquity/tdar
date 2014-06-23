@@ -7,29 +7,31 @@
 <@admin.header/>
 <h2>User Notifications</h2>
 <div id='notifications'>
-    <table class="table table-striped table-bordered table-condensed">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
                 <th>User</th>
                 <th>Date Created</th>
                 <th>Expiration Date</th>
                 <th>Type</th>
+                <th>Message Key</th>
                 <th>Message</th>
-                <th>Action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody data-bind='foreach: notifications'>
         <tr>
             <td data-bind='text: tdarUser'></td>
-            <td data-bind='text: creationDate'></td>
+            <td data-bind='text: shortFormatDateCreated'></td>
             <td data-bind='text: shortFormatExpirationDate'></td>
             <td data-bind='text: messageType'></td>
             <td data-bind='text: messageKey'></td>
-            <td data-bind='text: message'></td>
+            <td><textarea readonly data-bind='text: message'></textarea></td>
             <td>
-                <input type='hidden' name='id' data-bind='value: id()'>
-                <a class='btn btn-info' data-bind='click: $parent.editNotification.bind($data, false)'><i class='icon-edit'></i>Edit</a>
-                <button data-bind='click: sendDelete' type='submit' class='btn btn-danger'><i class='icon-trash'></i> Delete</button>
+                <div class='btn-group btn-group-vertical'>
+                    <button data-bind='click: $parent.editNotification.bind($data, false)' class='btn btn-info'><i class='icon-edit'></i></a>
+                    <button data-bind='click: sendDelete' class='btn btn-danger'><i class='icon-trash'></i></button>
+                </div>
             </td>
         </tr>
         </tbody>
@@ -101,12 +103,11 @@ function UserNotificationModel(data) {
         self.tdarUser = ko.observable("None");
         self.messageType = ko.observable("SYSTEM_BROADCAST");
         self.messageKey = ko.observable();
+        self.message = ko.observable();
     }
-    self.message = ko.observable("Not found");
     self.lookupMessageKey = function() {
         if (! self.messageKey()) {
-            console.debug("no message key, aborting");
-            self.message();
+            self.message("");
             return;
         }
         // cache ajax lookup?
@@ -118,11 +119,11 @@ function UserNotificationModel(data) {
         .fail(function (response) {
             console.debug("FAILED LOOKUP: ");
             console.debug(response);
-            self.message("Not found");
+            self.message(self.messageKey());
         });
     };
-    self.creationDate = ko.computed(function() {
-        return new Date(self.dateCreated());
+    self.shortFormatDateCreated = ko.computed(function() {
+        return moment(self.dateCreated()).format('L');
     });
     self.shortFormatExpirationDate = ko.computed(function() {
         var d = self.expirationDate();
