@@ -31,7 +31,7 @@
                     $error.hide();
                     $modal.modal('show');
                     $("#messageBody").val('');
-                    $("#email-form").hide();
+                    $("#followup").hide();
                 },
                 error : function(data) {
                     var json = data.responseJSON;
