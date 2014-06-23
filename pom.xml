@@ -12,7 +12,7 @@
         <hibernate.search.version>4.5.1.Final</hibernate.search.version>
         <spring.framework.version>4.0.5.RELEASE</spring.framework.version>
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
-        <postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
+        <postgresql.jdbc.version>9.3-1101-jdbc41</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
@@ -69,8 +69,9 @@
     </dependencyManagement>
     <repositories>
         <repository>
-            <id>local-dev</id>
-            <url>http://dev.tdar.org/repo/</url>
+            <id>virtualcommons.internal</id>
+            <name>ASU Archiva Proxy</name>
+            <url>http://dev.commons.asu.edu/archiva/repository/internal/</url>
         </repository>
         <repository>
             <id>imageJ</id>
@@ -92,6 +93,10 @@
             <id>codehaus</id>
             <name>Codehaus Repository</name>
             <url>http://repository.codehaus.org/</url>
+        </repository>
+        <repository>
+            <id>local-dev</id>
+            <url>http://dev.tdar.org/repo/</url>
         </repository>
         <repository>
             <snapshots>
@@ -182,7 +187,7 @@
         </dependency>
         <!-- postgres jdbc -->
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.jdbc.version}</version>
             <!-- LICENSE: BSD -->
@@ -523,7 +528,7 @@
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>2.14</version>
+            <version>2.15</version>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
                 <exclusion>
@@ -1447,7 +1452,7 @@
                 <dependencies>
                     <!-- specify the dependent jdbc driver here -->
                     <dependency>
-                        <groupId>postgresql</groupId>
+                        <groupId>org.postgresql</groupId>
                         <artifactId>postgresql</artifactId>
                         <version>${postgresql.jdbc.version}</version>
                     </dependency>

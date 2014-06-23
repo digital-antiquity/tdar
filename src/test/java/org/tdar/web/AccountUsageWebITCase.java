@@ -30,8 +30,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user124");
-        testLogin(personmap, true,true, true);
-        assertTextPresent("Create a new project");
+        testRegister(personmap, true);
+        assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
@@ -55,8 +55,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithCoupon() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user1124");
-        testLogin(personmap, true,true, true);
-        assertTextPresent("Create a new project");
+        testRegister(personmap, true);
+        assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
@@ -84,7 +84,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testAccountListWhenEditingAsAdmin() throws Exception {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw123");
-        testLogin(personmap, true,true, true);
+        testRegister(personmap, true);
 
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
@@ -119,8 +119,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234");
-        testLogin(personmap, true,true, true);
-        
+        testRegister(personmap, true);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
         // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);

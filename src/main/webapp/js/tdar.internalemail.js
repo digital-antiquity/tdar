@@ -30,6 +30,8 @@
                     $success.show();
                     $error.hide();
                     $modal.modal('show');
+                    $("#messageBody").val('');
+                    $("#followup").hide();
                 },
                 error : function(data) {
                     var json = data.responseJSON;

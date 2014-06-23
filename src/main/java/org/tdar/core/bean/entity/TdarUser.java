@@ -19,8 +19,6 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -39,19 +37,13 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 @Indexed
 @Table(name = "tdar_user")
 @XmlRootElement(name = "user")
-@Check(constraints="username <> ''")
+@Check(constraints = "username <> ''")
 public class TdarUser extends Person {
 
     private static final long serialVersionUID = 6232922939044373880L;
 
-    public TdarUser() {}
-    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
-
-    public TdarUser(String firstName, String lastName, String email) {
-        super(firstName, lastName, email);
-    }
 
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
@@ -71,7 +63,7 @@ public class TdarUser extends Person {
     private Date lastLogin;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "affilliation", length = FieldLength.FIELD_LENGTH_255)
+    @Column(name = "affiliation", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private UserAffiliation affiliation;
@@ -99,6 +91,17 @@ public class TdarUser extends Person {
     @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
     private Integer contributorAgreementVersion = 0;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "dismissed_notifications_date", nullable = true)
+    private Date dismissedNotificationsDate;
+
+    public TdarUser() {
+    }
+
+    public TdarUser(String firstName, String lastName, String email) {
+        super(firstName, lastName, email);
+    }
+
     public Boolean getContributor() {
         return contributor;
     }
@@ -118,8 +121,7 @@ public class TdarUser extends Person {
 
     public void setContributorReason(String contributorReason) {
         this.contributorReason = contributorReason;
-    }    
-
+    }
 
     public Long getTotalLogins() {
         if (totalLogins == null) {
@@ -137,7 +139,7 @@ public class TdarUser extends Person {
     }
 
     public void setLastLogin(Date lastLogin) {
-        this.penultimateLogin = this.lastLogin;
+        this.penultimateLogin = getLastLogin();
         this.lastLogin = lastLogin;
     }
 
@@ -167,7 +169,6 @@ public class TdarUser extends Person {
         return results;
     }
 
-    
     public String getUsername() {
         return username;
     }
@@ -175,7 +176,7 @@ public class TdarUser extends Person {
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     public boolean isRegistered() {
@@ -196,7 +197,6 @@ public class TdarUser extends Person {
         this.bookmarkedResources = bookmarkedResources;
     }
 
-    
     public Institution getProxyInstitution() {
         return proxyInstitution;
     }
@@ -233,7 +233,20 @@ public class TdarUser extends Person {
         return affiliation;
     }
 
-    public void setAffiliation(UserAffiliation affilliation) {
-        this.affiliation = affilliation;
+    public void setAffiliation(UserAffiliation affiliation) {
+        this.affiliation = affiliation;
     }
+
+    public Date getDismissedNotificationsDate() {
+        return dismissedNotificationsDate;
+    }
+
+    public void updateDismissedNotificationsDate() {
+        setDismissedNotificationsDate(new Date());
+    }
+
+    public void setDismissedNotificationsDate(Date dismissedNotificationsDate) {
+        this.dismissedNotificationsDate = dismissedNotificationsDate;
+    }
+
 }

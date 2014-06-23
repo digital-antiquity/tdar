@@ -59,7 +59,7 @@ public class UserLogin extends UserAuthData {
             errors.add(textProvider.getText("loginController.error_choose_password"));
         } 
         
-        checkForSpammers(textProvider, errors);
+        checkForSpammers(textProvider, errors, true);
         return errors;
     }
 

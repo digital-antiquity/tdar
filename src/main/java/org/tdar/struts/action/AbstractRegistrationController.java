@@ -25,13 +25,13 @@ public abstract class AbstractRegistrationController extends AuthenticationAware
 
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
 
-    private TdarUser person;
+    protected TdarUser person;
     private String password;
     private String confirmPassword;
     private String institutionName;
     @Autowired
     private transient EntityService entityService;
-    private String contributorReason;
+    protected String contributorReason;
     private String confirmEmail;
     private boolean requestingContributorAccess;
     private UserAffiliation affilliation;
@@ -114,7 +114,7 @@ public abstract class AbstractRegistrationController extends AuthenticationAware
 
         try {
             getH().setPerson(getPerson());
-            getH().checkForSpammers();
+            getH().checkForSpammers(false);
         } catch (TdarRecoverableRuntimeException tre) {
             addActionError(tre.getMessage());
             return true;

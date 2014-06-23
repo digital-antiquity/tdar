@@ -314,23 +314,23 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,
-                query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY_OVERALL,
-                query = "select ref.id, ref.title, ref.resourceType, count(ras.id) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by ref having count(ras.id) > :minCount order by count(ras.id) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count > :minCount order by ras.count desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
-                query = "select new org.tdar.struts.data.AggregateViewStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ref.id in (:resourceIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) >= :minCount order by date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ref.id in (:resourceIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FILE_DOWNLOAD_HISTORY,
-                query = "select new org.tdar.struts.data.AggregateDownloadStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM FileDownloadStatistic ras inner join ras.reference as ref where ref.id in (:fileIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) >= :minCount order by date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ref.id in (:fileIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DOWNLOAD_BY,
-                query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc, date_trunc('day', ras.date) desc"
+                query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
@@ -427,11 +427,16 @@
                 //select c.id, c.name from collection c left join collection_parents as p on c.id=p.collection_id left join authorized_user auth on c.id=auth.resource_collection_id where auth.general_permission_int>399 and auth.user_id=8092 or p.parent_id in (select resource_collection_id from authorized_user where authorized_user.general_permission_int>399 and authorized_user.user_id=8092);
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED,
                 query = " SELECT distinct new Resource(res.id, res.title, res.resourceType) " + org.tdar.core.dao.TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX
-                        +
-                        " order by res.title, res.id"),
+                        + " order by res.title, res.id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY,
                 query = "DELETE InformationResourceFileVersion WHERE id = :id"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
+                query = "SELECT n from UserNotification n LEFT JOIN n.tdarUser u "
+                        + "WHERE n.messageType = 'SYSTEM_BROADCAST' OR n.tdarUser.id = :userId "
+                        + "ORDER BY n.dateCreated DESC"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
@@ -443,9 +448,9 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
-        @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
-                query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv")
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
+                query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
 })
 package org.tdar.core.dao;
-
 

@@ -113,7 +113,7 @@ public class UserRegistration extends UserAuthData {
             errors.add(textProvider.getText("userAccountController.error_passwords_dont_match"));
         }
 
-        checkForSpammers(textProvider, errors);
+        checkForSpammers(textProvider, errors, false);
         return errors;
     }
 

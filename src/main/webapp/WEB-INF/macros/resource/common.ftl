@@ -425,7 +425,7 @@ with that datapoint -->
         </#if>
     <div class="barGraph nogrid" id="graph${id}" style="height:${graphHeight?c}px;" data-title="${graphLabel?html}">
        <script>
-            var props = {
+            var props${id} = {
             seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
             xaxis: "${xaxis}",
             yaxis: "${yaxis}",
@@ -435,7 +435,7 @@ with that datapoint -->
             context:"${context?string}"
         };
         $(document).ready(function () {
-            TDAR.charts.barGraph(props, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
+            TDAR.charts.barGraph(props${id}, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
         });
         <#nested />
         

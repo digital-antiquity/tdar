@@ -39,7 +39,7 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFindAllWithCache() {
         for (Class<?> cls : Arrays.asList(InvestigationType.class, MaterialKeyword.class)) {
-            assertEquals(new HashSet(genericService.findAll(cls)), new HashSet(genericService.findAllWithCache(cls)));
+            assertEquals(new HashSet<>(genericService.findAll(cls)), new HashSet<>(genericService.findAllWithCache(cls)));
         }
     }
 
@@ -48,11 +48,12 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     public void testFindAllWithIds() {
         // iota
         List<Long> ids = new ArrayList<Long>();
-        for (long id = 1; id < 21; id++) {
-            ids.add(id);
+        int numberOfIds = 20;
+        for (int id = 0; id < numberOfIds; id++) {
+            ids.add(Long.valueOf(id + 1));
         }
         List<InvestigationType> investigationTypes = genericService.findAll(InvestigationType.class, ids);
-        assertEquals(20, investigationTypes.size());
+        assertEquals(numberOfIds, investigationTypes.size());
         Collections.sort(investigationTypes, new Comparator<InvestigationType>() {
             @Override
             public int compare(InvestigationType a, InvestigationType b) {

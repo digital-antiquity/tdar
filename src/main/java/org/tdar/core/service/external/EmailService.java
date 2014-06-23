@@ -16,6 +16,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.Email.Status;
@@ -161,7 +162,7 @@ public class EmailService {
         if (resource != null) {
             map.put("resource", resource);
         }
-        map.put("messageBody", messageBody);
+        map.put("message", messageBody);
         map.put("type", type);
         email.setMessage(messageBody);
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);

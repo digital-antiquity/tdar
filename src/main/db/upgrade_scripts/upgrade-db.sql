@@ -175,3 +175,18 @@ alter table file_download_day_agg add constraint file_per_day UNIQUE(date_access
 
 insert into file_download_day_agg (information_resource_file_id, count, date_accessed)  select information_resource_file_id, count(id), date_trunc('day', date_accessed) from information_resource_file_download_statistics group by information_resource_file_id, date_trunc('day', date_accessed);
 update file_download_day_agg set year = date_part('year', date_accessed);
+
+
+-- alllee user_notifications for TDAR-3908
+create table user_notification (
+    id  bigserial not null,
+    date_created timestamp not null,
+    expiration_date date,
+    message_key varchar(255) not null,
+    message_type varchar(32) not null,
+    user_id int8 references tdar_user,
+    primary key (id)
+);
+
+alter table tdar_user add column dismissed_notifications_date timestamp;
+alter table tdar_user rename column affilliation to affiliation;

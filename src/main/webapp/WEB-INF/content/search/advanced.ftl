@@ -34,7 +34,6 @@
     <div class="tab-content">
         <div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}">
             <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
-                <@s.token name='struts.csrf.token' />
                 <input type="hidden" name="_tdar.searchType" value="advanced">
 
                 <div class="searchgroup">
@@ -68,7 +67,6 @@
             <div class="glide">
                 <h3>Search For Collections By Name</h3>
                 <@s.form action="collections" method="GET" id='searchForm2'>
-                    <@s.token name='struts.csrf.token' />
                     <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
                 </@s.form>
             </div>
@@ -79,7 +77,6 @@
             <div class="glide">
                 <h3>Search For Institutions By Name</h3>
                 <@s.form action="institutions" method="GET" id='searchForm3'>
-                    <@s.token name='struts.csrf.token' />
                     <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
                 </@s.form>
             </div>
@@ -90,7 +87,6 @@
             <div class="glide">
                 <h3>Search For Person By Name</h3>
                 <@s.form action="people" method="GET" id='searchForm4'>
-                    <@s.token name='struts.csrf.token' />
                     <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
                 </@s.form>
             </div>

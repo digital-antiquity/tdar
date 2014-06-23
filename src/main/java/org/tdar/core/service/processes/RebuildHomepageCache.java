@@ -20,10 +20,10 @@ import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.AggregateViewStatistic;
 
 /**
  * $Id$
@@ -101,7 +101,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
             Set<Long> seen = new HashSet<>();
             for (AggregateViewStatistic avs : aggregateUsageStats) {
-                Long resourceId = avs.getResourceId();
+                Long resourceId = avs.getResource().getId();
                 // handling unique resource ids across the timeperiod
                 if (seen.contains(resourceId)) {
                     continue;

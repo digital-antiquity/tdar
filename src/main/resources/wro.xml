@@ -4,7 +4,7 @@
     <group name='default'>
         <css>/css/tdar-bootstrap.css</css>
         <css>/css/famfamfam.css</css>
-        <css>/includes/ivaynberg-select2-817453b/select2.css</css>
+<!--         <css>/includes/ivaynberg-select2-817453b/select2.css</css> -->
         <css>/includes/blueimp-jquery-file-upload-5.31.6/css/jquery.fileupload-ui.css</css>
         <css>/includes/jquery-treeview/jquery.treeview.css</css>
         <css>/includes/jqplot-1.08/jquery.jqplot.min.css</css>

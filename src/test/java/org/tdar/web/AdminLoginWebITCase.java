@@ -1,5 +1,7 @@
 package org.tdar.web;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.tdar.TestConstants;
 
@@ -60,9 +62,9 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    public void testAdminUsageStats() {
+    public void testAdminUsageStats() throws IOException {
         gotoPage("/admin/internal");
-        clickLinkOnPage("Usage Statistics");
+        clickLinkByHref("/admin/usage/stats");
         assertTextPresentInPage("stats for");
         assertTextPresentInPage("Download Stats");
     }

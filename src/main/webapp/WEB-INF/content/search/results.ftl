@@ -140,7 +140,7 @@
 
     <#if ( lookupSource='RESOURCE' && collectionTotalRecords > 0)>
     <div class="collectionResultsBox">
-        <h4>matching collections</h4>
+        <h4>Related Collections</h4>
         <div class="row">
         <div class="span4">
         <ul>

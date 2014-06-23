@@ -60,7 +60,7 @@ public class DownloadService {
     private final GenericService genericService;
 
     private final Cache<Long, List<Integer>> downloadLock;
-    
+
     @Autowired
     public DownloadService(PdfService pdfService, GenericService genericService) {
         this.pdfService = pdfService;
@@ -70,9 +70,9 @@ public class DownloadService {
                 .maximumSize(10000)
                 .expireAfterWrite(10, TimeUnit.MINUTES)
                 .build();
-        
+
     }
-    
+
     public void generateZipArchive(Map<File, String> files, File destinationFile) throws IOException {
         FileOutputStream fout = new FileOutputStream(destinationFile);
         ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(fout)); // what is apache ZipOutputStream? It's probably better.
@@ -97,20 +97,21 @@ public class DownloadService {
         if (ArrayUtils.isEmpty((irFileVersions))) {
             throw new TdarRecoverableRuntimeException("error.unsupported_action");
         }
-                
+
         List<FileDownloadStatistic> stats = handleActualDownload(authenticatedUser, dh, informationResourceId, irFileVersions);
         registerDownload(stats);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void registerDownload(List<FileDownloadStatistic> stats) {
         if (CollectionUtils.isNotEmpty(stats)) {
             genericService.saveOrUpdate(stats);
         }
     }
 
-    @Transactional(readOnly=true)
-    public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions) 
+    @Transactional(readOnly = true)
+    public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId,
+            InformationResourceFileVersion... irFileVersions)
             throws TdarActionException {
 
         Map<File, String> files = new HashMap<>();
@@ -159,7 +160,7 @@ public class DownloadService {
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } else if (files.keySet().size() == 1) {
                 resourceFile = (File) files.keySet().toArray()[0];
-                dh.setInputStream(new FileInputStream(resourceFile));
+               dh.setInputStream(new FileInputStream(resourceFile));
             } else {
                 logger.info("No files present in files.keySet() - could be thumbnail request for file w/ deleted status");
                 throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
@@ -168,7 +169,7 @@ public class DownloadService {
             dh.setContentLength(resourceFile.length());
             dh.setContentType(mimeType);
             logger.debug("downloading file:" + resourceFile.getCanonicalPath());
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException | NullPointerException ex) {
             logger.error("Could not generate zip file to download: file not found", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
         } catch (IOException ex) {
@@ -189,8 +190,9 @@ public class DownloadService {
         if (CollectionUtils.isNotEmpty(list)) {
             list.remove(new Integer(irFileVersions.hashCode()));
         }
-        
-        if (CollectionUtils.isEmpty(list));
+
+        if (CollectionUtils.isEmpty(list))
+            ;
         downloadLock.invalidate(key);
     }
 
@@ -210,7 +212,7 @@ public class DownloadService {
                 logger.error("too many concurrent downloads of the same file by one user");
             }
         }
-        
+
         if (list.size() > 4) {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
@@ -234,10 +236,10 @@ public class DownloadService {
         try {
             resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFileVersion);
         } catch (FileNotFoundException e1) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+            handleFileNotFound(resourceFile);
         }
         if ((resourceFile == null) || !resourceFile.exists()) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+            handleFileNotFound(resourceFile);
         }
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
@@ -252,6 +254,14 @@ public class DownloadService {
             }
         }
         downloadMap.put(resourceFile, irFileVersion.getFilename());
+    }
+
+    private void handleFileNotFound(File resourceFile) throws TdarActionException {
+        if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+        } else {
+            logger.warn("FILE NOT FOUND: {}", resourceFile);
+        }
     }
 
     // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)

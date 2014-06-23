@@ -20,8 +20,10 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterNormalUser() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user");
-        testLogin(personmap, true, false, false);
-        assertTextNotPresent("Start a new Project");
+        personmap.put("requestingContributorAccess", "false");
+        testRegister(personmap, true, false, true);
+        assertCurrentUrlContains("dashboard");
+        assertTextNotPresentIgnoreCase("new project");
         gotoPage("/logout");
     }
 
@@ -29,11 +31,11 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributor() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor");
-        testLogin(personmap, true);
-        assertTextPresent("Create a new project");
+        testRegister(personmap, true);
+        assertCurrentUrlContains("dashboard");
+        assertTextPresentIgnoreCase("Start a new Project");
         clickLinkWithText("UPLOAD");
-        gotoPage("/account/view?personId=1");
-        assertPageTitleEquals("Unauthorized");
+        assertPageTitleEquals("add a new resource");
         gotoPage("/logout");
     }
 
@@ -42,15 +44,8 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributorrr");
-        testLogin(personmap, true, true, true);
+        testRegister(personmap, true, true, true);
 
     }
 
-    @Test
-    public void testInvalidView() {
-        gotoPage("/account/view?personId=1");
-        assertCurrentUrlContains("/login");
-        gotoPage("/account/welcome?personId=1");
-        assertCurrentUrlContains("/login");
-    }
 }

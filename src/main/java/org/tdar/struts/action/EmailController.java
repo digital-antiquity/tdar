@@ -114,7 +114,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     @Override
     public void prepare() throws Exception {
-        h.checkForSpammers();
+        h.checkForSpammers(true);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Person.class, toId);
         resource = genericService.find(Resource.class, resourceId);
@@ -123,19 +123,21 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Override
     public void validate() {
         if (Persistable.Base.isTransient(from)) {
-            addActionError("emailController.from_not_found");
+            addActionError(getText("emailController.from_not_found"));
         }
         if (Persistable.Base.isTransient(to)) {
-            addActionError("emailController.to_not_found");
+            addActionError(getText("emailController.to_not_found"));
         }
         if (StringUtils.isBlank(messageBody)) {
-            addActionError("emailController.no_message");
-        }
-        if (type == null) {
-            addActionError("emailController.no_type");
+            addActionError(getText("emailController.no_message"));
         }
         if (Persistable.Base.isNotNullOrTransient(resourceId) && Persistable.Base.isNullOrTransient(resource)) {
-            addActionError("emailController.no_resource");
+            addActionError(getText("emailController.no_resource"));
+        }
+        if (type == null) {
+            addActionError(getText("emailController.no_type"));
+        } else if (getType().requiresResource() && Persistable.Base.isNullOrTransient(resource)) {
+            addActionError(getText("emailController.no_resource"));
         }
 
     }

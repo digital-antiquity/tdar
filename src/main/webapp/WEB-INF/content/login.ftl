@@ -26,6 +26,7 @@ vim:sts=2:sw=2:filetype=jsp
     <@s.textfield spellcheck="false" id='loginUsername' name="userLogin.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="userLogin.loginPassword" label="Password" cssClass="required" />
 
+    <@s.hidden name="returnUrl" />
     <div class="form-actions">
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
         <div class="pull-right">

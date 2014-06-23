@@ -12,24 +12,18 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserLogin;
-import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork2.validator.annotations.ValidatorType;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * $Id$
@@ -61,17 +55,28 @@ public class LoginController extends AuthenticationAware.Base {
     private AntiSpamHelper h = userLogin.getH();
     
     @Override
-    @Actions({
-            @Action("/login/")
-    })
     @HttpsOnly
+    @Action(value = "login", results = {
+            @Result(name = TdarActionSupport.SUCCESS, location = "/WEB-INF/content/login.ftl")
+    })
+    @SkipValidation
     public String execute() {
-        getLogger().debug("Executing /login/ .");
         if (isAuthenticated()) {
-            getLogger().debug("already authenticated, redirecting to project listing.");
-            return AUTHENTICATED;
+            return TdarActionSupport.AUTHENTICATED;
         }
-        getLogger().debug("Not authenticated for some reason: " + getSessionData());
+        return SUCCESS;
+
+    }
+
+    @Action(value = "logout",
+            results = {
+                    @Result(name = SUCCESS, type = "redirect", location = "/")
+            })
+    @SkipValidation
+    public String logout() {
+        if (getSessionData().isAuthenticated()) {
+            getAuthenticationAndAuthorizationService().logout(getSessionData(), getServletRequest(), getServletResponse());
+        }
         return SUCCESS;
     }
 
@@ -132,13 +137,13 @@ public class LoginController extends AuthenticationAware.Base {
     }
 
     private String parseReturnUrl() {
-        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
+        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(returnUrl)) {
             return null;
         }
 
         String url_ = getSessionData().getReturnUrl();
         if (StringUtils.isBlank(url_)) {
-            url_ = UrlUtils.urlDecode(url);
+            url_ = UrlUtils.urlDecode(returnUrl);
         }
 
         getLogger().info("url {} ", url_);
@@ -172,14 +177,6 @@ public class LoginController extends AuthenticationAware.Base {
     // public void setLoginPassword(String password) {
     // this.loginPassword = password;
     // }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUrl() {
-        return url;
-    }
 
     /**
      * @param returnUrl

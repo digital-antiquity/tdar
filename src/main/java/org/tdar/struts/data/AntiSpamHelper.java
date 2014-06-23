@@ -90,7 +90,6 @@ public class AntiSpamHelper implements Serializable {
         this.reCaptchaText = reCaptchaText;
     }
 
-    
     public boolean checkRecaptcha() {
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             final boolean reCaptchaResponse = getRecaptchaService().checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
@@ -109,7 +108,7 @@ public class AntiSpamHelper implements Serializable {
         this.recaptchaService = recaptchaService;
     }
 
-    public boolean checkForSpammers() {
+    public boolean checkForSpammers(boolean ignoreTimecheck) {
         long now = System.currentTimeMillis();
         checkUserInfo();
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
@@ -121,19 +120,20 @@ public class AntiSpamHelper implements Serializable {
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
-        logger.debug("timcheck:{}", getTimeCheck());
-        if (getTimeCheck() == null) {
-            logger.debug("internal time check was null, this should never happen for real users");
-            throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
-        }
+        if (!ignoreTimecheck) {
+            logger.debug("timcheck:{}", getTimeCheck());
+            if (getTimeCheck() == null) {
+                logger.debug("internal time check was null, this should never happen for real users");
+                throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
+            }
 
-        now -= timeCheck;
-        if ((now < FIVE_SECONDS_IN_MS) || (now > ONE_HOUR_IN_MS)) {
-            logger.debug(String.format("we think this user was a spammer, due to the time taken " +
-                    "to complete the form field: %s", now));
-            throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
+            now -= timeCheck;
+            if ((now < FIVE_SECONDS_IN_MS) || (now > ONE_HOUR_IN_MS)) {
+                logger.debug(String.format("we think this user was a spammer, due to the time taken " +
+                        "to complete the form field: %s", now));
+                throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
+            }
         }
-
         return false;
     }
 
@@ -149,7 +149,7 @@ public class AntiSpamHelper implements Serializable {
                 throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
             }
         } catch (NullPointerException npe) {
-            //ok ... no-op
+            // ok ... no-op
         }
     }
 

@@ -147,4 +147,36 @@
         <drop>drop index temporal_label_lc</drop>
         <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
     </database-object>
+    
+        <database-object>
+        <create>
+create table resource_access_day_agg (
+    id bigserial,
+    resource_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+    create index agg_res_date on resource_access_day_agg (resource_id, date_accessed);
+    create index agg_res_year on resource_access_day_agg (resource_id, year);
+    alter table resource_access_day_agg add constraint view_per_day UNIQUE(date_accessed, resource_id);
+    </create>
+        <drop>drop table resource_access_day_agg</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+    
+        <database-object>
+        <create>
+    create table file_download_day_agg (
+    id bigserial,
+    information_resource_file_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+
+create index agg_dwnld_date on file_download_day_agg (information_resource_file_id, date_accessed);
+create index agg_dwnld_year on file_download_day_agg (information_resource_file_id, year);</create>
+            <drop>drop table file_download_day_agg</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+    
 </hibernate-mapping>

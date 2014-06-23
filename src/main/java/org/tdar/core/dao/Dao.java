@@ -78,7 +78,7 @@ public interface Dao<T> {
      * 
      * @param persistentCollection
      */
-    <T> void save(Collection<T> persistentCollection);
+    <E> void save(Collection<E> persistentCollection);
 
     /**
      * Saves a fresh entity to the database. Not recommended for updating
@@ -86,44 +86,44 @@ public interface Dao<T> {
      * 
      * @param o
      */
-    <T> void save(T o);
+    <E> void save(E o);
 
-    <T> void persist(T o);
+    <E> void persist(E o);
 
     /**
      * Saves a fresh entity or updates an existing entity to the database.
      * 
      * @param o
      */
-    <T> void saveOrUpdate(T o);
+    <E> void saveOrUpdate(E o);
 
     /**
      * Merges a detached entity (see
      * http://docs.jboss.org/hibernate/stable/entitymanager
      * /reference/en/html/objectstate.html#d0e1318 for more details).
      */
-    <T> T merge(T entity);
+    <E> E merge(E entity);
 
     /**
      * Updates an existing entity.
      * 
      * @param o
      */
-    <T> void update(T o);
+    <E> void update(E o);
 
     /**
      * Deletes the given entity.
      * 
      * @param o
      */
-    <T> void delete(T o);
+    <E> void delete(E o);
 
     /**
      * Deletes each entity in persistentCollection.
      * 
      * @param persistentCollection
      */
-    <T> void delete(Collection<T> persistentCollection);
+    <E> void delete(Collection<E> persistentCollection);
 
     List<T> findByEqCriteria(Map<String, ?> criteria);
 
@@ -141,9 +141,9 @@ public interface Dao<T> {
      * us at this point.
      */
     @Component
-    public abstract static class HibernateBase<T extends Persistable> extends GenericDao implements Dao<T>, TdarNamedQueries {
+    public abstract static class HibernateBase<P extends Persistable> extends GenericDao implements Dao<P>, TdarNamedQueries {
 
-        protected final Class<T> persistentClass;
+        protected final Class<P> persistentClass;
 
         /**
          * Subclasses must super to this constructor with the persistent entity
@@ -152,20 +152,20 @@ public interface Dao<T> {
          * @param persistentClass
          *            the class to which this DAO provides persistent access.
          */
-        public HibernateBase(Class<T> persistentClass) {
+        public HibernateBase(Class<P> persistentClass) {
             this.persistentClass = persistentClass;
         }
 
         @Override
-        public List<T> findByEqCriteria(Map<String, ?> map) {
+        public List<P> findByEqCriteria(Map<String, ?> map) {
             return findByCriteria(getDetachedCriteria().add(Restrictions.allEq(map)));
         }
 
-        public List<T> findByCriteria(DetachedCriteria criteria) {
+        public List<P> findByCriteria(DetachedCriteria criteria) {
             return super.findByCriteria(persistentClass, criteria);
         }
 
-        public List<T> findByCriteria(DetachedCriteria criteria, int start, int numberOfRecords) {
+        public List<P> findByCriteria(DetachedCriteria criteria, int start, int numberOfRecords) {
             return super.findByCriteria(persistentClass, criteria, start, numberOfRecords);
         }
 
@@ -175,16 +175,16 @@ public interface Dao<T> {
         }
 
         @Override
-        public T find(Long id) {
+        public P find(Long id) {
             return super.find(persistentClass, id);
         }
 
-        public T find(String id) {
+        public P find(String id) {
             throw new UnsupportedOperationException(MessageHelper.getMessage("error.not_implemented"));
         }
 
         @Override
-        public List<T> findAll() {
+        public List<P> findAll() {
             return super.findAll(persistentClass);
         }
 
@@ -193,45 +193,45 @@ public interface Dao<T> {
         }
 
         @Override
-        public List<T> findAll(List<Long> ids) {
+        public List<P> findAll(List<Long> ids) {
             return super.findAll(persistentClass, ids);
         }
 
         @Override
-        public List<T> findAll(int start, int maxResults) {
+        public List<P> findAll(int start, int maxResults) {
             return super.findAll(persistentClass, maxResults);
         }
 
         @Override
-        public List<T> findAllSorted() {
+        public List<P> findAllSorted() {
             return super.findAllSorted(persistentClass);
         }
 
         @Override
-        public List<T> findAllSorted(String orderByClause) {
+        public List<P> findAllSorted(String orderByClause) {
             return super.findAllSorted(persistentClass, orderByClause);
         }
 
-        public T findByProperty(String propertyName, Object propertyValue) {
+        public P findByProperty(String propertyName, Object propertyValue) {
             return super.findByProperty(persistentClass, propertyName, propertyValue);
         }
 
         @Override
-        public List<T> findAllByProperty(String propertyName, Object propertyValue) {
+        public List<P> findAllByProperty(String propertyName, Object propertyValue) {
             return super.findAllByProperty(persistentClass, propertyName, propertyValue);
         }
 
         @Override
-        public List<T> findAllFromList(String propertyName, List<?> propertyValues) {
+        public List<P> findAllFromList(String propertyName, List<?> propertyValues) {
             return super.findAllFromList(persistentClass, propertyName, propertyValues);
         }
 
-        public T findByName(String name) {
+        public P findByName(String name) {
             return super.findByProperty(persistentClass, "name", name);
         }
 
         @Override
-        public T findOrCreateById(T entity) {
+        public P findOrCreateById(P entity) {
             return super.findOrCreateById(persistentClass, entity);
         }
 
@@ -247,7 +247,7 @@ public interface Dao<T> {
             return super.getCriteria(persistentClass);
         }
 
-        public Class<T> getPersistentClass() {
+        public Class<P> getPersistentClass() {
             return persistentClass;
         }
 

@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
+
 public class UsageStats implements Serializable {
 
     private static final long serialVersionUID = -3532666633416306513L;

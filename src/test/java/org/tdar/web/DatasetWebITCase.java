@@ -89,6 +89,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
         gotoPage(datasetUrl);
         clickLinkOnPage("duplicate");
+        submitForm("duplicate");
         assertPageTitleContains(" (Copy)");
         assertNotEquals(datasetUrl, getCurrentUrlPath());
         assertNoErrorTextPresent();

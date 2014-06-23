@@ -120,7 +120,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected Page internalPage;
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;
-    private HtmlElement documentElement;
     public static String PROJECT_ID_FIELDNAME = "projectId";
     protected static final String MY_TEST_ACCOUNT = "my test account";
     protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
@@ -143,7 +142,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     };
     // "unescaped & or unknown entity" /*add back later */,
 
-    protected Set<String> encodingErrorExclusions = new HashSet<String>();
+    protected Set<String> encodingErrorExclusions = new HashSet<>();
 
     @SuppressWarnings("serial")
     private Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>() {
@@ -156,6 +155,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             put("double-encoded html attribute pair", Pattern.compile("\\w+\\s?=\\s?&quot;\\w+&quot;"));
         }
     };
+
+    private HtmlElement documentElement;
 
     // disregard an encoding error if it's in the exclusions set;
 
@@ -183,8 +184,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 return webClient.getPage(prefix + localPath);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("couldn't find page at " + localPath, e);
+            logger.error("couldn't find page at {}", localPath, e);
         }
         return null;
     }
@@ -411,7 +411,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         try {
             input = page.getElementByName(name);
         } catch (Exception e) {
-            logger.trace("no element found: " + name);
+            logger.trace("no element found: {}", name, e);
         }
 
         if ((input == null) && overrideCreate) {
@@ -445,7 +445,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
             }
             if (option == null) {
-                logger.warn("option value " + value + " did not exist, creating it");
+                logger.warn("option value {} did not exist, creating it", value);
                 option = (HtmlOption) ((HtmlPage) internalPage).createElement("option");
                 option.setValueAttribute(value);
                 sel.appendChild(option);
@@ -619,9 +619,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertButtonPresentWithText(buttonText);
         try {
             HtmlElement buttonByName = getButtonWithName(buttonText);
-            changePage(buttonByName.click());
-        } catch (IOException iox) {
-            logger.error("exception while trying to submit from via button labeled " + buttonText, iox);
+            changePage(buttonByName.click(), true);
+        } catch (FailingHttpStatusCodeException | IOException iox) {
+            logger.error("exception while trying to submit from via button labeled {}", buttonText, iox);
         }
     }
 
@@ -658,7 +658,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             contents = page.getWebResponse().getContentAsString();
         }
         if (contents.contains(text)) {
-            logger.trace("text " + text + " found in " + contents);
+            logger.trace("text {} found in {}", text, contents);
         }
         assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl() + "\r\n" + getPageText(), contents.contains(text));
     }
@@ -707,14 +707,17 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public HtmlPage getHtmlPage() {
         assertTrue("page is not a HtmlPage", internalPage instanceof HtmlPage);
-        HtmlPage page = (HtmlPage) internalPage;
-        return page;
+        return (HtmlPage) internalPage;
     }
 
     public HtmlAnchor findPageLink(String text) {
-        HtmlAnchor anchor = getHtmlPage().getAnchorByText(text);
-        assertNotNull(String.format("link with text [%s] not found on page %s", text, getPageCode()), anchor);
-        return anchor;
+        try {
+            return getHtmlPage().getAnchorByText(text);
+        } catch (ElementNotFoundException exception) {
+            fail(String.format("link with text [%s] not found on page %s", text, getPageCode()));
+            return null;
+        }
+
     }
 
     public void clickLinkWithText(String text) {
@@ -722,28 +725,36 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void changePage(Page page) {
+        changePage(page, false);
+    }
+
+    public void changePage(Page page, boolean expectErrors) {
         if (page == null) {
             fail("changed to a null page for some reason");
             return;
         }
         internalPage = page;
         _internalForm = null;
-        logger.info("CHANGING url TO: " + internalPage.getUrl());
+        logger.info("CHANGING url TO: {}", internalPage.getUrl());
         if (internalPage instanceof HtmlPage) {
             htmlPage = (HtmlPage) internalPage;
             documentElement = htmlPage.getDocumentElement();
-            assertNoEscapeIssues();
-            assertPageValidHtml();
+            if (!expectErrors) {
+                assertNoEscapeIssues();
+                assertPageValidHtml();
+            }
         }
     }
 
+    public void clickLinkByHref(String href) throws IOException {
+        changePage(getHtmlPage().getAnchorByHref(href).click());
+    }
+
     public void clickLinkOnPage(String text) {
-        HtmlAnchor anchor = findPageLink(text);
-        assertNotNull("could not find link with " + text + " on " + getPageText(), anchor);
         try {
-            changePage(anchor.click());
-        } catch (Exception e) {
-            e.printStackTrace();
+            changePage(findPageLink(text).click());
+        } catch (IOException e) {
+            getLogger().warn("Couldn't click anchor {}", e);
         }
     }
 
@@ -759,8 +770,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public String getPageText() {
         if (internalPage instanceof HtmlPage) {
-            HtmlPage page = (HtmlPage) internalPage;
-            return page.asText();
+            return getHtmlPage().asText();
         }
         if (internalPage instanceof TextPage) {
             return ((TextPage) internalPage).getContent();
@@ -858,7 +868,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testCodingSheetView() {
         gotoPage("/coding-sheet/449");
-        logger.trace("\n----------- page begin--------\n" + getPageText() + "\n----------- page begin--------\n");
+        logger.trace("\n----------- page begin--------\n{}\n----------- page begin--------\n", this);
         assertTextPresentInPage("CARP Fauna Proximal-Distal");
         assertTextPresentInPage("Subcategory: Portion/Proximal/Distal");
     }
@@ -868,7 +878,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser());
 
         gotoPage("/project/3805");
-        logger.trace(getPageText());
+        logger.trace("{}", this);
         assertTextPresentInPage("New Philadelphia Archaeology Project");
         assertTextPresentInPage("Block 3, Lot 4");
     }
@@ -883,7 +893,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testDatasetView() {
         gotoPage("/dataset/3088");
-        logger.trace("content of dataset view page: {}", getPageText());
+        logger.trace("content of dataset view page: {}", this);
         assertTextPresentInPage("Knowth Stage 8 Fauna Dataset");
         assertTextPresentInPage("Dataset");
         assertTextPresentInPage("dataset_3088_knowthstage8.xls");
@@ -940,13 +950,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             HtmlForm htmlForm = null;
             if (getHtmlPage().getForms().size() == 1) {
                 htmlForm = getHtmlPage().getForms().get(0);
-                logger.trace("only one form: " + htmlForm.getNameAttribute());
+                logger.trace("only one form: {}", htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
                     if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
                             !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
                         htmlForm = form;
-                        logger.trace("using form: " + htmlForm.getNameAttribute());
+                        logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;
                     }
                 }
@@ -976,7 +986,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         for (HtmlForm form : getHtmlPage().getForms()) {
             if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'" + id + "')]") != null) {
-                logger.info("updating main for for id: " + id + " to form: " + form);
+                logger.info("updating main for for id: {} to form: {}", id, form);
                 setMainForm(form);
                 return;
             }
@@ -988,10 +998,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
         assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage.getWebResponse().getContentType().contains("json"));
         String json = getPageCode();
-        logger.debug("ticket json::" + json.trim());
+        logger.debug("ticket json:: {}", json.trim());
         JSONObject jsonObject = JSONObject.fromObject(json);
         String ticketId = jsonObject.getString("id");
-        logger.debug("ticket id::" + ticketId);
+        logger.debug("ticket id::{}", ticketId);
         return ticketId;
     }
 
@@ -1075,7 +1085,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected void assertFileSizes(Page page, List<File> files) {
         JSONObject json = toJson(page.getWebResponse().getContentAsString());
         JSONArray jsonArray = json.getJSONArray("files");
-        logger.info(jsonArray.toString());
+        logger.info("{}", jsonArray);
         for (int i = 0; i < files.size(); i++) {
             Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
         }
@@ -1129,7 +1139,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
         // logger.info(getPageCode());
         submitForm();
-        HtmlPage page = (HtmlPage) internalPage;
         // make sure we're on the view page
         assertPageTitleEquals(title);
         assertTextPresentInPage(title + " (ABSTRACT)");
@@ -1267,11 +1276,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @Autowired
     private AuthenticationAndAuthorizationService authService;
 
-    public void testLogin(Map<String, String> values, boolean deleteFirst) {
-        testLogin(values, deleteFirst, false, false);
+    public void testRegister(Map<String, String> values, boolean deleteFirst) {
+        testRegister(values, deleteFirst, false, false);
     }
 
-    public void testLogin(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
+    public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
 
         String username = values.get("person.username");
         if (deleteFirst) {
@@ -1360,6 +1369,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
         createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
+    }
+
+    @Override
+    public String toString() {
+        return getPageText();
     }
 
 }

@@ -26,7 +26,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -51,7 +50,6 @@ public class IndexAction extends AuthenticationAware.Base {
     private static final long serialVersionUID = -9216882130992021384L;
 
     private Project featuredProject;
-    
 
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
@@ -110,7 +108,7 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="about", results = { @Result(name = SUCCESS, location = "about.ftl") })
+    @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") })
     @HttpOnlyIfUnauthenticated
     public String about() {
         worldMap();
@@ -131,8 +129,8 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", 
-            params = { "contentType","text/html" }) })
+    @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker",
+            params = { "contentType", "text/html" }) })
     public String featuredItems() {
         try {
             for (HomepageFeaturedItemCache cache : getGenericService().findAllWithL2Cache(HomepageFeaturedItemCache.class)) {
@@ -151,7 +149,7 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = "freemarker", 
+    @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = "freemarker",
             params = { "contentType", "text/html" }) })
     public String resourceStats() {
         setHomepageResourceCountCache(getGenericService().findAllWithL2Cache(HomepageResourceCountCache.class));
@@ -160,27 +158,6 @@ public class IndexAction extends AuthenticationAware.Base {
             if (iterator.next().getResourceType().isSupporting()) {
                 iterator.remove();
             }
-        }
-        return SUCCESS;
-    }
-
-    @Action("login")
-    @HttpsOnly
-    public String login() {
-        if (isAuthenticated()) {
-            return TdarActionSupport.AUTHENTICATED;
-        }
-        return SUCCESS;
-
-    }
-
-    @Action(value = "logout",
-            results = {
-                    @Result(name = SUCCESS, type = "redirect", location = "/")
-            })
-    public String logout() {
-        if (getSessionData().isAuthenticated()) {
-            getAuthenticationAndAuthorizationService().logout(getSessionData(), getServletRequest(), getServletResponse());
         }
         return SUCCESS;
     }

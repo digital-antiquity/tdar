@@ -1,3 +1,4 @@
+<#import "/WEB-INF/content/admin/admin-common.ftl" as admin>
 <head>
     <title>Build ${siteAcronym} Index</title>
     <script type="text/javascript">
@@ -70,6 +71,7 @@
     </script>
 </head>
 <body>
+<@admin.header/>
 <h1>Rebuild Search Indexes</h1>
 <@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  label="what to reindex"/>
 <div>
