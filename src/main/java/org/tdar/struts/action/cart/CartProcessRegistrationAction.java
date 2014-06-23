@@ -41,8 +41,6 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     private static final long serialVersionUID = -191583172083241851L;
 
     @Autowired
-    private EntityService entityService;
-    @Autowired
     private RecaptchaService recaptchaService;
 
     private UserRegistration registrationInfo = new UserRegistration(recaptchaService);
@@ -51,7 +49,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(), entityService, true);
+        List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(), true);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }

@@ -25,6 +25,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
+import org.tdar.struts.data.UserLogin;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
@@ -294,8 +295,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             @Override
             public TdarUser doInTransaction(TransactionStatus status) {
                 LoginController loginAction = generateNewInitializedController(LoginController.class);
-                loginAction.setLoginUsername(p.getEmail());
-                loginAction.setLoginPassword("password");
+                UserLogin userLogin = new UserLogin(p.getEmail(), "password");
+                loginAction.setUserLogin(userLogin);
                 loginAction.setServletRequest(getServletPostRequest());
                 assertEquals(TdarActionSupport.AUTHENTICATED, loginAction.authenticate());
                 TdarUser person = genericService.find(TdarUser.class, p.getId());
@@ -489,8 +490,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         // okay, now try to "login": mock a POST request with empty session
         LoginController loginAction = generateNewController(LoginController.class);
-        loginAction.setLoginUsername(p.getUsername());
-        loginAction.setLoginPassword(password);
+        UserLogin userLogin = new UserLogin(p.getUsername(), password);
+        loginAction.setUserLogin(userLogin);
         loginAction.setServletRequest(httpServletPostRequest);
         loginAction.setSessionData(new SessionData());
 

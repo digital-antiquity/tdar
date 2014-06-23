@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -9,17 +12,24 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.UserLogin;
+import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * $Id$
@@ -41,13 +51,15 @@ public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
 
-    private String loginUsername;
-    private String loginPassword;
-    private Person person;
     private String url;
-    private String comment; // for simple spam protection
     private String returnUrl;
+    @Autowired
+    private RecaptchaService recaptchaService;
 
+    private UserLogin userLogin = new UserLogin(recaptchaService);
+
+    private AntiSpamHelper h = userLogin.getH();
+    
     @Override
     @Actions({
             @Action("/login/")
@@ -86,20 +98,18 @@ public class LoginController extends AuthenticationAware.Base {
             @HttpsOnly
             @WriteableSession
             public String authenticate() {
-        getLogger().debug("Trying to authenticate username:{}", getLoginUsername());
-        if (StringUtils.isNotBlank(getComment())) {
-            getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
-            addActionError("Could not authenticate");
-            return INPUT;
-        }
-        if (!isPostRequest()) {
-            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
+        getLogger().debug("Trying to authenticate username:{}", getUserLogin().getLoginUsername());
+        List<String> validate = userLogin.validate(this, getAuthenticationAndAuthorizationService());
+        addActionErrors(validate);
+
+        if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
             return INPUT;
         }
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = getAuthenticationAndAuthorizationService().authenticatePerson(loginUsername, loginPassword, getServletRequest(), getServletResponse(),
+            status = getAuthenticationAndAuthorizationService().authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                     getSessionData());
         } catch (Exception e) {
             addActionError(e.getMessage());
@@ -152,33 +162,16 @@ public class LoginController extends AuthenticationAware.Base {
         return url_;
     }
 
-    public String getLoginUsername() {
-        return loginUsername;
-    }
-
-    // FIXME: messages should be localized
-    @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your username.", shortCircuit = true)
-    public void setLoginUsername(String username) {
-        this.loginUsername = username;
-    }
-
-    public String getLoginPassword() {
-        return loginPassword;
-    }
-
-    // FIXME: localize message
-    @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your password.")
-    public void setLoginPassword(String password) {
-        this.loginPassword = password;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
+    // // FIXME: messages should be localized
+    // @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your username.", shortCircuit = true)
+    // public void setLoginUsername(String username) {
+    // this.loginUsername = username;
+    // }
+    // // FIXME: localize message
+    // @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your password.")
+    // public void setLoginPassword(String password) {
+    // this.loginPassword = password;
+    // }
 
     public void setUrl(String url) {
         this.url = url;
@@ -203,19 +196,20 @@ public class LoginController extends AuthenticationAware.Base {
         return returnUrl;
     }
 
-    /**
-     * @return the comment
-     */
-    public String getComment() {
-        return comment;
+    public UserLogin getUserLogin() {
+        return userLogin;
     }
 
-    /**
-     * @param comment
-     *            the comment to set
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setUserLogin(UserLogin userLogin) {
+        this.userLogin = userLogin;
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
     }
 
 }

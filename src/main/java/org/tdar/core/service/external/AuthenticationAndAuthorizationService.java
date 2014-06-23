@@ -54,6 +54,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
@@ -141,6 +142,16 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         return false;
     }
 
+    
+    @Transactional(readOnly = true)
+    public TdarUser findByUsername(String username) {
+        if ((username == null) || username.isEmpty()) {
+            return null;
+        }
+        return personDao.findByUsername(username);
+    }
+
+    
     /*
      * Not currently used; but would allow for the updating of a username in the external auth system by deleting the user and adding them again. In Crowd 2.8
      * this is builtin function; but it might not be for LDAP.
@@ -686,24 +697,24 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @param sessionData - the @SessionData object to intialize with the user's session / cookie information if logged in properly.
      */
     @Transactional
-    public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
+    public AuthenticationStatus authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
-        if (!isPossibleValidUsername(loginUsername)) {
+        if (!isPossibleValidUsername(userLogin.getLoginUsername())) {
             throw new TdarRecoverableRuntimeException("auth.username.invalid");
         }
 
-        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
+        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, userLogin.getLoginUsername(), userLogin.getLoginPassword());
         if (!result.getType().isValid()) {
-            logger.debug("Couldn't authenticate {} - (reason: {})", loginUsername, result);
+            logger.debug("Couldn't authenticate {} - (reason: {})", userLogin.getLoginUsername(), result);
             throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
         }
 
-        TdarUser person = personDao.findByUsername(loginUsername);
+        TdarUser person = personDao.findByUsername(userLogin.getLoginUsername());
         if (person == null) {
             // FIXME: person exists in Crowd but not in tDAR..
-            logger.debug("Person successfully authenticated by authentication service but not present in site database: {}", loginUsername);
+            logger.debug("Person successfully authenticated by authentication service but not present in site database: {}", userLogin.getLoginUsername());
             person = new TdarUser();
-            person.setUsername(loginUsername);
+            person.setUsername(userLogin.getLoginUsername());
             // how to pass along authentication information..?
             // username was in Crowd but not in tDAR? Redirect them to the account creation page
             return AuthenticationStatus.NEW;
@@ -720,7 +731,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
             throw new TdarRecoverableRuntimeException("auth.cannot.notmember");
         }
 
-        logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),
+        logger.debug(String.format("%s (%s) logged in from %s using: %s", userLogin.getLoginUsername(), person.getEmail(), request.getRemoteAddr(),
                 request.getHeader("User-Agent")));
         createAuthenticationToken(person, sessionData);
         personDao.registerLogin(person);
@@ -873,7 +884,8 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // short circut the login process -- if there username and password are registered and valid -- just move on.
         if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
             try {
-                AuthenticationStatus status = authenticatePerson(findByUsername.getUsername(), password, request, response, sessionData);
+                UserLogin userLogin = new UserLogin(findByUsername.getUsername(), password);
+                AuthenticationStatus status = authenticatePerson(userLogin, request, response, sessionData);
                 if (status == AuthenticationStatus.AUTHENTICATED) {
                     return new AuthenticationResult(AuthenticationResultType.VALID);
                 }

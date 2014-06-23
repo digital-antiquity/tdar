@@ -205,25 +205,7 @@
 </@s.form>
 <script type='text/javascript'>
     $(function () {
-        setTimeout(function () {
-            alert("Your session has timed out, click ok to refresh the page.");
-            location.reload(true);
-        }, ${registrationTimeout?c});
-        $('#contributor-id').click(function () {
-            switchContributorReasonDisplay($(this).is(':checked'));
-        });
-        var contributor = $("#contributor-id").is(':checked');
-        switchContributorReasonDisplay(contributor);
-
-        TDAR.common.initRegformValidation("#accountForm");
-
-        $('#firstName').focus();
-
+        TDAR.auth.initRegister(${registrationTimeout?c});
     });
-    function switchContributorReasonDisplay(shouldDisplay) {
-        var opt = shouldDisplay ? 'show' : 'hide';
-        $('#contributorReasonTextArea').collapse(opt);
-        $('#contributorReasonId').attr("disabled", !shouldDisplay);
-    }
 </script>
 </body>

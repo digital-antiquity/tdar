@@ -10,25 +10,19 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 
 import com.opensymphony.xwork2.TextProvider;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 /**
  * Created by jimdevos on 6/17/14.
  */
-public class UserRegistration {
+public class UserRegistration extends UserAuthData {
 
+    private static final long serialVersionUID = -378621821868811122L;
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-    private AntiSpamHelper h;
-    private TdarUser person = new TdarUser();
     private String password;
     private String confirmPassword;
     private String institutionName;
@@ -39,36 +33,26 @@ public class UserRegistration {
     private UserAffiliation affiliation;
 
     public UserRegistration(RecaptchaService recaptchaService) {
-        this.h = new AntiSpamHelper(recaptchaService);
+        setH(new AntiSpamHelper(recaptchaService));
     }
 
-    // private final TextProvider textProvider;
-    // private final AuthenticationAndAuthorizationService authService;
-    // private final EntityService entityService;
-
-    // public RegistrationInfo(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService) {
-    // this.textProvider = textProvider;
-    // this.authService = authService;
-    // this.entityService = entityService;
-    // }
-
-    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, EntityService entityService,
+    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, 
             boolean requireContributor) {
 
         List<String> errors = new ArrayList<>();
 
-        if (person.getUsername() != null) {
-            String normalizedUsername = authService.normalizeUsername(person.getUsername());
-            if (!normalizedUsername.equals(person.getUsername())) {
-                getLogger().info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
-                person.setUsername(normalizedUsername);
+        if (getPerson().getUsername() != null) {
+            String normalizedUsername = authService.normalizeUsername(getPerson().getUsername());
+            if (!normalizedUsername.equals(getPerson().getUsername())) {
+                getLogger().info("normalizing username; was:{} \t now:{}", getPerson().getUsername(), normalizedUsername);
+                getPerson().setUsername(normalizedUsername);
             }
 
-            if (!authService.isValidUsername(person.getUsername())) {
+            if (!authService.isValidUsername(getPerson().getUsername())) {
                 errors.add(textProvider.getText("userAccountController.username_invalid"));
             }
 
-            if (!authService.isValidEmail(person.getEmail())) {
+            if (!authService.isValidEmail(getPerson().getEmail())) {
                 errors.add(textProvider.getText("userAccountController.email_invalid"));
             }
         }
@@ -90,24 +74,24 @@ public class UserRegistration {
         }
 
         // firstName required
-        if (isBlank(person.getFirstName())) {
+        if (isBlank(getPerson().getFirstName())) {
             errors.add(textProvider.getText("userAccountController.enter_first_name"));
         }
 
         // lastName required
-        if (isBlank(person.getLastName())) {
+        if (isBlank(getPerson().getLastName())) {
             errors.add(textProvider.getText("userAccountController.enter_last_name"));
         }
 
         // username required
-        if (isBlank(person.getUsername())) {
+        if (isBlank(getPerson().getUsername())) {
             errors.add(textProvider.getText("userAccountController.error_missing_username"));
 
             // username must not be claimed
         } else {
-            TdarUser existingUser = entityService.findByUsername(person.getUsername());
+            TdarUser existingUser = authService.findByUsername(getPerson().getUsername());
             if (existingUser != null && existingUser.isRegistered()) {
-                getLogger().debug("username was already registered: ", person.getUsername());
+                getLogger().debug("username was already registered: ", getPerson().getUsername());
                 errors.add(textProvider.getText("userAccountController.error_username_already_registered"));
             }
         }
@@ -117,7 +101,7 @@ public class UserRegistration {
             errors.add(textProvider.getText("userAccountController.error_confirm_email"));
 
             // email + confirmation email must match
-        } else if (!new EqualsBuilder().append(person.getEmail(), getConfirmEmail()).isEquals()) {
+        } else if (!new EqualsBuilder().append(getPerson().getEmail(), getConfirmEmail()).isEquals()) {
             errors.add(textProvider.getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + password-confirmation
@@ -133,38 +117,7 @@ public class UserRegistration {
         return errors;
     }
 
-    private void checkForSpammers(TextProvider textProvider, List<String> errors) {
-        // SPAM CHECKING
-        // 1 - check for whether the "bogus" comment field has data
-        // 2 - check whether someone is adding characters that should not be there
-        // 3 - check for known spammer - fname == lname & phone = 123456
-        try {
-            getH().setPerson(person);
-            getH().checkForSpammers();
-        } catch (TdarRecoverableRuntimeException tre) {
-            errors.add(textProvider.getText(tre.getMessage()));
-        }
-    }
 
-    private Logger getLogger() {
-        return logger;
-    }
-
-    public AntiSpamHelper getH() {
-        return h;
-    }
-
-    public void setH(AntiSpamHelper h) {
-        this.h = h;
-    }
-
-    public TdarUser getPerson() {
-        return person;
-    }
-
-    public void setPerson(TdarUser person) {
-        this.person = person;
-    }
 
     public String getPassword() {
         return password;

@@ -389,8 +389,8 @@ public class CommandLineAPITool {
             // make tdar authentication call
             HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
             List<NameValuePair> postNameValuePairs = new ArrayList<>();
-            postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
-            postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
+            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", getUsername()));
+            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", getPassword()));
 
             tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
             HttpResponse response = httpclient.execute(tdarAuth);

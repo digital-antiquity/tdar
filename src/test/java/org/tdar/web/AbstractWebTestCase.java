@@ -1248,8 +1248,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         user = CONFIG.getUsername(user);
         pass = CONFIG.getPassword(pass);
         // logger.info(user + ":" + pass);
-        setInput("loginUsername", user);
-        setInput("loginPassword", pass);
+        setInput("userLogin.loginUsername", user);
+        setInput("userLogin.loginPassword", pass);
         if (expectingErrors) {
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
             submitFormWithoutErrorCheck("_tdar.Login");
