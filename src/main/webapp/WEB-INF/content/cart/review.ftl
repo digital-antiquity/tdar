@@ -66,18 +66,11 @@
         <div class="span3" id="divLoginSection">
             <@s.form name='registrationForm' id='registrationForm'  method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/login/process-cart-login">
-                <@s.token name='struts.csrf.token' />
-                <fieldset>
-                    <legend>Login:</legend>
-                    <label>Username</label>
-                    <input type="text" name="loginUsername" placeholder="Enter username">
-                    <label>Password</label>
-                    <input type="password" name="loginPassword">
+                <@auth.login>
                     <div class="form-actions">
                         <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
                     </div>
-
-                </fieldset>
+                </@auth.login>
             </@s.form>
 
         </div>

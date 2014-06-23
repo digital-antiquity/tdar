@@ -101,6 +101,21 @@
     </div>
 </div>
 </#macro>
+<#macro login>
+<fieldset>
+    <input type="hidden" name="url" value="${Parameters.url!''}"/>
+    <@s.token name='struts.csrf.token' />
+    <@common.antiSpam />
+    <@s.textfield spellcheck="false" id='loginUsername' name="userLogin.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
+    <@s.password id='loginPassword' name="userLogin.loginPassword" label="Password" cssClass="required" />
 
-
+    <@s.hidden name="returnUrl" />
+    <#nested />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            TDAR.auth.initLogin();
+        });
+    </script>
+</fieldset>
+</#macro>
 </#escape>
