@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -30,6 +31,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.ValidationAware;
 
 /**
  * $Id$
@@ -41,7 +43,7 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Revision$
  */
 
-@ParentPackage("secured")
+@ParentPackage("default")
 @Namespace("/account")
 @Component
 @Scope("prototype")
@@ -50,7 +52,7 @@ import com.opensymphony.xwork2.Preparable;
 // @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
 @CacheControl
-public class UserAccountController extends AuthenticationAware.Base implements Preparable {
+public class UserAccountController extends AuthenticationAware.Base implements Preparable, ValidationAware {
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -61,12 +63,12 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Autowired
     private transient RecaptchaService reCaptchaService;
-    private UserRegistration registration = new UserRegistration(reCaptchaService); 
+    private UserRegistration registration = new UserRegistration(reCaptchaService);
 
     @Autowired
     private EntityService entityService;
     private String reminderEmail;
-    private AntiSpamHelper h;
+    private AntiSpamHelper h = registration.getH();
 
     public boolean isUsernameRegistered(String username) {
         getLogger().debug("testing username:", username);
@@ -80,7 +82,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     // interceptorRefs = @InterceptorRef("basicStack"),
     @Action(value = "new",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "edit.ftl"),
                     @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) })
@@ -99,7 +100,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     }
 
     @Action(value = "recover",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${passwordResetURL}") })
     @SkipValidation
     @HttpsOnly
@@ -119,8 +119,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     }
 
     // FIXME: not implemented yet.
-    @Action(value = "reminder",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }
+    @Action(value = "reminder"
             , results = { @Result(name = SUCCESS, location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
     @SkipValidation
     @HttpsOnly
@@ -138,18 +137,26 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return SUCCESS;
     }
 
-    @Action(value = "register",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
-                    @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
-                    @Result(name = INPUT, location = "edit.ftl") })
+    @Actions({
+            @Action(value = "register",
+                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+                            @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
+                            @Result(name = INPUT, location = "edit.ftl") }),
+            @Action(value = "process-registration",
+                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/cart/review"),
+                            @Result(name = INPUT,
+                                    type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
+                    })
+    })
     @HttpsOnly
     @PostOnly
     @WriteableSession
     @DoNotObfuscate(reason = "getPerson() may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
         if (registration == null || registration.getPerson() == null || !isPostRequest()) {
-            return ADD;
+            return INPUT;
         }
         AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
                 registration, getServletRequest(), getServletResponse(), getSessionData(), true);
@@ -162,22 +169,22 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
     }
 
-//    public void setPersonId(Long personId) {
-//        this.personId = personId;
-//    }
+    // public void setPersonId(Long personId) {
+    // this.personId = personId;
+    // }
 
     @Override
     public void prepare() {
-//        if (Persistable.Base.isNullOrTransient(personId)) {
-//            getLogger().debug("prepare: creating new person");
-//            setPerson(new TdarUser());
-//        } else {
-//            getLogger().debug("prepare: loading new person with person id: " + personId);
-//            setPerson(getGenericService().find(TdarUser.class, personId));
-//            if (getPerson() == null) {
-//                getLogger().error("Couldn't load person with id: " + personId);
-//            }
-//        }
+        // if (Persistable.Base.isNullOrTransient(personId)) {
+        // getLogger().debug("prepare: creating new person");
+        // setPerson(new TdarUser());
+        // } else {
+        // getLogger().debug("prepare: loading new person with person id: " + personId);
+        // setPerson(getGenericService().find(TdarUser.class, personId));
+        // if (getPerson() == null) {
+        // getLogger().error("Couldn't load person with id: " + personId);
+        // }
+        // }
     }
 
     public String getPasswordResetURL()
@@ -190,10 +197,10 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.passwordResetURL = url;
     }
 
-//    public boolean isEditable() {
-//        return getAuthenticatedUser().equals(getPerson())
-//                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-//    }
+    // public boolean isEditable() {
+    // return getAuthenticatedUser().equals(getPerson())
+    // || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+    // }
 
     public String getTosUrl() {
         return getTdarConfiguration().getTosUrl();
@@ -206,7 +213,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     public List<UserAffiliation> getUserAffiliations() {
         return Arrays.asList(UserAffiliation.values());
     }
-
 
     public String getUrl() {
         return url;
@@ -244,5 +250,17 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         this.h = h;
     }
 
+    // if form submittal takes too long we assume spambot. expose the timeout value to view layer so that we can make sure
+    // actual humans get a form that is never too old while still locking out spambots.
+    public long getRegistrationTimeout() {
+        return UserAccountController.ONE_HOUR_IN_MS;
+    }
 
+    @Override
+    public void validate() {
+        getLogger().debug("validating registration request");
+        List<String> errors = registration.validate(this, getAuthenticationAndAuthorizationService(), false);
+        getLogger().debug("found errors {}", errors);
+        addActionErrors(errors);
+    }
 }

@@ -32,7 +32,7 @@
     </ul>
 
 
-    <@s.hidden name='personId' value='${person.id!-1}'/>
+    <@s.hidden name='personId' value='${registration.person.id!-1}'/>
     <h3>About You</h3>
 
     <div class="row">

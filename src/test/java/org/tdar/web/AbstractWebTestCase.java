@@ -1282,7 +1282,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
 
-        String username = values.get("person.username");
+        String username = values.get("registration.person.username");
         if (deleteFirst) {
             TdarUser p = new TdarUser();
             p.setUsername(username);
@@ -1294,11 +1294,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
-        // if (includeTos) {
-        // setInput("acceptedAuthNotices", "TOS_AGREEMENT");
-        // }
+
+        if (includeTos) {
+            setInput("registration.acceptTermsOfUse","true");
+
+        }
         if (includeUserAgreement) {
-            setInput("requestingContributorAccess", "true");
+            setInput("registration.requestingContributorAccess", "true");
         }
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
@@ -1320,7 +1322,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // personmap.put("contributor", "true");
         personmap.put("registration.affilliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
-        personmap.put("registration.requestingContributorAccess", "true");
+//        personmap.put("registration.acceptTermsOfUse","true");
+//        personmap.put("registration.requestingContributorAccess", "true");
     }
 
     @Override
