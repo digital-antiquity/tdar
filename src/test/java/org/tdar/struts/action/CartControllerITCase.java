@@ -211,7 +211,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
             invoice.getItems().add(billingItem);
         }
         invoice.setBillingPhone(1234567890L);
-
+        genericService.saveOrUpdate(billingItem.getActivity());
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
         controller.setBillingPhone("123-415-9999");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
