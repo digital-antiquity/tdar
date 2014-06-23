@@ -1,8 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import static org.tdar.core.bean.resource.Status.ACTIVE;
-import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +17,7 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.AccountService;
@@ -256,7 +254,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
             if (getInvoice().getOwner() == null) {
                 getInvoice().setOwner(getAuthenticatedUser());
             }
-            getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+            getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             getLogger().debug("accounts; {}", getAccounts());
             Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());
             if (CollectionUtils.isNotEmpty(getAccounts())) {
