@@ -30,18 +30,9 @@
         <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="false" id="select-existing-account"
         list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
         <script>
-            $(document).ready(function () {
-                var $slct = $("#select-existing-account");
-                $slct.change(function() {
-                var $addnew = $(".add-new");
-                    if ($slct.val() == -1) {
-                        $addnew.removeClass("hidden");
-                    } else {
-                        $addnew.addClass("hidden");
-                    }
-                });
-            });
-        
+        $(document).ready(function () {
+            TDAR.pricing.initBillingChoice();
+        });
         </script>  
         <div class="add-new hidden">
             <h3>Create a new account</h3>

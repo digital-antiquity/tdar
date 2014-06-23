@@ -42,44 +42,11 @@
 </div>
 <script>
     var TIMEOUT = 1500; //2fps is all we need.
-    var newWindow;
+    var pollingUrl = "<@s.url value="/cart/${invoice.id?c}/polling-check"/>";
     $(document).ready(function () {
-        updateProgress();
+        TDAR.pricing.initPolling();
     });
 
-    setTimeout(function () {
-        newWindow = window.open("<#noescape>${redirectUrl}</#noescape>", "payement window");
-    }, 500);
-
-    var updateProgress = function () {
-        console.log("updating progress");
-
-        var url = "<@s.url value="/cart/${invoice.id?c}/polling-check"/>";
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            type: 'POST',
-            success: function (data) {
-                if (data.transactionStatus == 'PENDING_TRANSACTION') {
-                    $("#polling-status").html("checking status ...");
-                    setTimeout(updateProgress, TIMEOUT);
-                } else {
-                    $("#polling-status").html("done: " + data.transactionStatus);
-                    if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
-                        window.document.location = "/dashboard";
-                    }
-                }
-                if (data.errors != undefined && data.errors != "") {
-                    $("#asyncErrors").html("<div class='action-errors ui-corner-all'>" + data.errors + "</div>");
-                }
-            },
-            error: function (xhr, txtStatus, errorThrown) {
-                console.error("error: %s, %s", txtStatus, errorThrown);
-            }
-        });
-
-        console.log("registered ajax callback");
-    };
 
 </script>
 </#escape>

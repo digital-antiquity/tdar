@@ -124,8 +124,63 @@
         $(form).change();
     };
 
+    var _initPolling = function () {
+        _updateProgress();
+    };
+    
+    var _updateProgress = function() {
+        console.log("updating progress");
+
+        var url = pollingUrl;
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            type: 'POST',
+            success: function (data) {
+                if (data.transactionStatus == 'PENDING_TRANSACTION') {
+                    $("#polling-status").html("checking status ...");
+                    setTimeout(TDAR.pricing.updateProgress, TIMEOUT);
+                } else {
+                    $("#polling-status").html("done: " + data.transactionStatus);
+                    if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
+                        window.document.location = "/dashboard";
+                    }
+                }
+                if (data.errors != undefined && data.errors != "") {
+                    $("#asyncErrors").html("<div class='action-errors ui-corner-all'>" + data.errors + "</div>");
+                }
+            },
+            error: function (xhr, txtStatus, errorThrown) {
+                console.error("error: %s, %s", txtStatus, errorThrown);
+            }
+        });
+
+        console.log("registered ajax callback");
+    };
+    
+    var _initBillingChoice = function() {
+        $(document).ready(function () {
+            var $slct = $("#select-existing-account");
+            $slct.change(function() {
+            var $addnew = $(".add-new");
+                if ($slct.val() == -1) {
+                    $addnew.removeClass("hidden");
+                } else {
+                    $addnew.addClass("hidden");
+                }
+            });
+            if ($slct.val() == -1) {
+                $(".add-new").removeClass("hidden");
+            }
+        });
+    }
+    
     TDAR.pricing = {
-        "initPricing": _initPricing
+        "initPricing": _initPricing,
+        "updateProgress": _updateProgress,
+        "initPolling": _initPolling,
+        "initBillingChoice": _initBillingChoice
     };
 
+    
 })(TDAR, jQuery);
