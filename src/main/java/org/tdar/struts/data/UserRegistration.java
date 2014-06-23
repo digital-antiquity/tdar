@@ -1,4 +1,4 @@
-package org.tdar.struts.action.auth;
+package org.tdar.struts.data;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -14,7 +14,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
-import org.tdar.struts.data.AntiSpamHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.opensymphony.xwork2.util.logging.Logger;

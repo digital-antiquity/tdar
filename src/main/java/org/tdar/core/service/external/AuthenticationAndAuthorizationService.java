@@ -53,8 +53,8 @@ import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResult
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.action.auth.UserRegistration;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 

@@ -64,27 +64,28 @@ public class LoginController extends AuthenticationAware.Base {
     }
 
     @Actions(
-            {
-                    @Action(value = "process",
-                            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
-                            results = {
-                                    @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
-                                    @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
-                            }),
-                    @Action(value = "process-cart-login",
-                            interceptorRefs= {@InterceptorRef("csrfDefaultStack")},
-                            results = {
-                                    @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/show-billing-accounts"),
-                                    @Result(name = REDIRECT, type = HTTPHEADER, params = {"error", BAD_REQUEST, "errorMessage", "returnUrl not expected for login from cart"}),
+    {
+            @Action(value = "process",
+                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    results = {
+                            @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
+                            @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
+                    }),
+            @Action(value = "process-cart-login",
+                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    results = {
+                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/show-billing-accounts"),
+                            @Result(name = REDIRECT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
+                                    "returnUrl not expected for login from cart" }),
 
-                                    //FIXME: this is not a graceful way to handle unsuccessful login, but it works for now
-                                    @Result(name = INPUT, type =  REDIRECT, location = "/cart/review?loginUsername=${loginUsername}")
-                            })
-            }
-    )
-    @HttpsOnly
-    @WriteableSession
-    public String authenticate() {
+                            // FIXME: this is not a graceful way to handle unsuccessful login, but it works for now
+                            @Result(name = INPUT, type = REDIRECT, location = "/cart/review?loginUsername=${loginUsername}")
+                    })
+    }
+            )
+            @HttpsOnly
+            @WriteableSession
+            public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", getLoginUsername());
         if (StringUtils.isNotBlank(getComment())) {
             getLogger().debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
@@ -119,7 +120,6 @@ public class LoginController extends AuthenticationAware.Base {
         }
         return AUTHENTICATED;
     }
-
 
     private String parseReturnUrl() {
         if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
