@@ -88,7 +88,7 @@
             <td><a href="<@s.url value="/cart/${invoice.id?c}" />">${invoice.dateCreated}</a></td>
             <td>
                 <a href="<@s.url value="/browse/creators/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a>
-                <#if invoice.proxy>
+                <#if invoice.proxy && invoice.transactedBy?has_content >
                     c/o ${invoice.transactedBy.properName}
                 </#if>
             </td>
