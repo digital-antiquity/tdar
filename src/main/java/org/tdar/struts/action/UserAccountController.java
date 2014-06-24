@@ -247,6 +247,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
     }
 }
