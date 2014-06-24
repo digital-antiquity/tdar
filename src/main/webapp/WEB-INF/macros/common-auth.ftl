@@ -101,8 +101,11 @@
     </div>
 </div>
 </#macro>
-<#macro login>
+<#macro login showLegend=false>
 <fieldset>
+    <#if showLegend>
+        <legend>Login</legend>
+    </#if>
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.token name='struts.csrf.token' />
     <@common.antiSpam />

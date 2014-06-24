@@ -143,7 +143,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
                     results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                             @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") }),
-            @Action(value = "process-registration",
+            @Action(value = "process-cart-registration",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/cart/review"),
                             @Result(name = INPUT,

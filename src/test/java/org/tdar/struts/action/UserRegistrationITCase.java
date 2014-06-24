@@ -273,13 +273,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testEmailWithPlusSign() {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
 
-        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String email = "test++++++user@gmail.com";
         Person findByEmail = entityService.findByEmail(email);
         if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
             genericService.delete(findByEmail);
         }
         evictCache();
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller, email);
         final TdarUser p = controller.getRegistration().getPerson();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
@@ -295,8 +295,9 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             @Override
             public TdarUser doInTransaction(TransactionStatus status) {
                 LoginController loginAction = generateNewInitializedController(LoginController.class);
-                UserLogin userLogin = new UserLogin(p.getEmail(), "password");
-                loginAction.setUserLogin(userLogin);
+                UserLogin userLogin = loginAction.getUserLogin();
+                userLogin.setLoginUsername(p.getEmail());
+                userLogin.setLoginPassword("password");
                 loginAction.setServletRequest(getServletPostRequest());
                 assertEquals(TdarActionSupport.AUTHENTICATED, loginAction.authenticate());
                 TdarUser person = genericService.find(TdarUser.class, p.getId());

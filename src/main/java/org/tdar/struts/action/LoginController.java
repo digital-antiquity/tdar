@@ -53,7 +53,7 @@ public class LoginController extends AuthenticationAware.Base {
     private UserLogin userLogin = new UserLogin(recaptchaService);
 
     private AntiSpamHelper h = userLogin.getH();
-    
+
     @Override
     @HttpsOnly
     @Action(value = "login", results = {
@@ -94,7 +94,7 @@ public class LoginController extends AuthenticationAware.Base {
                             @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/review"),
                             @Result(name = REDIRECT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                                     "returnUrl not expected for login from cart" }),
-                            @Result(name = INPUT, 
+                            @Result(name = INPUT,
                                     type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
                     })
     }

@@ -23,9 +23,10 @@ public class UserLogin extends UserAuthData {
         setH(new AntiSpamHelper(recaptchaService));
     }
     
-    public UserLogin(String username, String password) {
+    public UserLogin(String username, String password, RecaptchaService recaptchaService) {
         this.loginUsername = username;
         this.loginPassword = password;
+        setH(new AntiSpamHelper(recaptchaService));
     }
 
     public String getLoginUsername() {

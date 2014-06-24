@@ -852,14 +852,6 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
-    @Transactional(readOnly = false)
-    public AuthenticationResult addAndAuthenticateUser(UserRegistration registrationInfo, HttpServletRequest servletRequest,
-            HttpServletResponse servletResponse, SessionData sessionData) {
-        return addAndAuthenticateUser(registrationInfo.getPerson(), registrationInfo.getPassword(), registrationInfo.getInstitutionName(),
-                servletRequest, servletResponse, sessionData, registrationInfo.isRequestingContributorAccess());
-
-    }
-
     /**
      * Authenticate a user, and optionally create the user account prior to authentication.
      * 
@@ -875,16 +867,16 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * @return
      */
     @Transactional(readOnly = false)
-    public synchronized AuthenticationResult addAndAuthenticateUser(TdarUser person_, String password, String institutionName, HttpServletRequest request,
-            HttpServletResponse response, SessionData sessionData, boolean contributor) {
+    public synchronized AuthenticationResult addAndAuthenticateUser(UserRegistration reg, HttpServletRequest request,
+            HttpServletResponse response, SessionData sessionData) {
         // FIXME: pointless alias?
-        TdarUser person = person_;
+        TdarUser person = reg.getPerson();
         TdarUser findByUsername = personDao.findByUsername(person.getUsername());
         TdarUser findByEmail = personDao.findUserByEmail(person.getEmail());
         // short circut the login process -- if there username and password are registered and valid -- just move on.
         if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
             try {
-                UserLogin userLogin = new UserLogin(findByUsername.getUsername(), password);
+                UserLogin userLogin = new UserLogin(findByUsername.getUsername(), reg.getPassword(), null);
                 AuthenticationStatus status = authenticatePerson(userLogin, request, response, sessionData);
                 if (status == AuthenticationStatus.AUTHENTICATED) {
                     return new AuthenticationResult(AuthenticationResultType.VALID);
@@ -904,21 +896,21 @@ public class AuthenticationAndAuthorizationService implements Accessible {
                 logger.info("person: {}", person);
             }
         }
-        Institution institution = institutionDao.findByName(institutionName);
-        if ((institution == null) && !StringUtils.isBlank(institutionName)) {
+        Institution institution = institutionDao.findByName(reg.getInstitutionName());
+        if ((institution == null) && !StringUtils.isBlank(reg.getInstitutionName())) {
             institution = new Institution();
-            institution.setName(institutionName);
+            institution.setName(reg.getInstitutionName());
             personDao.save(institution);
         }
         person.setInstitution(institution);
 
-        AuthenticationResult addResult = getAuthenticationProvider().addUser(person, password);
+        AuthenticationResult addResult = getAuthenticationProvider().addUser(person, reg.getPassword());
         if (!addResult.getType().isValid()) {
             throw new TdarRecoverableRuntimeException(addResult.getType().getMessage());
         }
         // after the person has been saved, create a contributor request for
         // them as needed.
-        if (contributor) {
+        if (reg.isRequestingContributorAccess()) {
             person.setContributor(true);
             satisfyPrerequisite(person, AuthNotice.CONTRIBUTOR_AGREEMENT);
         } else {
@@ -939,7 +931,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
         // logger.error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
         // }
         // log person in.
-        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), password);
+        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), reg.getPassword());
         if (result.getType().isValid()) {
             logger.debug("Authenticated successfully with auth service, registering login and creating authentication token");
             personDao.registerLogin(person);

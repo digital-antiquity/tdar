@@ -52,7 +52,7 @@
 <#if !sessionData.person?has_content>
     <div class="row">
         <div class="span9" id="divRegistrationSection">
-            <@s.form name='registrationForm' id='registrationForm' method="post" cssClass=" disableFormNavigate"
+            <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="process-registration">
                 <@s.token name='struts.csrf.token' />
                 <fieldset>
@@ -66,7 +66,7 @@
         <div class="span3" id="divLoginSection">
             <@s.form name='registrationForm' id='registrationForm'  method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/login/process-cart-login">
-                <@auth.login>
+                <@auth.login showLegend=true>
                     <div class="form-actions">
                         <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
                     </div>
