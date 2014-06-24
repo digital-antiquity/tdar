@@ -243,6 +243,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
      */
     @Action(REVIEW)
     // @GetOnly
+    //FIXME: actions that service GET request should always be idempotent (writeable session on a GET request is a "tdar code smell")
+    //FIXME: This action facilitates two distinct steps in the workflow: the "review your filecount/mb selection" page and the  "choose a billing account" page. They should be broken out into two actions.
     @WriteableSession
     public String showInvoice() {
         // todo: if not authenticated, render the review page w/ signup/login form
@@ -250,10 +252,13 @@ public class UnauthenticatedCartController extends AbstractCartController {
             return "redirect-start";
         }
 
+        //the view layer relies on invoice.isProxy(),  when in-turn relies on invoice.owner and invoice.transactedBy
         if (getAuthenticatedUser() != null) {
             if (getInvoice().getOwner() == null) {
                 getInvoice().setOwner(getAuthenticatedUser());
+                getInvoice().setTransactedBy(getAuthenticatedUser());
             }
+
             getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             getLogger().debug("accounts; {}", getAccounts());
             Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());

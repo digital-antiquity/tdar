@@ -91,6 +91,13 @@ public class CartBillingAccountController extends AbstractCartController {
     @PostOnly
     @WriteableSession
     public String processBillingAccountChoice() {
+
+        //if user came via unauthenticated page the owner/proxy may not be set.  If either is null, we set both to the current user
+        if (getInvoice().getOwner() == null || getInvoice().getTransactedBy() == null) {
+            getInvoice().setOwner(getAuthenticatedUser());
+            getInvoice().setTransactedBy(getAuthenticatedUser());
+        }
+
         Account acct = account;
         // prevent params-prepare-params from modifying pre-existing account
         if (selectedAccount != null) {
