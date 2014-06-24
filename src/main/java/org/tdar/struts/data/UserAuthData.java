@@ -17,14 +17,15 @@ public abstract class UserAuthData implements Serializable {
     private AntiSpamHelper h;
     private TdarUser person = new TdarUser();
 
-    
     protected void checkForSpammers(TextProvider textProvider, List<String> errors, boolean ignoreTimecheck) {
         // SPAM CHECKING
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
         // 3 - check for known spammer - fname == lname & phone = 123456
         try {
-            getH().setPerson(getPerson());
+            if (getPerson() != null) {
+                getH().setPerson(getPerson());
+            }
             getH().checkForSpammers(ignoreTimecheck);
         } catch (TdarRecoverableRuntimeException tre) {
             errors.add(textProvider.getText(tre.getMessage()));

@@ -36,7 +36,7 @@ public class UserRegistration extends UserAuthData {
         setH(new AntiSpamHelper(recaptchaService));
     }
 
-    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService, 
+    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService,
             boolean requireContributor) {
 
         List<String> errors = new ArrayList<>();
@@ -64,7 +64,7 @@ public class UserRegistration extends UserAuthData {
         if (requireContributor && requestingContributorAccess == false) {
             errors.add(textProvider.getText("userAccountController.require_contributor_agreement"));
         }
-        
+
         // contributorReason
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
@@ -105,9 +105,9 @@ public class UserRegistration extends UserAuthData {
             errors.add(textProvider.getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + password-confirmation
-        if (isBlank(confirmPassword)) {
+        if (isBlank(password)) {
             errors.add(textProvider.getText("userAccountController.error_choose_password"));
-        } else if (isBlank(getConfirmPassword())) {
+        } else if (isBlank(confirmPassword)) {
             errors.add(textProvider.getText("userAccountController.error_confirm_password"));
         } else if (!new EqualsBuilder().append(getPassword(), getConfirmPassword()).isEquals()) {
             errors.add(textProvider.getText("userAccountController.error_passwords_dont_match"));
@@ -116,8 +116,6 @@ public class UserRegistration extends UserAuthData {
         checkForSpammers(textProvider, errors, false);
         return errors;
     }
-
-
 
     public String getPassword() {
         return password;

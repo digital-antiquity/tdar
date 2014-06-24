@@ -80,7 +80,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
-        assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
+        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
         logger.info(execute + " : " + controller.getActionMessages());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_username_already_registered"), controller
                 .getActionErrors().iterator().next());
@@ -117,7 +117,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
-        assertEquals("Expected controller to return an error, email exists", Action.ERROR, execute);
+        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
         logger.info(execute + " : " + controller.getActionMessages());
         assertEquals("expecting valid message", MessageHelper.getMessage("userAccountController.error_duplicate_email"), controller.getActionErrors()
                 .iterator().next());
@@ -158,10 +158,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p = testCreatePerson(email, Status.DRAFT, Action.SUCCESS);
         assertEquals(Status.ACTIVE, p.getStatus());
 
-        p = testCreatePerson(email, Status.DELETED, Action.ERROR);
+        p = testCreatePerson(email, Status.DELETED, Action.INPUT);
         assertEquals(Status.DELETED, p.getStatus());
 
-        p = testCreatePerson(email, Status.FLAGGED, Action.ERROR);
+        p = testCreatePerson(email, Status.FLAGGED, Action.INPUT);
         assertEquals(Status.FLAGGED, p.getStatus());
     }
 
@@ -360,9 +360,10 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.prepare();
-        Person p = controller.getRegistration().getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
 
         p.setEmail("test@tdar.org");
+        p.setUsername(p.getEmail());
         assertTrue(p.getId().equals(-1L));
         controller.validate();
         assertTrue("expecting user existing",
@@ -408,8 +409,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
-        Person p = controller.getRegistration().getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
+        p.setFirstName("fn");
+        p.setLastName("ln");
+        p.setUsername(TESTING_EMAIL);
+        controller.getRegistration().setAcceptTermsOfUse(true);
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
         controller.getRegistration().setPassword("password");
         controller.validate();
@@ -453,7 +458,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
-        assertEquals(1, controller.getActionErrors().size());
+        assertEquals(3, controller.getActionErrors().size());
     }
 
     @Override
@@ -490,8 +495,9 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         // okay, now try to "login": mock a POST request with empty session
         LoginController loginAction = generateNewController(LoginController.class);
-        UserLogin userLogin = new UserLogin(p.getUsername(), password);
-        loginAction.setUserLogin(userLogin);
+        UserLogin userLogin = loginAction.getUserLogin();
+        userLogin.setLoginPassword(password);
+        userLogin.setLoginUsername(username);
         loginAction.setServletRequest(httpServletPostRequest);
         loginAction.setSessionData(new SessionData());
 

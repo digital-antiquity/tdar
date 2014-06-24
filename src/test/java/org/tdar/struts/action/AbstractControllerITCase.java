@@ -378,7 +378,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
+        controller.getRegistration().setPerson(p);
         controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setAcceptTermsOfUse(true);
         controller.getRegistration().setContributorReason(REASON);
         p.setRpaNumber("214");
 
@@ -398,6 +400,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.getRegistration().setConfirmPassword(password);
         controller.getRegistration().setConfirmEmail(p.getEmail());
         controller.getRegistration().setPerson(p);
+        controller.getRegistration().setAcceptTermsOfUse(true);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();
