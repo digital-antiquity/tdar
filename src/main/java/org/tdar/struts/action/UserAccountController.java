@@ -48,12 +48,9 @@ import com.opensymphony.xwork2.ValidationAware;
 @Namespace("/account")
 @Component
 @Scope("prototype")
-/* not sure this is needed */
-// @InterceptorRef("paramsPrepareParamsStack")
-// @Result(name = "new", type = "redirect", location = "new")
 @HttpsOnly
 @CacheControl
-public class UserAccountController extends AuthenticationAware.Base implements Preparable, ValidationAware {
+public class UserAccountController extends AuthenticationAware.Base implements ValidationAware, Preparable {
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -84,7 +81,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return ((person != null) && person.isRegistered());
     }
 
-    // interceptorRefs = @InterceptorRef("basicStack"),
     @Action(value = "new",
             results = {
                     @Result(name = SUCCESS, location = "edit.ftl"),
@@ -178,24 +174,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return TdarActionSupport.INPUT;
     }
 
-    // public void setPersonId(Long personId) {
-    // this.personId = personId;
-    // }
-
-    @Override
-    public void prepare() {
-        // if (Persistable.Base.isNullOrTransient(personId)) {
-        // getLogger().debug("prepare: creating new person");
-        // setPerson(new TdarUser());
-        // } else {
-        // getLogger().debug("prepare: loading new person with person id: " + personId);
-        // setPerson(getGenericService().find(TdarUser.class, personId));
-        // if (getPerson() == null) {
-        // getLogger().error("Couldn't load person with id: " + personId);
-        // }
-        // }
-    }
-
     public String getPasswordResetURL()
     {
         return passwordResetURL;
@@ -205,11 +183,6 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     {
         this.passwordResetURL = url;
     }
-
-    // public boolean isEditable() {
-    // return getAuthenticatedUser().equals(getPerson())
-    // || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
-    // }
 
     public String getTosUrl() {
         return getTdarConfiguration().getTosUrl();
@@ -271,5 +244,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         List<String> errors = registration.validate(this, authenticationService, false);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
+    }
+
+    @Override
+    public void prepare() throws Exception {
     }
 }

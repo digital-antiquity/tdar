@@ -52,8 +52,6 @@ public class UserLogin extends UserAuthData {
 
         if (isBlank(getLoginUsername())) {
             errors.add(textProvider.getText("loginController.error_missing_username"));
-
-            // username must not be claimed
         } 
 
         if (isBlank(getLoginPassword())) {

@@ -133,9 +133,7 @@ public class AuthenticationService {
      * Authenticate a web user passing in the Request, Response, username and password. Checks that (a) the username is valid (b) that the user can authenticate
      * (c) that user exists and is valid within tDAR (active);
      * 
-     * @param loginUsername - the username of the user to authenticate
-     * 
-     * @param loginPassword - the user's password
+     * @param UserLogin - a bean containing username and password data
      * 
      * @param request - the @link HttpServletRequest to read cookies from or other information
      * 
