@@ -101,7 +101,7 @@
                 </span>
             </div>
             <div class="modal-footer">
-                <a href="#" data-dismiss="modal" aria-hidden="true" id="emai-close-button" class="btn">Close</a>
+                <a href="#" data-dismiss="modal" aria-hidden="true" id="email-close-button" class="btn">Close</a>
             </div>
         </div>
      <form id="followup">
