@@ -854,9 +854,9 @@ public class AuthenticationAndAuthorizationService implements Accessible {
 
     @Transactional(readOnly = false)
     public AuthenticationResult addAndAuthenticateUser(UserRegistration registrationInfo, HttpServletRequest servletRequest,
-            HttpServletResponse servletResponse, SessionData sessionData, boolean contributor) {
+            HttpServletResponse servletResponse, SessionData sessionData) {
         return addAndAuthenticateUser(registrationInfo.getPerson(), registrationInfo.getPassword(), registrationInfo.getInstitutionName(),
-                servletRequest, servletResponse, sessionData, true);
+                servletRequest, servletResponse, sessionData, registrationInfo.isRequestingContributorAccess());
 
     }
 

@@ -173,21 +173,26 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         controller.getRegistration().setConfirmPassword(password);
         controller.getRegistration().setConfirmEmail(person.getEmail());
         controller.getRegistration().setPerson(person);
+        controller.getRegistration().setAcceptTermsOfUse(true);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
-        controller.validate();
         String execute = null;
         setIgnoreActionErrors(true);
-        // technically this is more appropriate -- only call create if validate passes
-        if (CollectionUtils.isEmpty(controller.getActionErrors())) {
-            execute = controller.create();
-        } else {
-            logger.error("errors: {} ", controller.getActionErrors());
+        try {
+            controller.validate();
+            // technically this is more appropriate -- only call create if validate passes
+            if (CollectionUtils.isEmpty(controller.getActionErrors())) {
+                execute = controller.create();
+            } else {
+                logger.error("errors: {} ", controller.getActionErrors());
+            }
+        } catch (Exception e) {
+            logger.error("{}", e);
+        } finally {
+            authenticationAndAuthorizationService.setProvider(oldProvider);
         }
-
-        authenticationAndAuthorizationService.setProvider(oldProvider);
         logger.info("errors: {}", controller.getActionErrors());
-        assertEquals("result is not input :" + execute, execute, Action.ERROR);
+        assertEquals("result is not input :" + execute, execute, Action.INPUT);
         logger.info("person:{}", person);
         assertTrue("person should not have an id", Persistable.Base.isTransient(person));
     }

@@ -158,15 +158,20 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         if (registration == null || registration.getPerson() == null || !isPostRequest()) {
             return INPUT;
         }
-        AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
-                registration, getServletRequest(), getServletResponse(), getSessionData(), true);
-        if (result.getType().isValid()) {
-            registration.setPerson(result.getPerson());
-            addActionMessage(getText("userAccountController.successful_registration_message"));
-            return TdarActionSupport.SUCCESS;
-        } else {
+        AuthenticationResult result = null;
+        try {
+            result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
+                    registration, getServletRequest(), getServletResponse(), getSessionData());
+            if (result.getType().isValid()) {
+                registration.setPerson(result.getPerson());
+                addActionMessage(getText("userAccountController.successful_registration_message"));
+                return TdarActionSupport.SUCCESS;
+            }
+        } catch (Throwable e) {
+            addActionError(e.getLocalizedMessage());
             return TdarActionSupport.INPUT;
         }
+        return TdarActionSupport.INPUT;
     }
 
     // public void setPersonId(Long personId) {

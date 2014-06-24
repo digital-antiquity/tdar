@@ -60,7 +60,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @PostOnly
     public String processRegistration() {
         AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
-                registrationInfo, getServletRequest(), getServletResponse(), getSessionData(), true);
+                registrationInfo, getServletRequest(), getServletResponse(), getSessionData());
         if (result.getType().isValid()) {
             registrationInfo.setPerson(result.getPerson());
             addActionMessage(getText("userAccountController.successful_registration_message"));
