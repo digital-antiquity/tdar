@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.DownloadHandler;
@@ -46,6 +47,8 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     @Autowired
     private transient DownloadService downloadService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -97,7 +100,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
         }
-        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getPerson())) {
+        if (!authorizationService.canDownload(irFileVersion, getSessionData().getPerson())) {
             String msg = String.format("user %s does not have permissions to download %s", getSessionData().getPerson(), irFileVersion);
             getLogger().warn(msg);
             return FORBIDDEN;
@@ -129,7 +132,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return ERROR;
         }
 
-        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getPerson())) {
+        if (!authorizationService.canDownload(irFileVersion, getSessionData().getPerson())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
             return FORBIDDEN;
         }
@@ -150,7 +153,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             if (irf.isDeleted()) {
                 continue;
             }
-            if (!getAuthenticationAndAuthorizationService().canDownload(irf, getSessionData().getPerson())) {
+            if (!authorizationService.canDownload(irf, getSessionData().getPerson())) {
                 getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
                 return FORBIDDEN;
             }

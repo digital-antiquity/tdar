@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
@@ -56,6 +57,9 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
 
     private static final String INPUT_COLUMNS = "INPUT_COLUMNS";
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient DatasetService datasetService;
@@ -283,7 +287,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
-            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+            if (authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
                 dataTableRowAsMap = datasetService.selectRowFromDataTable(dataTable, rowId, true);
                 if (MapUtils.isEmpty(dataTableRowAsMap)) {
                     return ERROR;
@@ -293,6 +297,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         return ERROR;
     }
+    
 
     /**
      * @return The output of the xml request to the database wrapped in a stream
@@ -329,7 +334,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
-            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+            if (authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
                 String dataTableAsXml = datasetService.selectTableAsXml(dataTable);
                 xmlStream = new ByteArrayInputStream(dataTableAsXml.getBytes(StandardCharsets.UTF_8));
                 return SUCCESS;

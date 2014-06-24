@@ -34,6 +34,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
@@ -66,6 +67,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private static final long serialVersionUID = -200666002871956655L;
 
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient XmlService xmlService;
@@ -153,7 +156,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
     public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
-        getAuthenticationAndAuthorizationService().applyTransientViewableFlag(ir, p);
+        authorizationService.applyTransientViewableFlag(ir, p);
         if (Persistable.Base.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
@@ -204,7 +207,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         if (isHasFileProxyChanges()
-                && !getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                && !authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                         GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
@@ -431,7 +434,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setResourceLanguage(getResource().getResourceLanguage());
         setMetadataLanguage(getResource().getMetadataLanguage());
         loadResourceProviderInformation();
-        setAllowedToViewConfidentialFiles(getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
+        setAllowedToViewConfidentialFiles(authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
         initializeFileProxies();
         try {
             datasetService.assignMappedDataForInformationResource(getResource());
@@ -511,7 +514,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             potentialParents.addAll(projectService.findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
@@ -727,7 +730,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
-            isAbleToUploadFiles = getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable());
+            isAbleToUploadFiles = authorizationService.canUploadFiles(getAuthenticatedUser(), getPersistable());
         }
         return isAbleToUploadFiles;
     }

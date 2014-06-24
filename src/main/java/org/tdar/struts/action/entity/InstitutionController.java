@@ -15,6 +15,7 @@ import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
 
 @Component
@@ -27,6 +28,8 @@ public class InstitutionController extends AbstractCreatorController<Institution
 
     @Autowired
     private transient EntityService entityService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     private String name;
 
@@ -103,7 +106,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (!isAuthenticated()) {
             return false;
         }
-        return getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
+        return authorizationService.can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
     }
 
     public String getName() {

@@ -53,7 +53,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.data.DateGranularity;
@@ -79,7 +79,7 @@ public class ResourceService extends GenericService {
     private DatasetDao datasetDao;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private AuthorizationService authenticationAndAuthorizationService;
     @Autowired
     private GeoSearchService geoSearchService;
 

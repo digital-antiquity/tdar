@@ -21,6 +21,7 @@ import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserRegistration;
@@ -66,6 +67,9 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     private UserRegistration registration = new UserRegistration(reCaptchaService);
 
     @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
     private EntityService entityService;
     private String reminderEmail;
     private AntiSpamHelper h = registration.getH();
@@ -104,7 +108,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @SkipValidation
     @HttpsOnly
     public String recover() {
-        setPasswordResetURL(getAuthenticationAndAuthorizationService().getAuthenticationProvider().getPasswordResetURL());
+        setPasswordResetURL(authenticationService.getAuthenticationProvider().getPasswordResetURL());
         return SUCCESS;
     }
 
@@ -160,7 +164,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
         AuthenticationResult result = null;
         try {
-            result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
+            result = authenticationService.addAndAuthenticateUser(
                     registration, getServletRequest(), getServletResponse(), getSessionData());
             if (result.getType().isValid()) {
                 registration.setPerson(result.getPerson());
@@ -264,7 +268,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registration.validate(this, getAuthenticationAndAuthorizationService(), false);
+        List<String> errors = registration.validate(this, authenticationService, false);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }

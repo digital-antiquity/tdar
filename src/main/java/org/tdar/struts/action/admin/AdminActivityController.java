@@ -29,6 +29,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
@@ -64,6 +65,8 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private List<Person> activePeople;
 
     private ByteArrayInputStream jsonInputStream;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Action(value = "active-users", results = { 
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
@@ -109,7 +112,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
             getCounters().put(activity.getSimpleBrowserName(), num);
         }
 
-        setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        setActivePeople(authorizationService.getCurrentlyActiveUsers());
 
         initSystemStats();
         return SUCCESS;

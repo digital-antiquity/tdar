@@ -38,7 +38,7 @@ import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.utils.AccountEvaluationHelper;
 
 @Transactional(readOnly = true)
@@ -51,7 +51,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     private GenericDao genericDao;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthorizationService authService;
 
     /**
      * Find all accounts for user: return accounts that are active and have not met their quota

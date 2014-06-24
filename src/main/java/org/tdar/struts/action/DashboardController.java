@@ -36,6 +36,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
@@ -72,6 +73,9 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
     private List<InformationResource> resourcesWithErrors;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -229,7 +233,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         }
 
         for (Resource res : bookmarkedResources) {
-            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
+            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
         }
     }
 
@@ -264,7 +268,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private Set<Resource> editableProjects = new HashSet<>();
 
     private void prepareProjectStuff() {
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         editableProjects = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
 
@@ -294,11 +298,11 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
             for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
                 Long count = 0L;
                 for (Status status : getResourceCountAndStatusForUser().get(type).keySet()) {
-                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
+                    if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
                             && status == Status.DELETED) {
                         continue;
                     }
-                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
+                    if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
                             && status == Status.FLAGGED) {
                         continue;
                     }
@@ -314,16 +318,16 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
         if (CollectionUtils.isEmpty(statusCountForUser.keySet())) {
             for (Status status : Status.values()) {
                 Long count = 0L;
-                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
+                if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
                         && status == Status.DELETED) {
                     continue;
                 }
-                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
+                if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
                         && status == Status.FLAGGED) {
                     continue;
                 }
                 if ((!TdarConfiguration.getInstance().isPayPerIngestEnabled() ||
-                        getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
+                        authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
                         && status == Status.FLAGGED_ACCOUNT_BALANCE) {
                     continue;
                 }
@@ -345,7 +349,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     }
 
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {

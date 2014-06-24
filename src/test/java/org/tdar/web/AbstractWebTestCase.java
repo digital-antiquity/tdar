@@ -56,7 +56,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
@@ -1274,7 +1274,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthenticationService authService;
 
     public void testRegister(Map<String, String> values, boolean deleteFirst) {
         testRegister(values, deleteFirst, false, false);

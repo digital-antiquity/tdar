@@ -14,7 +14,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -37,8 +37,6 @@ public interface AuthenticationAware extends SessionDataAware {
 
     final String TYPE_REDIRECT = "redirect";
 
-    AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
-
     @DoNotObfuscate(reason = "never obfuscate the session user")
     TdarUser getAuthenticatedUser();
 
@@ -51,7 +49,7 @@ public interface AuthenticationAware extends SessionDataAware {
         private static final long serialVersionUID = -7792905441259237588L;
 
         @Autowired
-        private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+        private transient AuthorizationService authorizationService;
 
         @Override
         @DoNotObfuscate(reason = "never obfuscate the session user")
@@ -122,7 +120,7 @@ public interface AuthenticationAware extends SessionDataAware {
             }
 
             // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
-            if (getAuthenticationAndAuthorizationService().can(adminRightsCheck, action.getAuthenticatedUser())) {
+            if (authorizationService.can(adminRightsCheck, action.getAuthenticatedUser())) {
                 return;
             }
 
@@ -168,39 +166,39 @@ public interface AuthenticationAware extends SessionDataAware {
 
 
         public boolean isAdministrator() {
-            return isAuthenticated() && authenticationAndAuthorizationService.isAdministrator(getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
         }
 
         public boolean isEditor() {
-            return isAuthenticated() && authenticationAndAuthorizationService.isEditor(getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.isEditor(getAuthenticatedUser());
         }
 
         public boolean isAbleToFindDraftResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToFindDeletedResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToEditAnything() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         }
 
         public boolean isAbleToFindFlaggedResources() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
         }
 
         public boolean isAbleToReprocessDerivatives() {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
         }
 
         public boolean userCan(InternalTdarRights right) {
-            return isAuthenticated() && authenticationAndAuthorizationService.can(right, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.can(right, getAuthenticatedUser());
         }
 
         public boolean userCannot(InternalTdarRights right) {
-            return isAuthenticated() && authenticationAndAuthorizationService.cannot(right, getAuthenticatedUser());
+            return isAuthenticated() && authorizationService.cannot(right, getAuthenticatedUser());
         }
 
         public boolean isContributor() {
@@ -217,12 +215,7 @@ public interface AuthenticationAware extends SessionDataAware {
             list.add(null);
             return list;
         }
-
-        @Override
-        public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
-            return authenticationAndAuthorizationService;
-        }
-
+        
         /**
          * Return filtered list containing only valid id's (or null if given null)
          */
@@ -251,7 +244,7 @@ public interface AuthenticationAware extends SessionDataAware {
          */
         @Override
         public boolean isBillingManager() {
-            return getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser());
+            return authorizationService.isBillingManager(getAuthenticatedUser());
         }
 
     }

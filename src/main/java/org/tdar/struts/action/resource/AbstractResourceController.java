@@ -71,6 +71,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -121,6 +122,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private ObfuscationService obfuscationService;
@@ -470,7 +474,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             return false;
         }
         if (editable == null) {
-            editable = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
     }
@@ -478,7 +482,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public boolean isViewable() throws TdarActionException {
         if (getResource().isActive()
-                || userCan(InternalTdarRights.VIEW_ANYTHING) || getAuthenticationAndAuthorizationService().canView(getAuthenticatedUser(), getPersistable())
+                || userCan(InternalTdarRights.VIEW_ANYTHING) || authorizationService.canView(getAuthenticatedUser(), getPersistable())
                 || isEditable()) {
             getLogger().trace("{} is viewable: {}", getId(), getPersistableClass().getSimpleName());
             return true;
@@ -614,7 +618,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         // only modify these permissions if the user has the right to
-        if (getAuthenticationAndAuthorizationService().canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+        if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
         }
@@ -830,7 +834,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public boolean isAbleToViewConfidentialFiles() {
-        return getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable());
+        return authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getPersistable());
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
@@ -1143,7 +1147,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
             for (ResourceCollection resourceCollection : getResource().getSharedResourceCollections()) {
-                if (getAuthenticationAndAuthorizationService().canViewCollection(resourceCollection, getAuthenticatedUser())) {
+                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
                     collections.add(resourceCollection);
                 }
             }
@@ -1287,7 +1291,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public boolean isUserAbleToReTranslate() {
-        if (getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), getPersistable())) {
+        if (authorizationService.canEdit(getAuthenticatedUser(), getPersistable())) {
             return true;
         }
         return false;

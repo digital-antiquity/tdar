@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -23,7 +23,7 @@ import org.tdar.utils.MessageHelper;
 public class RedirectMessageITCase extends AbstractControllerITCase {
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthenticationService authService;
 
     @Test
     @Rollback

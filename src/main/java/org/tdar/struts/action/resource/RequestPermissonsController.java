@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.CrudAction;
@@ -41,6 +42,8 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     private GeneralPermissions permission;
     private Resource resource;
     private List<GeneralPermissions> availablePermissions = Arrays.asList(GeneralPermissions.values());
+    @Autowired
+    private transient AuthorizationService authorizationService;
     @Autowired
     private transient GenericService genericService;
     @Autowired
@@ -127,7 +130,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
 
     @Override
     public boolean isEditable() throws TdarActionException {
-        return getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getResource(), GeneralPermissions.MODIFY_METADATA);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getResource(), GeneralPermissions.MODIFY_METADATA);
     }
 
     @Override

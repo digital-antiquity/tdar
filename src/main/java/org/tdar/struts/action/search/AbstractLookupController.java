@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler;
@@ -87,6 +88,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     @Autowired
     private transient SearchService searchService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     ObfuscationService obfuscationService;
@@ -221,7 +225,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms(ActionSupport support) {
-        getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
+        authorizationService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
         return getReservedSearchParameters().toQueryPartGroup(support);
     }
 

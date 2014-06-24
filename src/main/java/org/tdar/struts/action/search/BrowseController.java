@@ -49,6 +49,7 @@ import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.Type;
@@ -132,6 +133,8 @@ public class BrowseController extends AbstractLookupController {
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient EntityService entityService;
@@ -231,7 +234,7 @@ public class BrowseController extends AbstractLookupController {
                 if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
                     TdarUser person = (TdarUser) creator;
                     try {
-                        getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(person));
+                        getGroups().addAll(authorizationService.getGroupMembership(person));
                     } catch (Throwable e) {
                         getLogger().error("problem communicating with crowd getting user info for {} {}", creator, e);
                     }

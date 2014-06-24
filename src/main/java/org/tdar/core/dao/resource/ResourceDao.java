@@ -39,7 +39,7 @@ import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
@@ -57,7 +57,7 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationService;
+    private AuthorizationService authenticationService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

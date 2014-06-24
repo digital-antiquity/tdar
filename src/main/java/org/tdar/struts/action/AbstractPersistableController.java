@@ -30,6 +30,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
@@ -84,7 +85,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     @Autowired
     private transient GenericService genericService;
-
+    @Autowired
+    private transient AuthorizationService authorizationService;
+    
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -716,7 +719,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public AntiSpamHelper getH() {

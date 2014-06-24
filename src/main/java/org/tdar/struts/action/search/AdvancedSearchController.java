@@ -64,6 +64,7 @@ import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
 import org.tdar.search.index.LookupSource;
@@ -114,6 +115,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     @Autowired
     private transient ExcelService excelService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient GenericKeywordService genericKeywordService;
@@ -217,7 +221,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             searchService.handleSearch(queryBuilder, result, this);
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
             for (ResourceCollection col : getCollectionResults()) {
-                getAuthenticationAndAuthorizationService().applyTransientViewableFlag(col, getAuthenticatedUser());
+                authorizationService.applyTransientViewableFlag(col, getAuthenticatedUser());
             }
             getLogger().debug("RESULST: {}", result.getResults());
             setCollectionTotalRecords(result.getTotalRecords());
@@ -313,7 +317,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));
         if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-            if (!getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
             } else {
                 qpg.clear();

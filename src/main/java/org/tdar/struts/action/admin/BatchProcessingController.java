@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
@@ -43,6 +44,9 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private BatchAction batchAction;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient ProjectService projectService;
@@ -80,7 +84,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
 
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             Collections.sort(fullUserProjects);
             fullUserProjects.removeAll(getAllSubmittedProjects());
@@ -97,7 +101,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     }
 
     public Set<Resource> getEditableProjects() {
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
         return findSparseTitleIdProjectListByPerson;
@@ -107,7 +111,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {

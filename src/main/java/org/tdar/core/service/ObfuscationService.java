@@ -14,7 +14,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 
 /**
  * A service to help with the obfuscation of @link Persistable Beans supporting @link Obfuscatable
@@ -32,7 +32,7 @@ public class ObfuscationService {
     private GenericDao genericDao;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthorizationService authService;
 
     /**
      * Obfuscates a collection of objects based on the specified user.
@@ -55,7 +55,7 @@ public class ObfuscationService {
      * 
      * @return
      */
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+    public AuthorizationService getAuthenticationAndAuthorizationService() {
         return authService;
     }
 

@@ -30,7 +30,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -69,7 +69,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private SearchService searchService;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private AuthorizationService authenticationAndAuthorizationService;
 
     @Autowired
     private GenericKeywordService genericKeywordService;

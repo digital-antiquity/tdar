@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
@@ -42,6 +43,9 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @Autowired
     private RecaptchaService recaptchaService;
+    
+    @Autowired
+    private AuthenticationService authenticationService;
 
     private UserRegistration registrationInfo = new UserRegistration(recaptchaService);
     private AntiSpamHelper h = registrationInfo.getH();
@@ -49,7 +53,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registrationInfo.validate(this, getAuthenticationAndAuthorizationService(), true);
+        List<String> errors = registrationInfo.validate(this, authenticationService, true);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
@@ -59,7 +63,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Action("process-registration")
     @PostOnly
     public String processRegistration() {
-        AuthenticationResult result = getAuthenticationAndAuthorizationService().addAndAuthenticateUser(
+        AuthenticationResult result = authenticationService.addAndAuthenticateUser(
                 registrationInfo, getServletRequest(), getServletResponse(), getSessionData());
         if (result.getType().isValid()) {
             registrationInfo.setPerson(result.getPerson());

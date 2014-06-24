@@ -35,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
@@ -59,6 +60,8 @@ import com.opensymphony.xwork2.Preparable;
 public class WorkspaceController extends AuthenticationAware.Base implements Preparable{
 
     private static final long serialVersionUID = -3538370664425794045L;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient DataIntegrationService dataIntegrationService;
@@ -256,7 +259,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         }
 
         for (Resource res : bookmarkedResources) {
-            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
+            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
         }
         return bookmarkedResources;
     }

@@ -63,7 +63,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
@@ -580,7 +580,7 @@ public class SearchService {
         getAuthenticationAndAuthorizationService().removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
     }
 
-    private AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+    private AuthorizationService getAuthenticationAndAuthorizationService() {
         return obfuscationService.getAuthenticationAndAuthorizationService();
     }
 

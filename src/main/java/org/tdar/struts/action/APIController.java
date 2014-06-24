@@ -29,6 +29,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -42,6 +43,9 @@ import com.gargoylesoftware.htmlunit.WebConsole.Logger;
 @Scope("prototype")
 @ParentPackage("secured")
 public class APIController extends AuthenticationAware.Base {
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
@@ -84,7 +88,7 @@ public class APIController extends AuthenticationAware.Base {
     public String view() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = resourceService.find(getId());
-            if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
+            if (!isAdministrator() && !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());

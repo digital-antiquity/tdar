@@ -393,7 +393,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public String setupValidUserInController(UserAccountController controller, TdarUser p, String password) {
         // cleanup crowd if we need to...
-        authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
+        authenticationService.getAuthenticationProvider().deleteUser(p);
         controller.getRegistration().setRequestingContributorAccess(true);
         controller.getRegistration().setInstitutionName(TESTING_AUTH_INSTIUTION);
         controller.getRegistration().setPassword(password);

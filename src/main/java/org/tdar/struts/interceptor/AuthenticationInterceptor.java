@@ -13,7 +13,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.UserAgreementController;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -49,15 +50,17 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     private final WeakHashMap<Method, RequiresTdarUserGroup> requiredGroupMethodCache = new WeakHashMap<>();
 
     @Autowired
-    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    private transient AuthenticationService authenticationService;
     // A Spring AOP session scoped proxy is injected here that retrieves the appropriate SessionData bound to the HTTP Session.
     private SessionData sessionData;
 
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+    public AuthorizationService getAuthenticationAndAuthorizationService() {
         return authenticationAndAuthorizationService;
     }
 
-    public void setAuthenticationAndAuthorizationService(AuthenticationAndAuthorizationService authenticationService) {
+    public void setAuthenticationAndAuthorizationService(AuthorizationService authenticationService) {
         this.authenticationAndAuthorizationService = authenticationService;
     }
 
@@ -142,7 +145,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         // user is authenticated and authorized to perform requested action.
         // now we check for any outstanding notices require user attention
         String result = null;
-        if (authenticationAndAuthorizationService.userHasPendingRequirements(user)
+        if (authenticationService.userHasPendingRequirements(user)
                 // avoid infinite redirect
                 && !(action instanceof UserAgreementController)) {
             logger.info("user: {} has pending agreements", user);

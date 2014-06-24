@@ -31,6 +31,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.FacetValue;
@@ -65,6 +66,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient ResourceService resourceService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<>();
@@ -95,7 +98,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (isNullOrNew()) {
             return false;
         }
-        return getAuthenticationAndAuthorizationService().canEditCollection(getAuthenticatedUser(), getPersistable());
+        return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
     /**
@@ -111,7 +114,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public boolean isViewable() {
-        return isEditable() || getAuthenticationAndAuthorizationService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return isEditable() || authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
     
@@ -274,7 +277,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         for (Resource resource : getPersistable().getResources()) {
             getLogger().trace("retain?: {}", resource);
             getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
+            boolean canEdit = authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
             if (!canEdit) {
                 retainedResources.add(resource);
             }
@@ -374,7 +377,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private void prepareProjectSection() {
         allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
     }
@@ -386,7 +389,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
             fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         }
         return fullUserProjects;
@@ -394,7 +397,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     @Override

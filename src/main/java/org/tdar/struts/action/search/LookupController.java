@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -66,6 +68,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private Long sortCategoryId;
     private boolean includeCompleteRecord = false;
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Action(value = "person",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
@@ -203,7 +207,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         if (checkMinString(term)) {
             q.append(new AutocompleteTitleQueryPart(getTerm()));
             boolean admin = false;
-            if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+            if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 admin = true;
             }
             CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(getAuthenticatedUser(), admin, getPermission());

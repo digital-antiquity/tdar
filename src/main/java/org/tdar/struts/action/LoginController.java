@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserLogin;
@@ -54,6 +56,11 @@ public class LoginController extends AuthenticationAware.Base {
 
     private AntiSpamHelper h = userLogin.getH();
 
+    @Autowired
+    private AuthenticationService authenticationService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
     @Override
     @HttpsOnly
     @Action(value = "login", results = {
@@ -75,7 +82,7 @@ public class LoginController extends AuthenticationAware.Base {
     @SkipValidation
     public String logout() {
         if (getSessionData().isAuthenticated()) {
-            getAuthenticationAndAuthorizationService().logout(getSessionData(), getServletRequest(), getServletResponse());
+            authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse());
         }
         return SUCCESS;
     }
@@ -103,7 +110,7 @@ public class LoginController extends AuthenticationAware.Base {
             @WriteableSession
             public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", getUserLogin().getLoginUsername());
-        List<String> validate = userLogin.validate(this, getAuthenticationAndAuthorizationService());
+        List<String> validate = userLogin.validate(this, authorizationService);
         addActionErrors(validate);
 
         if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
@@ -113,7 +120,7 @@ public class LoginController extends AuthenticationAware.Base {
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = getAuthenticationAndAuthorizationService().authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
+            status = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                     getSessionData());
         } catch (Exception e) {
             addActionError(e.getMessage());

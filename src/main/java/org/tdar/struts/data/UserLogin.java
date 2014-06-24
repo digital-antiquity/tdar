@@ -5,7 +5,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -46,7 +46,7 @@ public class UserLogin extends UserAuthData {
     }
 
     
-    public List<String> validate(TextProvider textProvider, AuthenticationAndAuthorizationService authService) {
+    public List<String> validate(TextProvider textProvider, AuthorizationService authService) {
 
         List<String> errors = new ArrayList<>();
 

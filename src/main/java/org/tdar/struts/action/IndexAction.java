@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
@@ -60,6 +61,8 @@ public class IndexAction extends AuthenticationAware.Base {
 
     @Autowired
     private ObfuscationService obfuscationService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private RssService rssService;
@@ -136,7 +139,7 @@ public class IndexAction extends AuthenticationAware.Base {
             for (HomepageFeaturedItemCache cache : getGenericService().findAllWithL2Cache(HomepageFeaturedItemCache.class)) {
                 Resource key = cache.getKey();
                 if (key instanceof InformationResource) {
-                    getAuthenticationAndAuthorizationService().applyTransientViewableFlag(key, null);
+                    authorizationService.applyTransientViewableFlag(key, null);
                 }
                 if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
                     obfuscationService.obfuscate(key, getAuthenticatedUser());

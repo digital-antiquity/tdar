@@ -31,6 +31,7 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
@@ -68,6 +69,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient InvoiceService cartService;
@@ -223,7 +226,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
-        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
+        if (authorizationService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
         if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
@@ -237,7 +240,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
-        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
+        if (authorizationService.can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
         if (getAuthenticatedUser().equals(getInvoice().getOwner())) {

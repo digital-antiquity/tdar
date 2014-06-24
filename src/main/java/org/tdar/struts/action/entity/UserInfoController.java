@@ -24,6 +24,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -42,7 +44,9 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     private transient ObfuscationService obfuscationService;
     @Autowired
     private transient AccountService accountService;
-
+    @Autowired
+    private transient AuthenticationService authenticationService;
+    
     private static final long serialVersionUID = -2666270784609372369L;
     private String proxyInstitutionName;
     private boolean passwordResetRequested;
@@ -59,6 +63,8 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
 
     @Autowired
     private transient EntityService entityService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")
@@ -121,7 +127,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
             getSessionData().getAuthenticationToken().setPerson(person);
         }
         if (passwordResetRequested) {
-            getAuthenticationAndAuthorizationService().getAuthenticationProvider().resetUserPassword(person);
+            authenticationService.getAuthenticationProvider().resetUserPassword(person);
         }
         return SUCCESS;
     }
@@ -138,7 +144,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword((TdarUser)getPerson(), password);
+            authenticationService.getAuthenticationProvider().updateUserPassword((TdarUser)getPerson(), password);
             addActionMessage(getText("personController.password_successfully_changed"));
         }
     }
@@ -159,7 +165,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            getAuthenticationAndAuthorizationService().updateUsername((TdarUser)getPerson(), newUsername, password);
+            authenticationService.updateUsername((TdarUser)getPerson(), newUsername, password);
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
             addActionMessage(getText("userAccountController.username_successfully_changed"));
             return true;
@@ -170,7 +176,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     @Override
     public boolean isEditable() {
         return getAuthenticatedUser().equals(getPersistable())
-                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
 
     @Override
@@ -188,7 +194,7 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
         try {
-            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPersistable()));
+            getGroups().addAll(authenticationService.getGroupMembership(getPersistable()));
         } catch (Throwable e) {
             getLogger().error("problem communicating with crowd getting user info for {} ", getPersistable(), e);
         }

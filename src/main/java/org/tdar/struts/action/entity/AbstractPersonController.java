@@ -12,6 +12,7 @@ import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
@@ -27,6 +28,8 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     private String institutionName;
 
     private String email;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient EntityService entityService;
@@ -108,7 +111,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     @Override
     public boolean isEditable() {
         return getAuthenticatedUser().equals(getPersistable())
-                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
 
     @Override

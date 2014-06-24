@@ -17,6 +17,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
@@ -38,6 +39,9 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private Object jsonResult = new HashMap<String, Object>();
 
     @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
     private transient DatasetService datasetService;
 
     @Autowired
@@ -54,7 +58,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
         }
         DataTable dataTable = getGenericService().find(DataTable.class, getId());
         Dataset dataset = dataTable.getDataset();
-        if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
+        if (dataset.isPublicallyAccessible() || authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
                 selectAllFromDataTable = datasetService.selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,

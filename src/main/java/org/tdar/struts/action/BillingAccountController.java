@@ -35,6 +35,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -70,6 +71,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Autowired
     private transient AccountService accountService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @SkipValidation
     @Action(value = CHOOSE, results = {
@@ -81,7 +84,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (invoice == null) {
             throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
         }
-        if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
+        if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
             throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
         setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
@@ -112,7 +115,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     public void loadListData() {
-        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+        if (authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getAccounts().addAll(accountService.findAll());
         }
     }
@@ -120,7 +123,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @SkipValidation
     @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
     public String listInvoices() {
-        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+        if (authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
             getInvoices().addAll(getGenericService().findAll(Invoice.class));
             Collections.sort(getInvoices(), new Comparator<Invoice>() {
                 @Override
@@ -206,7 +209,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             return false;
         }
 
-        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
+        if (authorizationService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
 
@@ -294,7 +297,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     public boolean isBillingAdmin() {
-        return getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
+        return authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
     }
 
     public BillingActivityModel getBillingActivityModel() {

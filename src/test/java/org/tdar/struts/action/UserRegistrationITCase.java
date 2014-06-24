@@ -21,7 +21,7 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.action.resource.ResourceController;
@@ -53,7 +53,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     private Configuration freemarkerConfiguration;
 
     @Autowired
-    AuthenticationAndAuthorizationService authService;
+    AuthenticationService authService;
 
     private List<TdarUser> crowdPeople = new ArrayList<TdarUser>();
 
@@ -243,8 +243,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         List<String> emails = Arrays.asList("aaaa-bbbbbb.ccccccc-ddddd@eeeeeee.ffff.hh");
 
         for (String email : emails) {
-            assertTrue(authenticationAndAuthorizationService.isValidEmail(email));
-            assertTrue(authenticationAndAuthorizationService.isValidUsername(email));
+            assertTrue(authenticationService.isValidEmail(email));
+            assertTrue(authenticationService.isValidUsername(email));
             logger.info("TRYING =======> {}", email);
             controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
             String execute = setupValidUserInController(controller, email);

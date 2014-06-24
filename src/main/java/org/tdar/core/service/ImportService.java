@@ -58,7 +58,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
@@ -91,7 +91,7 @@ public class ImportService {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
     @Autowired
-    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private AuthorizationService authenticationAndAuthorizationService;
     @Autowired
     private GenericService genericService;
     @Autowired

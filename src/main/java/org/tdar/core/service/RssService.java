@@ -38,7 +38,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.MessageHelper;
 
@@ -106,7 +106,7 @@ public class RssService implements Serializable {
     private transient ObfuscationService obfuscationService;
 
     @Autowired
-    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
 
     /**
      * Strip invalid characters from a string for XML (low-level ASCII)

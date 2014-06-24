@@ -17,7 +17,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,8 +41,6 @@ import com.opensymphony.xwork2.Action;
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
 public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegrationTestCase {
-    @Autowired
-    AuthenticationAndAuthorizationService authService;
 
     int tosLatestVersion = TdarConfiguration.getInstance().getTosLatestVersion();
     int contributorAgreementLatestVersion = TdarConfiguration.getInstance().getContributorAgreementLatestVersion();
@@ -74,14 +71,14 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     @Rollback
     public void testUserHasPendingRequirements() throws Exception {
         TdarUser legacyUser = user(false, 0, 0);
-        assertThat(authService.userHasPendingRequirements(legacyUser), is(true));
+        assertThat(authenticationService.userHasPendingRequirements(legacyUser), is(true));
 
         TdarUser legacyContributor = user(true, 0, 0);
-        assertThat(authService.userHasPendingRequirements(legacyContributor), is(true));
+        assertThat(authenticationService.userHasPendingRequirements(legacyContributor), is(true));
 
         // if user registered after latest version of TOS/CA, they have not pending requirements
         TdarUser newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
-        assertThat(authService.userHasPendingRequirements(newUser), is(false));
+        assertThat(authenticationService.userHasPendingRequirements(newUser), is(false));
 
     }
 
@@ -89,16 +86,16 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     public void testGetUserRequirements() throws Exception {
         // should not meet either requirement
         TdarUser legacyContributor = user(true, 0, 0);
-        List<AuthNotice> requirements = authService.getUserRequirements(legacyContributor);
+        List<AuthNotice> requirements = authenticationService.getUserRequirements(legacyContributor);
         assertThat(requirements, hasItems(AuthNotice.TOS_AGREEMENT, AuthNotice.CONTRIBUTOR_AGREEMENT));
 
         // should satisfy all requirements
         TdarUser newUser = user(false, tosLatestVersion, contributorAgreementLatestVersion);
-        assertThat(authService.getUserRequirements(newUser), empty());
+        assertThat(authenticationService.getUserRequirements(newUser), empty());
 
         // should satisfy all requirements
         TdarUser newContributor = user(true, tosLatestVersion, contributorAgreementLatestVersion);
-        assertThat(authService.getUserRequirements(newContributor), empty());
+        assertThat(authenticationService.getUserRequirements(newContributor), empty());
     }
 
     @Test
@@ -106,11 +103,11 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
     public void testSatisfyPrerequisite() throws Exception {
         // a contributor that hasn't signed on since updated TOS and creator agreement
         TdarUser contributor = user(true, 0, 0);
-        authService.satisfyPrerequisite(contributor, AuthNotice.TOS_AGREEMENT);
-        assertThat(authService.getUserRequirements(contributor), not(hasItem(AuthNotice.TOS_AGREEMENT)));
+        authenticationService.satisfyPrerequisite(contributor, AuthNotice.TOS_AGREEMENT);
+        assertThat(authenticationService.getUserRequirements(contributor), not(hasItem(AuthNotice.TOS_AGREEMENT)));
 
-        authService.satisfyPrerequisite(contributor, AuthNotice.CONTRIBUTOR_AGREEMENT);
-        assertThat(authService.getUserRequirements(contributor), not(hasItems(AuthNotice.TOS_AGREEMENT,
+        authenticationService.satisfyPrerequisite(contributor, AuthNotice.CONTRIBUTOR_AGREEMENT);
+        assertThat(authenticationService.getUserRequirements(contributor), not(hasItems(AuthNotice.TOS_AGREEMENT,
                 AuthNotice.CONTRIBUTOR_AGREEMENT)));
     }
 
@@ -122,20 +119,20 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         TdarUser user = getBasicUser();
         user.setContributorAgreementVersion(0);
         init(controller, user);
-        assertThat(authService.getUserRequirements(user), hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT));
+        assertThat(authenticationService.getUserRequirements(user), hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT));
         List<AuthNotice> list = new ArrayList<>();
         list.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         list.add(AuthNotice.TOS_AGREEMENT);
         logger.info("{}", controller.getSessionData());
         logger.info("{}", controller.getSessionData().getPerson());
-        authService.satisfyUserPrerequisites(controller.getSessionData(), list);
-        assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
+        authenticationService.satisfyUserPrerequisites(controller.getSessionData(), list);
+        assertThat(authenticationService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
         evictCache();
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
                 TdarUser user = getBasicUser();
-                assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
+                assertThat(authenticationService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
                 user.setContributorAgreementVersion(0);
                 genericService.saveOrUpdate(user);
                 return null;
@@ -153,15 +150,15 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         person.setUsername(person.getEmail());
         person.setContributor(true);
 
-        AuthenticationProvider oldProvider = authenticationAndAuthorizationService.getProvider();
-        authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(person);
+        AuthenticationProvider oldProvider = authenticationService.getProvider();
+        authenticationService.getAuthenticationProvider().deleteUser(person);
         Properties crowdProperties = new Properties();
         crowdProperties.put("application.name", "tdar.test");
         crowdProperties.put("application.password", "tdar.test");
         crowdProperties.put("application.login.url", "http://localhost/crowd");
         crowdProperties.put("crowd.server.url", "http://localhost/crowd");
 
-        authenticationAndAuthorizationService.setProvider(new CrowdRestDao(crowdProperties));
+        authenticationService.setProvider(new CrowdRestDao(crowdProperties));
 
         String password = "super.secret";
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
@@ -189,7 +186,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         } catch (Exception e) {
             logger.error("{}", e);
         } finally {
-            authenticationAndAuthorizationService.setProvider(oldProvider);
+            authenticationService.setProvider(oldProvider);
         }
         logger.info("errors: {}", controller.getActionErrors());
         assertEquals("result is not input :" + execute, execute, Action.INPUT);
