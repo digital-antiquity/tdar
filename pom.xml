@@ -2408,6 +2408,26 @@
                 </plugins>
             </build>
         </profile>
+
+        <!--profile: skip-web-tests - when activated,  skip all integration tests with title ending in WebITCase.java -->
+        <!--TODO: don't fire up webserver when this profile is active -->
+        <profile>
+            <id>skip-web-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/WebITCase.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
     </profiles>
 
     <scm>
