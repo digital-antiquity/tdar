@@ -55,6 +55,15 @@
         <@s.password required=true label='Confirm password' name='reg.confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
     </div>
 </div>
+
+<#if (level > 1)>
+    <div class="row">
+        <div class="span4">
+            <@s.textfield label='Work phone' labelposition='left' name='reg.person.phone' id='phone' cssClass=" input-xlarge"/>
+        </div>
+    </div>
+</#if>
+
 <div class="row">
     <div class="${spanfull}">
         <div class="control-group">

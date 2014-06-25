@@ -1282,7 +1282,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
 
-        String username = values.get("registration.person.username");
+        String username = values.get("reg.person.username");
         if (deleteFirst) {
             TdarUser p = new TdarUser();
             p.setUsername(username);
@@ -1296,11 +1296,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
 
         if (includeTos) {
-            setInput("registration.acceptTermsOfUse","true");
+            setInput("reg.acceptTermsOfUse","true");
 
         }
         if (includeUserAgreement) {
-            setInput("registration.requestingContributorAccess", "true");
+            setInput("reg.requestingContributorAccess", "true");
         }
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
@@ -1309,21 +1309,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
-        personmap.put("registration.person.firstName", prefix + "firstName");
-        personmap.put("registration.person.lastName", prefix + "lastName");
-        personmap.put("registration.person.email", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.confirmEmail", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.person.username", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.password", "secret");
-        personmap.put("registration.confirmPassword", "secret");
-        personmap.put("registration.institutionName", "institution");
-        personmap.put("registration.person.phone", "1234567890");
-        personmap.put("registration.contributorReason", "there is a reason");
+        personmap.put("reg.person.firstName", prefix + "firstName");
+        personmap.put("reg.person.lastName", prefix + "lastName");
+        personmap.put("reg.person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put("reg.confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("reg.person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put("reg.password", "secret");
+        personmap.put("reg.confirmPassword", "secret");
+        personmap.put("reg.institutionName", "institution");
+        personmap.put("reg.person.phone", "1234567890");
+        personmap.put("reg.contributorReason", "there is a reason");
         // personmap.put("contributor", "true");
-        personmap.put("registration.affilliation", UserAffiliation.GRADUATE_STUDENT.name());
+        personmap.put("reg.affiliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
-//        personmap.put("registration.acceptTermsOfUse","true");
-//        personmap.put("registration.requestingContributorAccess", "true");
+//        personmap.put("reg.acceptTermsOfUse","true");
+//        personmap.put("reg.requestingContributorAccess", "true");
     }
 
     @Override

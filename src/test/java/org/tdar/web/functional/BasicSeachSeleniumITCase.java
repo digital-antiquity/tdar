@@ -21,6 +21,7 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     public void setup() {
         reindexOnce();
     }
+    
 
     @Test
     public void testBrowse() {
