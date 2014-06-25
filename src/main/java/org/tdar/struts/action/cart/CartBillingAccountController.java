@@ -103,12 +103,7 @@ public class CartBillingAccountController extends AbstractCartController {
         if (selectedAccount != null) {
             acct = selectedAccount;
         }
-        acct.getInvoices().add(getInvoice());
-        if (Persistable.Base.isTransient(acct)) {
-            acct.markUpdated(getInvoice().getOwner());
-            acct.setStatus(Status.ACTIVE);
-        }
-        getGenericService().saveOrUpdate(acct);
+        accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
         return SUCCESS;
     }
 

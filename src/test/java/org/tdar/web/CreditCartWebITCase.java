@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,6 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlOption;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })

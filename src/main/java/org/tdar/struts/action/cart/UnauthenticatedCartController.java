@@ -218,7 +218,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @PostOnly
     public String preview() {
         try {
-            setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), getOwner(), code, extraItemIds, extraItemQuantities, pricingType,
+            setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraItemIds, extraItemQuantities, pricingType,
                     accountId));
         } catch (Exception trex) {
             addActionError(trex.getLocalizedMessage());
@@ -226,12 +226,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
         }
 
         storePendingInvoice(getInvoice());
-
-        // if user is authenticated, redirect them to billing account selection (todo: or go w/ adam's idea of having a review-part-2 page, which has billing
-        // account selection)
-        // if (isAuthenticated()) {
-        // return "authenticated";
-        // }
 
         return SUCCESS;
     }
@@ -245,7 +239,6 @@ public class UnauthenticatedCartController extends AbstractCartController {
     // @GetOnly
     //FIXME: actions that service GET request should always be idempotent (writeable session on a GET request is a "tdar code smell")
     //FIXME: This action facilitates two distinct steps in the workflow: the "review your filecount/mb selection" page and the  "choose a billing account" page. They should be broken out into two actions.
-    @WriteableSession
     public String showInvoice() {
         // todo: if not authenticated, render the review page w/ signup/login form
         if (getInvoice() == null) {
@@ -254,21 +247,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
 
         //the view layer relies on invoice.isProxy(),  when in-turn relies on invoice.owner and invoice.transactedBy
         if (getAuthenticatedUser() != null) {
-            if (getInvoice().getOwner() == null) {
-                getInvoice().setOwner(getAuthenticatedUser());
-                getInvoice().setTransactedBy(getAuthenticatedUser());
-            }
-
             getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             getLogger().debug("accounts; {}", getAccounts());
-            Account account = accountService.createAccountForUserIfNeeded(getInvoice().getOwner(), getAccounts(), getInvoice());
-            if (CollectionUtils.isNotEmpty(getAccounts())) {
-                getAccounts().add(new Account("Add an account"));
-            }
-
-            if (account != null) {
-                setAccountId(account.getId());
-            }
         }
         return SUCCESS;
     }

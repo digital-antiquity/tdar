@@ -32,9 +32,9 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     // list of billing accounts that the user may choose from when assigning the invoice
     private Set<Account> accounts = new HashSet<>();
 
-    // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
-    private TdarUser owner = new TdarUser();
-    private Long ownerId;
+//    // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
+//    private TdarUser owner = new TdarUser();
+//    private Long ownerId;
 
     @Autowired
     private transient RecaptchaService recaptchaService; 
@@ -75,22 +75,22 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         invoice = loadPendingInvoice();
     }
 
-    public TdarUser getOwner() {
-        return owner;
-    }
-
-    // subclasses may set the owner, but we don't want this coming from struts
-    protected void setOwner(TdarUser owner) {
-        this.owner = owner;
-    }
-
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
+//    public TdarUser getOwner() {
+//        return owner;
+//    }
+//
+//    // subclasses may set the owner, but we don't want this coming from struts
+//    protected void setOwner(TdarUser owner) {
+//        this.owner = owner;
+//    }
+//
+//    public Long getOwnerId() {
+//        return ownerId;
+//    }
+//
+//    public void setOwnerId(Long ownerId) {
+//        this.ownerId = ownerId;
+//    }
 
     @Override
     /*

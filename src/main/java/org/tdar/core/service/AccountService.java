@@ -1,8 +1,5 @@
 package org.tdar.core.service;
 
-import static org.tdar.core.bean.resource.Status.ACTIVE;
-import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -673,5 +670,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public Collection<? extends Account> listAvailableAccountsForCartAccountSelection(TdarUser owner, Status... status) {
         Set<Account> accounts = listAvailableAccountsForUser(owner, status);
         return accounts;
+    }
+
+    @Transactional
+    public void processBillingAccountChoice(Account acct, Invoice invoice, TdarUser authenticatedUser) {
+        if (invoice.getOwner() == null) {
+            invoice.setOwner(authenticatedUser);
+        }
+        if (Persistable.Base.isTransient(acct)) {
+            acct.markUpdated(invoice.getOwner());
+            acct.setStatus(Status.ACTIVE);
+        }
+        invoice.markUpdated(authenticatedUser);
+        acct.getInvoices().add(invoice);
+        getDao().saveOrUpdate(invoice);
+        getDao().saveOrUpdate(acct);
+
     }
 }

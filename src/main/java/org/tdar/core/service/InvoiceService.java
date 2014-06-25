@@ -437,7 +437,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional(readOnly = false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, TdarUser owner, String code, List<Long> extraItemIds,
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, List<Long> extraItemIds,
             List<Integer> extraItemQuantities, PricingType pricingType, Long accountId) {
         boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
         if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
@@ -445,7 +445,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         invoice.getItems().clear();
-
+        
         Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
         for (int i = 0; i < extraItemIds.size(); i++) {
             BillingActivity act = actIdMap.get(extraItemIds.get(i));
@@ -477,8 +477,20 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         invoice.setTransactedBy(authenticatedUser);
+
+
+        TdarUser owner = invoice.getOwner();
+        // if we have an owner
         if (billingManager && isNotNullOrTransient(owner)) {
             invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
+        } else {
+            // if we're logged in
+            if (authenticatedUser != null) {
+                invoice.setOwner(authenticatedUser);
+            } else {
+                // just in case, clear it as we may have a transient instance id=-1
+                invoice.setOwner(null);
+            }
         }
         invoice.markUpdated(authenticatedUser);
         // if invoice is persisted it will be read-only, so make it writable

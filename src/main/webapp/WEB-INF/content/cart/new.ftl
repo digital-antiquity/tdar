@@ -161,7 +161,7 @@
 
                 <div class="controls">
 
-                    <@edit.registeredUserRow prefix="owner" person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
+                    <@edit.registeredUserRow prefix="invoice.owner" person=blankAuthorizedUser.user _indexNumber="" includeRepeatRow=false/>
 
             <@nav.clearDeleteButton id="clearAssignedOwner" />
                 </div>
