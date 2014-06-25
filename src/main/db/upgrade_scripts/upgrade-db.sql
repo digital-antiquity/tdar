@@ -184,7 +184,7 @@ create table user_notification (
     id  bigserial not null,
     date_created timestamp not null,
     expiration_date date,
-    message_key varchar(255) not null,
+    message_key text not null,
     message_type varchar(32) not null,
     user_id int8 references tdar_user,
     primary key (id)
@@ -192,6 +192,8 @@ create table user_notification (
 
 alter table tdar_user add column dismissed_notifications_date timestamp;
 alter table tdar_user rename column affilliation to affiliation;
-insert into user_notification(date_created, message_key,message_type) VALUES(now(), 'lithic-announce','SYSTEM_BROADCAST');
-
-insert into user_notification(date_created, message_key,user_id) SELECT now(),'pre-tdar-invoice','INFO', tdar_user.id from pos_account, person where owner_id=person.id and pos_account.description like '%auto-gen%' and (last_login is null or last_login < '2013-01-01');
+insert into user_notification(date_created, message_key, message_type) VALUES (current_timestamp, 'lithic-announce','SYSTEM_BROADCAST');
+insert into user_notification(date_created, message_key, message_type, user_id) 
+    SELECT current_timestamp, 'pre-tdar-invoice', 'INFO', tdar_user.id
+    FROM pos_account, tdar_user 
+    WHERE pos_account.owner_id=tdar_user.id and pos_account.description like '%auto-gen%' and (tdar_user.last_login is null or tdar_user.last_login < '2013-01-01');

@@ -7,12 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
@@ -49,6 +51,7 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     @Column(name = "message_type", length = 32, nullable = false)
     private UserNotificationType messageType;
 
+    @Lob
     @Column(name = "message_key", nullable = false)
     private String messageKey;
 
@@ -117,7 +120,11 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     }
     
     public void setMessage(TextProvider textProvider) {
-        setMessage(textProvider.getText(getMessageKey()));
+        String text = textProvider.getText(getMessageKey());
+        if (StringUtils.isBlank(text)) {
+            text = getMessageKey(); 
+        }
+        setMessage(text);
     }
 
 }
