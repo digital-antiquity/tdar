@@ -126,6 +126,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
+    
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -423,7 +424,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
         resolveProject();
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
+        Project obsProj = getGenericService().find(Project.class, getProjectId());
+        getObfuscationService().obfuscate(obsProj, getAuthenticatedUser());
+        json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(),null);
         return retval;
     }
 

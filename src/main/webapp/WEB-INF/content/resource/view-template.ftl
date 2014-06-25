@@ -427,7 +427,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 </#if>
             </#list>
             <#if contents?has_content>
-                <#assign keyLabel>${key.key}(s)</#assign>
+                <#assign keyLabel><#noescape>${key.key}</#noescape>(s)</#assign>
                 <@view.kvp key=keyLabel val=contents noescape=true />
             </#if>
         </#list>
