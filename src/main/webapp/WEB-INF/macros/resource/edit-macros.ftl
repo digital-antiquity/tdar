@@ -133,8 +133,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             <#if switchableMapObfuscation>
                 <@helptext.showExactLocationTip />
-                <div class="" id="showExactLocation" data-tiplabel="Is it OK to show the exact location?" data-tooltipcontent="#showExactLocationHelpDiv">
-                    <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Is it OK to show the exact location?' labelposition='right'  />
+                    <div class="" id="showExactLocation" data-tiplabel="Reveal location to public users?" data-tooltipcontent="#showExactLocationHelpDiv" >
+                        <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Reveal location to public users?' labelposition='right'  />
                 </div>
             </#if>
         </div>
@@ -915,7 +915,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <td class="preview">
         <#--
                         <#if (proxy.informationResourceFile.latestThumbnail)?has_content>
-            	<img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
+                <img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
             </#if>
             
             -->
@@ -1009,12 +1009,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         </optgroup>
                     </#if>
 
-                    <optgroup label="Projects you have been given access to">
-                        <#list fullUserProjects?sort_by("titleSort") as editableProject>
-                            <option value="${editableProject.id?c}"
+                    <#if fullUserProjects??>
+                        <optgroup label="Projects you have been given access to">
+                            <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                                <option value="${editableProject.id?c}"
                                     title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
-                        </#list>
-                    </optgroup>
+                            </#list>
+                        </optgroup>
+                    </#if>
                 </select>
             </div>
 

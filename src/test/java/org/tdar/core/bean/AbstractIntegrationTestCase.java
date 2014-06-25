@@ -792,9 +792,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
-                logger.error(err.toString());
+                logger.error("*=> schema error: {0} ", err.toString());
             }
-            assertTrue(v.isSchemaValid());
+            assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
         }
     }
 

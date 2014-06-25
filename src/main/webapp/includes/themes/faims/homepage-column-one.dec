@@ -5,7 +5,41 @@
     <p>If you wish to deposit data contact <a href="mailto:leadership@fedarch.org?subject=FAIMS%20deposit">leadership@fedarch.org</a>.</p>
   </div>
 </#if>
-
+<div class="row">
+            <div class="span3 bucket">
+                <img src="/images/r4/icn-data.png" alt="Access / Use"/>
+                <h3>Access &amp; Use</h3>
+                <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-pres.png" alt="Preservation"/>
+                <h3>Preservation</h3>
+                <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-stew.png" alt="Stewardship"/>
+                <h3>Upload Resources</h3>
+                <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-uses.png" alt="Use" />
+                <h3>Who Uses FAIMS</h3>
+                <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+</div>
+<hr />
 <h3>Browse Your Field Of Research</h3>
 <div class="container">
   <div class="row">

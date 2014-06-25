@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import org.tdar.struts.data.FileProxy;
 
 /**
  * Wraps an archive file, such as a zip file or a tarball.
- * 
+ *
  * @author Martin Paulo
  */
 @ParentPackage("secured")
@@ -35,7 +36,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
         // this is a little hacky, but we need to re-process the file to get the work flow to make a copy of the tarball if
         // the user has checked the 'do import content' flag. In the time frame available I can't think of another way to do this.
         boolean isOnlyMetadataChanged = false;
-        for (FileProxy fp : fileProxies) {
+        for( FileProxy fp: fileProxies) {
             if (fp.getAction() == FileAction.MODIFY_METADATA) {
                 isOnlyMetadataChanged = true;
                 break;
@@ -54,7 +55,16 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForType(ResourceType.ARCHIVE);
+        // The following used to be the returned value. I'm leaving it as dead code so 
+        // any refactoring that might happen (? unlikely, but..) will still affect it. 
+        @SuppressWarnings("unused")
+        
+        Set<String> usedToBe = getAnalyzer().getExtensionsForType(ResourceType.ARCHIVE);
+        // But due to user confusion on the interface, we have a choice of limiting the file archive
+        // type to bz2 or of changing the user interface. So we limit it here for the time being.
+        Set<String> toReturn = new HashSet<>();
+        toReturn.add("bz2");
+        return toReturn;
     }
 
     public void setArchive(final Archive archive) {
