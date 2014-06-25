@@ -812,5 +812,25 @@ View freemarker macros
         </#if>
     </#macro>
 
+<#macro featured header="Featured Content" span="span12">
+<div class="tdar-slider slider ${span}">
+    <h3>${header}</h3>
+
+    <div id="slider" class="carousel slide">
+        <!-- Carousel items -->
+        <div class="carousel-inner">
+            <#list featuredResources as featuredResource>
+            <#if featuredResource?has_content>
+                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+            </#if>
+            </#list>
+        </div>
+        <!-- Carousel nav -->
+        <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
+        <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
+    </div>
+</div>
+</#macro>
+
 </#escape>
 <#-- NOTHING SHOULD GO AFTER THIS -->

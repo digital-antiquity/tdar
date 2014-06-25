@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+    <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
@@ -28,29 +29,34 @@
                 <hr/>
             </#if>
         <#else>
-        <div id="myCarousel" class="carousel slide" data-interval="5000">
+            <div id="myCarousel" class="carousel slide" data-interval="5000">
                 <#assign showBuy = (!accounts?has_content) />
-        
-  <ol class="carousel-indicators">
-    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-    <#if showBuy><li data-target="#myCarousel" data-slide-to="1"></li></#if>
-    <li data-target="#myCarousel" data-slide-to="2"></li>
-  </ol>
-  <!-- Carousel items -->
-  <div class="carousel-inner">
-    <div class="active item">Manual</div>
-        <#if (showBuy)>
-        <div class="item">
-            Buy tDAR now
+              <!-- Carousel items -->
+              <div class="carousel-inner">
+                <div class="active item">
+                    <img class="" src="#" width=120 height=150/>
+                        Read the Manual
+                </div>
+                    <#if (showBuy)>
+                    <div class="item">
+                        <img class="" src="#" width=120 height=150/>
+                            Buy tDAR now
+                    </div>
+                    </#if>
+                <div class="item">
+                        <img class="" src="#" width=120 height=150/>
+                            Explore Content now
+                </div>
+              </div>
+              <div class="clearfix centered">
+              <ol class="carousel-indicators" >
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <#if showBuy><li data-target="#myCarousel" data-slide-to="1"></li></#if>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+              </ol>
+              </div>
+
         </div>
-        </#if>
-    <div class="item">content</div>
-  </div>
-  <#-- Carousel nav 
-  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
-  -->
-</div>
         </#if>
         <@collectionsSection />
     </div>
@@ -87,7 +93,7 @@
     <#if featuredResources?has_content  >
     <hr/>
     <div class="row">
-        <#include "../featured.ftl" />
+        <@view.featured span="span9" header="Featured and Recent Content"/>
     </div>
     </#if>
     </#if>
@@ -100,18 +106,13 @@
 
 <#macro searchSection>
     <div class="row">
-    <div class="span9">
-        <form name="searchheader" action="<@s.url value="/search/results"/>">
+        <div class="span9">
+            <form name="searchheader" action="<@s.url value="/search/results"/>">
                 <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
                 <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
-        <#-- 
-        <h2>Sorting Options and Submit</h2>
-        <@search.sortFields /> -->
-        <@s.submit value="Search" cssClass="btn btn-primary" />
-        
+                <@s.submit value="Search" cssClass="btn btn-primary" />
             </form>
-    
-    </div>    
+        </div>    
     </div>
 
 </#macro>

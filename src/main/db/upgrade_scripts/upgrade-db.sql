@@ -23,6 +23,9 @@ create table tdar_user (
 insert into tdar_user (id, username, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id) select id, username, affilliation, contributor, contributor_agreement_version, contributor_reason, last_login, penultimate_login, proxy_note, tos_version, total_login, proxyinstitution_id from person where username is not null;
 
 
+alter table person ALTER COLUMN contributor drop not null;
+alter table person ALTER COLUMN registered drop not null;
+
 --alter table person drop column registered;
 --alter table person drop column affilliation;
 --alter table person drop column contributor;
@@ -34,7 +37,6 @@ insert into tdar_user (id, username, affilliation, contributor, contributor_agre
 --alter table person drop column tos_version;
 --alter table person drop column total_login;
 --alter table person drop column username;
---alter table person drop column id;
 --alter table person drop column proxyInstitution_id;
 
 
@@ -191,3 +193,5 @@ create table user_notification (
 alter table tdar_user add column dismissed_notifications_date timestamp;
 alter table tdar_user rename column affilliation to affiliation;
 insert into user_notification(date_created, message_key,message_type) VALUES(now(), 'lithic-announce','SYSTEM_BROADCAST');
+
+insert into user_notification(date_created, message_key,user_id) SELECT now(),'pre-tdar-invoice','INFO', tdar_user.id from pos_account, person where owner_id=person.id and pos_account.description like '%auto-gen%' and (last_login is null or last_login < '2013-01-01');
