@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.UserNotification;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.AccountService;
@@ -34,6 +35,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
@@ -87,9 +89,14 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     private transient EntityService entityService;
     @Autowired
     private transient ResourceService resourceService;
+
+    @Autowired
+    private transient UserNotificationService userNotificationService;
+
     private List<Project> allSubmittedProjects;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
+    private List<UserNotification> currentNotifications;
 
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
@@ -109,6 +116,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
     @Action("dashboard")
     public String execute() {
         setupRecentResources();
+        setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
         getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         getLogger().trace("find empty projects");
@@ -406,6 +414,14 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
     public void setFeaturedResources(List<Resource> featuredResources) {
         this.featuredResources = featuredResources;
+    }
+
+    public List<UserNotification> getCurrentNotifications() {
+        return currentNotifications;
+    }
+
+    public void setCurrentNotifications(List<UserNotification> currentNotifications) {
+        this.currentNotifications = currentNotifications;
     }
 
 }

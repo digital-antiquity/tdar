@@ -190,3 +190,4 @@ create table user_notification (
 
 alter table tdar_user add column dismissed_notifications_date timestamp;
 alter table tdar_user rename column affilliation to affiliation;
+insert into user_notification(date_created, message_key,message_type) VALUES(now(), 'lithic-announce','SYSTEM_BROADCAST');

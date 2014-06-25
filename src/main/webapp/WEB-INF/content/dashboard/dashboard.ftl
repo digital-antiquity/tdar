@@ -284,18 +284,7 @@
 
 <script>
     $(document).ready(function () {
-        $("[data-dismiss-cookie]").each(function () {
-            var $this = $(this);
-            var id = $this.data('dismiss-cookie');
-            if ($.cookie(id)) {
-                $("#" + id).hide();
-            } else {
-                $this.click(function () {
-                    $.cookie(id, id);
-                });
-            }
-        });
-
+        TDAR.notifications.init();
         TDAR.common.collectionTreeview();
     });
 </script>
@@ -303,21 +292,12 @@
 
 
 <#macro headerNotifications>
-    <#if payPerIngestEnabled>
-        <div class="news alert" id="alert-charging">
-            <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="alert-charging">&times;</button>
-            <B>${siteAcronym} Update:</B>
-            Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing">the website</a> for
-            more information.
-            <br/>
-            <br/>
-            <#if (authenticatedUser.id < 145165 )>
-                If you are a contributor who uploaded files to tDAR during the free period, we've generated an account for those files. As a thank you for your
-                support, we have credited your account with one additional file (up to 10 MB, a $50 value) to get your next project started.  </#if>
-            <br/>
+    <#list currentNotifications as notification>
+        <div class="${notification.messageType} alert" id="${notification.messageKey}">
+        <button type="button" class="close" data-dismiss="alert" data-dismiss-id="${notification.id?c}" >&times;</button>
+        <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]
         </div>
-    </#if>
-
+    </#list>
 
     <#if resourcesWithErrors?has_content>
     <div class="alert-error alert">
