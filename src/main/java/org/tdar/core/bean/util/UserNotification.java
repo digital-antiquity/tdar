@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 
@@ -52,6 +53,7 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     private UserNotificationType messageType;
 
     @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "message_key", nullable = false)
     private String messageKey;
 

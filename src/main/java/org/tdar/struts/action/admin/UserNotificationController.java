@@ -63,7 +63,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         if (notification == null) {
             notification = new UserNotification();
         }
-        getLogger().debug("now has notification: {}", notification);
+        getLogger().debug("prepared notification: {}", notification);
     }
 
     @Actions({
@@ -74,7 +74,6 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         allNotifications = userNotificationService.findAll(this);
         notificationsJson = xmlService.convertFilteredJsonForStream(allNotifications, null, null);
         allMessageTypesJson = xmlService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
-        getLogger().debug("notifications: {}, allMessageTypes: {}", notificationsJson, allMessageTypesJson);
         return SUCCESS;
     }
 
@@ -89,13 +88,11 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         jsonMap.put("message", getText(messageKey));
         String json = xmlService.convertFilteredJsonForStream(jsonMap, null, null);
         this.resultJson = new ByteArrayInputStream(json.getBytes());
-        getLogger().debug("resultJson: {}", json);
         return SUCCESS;
-
     }
 
-    // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
     @Action(value = "update",
+            // FIXME: using CSRF with ajax requires a fresh token per request.
             // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
@@ -110,8 +107,8 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
         return SUCCESS;
     }
 
-    // FIXME: using CSRF with Ajax means we'll need to request a token for every ajax request.
     @Action(value = "delete",
+            // FIXME: using CSRF with ajax requires a fresh token per request.
             // interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
@@ -131,21 +128,15 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
             })
     public String generateToken() {
         Map<String, Object> context = ActionContext.getContext().getValueStack().getContext();
+        Map<String, Object> jsonMap = new HashMap<>();
         Object token = context.get("token");
         if (token == null) {
             token = TokenHelper.setToken("token");
             context.put("token", token);
         }
-        String json = xmlService.convertFilteredJsonForStream(context, null, null);
+        jsonMap.put("token", token);
+        String json = xmlService.convertFilteredJsonForStream(jsonMap, null, null);
         this.resultJson = new ByteArrayInputStream(json.getBytes());
-        getLogger().debug("json: {}", json);
-        return SUCCESS;
-
-    }
-
-    @Action("add")
-    @PostOnly
-    public String add() {
         return SUCCESS;
     }
 
