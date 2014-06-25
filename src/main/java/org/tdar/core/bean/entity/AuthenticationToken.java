@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -28,7 +29,8 @@ public class AuthenticationToken extends Persistable.Base {
     public final static AuthenticationToken INVALID = new AuthenticationToken();
 
     @ManyToOne(optional = false)
-    private TdarUser person;
+    @JoinColumn(name = "tdar_user_id", nullable = false)
+    private TdarUser tdarUser;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, name = "session_start")
@@ -38,22 +40,22 @@ public class AuthenticationToken extends Persistable.Base {
     @Column(name = "session_end")
     private Date sessionEnd;
 
-    public static AuthenticationToken create(TdarUser person) {
-        if (person == null) {
+    public static AuthenticationToken create(TdarUser tdarUser) {
+        if (tdarUser == null) {
             throw new NullPointerException(MessageHelper.getMessage("authenticationToken.undefined_person"));
         }
         AuthenticationToken token = new AuthenticationToken();
-        token.setPerson(person);
+        token.setTdarUser(tdarUser);
         token.setSessionStart(new Date());
         return token;
     }
 
-    public TdarUser getPerson() {
-        return person;
+    public TdarUser getTdarUser() {
+        return tdarUser;
     }
 
-    public void setPerson(TdarUser person) {
-        this.person = person;
+    public void setTdarUser(TdarUser tdarUser) {
+        this.tdarUser = tdarUser;
     }
 
     public Date getSessionStart() {
@@ -67,11 +69,11 @@ public class AuthenticationToken extends Persistable.Base {
     /**
      * Returns true if this authentication token is valid. Current policy does not utilize timeouts or sessionStart timestamp.
      * 
-     * @return true if the Person wrapped by this AuthenticationToken is not null and a registered user of tDAR, false otherwise.
+     * @return true if the TdarUser wrapped by this AuthenticationToken is not null and a registered user of tDAR, false otherwise.
      */
     @Transient
     public boolean isValid() {
-        return (person != null) && person.isRegistered();
+        return (tdarUser != null) && tdarUser.isRegistered();
     }
 
     public Date getSessionEnd() {
@@ -84,6 +86,6 @@ public class AuthenticationToken extends Persistable.Base {
 
     @Override
     public String toString() {
-        return "auth token for " + person + " with id: " + getId();
+        return "auth token for " + tdarUser + " with id: " + getId();
     }
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -55,9 +54,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
     private Long userId;
     private boolean asyncSave = true;
-    private LinkedList<Throwable> errors = new LinkedList<Throwable>();
+    private LinkedList<Throwable> errors = new LinkedList<>();
 
-    private List<LookupSource> indexesToRebuild = new ArrayList<LookupSource>();
+    private List<LookupSource> indexesToRebuild = new ArrayList<>();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -77,9 +76,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public String startIndex() {
         if (!isReindexing()) {
             Date date = new Date();
-            List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
+            List<Class<? extends Indexable>> toReindex = new ArrayList<>();
             getLogger().info("{}", getIndexesToRebuild());
-            searchIndexService.getClassessToReindex(getIndexesToRebuild().toArray(new LookupSource[0]));
+            searchIndexService.getClassesToReindex(getIndexesToRebuild());
 
             getLogger().info("to reindex: {}", toReindex);
             Person person = null;

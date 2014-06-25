@@ -57,7 +57,7 @@ public class Activity implements Serializable {
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
         if (sessionData != null) {
-            setUser(sessionData.getPerson());
+            setUser(sessionData.getTdarUser());
         }
     }
 

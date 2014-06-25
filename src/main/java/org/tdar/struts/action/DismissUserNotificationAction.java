@@ -14,7 +14,6 @@ import org.tdar.core.bean.util.UserNotification;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -23,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/notification")
 @Component
 @Scope("prototype")
-public class DissmissUserNotificationAction extends AuthenticationAware.Base implements Preparable {
+public class DismissUserNotificationAction extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -1680185105953721985L;
 
@@ -37,13 +36,13 @@ public class DissmissUserNotificationAction extends AuthenticationAware.Base imp
 
     private UserNotification notification;
 
-    @Action(value = "dissmiss", results = {
+    @Action(value = "dismiss", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
             @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
     })
     @WriteableSession
     @PostOnly
-    public String dissmiss() {
+    public String dismiss() {
         try {
             userNotificationService.dismiss(getAuthenticatedUser(), getNotification());
             jsonResult.put("success", "success");

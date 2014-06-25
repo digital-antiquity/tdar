@@ -52,7 +52,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
             if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
-                activity.setUser(sessionData.getPerson());
+                activity.setUser(sessionData.getTdarUser());
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
         }

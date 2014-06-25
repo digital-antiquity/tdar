@@ -57,8 +57,8 @@
                     <div class='controls'><select name='notification.messageType' data-bind='options: $root.messageTypes, value: messageType'></select></div>
                 </div>
                 <div class='control-group'>
-                    <label class='control-label'>Message Key</label>
-                    <div class='controls'><input type='text' name='notification.messageKey' data-bind='value: messageKey' placeholder='Message key'></div>
+                    <label class='control-label'>Message</label>
+                    <div class='controls'><textarea rows="5" name='notification.messageKey' data-bind='value: messageKey' placeholder='Message / key'></textarea></div>
                 </div>
                 <div class='control-group'>
                     <label class='control-label'>Message</label>

@@ -229,7 +229,7 @@ Common macros used in multiple contexts
                                 <li><a href="${bugReportUrl}">Report a Bug</a></li>
                                 <li><a href="${commentUrl}">Comments</a></li>
                                 <#if authenticatedUser??>
-                                    <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Update your profile</a></li>
+                                    <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.tdarUser.id?c}'/>">Update your profile</a></li>
                                 </#if>
                             </ul>
 

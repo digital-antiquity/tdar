@@ -192,8 +192,10 @@ create table user_notification (
 
 alter table tdar_user add column dismissed_notifications_date timestamp;
 alter table tdar_user rename column affilliation to affiliation;
-insert into user_notification(date_created, message_key, message_type) VALUES (current_timestamp, 'lithic-announce','SYSTEM_BROADCAST');
+insert into user_notification(id, date_created, message_key, message_type) VALUES (1, current_timestamp, 'lithic-announce','SYSTEM_BROADCAST');
 insert into user_notification(date_created, message_key, message_type, user_id) 
     SELECT current_timestamp, 'pre-tdar-invoice', 'INFO', tdar_user.id
     FROM pos_account, tdar_user 
     WHERE pos_account.owner_id=tdar_user.id and pos_account.description like '%auto-gen%' and (tdar_user.last_login is null or tdar_user.last_login < '2013-01-01');
+
+alter table user_session rename column person_id to tdar_user_id;

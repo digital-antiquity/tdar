@@ -83,7 +83,7 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
-    <#if sessionData.person?has_content>
+    <#if sessionData.tdarUser?has_content>
      <div id="email-form" class="hide">
         <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
           <div class="modal-header">
@@ -115,7 +115,7 @@
         </#if>
         <@s.hidden name="toId" value="${contactId?c}" />
         <@s.hidden name="resourceId" value="${resource.id?c}" />
-        <@s.hidden name="fromId" value="${(sessionData.person.id)!-1?c}" /> 
+        <@s.hidden name="fromId" value="${(sessionData.tdarUser.id)!-1?c}" /> 
         <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span9"/>
         <@common.antiSpam />
      <button name="send" id="followup-send" class="button btn btn-primary">send</button>
@@ -505,7 +505,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#assign txt>Request Access, Submit Correction</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
-            <#if sessionData.person?has_content>
+            <#if sessionData.tdarUser?has_content>
                     <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
                     <a href="/login?returnUrl=${currentUrl}">${txt} (requires login)</a>

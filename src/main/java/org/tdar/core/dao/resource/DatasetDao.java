@@ -308,7 +308,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {

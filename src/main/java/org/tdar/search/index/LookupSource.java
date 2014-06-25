@@ -1,6 +1,6 @@
 package org.tdar.search.index;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
@@ -40,7 +40,7 @@ public enum LookupSource implements HasLabel, Localizable {
     COLLECTION("collections", ResourceCollection.class);
 
     private String collectionName;
-    private Class<? extends Indexable> classes[];
+    private Class<? extends Indexable>[] classes;
 
     private LookupSource(String name, Class<? extends Indexable>... classes) {
         this.collectionName = name;
@@ -49,7 +49,7 @@ public enum LookupSource implements HasLabel, Localizable {
 
     @Override
     public String getLabel() {
-        return this.collectionName;
+        return collectionName;
     }
 
     @Override
@@ -58,7 +58,7 @@ public enum LookupSource implements HasLabel, Localizable {
     }
 
     public String getCollectionName() {
-        return this.collectionName;
+        return collectionName;
     }
 
     public String getProper() {

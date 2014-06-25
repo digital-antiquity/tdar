@@ -71,7 +71,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<Person> synonyms = new HashSet<Person>();
+    private Set<Person> synonyms = new HashSet<>();
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")

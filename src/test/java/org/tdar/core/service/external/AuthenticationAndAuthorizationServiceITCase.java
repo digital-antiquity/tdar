@@ -127,7 +127,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         list.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         list.add(AuthNotice.TOS_AGREEMENT);
         logger.info("{}", controller.getSessionData());
-        logger.info("{}", controller.getSessionData().getPerson());
+        logger.info("{}", controller.getSessionData().getTdarUser());
         authService.satisfyUserPrerequisites(controller.getSessionData(), list);
         assertThat(authService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
         evictCache();

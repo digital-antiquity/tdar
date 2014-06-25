@@ -8,12 +8,12 @@
         $("[data-dismiss-id]").each(function () {
             var $this = $(this);
             var id = $this.data('dismiss-id');
-            $this.click(function() {TDAR.notifications.dissmiss(id)});
+            $this.click(function() {TDAR.notifications.dismiss(id)});
         });
     }
     
-    function _dissmiss(id) {
-            var url = "/notification/dissmiss"; // the script where you handle the form input.
+    function _dismiss(id) {
+            var url = "/notification/dismiss"; // the script where you handle the form input.
             $.ajax({
                 type : "POST",
                 url : url,
@@ -30,7 +30,7 @@
 
     TDAR.notifications = {
         init : _init,
-        dissmiss:_dissmiss
+        dismiss:_dismiss
     };
 
 })(TDAR, jQuery);

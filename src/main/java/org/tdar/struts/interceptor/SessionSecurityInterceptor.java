@@ -76,7 +76,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
                 if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getPerson()));
+                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getTdarUser()));
                 }
             }
             String invoke = invocation.invoke();

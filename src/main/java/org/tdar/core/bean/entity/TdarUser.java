@@ -73,7 +73,7 @@ public class TdarUser extends Person {
     private Date penultimateLogin;
 
     @Column(name = "total_login")
-    private Long totalLogins = 0l;
+    private Long totalLogins = 0L;
 
     // can this user contribute resources?
     @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")

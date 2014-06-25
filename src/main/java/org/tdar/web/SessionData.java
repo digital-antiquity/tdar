@@ -27,11 +27,16 @@ public class SessionData implements Serializable {
     private String returnUrl;
     private String[] parameters;
 
+    @Deprecated
     public TdarUser getPerson() {
+        return getTdarUser();
+    }
+
+    public TdarUser getTdarUser() {
         if (authenticationToken == null) {
             return null;
         }
-        return authenticationToken.getPerson();
+        return authenticationToken.getTdarUser();
     }
 
     public AuthenticationToken getAuthenticationToken() {
@@ -90,11 +95,11 @@ public class SessionData implements Serializable {
     }
 
     public boolean isContributor() {
-        TdarUser person = getPerson();
-        if (person == null) {
+        TdarUser tdarUser = getTdarUser();
+        if (tdarUser == null) {
             return false;
         }
-        return person.getContributor();
+        return tdarUser.getContributor();
     }
 
 }

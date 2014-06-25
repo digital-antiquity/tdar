@@ -282,7 +282,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller, email);
         final TdarUser p = controller.getPerson();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
-        assertEquals(p, token.getPerson());
+        assertEquals(p, token.getTdarUser());
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());
