@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -61,9 +64,11 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
@@ -89,6 +94,17 @@ public abstract class AbstractSeleniumWebITCase {
     private boolean ignoreModals = false;
     WebDriver driver;
 
+    
+    public AbstractSeleniumWebITCase() {
+    }
+    
+    public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
+        Properties props = new Properties();
+        props.load(new FileReader(new File("src/test/resources/crowd.properties")));
+        CrowdRestDao crowdRestDao = new CrowdRestDao(props);
+        crowdRestDao.deleteUser(user);
+    }
+    
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
