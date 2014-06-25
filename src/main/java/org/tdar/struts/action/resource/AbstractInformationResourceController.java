@@ -33,6 +33,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileProxyService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DatasetService;
@@ -90,6 +91,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     private transient ProjectService projectService;
+    
+    @Autowired
+    private transient ObfuscationService obfuscationService;
     
     private List<CategoryVariable> allDomainCategories;
 
@@ -425,7 +429,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         String retval = super.loadAddMetadata();
         resolveProject();
         Project obsProj = getGenericService().find(Project.class, getProjectId());
-        getObfuscationService().obfuscate(obsProj, getAuthenticatedUser());
+        obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(),null);
         return retval;
     }
