@@ -336,6 +336,7 @@
         <#if authenticatedUser?has_content>
         TDAR.common.currentTime = 1;
         </#if>
+
 </script>
 <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
     <#if qunit>

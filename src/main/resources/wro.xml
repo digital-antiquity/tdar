@@ -76,6 +76,7 @@
         <js>/js/tdar.inheritance.js</js>
         <js>/js/tdar.internalemail.js</js>
         <js>/js/tdar.pricing.js</js>
+        <js>/js/tdar.locale.js</js>
         <js>/js/tdar.heightevents.js</js>
         <js>/js/tdar.contexthelp.js</js><js>/js/tdar.formValidateExtensions.js</js><js>/js/tdar.jquery-upload-validation.js</js>
         <js>/includes/bindWithDelay.js</js>

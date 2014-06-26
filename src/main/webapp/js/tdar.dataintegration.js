@@ -361,7 +361,7 @@
             }
         }
         if (!okay) {
-            _setStatus("no shared integration columns were found.");
+            _setStatus(TDAR.locale.getText("integration.no_shared_vars"));
         }
 
         //you know, rumors tell of an html element that implements this.. button-like behavior.
@@ -463,7 +463,7 @@
             var errors = "";
             $(".integrationTable").each(function () {
                 if ($(":checked ", $(this)).length == 0) {
-                    errors = "at least one table does not have any filter values checked";
+                    errors = TDAR.locale.getKey("integration.missing_table");
                 }
             });
 
@@ -473,7 +473,7 @@
             }
             ;
             if ($("#filterForm :checked").length < 1) {
-                alert("please select at least one variable");
+                alert(TDAR.integration.getKey("please select at least one variable"));
                 return false;
             }
         });
