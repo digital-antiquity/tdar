@@ -55,7 +55,9 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registrationInfo.validate(this, authenticationService, true);
+        //a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
+        registrationInfo.setContributorAgreementRequired(true);
+        List<String> errors = registrationInfo.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
@@ -74,6 +76,16 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         } else {
             return TdarActionSupport.INPUT;
         }
+    }
+
+    @Override
+    public void prepare() {
+        super.prepare();
+
+//        //the TOU checkbox counds for both TOU and contributer agreement
+//        if(registrationInfo.isAcceptTermsOfUse()) {
+//            registrationInfo.setRequestingContributorAccess(true);
+//        }
     }
 
     public UserRegistration getRegistrationInfo() {

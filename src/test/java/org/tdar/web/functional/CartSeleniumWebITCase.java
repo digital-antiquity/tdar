@@ -66,6 +66,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
      * @param reg
      */
     private void fillOut(UserRegistration reg) {
+        //on firefox, autofoxus occurs after pageload(bugzilla: 717361). so we wait
+        waitForPageload();
         TdarUser person = reg.getPerson();
         find("#firstName").val(person.getFirstName());
         find("#lastName").val(person.getLastName());
@@ -77,8 +79,11 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#password").val(reg.getPassword());
         find("#confirmPassword").val(reg.getConfirmPassword());
         find("#username").val(person.getUsername());
-        if(reg.isAcceptTermsOfUse() != find("#tou-id").first().isSelected()) {
+        if(reg.isAcceptTermsOfUse() != find("#tou-id").isSelected()) {
             find("#tou-id").click();
+        }
+        if(reg.isRequestingContributorAccess() != find("#contributor-id").isSelected() ) {
+            find("#contributor-id").click();
         }
     }
 
@@ -101,7 +106,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
-        submitForm("type[submit]");
+        //FIXME: look for type=submit in submitForm()
+        submitForm("[type=submit]");
 
         //now we are on the process payment page.  click on the button to fire up a new window
         assertThat(getCurrentUrl(), endsWith("cart/process-payment-request"));

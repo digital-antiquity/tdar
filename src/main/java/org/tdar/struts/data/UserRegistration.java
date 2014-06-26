@@ -32,6 +32,9 @@ public class UserRegistration extends UserAuthData {
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
 
+    //indicates whether user must accept contributor agreement as in order to register (default: false)
+    private boolean contributorAgreementRequired = false;
+
     public UserRegistration() {
     }
 
@@ -40,8 +43,7 @@ public class UserRegistration extends UserAuthData {
         setH(new AntiSpamHelper(recaptchaService));
     }
 
-    public List<String> validate(TextProvider textProvider, AuthenticationService authService,
-            boolean requireContributor) {
+    public List<String> validate(TextProvider textProvider, AuthenticationService authService) {
 
         List<String> errors = new ArrayList<>();
 
@@ -61,11 +63,11 @@ public class UserRegistration extends UserAuthData {
             }
         }
 
-        if (acceptTermsOfUse == false) {
+        if (!acceptTermsOfUse) {
             errors.add(textProvider.getText("userAccountController.require_tos"));
         }
 
-        if (requireContributor && requestingContributorAccess == false) {
+        if (contributorAgreementRequired && !requestingContributorAccess) {
             errors.add(textProvider.getText("userAccountController.require_contributor_agreement"));
         }
 
@@ -183,5 +185,13 @@ public class UserRegistration extends UserAuthData {
 
     public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
+    }
+
+    public boolean isContributorAgreementRequired() {
+        return contributorAgreementRequired;
+    }
+
+    public void setContributorAgreementRequired(boolean contributorAgreementRequired) {
+        this.contributorAgreementRequired = contributorAgreementRequired;
     }
 }

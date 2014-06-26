@@ -241,7 +241,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registration.validate(this, authenticationService, false);
+        List<String> errors = registration.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
