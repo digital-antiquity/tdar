@@ -1,6 +1,5 @@
 package org.tdar.core.service.processes;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,24 +9,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.ScrollableResults;
+import org.hibernate.exception.GenericJDBCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersionProxy;
+import org.tdar.core.bean.util.Email;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.LogType;
-import org.tdar.filestore.Filestore.ObjectType;
 
 @Component
 public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
@@ -42,74 +43,81 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
 
     @Autowired
     private transient InformationResourceFileService informationResourceFileService;
-    
+
     @Autowired
     private transient FreemarkerService freemarkerService;
 
     @Autowired
     private transient EmailService emailService;
 
+    @Autowired
+    private transient ThreadPoolTaskExecutor taskExecutor;
+
     private boolean run = false;
+    private ScrollableResults scrollableResults;
+    private List<FileStoreFileProxy> missing = new ArrayList<>();
+    private List<FileStoreFileProxy> other = new ArrayList<>();
+    private List<FileStoreFileProxy> tainted = new ArrayList<>();
+    private int count = 0;
+    private Filestore filestore = getTdarConfiguration().getFilestore();
 
     @Override
     public void execute() {
         Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         run = true;
         logger.info("beginning automated verification of files");
-        Filestore filestore = getTdarConfiguration().getFilestore();
-        List<InformationResourceFileVersion> missing = new ArrayList<InformationResourceFileVersion>();
-        List<InformationResourceFileVersion> other = new ArrayList<InformationResourceFileVersion>();
-        List<InformationResourceFileVersion> tainted = new ArrayList<InformationResourceFileVersion>();
+        scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
+        for (int i = 0; i < taskExecutor.getCorePoolSize(); i++) {
+            taskExecutor.execute(new FilestoreVerificationTask(filestore, this));
+        }
+
+        while (taskExecutor.getActiveCount() != 0) {
+            int count = taskExecutor.getActiveCount();
+            logger.debug("Active Threads : {}", count);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (count == 0) {
+                taskExecutor.shutdown();
+                break;
+            }
+        }
+        report();
+    }
+
+    public synchronized List<FileStoreFileProxy> createThreadBatch() {
+        Thread.yield();
+        List<FileStoreFileProxy> current = new ArrayList<>();
+        if (scrollableResults == null) {
+            return current;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            if (scrollableResults != null) {
+                try {
+                    FileStoreFileProxy result = setupVersionFromResult(scrollableResults);
+                    if (result != null) {
+                        current.add(result);
+                    } else {
+                        break;
+                    }
+                } catch (Exception e) {
+                    logger.error("error in loading from resultsset: {}", e);
+                }
+            }
+        }
+        return current;
+    }
+
+    public void report() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("other", other);
         map.put("tainted", tainted);
         map.put("missing", missing);
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
-        int count = 0;
-        ScrollableResults scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
-
-        while (scrollableResults.next()) {
-            try {
-            Long irId = scrollableResults.getLong(0);
-            Long irfId = scrollableResults.getLong(1);
-            Integer latestVersion = scrollableResults.getInteger(2);
-            InformationResourceFileVersionProxy versionProxy = (InformationResourceFileVersionProxy) scrollableResults.get(3);
-            InformationResourceFile irf = new InformationResourceFile();
-            irf.setLatestVersion(latestVersion);
-            irf.setId(irfId);
-            InformationResourceFileVersion version = versionProxy.generateInformationResourceFileVersion();
-            version.setInformationResourceFileId(irfId);
-            version.setInformationResourceId(irId);
-            version.setInformationResourceFile(irf);
-            try {
-                if (!filestore.verifyFile(ObjectType.RESOURCE, version)) {
-                    count++;
-                    tainted.add(version);
-                }
-            } catch (FileNotFoundException e) {
-                count++;
-                missing.add(version);
-                logger.debug("file not found ", e);
-            } catch (Exception e) {
-                count++;
-                tainted.add(version);
-                logger.debug("other error ", e);
-            }
-                if ((count % 5_000) == 0) {
-                    try {
-                        Thread.sleep(1_000l);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-//            }
-            } catch (IllegalAccessException | InvocationTargetException e1) {
-                logger.error("casting issue with file verify: {}", e1);
-            }
-        }
-        scrollableResults.close();
-
         if (count == 0) {
             subject.append(" [NONE]");
         }
@@ -137,6 +145,34 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         }
     }
 
+    private synchronized FileStoreFileProxy setupVersionFromResult(ScrollableResults scrollableResults) throws IllegalAccessException,
+            InvocationTargetException {
+        try {
+            if (scrollableResults != null && scrollableResults.next()) {
+                Long irId = scrollableResults.getLong(0);
+                Long irfId = scrollableResults.getLong(1);
+                Integer latestVersion = scrollableResults.getInteger(2);
+                InformationResourceFileVersionProxy versionProxy = (InformationResourceFileVersionProxy) scrollableResults.get(3);
+                InformationResourceFile irf = new InformationResourceFile();
+                irf.setLatestVersion(latestVersion);
+                irf.setId(irfId);
+                InformationResourceFileVersion version = versionProxy.generateInformationResourceFileVersion();
+                version.setInformationResourceFileId(irfId);
+                version.setInformationResourceId(irId);
+                version.setInformationResourceFile(irf);
+                return version;
+            } else {
+                if (scrollableResults != null) {
+                    scrollableResults.close();
+                    scrollableResults = null;
+                }
+            }
+        } catch (GenericJDBCException ex) {
+            logger.error("{}", ex.getLocalizedMessage(), ex);
+        }
+        return null;
+    }
+
     @Override
     public boolean isEnabled() {
         return true;
@@ -160,6 +196,12 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Override
     public boolean isSingleRunProcess() {
         return false;
+    }
+
+    public synchronized void updateCounts(List<FileStoreFileProxy> proxyList, List<FileStoreFileProxy> tainted_, List<FileStoreFileProxy> missing_) {
+        count += proxyList.size();
+        this.missing.addAll(missing_);
+        this.tainted.addAll(tainted_);
     }
 
 }
