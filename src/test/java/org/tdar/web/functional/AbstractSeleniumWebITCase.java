@@ -234,7 +234,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-    private void clearPageCache() {
+    protected void clearPageCache() {
         pageText = null;
     }
 

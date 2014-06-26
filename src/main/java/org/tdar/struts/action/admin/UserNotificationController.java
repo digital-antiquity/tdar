@@ -31,6 +31,10 @@ import com.opensymphony.xwork2.Preparable;
 
 /**
  * Manages admin CRUD requests for UserNotifications.
+ * 
+ * FIXME: refactor to use Object / Map for json. E.g.,
+ *   @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }), 
+ *   @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" }
  */
 @Component
 @Scope("prototype")
@@ -42,6 +46,7 @@ public class UserNotificationController extends AuthenticationAware.Base impleme
     private static final long serialVersionUID = 5844268857719107949L;
 
     private List<UserNotification> allNotifications;
+    // FIXME: replace with JSONRESULT type
     private String notificationsJson;
     private String allMessageTypesJson;
     private InputStream resultJson;
