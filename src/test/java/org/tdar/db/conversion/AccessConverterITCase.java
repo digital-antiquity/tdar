@@ -165,7 +165,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("bone_common_name", meta.getColumnName(6));
                         assertEquals("side", meta.getColumnName(7));
                         assertEquals("part", meta.getColumnName(8));
-                        assertEquals("no", meta.getColumnName(9));
+                        assertEquals("col_no", meta.getColumnName(9));
                         assertEquals("fus_prox", meta.getColumnName(10));
                         assertEquals("fus_dis", meta.getColumnName(11));
                         assertEquals("prop", meta.getColumnName(12));

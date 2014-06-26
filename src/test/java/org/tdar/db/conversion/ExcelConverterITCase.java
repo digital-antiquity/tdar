@@ -106,7 +106,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
         assertNotNull(dataTable.getColumnByDisplayName("1.00"));
         assertNotNull(dataTable.getColumnByDisplayName("ABC"));
-        assertNotNull(dataTable.getColumnByName("period"));
+        assertNotNull(dataTable.getColumnByName("col_period"));
         assertNotNull(dataTable.getColumnByName("sumofno"));
         assertNotNull(dataTable.getColumnByName("c1_00"));
         assertNotNull(dataTable.getColumnByName("abc"));
