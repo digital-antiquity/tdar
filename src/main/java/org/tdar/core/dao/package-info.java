@@ -434,9 +434,13 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
-                query = "SELECT n from UserNotification n "
-                        + "WHERE n.messageType = 'SYSTEM_BROADCAST' OR n.tdarUser.id = :userId "
-                        + "ORDER BY n.dateCreated DESC"
+                query = "from UserNotification "
+                        + "WHERE messageType = 'SYSTEM_BROADCAST' OR tdarUser.id = :userId "
+                        + "ORDER BY dateCreated DESC"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_USER_NOTIFICATIONS_BY_TYPE,
+                query = "from UserNotification WHERE messageType = :messageType ORDER BY dateCreated DESC"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,

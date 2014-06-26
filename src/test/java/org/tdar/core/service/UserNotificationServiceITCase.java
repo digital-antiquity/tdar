@@ -5,7 +5,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.UserNotification;
+import org.tdar.core.bean.util.UserNotificationType;
 
 public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 
@@ -25,46 +28,37 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 
     private TdarUser user;
 
+    private List<UserNotification> initialNotifications;
+
     @Before
     public void setUp() {
         user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
-    }
-
-    @Test
-    @Rollback
-    public void testJsonSerialization() {
-        List<UserNotification> notifications = Arrays.asList(
-                userNotificationService.info(user, "1st info"),
-                userNotificationService.info(user, "2nd info"),
-                userNotificationService.error(user, "1st error"),
-                userNotificationService.warning(user, "1st warning"),
-                userNotificationService.broadcast("broadcast message")
-                );
-        String json = xmlService.convertFilteredJsonForStream(notifications, null, null);
-        getLogger().debug("json: {}", json);
+        initialNotifications = userNotificationService.findAll();
     }
 
     @Test
     @Rollback
     public void testDismissNotifications() {
-        UserNotification infoNotification = userNotificationService.info(user, "info");
-        UserNotification broadcastNotification = userNotificationService.broadcast("broadcast");
-        List<UserNotification> notifications = Arrays.asList(broadcastNotification, infoNotification);
+        UserNotification infoNotification = userNotificationService.info(user, "some info message");
+        UserNotification broadcastNotification = userNotificationService.broadcast("some broadcast message");
+        initialNotifications.addAll(Arrays.asList(broadcastNotification, infoNotification));
         List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
         Collections.sort(currentNotifications);
-        assertEquals(notifications, currentNotifications);
+        Collections.sort(initialNotifications);
+        assertEquals(initialNotifications, currentNotifications);
         List<UserNotification> allNotifications = userNotificationService.findAll();
         Collections.sort(allNotifications);
-        assertEquals(notifications, allNotifications);
+        assertEquals(initialNotifications, allNotifications);
         assertNull(user.getDismissedNotificationsDate());
         userNotificationService.dismiss(user, infoNotification);
-        assertNull(user.getDismissedNotificationsDate());
+        assertNull("Dismissing a targeted message should not update dismissedNotificationsDate", user.getDismissedNotificationsDate());
         userNotificationService.dismiss(user, broadcastNotification);
-        assertNotNull(user.getDismissedNotificationsDate());
+        assertNotNull("Dismissing a broadcast message should update dismissedNotificationsDate", user.getDismissedNotificationsDate());
         assertEquals(1, user.getDismissedNotificationsDate().compareTo(broadcastNotification.getDateCreated()));
         assertTrue("Test user dismissed notification, notification set should be empty",
                 userNotificationService.getCurrentNotifications(user).isEmpty());
-        assertEquals("broadcast notification should still exist even after dismissed", broadcastNotification, userNotificationService.findAll().get(0));
+        assertEquals("broadcast notifications should still exist even after dismissed", 2,
+                userNotificationService.findAll(UserNotificationType.SYSTEM_BROADCAST).size());
     }
 
     @Test
@@ -81,64 +75,41 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         }
         for (TdarUser user : otherUsers) {
             List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
-            assertEquals(4, currentNotifications.size());
-            int infos = 0;
-            int errors = 0;
-            int warnings = 0;
-            int broadcasts = 0;
-            for (UserNotification notification : currentNotifications) {
-                switch (notification.getMessageType()) {
-                    case SYSTEM_BROADCAST:
-                        fail("No broadcasts available yet.");
-                        break;
-                    case INFO:
-                        infos++;
-                        break;
-                    case ERROR:
-                        errors++;
-                        break;
-                    case WARNING:
-                        warnings++;
-                        break;
-                }
-            }
-            assertEquals(2, infos);
-            assertEquals(1, errors);
-            assertEquals(1, warnings);
-            assertEquals(0, broadcasts);
+            assertEquals(5, currentNotifications.size());
+            Map<UserNotificationType, Integer> counts = getNotificationTypeCounts(currentNotifications);
+            assertEquals(2, counts.get(UserNotificationType.INFO).intValue());
+            assertEquals(1, counts.get(UserNotificationType.ERROR).intValue());
+            assertEquals(1, counts.get(UserNotificationType.WARNING).intValue());
+            assertEquals(1, counts.get(UserNotificationType.SYSTEM_BROADCAST).intValue());
         }
-        assertTrue("The original user shouldn't have any notifications", userNotificationService.getCurrentNotifications(user).isEmpty());
-        userNotificationService.broadcast("this is a test of the emergency broadcast system");
+        assertEquals("The original user should only have lithic.announce broadcast",
+                initialNotifications, userNotificationService.getCurrentNotifications(user));
+        UserNotification broadcast = userNotificationService.broadcast("this is a test of the emergency broadcast system");
+        initialNotifications.add(0, broadcast);
+        assertEquals("original user should have 2 broadcast messages now", initialNotifications, userNotificationService.getCurrentNotifications(user));
         for (TdarUser user : otherUsers) {
             List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
-            assertEquals(5, currentNotifications.size());
-            int infos = 0;
-            int errors = 0;
-            int warnings = 0;
-            int broadcasts = 0;
-            for (UserNotification notification : currentNotifications) {
-                switch (notification.getMessageType()) {
-                    case SYSTEM_BROADCAST:
-                        broadcasts++;
-                        break;
-                    case INFO:
-                        infos++;
-                        break;
-                    case ERROR:
-                        errors++;
-                        break;
-                    case WARNING:
-                        warnings++;
-                        break;
-                }
-            }
-            assertEquals(2, infos);
-            assertEquals(1, errors);
-            assertEquals(1, warnings);
-            assertEquals(1, broadcasts);
+            assertEquals(6, currentNotifications.size());
+            Map<UserNotificationType, Integer> counts = getNotificationTypeCounts(currentNotifications);
+            assertEquals(2, counts.get(UserNotificationType.INFO).intValue());
+            assertEquals(1, counts.get(UserNotificationType.ERROR).intValue());
+            assertEquals(1, counts.get(UserNotificationType.WARNING).intValue());
+            assertEquals(2, counts.get(UserNotificationType.SYSTEM_BROADCAST).intValue());
         }
-        assertEquals(1, userNotificationService.getCurrentNotifications(user).size());
-        assertEquals(21, userNotificationService.findAll().size());
+        assertEquals(2, userNotificationService.getCurrentNotifications(user).size());
+        assertEquals(22, userNotificationService.findAll().size());
+    }
+
+    private Map<UserNotificationType, Integer> getNotificationTypeCounts(List<UserNotification> notifications) {
+        Map<UserNotificationType, Integer> map = new HashMap<>();
+        for (UserNotification notification : notifications) {
+            Integer count = map.get(notification.getMessageType());
+            if (count == null) {
+                count = 0;
+            }
+            map.put(notification.getMessageType(), count + 1);
+        }
+        return map;
     }
 
 }
