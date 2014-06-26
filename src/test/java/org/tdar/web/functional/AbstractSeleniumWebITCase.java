@@ -348,20 +348,9 @@ public abstract class AbstractSeleniumWebITCase {
         return caps;
     }
 
-    // /**
-    // * @return firefox profile that has CSS rendering disabled.
-    // */
-    // public final FirefoxProfile firefoxProfileNoCss() {
-    // // http://stackoverflow.com/questions/3526361/firefoxdriver-how-to-disable-javascript-css-and-make-sendkeys-type-instantly
-    // FirefoxProfile profile = new FirefoxProfile();
-    // profile.setPreference("permissions.default.stylesheet", 2);
-    // // profile.setPreference("permissions.default.image", 2);
-    // return profile;
-    // }
-    //
-
     @Rule
     public TestName testName = new TestName();
+
     private static boolean reindexed = false;
 
     /*
@@ -837,7 +826,7 @@ public abstract class AbstractSeleniumWebITCase {
      * Block until document loaded (readystate === true). This is usually unnecesssary since most click() actions
      * block anyway. Use it for situations where an event handler causes navigation (e.g. jquery validate success)
      * 
-     * @param timeout
+     * @param timeout amount of time(in seconds) to wait before throwing timeout exception
      */
     private void waitForPageload(int timeout) {
         // if called too soon, page navigation might not have happened yet - give it a second.
@@ -1106,11 +1095,6 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-    // return true if this is an ignorable error
-    public boolean isIgnoreableJavascriptError(String error) {
-        return !isLegitJavascriptError(error);
-    }
-
     public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
@@ -1130,6 +1114,24 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void setIgnorePageErrorChecks(boolean ignorePageErrorChecks) {
         this.ignorePageErrorChecks = ignorePageErrorChecks;
+    }
+
+    /**
+     * Tell the webdriver to switch to the next window amongst the current list of windows.  The next window is determined by the ascending sort-order of
+     * the window handle names.  If current window handle is at the end of the list, this method returns the first instead.
+     *
+     * @return value of previously active window handle.
+     * */
+    public String switchToNextWindow() {
+        List<String> handles = new ArrayList<>();
+        handles.addAll(driver.getWindowHandles());
+        Collections.sort(handles);
+        String previousHandle = driver.getWindowHandle();
+        int idx = handles.indexOf(previousHandle);
+        int idxNext = (idx + 1) % handles.size();
+        String nextHandle = handles.get(idxNext);
+        driver.switchTo().window(nextHandle);
+        return previousHandle;
     }
 
 }

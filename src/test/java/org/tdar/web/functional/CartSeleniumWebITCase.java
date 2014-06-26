@@ -3,18 +3,17 @@ package org.tdar.web.functional;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.UserRegistration;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
-import static com.ibm.icu.impl.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -23,6 +22,8 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
  * Created by jimdevos on 6/25/14.
  */
 public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Assert that user is logged out.
@@ -96,6 +97,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         gotoPage("/cart/new");
         assertLoggedOut();
         find("#divlarge button").click();
+        String windowMain = getDriver().getWindowHandle();
 
         //now we are on the review form (w/ registration/login forms)
         //fill out required user registration fields and submit form
@@ -116,46 +118,24 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#btnOpenPaymentWindow").click();
 
 
+        //sanity check: assert that selenium didn't implicitly switch to popup window (this might be a osx-only thing)
+        assertThat(windowMain, equalTo(getDriver().getWindowHandle()));
+
+        switchToNextWindow();
         //popup window is active now.  assuming it is the fake payment processor,  all we need to do is submit the form to "pay" for the invoice
-        waitFor(3);
-        switchTo("fake-payment-form");
-        String popupTitle = getDriver().getTitle();
-        //assertThat(popupTitle, equalToIgnoringCase("fake-payment-form"));
+        waitFor("[type=submit]");
         submitForm("[type=submit]");
 
         //close the popup window
         find("#btnCloseWindow").click();
+        assertThat("assert that popup window is no longer open", getDriver().getWindowHandles().size(), equalTo(1));
 
-        //todo: switch back to original window
+        //even though the popup window is gone, we still need to switch back to the main window
+        getDriver().switchTo().window(windowMain);
 
-        //todo: wait for parent window to update with success message
-
+        //if successful, we are sent to the dashboard
+        waitFor("body.dashboard");
     }
 
-    private void switchTo(String windowTitle) {
-        Set<String> handles = getDriver().getWindowHandles();
-        //only one window = do nothing
-        if(handles.size() == 1) return;
-
-//        //only two windows - if specified window not ours just swap
-//        if(handles.size() == 2 && !getDriver().getTitle().equals(windowTitle)) {
-//
-//        } else {
-            boolean found = false;
-            for(String handle: handles) {
-                getDriver().switchTo().window(handle);
-                if(getDriver().getTitle().equals(windowTitle)) {
-                    found=true;
-                    break;
-                }
-            }
-
-            if(!found) {
-                fail("could not find specified window:" + windowTitle);
-            }
-
-//        }
-
-    }
 
 }
