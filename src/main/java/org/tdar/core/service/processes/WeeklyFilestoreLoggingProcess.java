@@ -64,7 +64,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Override
     public void execute() {
         Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
-        run = true;
         logger.info("beginning automated verification of files");
         scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
         for (int i = 0; i < taskExecutor.getCorePoolSize(); i++) {
@@ -85,26 +84,43 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
             }
         }
         report();
+        run = true;
+    }
+
+    private synchronized FileStoreFileProxy setupVersionFromResult() throws IllegalAccessException, InvocationTargetException {
+        Long irId = scrollableResults.getLong(0);
+        Long irfId = scrollableResults.getLong(1);
+        Integer latestVersion = scrollableResults.getInteger(2);
+        InformationResourceFileVersionProxy versionProxy = (InformationResourceFileVersionProxy) scrollableResults.get(3);
+        InformationResourceFile irf = new InformationResourceFile();
+        irf.setLatestVersion(latestVersion);
+        irf.setId(irfId);
+        InformationResourceFileVersion version = versionProxy.generateInformationResourceFileVersion();
+        version.setInformationResourceFileId(irfId);
+        version.setInformationResourceId(irId);
+        version.setInformationResourceFile(irf);
+        return version;
     }
 
     public synchronized List<FileStoreFileProxy> createThreadBatch() {
-        Thread.yield();
         List<FileStoreFileProxy> current = new ArrayList<>();
         if (scrollableResults == null) {
             return current;
         }
-
         for (int i = 0; i < 10; i++) {
-            if (scrollableResults != null) {
+            if (scrollableResults != null && scrollableResults.next()) {
                 try {
-                    FileStoreFileProxy result = setupVersionFromResult(scrollableResults);
-                    if (result != null) {
-                        current.add(result);
-                    } else {
-                        break;
-                    }
-                } catch (Exception e) {
+                    FileStoreFileProxy result = setupVersionFromResult();
+                    current.add(result);
+                } 
+                catch (Exception e) {
                     logger.error("error in loading from resultsset: {}", e);
+                }
+            }
+            else {
+                if (scrollableResults != null) {
+                    scrollableResults.close();
+                    scrollableResults = null;
                 }
             }
         }
@@ -141,36 +157,8 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
             emailService.queue(email);
             logger.info("ending automated verification of files");
         } catch (Exception e) {
-            logger.error("eception occurred when testing filestore", e);
+            logger.error("exception occurred when testing filestore", e);
         }
-    }
-
-    private synchronized FileStoreFileProxy setupVersionFromResult(ScrollableResults scrollableResults) throws IllegalAccessException,
-            InvocationTargetException {
-        try {
-            if (scrollableResults != null && scrollableResults.next()) {
-                Long irId = scrollableResults.getLong(0);
-                Long irfId = scrollableResults.getLong(1);
-                Integer latestVersion = scrollableResults.getInteger(2);
-                InformationResourceFileVersionProxy versionProxy = (InformationResourceFileVersionProxy) scrollableResults.get(3);
-                InformationResourceFile irf = new InformationResourceFile();
-                irf.setLatestVersion(latestVersion);
-                irf.setId(irfId);
-                InformationResourceFileVersion version = versionProxy.generateInformationResourceFileVersion();
-                version.setInformationResourceFileId(irfId);
-                version.setInformationResourceId(irId);
-                version.setInformationResourceFile(irf);
-                return version;
-            } else {
-                if (scrollableResults != null) {
-                    scrollableResults.close();
-                    scrollableResults = null;
-                }
-            }
-        } catch (GenericJDBCException ex) {
-            logger.error("{}", ex.getLocalizedMessage(), ex);
-        }
-        return null;
     }
 
     @Override
@@ -196,6 +184,15 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     @Override
     public boolean isSingleRunProcess() {
         return false;
+    }
+    
+    @Override
+    public void cleanup() {
+        missing.clear();
+        tainted.clear();
+        other.clear();
+        count = 0;
+        run = false;
     }
 
     public synchronized void updateCounts(List<FileStoreFileProxy> proxyList, List<FileStoreFileProxy> tainted_, List<FileStoreFileProxy> missing_) {
