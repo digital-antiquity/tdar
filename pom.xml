@@ -1440,6 +1440,7 @@
                     <arguments>
                         <argument>${generated.schema.dir}/${generated.schema.file}</argument>
                     </arguments>
+                    <skip>${maven.createDB.skip}</skip>
                     <includePluginDependencies>true</includePluginDependencies>
                 </configuration>
             </plugin>

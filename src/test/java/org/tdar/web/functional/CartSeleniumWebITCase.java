@@ -114,8 +114,13 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#btnOpenPaymentWindow").click();
 
 
+        //popup window is active now.  assuming it is the fake payment processor,  all we need to do is submit the form to "pay" for the invoice
+        String popupTitle = getDriver().getTitle();
+        assertThat(popupTitle, equalToIgnoringCase("fake-payment-form"));
+        submitForm();
 
-
+        //close the popup window
+        find("#btnCloseWindow").click();
 
     }
 

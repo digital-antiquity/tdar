@@ -1,3 +1,6 @@
+<head>
+    <title>fake-payment-form</title>
+</head>
 <@s.form action="process-payment">
 <@s.token name='struts.csrf.token' />
 <h3>Fake CC Form -- enter fake cc num, must start with </h3>
@@ -10,3 +13,4 @@
     <@s.submit />
 
 </@s.form>
+
