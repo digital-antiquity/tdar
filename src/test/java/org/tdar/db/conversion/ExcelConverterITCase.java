@@ -78,7 +78,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals(1, dataTables.size());
         DataTable dataTable = dataTables.iterator().next();
         assertNotNull(dataTable.getColumnByDisplayName("Period"));
-        assertNotNull(dataTable.getColumnByName("period"));
+        assertNotNull(dataTable.getColumnByName("col_period"));
         assertNotNull(dataTable.getColumnByDisplayName("Stratigraphy"));
         assertNotNull(dataTable.getColumnByDisplayName("Sites::N Coordinates"));
         assertNotNull(dataTable.getColumnByDisplayName("Sites::E Coordinates"));
