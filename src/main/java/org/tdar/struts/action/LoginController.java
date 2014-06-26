@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserLogin;
@@ -103,12 +103,17 @@ public class LoginController extends AuthenticationAware.Base {
                                     "returnUrl not expected for login from cart" }),
                             @Result(name = INPUT,
                                     type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
+                    }),
+            @Action(value = "process-download-login",
+                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    results = {
+                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "${sessionData.returnUrl}"),
+                            @Result(name = INPUT, type = REDIRECT, location = "${sessionData.returnFailureUrl}"),
                     })
-    }
-            )
-            @HttpsOnly
-            @WriteableSession
-            public String authenticate() {
+    })
+    @HttpsOnly
+    @WriteableSession
+    public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", getUserLogin().getLoginUsername());
         List<String> validate = userLogin.validate(this, authorizationService);
         addActionErrors(validate);

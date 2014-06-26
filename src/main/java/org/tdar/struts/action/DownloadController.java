@@ -22,9 +22,12 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.DownloadHandler;
+import org.tdar.struts.data.DownloadUserRegistration;
 
 @ParentPackage("secured")
 @Namespace("/filestore")
@@ -61,10 +64,10 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     private String contentType;
     private String fileName;
     private Long contentLength;
-    private Long informationResourceFileId;
     private Integer version;
     private boolean coverPageIncluded = true;
     private VersionType type;
+    private Long informationResourceFileId;
     private Long informationResourceId;
 
     private String dispositionPrefix = "";
@@ -72,20 +75,39 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     public static final String FORBIDDEN = "forbidden";
 
     @Autowired
+    private transient RecaptchaService recaptchaService;
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private DownloadUserRegistration reg = new DownloadUserRegistration();
+
+    @Autowired
     private transient PdfService pdfService;
 
     @Autowired
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
-    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-download.ftl") })
+    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
     public String confirm() throws TdarActionException {
         // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
             return status;
         }
-        ;
         return "confirm";
+    }
+
+    @Action(value = "download",
+            results = {
+                    @Result(name = SUCCESS, type = "redirect", location = GET),
+                    @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") },
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    public String download() {
+        if (isAuthenticated()) {
+            return SUCCESS;
+        }
+        reg.setInformationResourceFileId(informationResourceFileId);
+        getSessionData().setReturnFailureUrl(getCurrentUrl());
+        getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileId=%s", informationResourceFileId));
+        return LOGIN;
     }
 
     @Override
@@ -169,7 +191,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     }
 
     @Action(value = DOWNLOAD_ALL_LANDING, results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/download-all.ftl") })
+            @Result(name = SUCCESS, type = "freemarker", location = "download-all.ftl") })
     public String showDownloadAllLandingPage() {
         return SUCCESS;
     }
@@ -259,6 +281,22 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     public void setCoverPageIncluded(boolean coverPageIncluded) {
         this.coverPageIncluded = coverPageIncluded;
+    }
+
+    public AntiSpamHelper getH() {
+        return h;
+    }
+
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
+    }
+
+    public DownloadUserRegistration getReg() {
+        return reg;
+    }
+
+    public void setReg(DownloadUserRegistration reg) {
+        this.reg = reg;
     }
 
 }

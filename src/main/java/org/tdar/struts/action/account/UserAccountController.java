@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.account;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +23,8 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
@@ -235,7 +237,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     // if form submittal takes too long we assume spambot. expose the timeout value to view layer so that we can make sure
     // actual humans get a form that is never too old while still locking out spambots.
     public long getRegistrationTimeout() {
-        return UserAccountController.ONE_HOUR_IN_MS;
+        return ONE_HOUR_IN_MS;
     }
 
     @Override

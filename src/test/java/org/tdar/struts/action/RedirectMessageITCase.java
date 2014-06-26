@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.utils.MessageHelper;
 
 /**

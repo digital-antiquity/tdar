@@ -33,8 +33,8 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.UserAgreementController;
+import org.tdar.struts.action.account.UserAccountController;
 
 import com.opensymphony.xwork2.Action;
 
