@@ -79,7 +79,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         for (DataTableColumn column_ : dataTableColumns) {
             DataTableColumn column = (DataTableColumn) BeanUtils.cloneBean(column_);
             dataTableColumns_.add(column);
-            if (column.getName().equals("mapping")) {
+            if (column.getDisplayName().equals("mapping")) {
                 seenMappingColumn = true;
                 column.setMappingColumn(true);
                 column.setIgnoreFileExtension(false);

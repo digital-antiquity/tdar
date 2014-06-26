@@ -632,7 +632,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
             DataTableColumn clone = (DataTableColumn) BeanUtils.cloneBean(dtc);
             columns.add(clone);
-            if (clone.getName().equals("a")) {
+            if (clone.getName().equals("col_a")) {
                 clone.setDefaultOntology(ontology);
             }
         }
@@ -641,7 +641,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller.getDataTableColumns();
         DataTableColumn myColumn = null;
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
-            if (dtc.getName().equals("a")) {
+            if (dtc.getName().equals("col_a")) {
                 myColumn = dtc;
             }
         }
