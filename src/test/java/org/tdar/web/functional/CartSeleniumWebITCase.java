@@ -1,6 +1,7 @@
 package org.tdar.web.functional;
 
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -25,7 +26,15 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
  */
 public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    Logger logger = LoggerFactory.getLogger(getClass());
+
+    // handle of window created at beginning of test
+    String startWindow = null;
+
+    @Before
+    public void cartTestBefore() {
+        startWindow = getDriver().getWindowHandle();
+    }
 
     /**
      * Assert that user is logged out.
@@ -99,14 +108,13 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         gotoPage("/cart/new");
         assertLoggedOut();
         find("#divlarge button").click();
-        String windowMain = getDriver().getWindowHandle();
 
         //now we are on the review form (w/ registration/login forms)
         //fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), endsWith("cart/review"));
         UserRegistration reg = createUserRegistration("bob");
         fillOut(reg);
-        submitForm();
+        submitForm("#registrationForm #submitButton");
 
 
         //now we are on the "choose billing account" page. just click through to next page
@@ -120,19 +128,19 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
 
         //sanity check: assert that selenium didn't implicitly switch to popup window (this might be a osx-only thing)
-        assertThat(windowMain, equalTo(getDriver().getWindowHandle()));
+        assertThat(startWindow, equalTo(getDriver().getWindowHandle()));
 
         switchToNextWindow();
         //popup window is active now.  assuming it is the fake payment processor,  all we need to do is submit the form to "pay" for the invoice
         waitFor("[type=submit]");
-        submitForm("[type=submit]");
+        submitForm();
 
         //close the popup window
         find("#btnCloseWindow").click();
-        assertThat("assert that popup window is no longer open", getDriver().getWindowHandles().size(), equalTo(1));
+        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         //even though the popup window is gone, we still need to switch back to the main window
-        getDriver().switchTo().window(windowMain);
+        getDriver().switchTo().window(startWindow);
 
         //if successful, we are sent to the dashboard
         waitFor("body.dashboard");
@@ -140,6 +148,41 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Test
     //ideal walkthrough of purchase process for logged-out-user process with no mistakes
+    //todo: create By.buttonWithLabel (finds submit input with matching value -or- button with matching text node)
+    //todo: create By.inputWithLabel  (finds element referred by for-attribute or child elements)
     public void testLoginPurchase() {
+        // Starting page
+        // go to the cart page and make sure we are logged out
+        gotoPage("/cart/new");
+        assertLoggedOut();
+        // choose the large package
+        find("#divlarge button").click();
+
+        // review
+        assertThat(getCurrentUrl(), endsWith("cart/review"));
+        find("#loginUsername").val(CONFIG.getUsername());
+        find("#loginPassword").val(CONFIG.getPassword());
+        submitForm("#loginForm [type=submit]");
+
+        // choose billing account
+        assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
+        // we aren't testing billing account customization,  so we just advance to the next step
+        submitForm();
+
+        // process payment
+        assertThat(getCurrentUrl(), endsWith("cart/process-payment-request"));
+        // open the popup window
+        find("#btnOpenPaymentWindow").click();
+        switchToNextWindow();
+        waitFor("[type=submit]");
+        submitForm();
+
+        //close the popup window
+        waitFor("btnCloswWindow").click();
+        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
+
+        // switch back to polling page
+        getDriver().switchTo().window(startWindow);
+        waitFor("body.dashboard");
     }
 }

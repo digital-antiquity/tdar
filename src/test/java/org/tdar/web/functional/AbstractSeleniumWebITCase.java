@@ -1179,6 +1179,7 @@ public abstract class AbstractSeleniumWebITCase {
         int idxNext = (idx + 1) % handles.size();
         String nextHandle = handles.get(idxNext);
         driver.switchTo().window(nextHandle);
+        cachedPageText = null;
         return previousHandle;
     }
 
