@@ -28,18 +28,18 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void setupContextSearch() {
-        Dimension size2 = driver.manage().window().getSize();
+        Dimension size2 = getDriver().manage().window().getSize();
         if (size2 != testSize) {
             originalSize = size2;
         }
-        driver.manage().window().setSize(testSize);
+        getDriver().manage().window().setSize(testSize);
         reindexOnce();
     }
 
     @After
     public void resetSize() {
         if (originalSize != null) {
-            driver.manage().window().setSize(originalSize);
+            getDriver().manage().window().setSize(originalSize);
         }
     }
 

@@ -1,5 +1,7 @@
 package org.tdar;
 
+import java.util.regex.Pattern;
+
 public interface TestConstants {
     // public static final String DEFAULT_HOST = "localhost";
     /** id for a user that has admin rights **/
@@ -64,4 +66,10 @@ public interface TestConstants {
 
     public static final Long NO_ASSOCIATED_PROJECT = -1L;
 
+    // max number of screenshots per test (to protect against infinite loops killing our disk space)
+    int MAX_SCREENSHOTS_PER_TEST = 100;
+    // time conversion constant
+    int MILLIS_PER_SECOND = 1000;
+    // regex pattern for js error that typically occurs when rendering google maps in test environment
+    public static final String REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent");
 }

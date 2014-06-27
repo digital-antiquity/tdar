@@ -61,17 +61,17 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
         }
         
         gotoPage(SEARCH_RESULTS);
-        Select sel = new Select(driver.findElement(By.id("recordsPerPage")));
+        Select sel = new Select(getDriver().findElement(By.id("recordsPerPage")));
         int size = sel.getOptions().size();
         for (int i = 0; i < size; i++) {
-            sel = new Select(driver.findElement(By.id("recordsPerPage")));
+            sel = new Select(getDriver().findElement(By.id("recordsPerPage")));
             sel.selectByIndex(i);
             waitForPageload();
         }
-        sel = new Select(driver.findElement(By.id("sortField")));
+        sel = new Select(getDriver().findElement(By.id("sortField")));
         size = sel.getOptions().size();
         for (int i = 0; i < size; i++) {
-            sel = new Select(driver.findElement(By.id("sortField")));
+            sel = new Select(getDriver().findElement(By.id("sortField")));
             sel.selectByIndex(i);
             waitForPageload();
         }

@@ -16,7 +16,7 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public BrowseSeleniumWebITCase() {
-        setJavascriptIgnorePatterns(IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
+        setJavascriptIgnorePatterns(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
     }
 
     private void browseTest(String url) {

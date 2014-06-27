@@ -1,9 +1,5 @@
 package org.tdar.web.functional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -28,9 +24,9 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -61,6 +57,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -76,45 +73,39 @@ import org.tdar.web.AbstractWebTestCase;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.*;
+
 public abstract class AbstractSeleniumWebITCase {
 
-    public static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+    // default timeout used for waitFor()
+    public static final int DEFAULT_WAITFOR_TIMEOUT = 20;
+
+    protected static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+
     // private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     public static String PATH_OUTPUT_ROOT = "target/selenium";
 
-    // regex pattern for js error that typically occurs when rendering google maps in test
-    public static final String IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent");
+    // {@link #getText} is a slow operation. cache the results until next pageload.
+    private String cachedPageText = null;
 
-    private String pageText = null;
-
-    // package privates
-    boolean screenshotsAllowed = true;
-    boolean ignoreJavascriptErrors = false;
-    List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
+    private boolean screenshotsAllowed = true;
+    protected boolean ignoreJavascriptErrors = false;
+    private List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
     private boolean ignoreModals = false;
-    WebDriver driver;
+    private WebDriver driver;
+    private Browser currentBrowser;
 
-    
-    public AbstractSeleniumWebITCase() {
-    }
-    
-    public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
-        Properties props = new Properties();
-        props.load(new FileReader(new File("src/test/resources/crowd.properties")));
-        CrowdRestDao crowdRestDao = new CrowdRestDao(props);
-        crowdRestDao.deleteUser(user);
-    }
-    
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
-    // protect against infinite loops killing our disk space
-    static int MAX_SCREENSHOTS_PER_TEST = 100;
-
     private Logger logger = LoggerFactory.getLogger(getClass());
+
     private boolean ignorePageErrorChecks;
 
-    // Predicates that can be used as arguments for FluentWait.until.
+    // predicate that returns true if document.readystate == "complete" (use with FluentWait)
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
         @Override
         public boolean apply(@Nullable WebDriver webDriver) {
@@ -122,10 +113,23 @@ public abstract class AbstractSeleniumWebITCase {
             return "complete".equals(readyState);
         }
     };
+
+    // predicate that returns true if document.readystate != "complete" (use with FluentWait)
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
+    public AbstractSeleniumWebITCase() {
+    }
+
+    public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
+        Properties props = new Properties();
+        props.load(new FileReader(new File("src/test/resources/crowd.properties")));
+        CrowdRestDao crowdRestDao = new CrowdRestDao(props);
+        crowdRestDao.deleteUser(user);
+    }
+
+
     /**
-     * afterClickOn() element is invalid if the clicked-on element caused the browser to navigate to new page, so we
+     * The {@link WebDriverEventListener#afterClickOn} element argument  is invalid if the clicked-on element caused the browser to navigate to new page, so we
      * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
      */
     private Set<WebElement> clickElems = new HashSet<>();
@@ -216,17 +220,24 @@ public abstract class AbstractSeleniumWebITCase {
         }
     };
 
-    private void beforePageChange() {
+    /**
+     * This event fires  after the webdriver executes a command that will cause navigation (e.g. link click, back button, gotoPage())
+     * but before the navigation occurs.
+     */
+    protected void beforePageChange() {
         takeScreenshot();
         reportJavascriptErrors();
-        clearPageCache();
+        cachedPageText = null;
     }
 
-    private void afterPageChange() {
+    /**
+     * This event fires  after the browser navigates to a location following a command from webdriver (e.g. link click, back button, gotoPage())
+     */
+    protected void afterPageChange() {
         if (ignoreModals) {
             dismissModal();
         }
-        removeAffix();
+        applyEditPageHacks();
         takeScreenshot();
         if (!isIgnorePageErrorChecks()) {
             String text = getText();
@@ -238,24 +249,64 @@ public abstract class AbstractSeleniumWebITCase {
             }
             setIgnorePageErrorChecks(false);
         }
-
     }
 
-    // temporary hack
-    private void removeAffix() {
+    /**
+     * On tdar edit pages, the floating page navigation bar may obscure an underlying form element.  In practice, a user will know to scroll until
+     * the element is visible.  However,  selenium will deem the element unclickable and throw an exception if we try to modify it.  This hack
+     * removes the floating nav header to avoid that scenario.
+     *
+     * //fixme: instead, use fluentWait with ElementToBeVisible condition & sleeper that scrolls up 5px per sleep
+     */
+    protected void applyEditPageHacks() {
         try {
-            executeJavascript("$('#subnavbar').remove()");
-        } catch (Exception ex) {
-            logger.warn("js error", ex);
-        }
+            executeJavascript("var n=document.getElementById('subnavbar');n.parentNode.removeChild(n)");
+        } catch (Exception ignored) {}
     }
 
-    private void clearPageCache() {
-        pageText = null;
-    }
-
-    private enum Browser {
+    protected enum Browser {
         FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
+    }
+
+    /**
+     * Convenience wrapper for SystemUtils, which is a convenience wrapper for system.os.name.
+     *
+     * OS.CURRENT is an alias to enum value for the detected OS.
+     *
+     * metaKey indicates the key used by the current browser to execute menu hotkey command (e.g. CTRL+N opens window on Windows,
+     * CMD+N opens window on OSX)
+     */
+    public enum OS {
+        WINDOWS,
+        LINUX,
+        OSX(Keys.COMMAND),
+        UNIX(Keys.META),
+        TRS_80;
+
+        public Keys metaKey;
+
+        static OS CURRENT;
+        static  {
+            if(SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX)
+                CURRENT = OSX;
+            else if(SystemUtils.IS_OS_WINDOWS)
+                CURRENT = WINDOWS;
+            else if(SystemUtils.IS_OS_LINUX)
+                CURRENT = LINUX;
+            else if(SystemUtils.IS_OS_UNIX)
+                CURRENT = UNIX;
+            else
+                CURRENT = TRS_80;
+        }
+
+        OS(){
+            metaKey = Keys.CONTROL;
+        }
+
+        OS(Keys metaKey) {
+            this.metaKey = metaKey;
+        }
+
     }
 
     @Before
@@ -281,7 +332,7 @@ public abstract class AbstractSeleniumWebITCase {
         if (StringUtils.isNotBlank(xvfbPort)) {
             environment.put("DISPLAY", xvfbPort);
         }
-
+        currentBrowser = browser;
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
@@ -381,7 +432,7 @@ public abstract class AbstractSeleniumWebITCase {
         if (!screenshotsAllowed) {
             return;
         }
-        if (screenidx > MAX_SCREENSHOTS_PER_TEST) {
+        if (screenidx > TestConstants.MAX_SCREENSHOTS_PER_TEST) {
             return;
         }
 
@@ -426,18 +477,6 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * returns absolute url based on getBaseUrl() and provided path. If path is actually a complete url itself, ignore
-     * the base URL.
-     * 
-     * @see URL#URL(java.net.URL, String)
-     */
-    // private String absoluteUrl(String path) throws MalformedURLException {
-    // URL baseUrl = new URL(getBaseUrl());
-    // URL url = new URL(baseUrl, path);
-    // return url.toString();
-    // }
-
-    /**
      * return absolute url based upon context (i.e. base url) and path.
      * 
      * @param base
@@ -469,14 +508,6 @@ public abstract class AbstractSeleniumWebITCase {
 
     public String getCurrentUrl() {
         return getDriver().getCurrentUrl();
-    }
-
-    /**
-     * for our purposes, any protocol other than http[s] is considered invalid
-     */
-    private void assertCurrentUrl() {
-        String url = getCurrentUrl();
-        Assert.assertTrue("gotoPage url should be http or https", url.startsWith("http:") || url.startsWith("https:"));
     }
 
     private static final String CONTEXTUAL_BASE_URL_INDICATOR = "~";
@@ -525,19 +556,13 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-    // public void gotoPage(String path) {
-    // String url = null;
-    // try {
-    // url = absoluteUrl(path);
-    // logger.debug("going to {}", url);
-    // driver.get(absoluteUrl(path));
-    // } catch (Exception e) {
-    // Assert.fail(String.format("gotoPage() failed. base:%s   path:%s", getBaseUrl(), path));
-    // }
-    // }
-
+    /**
+     * Wait for specified css selector to match at least one element.  Uses default timeout.
+     * @param selector
+     * @return
+     */
     public WebElementSelection waitFor(String selector) {
-        return waitFor(selector, 20);
+        return waitFor(selector, DEFAULT_WAITFOR_TIMEOUT);
     }
 
     public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
@@ -547,18 +572,33 @@ public abstract class AbstractSeleniumWebITCase {
         return selection;
     }
 
+    /**
+     * Wait for specified number of seconds.  Use this as a last resort. Consider using
+     * {@link #waitFor(String)} or {@link #waitForPageload()}
+     * @param timeInSeconds  seconds to wait before timeout
+     */
     public void waitFor(int timeInSeconds) {
         try {
-            Thread.sleep(timeInSeconds * 1000);
+            Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException e) {
             e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
     }
 
+    /**
+     * Return WebElementSelection containing all elements mathing the specified css selector.
+     * @param selector css selector
+     * @return WebElementSelection containing zero-or-more elments
+     */
     public WebElementSelection find(String selector) {
         return find(By.cssSelector(selector));
     }
 
+    /**
+     * Return WebElementSelection containing all elements mathing the specified css selector.
+     * @param by
+     * @return
+     */
     public WebElementSelection find(By by) {
         logger.trace("find start: {}", by);
         WebElementSelection selection = new WebElementSelection(driver.findElements(by), driver);
@@ -613,12 +653,12 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String getText() {
-        if (pageText == null) {
+        if (cachedPageText == null) {
             logger.trace("getting body.innerText for url:{}", getDriver().getCurrentUrl());
             WebElement body = waitFor("body").first();
-            pageText = body.getText();
+            cachedPageText = body.getText();
         }
-        return pageText;
+        return cachedPageText;
     }
 
     @SuppressWarnings("unchecked")
@@ -808,8 +848,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-//        submitForm("#submitButton,.submitButton,input[type=submit]");
-        submitForm("#submitButton,.submitButton");
+        submitForm("#submitButton,.submitButton,form input[type=submit]");
     }
 
     /**
@@ -923,6 +962,15 @@ public abstract class AbstractSeleniumWebITCase {
             return false;
         }
         return true;
+    }
+
+
+    /**
+     * when indicates whether the test should (try to) ignore modal windows that appear during the course of test.
+     * @return
+     */
+    public boolean isIgnoreModals() {
+        return this.ignoreModals;
     }
 
     /**
@@ -1133,5 +1181,48 @@ public abstract class AbstractSeleniumWebITCase {
         driver.switchTo().window(nextHandle);
         return previousHandle;
     }
+
+    /**
+     * Spawn a new browser window using the same webdriver instance.  Note that the active window handle does not change after this method creates
+     * the new window.  To switch to the new window,  call getDriver().switchTo().window()
+     *
+     * Fun Fact: The WebDriver API lacks this feature because the Selenium devteam hates you.
+     * @return handle of new window.
+     */
+    public String spawnWindow() {
+        return spawnWindow(Keys.chord(OS.CURRENT.metaKey, "n"));
+    }
+
+    /**
+     * Spawn a "private browsing".  This is a handy way to login with different credentials on the same webdriver instance.  Note that
+     * all private windows share the same cookies.  So you the effective maximum number of unique sessions per webdriver instance is two;
+     * @return
+     */
+    public String spawnPrivateWindow() {
+        if(currentBrowser != Browser.FIREFOX) fail("not implemented for " + currentBrowser);
+        return spawnWindow(Keys.chord(OS.CURRENT.metaKey, "P"));
+    }
+
+    /**
+     * send specified key combo to current window and assert that the browser created a new window
+     * @param chord
+     * @return
+     */
+    private String spawnWindow(String chord)  {
+        List<String> origHandles = new ArrayList<>();
+        List<String> newHandles = new ArrayList<>();
+        origHandles.addAll(driver.getWindowHandles());
+
+        //fixme: is there a platform-independent way to get teh appropriate meta key (ctrl for windows, command for windows, meta for unix)
+        find("body").sendKeys(chord);
+        //hopefully this spawned a new window
+        newHandles.addAll(driver.getWindowHandles());
+        newHandles.removeAll(origHandles);
+        assertThat("new window should have been created", newHandles, is(not(empty())));
+        String newHandle = newHandles.iterator().next();
+        return newHandle;
+
+    }
+
 
 }

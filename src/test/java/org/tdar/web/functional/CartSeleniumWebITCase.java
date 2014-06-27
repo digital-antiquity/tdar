@@ -1,5 +1,7 @@
 package org.tdar.web.functional;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -49,7 +51,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     /**
      * create user-registration info with random username,email that satisfies minimum required fields
-     * @param userPrefix
+     * @param userPrefix prefix applied to username, email, firstname, and lastname
      * @return
      */
     private UserRegistration createUserRegistration(String userPrefix) {
@@ -66,7 +68,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     /**
      * fill out the user registration fields on the cart/review page.
-     * @param reg
+     * @param reg user registration information
      */
     private void fillOut(UserRegistration reg) {
         //on firefox, autofoxus occurs after pageload(bugzilla: 717361). so we wait
@@ -110,8 +112,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
-        //FIXME: look for type=submit in submitForm()
-        submitForm("[type=submit]");
+        submitForm();
 
         //now we are on the process payment page.  click on the button to fire up a new window
         assertThat(getCurrentUrl(), endsWith("cart/process-payment-request"));
@@ -137,5 +138,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor("body.dashboard");
     }
 
-
+    @Test
+    //ideal walkthrough of purchase process for logged-out-user process with no mistakes
+    public void testLoginPurchase() {
+    }
 }

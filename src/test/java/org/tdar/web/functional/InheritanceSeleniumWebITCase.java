@@ -189,7 +189,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
         // inherit everything
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(getDriver(), 5);
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
 
