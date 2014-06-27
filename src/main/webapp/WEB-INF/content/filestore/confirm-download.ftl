@@ -1,4 +1,4 @@
-<#assign download ="/filestore/${informationResourceFileId?c}" />
+<#assign download ="/filestore/${informationResourceFileVersionId?c}" />
 <html>
 <head>
     <title>Download: ${fileName?html}</title>
@@ -24,7 +24,7 @@
 
 <script>
     var _register = function () {
-        TDAR.common.registerDownload('<@s.url value="${download}"/>', '${informationResourceId?c}');
+        TDAR.common.registerDownload('<@s.url value="${download}"/>', '${informationResourceFileVersionId?c}');
     };
 
     var _autoDownload = function () {

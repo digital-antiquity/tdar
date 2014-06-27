@@ -106,7 +106,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
                     @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") },
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String download() {
-        if (getInformationResourceFileVersionId() == null) {
+        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
             return ERROR;
         }
         if (isAuthenticated()) {
@@ -124,7 +124,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     @Override
     @Action(value = GET)
     public String execute() throws TdarActionException {
-        if (informationResourceFileVersion == null) {
+        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
@@ -144,7 +144,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     })
     public String thumbnail() throws TdarActionException {
-        if (informationResourceFileVersion == null) {
+        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
@@ -166,7 +166,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     @Action(value = DOWNLOAD_ALL)
     public String downloadZipArchive() throws TdarActionException {
-        if (getInformationResourceId() == null) {
+        if (Persistable.Base.isNullOrTransient(informationResource)) {
             return ERROR;
         }
 

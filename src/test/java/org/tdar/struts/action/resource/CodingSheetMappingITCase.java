@@ -465,6 +465,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
             DownloadController dc = generateNewInitializedController(DownloadController.class);
             dc.setInformationResourceFileVersionId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.prepare();
             dc.execute();
             assertEquals("bigsheet_translated.xls", dc.getFileName());
 

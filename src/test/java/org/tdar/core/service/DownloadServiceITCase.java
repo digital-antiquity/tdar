@@ -141,6 +141,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
+        controller.prepare();
         assertEquals(Action.SUCCESS, controller.downloadZipArchive());
         logger.info(controller.getFileName());
         File file = File.createTempFile("test", ".zip");
@@ -195,6 +196,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
         controller.setInformationResourceFileVersionId(document.getFirstInformationResourceFile().getLatestPDF().getId());
         try {
+            controller.prepare();
             assertEquals(Action.SUCCESS, controller.execute());
             assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
         } catch (TdarActionException e) {
