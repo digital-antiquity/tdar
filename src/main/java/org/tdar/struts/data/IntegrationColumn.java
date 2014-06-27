@@ -278,7 +278,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return sharedOntology;
     }
 
-    public synchronized List<OntologyNode> getFlattenedOntologyNodeList() {
+    public List<OntologyNode> getFlattenedOntologyNodeList() {
         if (flattenedOntologyNodeList == null) {
             flatten();
         }
@@ -342,7 +342,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
                             break;
                         }
                     }
-                }                
+                }
             }
         }
         flattenedOntologyNodeList = ontologyNodes;

@@ -31,8 +31,7 @@ import org.tdar.core.bean.SupportsResource;
 /**
  * $Id$
  * 
- * Represents an Ontology in tDAR. There are two ways to access an Ontology, via the URL (getUrl()) and
- * via the filesystem via getFilename()).
+ * OntologyS in tDAR are InformationResources with a collection of OntologyNodeS that can be categorized. 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision $
@@ -51,11 +50,11 @@ public class Ontology extends InformationResource implements SupportsResource {
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
-    private List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
+    private List<OntologyNode> ontologyNodes = new ArrayList<>();
 
-    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<Long, OntologyNode>();
-    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<String, OntologyNode>();
-    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<String, OntologyNode>();
+    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
     private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
@@ -84,7 +83,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public Map<Long, OntologyNode> getIdToNodeMap() {
-        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<Long, OntologyNode>();
+        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<>();
         for (OntologyNode node : ontologyNodes) {
             idToNodeMap.put(node.getId(), node);
         }
@@ -98,7 +97,7 @@ public class Ontology extends InformationResource implements SupportsResource {
      */
     public SortedMap<Integer, List<OntologyNode>> toOntologyNodeMap() {
         List<OntologyNode> sortedOntologyNodes = getSortedOntologyNodes();
-        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<Integer, List<OntologyNode>>();
+        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<>();
         for (OntologyNode node : sortedOntologyNodes) {
             Integer intervalStart = node.getIntervalStart();
             String index = node.getIndex();
@@ -110,7 +109,7 @@ public class Ontology extends InformationResource implements SupportsResource {
                 }
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
-                    children = new ArrayList<OntologyNode>();
+                    children = new ArrayList<>();
                     map.put(parentId, children);
                 }
                 children.add(node);
@@ -162,7 +161,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public List<OntologyNode> getSortedOntologyNodes(Comparator<OntologyNode> comparator) {
-        ArrayList<OntologyNode> sortedNodes = new ArrayList<OntologyNode>(getOntologyNodes());
+        ArrayList<OntologyNode> sortedNodes = new ArrayList<>(getOntologyNodes());
         Collections.sort(sortedNodes, comparator);
         return sortedNodes;
     }

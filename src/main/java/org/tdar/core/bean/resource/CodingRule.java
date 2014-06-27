@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
@@ -25,11 +26,12 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * Key, Description, and Mapping for each entry in a coding-sheet
+ * Represents an entry in a CodingSheet consisting of a String code (key),
+ * the String term (value) that the code is mapped to, and an optional description.
  * 
- * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
- * @version $Revision$
- * @latest $Id$
+ * CodingRules can also be mapped to an OntologyNode in an Ontology, which is essential for the way we
+ * currently perform data integration, where different datasets can be compared through their mappings
+ * to nodes in a common ontology.
  */
 @Entity
 @Table(name = "coding_rule", indexes = {
@@ -55,6 +57,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String term;
 
+    // FIXME: use a Lob instead?
     @Column(length = 2000)
     @Length(max = 2000)
     private String description;
@@ -65,9 +68,9 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     private transient long count = -1L;
 
-    private transient List<Long> mappedToData = new ArrayList<Long>();
+    private transient List<Long> mappedToData = new ArrayList<>();
 
-    private transient List<OntologyNode> suggestions = new ArrayList<OntologyNode>();
+    private transient List<OntologyNode> suggestions = new ArrayList<>();
 
     public CodingRule() {
     }
@@ -86,7 +89,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         setTerm(term);
         setDescription(description);
         setOntologyNode(node);
-        // FIXME: must be careful when adding "this" to collections inside a constructor to avoid NPEs from uninitialized instance variables. 
+        // FIXME: must be careful when adding "this" to collections inside a constructor to avoid NPEs from uninitialized instance variables.
         codingSheet.getCodingRules().add(this);
     }
 
@@ -112,7 +115,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     // strips leading zeros and trims whitespace from string.
     private static String sanitize(String string) {
-        if ((string == null) || string.isEmpty()) {
+        if (StringUtils.isEmpty(string)) {
             return null;
         }
         try {
@@ -139,7 +142,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     }
 
     public void setDescription(String description) {
-        this.description = description.trim();
+        this.description = StringUtils.trimToNull(description);
     }
 
     @XmlElement(name = "codingSheetRef")
@@ -163,39 +166,25 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     @Override
     public int compareTo(CodingRule other) {
         try {
-            // try to use integer comparison instead of String lexicographic comparison
+            // first try integer comparison instead of String lexicographic comparison
             return Integer.valueOf(code).compareTo(Integer.valueOf(other.code));
         } catch (NumberFormatException exception) {
             return code.compareTo(other.code);
         }
     }
 
-    /**
-     * @return the ontologyNode
-     */
     public OntologyNode getOntologyNode() {
         return ontologyNode;
     }
 
-    /**
-     * @param ontologyNode
-     *            the ontologyNode to set
-     */
     public void setOntologyNode(OntologyNode ontologyNode) {
         this.ontologyNode = ontologyNode;
     }
 
-    /**
-     * @return the count
-     */
     public long getCount() {
         return count;
     }
 
-    /**
-     * @param count
-     *            the count to set
-     */
     public void setCount(long count) {
         this.count = count;
     }
@@ -215,6 +204,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     }
 
     public void setMappedToData(DataTableColumn col) {
-        this.mappedToData.add(col.getId());
+        mappedToData.add(col.getId());
     }
 }
