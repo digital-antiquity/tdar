@@ -30,6 +30,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 /**
  * $Id$
@@ -46,7 +47,7 @@ import com.opensymphony.xwork2.Preparable;
 @Results({
         @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
-public class LoginController extends AuthenticationAware.Base implements Preparable {
+public class LoginController extends AuthenticationAware.Base implements Validateable, Preparable {
 
     private static final long serialVersionUID = -1219398494032484272L;
 
@@ -175,12 +176,6 @@ public class LoginController extends AuthenticationAware.Base implements Prepara
         return url_;
     }
 
-
-    @Override
-    public void validate() {
-        // TODO Auto-generated method stub
-        super.validate();
-    }
     /**
      * @param returnUrl
      *            the returnUrl to set
@@ -221,22 +216,25 @@ public class LoginController extends AuthenticationAware.Base implements Prepara
     }
 
     @Override
-    public void prepare() throws Exception {
-        if (login == null) {
-            login = userLogin;
-        }
-        if (login == null) {
-            login = downloadUserLogin;
-        }
-        if (login == null) {
-            throw new TdarRecoverableRuntimeException();
-        }
+    public void validate()  {
         List<String> validate = login.validate(this, authorizationService);
         addActionErrors(validate);
 
         if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
         }
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        login = userLogin;
+        if (StringUtils.isBlank(login.getLoginUsername() )) {
+            login = downloadUserLogin;
+        }
+        if (login == null) {
+            throw new TdarRecoverableRuntimeException();
+        }
+        
     }
 
     
