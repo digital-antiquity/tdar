@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#assign download ="/filestore/${informationResourceFileVersionId?c}" />
 <html>
 <head>
@@ -23,28 +24,13 @@
 </div>
 
 <script>
-    var _register = function () {
-        TDAR.common.registerDownload('<@s.url value="${download}"/>', '${informationResourceFileVersionId?c}');
-    };
 
-    var _autoDownload = function () {
-        _register();
-        document.location = "${download?js_string}";
-    };
 
     $(function () {
-
-        var DOWNLOAD_WAIT_SECONDS = 4;
-        var id = setTimeout(_autoDownload, DOWNLOAD_WAIT_SECONDS * 1000);
-
-        //cancel auto-download if user beats us to the clock
-        $('.manual-download').click(function () {
-            clearTimeout(id);
-            _register();
-            return true;
-        });
+        TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersionId?c}');
     });
 
 
 </script>
 </body>
+</#escape>
