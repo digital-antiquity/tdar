@@ -228,6 +228,8 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @Override
     public void prepare() throws Exception {
         login = userLogin;
+        
+        // FIXME: fomralize and make more robust
         if (StringUtils.isBlank(login.getLoginUsername() )) {
             login = downloadUserLogin;
         }
