@@ -1,9 +1,9 @@
-<#assign download ="/filestore/${reg.informationResourceFileId?c}" />
+<#assign download ="/filestore/${downloadRegistration.version.id?c}" />
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <html>
 <head>
-    <title>Download: ${fileName!"undefined"?html}</title>
+    <title>Download: ${downloadRegistration.version.fileName!"undefined"?html}</title>
 </head>
 <body>
 <div class="hero-unit">
@@ -12,7 +12,7 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download!""}" class="manual-download">${fileName!"undefined"?html}</a></dd>
+        <dd><a href="${download!""}" class="manual-download">${downloadRegistration.version.filename!"undefined"?html}</a></dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
@@ -26,10 +26,11 @@
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/account/process-download-registration">
                 <@s.token name='struts.csrf.token' />
-                <@s.hidden name="reg.informationResourceFileId" value="${reg.informationResourceFileId?c}" />
+                <@s.hidden name="downloadRegistration.version.id" />
+                <@s.hidden name="downloadRegistration.version.filename"/>
                 <fieldset>
                     <legend>Register</legend>
-                    <@auth.registrationFormFields detail="minimal" cols=9 />
+                    <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" />
                 </fieldset>
             </@s.form>
 

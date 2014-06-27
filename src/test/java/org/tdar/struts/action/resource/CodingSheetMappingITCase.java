@@ -464,7 +464,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
 
             DownloadController dc = generateNewInitializedController(DownloadController.class);
-            dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.setInformationResourceFileVersionId(translatedFile.getLatestTranslatedVersion().getId());
             dc.execute();
             assertEquals("bigsheet_translated.xls", dc.getFileName());
 

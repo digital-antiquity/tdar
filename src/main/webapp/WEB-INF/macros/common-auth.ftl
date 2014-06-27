@@ -7,7 +7,7 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12>
+<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg">
     <@common.antiSpam />
 <#local
     level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
@@ -19,47 +19,47 @@
 >
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='reg.person.firstName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='${beanPrefix}.person.firstName' cssClass="required input-xlarge" />
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='reg.person.lastName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='${beanPrefix}.person.lastName' cssClass="required input-xlarge" />
     </div>
 </div>
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="reg.person.email" cssClass="required email input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="${beanPrefix}.person.email" cssClass="required email input-xlarge" />
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="reg.confirmEmail" cssClass="required email input-xlarge"/>
+        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="${beanPrefix}.confirmEmail" cssClass="required email input-xlarge"/>
     </div>
 </div>
 
 <div class="row">
     <div class="span4">
-        <@s.textfield labelposition='left' label='Organization' name='reg.institutionName' id='institutionName' cssClass="input-xlarge"/>
+        <@s.textfield labelposition='left' label='Organization' name='${beanPrefix}.institutionName' id='institutionName' cssClass="input-xlarge"/>
     </div>
     <div class="span4">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
-            <@s.select list="userAffiliations" name="reg.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
+            <@s.select list="userAffiliations" name="${beanPrefix}.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
 
 </div>
 
 </div>
-    <@s.textfield spellcheck="false" required=true id='username' label="Username" name="reg.person.username" cssClass="required username input-xlarge" />
+    <@s.textfield spellcheck="false" required=true id='username' label="Username" name="${beanPrefix}.person.username" cssClass="required username input-xlarge" />
 <div class="row">
     <div class="span4">
-        <@s.password required=true label='Password' name='reg.password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Password' name='${beanPrefix}.password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
     </div>
     <div class="span4">
-        <@s.password required=true label='Confirm password' name='reg.confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Confirm password' name='${beanPrefix}.confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
     </div>
 </div>
 
 <#if (level > 1)>
     <div class="row">
         <div class="span4">
-            <@s.textfield label='Work phone' labelposition='left' name='reg.person.phone' id='phone' cssClass=" input-xlarge"/>
+            <@s.textfield label='Work phone' labelposition='left' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
         </div>
     </div>
 </#if>
@@ -71,7 +71,7 @@
             <div class="controls">
                 <span class="help-block">  </span>
                 <label class="checkbox">
-                    <@s.checkbox theme="simple" name="reg.acceptTermsOfUse" id="tou-id"  />
+                    <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
                     I have read and accept the ${siteAcronym}
                     <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
                 </label>
@@ -83,7 +83,7 @@
             <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
             </span>
                 <label class="checkbox">
-                    <@s.checkbox theme="simple" name="reg.requestingContributorAccess" id="contributor-id"  />
+                    <@s.checkbox theme="simple" name="${beanPrefix}.requestingContributorAccess" id="contributor-id"  />
                     I accept the ${siteAcronym}
                     <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                     and wish to add ${siteAcronym} content.
@@ -99,7 +99,7 @@
                     Please briefly describe the geographical areas, time periods, or other subjects for which you
                     would like to contribute information
                 </span>
-                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='reg.contributorReason' id='contributorReasonId' />
+                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId' />
                 </div>
             </div>
         </div>

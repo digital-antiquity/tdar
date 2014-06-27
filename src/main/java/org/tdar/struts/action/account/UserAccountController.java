@@ -1,5 +1,8 @@
 package org.tdar.struts.action.account;
 
+import static com.opensymphony.xwork2.Action.INPUT;
+import static com.opensymphony.xwork2.Action.SUCCESS;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +29,7 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.DownloadUserRegistration;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -64,6 +68,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Autowired
     private transient RecaptchaService reCaptchaService;
     private UserRegistration registration = new UserRegistration(reCaptchaService);
+    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(reCaptchaService);
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -145,11 +150,10 @@ public class UserAccountController extends AuthenticationAware.Base implements V
                     results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                             @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") }),
-            @Action(value = "process-cart-registration",
+            @Action(value = "process-download-registration",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
-                    results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/cart/review"),
-                            @Result(name = INPUT,
-                                    type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
+                    results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
+                            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "${sessionData.returnUrl}")
                     })
     })
     @HttpsOnly
@@ -243,12 +247,24 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registration.validate(this, authenticationService);
+        UserRegistration reg = registration;
+        if (reg == null) {
+            reg = downloadRegistration;
+        }
+        List<String> errors = reg.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
 
     @Override
     public void prepare() {
+    }
+
+    public DownloadUserRegistration getDownloadRegistration() {
+        return downloadRegistration;
+    }
+
+    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
+        this.downloadRegistration = downloadRegistration;
     }
 }

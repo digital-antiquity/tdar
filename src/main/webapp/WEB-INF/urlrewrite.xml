@@ -145,22 +145,22 @@
 
     <rule>
         <from>^/filestore/(\d+)/([\w\-]+)</from>
-        <to>/filestore/$2?informationResourceFileId=$1</to>
+        <to>/filestore/$2?informationResourceFileVersionId=$1</to>
     </rule>
 
     <rule>
         <from>^/files/img/sm/(\d+)</from>
-        <to>/filestore/thumbnail?informationResourceFileId=$1</to>
+        <to>/filestore/thumbnail?informationResourceFileVersionId=$1</to>
     </rule>
 
     <rule>
         <from>^/files/img/(md|lg)/(\d+)</from>
-        <to>/filestore/$1?informationResourceFileId=$2</to>
+        <to>/filestore/$1?informationResourceFileVersionId=$2</to>
     </rule>
 
     <rule>
         <from>^/filestore/(\d+)/?</from>
-        <to>/filestore/get?informationResourceFileId=$1</to>
+        <to>/filestore/get?informationResourceFileVersionId=$1</to>
     </rule>
 
     <rule>

@@ -1,5 +1,8 @@
 package org.tdar.struts.data;
 
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.external.RecaptchaService;
 
 /**
@@ -9,10 +12,10 @@ public class DownloadUserRegistration extends UserRegistration {
 
     private static final long serialVersionUID = 703786803735892594L;
 
-    private Long informationResourceFileId;
-    private Long informationResourceId;
-    private String fileName;
-    private String download;
+    private InformationResourceFileVersion version;
+    private InformationResource  resource;
+    private String returnUrl;
+    private String inputUrl;
     
     public DownloadUserRegistration() {
     }
@@ -21,29 +24,36 @@ public class DownloadUserRegistration extends UserRegistration {
         super(recaptchaService);
     }
     
-    public Long getInformationResourceFileId() {
-        return informationResourceFileId;
+    public InformationResource getResource() {
+        return resource;
     }
-    public void setInformationResourceFileId(Long informationResourceFileId) {
-        this.informationResourceFileId = informationResourceFileId;
+
+    public void setResource(InformationResource resource) {
+        this.resource = resource;
     }
-    public Long getInformationResourceId() {
-        return informationResourceId;
+
+    public InformationResourceFileVersion getVersion() {
+        return version;
     }
-    public void setInformationResourceId(Long informationResourceId) {
-        this.informationResourceId = informationResourceId;
+
+    public void setVersion(InformationResourceFileVersion version) {
+        this.version = version;
     }
-    public String getFileName() {
-        return fileName;
+
+    public String getInputUrl() {
+        return inputUrl;
     }
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+
+    public void setInputUrl(String inputUrl) {
+        this.inputUrl = inputUrl;
     }
-    public String getDownload() {
-        return download;
+
+    public String getReturnUrl() {
+        return returnUrl;
     }
-    public void setDownload(String download) {
-        this.download = download;
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
     
     

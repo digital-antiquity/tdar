@@ -193,7 +193,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         // controller.setInformationResourceId(document.getId());
 
-        controller.setInformationResourceFileId(document.getFirstInformationResourceFile().getLatestPDF().getId());
+        controller.setInformationResourceFileVersionId(document.getFirstInformationResourceFile().getLatestPDF().getId());
         try {
             assertEquals(Action.SUCCESS, controller.execute());
             assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());

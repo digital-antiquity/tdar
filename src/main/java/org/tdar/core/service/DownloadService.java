@@ -171,7 +171,7 @@ public class DownloadService {
             logger.debug("downloading file:" + resourceFile.getCanonicalPath());
         } catch (FileNotFoundException | NullPointerException ex) {
             logger.error("Could not generate zip file to download: file not found", ex);
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
+            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generatefile to download");
         } catch (IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "Could not generate zip file to download");
