@@ -63,7 +63,6 @@ public class UserNotificationService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> getCurrentNotifications(final TdarUser user) {
-        logger.debug("finding notifications for user: {} ({})", user, user.getId());
         List<UserNotification> notifications =
                 genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setLong("userId", user.getId()).list();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();

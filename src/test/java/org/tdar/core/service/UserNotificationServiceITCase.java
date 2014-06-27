@@ -26,19 +26,18 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     private XmlService xmlService;
 
-    private TdarUser user;
-
     private List<UserNotification> initialNotifications;
 
     @Before
     public void setUp() {
-        user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
         initialNotifications = userNotificationService.findAll();
     }
 
     @Test
     @Rollback
     public void testDismissNotifications() {
+        TdarUser user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
+        getLogger().debug("created user with id: {}", user.getId());
         UserNotification infoNotification = userNotificationService.info(user, "some info message");
         UserNotification broadcastNotification = userNotificationService.broadcast("some broadcast message");
         initialNotifications.addAll(Arrays.asList(broadcastNotification, infoNotification));
@@ -65,6 +64,7 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testMultipleUserCurrentNotifications() {
         List<TdarUser> otherUsers = new ArrayList<>();
+        TdarUser user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
         for (int i = 0; i < 5; i++) {
             TdarUser anotherUser = createAndSaveNewPerson(i + "usern@mailinator.com", "n" + i);
             otherUsers.add(anotherUser);
@@ -73,8 +73,8 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
             userNotificationService.error(anotherUser, "1st error for " + i);
             userNotificationService.warning(anotherUser, "1st warning for " + i);
         }
-        for (TdarUser user : otherUsers) {
-            List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
+        for (TdarUser otherUser : otherUsers) {
+            List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(otherUser);
             assertEquals(5, currentNotifications.size());
             Map<UserNotificationType, Integer> counts = getNotificationTypeCounts(currentNotifications);
             assertEquals(2, counts.get(UserNotificationType.INFO).intValue());
@@ -87,8 +87,8 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         UserNotification broadcast = userNotificationService.broadcast("this is a test of the emergency broadcast system");
         initialNotifications.add(0, broadcast);
         assertEquals("original user should have 2 broadcast messages now", initialNotifications, userNotificationService.getCurrentNotifications(user));
-        for (TdarUser user : otherUsers) {
-            List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
+        for (TdarUser otherUser : otherUsers) {
+            List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(otherUser);
             assertEquals(6, currentNotifications.size());
             Map<UserNotificationType, Integer> counts = getNotificationTypeCounts(currentNotifications);
             assertEquals(2, counts.get(UserNotificationType.INFO).intValue());
