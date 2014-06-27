@@ -28,6 +28,7 @@ import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.DownloadHandler;
+import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.DownloadUserRegistration;
 
 import com.opensymphony.xwork2.Preparable;
@@ -80,7 +81,8 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
-    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration();
+    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(recaptchaService);
+    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(recaptchaService);
 
     @Autowired
     private transient PdfService pdfService;
@@ -115,7 +117,8 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         getDownloadRegistration().setVersion(informationResourceFileVersion);
         getDownloadRegistration().setResource(informationResource);
         getDownloadRegistration().setInputUrl(getCurrentUrl());
-        getSessionData().setReturnFailureUrl(getCurrentUrl());
+        getDownloadUserLogin().setVersion(informationResourceFileVersion);
+        getDownloadUserLogin().setResource(informationResource);
         getDownloadRegistration().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
         getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
         return LOGIN;
@@ -327,6 +330,14 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
         this.downloadRegistration = downloadRegistration;
+    }
+
+    public DownloadUserLogin getDownloadUserLogin() {
+        return downloadUserLogin;
+    }
+
+    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
+        this.downloadUserLogin = downloadUserLogin;
     }
 
 }

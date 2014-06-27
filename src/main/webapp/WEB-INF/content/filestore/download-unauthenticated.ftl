@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#assign download ="/filestore/${downloadRegistration.version.id?c}" />
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
@@ -26,8 +27,7 @@
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/account/process-download-registration">
                 <@s.token name='struts.csrf.token' />
-                <@s.hidden name="downloadRegistration.version.id" />
-                <@s.hidden name="downloadRegistration.version.filename"/>
+                <@commonFields />
                 <fieldset>
                     <legend>Register</legend>
                     <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" />
@@ -39,6 +39,7 @@
         <div class="span3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/login/process-download-login">
+                    <@commonFields />
                 <@auth.login showLegend=true>
                     <div class="form-actions">
                         <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
@@ -48,4 +49,13 @@
 
         </div>
     </div>
+    <#macro commonFields>
+        <@s.hidden name="downloadRegistration.version.id" />
+        <@s.hidden name="downloadRegistration.version.filename"/>
+        <@s.hidden name="downloadRegistration.resource.id"/>
+        <@s.hidden name="downloadRegistration.resource.title"/>
+        <@s.hidden name="downloadRegistration.resource.description"/>
+        <@s.hidden name="downloadRegistration.resource.resourceType"/>
+    </#macro>
 </body>
+</#escape>

@@ -25,7 +25,6 @@ public class SessionData implements Serializable {
     private AuthenticationToken authenticationToken;
 
     private String returnUrl;
-    private String returnFailureUrl;
     private String[] parameters;
     private Long invoiceId;
     
@@ -44,7 +43,6 @@ public class SessionData implements Serializable {
         this.authenticationToken = null;
         this.parameters = null;
         this.returnUrl = null;
-        this.returnFailureUrl = null;
     }
 
     public void setAuthenticationToken(AuthenticationToken authenticationToken) {
@@ -106,14 +104,6 @@ public class SessionData implements Serializable {
 
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
-    }
-
-    public String getReturnFailureUrl() {
-        return returnFailureUrl;
-    }
-
-    public void setReturnFailureUrl(String returnFailureUrl) {
-        this.returnFailureUrl = returnFailureUrl;
     }
 
 }

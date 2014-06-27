@@ -110,16 +110,17 @@
     </div>
 </div>
 </#macro>
-<#macro login showLegend=false>
+<#macro login showLegend=false beanPrefix="userLogin">
 <fieldset>
     <#if showLegend>
         <legend>Login</legend>
     </#if>
-    <input type="hidden" name="url" value="${Parameters.url!''}"/>
+<#-- don't think this does anything
+    <input type="hidden" name="url" value="${Parameters.url!''}"/> -->
     <@s.token name='struts.csrf.token' />
     <@common.antiSpam />
-    <@s.textfield spellcheck="false" id='loginUsername' name="userLogin.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
-    <@s.password id='loginPassword' name="userLogin.loginPassword" label="Password" cssClass="required" />
+    <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
+    <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
 
     <@s.hidden name="returnUrl" />
     <#nested />

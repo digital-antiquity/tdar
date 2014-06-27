@@ -17,15 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$
@@ -40,19 +44,19 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD),
-        @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl") })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
-public class LoginController extends AuthenticationAware.Base {
+public class LoginController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -1219398494032484272L;
 
-    private String url;
     private String returnUrl;
     @Autowired
     private RecaptchaService recaptchaService;
 
+    private UserLogin login;
     private UserLogin userLogin = new UserLogin(recaptchaService);
+    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(recaptchaService);
 
     private AntiSpamHelper h = userLogin.getH();
 
@@ -93,8 +97,8 @@ public class LoginController extends AuthenticationAware.Base {
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
-                            @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}")
-                    }),
+                            @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}"),
+                            @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl")                    }),
             @Action(value = "process-cart-login",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
@@ -107,25 +111,18 @@ public class LoginController extends AuthenticationAware.Base {
             @Action(value = "process-download-login",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
-                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "${sessionData.returnUrl}"),
-                            @Result(name = INPUT, type = REDIRECT, location = "${sessionData.returnFailureUrl}"),
+                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "${downloadLogin.successUrl}"),
+                            @Result(name = INPUT, type = REDIRECT, location = "${downloadLogin.failureUrl}"),
                     })
     })
     @HttpsOnly
     @WriteableSession
     public String authenticate() {
-        getLogger().debug("Trying to authenticate username:{}", getUserLogin().getLoginUsername());
-        List<String> validate = userLogin.validate(this, authorizationService);
-        addActionErrors(validate);
-
-        if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
-            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
-            return INPUT;
-        }
+        getLogger().debug("Trying to authenticate username:{}", login.getLoginUsername());
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
+            status = authenticationService.authenticatePerson(login, getServletRequest(), getServletResponse(),
                     getSessionData());
         } catch (Exception e) {
             addActionError(e.getMessage());
@@ -178,17 +175,12 @@ public class LoginController extends AuthenticationAware.Base {
         return url_;
     }
 
-    // // FIXME: messages should be localized
-    // @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your username.", shortCircuit = true)
-    // public void setLoginUsername(String username) {
-    // this.loginUsername = username;
-    // }
-    // // FIXME: localize message
-    // @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your password.")
-    // public void setLoginPassword(String password) {
-    // this.loginPassword = password;
-    // }
 
+    @Override
+    public void validate() {
+        // TODO Auto-generated method stub
+        super.validate();
+    }
     /**
      * @param returnUrl
      *            the returnUrl to set
@@ -220,4 +212,32 @@ public class LoginController extends AuthenticationAware.Base {
         this.h = h;
     }
 
+    public DownloadUserLogin getDownloadUserLogin() {
+        return downloadUserLogin;
+    }
+
+    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
+        this.downloadUserLogin = downloadUserLogin;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        if (login == null) {
+            login = userLogin;
+        }
+        if (login == null) {
+            login = downloadUserLogin;
+        }
+        if (login == null) {
+            throw new TdarRecoverableRuntimeException();
+        }
+        List<String> validate = login.validate(this, authorizationService);
+        addActionErrors(validate);
+
+        if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
+        }
+    }
+
+    
 }

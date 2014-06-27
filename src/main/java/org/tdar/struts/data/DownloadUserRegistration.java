@@ -1,7 +1,6 @@
 package org.tdar.struts.data;
 
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.external.RecaptchaService;
 
