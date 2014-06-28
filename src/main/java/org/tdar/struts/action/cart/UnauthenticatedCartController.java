@@ -24,10 +24,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.PricingOption.PricingType;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts.interceptor.annotation.*;
 
 @Component
 @Scope("prototype")
@@ -235,24 +232,11 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * 
      * @return
      */
-    @Actions({
-            @Action(REVIEW),
-            @Action(value = "choose-billing-account", results = {@Result(location = "review.ftl")})
-    })
-
-    // @GetOnly
-    //FIXME: actions that service GET request should always be idempotent (writeable session on a GET request is a "tdar code smell")
-    //FIXME: This action facilitates two distinct steps in the workflow: the "review your filecount/mb selection" page and the  "choose a billing account" page. They should be broken out into two actions.
+    @Action(REVIEW)
+    @GetOnly
     public String showInvoice() {
-        // todo: if not authenticated, render the review page w/ signup/login form
         if (getInvoice() == null) {
             return "redirect-start";
-        }
-
-        //the view layer relies on invoice.isProxy(),  when in-turn relies on invoice.owner and invoice.transactedBy
-        if (getAuthenticatedUser() != null) {
-            getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-            getLogger().debug("accounts; {}", getAccounts());
         }
         return SUCCESS;
     }

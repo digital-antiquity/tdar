@@ -16,6 +16,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
+import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -104,6 +105,12 @@ public class CartBillingAccountController extends AbstractCartController {
             acct = selectedAccount;
         }
         accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    @Action("choose-billing-account")
+    @GetOnly
+    public String showBillingAccounts() {
         return SUCCESS;
     }
 
