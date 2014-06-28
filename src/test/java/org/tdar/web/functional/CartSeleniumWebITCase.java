@@ -114,7 +114,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith("cart/review"));
         UserRegistration reg = createUserRegistration("bob");
         fillOut(reg);
-        submitForm("#registrationForm #submitButton");
+        submitForm("#registrationForm .submitButton");
 
 
         //now we are on the "choose billing account" page. just click through to next page
@@ -178,7 +178,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         submitForm();
 
         //close the popup window
-        waitFor("btnCloswWindow").click();
+        waitFor("#btnCloseWindow").click();
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         // switch back to polling page
