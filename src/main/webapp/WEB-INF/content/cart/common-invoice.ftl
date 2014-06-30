@@ -48,6 +48,14 @@
     </table>
     </#macro>
 
+    <#macro printSubtotal invoice>
+    <div id="divInvoiceSubtotal" class="invoice-subtotal">
+        <h3>Subtotal</h3>
+        <span class="amt">${invoice.calculatedCost}</span>
+    </div>
+
+    </#macro>
+
     <#macro paymentMethod includePhone=true>
         <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
         listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />

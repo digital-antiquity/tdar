@@ -7,7 +7,7 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg">
+<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true>
     <@common.antiSpam />
 <#local
     level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
@@ -17,6 +17,13 @@
     spanfull = "span${cols}"
     spanhalf = "span${cols/2}"
 >
+
+<div class="row">
+    <div class="span8">
+        <@s.textfield spellcheck="false" required=true id='username' label="Username" name="${beanPrefix}.person.username" cssClass="required username input-xlarge" />
+    </div>
+</div>
+
 <div class="row">
     <div class="span4">
         <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='${beanPrefix}.person.firstName' cssClass="required input-xlarge" />
@@ -25,6 +32,7 @@
         <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='${beanPrefix}.person.lastName' cssClass="required input-xlarge" />
     </div>
 </div>
+
 <div class="row">
     <div class="span4">
         <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="${beanPrefix}.person.email" cssClass="required email input-xlarge" />
@@ -42,11 +50,9 @@
     <#-- listValueKey="localeKey"	       theme="tdar" -->
             <@s.select list="userAffiliations" name="${beanPrefix}.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
-
 </div>
 
 </div>
-    <@s.textfield spellcheck="false" required=true id='username' label="Username" name="${beanPrefix}.person.username" cssClass="required username input-xlarge" />
 <div class="row">
     <div class="span4">
         <@s.password required=true label='Password' name='${beanPrefix}.password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
@@ -57,11 +63,11 @@
 </div>
 
 <#if (level > 1)>
-    <div class="row">
-        <div class="span4">
-            <@s.textfield label='Work phone' labelposition='left' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
-        </div>
+<div class="row">
+    <div class="span4">
+        <@s.textfield label='Work phone' labelposition='left' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
     </div>
+</div>
 </#if>
 
 <div class="row">
@@ -104,14 +110,17 @@
             </div>
         </div>
         </#if>
+        <#if showSubmit>
         <div class="form-actions">
             <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Register">
         </div>
+        </#if>
     </div>
 </div>
 </#macro>
+
+
 <#macro login showLegend=false beanPrefix="userLogin">
-<fieldset>
     <#if showLegend>
         <legend>Login</legend>
     </#if>
@@ -129,6 +138,5 @@
             TDAR.auth.initLogin();
         });
     </script>
-</fieldset>
 </#macro>
 </#escape>

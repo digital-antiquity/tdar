@@ -185,4 +185,5 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         getDriver().switchTo().window(startWindow);
         waitFor("body.dashboard");
     }
+
 }

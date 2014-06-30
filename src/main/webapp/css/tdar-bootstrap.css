@@ -1563,3 +1563,18 @@ div.orgChart div.node.level1.special {
     margin-top:1em;
     margin-bottom:1em;
 }
+
+/* styles for purchasing pages  */
+.authpane {
+    background-color: #ecdccc;
+    padding: 0.5em;
+    border-radius: 0.5em;
+}
+
+.authfields {
+    height: 600px;
+}
+.authpane .form-actions {
+    background-color: #ecdccc;
+    border: none;
+}
