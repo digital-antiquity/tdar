@@ -88,7 +88,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#emailAddress").val(person.getEmail());
 
         assertThat(find("#confirmEmail").toList().size(), is(equalTo(1)));
-//        find("#confirmEmail").val(person.getEmail());
         find("#confirmEmail").val(reg.getConfirmEmail());
         find("#password").val(reg.getPassword());
         find("#confirmPassword").val(reg.getConfirmPassword());
@@ -96,9 +95,9 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         if(reg.isAcceptTermsOfUse() != find("#tou-id").isSelected()) {
             find("#tou-id").click();
         }
-        if(reg.isRequestingContributorAccess() != find("#contributor-id").isSelected() ) {
-            find("#contributor-id").click();
-        }
+//        if(reg.isRequestingContributorAccess() != find("#contributor-id").isSelected() ) {
+//            find("#contributor-id").click();
+//        }
     }
 
     @Test

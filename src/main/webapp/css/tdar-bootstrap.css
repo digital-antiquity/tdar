@@ -1565,16 +1565,16 @@ div.orgChart div.node.level1.special {
 }
 
 /* styles for purchasing pages  */
-.authpane {
+.authpane, .cartpane {
     background-color: #ecdccc;
     padding: 0.5em;
     border-radius: 0.5em;
 }
 
 .authfields {
-    height: 600px;
+    min-height: 400px;
 }
-.authpane .form-actions {
+.authpane .form-actions, .cartpane .form-actions {
     background-color: #ecdccc;
     border: none;
 }

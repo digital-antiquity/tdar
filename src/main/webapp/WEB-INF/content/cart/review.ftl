@@ -27,7 +27,7 @@
                                 <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false />
                             </div>
                             <div class="form-actions">
-                                <input type="submit" class='btn submitButton' name="submitAction" value="Register and Continue">
+                                <input type="submit" class='btn btn-mini submitButton tdar-button' name="submitAction" value="Register and Continue">
                             </div>
                         </div>
 
@@ -49,12 +49,13 @@
 
                     </div>
                     <div class="form-actions">
-                        <input type="submit" name="submit" class="btn" value="Login and Continue">
+                        <input type="submit" name="submit" class="btn btn-mini submitButton tdar-button" value="Login and Continue">
                     </div>
                 </div>
                 </@auth.login>
             </@s.form>
         </div>
+
     </div>
 </#if>
 

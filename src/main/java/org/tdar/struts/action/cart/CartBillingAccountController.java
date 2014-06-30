@@ -49,12 +49,16 @@ public class CartBillingAccountController extends AbstractCartController {
     public void prepare() {
         super.prepare();
         selectedAccount = getGenericService().find(Account.class, id);
-        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(getInvoice().getOwner(), ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+
+        TdarUser owner = getInvoice().getOwner();
+        if(owner == null) {
+            owner = getAuthenticatedUser();
+        }
+        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(owner, ACTIVE, FLAGGED_ACCOUNT_BALANCE));
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccount());
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new Account("Add an account"));
         }
-
     }
 
     @Override
@@ -79,7 +83,8 @@ public class CartBillingAccountController extends AbstractCartController {
 
     private void validate(Account account) {
         if (StringUtils.isBlank(account.getName())) {
-            addActionError("Account name required");
+            //addActionError("Account name required");
+            account.setName("Generated account for " + getAuthenticatedUser().getProperName());
         }
     }
 
@@ -108,7 +113,7 @@ public class CartBillingAccountController extends AbstractCartController {
         return SUCCESS;
     }
 
-    @Action("choose-billing-account")
+    @Action(value = "choose-billing-account", results={@Result(name = "input", location = "choose-billing-account.ftl")})
     @GetOnly
     public String showBillingAccounts() {
         return SUCCESS;

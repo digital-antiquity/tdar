@@ -82,10 +82,10 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     public void prepare() {
         super.prepare();
 
-//        //the TOU checkbox counds for both TOU and contributer agreement
-//        if(registrationInfo.isAcceptTermsOfUse()) {
-//            registrationInfo.setRequestingContributorAccess(true);
-//        }
+        //the TOU checkbox counds for both TOU and contributer agreement
+        if(registrationInfo.isAcceptTermsOfUse()) {
+            registrationInfo.setRequestingContributorAccess(true);
+        }
     }
 
     public UserRegistration getRegistrationInfo() {

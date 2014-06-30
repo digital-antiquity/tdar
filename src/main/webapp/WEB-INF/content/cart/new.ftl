@@ -107,10 +107,12 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="span8 offset4">
                         <@s.textfield name="code" label="Redeem Code" />
-			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
+                        <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction"
+                               value="Next: Review & Choose Payment Method">
                     </div>
                 </div>
 
@@ -147,6 +149,16 @@
                         </#if>
                     </div>
                 </div>
+
+                <#if invoice??>
+                    <div class="row">
+                        <div class="span9"></div>
+                        <div class="span3">
+                            <@invoicecommon.printSubtotal invoice />
+                        </div>
+                    </div>
+                </#if>
+
             </div>
         </div>
     </div>

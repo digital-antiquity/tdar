@@ -9,47 +9,52 @@
     <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <head>
-    <title>Review Billing Information</title>
-
+    <title>Choose A Billing Account</title>
 </head>
 <body>
-<h1>Invoice <span class="small">{${invoice.transactionStatus.label}}</span></h1>
+<h1>Choose A Billing Account</h1>
 <div class="row">
-    <div class="span6">
-        <#if authenticatedUser?has_content>
-            <p>prepared for: ${authenticatedUser.properName}</p>
-        </#if>
-        <@invoicecommon.proxyNotice />
-        <@invoicecommon.printInvoice />
-        <p><b>Payment by:</b><@s.text name="${invoice.paymentMethod.localeKey}"/></p>
-    </div>
-    <div class="span6">
-        <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-billing-account-choice'>
+    <div class="span12">
+        <div class="authpane">
+        <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal billing-account-choice" enctype='multipart/form-data' action='process-billing-account-choice'>
             <@s.token name='struts.csrf.token' />
             <@s.hidden name="invoiceId" value="${invoice.id?c}" />
             <#if accounts?has_content>
-                <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="false" id="select-existing-account"
-                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
-                <script>
-                    $(document).ready(function () {
-                        TDAR.pricing.initBillingChoice();
-                    });
-                </script>
-                <div class="add-new hidden">
-                    <h3>Create a new account</h3>
-                <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
-                    <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-                    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
-                    <p>Note: you can modify this account later to change the name, description, or specify who can charge it</p>
-                </div>
-            <#else>
-                <input type="hidden" name="account.id" value="-1"/>
-                <input type="hidden" name="account.name" value="Generated account for {name}"/>
+                <@s.select labelposition='top' label='Select Account' name='id' emptyOption="false" id="select-existing-account"
+                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" />
             </#if>
-            <@s.submit name="submit" value="submit" cssClass="button btn btn-primary"/>
+            <div class="add-new hidden">
+                <h3>Create a new account</h3>
+                <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
+                <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
+                <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
+                <p>Note: you can modify this account later to change the name, description, or specify who can charge it</p>
+            </div>
+
+            <@s.submit name="submit" value="Next Step: Payment" cssClass="btn btn-mini tdar-button"/>
         </@s.form>
+        </div>
 
     </div>
 </div>
+
+
+<div class="row">
+    <div class="span9"></div>
+    <div class="span3">
+        <#if authenticatedUser?has_content>
+            <p>Prepared for: ${authenticatedUser.properName}</p>
+        </#if>
+        <@invoicecommon.proxyNotice />
+        <@invoicecommon.printSubtotal invoice />
+        <p><b>Payment by:</b><@s.text name="${invoice.paymentMethod.localeKey}"/></p>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        TDAR.pricing.initBillingChoice();
+    });
+</script>
 </body>
 </#escape>

@@ -72,44 +72,55 @@
 
 <div class="row">
     <div class="${spanfull}">
-        <div class="control-group">
-            <label class="control-label">Terms of Use</label>
-            <div class="controls">
-                <span class="help-block">  </span>
-                <label class="checkbox">
-                    <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
-                    I have read and accept the ${siteAcronym}
-                    <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
-                </label>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">Contributor Agreement</label>
-            <div class="controls">
-            <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
-            </span>
-                <label class="checkbox">
-                    <@s.checkbox theme="simple" name="${beanPrefix}.requestingContributorAccess" id="contributor-id"  />
-                    I accept the ${siteAcronym}
-                    <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
-                    and wish to add ${siteAcronym} content.
-                </label>
-            </div>
-        </div>
-        <#if (level > 1)> 
-        <div id='contributorReasonTextArea'>
-            <label class="control-label">Contributor information</label>
+        <#if showMinimal>
+            <label class="checkbox">
+                <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
+                I have read and accept the ${siteAcronym}
+                <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
+                <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+            </label>
+
+        <#else>
             <div class="control-group">
+                <label class="control-label">Terms of Use</label>
                 <div class="controls">
-                <span class="help-block">
-                    Please briefly describe the geographical areas, time periods, or other subjects for which you
-                    would like to contribute information
-                </span>
-                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId' />
+                    <span class="help-block">  </span>
+                    <label class="checkbox">
+                        <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
+                        I have read and accept the ${siteAcronym}
+                        <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
+                    </label>
                 </div>
             </div>
-        </div>
+            <div class="control-group">
+                <label class="control-label">Contributor Agreement</label>
+                <div class="controls">
+                <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to ${siteAcronym}. You may change this setting at any time.
+                </span>
+                    <label class="checkbox">
+                        <@s.checkbox theme="simple" name="${beanPrefix}.requestingContributorAccess" id="contributor-id"  />
+                        I accept the ${siteAcronym}
+                        <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                        and wish to add ${siteAcronym} content.
+                    </label>
+                </div>
+            </div>
+            <#if (level > 1)>
+            <div id='contributorReasonTextArea'>
+                <label class="control-label">Contributor information</label>
+                <div class="control-group">
+                    <div class="controls">
+                    <span class="help-block">
+                        Please briefly describe the geographical areas, time periods, or other subjects for which you
+                        would like to contribute information
+                    </span>
+                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId' />
+                    </div>
+                </div>
+            </div>
+            </#if>
         </#if>
+
         <#if showSubmit>
         <div class="form-actions">
             <input type="submit" class='btn btn-primary  submitButton' name="submitAction" value="Register">

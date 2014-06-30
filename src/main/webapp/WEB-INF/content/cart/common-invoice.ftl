@@ -52,6 +52,8 @@
     <div id="divInvoiceSubtotal" class="invoice-subtotal">
         <h3>Subtotal</h3>
         <span class="amt">${invoice.calculatedCost}</span>
+        <br>
+        <span class="status">Status: ${invoice.transactionStatus.label}</span>
     </div>
 
     </#macro>
