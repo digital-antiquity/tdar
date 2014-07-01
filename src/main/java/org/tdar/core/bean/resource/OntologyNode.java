@@ -102,7 +102,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private transient OntologyNode parentNode;
     private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
-
     public OntologyNode() {
     }
 
@@ -329,11 +328,10 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
             return getDisplayName();
         }
     }
-    
+
     @Transient
-    @XmlTransient
     public boolean isDisabled() {
-        return hasMappedDataValues();
+        return !mappedDataValues;
     }
 
     @Transient

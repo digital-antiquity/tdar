@@ -5,6 +5,7 @@ public interface TdarNamedQueries {
      * constants to map between the Annotation Keys for HQL queries and the queries in the DAOs
      */
     String QUERY_CURRENT_USER_NOTIFICATIONS = "userNotifications.current";
+    String QUERY_USER_NOTIFICATIONS_BY_TYPE = "userNotifications.byType";
     String QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES = "informationResourceFileVersion.deleteDerivatives";
     String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY = "ontology.isMapped";
     String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN = "ontology.isMappedToColumn";
@@ -220,6 +221,5 @@ public interface TdarNamedQueries {
     String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, date_accessed, count) select resource_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from resource_access_statistics where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
     String RESOURCE_ACCESS_COUNT = "resource.exactAccessCount";
-
 
 }

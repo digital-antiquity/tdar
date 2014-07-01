@@ -197,8 +197,8 @@ public class DataIntegrationService {
         logger.info("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
             if (values.contains(rule.getTerm())) {
+                logger.debug("mapping rule {} to column {}", rule, column);
                 rule.setMappedToData(column);
-                logger.info("matched term {}", rule.getTerm());
             }
         }
     }
@@ -217,7 +217,7 @@ public class DataIntegrationService {
         // FIXME: this lookup should be moved out of this method, otherwise we are creating / recreating these data structures over and over
         // and over and over
         CodingSheet codingSheet = column.getDefaultCodingSheet();
-        Set<OntologyNode> filteredOntologyNodes = new HashSet<OntologyNode>(integrationColumn.getFilteredOntologyNodes());
+        Set<OntologyNode> filteredOntologyNodes = new HashSet<>(integrationColumn.getFilteredOntologyNodes());
         Map<OntologyNode, OntologyNode> closestParentMap = integrationColumn.getNearestParentMap();
         Map<String, OntologyNode> termToNodeMap = codingSheet.getTermToOntologyNodeMap();
         OntologyNode matchingNode = termToNodeMap.get(value);
@@ -254,11 +254,11 @@ public class DataIntegrationService {
         }
 
         // generate projections from each column, first aggregate across common display columns and integration columns
-        List<IntegrationDataResult> results = new ArrayList<IntegrationDataResult>();
+        List<IntegrationDataResult> results = new ArrayList<>();
         // keeps track of all the columns that we need to select out from this data table
         // now iterate through all tables and generate the column lists.
         // use the OntologyNodes on the integration columns. each DataTable should have one integration column in it...
-        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = new LinkedHashMap<List<OntologyNode>, Map<DataTable, Integer>>();
+        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = new LinkedHashMap<>();
 
         for (DataTable table : tables) {
             // generate results per table
@@ -372,7 +372,7 @@ public class DataIntegrationService {
         genericDao.save(codingSheet);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
-        Set<CodingRule> rules = new HashSet<CodingRule>();
+        Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
             CodingRule rule = new CodingRule(codingSheet, dataValue);
@@ -443,11 +443,14 @@ public class DataIntegrationService {
                 dataTableColumns = table.getDataTableColumns();
             }
             for (DataTableColumn column : dataTableColumns) {
-                if (column.getDefaultOntology() != null) {
-                    if (!dataTableAutoMap.containsKey(column.getDefaultOntology())) {
-                        dataTableAutoMap.put(column.getDefaultOntology(), new ArrayList<DataTableColumn>());
+                Ontology ontology = column.getDefaultOntology();
+                if (ontology != null) {
+                    List<DataTableColumn> columns = dataTableAutoMap.get(ontology);
+                    if (columns == null) {
+                        columns = new ArrayList<>();
+                        dataTableAutoMap.put(ontology, columns);
                     }
-                    dataTableAutoMap.get(column.getDefaultOntology()).add(column);
+                    columns.add(column);
                 }
             }
         }

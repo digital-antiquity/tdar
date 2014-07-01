@@ -39,6 +39,12 @@ public class UserNotificationService {
         return genericDao.findAll(UserNotification.class);
     }
 
+    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+    public List<UserNotification> findAll(UserNotificationType userNotificationType) {
+        return genericDao.getNamedQuery(TdarNamedQueries.QUERY_USER_NOTIFICATIONS_BY_TYPE).setParameter("messageType", userNotificationType).list();
+    }
+
     /**
      * Returns all UserNotifications with initialized message fields. Messages are looked up their messageKey via the given TextProvider.
      * 
@@ -57,7 +63,6 @@ public class UserNotificationService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> getCurrentNotifications(final TdarUser user) {
-        logger.debug("finding notifications for user: {} ({})", user, user.getId());
         List<UserNotification> notifications =
                 genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setLong("userId", user.getId()).list();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
