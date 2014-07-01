@@ -119,6 +119,10 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
+        int size = find(withLabel("account name")).size();
+        assertThat(size, equalTo(1));
+        //make sure that the form fields are present
+
         submitForm();
 
         //now we are on the process payment page.  click on the button to fire up a new window

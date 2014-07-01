@@ -73,6 +73,7 @@ import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import org.tdar.web.selenium.ByLabelText;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -117,6 +118,16 @@ public abstract class AbstractSeleniumWebITCase {
 
     // predicate that returns true if document.readystate != "complete" (use with FluentWait)
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
+
+    /**
+     * Custom "By" criteria for use with {@link #find(By)} - matches all elements that are referred by a label with the specified label text.  e.g. <br>
+     * <code>find(withLabel("First Name")).val("Bob")</code>
+     * @param labelText text of the label associated with the element.
+     * @return  By locator instance
+     */
+    protected static By withLabel(String labelText) {
+        return new ByLabelText(labelText);
+    }
 
     public AbstractSeleniumWebITCase() {
     }

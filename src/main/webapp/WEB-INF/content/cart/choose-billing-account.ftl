@@ -15,6 +15,9 @@
 <h1>Choose A Billing Account</h1>
 <div class="row">
     <div class="span12">
+        <div class="alert alert-info">
+            <@s.text name="cart.about_billing_accounts" />
+        </div>
         <div class="authpane">
         <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal billing-account-choice" enctype='multipart/form-data' action='process-billing-account-choice'>
             <@s.token name='struts.csrf.token' />
