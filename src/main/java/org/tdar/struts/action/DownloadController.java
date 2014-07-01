@@ -30,6 +30,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.DownloadUserRegistration;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -107,6 +108,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
                     @Result(name = SUCCESS, type = "redirect", location = GET),
                     @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") },
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @HttpsOnly
     public String download() {
         if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
             return ERROR;
@@ -120,7 +122,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         getDownloadUserLogin().setVersion(informationResourceFileVersion);
         getDownloadUserLogin().setResource(informationResource);
         getDownloadRegistration().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
-        getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
+//        getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
         return LOGIN;
     }
 

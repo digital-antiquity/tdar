@@ -11,9 +11,14 @@ public class DownloadUserLogin extends UserLogin {
         super(recaptchaService);
     }
 
+    public DownloadUserLogin() {
+        super(null);
+    }
+
     private static final long serialVersionUID = -6157970041213328371L;
-    private InformationResourceFileVersion version;
-    private InformationResource resource;
+    private InformationResourceFileVersion version = new InformationResourceFileVersion();
+    private InformationResource resource = new InformationResource() {
+    };
 
     public InformationResourceFileVersion getVersion() {
         return version;
@@ -40,9 +45,9 @@ public class DownloadUserLogin extends UserLogin {
         if (Persistable.Base.isNotNullOrTransient(resource)) {
             resourceid = resource.getId().toString();
         }
-        return String.format("/download/download?informationResourceFileVersionId=%s&resourceId=%s", versionid, resourceid);
+        return String.format("/filestore/download?informationResourceFileVersionId=%s&resourceId=%s", versionid, resourceid);
     }
-    
+
     public String getFailureUrl() {
         return getReturnUrl();
     }

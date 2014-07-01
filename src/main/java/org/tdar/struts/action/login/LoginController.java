@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.login;
 
 import java.util.List;
 
@@ -22,8 +22,9 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
+import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -57,7 +58,6 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     private UserLogin login;
     private UserLogin userLogin = new UserLogin(recaptchaService);
-    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(recaptchaService);
 
     private AntiSpamHelper h = userLogin.getH();
 
@@ -99,21 +99,17 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                             @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}"),
-                            @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl")                    }),
+                            @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl"),
+                            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.DASHBOARD),
+                    }),
             @Action(value = "process-cart-login",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
-                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "/cart/choose-billing-account"),
+                            @Result(name = SUCCESS, type = REDIRECT, location = "/cart/choose-billing-account"),
                             @Result(name = REDIRECT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                                     "returnUrl not expected for login from cart" }),
                             @Result(name = INPUT,
                                     type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
-                    }),
-            @Action(value = "process-download-login",
-                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
-                    results = {
-                            @Result(name = AUTHENTICATED, type = REDIRECT, location = "${downloadLogin.successUrl}"),
-                            @Result(name = INPUT, type = REDIRECT, location = "${downloadLogin.failureUrl}"),
                     })
     })
     @HttpsOnly
@@ -130,11 +126,13 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             return INPUT;
         }
 
-        if (status != AuthenticationStatus.AUTHENTICATED) {
-            if (status.name() == NEW) {
+        switch (status) {
+            case ERROR:
+            case NEW:
                 addActionMessage("User is in crowd, but not in local db");
-            }
-            return status.name().toLowerCase();
+                return INPUT;
+            default:
+                break;
         }
 
         setReturnUrl(parseReturnUrl());
@@ -142,7 +140,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             getSessionData().setReturnUrl(getReturnUrl());
             return REDIRECT;
         }
-        return AUTHENTICATED;
+        return SUCCESS;
     }
 
     private String parseReturnUrl() {
@@ -207,37 +205,28 @@ public class LoginController extends AuthenticationAware.Base implements Validat
         this.h = h;
     }
 
-    public DownloadUserLogin getDownloadUserLogin() {
-        return downloadUserLogin;
-    }
-
-    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
-        this.downloadUserLogin = downloadUserLogin;
-    }
-
     @Override
-    public void validate()  {
+    public void validate() {
         List<String> validate = login.validate(this, authorizationService);
         addActionErrors(validate);
 
         if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
-            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", login.getLoginUsername());
         }
     }
 
     @Override
     public void prepare() throws Exception {
         login = userLogin;
-        
+
         // FIXME: fomralize and make more robust
-        if (StringUtils.isBlank(login.getLoginUsername() )) {
-            login = downloadUserLogin;
+        if (login != null && StringUtils.isBlank(login.getLoginUsername())) {
+            login = userLogin;
         }
         if (login == null) {
             throw new TdarRecoverableRuntimeException();
         }
-        
+
     }
 
-    
 }
