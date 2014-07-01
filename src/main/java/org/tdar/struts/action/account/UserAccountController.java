@@ -1,9 +1,5 @@
 package org.tdar.struts.action.account;
 
-import static com.opensymphony.xwork2.Action.INPUT;
-import static com.opensymphony.xwork2.Action.SUCCESS;
-
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
@@ -196,10 +191,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
 
     public String getContributorAgreementUrl() {
         return getTdarConfiguration().getContributorAgreementUrl();
-    }
-
-    public List<UserAffiliation> getUserAffiliations() {
-        return Arrays.asList(UserAffiliation.values());
     }
 
     public String getUrl() {

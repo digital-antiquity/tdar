@@ -15,6 +15,8 @@ import org.tdar.core.service.external.RecaptchaService;
 
 import com.opensymphony.xwork2.TextProvider;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * Created by jimdevos on 6/17/14.
  */
@@ -23,6 +25,7 @@ public class UserRegistration extends UserAuthData {
     private static final long serialVersionUID = -378621821868811122L;
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
+    private List<UserAffiliation> affiliations = Arrays.asList(UserAffiliation.values());
     private String password;
     private String confirmPassword;
     private String institutionName;
@@ -193,5 +196,15 @@ public class UserRegistration extends UserAuthData {
 
     public void setContributorAgreementRequired(boolean contributorAgreementRequired) {
         this.contributorAgreementRequired = contributorAgreementRequired;
+    }
+
+
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
+
+
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
     }
 }
