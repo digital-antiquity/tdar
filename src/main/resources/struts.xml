@@ -60,8 +60,10 @@
                 <interceptor-ref name="store">
                     <param name="operationMode">AUTOMATIC</param>
                 </interceptor-ref>
+                <!--e.g.  foo.action?request_locale=en_US see: http://struts.apache.org/release/2.0.x/struts2-core/apidocs/com/opensymphony/xwork2/interceptor/I18nInterceptor.html  -->
                 <interceptor-ref name="i18n"/> 
                 <interceptor-ref name="checkbox"/>
+                <!--  technically, this is not used or needed, but keeping it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect"/>
                 <interceptor-ref name="params">
                     <!-- Mirror changes to the second entry below as well... -->
