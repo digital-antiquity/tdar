@@ -13,8 +13,13 @@
 </head>
 
 <body>
-<h1>Register or Log In to tDAR</h1>
-<#if !sessionData.person?has_content>
+<h1>Confirm Selection</h1>
+    <@invoicecommon.printInvoice />
+<#if sessionData.person?has_content>
+    <div class="form-actions">
+        <a href="/cart/choose-billing-account" type="submit" class='btn btn-mini submitButton tdar-button'>Next Step: Choose Biling Account</a>
+    </div>
+<#else>
     <div class="row">
         <div class="span9" id="divRegistrationSection">
                 <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"

@@ -1162,17 +1162,17 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse, boolean returnAccount) throws MalformedURLException {
         // assertCurrentUrlContains("/simple");
         // setInput("invoice.paymentMethod", "CREDIT_CARD");
-
+        gotoPage("/cart/choose-billing-account");
         String invoiceid = getValue("invoiceId");
         String accountid = getValue("accountId");
         logger.debug("INVOICE ID: {} ACCOUNT ID: {}", invoiceid, accountid);
         logger.info("TOTAL::: " + total);
         if (!total.equals("0")) {
-            submitForm("submit");
+            submitForm("Next Step: Payment");
             invoiceid = getValue("invoiceId");
             accountid = getValue("accountId");
             assertCurrentUrlContains("process-payment-request");
-            clickLinkWithText("click here");
+            clickLinkWithText("Click Here To Begin Payment Process");
             URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
             String response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
@@ -1280,7 +1280,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         testRegister(values, deleteFirst, false, false);
     }
 
-    public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean includeUserAgreement) {
+    public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean requestingContributorAccess) {
 
         String username = values.get("reg.person.username");
         if (deleteFirst) {
@@ -1299,7 +1299,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             setInput("reg.acceptTermsOfUse","true");
 
         }
-        if (includeUserAgreement) {
+        if (requestingContributorAccess) {
             setInput("reg.requestingContributorAccess", "true");
         }
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
@@ -1380,6 +1380,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void selectAnyAccount() {
+        gotoPage("/cart/choose-billing-account");
+
         try {
             HtmlElement input = getInput("id");
             if (input instanceof HtmlSelect) {

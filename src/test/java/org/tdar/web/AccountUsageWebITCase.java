@@ -30,7 +30,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user124");
-        testRegister(personmap, true, true, true);
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, true, true, false);
         assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
@@ -55,7 +56,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithCoupon() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user1124");
-        testRegister(personmap, true, true, true);
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, true, true, false);
         assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
@@ -84,12 +86,14 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testAccountListWhenEditingAsAdmin() throws Exception {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw123");
-        testRegister(personmap, true, true, true);
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, true, true, false);
 
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
+        logger.debug("curernt page:{}", getCurrentUrlPath());
         // setInput("invoice.paymentMethod", "CREDIT_CARD");
         String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
 
@@ -119,7 +123,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234");
-        testRegister(personmap, true, true, true);
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, true, true, false);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
         // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);
@@ -136,6 +141,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
+        logger.debug("about to submit form:{}", getForm());
         submitForm();
         setInputIfExists("invoice.paymentMethod", "CREDIT_CARD");
         setInputIfExists("account.id", "-1");
