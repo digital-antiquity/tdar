@@ -1,8 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import static com.opensymphony.xwork2.Action.INPUT;
-import static com.opensymphony.xwork2.Action.SUCCESS;
-
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -13,12 +10,13 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.CartUserRegistration;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -31,11 +29,11 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = INPUT, location = "review.ftl"),
+        @Result(name = TdarActionSupport.INPUT, location = "review.ftl"),
         //// no need to take user to billing account selection if we no they don't have one
         //@Result(name = SUCCESS, location = "/cart/process-payment-request", type = "redirect")
         //route to the billing account selection page for now, even though user has one choice
-       @Result(name = SUCCESS, location = "/cart/choose-billing-account", type="redirect")
+       @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CHOOSE_BILLING_ACCOUNT, type="redirect")
 })
 @Namespace("/cart")
 @ParentPackage("default")
@@ -49,14 +47,13 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    private UserRegistration registrationInfo = new UserRegistration(recaptchaService);
+    private CartUserRegistration registrationInfo = new CartUserRegistration(recaptchaService);
     private AntiSpamHelper h = registrationInfo.getH();
 
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
         //a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
-        registrationInfo.setContributorAgreementRequired(true);
         List<String> errors = registrationInfo.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
@@ -67,6 +64,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Action("process-registration")
     @PostOnly
     public String processRegistration() {
+        getLogger().debug("processing registration for person {} {}", registrationInfo.getPerson(), registrationInfo.isRequestingContributorAccess());
         AuthenticationResult result = authenticationService.addAndAuthenticateUser(
                 registrationInfo, getServletRequest(), getServletResponse(), getSessionData());
         if (result.getType().isValid()) {
@@ -86,6 +84,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         if(registrationInfo.isAcceptTermsOfUse()) {
             registrationInfo.setRequestingContributorAccess(true);
         }
+
     }
 
     public UserRegistration getRegistrationInfo() {
