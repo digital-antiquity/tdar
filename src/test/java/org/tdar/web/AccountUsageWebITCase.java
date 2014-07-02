@@ -31,7 +31,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user124");
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, true, true, false);
+        testRegister(personmap, TERMS.BOTH);
         assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
@@ -57,7 +57,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user1124");
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, true, true, false);
+        testRegister(personmap, TERMS.BOTH);
         assertTextPresent("Start a new Project");
 
         gotoPage(CART_ADD);
@@ -68,7 +68,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL, true);
         assertTrue(accountId != "-1");
         logger.info(getCurrentUrlPath());
-        gotoPage("/billing/"+ accountId);
+        gotoPage("/billing/" + accountId);
         setInput("numberOfFiles", "1");
         submitForm("Create Voucher");
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
@@ -87,7 +87,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw123");
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, true, true, false);
+        testRegister(personmap, TERMS.BOTH);
 
         gotoPage(CART_ADD);
         setInput("invoice.numberOfMb", "20");
@@ -123,8 +123,8 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234");
-        personmap.remove("reg.contributorReason");
-        testRegister(personmap, true, true, false);
+        // personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
         // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);

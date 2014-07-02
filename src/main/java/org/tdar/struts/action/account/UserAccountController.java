@@ -24,7 +24,6 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.DownloadUserRegistration;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -32,7 +31,6 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
-import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.ValidationAware;
 
 /**

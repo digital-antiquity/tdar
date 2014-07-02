@@ -20,7 +20,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterNormalUser() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user");
-        testRegister(personmap, true, true, false);
+        testRegister(personmap, TERMS.TOS);
         assertCurrentUrlContains("dashboard");
         assertTextNotPresentIgnoreCase("new project");
         gotoPage("/logout");
@@ -30,7 +30,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributor() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor");
-        testRegister(personmap, true, true, true);
+        testRegister(personmap, TERMS.BOTH);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
         clickLinkWithText("UPLOAD");
@@ -43,7 +43,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributorrr");
-        testRegister(personmap, true, true, true);
+        testRegister(personmap, TERMS.BOTH);
 
     }
 

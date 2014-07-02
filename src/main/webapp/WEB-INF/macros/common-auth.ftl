@@ -9,14 +9,15 @@
 -->
 <#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.antiSpam />
-<#local
-    level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
-    showMinimal = true,
-    showExtended = (2 <= level),
-    showVerbose = (3 <= level)
-    spanfull = "span${cols}"
-    spanhalf = "span${cols/2}"
->
+    <#local level = 1/>
+    <#local showMinimal = true />
+    <#if detail == 'verbose'>
+        <#local level=3 />
+    </#if>
+<#local showMinimal = (level == 1) />
+<#local showVerbose = (3 <= level) />
+<#local spanfull = "span${cols}" />
+<#local spanhalf = "span${cols/2}"/>
 
 <div class="row">
     <div class="span8">

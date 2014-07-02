@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.tdar.core.bean.entity.TdarUser;
-import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
@@ -220,7 +218,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
         if (user == null) {
             userNew = true;
-            logger.debug("Adding user : {} {} {} {} {} {} {} ",  person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), person.getId());
+            logger.debug("Adding user : {} {} {} {} {} {} ",  person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), person.getId());
             user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
                     true);
         }

@@ -30,7 +30,7 @@
 
     <h3>About You</h3>
 
-     <@auth.registrationFormFields />
+     <@auth.registrationFormFields beanPrefix="registration" />
 
 </div>
 

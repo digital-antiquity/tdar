@@ -1,8 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import static org.tdar.core.bean.resource.Status.ACTIVE;
-import static org.tdar.core.bean.resource.Status.FLAGGED_ACCOUNT_BALANCE;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -54,7 +51,7 @@ public class CartBillingAccountController extends AbstractCartController {
         if(owner == null) {
             owner = getAuthenticatedUser();
         }
-        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(owner, ACTIVE, FLAGGED_ACCOUNT_BALANCE));
+        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(owner, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccount());
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new Account("Add an account"));

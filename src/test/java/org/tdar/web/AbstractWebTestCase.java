@@ -1144,7 +1144,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextPresentInPage(title + " (ABSTRACT)");
         assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
     }
-    
+
     public void setInputIfExists(String name, String value) {
         try {
             getInput(name);
@@ -1152,8 +1152,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } catch (Exception e) {
         }
     }
-
-
 
     protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         return testAccountPollingResponse(total, expectedResponse, false);
@@ -1193,8 +1191,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     private String getValue(String key) {
         try {
-            return getInput(key).getAttribute("value");    
-        } catch (Exception e) {}
+            return getInput(key).getAttribute("value");
+        } catch (Exception e) {
+        }
         return null;
     }
 
@@ -1276,32 +1275,44 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     @Autowired
     private AuthenticationService authService;
 
-    public void testRegister(Map<String, String> values, boolean deleteFirst) {
-        testRegister(values, deleteFirst, false, false);
+    public enum TERMS {
+        TOS,
+        CONTRIB,
+        BOTH;
     }
 
-    public void testRegister(Map<String, String> values, boolean deleteFirst, boolean includeTos, boolean requestingContributorAccess) {
+    public void testRegister(Map<String, String> values, TERMS terms) {
 
-        String username = values.get("reg.person.username");
-        if (deleteFirst) {
+        String username = values.get("registration.person.username");
+        if (true) {
             TdarUser p = new TdarUser();
             p.setUsername(username);
             authService.getAuthenticationProvider().deleteUser(p);
         }
         gotoPage("/");
         clickLinkOnPage("Sign Up");
-        logger.trace(getPageCode());
+        logger.debug(getPageCode());
         for (String key : values.keySet()) {
             setInput(key, values.get(key));
         }
 
-        if (includeTos) {
-            setInput("reg.acceptTermsOfUse","true");
+        if (terms != null) {
+            switch (terms) {
+                case BOTH:
+                    setInput("registration.acceptTermsOfUse", "true");
+                    setInput("registration.requestingContributorAccess", "true");
+                    break;
+                case CONTRIB:
+                    setInput("registration.requestingContributorAccess", "true");
+                    break;
+                case TOS:
+                    setInput("registration.acceptTermsOfUse", "true");
+                    break;
+                default:
+                    break;
+            }
+        }
 
-        }
-        if (requestingContributorAccess) {
-            setInput("reg.requestingContributorAccess", "true");
-        }
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
         evictCache();
@@ -1309,21 +1320,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
-        personmap.put("reg.person.firstName", prefix + "firstName");
-        personmap.put("reg.person.lastName", prefix + "lastName");
-        personmap.put("reg.person.email", prefix + "aaaaa@bbbbb.com");
-        personmap.put("reg.confirmEmail", prefix + "aaaaa@bbbbb.com");
-        personmap.put("reg.person.username", prefix + "aaaaa@bbbbb.com");
-        personmap.put("reg.password", "secret");
-        personmap.put("reg.confirmPassword", "secret");
-        personmap.put("reg.institutionName", "institution");
-        personmap.put("reg.person.phone", "1234567890");
-        personmap.put("reg.contributorReason", "there is a reason");
+        personmap.put("registration.person.firstName", prefix + "firstName");
+        personmap.put("registration.person.lastName", prefix + "lastName");
+        personmap.put("registration.person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put("registration.password", "secret");
+        personmap.put("registration.confirmPassword", "secret");
+        personmap.put("registration.institutionName", "institution");
+        personmap.put("registration.person.phone", "1234567890");
+        personmap.put("registration.contributorReason", "there is a reason");
         // personmap.put("contributor", "true");
-        personmap.put("reg.affiliation", UserAffiliation.GRADUATE_STUDENT.name());
+        personmap.put("registration.affiliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
-//        personmap.put("reg.acceptTermsOfUse","true");
-//        personmap.put("reg.requestingContributorAccess", "true");
+        // personmap.put("registration.acceptTermsOfUse","true");
+        // personmap.put("registration.requestingContributorAccess", "true");
     }
 
     @Override
@@ -1389,7 +1400,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 for (HtmlOption option : ((HtmlSelect) input).getOptions()) {
                     String valueAttribute = option.getValueAttribute();
                     if (StringUtils.isNotBlank(valueAttribute) && Long.parseLong(valueAttribute.trim()) > -1) {
-                        logger.debug("accountId: " + valueAttribute );
+                        logger.debug("accountId: " + valueAttribute);
                         opt = option;
                         break;
                     }
@@ -1399,7 +1410,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 }
             }
         } catch (Exception e) {
-            logger.error("{}",e);
+            logger.error("{}", e);
         }
     }
 

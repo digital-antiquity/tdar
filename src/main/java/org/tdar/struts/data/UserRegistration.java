@@ -25,6 +25,7 @@ public class UserRegistration extends UserAuthData {
     private static final long serialVersionUID = -378621821868811122L;
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
+    @SuppressWarnings("unchecked")
     private List<UserAffiliation> affiliations = Arrays.asList(UserAffiliation.values());
     private String password;
     private String confirmPassword;
@@ -34,9 +35,6 @@ public class UserRegistration extends UserAuthData {
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
-
-    //indicates whether user must accept contributor agreement as in order to register (default: false)
-    private boolean contributorAgreementRequired = false;
 
     public UserRegistration() {
     }
@@ -68,10 +66,6 @@ public class UserRegistration extends UserAuthData {
 
         if (!acceptTermsOfUse) {
             errors.add(textProvider.getText("userAccountController.require_tos"));
-        }
-
-        if (contributorAgreementRequired && !requestingContributorAccess) {
-            errors.add(textProvider.getText("userAccountController.require_contributor_agreement"));
         }
 
         // contributorReason
@@ -188,14 +182,6 @@ public class UserRegistration extends UserAuthData {
 
     public void setAffiliation(UserAffiliation affiliation) {
         this.affiliation = affiliation;
-    }
-
-    public boolean isContributorAgreementRequired() {
-        return contributorAgreementRequired;
-    }
-
-    public void setContributorAgreementRequired(boolean contributorAgreementRequired) {
-        this.contributorAgreementRequired = contributorAgreementRequired;
     }
 
 
