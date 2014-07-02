@@ -45,8 +45,8 @@
             <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
             <interceptor name="cacheControl" class="org.tdar.struts.interceptor.CacheControlInterceptor"/>
             <interceptor name="activityLogging" class="org.tdar.struts.interceptor.ActivityLoggingInterceptor"/>
-            <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
-            <interceptor-stack name="tdarDefaultStack">
+<!--             <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
+ -->            <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">
                     <param name="logEnabled">true</param>
                     <param name="logLevel">ERROR</param>
