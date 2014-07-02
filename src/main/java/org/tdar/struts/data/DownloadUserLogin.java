@@ -3,6 +3,7 @@ package org.tdar.struts.data;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.RecaptchaService;
 
 public class DownloadUserLogin extends UserLogin {
@@ -17,8 +18,7 @@ public class DownloadUserLogin extends UserLogin {
 
     private static final long serialVersionUID = -6157970041213328371L;
     private InformationResourceFileVersion version = new InformationResourceFileVersion();
-    private InformationResource resource = new InformationResource() {
-    };
+    private Resource resource = new Resource();
 
     public InformationResourceFileVersion getVersion() {
         return version;
@@ -28,7 +28,7 @@ public class DownloadUserLogin extends UserLogin {
         this.version = version;
     }
 
-    public InformationResource getResource() {
+    public Resource getResource() {
         return resource;
     }
 
@@ -51,4 +51,5 @@ public class DownloadUserLogin extends UserLogin {
     public String getFailureUrl() {
         return getReturnUrl();
     }
+
 }

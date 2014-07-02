@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.download;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,13 +23,11 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DownloadHandler;
-import org.tdar.struts.data.DownloadUserLogin;
-import org.tdar.struts.data.DownloadUserRegistration;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -51,7 +49,7 @@ import com.opensymphony.xwork2.Preparable;
 })
 @Component
 @Scope("prototype")
-public class DownloadController extends AuthenticationAware.Base implements DownloadHandler, Preparable {
+public class DownloadController extends AbstractDownloadController implements DownloadHandler, Preparable {
 
     @Autowired
     private transient DownloadService downloadService;
@@ -63,8 +61,6 @@ public class DownloadController extends AuthenticationAware.Base implements Down
 
     public static final String GET = "get";
     private static final long serialVersionUID = 7548544212676661097L;
-    private static final String DOWNLOAD_ALL_LANDING = "show-download-landing";
-    public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private transient InputStream inputStream;
     private String contentType;
     private String fileName;
@@ -72,26 +68,15 @@ public class DownloadController extends AuthenticationAware.Base implements Down
     private Integer version;
     private boolean coverPageIncluded = true;
     private VersionType type;
-    private Long informationResourceFileVersionId;
-    private Long informationResourceId;
-
     private String dispositionPrefix = "";
 
     public static final String FORBIDDEN = "forbidden";
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
-    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(recaptchaService);
-    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(recaptchaService);
 
     @Autowired
     private transient PdfService pdfService;
 
     @Autowired
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
-    private InformationResource informationResource;
-    private InformationResourceFileVersion informationResourceFileVersion;
 
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
     public String confirm() throws TdarActionException {
@@ -110,37 +95,32 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     @HttpsOnly
     public String download() {
-        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
+        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             return ERROR;
         }
         if (isAuthenticated()) {
             return SUCCESS;
         }
-        getDownloadRegistration().setVersion(informationResourceFileVersion);
-        getDownloadRegistration().setResource(informationResource);
-        getDownloadRegistration().setInputUrl(getCurrentUrl());
-        getDownloadUserLogin().setVersion(informationResourceFileVersion);
-        getDownloadUserLogin().setResource(informationResource);
-        getDownloadRegistration().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
-//        getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
+        setupLoginRegistrationBeans();
+        // getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
         return LOGIN;
     }
 
     @Override
     @Action(value = GET)
     public String execute() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
+        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
-        if (!authorizationService.canDownload(informationResourceFileVersion, getAuthenticatedUser())) {
-            String msg = String.format("user %s does not have permissions to download %s", getAuthenticatedUser(), informationResourceFileVersion);
+        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
+            String msg = String.format("user %s does not have permissions to download %s", getAuthenticatedUser(), getInformationResourceFileVersion());
             getLogger().warn(msg);
             return FORBIDDEN;
         }
-        setInformationResourceId(informationResourceFileVersion.getInformationResourceId());
-        getLogger().info("user {} downloaded {}", getAuthenticatedUser(), informationResourceFileVersion);
-        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), informationResourceFileVersion);
+        setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
+        getLogger().info("user {} downloaded {}", getAuthenticatedUser(), getInformationResourceFileVersion());
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), getInformationResourceFileVersion());
         return SUCCESS;
     }
 
@@ -149,34 +129,34 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     })
     public String thumbnail() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(informationResourceFileVersion)) {
+        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
 
         // image must be thumbnail
-        if (informationResourceFileVersion.getFileVersionType() != VersionType.WEB_SMALL) {
+        if (getInformationResourceFileVersion().getFileVersionType() != VersionType.WEB_SMALL) {
             getLogger().warn("thumbail request: requested version exists but is not a thumbnail: {}", getInformationResourceFileVersionId());
             return ERROR;
         }
 
-        if (!authorizationService.canDownload(informationResourceFileVersion, getAuthenticatedUser())) {
+        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
             return FORBIDDEN;
         }
 
-        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), informationResourceFileVersion);
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), getInformationResourceFileVersion());
         return SUCCESS;
     }
 
     @Action(value = DOWNLOAD_ALL)
     public String downloadZipArchive() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(informationResource)) {
+        if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
 
         List<InformationResourceFileVersion> versions = new ArrayList<>();
-        for (InformationResourceFile irf : informationResource.getInformationResourceFiles()) {
+        for (InformationResourceFile irf : getInformationResource().getInformationResourceFiles()) {
             if (irf.isDeleted()) {
                 continue;
             }
@@ -239,10 +219,6 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         this.type = type;
     }
 
-    public Long getInformationResourceId() {
-        return informationResourceId;
-    }
-
     public String getDispositionPrefix() {
         return dispositionPrefix;
     }
@@ -267,10 +243,6 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         this.dispositionPrefix = string;
     }
 
-    public void setInformationResourceId(Long informationResourceId) {
-        this.informationResourceId = informationResourceId;
-    }
-
     @Override
     public boolean isCoverPageIncluded() {
         return coverPageIncluded;
@@ -280,66 +252,18 @@ public class DownloadController extends AuthenticationAware.Base implements Down
         this.coverPageIncluded = coverPageIncluded;
     }
 
-    public AntiSpamHelper getH() {
-        return h;
-    }
-
-    public void setH(AntiSpamHelper h) {
-        this.h = h;
-    }
-
-    public Long getInformationResourceFileVersionId() {
-        return informationResourceFileVersionId;
-    }
-
-    public void setInformationResourceFileVersionId(Long informationResourceFileVersionId) {
-        this.informationResourceFileVersionId = informationResourceFileVersionId;
-    }
-
-    @Override
-    public void prepare() {
-        if (Persistable.Base.isNullOrTransient(getInformationResourceId()) &&
-                Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
-            addActionError(getText("downloadController.specify_what_to_download"));
+        @Override
+        public void prepare() {
+            if (Persistable.Base.isNullOrTransient(getInformationResourceId()) &&
+                    Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
+                addActionError(getText("downloadController.specify_what_to_download"));
+            }
+            if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
+                setInformationResource(getGenericService().find(InformationResource.class, getInformationResourceId()));
+            }
+            if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
+                setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, getInformationResourceFileVersionId()));
+            }
         }
-        if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
-            setInformationResource(getGenericService().find(InformationResource.class, informationResourceId));
-        }
-        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
-            setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, informationResourceFileVersionId));
-        }
-    }
-
-    public InformationResource getInformationResource() {
-        return informationResource;
-    }
-
-    public void setInformationResource(InformationResource informationResource) {
-        this.informationResource = informationResource;
-    }
-
-    public InformationResourceFileVersion getInformationResourceFileVersion() {
-        return informationResourceFileVersion;
-    }
-
-    public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
-        this.informationResourceFileVersion = informationResourceFileVersion;
-    }
-
-    public DownloadUserRegistration getDownloadRegistration() {
-        return downloadRegistration;
-    }
-
-    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
-        this.downloadRegistration = downloadRegistration;
-    }
-
-    public DownloadUserLogin getDownloadUserLogin() {
-        return downloadUserLogin;
-    }
-
-    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
-        this.downloadUserLogin = downloadUserLogin;
-    }
-
+        
 }

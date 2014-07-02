@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.ValidationAware;
 @Scope("prototype")
 @HttpsOnly
 @CacheControl
-public class UserAccountController extends AuthenticationAware.Base implements ValidationAware, Preparable {
+public class UserAccountController extends AuthenticationAware.Base implements ValidationAware {
 
     private static final long serialVersionUID = 1147098995283237748L;
 
@@ -63,7 +63,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Autowired
     private transient RecaptchaService reCaptchaService;
     private UserRegistration registration = new UserRegistration(reCaptchaService);
-    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(reCaptchaService);
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -144,12 +143,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                             @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
-                            @Result(name = INPUT, location = "edit.ftl") }),
-            @Action(value = "process-download-registration",
-                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
-                    results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "${sessionData.returnUrl}")
-                    })
+                            @Result(name = INPUT, location = "edit.ftl") })
     })
     @HttpsOnly
     @PostOnly
@@ -238,24 +232,9 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        UserRegistration reg = registration;
-        if (reg == null) {
-            reg = downloadRegistration;
-        }
-        List<String> errors = reg.validate(this, authenticationService);
+        List<String> errors = registration.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
     }
 
-    @Override
-    public void prepare() {
-    }
-
-    public DownloadUserRegistration getDownloadRegistration() {
-        return downloadRegistration;
-    }
-
-    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
-        this.downloadRegistration = downloadRegistration;
-    }
 }

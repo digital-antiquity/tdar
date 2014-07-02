@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
@@ -30,7 +29,6 @@ import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
-import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
 /**
@@ -48,7 +46,7 @@ import com.opensymphony.xwork2.Validateable;
 @Results({
         @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
-public class LoginController extends AuthenticationAware.Base implements Validateable, Preparable {
+public class LoginController extends AuthenticationAware.Base implements Validateable {
 
     private static final long serialVersionUID = -1219398494032484272L;
 
@@ -56,7 +54,6 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @Autowired
     private RecaptchaService recaptchaService;
 
-    private UserLogin login;
     private UserLogin userLogin = new UserLogin(recaptchaService);
 
     private AntiSpamHelper h = userLogin.getH();
@@ -115,11 +112,11 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @HttpsOnly
     @WriteableSession
     public String authenticate() {
-        getLogger().debug("Trying to authenticate username:{}", login.getLoginUsername());
+        getLogger().debug("Trying to authenticate username:{}", userLogin.getLoginUsername());
 
         AuthenticationStatus status = AuthenticationStatus.ERROR;
         try {
-            status = authenticationService.authenticatePerson(login, getServletRequest(), getServletResponse(),
+            status = authenticationService.authenticatePerson(userLogin, getServletRequest(), getServletResponse(),
                     getSessionData());
         } catch (Exception e) {
             addActionError(e.getMessage());
@@ -207,26 +204,12 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Override
     public void validate() {
-        List<String> validate = login.validate(this, authorizationService);
+        List<String> validate = userLogin.validate(this, authorizationService);
         addActionErrors(validate);
 
         if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
-            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", login.getLoginUsername());
+            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", userLogin.getLoginUsername());
         }
-    }
-
-    @Override
-    public void prepare() throws Exception {
-        login = userLogin;
-
-        // FIXME: fomralize and make more robust
-        if (login != null && StringUtils.isBlank(login.getLoginUsername())) {
-            login = userLogin;
-        }
-        if (login == null) {
-            throw new TdarRecoverableRuntimeException();
-        }
-
     }
 
 }

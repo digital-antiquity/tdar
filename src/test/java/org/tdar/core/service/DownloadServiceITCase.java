@@ -31,8 +31,8 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.download.DownloadController;
 
 import com.opensymphony.xwork2.Action;
 

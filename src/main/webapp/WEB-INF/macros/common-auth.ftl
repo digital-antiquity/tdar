@@ -7,7 +7,7 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true>
+<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.antiSpam />
 <#local
     level = ({'verbose': 3, 'extended': 2, 'minimal': 1}[detail])!3
@@ -73,25 +73,18 @@
 <div class="row">
     <div class="${spanfull}">
         <#if showMinimal>
+            <#if source == "cart">
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
                 I have read and accept the ${siteAcronym}
                 <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
                 <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
             </label>
-
+            <#else>
+                <@tos beanPrefix=beanPrefix />
+            </#if>
         <#else>
-            <div class="control-group">
-                <label class="control-label">Terms of Use</label>
-                <div class="controls">
-                    <span class="help-block">  </span>
-                    <label class="checkbox">
-                        <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
-                        I have read and accept the ${siteAcronym}
-                        <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
-                    </label>
-                </div>
-            </div>
+            <@tos beanPrefix=beanPrefix />
             <div class="control-group">
                 <label class="control-label">Contributor Agreement</label>
                 <div class="controls">
@@ -149,5 +142,19 @@
             TDAR.auth.initLogin();
         });
     </script>
+</#macro>
+
+<#macro tos beanPrefix>
+    <div class="control-group">
+        <label class="control-label">Terms of Use</label>
+        <div class="controls">
+            <span class="help-block">  </span>
+            <label class="checkbox">
+                <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
+                I have read and accept the ${siteAcronym}
+                <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
+            </label>
+        </div>
+    </div>
 </#macro>
 </#escape>

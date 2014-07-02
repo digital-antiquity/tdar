@@ -2,6 +2,7 @@ package org.tdar.struts.data;
 
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.RecaptchaService;
 
 /**
@@ -11,8 +12,8 @@ public class DownloadUserRegistration extends UserRegistration {
 
     private static final long serialVersionUID = 703786803735892594L;
 
-    private InformationResourceFileVersion version;
-    private InformationResource  resource;
+    private InformationResourceFileVersion version = new InformationResourceFileVersion();
+    private Resource  resource = new Resource();
     private String returnUrl;
     private String inputUrl;
     
@@ -23,7 +24,7 @@ public class DownloadUserRegistration extends UserRegistration {
         super(recaptchaService);
     }
     
-    public InformationResource getResource() {
+    public Resource getResource() {
         return resource;
     }
 

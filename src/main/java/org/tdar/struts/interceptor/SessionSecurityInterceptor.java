@@ -63,7 +63,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         }
 
         HttpServletResponse response = ServletActionContext.getResponse();
-
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();

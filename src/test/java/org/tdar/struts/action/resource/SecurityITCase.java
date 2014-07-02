@@ -22,8 +22,8 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.EntityService;
-import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.download.DownloadController;
 
 import com.opensymphony.xwork2.Action;
 

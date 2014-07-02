@@ -362,7 +362,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testPrepareValidate() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.prepare();
         TdarUser p = controller.getRegistration().getPerson();
 
         p.setEmail("test@tdar.org");
@@ -382,7 +381,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testPrepareValidate2() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-        controller.prepare();
         TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setPerson(p);
@@ -396,7 +394,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
-        controller.prepare();
         TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
@@ -411,7 +408,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
-        controller.prepare();
         TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setFirstName("fn");
@@ -431,7 +427,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
-        controller.prepare();
         Person p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
@@ -448,7 +443,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
         controller.clearErrorsAndMessages();
-        controller.prepare();
         TdarUser p = controller.getRegistration().getPerson();
         p.setEmail(TESTING_EMAIL);
         p.setUsername(TESTING_EMAIL);
