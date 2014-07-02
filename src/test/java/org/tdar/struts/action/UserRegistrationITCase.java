@@ -301,7 +301,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 userLogin.setLoginUsername(p.getEmail());
                 userLogin.setLoginPassword("password");
                 loginAction.setServletRequest(getServletPostRequest());
-                assertEquals(TdarActionSupport.AUTHENTICATED, loginAction.authenticate());
+                assertEquals(TdarActionSupport.SUCCESS, loginAction.authenticate());
                 TdarUser person = genericService.find(TdarUser.class, p.getId());
                 boolean deleteUser = authService.getAuthenticationProvider().deleteUser(person);
                 assertTrue("could not delete user", deleteUser);
@@ -499,7 +499,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         loginAction.setSessionData(new SessionData());
 
         String loginResponse = loginAction.authenticate();
-        assertEquals("login should have been successful", TdarActionSupport.AUTHENTICATED, loginResponse);
+        assertEquals("login should have been successful", TdarActionSupport.SUCCESS, loginResponse);
     }
 
     // return a new person reference. an @after method will try to delete this person from crowd

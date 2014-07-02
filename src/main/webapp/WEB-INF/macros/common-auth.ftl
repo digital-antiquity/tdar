@@ -8,7 +8,7 @@
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
 <#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
-    <@common.antiSpam />
+    <@common.embeddedAntiSpam bean=beanPrefix />
     <#local level = 1/>
     <#local showMinimal = true />
     <#if detail == 'verbose'>

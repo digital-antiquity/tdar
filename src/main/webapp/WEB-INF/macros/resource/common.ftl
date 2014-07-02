@@ -925,6 +925,7 @@ with that datapoint -->
         </#if>
     </#macro>
 
+<#--FIXME:  there has to be a better way here -->
     <#macro antiSpam>
         <#if h.recaptcha_public_key??>
         <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
@@ -932,11 +933,24 @@ with that datapoint -->
     
         <@s.hidden name="h.timeCheck"/>
         <textarea name="h.comment" class="tdarCommentDescription"></textarea>
-    
+
         <#if h.reCaptchaText?has_content>
-        ${h.reCaptchaText}
+            ${h.reCaptchaText}
         </#if>
-        
+    </#macro>
+
+    <#macro embeddedAntiSpam  bean="downloadRegistration">
+        <#local actual = bean?eval />
+        <#if actual.srecaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${actual.h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="${bean}.h.timeCheck"/>
+        <textarea name="${bean}.h.comment" class="tdarCommentDescription"></textarea>
+
+        <#if actual.h.reCaptchaText?has_content>
+            ${actual.h.reCaptchaText}
+        </#if>
     </#macro>
 
 </#escape>

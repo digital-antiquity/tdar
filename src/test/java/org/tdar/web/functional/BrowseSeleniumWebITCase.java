@@ -15,10 +15,6 @@ import org.tdar.TestConstants;
 public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public BrowseSeleniumWebITCase() {
-        setJavascriptIgnorePatterns(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
-    }
-
     private void browseTest(String url) {
         gotoPage(url);
         waitFor("body");

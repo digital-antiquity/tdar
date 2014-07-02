@@ -16,6 +16,7 @@ import org.tdar.struts.data.DownloadUserRegistration;
 
 public class AbstractDownloadController extends AuthenticationAware.Base {
 
+    private static final String CONFIRM_URL = "/download/confirm?informationResourceFileVersionId=%s&informationResourceId=%s";
     private static final long serialVersionUID = -1831798412944149017L;
     @Autowired
     private transient DownloadService downloadService;
@@ -106,11 +107,12 @@ public class AbstractDownloadController extends AuthenticationAware.Base {
     protected void setupLoginRegistrationBeans() {
         getDownloadRegistration().setVersion(getInformationResourceFileVersion());
         getDownloadRegistration().setResource(getInformationResource());
-        getDownloadRegistration().setInputUrl(getCurrentUrl());
         getDownloadUserLogin().setVersion(getInformationResourceFileVersion());
         getDownloadUserLogin().setResource(getInformationResource());
-        getDownloadRegistration()
-                .setReturnUrl(String.format("/download/confirm?getInformationResourceFileVersion()Id=%s", getInformationResourceFileVersion()));
+        getDownloadRegistration().setH(h);
+        getDownloadUserLogin().setH(h);
+        getDownloadRegistration().setReturnUrl(String.format(CONFIRM_URL, getInformationResourceFileVersionId(), getInformationResourceId()));
+        getDownloadUserLogin().setReturnUrl(String.format(CONFIRM_URL, getInformationResourceFileVersionId(), getInformationResourceId()));
     }
 
 }

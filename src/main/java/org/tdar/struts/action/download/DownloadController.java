@@ -102,7 +102,6 @@ public class DownloadController extends AbstractDownloadController implements Do
             return SUCCESS;
         }
         setupLoginRegistrationBeans();
-        // getSessionData().setReturnUrl(String.format("/download/confirm?informationResourceFileVersionId=%s", getInformationResourceFileVersionId()));
         return LOGIN;
     }
 

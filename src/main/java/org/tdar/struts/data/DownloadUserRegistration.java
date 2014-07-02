@@ -15,7 +15,6 @@ public class DownloadUserRegistration extends UserRegistration {
     private InformationResourceFileVersion version = new InformationResourceFileVersion();
     private Resource  resource = new Resource();
     private String returnUrl;
-    private String inputUrl;
     
     public DownloadUserRegistration() {
     }
@@ -40,13 +39,6 @@ public class DownloadUserRegistration extends UserRegistration {
         this.version = version;
     }
 
-    public String getInputUrl() {
-        return inputUrl;
-    }
-
-    public void setInputUrl(String inputUrl) {
-        this.inputUrl = inputUrl;
-    }
 
     public String getReturnUrl() {
         return returnUrl;

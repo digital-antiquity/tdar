@@ -1,5 +1,13 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -24,7 +32,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.jboss.arquillian.phantom.resolver.ResolvingPhantomJSDriverService;
 import org.junit.After;
 import org.junit.Before;
@@ -70,15 +77,10 @@ import org.tdar.filestore.Filestore;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
+import org.tdar.web.selenium.ByLabelText;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import org.tdar.web.selenium.ByLabelText;
-
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -289,6 +291,8 @@ public abstract class AbstractSeleniumWebITCase {
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+        jserrorIgnorePatterns.clear();
+        setJavascriptIgnorePatterns(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT, TestConstants.REGEX_TYPEKIT);
         WebDriver driver = null;
         Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");

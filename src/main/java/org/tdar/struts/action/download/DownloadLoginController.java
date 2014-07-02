@@ -11,19 +11,22 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
+import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
 @ParentPackage("default")
 @Namespace("/filestore")
 @Component
 @Scope("prototype")
-public class DownloadLoginController extends AbstractDownloadController implements Validateable {
+public class DownloadLoginController extends AbstractDownloadController implements Validateable, Preparable {
 
     private static final long serialVersionUID = 1525006233392261028L;
 
@@ -33,10 +36,13 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     @Autowired
     private AuthorizationService authorizationService;
 
+    @Autowired
+    private GenericService genericService;
+
     @Action(value = "process-download-login",
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = "${getDownloadUserLogin().returnUrl}"),
+                    @Result(name = SUCCESS, type = REDIRECT, location = "${downloadUserLogin.returnUrl}"),
                     @Result(name = INPUT, type = "freemarker", location = "../filestore/download-unauthenticated.ftl"),
             })
     @HttpsOnly
@@ -64,6 +70,12 @@ public class DownloadLoginController extends AbstractDownloadController implemen
         }
 
         return SUCCESS;
+    }
+
+    @Override
+    public void prepare() {
+        setInformationResource(genericService.find(InformationResource.class, getDownloadUserLogin().getResource().getId()));
+        setInformationResourceFileVersion(getDownloadUserLogin().getVersion());
     }
 
     @Override

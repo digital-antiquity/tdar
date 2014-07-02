@@ -19,6 +19,7 @@ public class DownloadUserLogin extends UserLogin {
     private static final long serialVersionUID = -6157970041213328371L;
     private InformationResourceFileVersion version = new InformationResourceFileVersion();
     private Resource resource = new Resource();
+    private String returnUrl;
 
     public InformationResourceFileVersion getVersion() {
         return version;
@@ -37,19 +38,11 @@ public class DownloadUserLogin extends UserLogin {
     }
 
     public String getReturnUrl() {
-        String versionid = "";
-        if (Persistable.Base.isNotNullOrTransient(version)) {
-            versionid = version.getId().toString();
-        }
-        String resourceid = "";
-        if (Persistable.Base.isNotNullOrTransient(resource)) {
-            resourceid = resource.getId().toString();
-        }
-        return String.format("/filestore/download?informationResourceFileVersionId=%s&resourceId=%s", versionid, resourceid);
+        return returnUrl;
     }
 
-    public String getFailureUrl() {
-        return getReturnUrl();
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 
 }
