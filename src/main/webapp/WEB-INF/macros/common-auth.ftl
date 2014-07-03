@@ -7,8 +7,12 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
+<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart" embedded=true>
+<#if embedded>
     <@common.embeddedAntiSpam bean=beanPrefix />
+<#else>
+    <@common.antiSpam  />
+</#if>    
     <#local level = 1/>
     <#local showMinimal = true />
     <#if detail == 'verbose'>
@@ -125,14 +129,19 @@
 </#macro>
 
 
-<#macro login showLegend=false beanPrefix="userLogin">
+<#macro login showLegend=false beanPrefix="userLogin" embedded=true>
+<#if embedded>
+    <@common.embeddedAntiSpam bean=beanPrefix />
+<#else>
+    <@common.antiSpam  />
+</#if>    
+
     <#if showLegend>
         <legend>Login</legend>
     </#if>
 <#-- don't think this does anything
     <input type="hidden" name="url" value="${Parameters.url!''}"/> -->
     <@s.token name='struts.csrf.token' />
-    <@common.antiSpam />
     <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
 
