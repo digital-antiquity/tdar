@@ -80,6 +80,8 @@ public class DownloadController extends AbstractDownloadController implements Do
 
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
     public String confirm() throws TdarActionException {
+        getSessionData().clearPassthroughParameters();
+
         // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
@@ -101,13 +103,15 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (isAuthenticated()) {
             return SUCCESS;
         }
-        setupLoginRegistrationBeans();
+        getSessionData().setInformationResourceFileVersionId(getInformationResourceFileVersionId());
+        getSessionData().setInformationResourceId(getInformationResourceId());
         return LOGIN;
     }
 
     @Override
     @Action(value = GET)
     public String execute() throws TdarActionException {
+        getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
@@ -128,6 +132,7 @@ public class DownloadController extends AbstractDownloadController implements Do
             @Action(value = SM, interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     })
     public String thumbnail() throws TdarActionException {
+        getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
@@ -150,6 +155,7 @@ public class DownloadController extends AbstractDownloadController implements Do
 
     @Action(value = DOWNLOAD_ALL)
     public String downloadZipArchive() throws TdarActionException {
+        getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
@@ -251,18 +257,4 @@ public class DownloadController extends AbstractDownloadController implements Do
         this.coverPageIncluded = coverPageIncluded;
     }
 
-        @Override
-        public void prepare() {
-            if (Persistable.Base.isNullOrTransient(getInformationResourceId()) &&
-                    Persistable.Base.isNullOrTransient(getInformationResourceFileVersionId())) {
-                addActionError(getText("downloadController.specify_what_to_download"));
-            }
-            if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
-                setInformationResource(getGenericService().find(InformationResource.class, getInformationResourceId()));
-            }
-            if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersionId())) {
-                setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, getInformationResourceFileVersionId()));
-            }
-        }
-        
 }

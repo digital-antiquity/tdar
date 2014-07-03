@@ -1010,12 +1010,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         uploadFileToPersonalFilestore(ticketId, path, true);
     }
 
-    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
+    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename, Long fileId, FileAction action) {
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
-        createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
-        createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
+        createInput("hidden", "fileProxies[" + rowNum + "].action", action.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].fileId", Long.toString(fileId));
         createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
+        
+    }
+    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
+        addFileProxyFields(rowNum, restriction, filename, -1L, FileAction.ADD);
     }
 
     public int uploadFileToPersonalFilestoreWithoutErrorCheck(String ticketId, String path) {

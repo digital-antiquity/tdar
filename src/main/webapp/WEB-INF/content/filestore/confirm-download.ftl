@@ -1,8 +1,8 @@
 <#escape _untrusted as _untrusted?html>
-<#assign download ="/filestore/${informationResourceFileVersionId?c}" />
+<#assign download ="/filestore/${informationResourceFileVersion.id?c}" />
 <html>
 <head>
-    <title>Download: ${fileName?html}</title>
+    <title>Download: ${informationResourceFileVersion.filename?html}</title>
 </head>
 <body>
 <div class="hero-unit">
@@ -11,7 +11,7 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download}" class="manual-download">${fileName?html}</a></dd>
+        <dd><a href="${download}" class="manual-download">${informationResourceFileVersion.filename?html}</a></dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
@@ -27,7 +27,7 @@
 
 
     $(function () {
-        TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersionId?c}');
+        TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersion.id?c}');
     });
 
 

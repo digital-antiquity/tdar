@@ -140,14 +140,15 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
                 overdrawnAccounts.add(account);
             }
         }
-        
+
         Long invoiceId = getSessionData().getInvoiceId();
+        getSessionData().clearPassthroughParameters();
         if (invoiceId != null) {
             Invoice invoice = genericService.find(Invoice.class, invoiceId);
             if (!invoice.isModifiable()) {
-                getSessionData().setInvoiceId(null);
+                invoiceId = null;
             }
-            
+            getSessionData().setInvoiceId(invoiceId);
         }
         prepareProjectStuff();
         setupBookmarks();

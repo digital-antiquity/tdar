@@ -27,7 +27,8 @@ public class SessionData implements Serializable {
     private String returnUrl;
     private String[] parameters;
     private Long invoiceId;
-    
+    private Long informationResourceId;
+    private Long informationResourceFileVersionId;
 
     @Deprecated
 
@@ -49,9 +50,15 @@ public class SessionData implements Serializable {
     public void clearAuthenticationToken() {
         this.authenticationToken = null;
         this.parameters = null;
-        this.returnUrl = null;
+        clearPassthroughParameters();
     }
 
+    public void clearPassthroughParameters() {
+        this.returnUrl = null;
+        this.informationResourceFileVersionId = null;
+        this.informationResourceId = null;
+    }
+    
     public void setAuthenticationToken(AuthenticationToken authenticationToken) {
         this.authenticationToken = authenticationToken;
     }
@@ -111,6 +118,22 @@ public class SessionData implements Serializable {
 
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
+    }
+
+    public Long getInformationResourceFileVersionId() {
+        return informationResourceFileVersionId;
+    }
+
+    public void setInformationResourceFileVersionId(Long informationResourceFileVersionId) {
+        this.informationResourceFileVersionId = informationResourceFileVersionId;
+    }
+
+    public Long getInformationResourceId() {
+        return informationResourceId;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
     }
 
 }

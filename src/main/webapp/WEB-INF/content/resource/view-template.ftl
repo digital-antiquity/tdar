@@ -508,7 +508,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#if sessionData.tdarUser?has_content>
                     <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
-                    <a href="/login?returnUrl=${currentUrl}">${txt} (requires login)</a>
+                    <a href="/login?url=${currentUrl}">${txt} (requires login)</a>
             </#if>
             </div>            
             </li>

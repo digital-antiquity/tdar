@@ -50,7 +50,9 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     private static final long serialVersionUID = -1219398494032484272L;
 
-    private String returnUrl;
+    private String url;
+    private String internalReturnUrl;
+    
     @Autowired
     private RecaptchaService recaptchaService;
 
@@ -95,7 +97,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
-                            @Result(name = REDIRECT, type = REDIRECT, location = "${returnUrl}"),
+                            @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),
                             @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl"),
                             @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.DASHBOARD),
                     }),
@@ -132,22 +134,22 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                 break;
         }
 
-        setReturnUrl(parseReturnUrl());
-        if (StringUtils.isNotBlank(getReturnUrl())) {
-            getSessionData().setReturnUrl(getReturnUrl());
+        setInternalReturnUrl(parseReturnUrl());
+        if (StringUtils.isNotBlank(getInternalReturnUrl())) {
+            getSessionData().clearPassthroughParameters();
             return REDIRECT;
         }
         return SUCCESS;
     }
 
     private String parseReturnUrl() {
-        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(returnUrl)) {
+        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
             return null;
         }
 
         String url_ = getSessionData().getReturnUrl();
         if (StringUtils.isBlank(url_)) {
-            url_ = UrlUtils.urlDecode(returnUrl);
+            url_ = UrlUtils.urlDecode(url);
         }
 
         getLogger().info("url {} ", url_);
@@ -169,21 +171,6 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
         getLogger().debug("Redirecting to return url: " + url_);
         return url_;
-    }
-
-    /**
-     * @param returnUrl
-     *            the returnUrl to set
-     */
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
-    }
-
-    /**
-     * @return the returnUrl
-     */
-    public String getReturnUrl() {
-        return returnUrl;
     }
 
     public UserLogin getUserLogin() {
@@ -210,6 +197,22 @@ public class LoginController extends AuthenticationAware.Base implements Validat
         if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", userLogin.getLoginUsername());
         }
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getInternalReturnUrl() {
+        return internalReturnUrl;
+    }
+
+    public void setInternalReturnUrl(String internalReturnUrl) {
+        this.internalReturnUrl = internalReturnUrl;
     }
 
 }
