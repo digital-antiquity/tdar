@@ -1313,7 +1313,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             }
         }
 
-        setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        setInput("registration.h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
         evictCache();
         setSessionUser(entityService.findByUsername(username));
