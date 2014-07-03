@@ -293,8 +293,9 @@ public abstract class AbstractSeleniumWebITCase {
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-        //typekit errors may occur on pretty much any page
+        //typekit & google-analytics  errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
+        getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
         WebDriver driver = null;
         Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");
