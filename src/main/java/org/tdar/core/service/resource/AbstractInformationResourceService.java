@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
@@ -290,7 +291,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
         }
         // first unmap all columns from the removed tables
-        datasetDao.unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
+        datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
         dataset.getDataTables().removeAll(tablesToRemove);
     }
 

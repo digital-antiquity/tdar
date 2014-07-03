@@ -54,19 +54,19 @@ public final class NamedNativeQueries {
                 filenameCheck, filenameList, versionList);
     }
 
-    public static String removeDatasetMappings(Project project, Collection<DataTableColumn> columns) {
+    public static String removeDatasetMappings(Long projectId, List<Long> columnIds) {
         StringBuilder sb = new StringBuilder();
-        for (DataTableColumn column : columns) {
+        for (Long columnId : columnIds) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(column.getId());
+            sb.append(columnId);
         }
 
         String sql = "update information_resource ir_ set mappeddatakeycolumn_id=NULL, mappedDataKeyValue=NULL " +
                 "WHERE ir_.project_id=%s and mappeddatakeycolumn_id in (%s)";
 
-        return String.format(sql, project.getId(), sb.toString());
+        return String.format(sql, projectId, sb.toString());
     }
 
     public static String generateDashboardGraphQuery(Person user, GeneralPermissions permission) {
