@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -194,11 +193,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return updatedValues;
     }
 
-    public void unmapAllColumnsInProject(Project project, Collection<DataTableColumn> columns) {
+    public void unmapAllColumnsInProject(Long projectId, List<Long> columns) {
         if (CollectionUtils.isEmpty(columns)) {
             return;
         }
-        String rawsql = NamedNativeQueries.removeDatasetMappings(project, columns);
+        String rawsql = NamedNativeQueries.removeDatasetMappings(projectId, columns);
         logger.trace(rawsql);
         Query query = getCurrentSession().createSQLQuery(rawsql);
         int executeUpdate = query.executeUpdate();

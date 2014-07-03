@@ -30,6 +30,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -408,10 +409,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getLogger().debug("result: {}", columnsToPersist);
             tableToPersist.setId(existingTable.getId());
 
-            // get rid of all the old existing columns that don't have an analogous column (by name)
-            Collection<DataTableColumn> columnsToRemove = existingColumnsMap.values();
-
-            getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToRemove);
+            getDao().unmapAllColumnsInProject(dataset.getProjectId(), Persistable.Base.extractIds(existingColumnsMap.values()));
 
             getLogger().debug("merged data table is now {}", tableToPersist);
             getLogger().debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), columnsToPersist);
@@ -486,7 +484,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             final DataTableColumn descriptionColumn) {
         final CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
-//        codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
+        // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
         codingSheet.setTitle("Generated Coding Rule from " + keyColumn.getDataTable().getName());
         codingSheet.setDescription(codingSheet.getTitle());
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
@@ -650,7 +648,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         if (project == Project.NULL) {
             throw new TdarRecoverableRuntimeException("datasetService.no_project_specified");
         }
-        getDao().unmapAllColumnsInProject(project, columns);
+        getDao().unmapAllColumnsInProject(project.getId(), Persistable.Base.extractIds(columns));
         for (DataTableColumn column : columns) {
             getLogger().info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
