@@ -21,6 +21,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -69,6 +70,28 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
     }
 
+    @Test
+    @Rollback
+    public void testReplaceWithLBNLTableIssue() {
+        docValMap.put(PROJECT_ID_FIELDNAME, "3805");
+        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA.xlsx" );
+        uploadDataset();
+        Long datasetId = extractTdarIdFromCurrentURL();
+
+        String filename = TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA_v2.xls";
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
+        docValMap.remove("uploadedFiles");
+        uploadFileToPersonalFilestore(ticketId, filename);
+        gotoPage("/dataset/" + datasetId + "/edit");
+        setInput("ticketId", ticketId);
+        Long fileId = Long.parseLong(getInput("fileProxies[0].fileId").getAttribute("value"));
+        addFileProxyFields(1, FileAccessRestriction.PUBLIC, filename, fileId, FileAction.REPLACE);
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("dataset/save"));
+        
+    }
+    
     @Test
     @Rollback(true)
     public void testCreateDatasetRecordSpitalfields() {
@@ -197,7 +220,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long
-            if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
+            if (key.equals(PROJECT_ID_FIELDNAME) || !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
                     && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
