@@ -96,7 +96,9 @@ public abstract class AbstractSeleniumWebITCase {
     private String cachedPageText = null;
 
     private boolean screenshotsAllowed = true;
-    protected boolean ignoreJavascriptErrors = false;
+    //if true, ignore all  javascript errors during page navigation events
+    private boolean ignoreJavascriptErrors = false;
+    //ignore javascript errors that match that match Patterns in this list
     private List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
     private boolean ignoreModals = false;
     private WebDriver driver;
@@ -291,8 +293,8 @@ public abstract class AbstractSeleniumWebITCase {
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-        jserrorIgnorePatterns.clear();
-        setJavascriptIgnorePatterns(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT, TestConstants.REGEX_TYPEKIT);
+        //typekit errors may occur on pretty much any page
+        getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
         WebDriver driver = null;
         Browser browser = Browser.FIREFOX;
         String xvfbPort = System.getProperty("display.port");
@@ -871,8 +873,12 @@ public abstract class AbstractSeleniumWebITCase {
         return errors;
     }
 
-    public void setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
+    public final void  setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
         this.ignoreJavascriptErrors = ignoreJavascriptErrors;
+    }
+
+    public final boolean getIgnoreJavascriptErrors() {
+        return ignoreJavascriptErrors;
     }
 
     // message: "errorEvent::" + (evt.message || "(no error message)"),
@@ -1102,13 +1108,29 @@ public abstract class AbstractSeleniumWebITCase {
         return wasFound;
     }
 
-    // set a list of regex strings that correspond to error messages that we should ignore (e.g. google map quota errors)
-    public void setJavascriptIgnorePatterns(String... patterns) {
-        for (String str : patterns) {
-            Pattern pattern = Pattern.compile(str);
-            jserrorIgnorePatterns.add(pattern);
-        }
+    /**
+     * Convenience wrapper for {@link #setJavascriptIgnorePatterns(List<Pattern>)}.
+     * @param patterns
+     */
+    public final void setJavascriptIgnorePatterns(Pattern... patterns) {
+        List<Pattern> _patterns = new ArrayList<>(Arrays.asList(patterns));
+        setJavascriptIgnorePatterns(_patterns);
     }
+
+    /**
+     * Set the list of javascript error ignore patterns. The test will check for outstanding javascript errors whenever the test detects a page
+     * navigation event. If  {@link #getIgnoreJavascriptErrors()} is <code>false</code> and the test detects javascript error messages that are not matched
+     * by the list of patterns,  this test will call {@link org.junit.Assert#fail()}
+     * @param patterns
+     */
+    public final void setJavascriptIgnorePatterns(List<Pattern> patterns) {
+        jserrorIgnorePatterns = patterns;
+    }
+
+    public final List<Pattern> getJavascriptIgnorePatterns() {
+        return jserrorIgnorePatterns;
+    }
+
 
     // return true if this is a legit error (i.e something we aren't ignoring)
     public boolean isLegitJavascriptError(String error) {

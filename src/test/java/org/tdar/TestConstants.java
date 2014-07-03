@@ -71,7 +71,7 @@ public interface TestConstants {
     // time conversion constant
     int MILLIS_PER_SECOND = 1000;
     // regex pattern for js error that typically occurs when rendering google maps in test environment
-    public static final String REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent");
+    public static final Pattern REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.compile(Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
     // [[{"message":"errorEvent::(no error message)","tag":"<script async=\"\" src=\"//use.typekit.net/czp6njc.js\"></script>","time":"0.293s"}, {"message":"errorEvent::(no error message)","tag":"<script src=\"https://ssl.google-analytics.com/ga.js\" async=\"\" type=\"text/javascript\"></script>","time":"0.294s"}]]
-    public static String REGEX_TYPEKIT = Pattern.quote("errorEvent::(no error message)");
+    public static final Pattern REGEX_TYPEKIT = Pattern.compile("use.typekit.net");
 }
