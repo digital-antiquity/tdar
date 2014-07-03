@@ -108,6 +108,9 @@ public class SheetEvaluator {
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
         for (int j = cellCount; j >= endAt; j--) {
+            if (j < 0) {
+                break;
+            }
             String value = getCellValueAsString(row.getCell(j));
             if (StringUtils.isBlank(value)) {
                 cellCount--;
