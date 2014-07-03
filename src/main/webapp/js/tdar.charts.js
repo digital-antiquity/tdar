@@ -224,7 +224,7 @@
             var plot = $.jqplot(graphId, [data], _defaults);
             var context = "";
             if (props.context != undefined) {
-                context = "&useSubmitterContext=true";
+                context = "&useSubmitterContext=" + props.context;
             }
             $graph.bind('jqplotDataClick',
                     function (ev, seriesIndex, pointIndex, data) {

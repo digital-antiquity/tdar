@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -20,7 +20,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 public class ReservedSearchParameters extends SearchParameters {
     private List<Status> statuses = new ArrayList<Status>();
-    private Person authenticatedUser;
+    private TdarUser authenticatedUser;
     private TdarGroup tdarGroup;
     private boolean useSubmitterContext = false;
 
@@ -62,11 +62,11 @@ public class ReservedSearchParameters extends SearchParameters {
         return queryPartGroup;
     }
 
-    public Person getAuthenticatedUser() {
+    public TdarUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
-    public void setAuthenticatedUser(Person authenticatedUser) {
+    public void setAuthenticatedUser(TdarUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
 
