@@ -402,6 +402,7 @@ public abstract class AbstractSeleniumWebITCase {
         driver = null;
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
+        getJavascriptIgnorePatterns().clear();
     }
 
     protected void takeScreenshot() {
