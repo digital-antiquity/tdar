@@ -1,6 +1,7 @@
 package org.tdar.struts.action.download;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.DownloadService;
@@ -14,9 +15,10 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.DownloadUserRegistration;
 
-public class AbstractDownloadController extends AuthenticationAware.Base {
+import com.opensymphony.xwork2.Preparable;
 
-    private static final String CONFIRM_URL = "/download/confirm?informationResourceFileVersionId=%s&informationResourceId=%s";
+public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
+
     private static final long serialVersionUID = -1831798412944149017L;
     @Autowired
     private transient DownloadService downloadService;
@@ -104,15 +106,28 @@ public class AbstractDownloadController extends AuthenticationAware.Base {
         this.downloadUserLogin = downloadUserLogin;
     }
 
-    protected void setupLoginRegistrationBeans() {
-        getDownloadRegistration().setVersion(getInformationResourceFileVersion());
-        getDownloadRegistration().setResource(getInformationResource());
-        getDownloadUserLogin().setVersion(getInformationResourceFileVersion());
-        getDownloadUserLogin().setResource(getInformationResource());
-        getDownloadRegistration().setH(h);
-        getDownloadUserLogin().setH(h);
-        getDownloadRegistration().setReturnUrl(String.format(CONFIRM_URL, getInformationResourceFileVersionId(), getInformationResourceId()));
-        getDownloadUserLogin().setReturnUrl(String.format(CONFIRM_URL, getInformationResourceFileVersionId(), getInformationResourceId()));
+    @Override
+    public void prepare() {
+        Long irId = getInformationResourceId();
+        if (Persistable.Base.isNullOrTransient(irId)) {
+            irId = getSessionData().getInformationResourceId();
+        }
+
+        Long irfvId = getInformationResourceFileVersionId();
+        if (Persistable.Base.isNullOrTransient(irfvId)) {
+            irfvId = getSessionData().getInformationResourceFileVersionId();
+        }
+
+        if (Persistable.Base.isNullOrTransient(irfvId) &&
+                Persistable.Base.isNullOrTransient(irId)) {
+            addActionError(getText("downloadController.specify_what_to_download"));
+        }
+        if (Persistable.Base.isNotNullOrTransient(irId)) {
+            setInformationResource(getGenericService().find(InformationResource.class, irId));
+        }
+        if (Persistable.Base.isNotNullOrTransient(irfvId)) {
+            setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, irfvId));
+        }
     }
 
 }

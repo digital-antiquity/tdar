@@ -11,11 +11,11 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -42,8 +42,8 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     @Action(value = "process-download-login",
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = "${downloadUserLogin.returnUrl}"),
-                    @Result(name = INPUT, type = "freemarker", location = "../filestore/download-unauthenticated.ftl"),
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}"),
+                    @Result(name = INPUT, type = "freemarker", location = "../filestore/download-unauthenticated.ftl")
             })
     @HttpsOnly
     @WriteableSession
@@ -63,19 +63,12 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             case ERROR:
             case NEW:
                 addActionMessage("User is in crowd, but not in local db");
-                setupLoginRegistrationBeans();
                 return INPUT;
             default:
                 break;
         }
 
         return SUCCESS;
-    }
-
-    @Override
-    public void prepare() {
-        setInformationResource(genericService.find(InformationResource.class, getDownloadUserLogin().getResource().getId()));
-        setInformationResourceFileVersion(getDownloadUserLogin().getVersion());
     }
 
     @Override

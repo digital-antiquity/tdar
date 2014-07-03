@@ -1,15 +1,10 @@
 <#escape _untrusted as _untrusted?html>
-    <#assign obj = downloadUserLogin />
-<#if downloadRegistration?has_content && (downloadRegistration.version?has_content || downloadRegistration.resource?has_content)>
-    <#assign obj = downloadRegistration />
-<#else>
-</#if>
-<#assign download ="/filestore/${obj.version.id?c}" />
+<#assign download ="/filestore/${informationResourceFileVersion.id?c}" />
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <html>
 <head>
-    <title>Download: ${obj.version.fileName!"undefined"?html}</title>
+    <title>Download: ${informationResourceFileVersion.fileName!"undefined"?html}</title>
 </head>
 <body>
 <div class="hero-unit">
@@ -18,7 +13,7 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download!""}" class="manual-download">${obj.version.filename!"undefined"?html}</a></dd>
+        <dd><a href="${download!""}" class="manual-download">${informationResourceFileVersion.filename!"undefined"?html}</a></dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
@@ -32,7 +27,6 @@
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="/filestore/process-download-registration">
                 <@s.token name='struts.csrf.token' />
-                <@commonFields beanPrefix="downloadRegistration" />
                 <fieldset>
                     <legend>Register</legend>
                     <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" source="download" />
@@ -44,7 +38,6 @@
         <div class="span3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="process-download-login">
-                    <@commonFields beanPrefix="downloadUserLogin" />
                 <@auth.login showLegend=true  beanPrefix="downloadUserLogin" >
                     <div class="form-actions">
                         <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
@@ -54,13 +47,5 @@
 
         </div>
     </div>
-    <#macro commonFields beanPrefix="downloadRegistration">
-        <@s.hidden name="${beanPrefix}.version.id" />
-        <@s.hidden name="${beanPrefix}.version.filename"/>
-        <@s.hidden name="${beanPrefix}.resource.id"/>
-        <@s.hidden name="${beanPrefix}.resource.title"/>
-        <@s.hidden name="${beanPrefix}.resource.description"/>
-        <@s.hidden name="${beanPrefix}.resource.resourceType"/>
-    </#macro>
 </body>
 </#escape>

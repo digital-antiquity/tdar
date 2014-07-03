@@ -10,9 +10,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -33,13 +31,11 @@ public class DownloadRegistrationController extends AbstractDownloadController i
 
     @Autowired
     private AuthenticationService authenticationService;
-    @Autowired
-    private GenericService genericService;
 
     @Action(value = "process-download-registration",
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "${downloadRegistration.returnUrl}")
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}")
             })
     @HttpsOnly
     @PostOnly
@@ -61,19 +57,11 @@ public class DownloadRegistrationController extends AbstractDownloadController i
         } catch (Throwable e) {
             addActionError(e.getLocalizedMessage());
         }
-        setupLoginRegistrationBeans();
         return TdarActionSupport.INPUT;
     }
-   
 
     @Override
-    public void prepare() {
-        setInformationResource(genericService.find(InformationResource.class, getDownloadRegistration().getResource().getId()));
-        setInformationResourceFileVersion(getDownloadRegistration().getVersion());
-    }
-
-    @Override
-    public void validate() {        
+    public void validate() {
         getLogger().debug("validating registration request");
         List<String> errors = getDownloadRegistration().validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
