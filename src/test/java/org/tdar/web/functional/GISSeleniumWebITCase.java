@@ -118,7 +118,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @Test
-    public void testUploadGeotiff() {
+    public void testUploadGeotiff()  {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -153,6 +153,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         gotoPage(url);
         find(".media-body a").first().click();
         waitFor("#loginUsername");
+//        Thread.sleep(1000L);
         String username = TestConfiguration.getInstance().getAdminUsername();
         String password = TestConfiguration.getInstance().getAdminPassword();
         assertThat(username, not(isEmptyOrNullString()));
