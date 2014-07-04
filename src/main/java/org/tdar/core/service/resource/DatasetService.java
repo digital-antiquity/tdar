@@ -413,7 +413,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             logger.debug("deleting unmerged columns: {}", existingColumnsMap);
             logger.debug("result: {}", columnsToPersist);
             tableToPersist.setId(existingTable.getId());
-
+            getDao().detachFromSession(existingTable);
             getDao().unmapAllColumnsInProject(dataset.getProjectId(), Persistable.Base.extractIds(existingColumnsMap.values()));
 
             logger.debug("merged data table is now {}", tableToPersist);
