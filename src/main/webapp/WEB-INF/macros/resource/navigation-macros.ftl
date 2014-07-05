@@ -144,6 +144,110 @@ navigation freemarker macros
     <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i
             class="icon-trash"></i></button>
     </#macro>
+
+
+
+<#-- Emit the global navigation bar. Should only be called on authenticated pages -->
+    <#macro bootstrapNavbar>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container">
+                <!-- display this toggle button when navbar exceeds available width and 'collapses' -->
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+
+                <!-- <a class="brand" href="#">Menu</a> -->
+                <!-- everything in the nav-collapse div will be hidden at 940px or less -->
+                <div class="nav-collapse">
+                    <ul class="nav">
+                        <li><a href="#">Home</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Search<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="<@s.url value='/search'/>">Search ${siteAcronym!""}</a></li>
+                                <li><a href="<@s.url value='/browse/explore'/>">Explore</a></li>
+                                <li><a href="<@s.url value='/search/results'/>">Browse All Resources</a></li>
+                                <li><a href="<@s.url value='/search/collections'/>">Browse All Collections</a></li>
+                            </ul>
+                        </li>
+                        <#if authenticatedUser??>
+
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Workspace<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="<@s.url value='/workspace/list'/>">Show Bookmarked Resources</a></li>
+                                    <li><a href="<@s.url value='/workspace/select-tables'/>">Integrate Bookmarked Data Tables</a></li>
+                                </ul>
+                            </li>
+
+                            <li><a href="<@s.url value='/dashboard'/>">Your Resources</a></li>
+                            <#if contributor!false>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">New<b class="caret"></b></a>
+                                <li><a href="<@s.url value='/project/add'/>">New...</a></li>
+                                <li><a href="<@s.url value='/project/add'/>">New Project</a></li>
+                                <li><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
+                                <li><a href="<@s.url value='/image/add'/>">New Image</a></li>
+                                <#if administrator!false>
+                                    <li><a href="<@s.url value='/video/add'/>">New Video</a></li></#if>
+                                <li><a href="<@s.url value='/dataset/add'/>">New Dataset</a></li>
+                                <li><a href="<@s.url value='/coding-sheet/add'/>" class="item_line">New Coding Sheet</a></li>
+                                <li><a href="<@s.url value='/ontology/add'/>">New Ontology</a></li>
+                                <li><a href="<@s.url value='/sensory-data/add'/>">New Sensory Data</a></li>
+                                <li><a href="<@s.url value='/collection/add'/>">New Collection</a></li>
+                                <li style="border-top: 1px solid #AAA;"><a href="<@s.url value='/batch/add'/>">Batch Upload Tool</a></li>
+                                <ul class="dropdown-menu">
+
+
+                                </ul>
+                                </li>
+                            </#if>
+                            <li><a href="<@s.url value='http://www.tdar.org'/>">About</a></li>
+                            <#if editor!false>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<@s.url value='/admin/internal'/>">Statistics</a></li>
+                                            <#if administrator!false>
+                                                <li><a href="<@s.url value='/admin/searchindex/build'/>">Build search index</a></li>
+                                                <li><a href="<@s.url value='/admin/system/activity'/>">System Activity</a></li>
+
+                                            </#if>
+                                            <li><a href="<@s.url value='/admin/authority-management/index'/>">Merge duplicates</a></li>
+                                        </ul>
+                                </li>
+                            </#if>
+                            <li><a href="<@s.url value='/logout'/>">Logout</a></li>
+                        <#else>
+                            <li><@loginButton /></li>
+                        </#if>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="${documentationUrl}">User Documentation</a></li>
+                                <li><a href="${bugReportUrl}">Report a Bug</a></li>
+                                <li><a href="${commentUrl}">Comments</a></li>
+                                <#if authenticatedUser??>
+                                    <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.tdarUser.id?c}'/>">Update your profile</a></li>
+                                </#if>
+                            </ul>
+
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- /.nav-collapse -->
+            </div>
+        </div>
+        <!-- /navbar-inner -->
+    </div>
+    </#macro>
+
 </#escape>
 
 <#-- Return the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard

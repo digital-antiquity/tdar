@@ -572,18 +572,7 @@ View freemarker macros
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".thumbnailLink").click(function () {
-                var $this = $(this);
-                $("#bigImage").attr('src', $this.data('url'));
-                var rights = "";
-                if ($this.data("access-rights")) {
-                    rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
-                }
-                $("#confidentialLabel").html(rights);
-                $("#downloadText").html($this.attr('alt'));
-                $(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
-                $this.parent().addClass("thumbnail-border-selected");
-            });
+            TDAR.common.initImageGallery();
         });
     </script>
     </#macro>
@@ -667,36 +656,7 @@ View freemarker macros
 
 
     <#macro datatableChildJavascript>
-    var _windowOpener = null;
-    //swallow cors exception. this can happen if window is a child but not an adhoc target
-    try {
-    if(window.opener) {
-    windowOpener = window.opener.TDAR.common.adhocTarget;
-    }
-    }catch(ex) {console.log("window parent not available - skipping adhoctarget check");}
-
-    if(_windowOpener)  {
-    window.opener.TDAR.common.populateTarget({
-    id:${resource.id?c},
-    title:"${resource.title?js_string}"
-    });
-
-
-    $( "#datatable-child" ).dialog({
-    resizable: false,
-    modal: true,
-    buttons: {
-    "Return to original page": function() {
-    window.opener.focus();
-    window.close();
-    },
-    "Stay on this page": function() {
-    window.opener.adhocTarget = null;
-    $( this ).dialog( "close" );
-    }
-    }
-    });
-    }
+    TDAR.datatable.registerChild(${resource.id?c},"${resource.title?js_string}");
     </#macro>
 
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
