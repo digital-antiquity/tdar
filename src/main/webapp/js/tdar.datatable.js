@@ -540,6 +540,40 @@ TDAR.datatable = function () {
             $(checked).click();
         }
     }
+    
+    function _registerChild(id, title) {
+        var _windowOpener = null;
+        // swallow cors exception. this can happen if window is a child but not an adhoc target
+        try {
+            if (window.opener) {
+                windowOpener = window.opener.TDAR.common.adhocTarget;
+            }
+        } catch (ex) {
+            console.log("window parent not available - skipping adhoctarget check");
+        }
+
+        if (_windowOpener) {
+            window.opener.TDAR.common.populateTarget({
+                id : id,
+                title : title
+            });
+
+            $("#datatable-child").dialog({
+                resizable : false,
+                modal : true,
+                buttons : {
+                    "Return to original page" : function() {
+                        window.opener.focus();
+                        window.close();
+                    },
+                    "Stay on this page" : function() {
+                        window.opener.adhocTarget = null;
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+    }
 
     return {
         extendSorting: _extendSorting,
@@ -549,6 +583,7 @@ TDAR.datatable = function () {
         removeResourceClicked: _removeResourceClicked,
         registerResourceCollectionDataTable: _registerResourceCollectionDataTable,
         renderPersonId: _fnRenderPersonId,
-        checkAllToggle: _checkAllToggle
+        checkAllToggle: _checkAllToggle,
+        registerChild: _registerChild
     };
 }();

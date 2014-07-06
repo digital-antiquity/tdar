@@ -537,4 +537,18 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
+    
+    public <R extends Resource> boolean isResourceViewable(TdarUser authenticatedUser, R resource) {
+        if (resource.isActive()
+                || can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || canView(authenticatedUser, resource)
+                || canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA)) {
+            logger.trace("{} is viewable: {}", resource.getId(), resource.getClass().getSimpleName());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isResourceEditable(TdarUser authenticatedUser, Resource resource) {
+        return canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA);
+    }
 }

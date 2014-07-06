@@ -1165,6 +1165,21 @@ TDAR.common = function () {
         } while (bytes >= thresh);
         return bytes.toFixed(1) + ' ' + units[u];
     };
+    
+    function _initImageGallery() {
+        $(".thumbnailLink").click(function () {
+            var $this = $(this);
+            $("#bigImage").attr('src', $this.data('url'));
+            var rights = "";
+            if ($this.data("access-rights")) {
+                rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
+            }
+            $("#confidentialLabel").html(rights);
+            $("#downloadText").html($this.attr('alt'));
+            $(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
+            $this.parent().addClass("thumbnail-border-selected");
+        });
+    }
 
     
     $.extend(self, {
@@ -1201,7 +1216,8 @@ TDAR.common = function () {
         "tmpl": tmpl,
 
         "collectionTreeview": _collectionTreeview,
-        "humanFileSize": humanFileSize
+        "humanFileSize": humanFileSize,
+        "initImageGallery": _initImageGallery
     });
 
     return self;

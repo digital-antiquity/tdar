@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
@@ -393,5 +394,14 @@ public class XmlService {
         FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
+    }
+    public <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(cls);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        logger.trace("converting: {}", object);
+        marshaller.marshal(object, writer);
+        
     }
 }

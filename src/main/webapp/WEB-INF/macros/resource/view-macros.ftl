@@ -572,18 +572,7 @@ View freemarker macros
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".thumbnailLink").click(function () {
-                var $this = $(this);
-                $("#bigImage").attr('src', $this.data('url'));
-                var rights = "";
-                if ($this.data("access-rights")) {
-                    rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
-                }
-                $("#confidentialLabel").html(rights);
-                $("#downloadText").html($this.attr('alt'));
-                $(".thumbnail-border-selected").removeClass("thumbnail-border-selected");
-                $this.parent().addClass("thumbnail-border-selected");
-            });
+            TDAR.common.initImageGallery();
         });
     </script>
     </#macro>
@@ -667,36 +656,7 @@ View freemarker macros
 
 
     <#macro datatableChildJavascript>
-    var _windowOpener = null;
-    //swallow cors exception. this can happen if window is a child but not an adhoc target
-    try {
-    if(window.opener) {
-    windowOpener = window.opener.TDAR.common.adhocTarget;
-    }
-    }catch(ex) {console.log("window parent not available - skipping adhoctarget check");}
-
-    if(_windowOpener)  {
-    window.opener.TDAR.common.populateTarget({
-    id:${resource.id?c},
-    title:"${resource.title?js_string}"
-    });
-
-
-    $( "#datatable-child" ).dialog({
-    resizable: false,
-    modal: true,
-    buttons: {
-    "Return to original page": function() {
-    window.opener.focus();
-    window.close();
-    },
-    "Stay on this page": function() {
-    window.opener.adhocTarget = null;
-    $( this ).dialog( "close" );
-    }
-    }
-    });
-    }
+    TDAR.datatable.registerChild(${resource.id?c},"${resource.title?js_string}");
     </#macro>
 
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
@@ -754,44 +714,7 @@ View freemarker macros
         <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
     </#function>
 
-<#-- emit OpenURL format url for the specified resource (for use with COIN citation) -->
-    <#macro toOpenURL resource>
-        <#noescape>
-            <#assign openUrl>ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/${hostName}&amp;rft.doi=${resource.externalId!""?url}</#assign>
-            <#if resource.date?has_content && resource.date != -1>
-                <#assign openUrl>${openUrl}&amp;rft.date=${resource.date?c?url}</#assign>
-            </#if>
-            <#if resource??>
-                <#if resource.resourceType == 'DOCUMENT'>
-                    <#if resource.documentType == 'JOURNAL_ARTICLE'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.journalTitle!""?url}&amp;rft.jtitle=${resource.journalTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#elseif resource.documentType == 'BOOK_SECTION'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.bookTitle!""?url}&amp;rft.btitle=${resource.bookTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#else>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.title!""?url}</#assign>
-                    </#if>
 
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.documentType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.documentType.openUrlGenre!""?url}&amp;rft.issn=${resource.issn!""?url}&amp;rft.isbn=${resource.isbn!""?url}</#assign>
-                <#else>
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.resourceType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.resourceType.openUrlGenre!""?url}&amp;rft.title=${resource.title!""?url}</#assign>
-                </#if>
-            </#if>
-        ${openUrl}
-        </#noescape>
-    </#macro>
-
-<#-- emit COIN microformat link -->
-    <#macro coin resource>
-        <#if resource??>
-            <#noescape>
-            <span class="Z3988" title="<@toOpenURL resource />"></span>
-            </#noescape>
-        </#if>
-    </#macro>
 
 <#-- emit license information section -->
     <#macro license>

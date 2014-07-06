@@ -16,10 +16,9 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.junit.Before;
 import org.junit.Test;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
-import org.w3c.dom.Document;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
@@ -38,12 +37,11 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
 
     private static final Long DOC_TDAR_ID = 4287L;
 
-    private DocumentController controller;
+    private JAXBMetadataViewController controller;
 
-    private void navigateTo(Long tdarId) throws TdarActionException {
+    private void navigateTo(Long tdarId) throws Exception {
         controller.setId(tdarId);
         controller.prepare();
-        controller.view();
     }
 
     private String getModsXml() throws TdarActionException {
@@ -84,11 +82,11 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         NamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext(ctx);
 
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(JAXBMetadataViewController.class);
     }
 
     @Test
-    public void simpleModsTest() throws TdarActionException {
+    public void simpleModsTest() throws Exception {
         // a simple test to see if we even get back a non-blank mods document
         navigateTo(DOC_TDAR_ID);
         String xml = getModsXml();
@@ -96,7 +94,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void simpleDcTest() throws TdarActionException {
+    public void simpleDcTest() throws Exception {
         // a simple test to see if we even get back a non-blank dc document
         navigateTo(DOC_TDAR_ID);
         String xml = getDcXml();
@@ -113,7 +111,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         assertXpathEvaluatesTo(DOC_AUTHOR_FIRSTNAME, "/m:mods/m:name[1]/m:namePart[@type='given']", xml);
         assertXpathEvaluatesTo(DOC_AUTHOR_LASTNAME, "/m:mods/m:name[1]/m:namePart[@type='family']", xml);
         // really we're only checking a portion of the description
-        Document xmlDocument = XMLUnit.buildTestDocument(xml);
+        org.w3c.dom.Document xmlDocument = XMLUnit.buildTestDocument(xml);
         XpathEngine xpathEngine = XMLUnit.newXpathEngine();
         String result = xpathEngine.evaluate("//m:abstract", xmlDocument);
         assertTrue("abstract is at least partially present", result.indexOf(DOC_DESCRIPTION_FRAGMENT) > -1);
@@ -121,8 +119,9 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
 
     @Test
     public void testModsForThesis() throws Exception {
+        Document doc = genericService.find(Document.class, DOC_TDAR_ID);
+        doc.setDocumentType(DocumentType.THESIS);
         navigateTo(DOC_TDAR_ID);
-        controller.getDocument().setDocumentType(DocumentType.THESIS);
         String xml = getModsXml();
         log.debug("thesis test");
         log.debug(xml);
@@ -135,8 +134,9 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
     public void testModsForConference() throws Exception {
         // besides the common fields, a conference citation should include
         // conference name and place where conference occured
+        Document doc = genericService.find(Document.class, DOC_TDAR_ID);
+        doc.setDocumentType(DocumentType.CONFERENCE_PRESENTATION);
         navigateTo(DOC_TDAR_ID);
-        controller.getDocument().setDocumentType(DocumentType.CONFERENCE_PRESENTATION);
         String xml = getModsXml();
         log.debug("conference test");
         log.debug(xml);
