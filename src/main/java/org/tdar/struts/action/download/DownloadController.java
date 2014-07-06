@@ -49,6 +49,19 @@ public class DownloadController extends AbstractDownloadController implements Do
 
     private static final long serialVersionUID = 7548544212676661097L;
 
+
+    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
+    public String confirm() throws TdarActionException {
+        getSessionData().clearPassthroughParameters();
+
+        // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
+        String status = execute();
+        if (status != SUCCESS) {
+            return status;
+        }
+        return "confirm";
+    }
+
     @Override
     @Action(value = GET)
     public String execute() throws TdarActionException {
