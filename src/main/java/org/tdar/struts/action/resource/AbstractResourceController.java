@@ -1,6 +1,7 @@
 package org.tdar.struts.action.resource;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -84,7 +85,10 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.transform.DcTransformer;
+import org.tdar.transform.MetaTag;
 import org.tdar.transform.ModsTransformer;
+import org.tdar.transform.OpenUrlFormatter;
+import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 
 import edu.asu.lib.dc.DublinCoreDocument;
@@ -231,6 +235,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
 
+    public String getOpenUrl() {
+        return OpenUrlFormatter.toOpenURL(getResource());
+    }
+    
+    public String getGoogleScholarTags() throws Exception {
+        ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
+        StringWriter sw = new StringWriter();
+        for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
+            xmlService.convertToXMLFragment(MetaTag.class, tag, sw);
+            sw.append("\n");
+        }
+        return sw.toString();
+    }
     
     
     @Override

@@ -278,6 +278,27 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
+    public void testOpenURLGeneration() {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(4231L);
+        controller.prepare();
+        String openUrl = controller.getOpenUrl();
+        logger.debug(openUrl);
+        assertEquals("ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/http://localhost:8180&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4", openUrl);
+    }
+
+    @Test
+    public void testScholarSource() throws Exception {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(4231L);
+        controller.prepare();
+        String scholar = controller.getGoogleScholarTags();
+        logger.debug(scholar);
+        assertEquals("<meta name=\"citation_title\" content=\"2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4\"/>\n<meta name=\"citation_date\" content=\"2008\"/>\n<meta name=\"citation_online_date\" content=\"2010/08/14\"/>\n", scholar);
+
+    }
+
+    @Test
     @Rollback()
     public void testInstitutionResourceCreatorNew() throws Exception {
         DocumentController controller = initControllerFields();

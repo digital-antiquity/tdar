@@ -714,44 +714,7 @@ View freemarker macros
         <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
     </#function>
 
-<#-- emit OpenURL format url for the specified resource (for use with COIN citation) -->
-    <#macro toOpenURL resource>
-        <#noescape>
-            <#assign openUrl>ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/${hostName}&amp;rft.doi=${resource.externalId!""?url}</#assign>
-            <#if resource.date?has_content && resource.date != -1>
-                <#assign openUrl>${openUrl}&amp;rft.date=${resource.date?c?url}</#assign>
-            </#if>
-            <#if resource??>
-                <#if resource.resourceType == 'DOCUMENT'>
-                    <#if resource.documentType == 'JOURNAL_ARTICLE'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.journalTitle!""?url}&amp;rft.jtitle=${resource.journalTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#elseif resource.documentType == 'BOOK_SECTION'>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.bookTitle!""?url}&amp;rft.btitle=${resource.bookTitle!""?url}&amp;
-                        rft.atitle=${resource.title!""?url}</#assign>
-                    <#else>
-                        <#assign openUrl>${openUrl}&amp;rft.title=${resource.title!""?url}</#assign>
-                    </#if>
 
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.documentType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.documentType.openUrlGenre!""?url}&amp;rft.issn=${resource.issn!""?url}&amp;rft.isbn=${resource.isbn!""?url}</#assign>
-                <#else>
-                    <#assign openUrl>${openUrl}&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:${resource.resourceType.openUrlGenre!""?url}&amp;
-                    rft.genre=${resource.resourceType.openUrlGenre!""?url}&amp;rft.title=${resource.title!""?url}</#assign>
-                </#if>
-            </#if>
-        ${openUrl}
-        </#noescape>
-    </#macro>
-
-<#-- emit COIN microformat link -->
-    <#macro coin resource>
-        <#if resource??>
-            <#noescape>
-            <span class="Z3988" title="<@toOpenURL resource />"></span>
-            </#noescape>
-        </#if>
-    </#macro>
 
 <#-- emit license information section -->
     <#macro license>

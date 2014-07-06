@@ -15,8 +15,10 @@
         <@search.headerLinks includeRss=false />
     </#if>
 
-    <@_googleScholarSection />
-
+    <#noescape>
+    ${googleScholarTags}
+    </#noescape>
+    
     <@view.canonical resource />
 
     <#if local_.head?? && local_.head?is_macro>
@@ -308,7 +310,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         </#if>
     </#if>
 
-    <@view.coin resource/>
+    <span class="Z3988" title="<#noescape>${openUrl}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
@@ -656,49 +658,5 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         </#if>
     </#macro>
 
-    <#macro _googleScholarSection>
-        <#if resource.title?? && resource.resourceCreators?? && resource.date??>
-        <meta name="citation_title" content="${resource.title?html}">
-            <#list resource.primaryCreators?sort_by("sequenceNumber") as resourceCreator>
-            <meta name="citation_author" content="${resourceCreator.creator.properName?html}">
-            </#list>
-        <meta name="citation_date" content="${resource.date?c!''}">
-            <#if resource.dateCreated??>
-            <meta name="citation_online_date" content="${resource.dateCreated?date?string('yyyy/MM/dd')}"></#if>
-            <#list resource.informationResourceFiles as irfile>
-                <#if (irfile.viewable) && irfile.latestPDF?has_content>
-                <meta name="citation_pdf_url" content="<@s.url value='/filestore/${irfile.latestPDF.id?c}/get'/>">
-                </#if>
-            </#list>
-            <#assign publisherFieldName = "DC.publisher" />
-            <#if resource.resourceType.document>
-                <#if document.documentType == 'CONFERENCE_PRESENTATION'>
-                    <#assign publisherFieldName="citation_conference_title" />
-                <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
-                <meta name="citation_journal_title" content="${document.journalName?html}">
-                </#if>
-                <#if document.volume?has_content>
-                <meta name="citation_volume" content="${document.volume}"></#if>
-                <#if document.journalNumber?has_content>
-                <meta name="citation_issue" content="${document.journalNumber}"></#if>
-                <#if document.issn?has_content>
-                <meta name="citation_issn" content="${document.issn}"></#if>
-                <#if document.isbn?has_content>
-                <meta name="citation_isbn" content="${document.isbn}"></#if>
-                <#if document.startPage?has_content>
-                <meta name="citation_firstpage" content="${document.startPage}"></#if>
-                <#if document.endPage?has_content>
-                <meta name="citation_lastpage" content="${document.endPage}"></#if>
-                <#if document.documentType == 'THESIS'>
-                    <#assign publisherFieldName="citation_dissertation_institution" />
-                </#if>
-            </#if>
-            <#if resource.publisher?has_content>
-            <meta name="${publisherFieldName}" content="${resource.publisher.name?html}">
-            </#if>
 
-        <#else>
-        <!--required google scholar fields not available - skipping meta tags -->
-        </#if>
-    </#macro>
 </#escape>
