@@ -161,6 +161,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         find("#loginUsername").val(username);
         find("#loginPassword").val(password);
         find("#btnLogin").click();
+        logger.debug("currentUrl: {}", getCurrentUrl());
         assertTrue(getCurrentUrl().contains("confirm"));
 
     }
