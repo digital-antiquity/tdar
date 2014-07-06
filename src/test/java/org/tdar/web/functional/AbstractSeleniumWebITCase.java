@@ -96,9 +96,9 @@ public abstract class AbstractSeleniumWebITCase {
     private String cachedPageText = null;
 
     private boolean screenshotsAllowed = true;
-    //if true, ignore all  javascript errors during page navigation events
+    // if true, ignore all javascript errors during page navigation events
     private boolean ignoreJavascriptErrors = false;
-    //ignore javascript errors that match that match Patterns in this list
+    // ignore javascript errors that match that match Patterns in this list
     private List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
     private boolean ignoreModals = false;
     private WebDriver driver;
@@ -124,10 +124,12 @@ public abstract class AbstractSeleniumWebITCase {
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
     /**
-     * Custom "By" criteria for use with {@link #find(By)} - matches all elements that are referred by a label with the specified label text.  e.g. <br>
+     * Custom "By" criteria for use with {@link #find(By)} - matches all elements that are referred by a label with the specified label text. e.g. <br>
      * <code>find(withLabel("First Name")).val("Bob")</code>
-     * @param labelText text of the label associated with the element.
-     * @return  By locator instance
+     * 
+     * @param labelText
+     *            text of the label associated with the element.
+     * @return By locator instance
      */
     protected static By withLabel(String labelText) {
         return new ByLabelText(labelText);
@@ -143,9 +145,8 @@ public abstract class AbstractSeleniumWebITCase {
         crowdRestDao.deleteUser(user);
     }
 
-
     /**
-     * The {@link WebDriverEventListener#afterClickOn} element argument  is invalid if the clicked-on element caused the browser to navigate to new page, so we
+     * The {@link WebDriverEventListener#afterClickOn} element argument is invalid if the clicked-on element caused the browser to navigate to new page, so we
      * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
      */
     private Set<WebElement> clickElems = new HashSet<>();
@@ -202,7 +203,9 @@ public abstract class AbstractSeleniumWebITCase {
 
         @Override
         public void onException(Throwable throwable, WebDriver driver) {
-            logger.error("hey there was an error", throwable);
+            if (!throwable.getMessage().contains("n is null")) {
+                logger.error("hey there was an error", throwable);
+            }
             takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
         }
 
@@ -237,7 +240,7 @@ public abstract class AbstractSeleniumWebITCase {
     };
 
     /**
-     * This event fires  after the webdriver executes a command that will cause navigation (e.g. link click, back button, gotoPage())
+     * This event fires after the webdriver executes a command that will cause navigation (e.g. link click, back button, gotoPage())
      * but before the navigation occurs.
      */
     protected void beforePageChange() {
@@ -247,7 +250,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * This event fires  after the browser navigates to a location following a command from webdriver (e.g. link click, back button, gotoPage())
+     * This event fires after the browser navigates to a location following a command from webdriver (e.g. link click, back button, gotoPage())
      */
     protected void afterPageChange() {
         if (ignoreModals) {
@@ -268,8 +271,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * On tdar edit pages, the floating page navigation bar may obscure an underlying form element.  In practice, a user will know to scroll until
-     * the element is visible.  However,  selenium will deem the element unclickable and throw an exception if we try to modify it.  This hack
+     * On tdar edit pages, the floating page navigation bar may obscure an underlying form element. In practice, a user will know to scroll until
+     * the element is visible. However, selenium will deem the element unclickable and throw an exception if we try to modify it. This hack
      * removes the floating nav header to avoid that scenario.
      *
      * //fixme: instead, use fluentWait with ElementToBeVisible condition & sleeper that scrolls up 5px per sleep
@@ -277,14 +280,13 @@ public abstract class AbstractSeleniumWebITCase {
     protected void applyEditPageHacks() {
         try {
             executeJavascript("var n=document.getElementById('subnavbar');n.parentNode.removeChild(n)");
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     protected enum Browser {
         FIREFOX, CHROME, SAFARI, IE, PHANTOMJS;
     }
-    
-
 
     @Before
     public void before() throws IOException {
@@ -293,7 +295,7 @@ public abstract class AbstractSeleniumWebITCase {
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-        //typekit & google-analytics  errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
+        // typekit & google-analytics errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
         WebDriver driver = null;
@@ -334,16 +336,16 @@ public abstract class AbstractSeleniumWebITCase {
                 ChromeDriverService service = new ChromeDriverService
                         .Builder().usingDriverExecutable(app).usingPort(9515).withEnvironment(environment).build();
                 ChromeOptions copts = new ChromeOptions();
-//                copts.setExperimentalOption("autofill.enabled",false);
-                
+                // copts.setExperimentalOption("autofill.enabled",false);
+
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
                 File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
-                //                File dir = new File("src/test/resources/c1");
+                // File dir = new File("src/test/resources/c1");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
-                
-                //http://peter.sh/experiments/chromium-command-line-switches/
-                //ignore-certificate-errors ? 
+
+                // http://peter.sh/experiments/chromium-command-line-switches/
+                // ignore-certificate-errors ?
                 copts.addArguments(
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + profilePath, // use specific profile path (random by default?)
@@ -538,7 +540,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Wait for specified css selector to match at least one element.  Uses default timeout.
+     * Wait for specified css selector to match at least one element. Uses default timeout.
+     * 
      * @param selector
      * @return
      */
@@ -554,9 +557,10 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Wait for specified number of seconds.  Use this as a last resort. Consider using
-     * {@link #waitFor(String)} or {@link #waitForPageload()}
-     * @param timeInSeconds  seconds to wait before timeout
+     * Wait for specified number of seconds. Use this as a last resort. Consider using {@link #waitFor(String)} or {@link #waitForPageload()}
+     * 
+     * @param timeInSeconds
+     *            seconds to wait before timeout
      */
     public void waitFor(int timeInSeconds) {
         try {
@@ -568,7 +572,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Return WebElementSelection containing all elements mathing the specified css selector.
-     * @param selector css selector
+     * 
+     * @param selector
+     *            css selector
      * @return WebElementSelection containing zero-or-more elments
      */
     public WebElementSelection find(String selector) {
@@ -577,6 +583,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Return WebElementSelection containing all elements mathing the specified css selector.
+     * 
      * @param by
      * @return
      */
@@ -834,6 +841,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Click a button with the assumption that it causes a form submission
+     * 
      * @param cssSelector
      */
     public void submitForm(String cssSelector) {
@@ -846,7 +854,8 @@ public abstract class AbstractSeleniumWebITCase {
      * Block until document loaded (readystate === true). This is usually unnecesssary since most click() actions
      * block anyway. Use it for situations where an event handler causes navigation (e.g. jquery validate success)
      * 
-     * @param timeout amount of time(in seconds) to wait before throwing timeout exception
+     * @param timeout
+     *            amount of time(in seconds) to wait before throwing timeout exception
      */
     private void waitForPageload(int timeout) {
         // if called too soon, page navigation might not have happened yet - give it a second.
@@ -875,7 +884,7 @@ public abstract class AbstractSeleniumWebITCase {
         return errors;
     }
 
-    public final void  setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
+    public final void setIgnoreJavascriptErrors(boolean ignoreJavascriptErrors) {
         this.ignoreJavascriptErrors = ignoreJavascriptErrors;
     }
 
@@ -949,9 +958,9 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-
     /**
      * when indicates whether the test should (try to) ignore modal windows that appear during the course of test.
+     * 
      * @return
      */
     public boolean isIgnoreModals() {
@@ -1112,6 +1121,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Convenience wrapper for {@link #setJavascriptIgnorePatterns(List<Pattern>)}.
+     * 
      * @param patterns
      */
     public final void setJavascriptIgnorePatterns(Pattern... patterns) {
@@ -1121,8 +1131,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      * Set the list of javascript error ignore patterns. The test will check for outstanding javascript errors whenever the test detects a page
-     * navigation event. If  {@link #getIgnoreJavascriptErrors()} is <code>false</code> and the test detects javascript error messages that are not matched
-     * by the list of patterns,  this test will call {@link org.junit.Assert#fail()}
+     * navigation event. If {@link #getIgnoreJavascriptErrors()} is <code>false</code> and the test detects javascript error messages that are not matched
+     * by the list of patterns, this test will call {@link org.junit.Assert#fail()}
+     * 
      * @param patterns
      */
     public final void setJavascriptIgnorePatterns(List<Pattern> patterns) {
@@ -1132,7 +1143,6 @@ public abstract class AbstractSeleniumWebITCase {
     public final List<Pattern> getJavascriptIgnorePatterns() {
         return jserrorIgnorePatterns;
     }
-
 
     // return true if this is a legit error (i.e something we aren't ignoring)
     public boolean isLegitJavascriptError(String error) {
@@ -1156,7 +1166,7 @@ public abstract class AbstractSeleniumWebITCase {
         find(By.name(selectField)).val(permissions.name());
 
     }
-    
+
     public void clearPageCache() {
         cachedPageText = null;
     }
@@ -1170,8 +1180,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Tell the webdriver to switch to the next window amongst the current list of windows.  The next window is determined by the ascending sort-order of
-     * the window handle names.  If current window handle is at the end of the list, this method returns the first instead.
+     * Tell the webdriver to switch to the next window amongst the current list of windows. The next window is determined by the ascending sort-order of
+     * the window handle names. If current window handle is at the end of the list, this method returns the first instead.
      *
      * @return value of previously active window handle.
      * */
@@ -1189,10 +1199,11 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Spawn a new browser window using the same webdriver instance.  Note that the active window handle does not change after this method creates
-     * the new window.  To switch to the new window,  call getDriver().switchTo().window()
+     * Spawn a new browser window using the same webdriver instance. Note that the active window handle does not change after this method creates
+     * the new window. To switch to the new window, call getDriver().switchTo().window()
      *
      * Fun Fact: The WebDriver API lacks this feature because the Selenium devteam hates you.
+     * 
      * @return handle of new window.
      */
     public String spawnWindow() {
@@ -1200,28 +1211,31 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Spawn a "private browsing".  This is a handy way to login with different credentials on the same webdriver instance.  Note that
-     * all private windows share the same cookies.  So you the effective maximum number of unique sessions per webdriver instance is two;
+     * Spawn a "private browsing". This is a handy way to login with different credentials on the same webdriver instance. Note that
+     * all private windows share the same cookies. So you the effective maximum number of unique sessions per webdriver instance is two;
+     * 
      * @return
      */
     public String spawnPrivateWindow() {
-        if(currentBrowser != Browser.FIREFOX) fail("not implemented for " + currentBrowser);
+        if (currentBrowser != Browser.FIREFOX)
+            fail("not implemented for " + currentBrowser);
         return spawnWindow(Keys.chord(TestConfiguration.OS.CURRENT.getMetaKey(), "P"));
     }
 
     /**
      * send specified key combo to current window and assert that the browser created a new window
+     * 
      * @param chord
      * @return
      */
-    private String spawnWindow(String chord)  {
+    private String spawnWindow(String chord) {
         List<String> origHandles = new ArrayList<>();
         List<String> newHandles = new ArrayList<>();
         origHandles.addAll(driver.getWindowHandles());
 
-        //fixme: is there a platform-independent way to get teh appropriate meta key (ctrl for windows, command for windows, meta for unix)
+        // fixme: is there a platform-independent way to get teh appropriate meta key (ctrl for windows, command for windows, meta for unix)
         find("body").sendKeys(chord);
-        //hopefully this spawned a new window
+        // hopefully this spawned a new window
         newHandles.addAll(driver.getWindowHandles());
         newHandles.removeAll(origHandles);
         assertThat("new window should have been created", newHandles, is(not(empty())));
@@ -1229,6 +1243,5 @@ public abstract class AbstractSeleniumWebITCase {
         return newHandle;
 
     }
-
 
 }
