@@ -200,22 +200,28 @@
         <to>/sitemap/sitemap?filename=sitemap$1</to>
     </rule>
 
+
+    <rule>
+        <from>^/unapi/(.+)/(\d+)$</from>
+        <to>/unapi/$1?id=$21</to>
+    </rule>
+
     <rule>
         <from>
-            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
+            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|json|xml)\??(.*)$
         </from>
         <to>/$1/$3?id=$2</to>
         <!-- was &amp;$3 aat end -->
     </rule>
     <outbound-rule>
         <from>
-            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
+            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping)\?id=([0-9]+)$
         </from>
         <to>/$1/$3/$2</to>
     </outbound-rule>
     <outbound-rule>
         <from>
-            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)(.+)$
+            ^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(admin|view|edit|xml|upload|delete|columns|citations|mapping)\?id=([0-9]+)(.+)$
         </from>
         <to>/$1/$3/$2?$4</to>
     </outbound-rule>

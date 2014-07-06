@@ -25,7 +25,7 @@ public class UnAPIITCase extends AbstractControllerITCase {
         assertEquals("formats", unapiController.execute());
         unapiController.setFormat("oai_dc");
         assertEquals("asformat", unapiController.execute());
-        assertEquals("/document/" + DOCUMENT_ID + "/dc", unapiController.getFormatUrl());
+        assertEquals("/unapi/dc/" + DOCUMENT_ID, unapiController.getFormatUrl());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class UnAPIITCase extends AbstractControllerITCase {
         assertEquals("formats", unapiController.execute());
         unapiController.setFormat("mods");
         assertEquals("asformat", unapiController.execute());
-        assertEquals("/document/" + DOCUMENT_ID + "/mods", unapiController.getFormatUrl());
+        assertEquals("/unapi/mods/" + DOCUMENT_ID, unapiController.getFormatUrl());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class UnAPIITCase extends AbstractControllerITCase {
         UnapiController unapiController = generateNewController(UnapiController.class);
         unapiController.setId(DOCUMENT_ID);
         assertEquals("formats", unapiController.execute());
-        unapiController.setFormat("dc");
+        unapiController.setFormat("db");
         assertEquals("noformat", unapiController.execute());
         unapiController.setId(DOCUMENT_ID + 10000);
         assertEquals(TdarActionSupport.NOT_FOUND, unapiController.execute());

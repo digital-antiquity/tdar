@@ -84,15 +84,10 @@ import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.transform.DcTransformer;
 import org.tdar.transform.MetaTag;
-import org.tdar.transform.ModsTransformer;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
-
-import edu.asu.lib.dc.DublinCoreDocument;
-import edu.asu.lib.mods.ModsDocument;
 
 /**
  * $Id$
@@ -111,8 +106,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private static final String REPROCESS = "reprocess";
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
     public static final String ADMIN = "admin";
-    public static final String DC = "dc";
-    public static final String MODS = "mods";
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -169,9 +162,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<String> otherKeywords;
 
-    private ModsDocument modsDocument;
     private Person submitter;
-    private DublinCoreDocument dcDocument;
     private List<String> temporalKeywords;
     private List<String> geographicKeywords;
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
@@ -491,26 +482,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isViewable() throws TdarActionException {
-        if (getResource().isActive()
-                || userCan(InternalTdarRights.VIEW_ANYTHING) || getAuthenticationAndAuthorizationService().canView(getAuthenticatedUser(), getPersistable())
-                || isEditable()) {
-            getLogger().trace("{} is viewable: {}", getId(), getPersistableClass().getSimpleName());
-            return true;
-        }
+        boolean result = getAuthenticationAndAuthorizationService().isResourceViewable(getAuthenticatedUser(), getResource());
+        if (result == false) {
+            if (getResource().isDeleted()) {
+                getLogger().debug("resource not viewable because it is deleted: {}", getResource());
+                throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
+            }
 
-        if (getResource().isDeleted()) {
-            getLogger().debug("resource not viewable because it is deleted: {}", getPersistable());
-            throw new TdarActionException(StatusCode.GONE, getText("abstractResourceController.resource_deleted"));
-        }
-        // don't judge me I hate this code too.
-        if (getResource().isDraft()) {
-            getLogger().trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName(DRAFT),
-                    getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
-        }
+            if (getResource().isDraft()) {
+                getLogger().trace("resource not viewable because it is draft: {}", getResource());
+                throw new TdarActionException(StatusCode.OK.withResultName(DRAFT),
+                        getText("abstractResourceController.this_record_is_in_draft_and_is_only_available_to_authorized_users"));
+            }
 
-        return false;
+        }
+        return result;
     }
+
 
     protected void saveKeywords() {
         getLogger().debug("siteNameKeywords=" + siteNameKeywords);
@@ -904,41 +892,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return uncontrolledCultureKeywords;
     }
 
-    public ModsDocument getModsDocument() {
-        if (modsDocument == null) {
-            obfuscationService.obfuscate(getResource(), getAuthenticatedUser());
-            modsDocument = ModsTransformer.transformAny(getResource());
-        }
-        return modsDocument;
-    }
-
-    @SkipValidation
-    @Action(value = MODS, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "modsDocument", "formatOutput", "true" })
-    })
-    public String viewMods() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-        // checkValidRequest(UserIs.ANONYMOUS, UsersCanModify.NONE, isEditable(), InternalTdarRights.VIEW_ANYTHING);
-        return SUCCESS;
-    }
-
-    public DublinCoreDocument getDcDocument() {
-        if (dcDocument == null) {
-            obfuscationService.obfuscate(getResource(), getAuthenticatedUser());
-            dcDocument = DcTransformer.transformAny(getResource());
-        }
-        return dcDocument;
-    }
-
-    @SkipValidation
-    @Action(value = DC, interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-            @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "dcDocument", "formatOutput", "true" })
-    })
-    public String viewDc() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-        // checkValidRequest(UserIs.ANONYMOUS, UsersCanModify.NONE, isEditable(), InternalTdarRights.VIEW_ANYTHING);
-        return SUCCESS;
-    }
 
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer

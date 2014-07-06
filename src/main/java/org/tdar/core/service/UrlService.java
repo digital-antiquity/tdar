@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /*
@@ -153,6 +154,20 @@ public class UrlService {
     private static String getAttribute(HttpServletRequest servletRequest, String attribute) {
         Object attr = servletRequest.getAttribute(attribute);
         return (String) attr;
+    }
+
+    public static String constructUnAPIFormatUrl(Resource r, String format) {
+        StringBuilder sb = new StringBuilder("/unapi");
+
+        if (format.equalsIgnoreCase("oai_dc") || format.equalsIgnoreCase("dc")) {
+            sb.append("/dc");
+        } else if (format.equalsIgnoreCase("mods")) {
+            sb.append("/mods");
+        } else {
+            return null;
+        }
+        sb.append("/").append(r.getId());
+        return sb.toString();
     }
 
 }
