@@ -1,9 +1,12 @@
 package org.tdar.struts.action.download;
 
+import java.io.InputStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -12,12 +15,13 @@ import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.AntiSpamHelper;
+import org.tdar.struts.data.DownloadHandler;
 import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.DownloadUserRegistration;
 
 import com.opensymphony.xwork2.Preparable;
 
-public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
+public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable, DownloadHandler {
 
     private static final long serialVersionUID = -1831798412944149017L;
     @Autowired
@@ -35,12 +39,22 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
     public static final String GET = "get";
+    public static final String FORBIDDEN = "forbidden";
     public static final String DOWNLOAD_ALL_LANDING = "show-download-landing";
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private Long informationResourceFileVersionId;
     private Long informationResourceId;
+    private transient InputStream inputStream;
+    private String contentType;
+    private String fileName;
+    private Long contentLength;
+    private Integer version;
+    private boolean coverPageIncluded = true;
+    private VersionType type;
+    private String dispositionPrefix = "";
 
-    public static final String FORBIDDEN = "forbidden";
+
+    
     private InformationResource informationResource;
     private InformationResourceFileVersion informationResourceFileVersion;
 
@@ -130,4 +144,76 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         }
     }
 
+    
+
+    @Override
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public VersionType getType() {
+        return type;
+    }
+
+    public void setType(VersionType type) {
+        this.type = type;
+    }
+
+    public String getDispositionPrefix() {
+        return dispositionPrefix;
+    }
+
+    @Override
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
+
+    @Override
+    public void setContentType(String mimeType) {
+        this.contentType = mimeType;
+    }
+
+    @Override
+    public void setContentLength(long length) {
+        this.contentLength = length;
+    }
+
+    @Override
+    public void setDispositionPrefix(String string) {
+        this.dispositionPrefix = string;
+    }
+
+    @Override
+    public boolean isCoverPageIncluded() {
+        return coverPageIncluded;
+    }
+
+    public void setCoverPageIncluded(boolean coverPageIncluded) {
+        this.coverPageIncluded = coverPageIncluded;
+    }
 }

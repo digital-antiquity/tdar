@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.download.DownloadController;
+import org.tdar.struts.action.download.UnauthenticatedDownloadController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -194,7 +195,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testThumbnailControllerInvalid() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupBadFullUserDoc();
-        DownloadController controller = generateNewInitializedController(DownloadController.class);
+        UnauthenticatedDownloadController controller = generateNewInitializedController(UnauthenticatedDownloadController.class);
         InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
         InformationResourceFileVersion currentVersion = irFile.getCurrentVersion(VersionType.WEB_SMALL);
         logger.info("{}", currentVersion.getId());
@@ -211,7 +212,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testThumbnailController() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
-        DownloadController controller = generateNewInitializedController(DownloadController.class);
+        UnauthenticatedDownloadController controller = generateNewInitializedController(UnauthenticatedDownloadController.class);
         InformationResourceFile irFile = doc.getInformationResourceFiles().iterator().next();
         if ((irFile.getInformationResourceFileVersions().size() == 3) && (irFile.getCurrentVersion(VersionType.WEB_SMALL) == null)) {
             Assert.fail("Transient failure due to wrong JPEG Processor being used by PDFBox");
