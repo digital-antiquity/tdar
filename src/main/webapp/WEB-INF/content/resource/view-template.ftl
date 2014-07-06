@@ -203,7 +203,7 @@
                         <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
                         <#if column.defaultOntology?has_content || (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
-                        <#if column.columnEncodingType?has_content && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
+                        <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
                         <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
                         <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
                         ${column.displayName}
@@ -301,10 +301,10 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
 </div>
 <hr/>
 
-    <#if resource.resourceType == 'CODING_SHEET' ||  resource.resourceType == 'ONTOLOGY'>
+    <#if resource.resourceType.supporting >
         <@view.categoryVariables />
     </#if>
-    <#if resource.resourceType != 'PROJECT'>
+    <#if !resource.resourceType.project >
         <#if licensesEnabled?? &&  licensesEnabled>
             <@view.license />
         </#if>

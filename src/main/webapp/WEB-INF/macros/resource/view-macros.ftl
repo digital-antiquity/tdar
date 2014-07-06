@@ -84,7 +84,7 @@ View freemarker macros
         <#if (version.viewable)>
         <a href="<@s.url value='/filestore/download?informationResourceFileVersionId=${version.id?c}'/>"
            onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
-           <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
+           <#if resource.resourceType.image>target='_blank'</#if>
            title="${version.filename?html}">
             <@common.truncate version.filename 65 />
         </a><#if newline><br/></#if>
@@ -120,7 +120,7 @@ View freemarker macros
             <#if ableToReprocessDerivatives>
             <h2> Admin File Actions</h2>
             <ul>
-                <#if resource.resourceType=='DATASET'>
+                <#if resource.resourceType.dataTableSupported>
                 <li><a href="<@s.url value='/${resource.urlNamespace}/reimport?id=${resource.id?c}' />">Reimport this dataset</a></li>
                 <li><a href="<@s.url value='/${resource.urlNamespace}/retranslate?id=${resource.id?c}' />">Retranslate this dataset</a></li>
                 </#if>
@@ -457,7 +457,7 @@ View freemarker macros
     <#macro pageStatusCallout>
         <#local status="danger">
         <#if (persistable.status)?has_content && !persistable.active >
-            <#if persistable.status == 'DRAFT'>
+            <#if persistable.status.draft >
                 <#local status="info"/>
             </#if>
 

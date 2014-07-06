@@ -51,4 +51,7 @@ public enum Status implements HasLabel, Localizable {
         }
     }
 
+    public boolean isDraft() {
+        return this == DRAFT;
+    }
 }
