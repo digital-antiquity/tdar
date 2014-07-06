@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -93,6 +92,7 @@ public class DownloadController extends AbstractDownloadController implements Do
     @Action(value = "download",
             results = {
                     @Result(name = SUCCESS, type = "redirect", location = GET),
+                    @Result(name = DOWNLOAD_ALL, type = "redirect", location = DOWNLOAD_ALL_LANDING),
                     @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") },
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     @HttpsOnly
@@ -101,7 +101,10 @@ public class DownloadController extends AbstractDownloadController implements Do
             return ERROR;
         }
         if (isAuthenticated()) {
-            return SUCCESS;
+            if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
+                return SUCCESS;
+            }
+            return DOWNLOAD_ALL;
         }
         getSessionData().setInformationResourceFileVersionId(getInformationResourceFileVersionId());
         getSessionData().setInformationResourceId(getInformationResourceId());

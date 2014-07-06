@@ -56,7 +56,6 @@
         <to type="redirect">/browse/collections</to>
     </rule>
 
-
     <rule>
         <from>^/filestore/?$</from>
         <to type="redirect">/</to>
