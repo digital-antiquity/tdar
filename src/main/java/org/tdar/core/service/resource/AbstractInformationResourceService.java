@@ -295,6 +295,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
+        getDao().delete(columnsToRemove);
         dataset.getDataTables().removeAll(tablesToRemove);
     }
 
