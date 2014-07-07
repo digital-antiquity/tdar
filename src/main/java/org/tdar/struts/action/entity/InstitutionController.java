@@ -14,8 +14,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.XmlService;
-import org.tdar.struts.action.AbstractPersistableController;
 
 @Component
 @Scope("prototype")

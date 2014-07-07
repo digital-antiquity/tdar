@@ -34,8 +34,6 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
-import com.gargoylesoftware.htmlunit.WebConsole.Logger;
-
 @SuppressWarnings("serial")
 @Namespace("/api")
 @Component

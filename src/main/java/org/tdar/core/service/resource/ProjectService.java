@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,8 +29,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.XmlService;
 import org.tdar.utils.jaxb.JsonProjectLookupFilter;
-
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 /**
  * $Id$

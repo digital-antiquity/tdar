@@ -41,7 +41,6 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
