@@ -50,11 +50,11 @@
 <div id="async-errors">
 </div>
 <script>
-    var TIMEOUT = 1500; //2fps is all we need.
+    var TIMEOUT = 1500;
     var pollingUrl = "<@s.url value="/cart/${invoice.id?c}/polling-check"/>";
     $(function () {
-        $("#btnOpenPaymentWindow").click(TDAR.pricing.initPolling);
-        //TDAR.pricing.initPolling();
+        //$("#btnOpenPaymentWindow").click(TDAR.pricing.initPolling).click();
+        TDAR.pricing.initPolling();
     });
 
 

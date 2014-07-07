@@ -112,7 +112,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
      * @throws TdarActionException
      */
     @SkipValidation
-    @WriteableSession
+        @WriteableSession
     // @GetOnly
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
@@ -175,13 +175,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
      * pending transaction.
      */
     // fixme: move to CartApiController
-    @SkipValidation
-    @PostOnly
-    @Action(value = PROCESS_EXTERNAL_PAYMENT_RESPONSE,
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = INVOICE, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
-            })
+//    @SkipValidation
+//    @PostOnly
+//    @Action(value = PROCESS_EXTERNAL_PAYMENT_RESPONSE,
+//            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+//            results = {
+//                    @Result(name = INVOICE, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
+//            })
     public String processPaymentResponse() throws TdarActionException {
         try {
             getLogger().trace("PROCESS RESPONSE {}", getParameters());
