@@ -89,6 +89,12 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
      * Send notifications to a user following a successful transaction
      */
     private void handlePurchaseNotifications() {
+        //for now, we only care about sending notification if the transaction was successful
+        if(invoice.getTransactionStatus() != Invoice.TransactionStatus.TRANSACTION_SUCCESSFUL) {
+            getLogger().info("invoice transaction not successful:{}", invoice);
+            return;
+        }
+
         //at the very least, send invoice notification
         TdarUser recipient = invoice.getOwner();
 
