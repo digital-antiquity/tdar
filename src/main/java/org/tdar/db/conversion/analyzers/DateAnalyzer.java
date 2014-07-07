@@ -82,6 +82,10 @@ public class DateAnalyzer implements ColumnAnalyzer {
             if (!StringUtils.equals(candidate.getText(), value)) {
                 result = null;
             }
+            
+            if (value.matches("(\\d+)\\-(\\d+)")) {
+                return null;
+            }
             logger.trace("== result: {} ", result);
         }
         return result;
