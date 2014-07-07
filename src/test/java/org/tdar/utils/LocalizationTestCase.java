@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -114,6 +115,21 @@ public class LocalizationTestCase {
         }
     }
 
+    @Test
+    public void testAvoidDuplicateKeys() {
+        MessageHelper freemarkerBundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-freemarker-messages"));
+        MessageHelper bundle = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+        Enumeration<String> keys = bundle.getKeys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            if (freemarkerBundle.containsKey(key)) {
+                fail("duplicate key in bundles:" + key);
+            }
+            
+        }
+        
+    }
+    
     @Test
     public void testFreemarkerLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
         Pattern pattern = Pattern.compile(("^.+(\\.?localText|s\\.text)(\\s*(name=)?)\"([^\"]+)\".+"));
