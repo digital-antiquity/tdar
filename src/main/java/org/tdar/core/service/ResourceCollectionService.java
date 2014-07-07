@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotNullPredicate;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.functors.NotNullPredicate;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -388,8 +388,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             current.clear();
         }
 
-        CollectionUtils.filter(incoming_, NotNullPredicate.INSTANCE);
-
+        Iterator<ResourceCollection> inc = incoming_.iterator();
+        while (inc.hasNext()) {
+            if (inc.next() == null) {
+                inc.remove();
+            }
+        }
         List<ResourceCollection> toRemove = new ArrayList<ResourceCollection>();
         Iterator<ResourceCollection> iterator = current.iterator();
         while (iterator.hasNext()) {

@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
