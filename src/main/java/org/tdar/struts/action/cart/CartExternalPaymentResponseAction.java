@@ -30,7 +30,7 @@ import java.util.Map;
  */
 @Component
 @Scope("prototype")
-@Namespace("cart")
+@Namespace("/cart")
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
 
     private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
