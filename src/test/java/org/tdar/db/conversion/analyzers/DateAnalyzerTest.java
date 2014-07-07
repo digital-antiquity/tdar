@@ -5,9 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DateAnalyzerTest {
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     private String[] validDates = {
             "1st June, 2003",
@@ -66,6 +70,16 @@ public class DateAnalyzerTest {
         assertTrue("DateAnalyzer.getType() should return DataTableColumnType.DATE, not " + type, DataTableColumnType.DATE.equals(type));
     }
 
+    @Test
+    public void testInvalidMonthDay() {
+        boolean result = da.analyze("9-01", null, 1);
+        logger.debug("result: {}", result);
+        assertFalse(result);
+        result = da.analyze("9-01-2014", null, 1);
+        logger.debug("result: {}", result);
+        assertTrue(result);
+    }
+    
     private void testLength(final String target, final int expectation) {
         da.analyze(target, null, 1);
         final int length = da.getLength();
