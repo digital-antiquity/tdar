@@ -9,13 +9,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -52,6 +54,7 @@ import org.tdar.struts.data.FileProxy;
 
 public abstract class AbstractInformationResourceService<T extends InformationResource, R extends ResourceDao<T>> extends ServiceInterface.TypedDaoBase<T, R> {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     // FIXME: this should be injected
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
 
@@ -83,12 +86,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
         for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
-            getLogger().debug("Creating new version {}", additionalVersion);
+            logger.debug("Creating new version {}", additionalVersion);
             createVersionMetadataAndStore(irFile, additionalVersion);
         }
         getDao().saveOrUpdate(irFile);
         resource.add(irFile);
-        getLogger().debug("all versions for {}", irFile);
+        logger.debug("all versions for {}", irFile);
     }
 
     /*
@@ -97,7 +100,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
         InformationResourceFile irFile = getDao().find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
-            getLogger().error("{} had no findable InformationResourceFile.id set on it", proxy);
+            logger.error("{} had no findable InformationResourceFile.id set on it", proxy);
             // FIXME: throw an exception?
         }
         return irFile;
@@ -108,10 +111,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * which is likely a controller.
      */
     @Transactional
-    public void importFileProxiesAndProcessThroughWorkflow(T resource, TdarUser user, Long ticketId, ActionMessageErrorSupport listener,
+    public void importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
             List<FileProxy> fileProxiesToProcess) throws IOException {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
-            getLogger().debug("Nothing to process, returning.");
+            logger.debug("Nothing to process, returning.");
             return;
         }
 
@@ -131,7 +134,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             irFiles.add(irFile);
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-            getLogger().trace("version: {} proxy: {} ", version, proxy);
+            logger.trace("version: {} proxy: {} ", version, proxy);
             getDao().saveOrUpdate(irFile);
             switch (version.getFileVersionType()) {
                 case UPLOADED:
@@ -140,7 +143,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     filesToProcess.add(version);
                     break;
                 default:
-                    getLogger().debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+                    logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
             }
         }
 
@@ -148,7 +151,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (irFiles.size() > 0) {
             addExistingCompositeFilesForProcessing(resource, filesToProcess, irFiles);
         }
-
         processFiles(filesToProcess, resource.getResourceType().isCompositeFilesEnabled());
 
         /*
@@ -218,7 +220,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 String name = FilenameUtils.getBaseName(fileName);
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
-                getLogger().info("removing {}", dt);
+                logger.info("removing {}", dt);
                 cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
                 // dataset.getDataTableByGenericName(name)
                 break;
@@ -234,14 +236,14 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional
     public void processMetadataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
         for (FileProxy proxy : proxies) {
-            getLogger().debug("applying {} to {}", proxy, informationResource);
+            logger.debug("applying {} to {}", proxy, informationResource);
             // will be reassigned in a REPLACE or ADD_DERIVATIVE
             InformationResourceFile irFile = new InformationResourceFile();
             irFile.setFilename(proxy.getFilename());
             if (proxy.getAction().requiresExistingIrFile()) {
                 irFile = findInformationResourceFile(proxy);
                 if (irFile == null) {
-                    getLogger().error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
+                    logger.error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
                     return;
                 }
             }
@@ -268,7 +270,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     }
                     break;
                 case NONE:
-                    getLogger().debug("Taking no action on {} with proxy {}", informationResource, proxy);
+                    logger.debug("Taking no action on {} with proxy {}", informationResource, proxy);
                     break;
                 default:
                     break;
@@ -283,9 +285,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      */
     @Transactional(readOnly = true)
     public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
-        getLogger().info("deleting unmerged tables: {}", tablesToRemove);
+        logger.info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>(columnsToRemove);
-
         for (DataTable table : tablesToRemove) {
             if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
                 columnsToUnmap.addAll(table.getDataTableColumns());
@@ -322,7 +323,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         if (sequenceNumber == null) {
-            getLogger().warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
+            logger.warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
         }
         else {
             irFile.setSequenceNumber(sequenceNumber);
@@ -335,12 +336,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private void incrementVersionNumber(InformationResourceFile irFile) {
         irFile.incrementVersionNumber();
         irFile.clearStatus();
-        getLogger().info("incremented version number and reset download and status for irfile: {}", irFile, irFile.getLatestVersion());
+        logger.info("incremented version number and reset download and status for irfile: {}", irFile, irFile.getLatestVersion());
     }
 
     /*
      * Given an @link InformationResource, find all of the latest versions and reprocess them.
      */
+    @SuppressWarnings("deprecation")
     @Transactional(readOnly = false)
     public void reprocessInformationResourceFiles(T ir, ActionMessageErrorSupport listener) throws Exception {
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
