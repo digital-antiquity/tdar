@@ -13,6 +13,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -42,10 +43,20 @@ public class CartBillingAccountController extends AbstractCartController {
     @Autowired
     private transient AccountService accountService;
 
+    @Autowired
+    private transient InvoiceService invoiceService;
+
     @Override
     public void prepare() {
         super.prepare();
-        selectedAccount = getGenericService().find(Account.class, id);
+
+        //the account id may have been set already by the "add invoice" link on /billing/{id}/view
+        if(id == -1L && getInvoice() != null) {
+            selectedAccount = invoiceService.getAccountForInvoice(getInvoice());
+        } else {
+            selectedAccount = getGenericService().find(Account.class, id);
+        }
+
 
         TdarUser owner = getInvoice().getOwner();
         if(owner == null) {
