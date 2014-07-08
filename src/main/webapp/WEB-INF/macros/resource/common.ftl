@@ -44,16 +44,6 @@ Common macros used in multiple contexts
 <#--define global getBaseURI(), getURI(path), TDAR.uri -->
     <#macro baseUriJavascript>
     if(typeof TDAR === "undefined") {var TDAR = {};}
-    //FIXME: replace occurances with TDAR.uri (TDAR-3830)
-    //Return the application base URL, including context path
-    function getBaseURI() {
-    return "<@s.url value='/' />";
-    }
-
-    //return absolute URL to for the specified relative path
-    function getURI(path) {
-    return getBaseURI() + path;
-    }
 
     //return absolute URL for the specified relative path,  including context path.
     //if no path specified, return the base URL.

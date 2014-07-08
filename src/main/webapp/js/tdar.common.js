@@ -635,7 +635,7 @@ TDAR.common = function () {
             var $row = $select.closest('.controls-row');
             $('.view-project', $row).remove();
             if ($select.val().length > 0 && $select.val() !== "-1") {
-                var href = getURI('project/' + $select.val());
+                var href = TDAR.uri('project/' + $select.val());
                 var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
                 $row.append($button);
             }
@@ -815,7 +815,7 @@ TDAR.common = function () {
         var $this = $(this);
         var resourceId = $this.attr("resource-id");
         var state = $this.attr("bookmark-state");
-        var $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+        var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
         var $icon = $(".bookmark-icon", $this);
         $icon.hide();
@@ -834,7 +834,7 @@ TDAR.common = function () {
         }
         var newclass = "tdar-icon-" + newstate;
 
-        $.getJSON(getBaseURI() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.getJSON(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();
@@ -1089,7 +1089,7 @@ TDAR.common = function () {
         var $categoryIdSelect = $(categoryIdSelect);
         var $subCategoryIdSelect = $(subCategoryIdSelect);
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(getBaseURI() + "resource/ajax/column-metadata-subcategories", {
+        $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data_, textStatus) {
             var data = jQuery.parseJSON(data_);

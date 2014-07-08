@@ -386,7 +386,7 @@ TDAR.autocomplete = (function () {
                 $elem.data('responseHolder', responseHolder);
 
                 var ajaxRequest = {
-                    url: getBaseURI() + options.url,
+                    url: TDAR.uri() + options.url,
                     dataType: "jsonp",
                     data: requestData,
                     success: function (data) {
@@ -652,10 +652,6 @@ TDAR.autocomplete = (function () {
                 description = item.description;
             }
             var link = "";
-            if (item.urlNamespace) {
-                // link = "<b onClick=\"openWindow('"+ getBaseURI() +
-                // item.urlNamespace + "/view/" + item.id +"\')\">view</b>";
-            }
             //double-encode on custom render
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
         };
