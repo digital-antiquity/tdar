@@ -103,10 +103,10 @@ View freemarker macros
     <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
     <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
         <#if resource.hasConfidentialFiles() >
-        Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+            Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
         <a href="<@s.url value='/filestore/download?informationResourceId=${resource.id?c}'/>" target="_blank"
-           onclick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"
+           onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
            title="download all as zip">Download All</a>
         </#if>
     </#macro>

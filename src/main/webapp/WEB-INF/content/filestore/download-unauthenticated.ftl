@@ -1,19 +1,26 @@
 <#escape _untrusted as _untrusted?html>
-<#assign download ="/filestore/${informationResourceFileVersion.id?c}" />
+<#if informationResourceFileVersion?has_content>
+    <#assign title>${informationResourceFileVersion.fileName!"undefined"?html}</#assign>
+    <#assign filename>${informationResourceFileVersion.fileName!"undefined"?html}</#assign>
+    <#assign download ="/filestore/get?informationResourceFileVersionId=${informationResourceFileVersion.id?c}" />
+<#else>
+    <#assign title>${informationResource.title!"undefined"?html}</#assign>
+    <#assign download ="/filestore/show-download-landing?informationResourceId=${informationResource.id?c}" />
+</#if>
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <html>
 <head>
-    <title>Download: ${informationResourceFileVersion.fileName!"undefined"?html}</title>
+    <title>Download: ${title}</title>
 </head>
 <body>
 <div class="hero-unit">
-    <h1>Welcome Back</h1>
+    <h1>Please Login or Register to download your file</h1>
 
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download!""}" class="manual-download">${informationResourceFileVersion.filename!"undefined"?html}</a></dd>
+        <dd><a href="${download!""}" class="manual-download">${filename!"undefined"?html}</a></dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin

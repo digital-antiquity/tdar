@@ -223,7 +223,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             for (ResourceCollection col : getCollectionResults()) {
                 authorizationService.applyTransientViewableFlag(col, getAuthenticatedUser());
             }
-            getLogger().debug("RESULST: {}", result.getResults());
             setCollectionTotalRecords(result.getTotalRecords());
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());

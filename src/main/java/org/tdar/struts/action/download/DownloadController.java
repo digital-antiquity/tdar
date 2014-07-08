@@ -49,17 +49,21 @@ public class DownloadController extends AbstractDownloadController implements Do
 
     private static final long serialVersionUID = 7548544212676661097L;
 
-
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        // FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
             return status;
         }
-        return "confirm";
+        return CONFIRM;
+    }
+
+    @Action(value = SHOW_DOWNLOAD_LANDING, results = {
+            @Result(name = SUCCESS, type = "freemarker", location = "download-all.ftl") })
+    public String showDownloadAllLandingPage() {
+        return SUCCESS;
     }
 
     @Override
@@ -70,15 +74,10 @@ public class DownloadController extends AbstractDownloadController implements Do
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
         }
-        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
-            String msg = String.format("user %s does not have permissions to download %s", getAuthenticatedUser(), getInformationResourceFileVersion());
-            getLogger().warn(msg);
-            return FORBIDDEN;
+        if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
+            setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
-        setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
-        getLogger().info("user {} downloaded {}", getAuthenticatedUser(), getInformationResourceFileVersion());
-        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), getInformationResourceFileVersion());
-        return SUCCESS;
+        return validateFilterAndSetupDownload();
     }
 
     @Action(value = DOWNLOAD_ALL)
@@ -87,26 +86,36 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
-
-        List<InformationResourceFileVersion> versions = new ArrayList<>();
-        for (InformationResourceFile irf : getInformationResource().getInformationResourceFiles()) {
-            if (irf.isDeleted()) {
-                continue;
-            }
-            if (!authorizationService.canDownload(irf, getAuthenticatedUser())) {
-                getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
-                return FORBIDDEN;
-            }
-            getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
-            versions.add(irf.getLatestUploadedOrArchivalVersion());
-        }
-        if (CollectionUtils.isEmpty(versions)) {
-            return ERROR;
-        }
-
-        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), versions.toArray(new InformationResourceFileVersion[0]));
-        return SUCCESS;
+        return validateFilterAndSetupDownload();
     }
 
+
+    public String validateFilterAndSetupDownload() throws TdarActionException {
+        List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
+        if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
+            versionsToDownload.add(getInformationResourceFileVersion());
+        }
+
+        if (Persistable.Base.isNotNullOrTransient(getInformationResource())) {
+            for (InformationResourceFile irf : getInformationResource().getInformationResourceFiles()) {
+                if (irf.isDeleted()) {
+                    continue;
+                }
+                if (!authorizationService.canDownload(irf, getAuthenticatedUser())) {
+                    getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
+                    return FORBIDDEN;
+                }
+                getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
+                versionsToDownload.add(irf.getLatestUploadedOrArchivalVersion());
+            }
+        }
+        if (CollectionUtils.isEmpty(versionsToDownload)) {
+            return ERROR;
+        }
+        getLogger().info("user {} downloaded {} ({})", getAuthenticatedUser(), getInformationResourceFileVersion(), getInformationResource());
+        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(),
+                versionsToDownload.toArray(new InformationResourceFileVersion[0]));
+        return SUCCESS;
+    }
 
 }

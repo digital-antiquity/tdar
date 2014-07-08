@@ -39,8 +39,13 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
     public static final String GET = "get";
+    public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
+    public static final String DOWNLOAD_SUFFIX = "informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}";
+    public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm?" + DOWNLOAD_SUFFIX;
+    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get?" +DOWNLOAD_SUFFIX;
     public static final String FORBIDDEN = "forbidden";
-    public static final String DOWNLOAD_ALL_LANDING = "show-download-landing";
+    public static final String SHOW_DOWNLOAD_LANDING = "show-download-landing";
+    public static final String DOWNLOAD_ALL_LANDING = "/filestore/show-download-landing?" + DOWNLOAD_SUFFIX;
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private Long informationResourceFileVersionId;
     private Long informationResourceId;
@@ -122,6 +127,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     @Override
     public void prepare() {
+        getLogger().debug("prep");
         Long irId = getInformationResourceId();
         if (Persistable.Base.isNullOrTransient(irId)) {
             irId = getSessionData().getInformationResourceId();
@@ -132,6 +138,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
             irfvId = getSessionData().getInformationResourceFileVersionId();
         }
 
+        getLogger().debug("IRID: {}, IRFVID: {}", irId, irfvId);
         if (Persistable.Base.isNullOrTransient(irfvId) &&
                 Persistable.Base.isNullOrTransient(irId)) {
             addActionError(getText("downloadController.specify_what_to_download"));

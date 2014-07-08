@@ -47,22 +47,23 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
 
     @Action(value = "download",
             results = {
-                    @Result(name = SUCCESS, type = "redirect", location = GET),
+                    @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
                     @Result(name = DOWNLOAD_ALL, type = "redirect", location = DOWNLOAD_ALL_LANDING),
                     @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") })
     @HttpsOnly
     public String download() {
-        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
-            return ERROR;
-        }
+        //not sure this is really needed, but...
+//        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion()) && Persistable.Base.isNullOrTransient(getInformationResource())) {
+//            return ERROR;
+//        }
+        getSessionData().setInformationResourceFileVersionId(getInformationResourceFileVersionId());
+        getSessionData().setInformationResourceId(getInformationResourceId());
         if (isAuthenticated()) {
             if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
                 return SUCCESS;
             }
             return DOWNLOAD_ALL;
         }
-        getSessionData().setInformationResourceFileVersionId(getInformationResourceFileVersionId());
-        getSessionData().setInformationResourceId(getInformationResourceId());
         return LOGIN;
     }
 
@@ -106,4 +107,8 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         return SUCCESS;
     }
 
+    @Override
+    public void prepare() {
+        super.prepare();
+    }
 }

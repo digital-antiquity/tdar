@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
@@ -30,6 +31,8 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     private static final long serialVersionUID = 1525006233392261028L;
 
+    public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
+
     @Autowired
     private AuthenticationService authenticationService;
     
@@ -42,8 +45,9 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     @Action(value = "process-download-login",
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}"),
-                    @Result(name = INPUT, type = "freemarker", location = "../filestore/download-unauthenticated.ftl")
+            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
+            @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING),
+                    @Result(name = INPUT, type = "freemarker", location = LOGIN_REGISTER_PROMPT)
             })
     @HttpsOnly
     @WriteableSession
@@ -67,7 +71,9 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             default:
                 break;
         }
-
+        if (Persistable.Base.isNotNullOrTransient(getInformationResource())) {
+            return SUCCESS_DOWNLOAD_ALL;
+        }
         return SUCCESS;
     }
 
