@@ -89,7 +89,6 @@ public class DownloadController extends AbstractDownloadController implements Do
         return validateFilterAndSetupDownload();
     }
 
-
     public String validateFilterAndSetupDownload() throws TdarActionException {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
@@ -101,16 +100,19 @@ public class DownloadController extends AbstractDownloadController implements Do
                 if (irf.isDeleted()) {
                     continue;
                 }
-                if (!authorizationService.canDownload(irf, getAuthenticatedUser())) {
-                    getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
-                    return FORBIDDEN;
-                }
-                getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
                 versionsToDownload.add(irf.getLatestUploadedOrArchivalVersion());
+                getLogger().trace("adding: {}", irf.getLatestUploadedVersion());
             }
         }
         if (CollectionUtils.isEmpty(versionsToDownload)) {
             return ERROR;
+        }
+
+        for (InformationResourceFileVersion version : versionsToDownload) {
+            if (!authorizationService.canDownload(version, getAuthenticatedUser())) {
+                getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
+                return FORBIDDEN;
+            }
         }
         getLogger().info("user {} downloaded {} ({})", getAuthenticatedUser(), getInformationResourceFileVersion(), getInformationResource());
         downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(),
