@@ -163,13 +163,16 @@ public class UnauthenticatedCartController extends AbstractCartController {
     public static final String PENDING_INVOICE_ID_KEY = "pending_invoice_id";
 
     private List<BillingActivity> activities = new ArrayList<>();
-    // private Long id;
-    private Long accountId;
 
     private List<Long> extraItemIds = new ArrayList<>();
     private List<Integer> extraItemQuantities = new ArrayList<>();
 
     private PricingType pricingType = null;
+
+    //the following values may come from the query string.  If so, they override any current values on the invoice.
+    private Long files;
+    private Long mb;
+    private Long accountId;
     private String code;
 
     @Autowired
@@ -286,6 +289,14 @@ public class UnauthenticatedCartController extends AbstractCartController {
             setInvoice(persistedInvoice);
         }
 
+        // check for querystring overrides  (we anticipate will only happen in a GET)
+        if(files != null) {
+            getInvoice().setNumberOfFiles(files);
+        }
+        if(mb != null) {
+            getInvoice().setNumberOfMb(mb);
+        }
+
         // set default
         if (getInvoice() != null && getInvoice().getPaymentMethod() == null) {
             getInvoice().setPaymentMethod(PaymentMethod.CREDIT_CARD);
@@ -342,6 +353,14 @@ public class UnauthenticatedCartController extends AbstractCartController {
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));
         }
+    }
+
+    public void setFiles(Long files) {
+        this.files = files;
+    }
+
+    public void setMb(Long mb) {
+        this.mb = mb;
     }
 
 }

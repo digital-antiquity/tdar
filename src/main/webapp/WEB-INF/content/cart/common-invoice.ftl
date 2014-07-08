@@ -54,6 +54,10 @@
         <span class="amt">${invoice.calculatedCost}</span>
         <br>
         <span class="status">Status: ${invoice.transactionStatus.label}</span>
+        <#if (billingManager!false)>
+            <br>
+            <@s.a href="/cart/new?files=${invoice.numberOfFiles?c}&mb=${invoice.numberOfMb?c}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a>
+        </#if>
     </div>
 
     </#macro>
