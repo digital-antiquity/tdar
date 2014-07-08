@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.XmlService;
-import org.tdar.utils.jaxb.JsonProjectLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;

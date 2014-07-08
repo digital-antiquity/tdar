@@ -20,7 +20,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 

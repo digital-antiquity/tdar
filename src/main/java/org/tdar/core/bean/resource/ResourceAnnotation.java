@@ -23,8 +23,8 @@ import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.utils.jaxb.JsonProjectLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 

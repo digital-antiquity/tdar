@@ -28,7 +28,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.XmlService;
-import org.tdar.utils.jaxb.JsonProjectLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
  * $Id$
