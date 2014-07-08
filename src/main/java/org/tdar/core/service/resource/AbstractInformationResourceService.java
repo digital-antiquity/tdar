@@ -219,11 +219,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
                 getLogger().info("removing {}", dt);
-                cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt));
+                cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
                 // dataset.getDataTableByGenericName(name)
                 break;
             default:
-                cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables());
+                cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
         }
     }
 
@@ -282,16 +282,19 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * not replaced.
      */
     @Transactional(readOnly = true)
-    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove) {
+    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         getLogger().info("deleting unmerged tables: {}", tablesToRemove);
-        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>(columnsToRemove);
+
         for (DataTable table : tablesToRemove) {
             if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
                 columnsToUnmap.addAll(table.getDataTableColumns());
             }
         }
+        
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
+        getDao().delete(columnsToRemove);
         dataset.getDataTables().removeAll(tablesToRemove);
     }
 
