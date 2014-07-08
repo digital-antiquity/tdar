@@ -53,11 +53,9 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
     @HttpsOnly
     public String download() {
         //not sure this is really needed, but...
-//        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion()) && Persistable.Base.isNullOrTransient(getInformationResource())) {
-//            return ERROR;
-//        }
-        getSessionData().setInformationResourceFileVersionId(getInformationResourceFileVersionId());
-        getSessionData().setInformationResourceId(getInformationResourceId());
+        if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion()) && Persistable.Base.isNullOrTransient(getInformationResource())) {
+            return ERROR;
+        }
         if (isAuthenticated()) {
             if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
                 return SUCCESS;

@@ -40,7 +40,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     public static final String GET = "get";
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
-    public static final String DOWNLOAD_SUFFIX = "informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}";
+    public static final String DOWNLOAD_SUFFIX = "informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}";
     public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm?" + DOWNLOAD_SUFFIX;
     public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get?" +DOWNLOAD_SUFFIX;
     public static final String FORBIDDEN = "forbidden";
@@ -127,16 +127,8 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     @Override
     public void prepare() {
-        getLogger().debug("prep");
         Long irId = getInformationResourceId();
-        if (Persistable.Base.isNullOrTransient(irId)) {
-            irId = getSessionData().getInformationResourceId();
-        }
-
         Long irfvId = getInformationResourceFileVersionId();
-        if (Persistable.Base.isNullOrTransient(irfvId)) {
-            irfvId = getSessionData().getInformationResourceFileVersionId();
-        }
 
         getLogger().debug("IRID: {}, IRFVID: {}", irId, irfvId);
         if (Persistable.Base.isNullOrTransient(irfvId) &&
@@ -145,9 +137,11 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         }
         if (Persistable.Base.isNotNullOrTransient(irId)) {
             setInformationResource(getGenericService().find(InformationResource.class, irId));
+            getInformationResource().getLatestVersions();
         }
         if (Persistable.Base.isNotNullOrTransient(irfvId)) {
             setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, irfvId));
+            informationResourceFileVersion.getInformationResourceFile().getLatestThumbnail();
         }
     }
 

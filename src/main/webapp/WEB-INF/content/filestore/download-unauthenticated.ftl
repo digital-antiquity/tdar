@@ -26,8 +26,14 @@
                     title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
             <#else>
                 <#list informationResource.informationResourceFiles as irFile>
-                    <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
-                    title="${irFile.filename!""?html}" alt="${irFile.filename?html}" /></li>
+                    <li>
+                    <#if (irFile.latestThumbnail)?has_content >
+                    <img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
+                    title="${irFile.filename!""?html}" alt="${irFile.filename?html}" />
+                    <#else>
+                        ${irFile.filename}
+                    </#if>
+                    </li>
                 </#list>
             </#if>
         </ul>
@@ -49,6 +55,7 @@
                 <fieldset>
                     <legend>Register</legend>
                     <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" source="download" />
+                    <@commonFields />
                 </fieldset>
             </@s.form>
 
@@ -61,10 +68,15 @@
                     <div class="form-actions">
                         <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
                     </div>
+                    <@commonFields />
                 </@auth.login>
             </@s.form>
 
         </div>
     </div>
 </body>
+<#macro commonFields>
+    <@s.hidden name="informationResourceId" />
+    <@s.hidden name="informationResourceFileVersionId" />
+</#macro>
 </#escape>

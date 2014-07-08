@@ -76,6 +76,11 @@ public class DownloadLoginController extends AbstractDownloadController implemen
         }
         return SUCCESS;
     }
+    
+    @Override
+    public void prepare() {
+        super.prepare();
+    };
 
     @Override
     public void validate() {
