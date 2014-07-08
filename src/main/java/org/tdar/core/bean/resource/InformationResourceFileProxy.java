@@ -77,6 +77,9 @@ public class InformationResourceFileProxy implements Serializable {
     @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
+    @Column(name = "deleted", columnDefinition = "boolean default false")
+    private Boolean deleted = Boolean.FALSE;
+    
     @OneToMany()
     @SortNatural
     @JoinColumn(name = "information_resource_file_id")
@@ -172,7 +175,7 @@ public class InformationResourceFileProxy implements Serializable {
         file.setFilename(getFilename());
         file.setStatus(getStatus());
         file.setDateMadePublic(getDateMadePublic());
-
+        file.setDeleted(getDeleted());
         for (InformationResourceFileVersionProxy prox : getInformationResourceFileVersionProxies()) {
             InformationResourceFileVersion version = prox.generateInformationResourceFileVersion();
             file.getInformationResourceFileVersions().add(version);
@@ -196,5 +199,13 @@ public class InformationResourceFileProxy implements Serializable {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

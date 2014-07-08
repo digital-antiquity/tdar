@@ -316,6 +316,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         Iterator<List<String>> expectedColumnDataIterator = expectedColumnData.iterator();
         for (DataTableColumn column : dataTable.getSortedDataTableColumns()) {
             // verify column values
+            logger.debug(String.format("column: %s (%s) %s ", column.getName(), column.getDisplayName(), column.getId()));
             List<String> expectedValues = expectedColumnDataIterator.next();
             List<String> actualValues = tdarDataImportDatabase.selectAllFrom(column);
             assertEquals(expectedValues, actualValues);
