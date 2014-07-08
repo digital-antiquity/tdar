@@ -1,10 +1,11 @@
 <#escape _untrusted as _untrusted?html>
 <#if informationResourceFileVersion?has_content>
-    <#assign title>${informationResourceFileVersion.fileName!"undefined"?html}</#assign>
-    <#assign filename>${informationResourceFileVersion.fileName!"undefined"?html}</#assign>
+    <#assign title>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
+    <#assign filename>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
     <#assign download ="/filestore/get?informationResourceFileVersionId=${informationResourceFileVersion.id?c}" />
 <#else>
     <#assign title>${informationResource.title!"undefined"?html}</#assign>
+    <#assign filename>${informationResource.id?c}-download.zip</#assign>
     <#assign download ="/filestore/show-download-landing?informationResourceId=${informationResource.id?c}" />
 </#if>
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
@@ -19,8 +20,19 @@
 
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
-        <dt>Requested File</dt>
-        <dd><a href="${download!""}" class="manual-download">${filename!"undefined"?html}</a></dd>
+        <ul class="inline">
+            <#if informationResourceFileVersion?has_content && (informationResourceFileVersion.informationResourceFile.latestThumbnail)?has_content>
+                <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
+                    title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
+            <#else>
+                <#list informationResource.informationResourceFiles as irFile>
+                    <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
+                    title="${irFile.filename!""?html}" alt="${irFile.filename?html}" /></li>
+                </#list>
+            </#if>
+        </ul>
+        <dt>File(s)</dt>
+        <dd>${filename!"undefined"?html}</dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
