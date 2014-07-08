@@ -286,7 +286,13 @@ public class UnauthenticatedCartController extends AbstractCartController {
         // look for pending invoice in the session.
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
-            setInvoice(persistedInvoice);
+
+            //if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
+            if(!persistedInvoice.isModifiable()) {
+                clearPendingInvoice();
+            } else {
+                setInvoice(persistedInvoice);
+            }
         }
 
         // check for querystring overrides  (we anticipate will only happen in a GET)
