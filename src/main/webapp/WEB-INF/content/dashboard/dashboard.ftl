@@ -70,7 +70,8 @@
             <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
             above.
         <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a>
-            | <a href="#billing">Billing Accounts</a> | <a href="#boomkarks">Bookmarks</a>
+            <#if payPerIngestEnabled>| <a href="#billing">Billing Accounts</a></#if>
+            | <a href="#boomkarks">Bookmarks</a>
         </p>
         <hr/>
         </#if>
@@ -260,11 +261,9 @@
             <a href="<@s.url value='/entity/person/edit?id=${sessionData.tdarUser.id?c}'/>">edit your profile</a>
         </div>
 
-        <#if payPerIngestEnabled>
-            <div class="span5" id="billing">
-                <@common.billingAccountList accounts />
-            </div>
-        </#if>
+        <div class="span5" id="billing">
+            <@common.billingAccountList accounts />
+        </div>
     </div>
     </#macro>
 

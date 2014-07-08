@@ -87,7 +87,11 @@
         <tr class="${extraClass}">
             <td><a href="<@s.url value="/cart/${invoice.id?c}" />">${invoice.dateCreated}</a></td>
             <td>
+                <#if (invoice.owner.id)??>
                 <a href="<@s.url value="/browse/creators/${invoice.owner.id?c}"/>">${invoice.owner.properName}</a>
+                <#else>
+                    <em>not assigned</em>
+                </#if>
                 <#if invoice.proxy && invoice.transactedBy?has_content >
                     c/o ${invoice.transactedBy.properName}
                 </#if>
