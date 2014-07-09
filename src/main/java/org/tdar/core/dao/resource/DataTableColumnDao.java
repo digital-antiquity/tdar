@@ -3,7 +3,7 @@ package org.tdar.core.dao.resource;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;

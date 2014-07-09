@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.ParameterAware;
@@ -36,7 +35,6 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 @Component
@@ -44,7 +42,6 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @ParentPackage("secured")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
-    private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
     public static final String SUCCESS_COMPLETE = "success-complete";
     public static final String PROCESS_PAYMENT_REQUEST = "process-payment-request";
     public static final String SIMPLE = "simple";

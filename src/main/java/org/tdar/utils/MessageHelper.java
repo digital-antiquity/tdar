@@ -2,6 +2,7 @@ package org.tdar.utils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -30,6 +31,10 @@ public class MessageHelper implements Serializable, TextProvider {
 
     protected MessageHelper(ResourceBundle bundle) {
         this.bundle = bundle;
+    }
+
+    public Enumeration<String> getKeys() {
+        return bundle.getKeys();
     }
 
     public static MessageHelper getInstance() {

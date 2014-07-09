@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Component;
 
 public class MockMailSender implements MailSender {
     private final ArrayList<SimpleMailMessage> messages = new ArrayList<SimpleMailMessage>();

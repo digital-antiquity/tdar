@@ -24,6 +24,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -216,7 +217,33 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoEscapeIssues();
         assertNoErrorTextPresent();
+        assertNoAccessibilityErrors();
         return statusCode;
+    }
+
+    private void assertNoAccessibilityErrors() {
+        Pattern p = Pattern.compile("<img([^>]+)");
+        Matcher matcher = p.matcher(getPageCode());
+        List<String> errors = new ArrayList<>();
+        while (matcher.find()) {
+            boolean missingAlt = false;
+            boolean missingTitle = false;
+            String group = matcher.group(1);
+            if (!group.contains(" alt=") && !group.contains(" alt =")) {
+                missingAlt = true;
+            }
+            if (!group.contains(" title=") && !group.contains(" title =")) {
+                missingTitle = true;
+            }
+            if (missingAlt || missingTitle) {
+                errors.add(String.format("%s -- missing alt(%s) title(%s)", group, missingAlt, missingTitle));
+            }
+        }
+        if (CollectionUtils.isNotEmpty(errors)) {
+            fail(StringUtils.join(errors.toArray()));
+        }
+
+        
     }
 
     public Long createResourceFromType(ResourceType rt, String title) {

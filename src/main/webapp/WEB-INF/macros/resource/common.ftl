@@ -44,16 +44,6 @@ Common macros used in multiple contexts
 <#--define global getBaseURI(), getURI(path), TDAR.uri -->
     <#macro baseUriJavascript>
     if(typeof TDAR === "undefined") {var TDAR = {};}
-    //FIXME: replace occurances with TDAR.uri (TDAR-3830)
-    //Return the application base URL, including context path
-    function getBaseURI() {
-    return "<@s.url value='/' />";
-    }
-
-    //return absolute URL to for the specified relative path
-    function getURI(path) {
-    return getBaseURI() + path;
-    }
 
     //return absolute URL for the specified relative path,  including context path.
     //if no path specified, return the base URL.
@@ -362,7 +352,7 @@ with that datapoint -->
         </script>
 
         <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-        <img class="worldmap" alt="world map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480
+        <img class="worldmap" alt="World Map" title="World Map" src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/images/world_480_2.png" />" width=480
              height=304 usemap="#world">
 
         <div id="map_legend">

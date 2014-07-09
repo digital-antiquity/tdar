@@ -14,8 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
@@ -258,7 +257,10 @@ public class BulkManifestProxy implements Serializable {
         
         // die at the end of the process if we still have required fields that haven't been set
         if (requiredFields.size() > 0) {
-            List<String> required = (List<String>) CollectionUtils.collect(requiredFields, new BeanToPropertyValueTransformer("displayName"));
+            List<String> required = new ArrayList<>();
+            for (CellMetadata meta : requiredFields) {
+                required.add(meta.getDisplayName());
+            }
             throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",
                     Arrays.asList(filename, StringUtils.join(required, ", ")));
         }

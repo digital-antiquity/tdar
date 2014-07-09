@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Component;

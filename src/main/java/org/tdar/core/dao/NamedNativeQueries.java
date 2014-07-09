@@ -6,7 +6,6 @@
  */
 package org.tdar.core.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;

@@ -429,7 +429,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="form-actions" id="editFormActions">
                 <#nested>
                 <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
-                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
             </div>
         </div>
     </div>
@@ -1145,8 +1145,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <tr id="license_details_${licenseCursor}" class="${visible}">
                     <td>
                         <#if (licenseCursor.imageURI != "")>
-                            <a href="${licenseCursor.URI}" target="_blank"><img alt="license image"
-                                                                                src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
+                            <a href="${licenseCursor.URI}" target="_blank">
+                                <img alt="${licenseCursor.licenseName}" title="${licenseCursor.licenseName}"
+                                  src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
                         </#if>
                     </td>
                     <td>
@@ -1320,7 +1321,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>

@@ -190,7 +190,7 @@ TDAR.datatable = function () {
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) + '</a>';
+        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) + '</a>';
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
             html += " " + objResource.status;
@@ -504,7 +504,7 @@ TDAR.datatable = function () {
     function _fnRenderPersonId(oObj) {
         //in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + getURI('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
+        var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
         return html;
     }
     function _registerUserLookupDatatable() {

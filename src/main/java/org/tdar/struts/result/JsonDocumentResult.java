@@ -20,7 +20,6 @@ import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
-import com.hp.hpl.jena.sparql.pfunction.library.str;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
 

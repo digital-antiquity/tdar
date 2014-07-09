@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -228,8 +227,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             }
         };
 
-        CollectionUtils.collect(resource.getRelatedComparativeCollections(), t, rccs);
-        CollectionUtils.collect(resource.getSourceCollections(), t, scs);
+        for (RelatedComparativeCollection rcc : resource.getRelatedComparativeCollections()) {
+            rccs.add(rcc.getText());
+        }
+        for (SourceCollection rcc : resource.getSourceCollections()) {
+            scs.add(rcc.getText());
+        }
 
         assertTrue(scs.contains("sc one"));
         assertTrue(scs.contains("sc two"));

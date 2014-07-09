@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.persistence.Table;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.hibernate.Query;

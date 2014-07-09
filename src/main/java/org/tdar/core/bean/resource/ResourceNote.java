@@ -8,7 +8,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,8 +20,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.utils.jaxb.JsonProjectLookupFilter;
-import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 

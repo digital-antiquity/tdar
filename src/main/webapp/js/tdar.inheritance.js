@@ -432,7 +432,7 @@ TDAR.inheritance = (function () {
             var sel = this;
             if ($(sel).val() !== '' && $(sel).val() > 0) {
                 $.ajax({
-                    url: getBaseURI() + "project/json",
+                    url: TDAR.uri() + "project/json",
                     dataType: "jsonp",
                     data: {
                         id: $(sel).val()
