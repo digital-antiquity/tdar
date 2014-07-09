@@ -516,8 +516,10 @@ View freemarker macros
                               <img class="thumbnailLink img-polaroid"<#t>
                                    <#if (resource.visibleFilesWithThumbnails?size = 1) && (irfile.description!'') = ''>
                                    alt="<@_altText irfile resource.title />"
+                                   title="<@_altText irfile resource.title />"
                                    <#else> <#t>
                                    alt="<@_altText irfile />" <#t>
+                                   title="<@_altText irfile />" <#t>
                                    </#if>
                                    <#if lazyLoad>
                                        src="/images/image_unavailable_t.gif"
