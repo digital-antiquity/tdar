@@ -7,7 +7,7 @@
 </#if>
 <div class="row">
             <div class="span3 bucket">
-                <img src="/images/r4/icn-data.png" alt="Access / Use"/>
+                <img src="/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
                 <h3>Access &amp; Use</h3>
                 <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
                 <p>
@@ -15,7 +15,7 @@
                 </p>
             </div>
                 <div class="span3 bucket">
-                <img src="/images/r4/icn-pres.png" alt="Preservation"/>
+                <img src="/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
                 <h3>Preservation</h3>
                 <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
                 <p>
@@ -23,7 +23,7 @@
                 </p>
             </div>
                 <div class="span3 bucket">
-                <img src="/images/r4/icn-stew.png" alt="Stewardship"/>
+                <img src="/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship" />
                 <h3>Upload Resources</h3>
                 <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
                 <p>
@@ -31,7 +31,7 @@
                 </p>
             </div>
                 <div class="span3 bucket">
-                <img src="/images/r4/icn-uses.png" alt="Use" />
+                <img src="/images/r4/icn-uses.png" alt="Use" title="Use" />
                 <h3>Who Uses FAIMS</h3>
                 <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
                 <p>
