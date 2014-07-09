@@ -1145,8 +1145,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <tr id="license_details_${licenseCursor}" class="${visible}">
                     <td>
                         <#if (licenseCursor.imageURI != "")>
-                            <a href="${licenseCursor.URI}" target="_blank"><img alt="license image"
-                                                                                src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
+                            <a href="${licenseCursor.URI}" target="_blank">
+                                <img alt="${licenseCursor.licenseName}" title="${licenseCursor.licenseName}"
+                                  src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
                         </#if>
                     </td>
                     <td>

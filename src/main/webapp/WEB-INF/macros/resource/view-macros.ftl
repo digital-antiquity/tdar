@@ -560,7 +560,8 @@ View freemarker macros
             <#list resource.visibleFilesWithThumbnails as irfile>
                 <div>
             <span id="imageContainer">
-            <img id="bigImage" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
+                 src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
             <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
                 </div>
                 <div id="downloadText">
@@ -687,7 +688,7 @@ View freemarker macros
     <div class="item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
         <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-            <img alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
+            <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
         <#else>
             <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
         </#if>
@@ -723,7 +724,7 @@ View freemarker macros
         <#if (resource.licenseType??) >
         <h3>License</h3>
             <#if (resource.licenseType.imageURI != "")>
-            <a href="${resource.licenseType.URI}"><img alt="license image"
+            <a href="${resource.licenseType.URI}"><img alt="license image" title="license image"
                                                        src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
             </#if>
             <#if (resource.licenseType.URI != "")>
