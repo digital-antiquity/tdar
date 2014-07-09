@@ -22,7 +22,7 @@
 <#else>
     <div class="row">
         <div class="span9" id="divRegistrationSection">
-                <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
+                <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"
                         enctype='multipart/form-data' action="process-registration">
                     <@s.token name='struts.csrf.token' />
                     <fieldset>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="span3" id="divLoginSection">
-            <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate"
+            <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="/login/process-cart-login">
                 <fieldset>
                     <legend>
@@ -72,7 +72,6 @@
         </#if>
         <@invoicecommon.proxyNotice />
         <@invoicecommon.printSubtotal invoice />
-        <p><b>Payment by:</b><@s.text name="${invoice.paymentMethod.localeKey}"/></p>
     </div>
 </div>
 

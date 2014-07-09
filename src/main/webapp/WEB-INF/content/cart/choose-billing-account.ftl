@@ -45,12 +45,8 @@
 <div class="row">
     <div class="span9"></div>
     <div class="span3">
-        <#if authenticatedUser?has_content>
-            <p>Prepared for: ${authenticatedUser.properName}</p>
-        </#if>
         <@invoicecommon.proxyNotice />
         <@invoicecommon.printSubtotal invoice />
-        <p><b>Payment by:</b><@s.text name="${invoice.paymentMethod.localeKey}"/></p>
     </div>
 </div>
 

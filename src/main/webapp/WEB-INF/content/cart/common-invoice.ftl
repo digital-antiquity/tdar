@@ -48,14 +48,20 @@
     </table>
     </#macro>
 
+<#macro invoiceOwner invoice>
+    ${(invoice.owner.displayName)!''}
+</#macro>
+
+
     <#macro printSubtotal invoice>
     <div id="divInvoiceSubtotal" class="invoice-subtotal">
         <h3>Subtotal</h3>
-        <span class="amt">${invoice.calculatedCost}</span>
-        <br>
-        <span class="status">Status: ${invoice.transactionStatus.label}</span>
+        <span class="amt">$${invoice.calculatedCost}</span>
+        <span class="item-desc"><@invoiceOwner invoice/></span>
+        <span class="item-desc">${invoice.numberOfFiles} files / ${invoice.numberOfMb}mb</span>
+        <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
+        <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if (billingManager!false)>
-            <br>
             <@s.a href="/cart/new?files=${invoice.numberOfFiles?c}&mb=${invoice.numberOfMb?c}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a>
         </#if>
     </div>
