@@ -47,7 +47,6 @@ import org.tdar.struts.action.search.ReservedSearchParameters;
 @Service
 public class AuthorizationService implements Accessible {
 
-
     /*
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
      * track these permissions for short periods of time. Logging out and logging in should reset this
@@ -55,11 +54,9 @@ public class AuthorizationService implements Accessible {
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
-
     @Autowired
     private AuthenticationService authenticationService;
-    
+
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
 
@@ -67,7 +64,6 @@ public class AuthorizationService implements Accessible {
     public List<Resource> findEditableResources(Person person, boolean isAdmin, List<ResourceType> resourceTypes) {
         return authorizedUserDao.findEditableResources(person, resourceTypes, isAdmin);
     }
-
 
     /**
      * Group Permissions tend to be hierarchical, hence, you may want to know if a user is a member of any of the nested hierarchy. Eg. EDITOR is a subset of
@@ -85,14 +81,12 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    
     /**
      * TdarGroups are represented in the external auth systems, but enable global permissions in tDAR; Admins, Billing Administrators, etc.
      */
     public boolean isMember(TdarUser person, TdarGroup group) {
         return authenticationService.isMember(person, group);
     }
-
 
     public boolean isAdministrator(TdarUser person) {
         return isMember(person, TdarGroup.TDAR_ADMIN);
@@ -113,7 +107,7 @@ public class AuthorizationService implements Accessible {
     public Collection<String> getGroupMembership(TdarUser person) {
         return authenticationService.getGroupMembership(person);
     }
-    
+
     /*
      * Returns a list of the people in the @link groupMembershipCache which is useful in tracking what's going on with tDAR at a given moment. This would be
      * helpful for
@@ -174,7 +168,6 @@ public class AuthorizationService implements Accessible {
         }
 
     }
-
 
     /**
      * Checks whether a @link Person has the rights to view a given resource. First, checking whether the person's @link TdarGroup permissions grant them
@@ -502,7 +495,6 @@ public class AuthorizationService implements Accessible {
         }
     }
 
-
     /*
      * sets the @link Viewable status on @link InformationResourceFile and @link InformationResourceFileVersion to simplify lookups on the view layer
      * (Freemarker)
@@ -521,7 +513,6 @@ public class AuthorizationService implements Accessible {
         }
     }
 
-
     /*
      * checks that the specified @link Person can assign an @link Invoice to an @link Account; 1/2 of the check whether the person has the rights to do anything
      * with the
@@ -537,7 +528,6 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    
     public <R extends Resource> boolean isResourceViewable(TdarUser authenticatedUser, R resource) {
         if (resource.isActive()
                 || can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || canView(authenticatedUser, resource)
@@ -550,5 +540,16 @@ public class AuthorizationService implements Accessible {
 
     public boolean isResourceEditable(TdarUser authenticatedUser, Resource resource) {
         return canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA);
+    }
+
+    public void applyTransientViewableFlag(InformationResourceFileVersion informationResourceFileVersion, TdarUser authenticatedUser) {
+        boolean visible = false;
+        InformationResourceFile irFile = informationResourceFileVersion.getInformationResourceFile();
+        if (irFile.isPublic() || canDownload(irFile, authenticatedUser)) {
+            visible = true;
+        }
+        for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
+            vers.setViewable(visible);
+        }
     }
 }

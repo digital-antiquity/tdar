@@ -21,13 +21,13 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <ul class="inline">
-            <#if informationResourceFileVersion?has_content && (informationResourceFileVersion.informationResourceFile.latestThumbnail)?has_content>
+            <#if informationResourceFileVersion?has_content && (informationResourceFileVersion.informationResourceFile.latestThumbnail)?has_content && informationResourceFileVersion.informationResourceFile.latestThumbnail.visible >
                 <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
                     title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
             <#else>
                 <#list informationResource.informationResourceFiles as irFile>
                     <li>
-                    <#if (irFile.latestThumbnail)?has_content >
+                    <#if (irFile.latestThumbnail)?has_content && irFile.latestThumbnail.visible >
                     <img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
                     title="${irFile.filename!""?html}" alt="${irFile.filename?html}" />
                     <#else>
