@@ -73,7 +73,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
-        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
+        addAuthuser("authorizedUsersFullNames[2].properName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
                 "person-" + config.getUserId(),
                 permissions);
         submitForm();
@@ -184,10 +184,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.visible", visible.toString().toLowerCase());
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
+        addAuthuser("authorizedUsersFullNames[1].properName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
                 + config.getEditorUserId(),
                 GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
+        addAuthuser("authorizedUsersFullNames[0].properName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
                 + config.getAdminUserId(),
                 GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection(_139);
