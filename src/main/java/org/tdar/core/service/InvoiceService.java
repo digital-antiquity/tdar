@@ -1,6 +1,5 @@
 package org.tdar.core.service;
 
-import static org.tdar.core.bean.Persistable.Base.isNotNullOrTransient;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.request.CoreAdminRequest.Persist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -394,7 +394,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
         }
-        if (isNotNullOrTransient(invoice.getCoupon())) {
+        if (Persistable.Base.isNotNullOrTransient(invoice.getCoupon())) {
             if (Persistable.Base.isEqual(coupon, invoice.getCoupon())) {
                 return;
             } else {
@@ -481,7 +481,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         TdarUser owner = invoice.getOwner();
         // if we have an owner
-        if (billingManager && isNotNullOrTransient(owner)) {
+        if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
             invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
         } else {
             // if we're logged in
@@ -494,12 +494,12 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         invoice.markUpdated(authenticatedUser);
         // if invoice is persisted it will be read-only, so make it writable
-        if (isNotNullOrTransient(invoice)) {
+        if (Persistable.Base.isNotNullOrTransient(invoice)) {
             genericDao.markUpdatable(invoice);
             genericDao.markUpdatable(invoice.getItems());
         }
         getDao().saveOrUpdate(invoice);
-        if (isNotNullOrTransient(accountId)) {
+        if (Persistable.Base.isNotNullOrTransient(accountId)) {
             Account account = genericDao.find(Account.class, accountId);
             account.getInvoices().add(invoice);
         }
