@@ -21,6 +21,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -228,6 +229,14 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
+        for (AuthorizedUser au : getAuthorizedUsers()) {
+            String name = null;
+            if (au != null && au.getUser() != null ) {
+                name = au.getUser().getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
+
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
         prepareProjectSection();
         resources.addAll(getPersistable().getResources());

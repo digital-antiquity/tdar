@@ -1,4 +1,4 @@
-k<#--
+<#--
 $Id$ 
 Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
@@ -1390,12 +1390,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
         <#local requiredClass><#if required>required</#if></#local>
         <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
+        <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
+
+        <#local properNameField>${prefix}.properName</#local>
+        <#if _index != ''>
+            <#local properNameField>authorizedUsersFullNames${_index}</#local>
+        </#if>
+
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
+            
             <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} ${textfieldCssClass!}" placeholder="Name"  readonly=isDisabled autocomplete="off"
-            name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
+            name="${properNameField}" maxlength="255" autocompleteName="properName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
 

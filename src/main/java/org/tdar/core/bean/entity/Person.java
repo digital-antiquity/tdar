@@ -63,9 +63,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
             "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
 
     @Transient
-    private transient String tempDisplayName;
-
-    @Transient
     private transient String wildcardName;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
@@ -142,7 +139,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     @Override
-    @Transient
     @JsonView(JsonLookupFilter.class)
     public String getProperName() {
         return firstName + " " + lastName;
@@ -379,39 +375,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
-    }
-
-    /**
-     * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * 
-     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
-     * */
-    @Deprecated
-    @JsonView(JsonLookupFilter.class)
-    public String getTempDisplayName() {
-        if (StringUtils.isNotBlank(tempDisplayName)) {
-            return tempDisplayName;
-        }
-        if (StringUtils.isBlank(firstName)) {
-            return "";
-        }
-        if (StringUtils.isBlank(lastName)) {
-            return "";
-        }
-        if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
-            setTempDisplayName(getProperName());
-        }
-        return tempDisplayName;
-    }
-
-    /**
-     * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * 
-     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
-     * */
-    @Deprecated
-    public void setTempDisplayName(String tempName) {
-        this.tempDisplayName = tempName;
     }
 
     public String getOrcidId() {

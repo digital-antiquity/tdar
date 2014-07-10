@@ -36,6 +36,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -715,6 +716,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
+        for (AuthorizedUser au : getAuthorizedUsers()) {
+            String name = null;
+            if (au != null && au.getUser() != null ) {
+                name = au.getUser().getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();

@@ -125,6 +125,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             case TDAR_USERS:
                 toReturn.add(TdarGroup.TDAR_USERS.getGroupName());
                 break;
+            default:
+                break;
         }
         String[] result = toReturn.toArray(new String[0]);
         logger.debug("group membership request: name:{}   groupname:{},  group:{},  membership:[{}]",

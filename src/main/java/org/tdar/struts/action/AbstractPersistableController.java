@@ -76,6 +76,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
+    private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
@@ -722,6 +723,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setH(AntiSpamHelper h) {
         this.h = h;
+    }
+
+    public List<String> getAuthorizedUsersFullNames() {
+        return authorizedUsersFullNames;
+    }
+
+    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
+        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 
 }
