@@ -575,6 +575,63 @@ TDAR.datatable = function () {
         }
     }
 
+    
+    function initalizeResourceDatasetDataTable(columns, viewRowSupported,resourceId, namespace, dataTableId) {
+            jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
+            $.extend($.fn.dataTableExt.oStdClasses, {
+                "sWrapper": "dataTables_wrapper form-inline"
+            });
+
+            var offset =0;
+            var browseUrl = "";
+            
+//    sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+            var options = {
+                "sAjaxDataProp": "results",
+                "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
+                "bProcessing": true,
+                "bServerSide": true,
+                "bScrollInfinite": false,
+                "bScrollCollapse": true,
+                tableSelector: '#dataTable',
+                sPaginationType: "bootstrap",
+                sScrollX: "100%",
+                //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
+                "sScrollY": "",
+                "sAjaxSource": browseUrl
+            };
+
+            options.aoColumns = [];
+            if (viewRowSupported) {
+                options.aoColumns.push(
+                  { "bSortable": false,
+                    "sName": "id_row_tdar",
+                    "sTitle": '<i class="icon-eye-open  icon-white"></i>',
+                    "fnRender": function (obj) {
+                        return '<a href="/${resource.urlNamespace}/view-row?id='+resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                    }
+                });
+                offset++;
+            };
+            var index = offset;
+            for (var col in columns ) {
+                options.aoColumns.push(
+                    { "bSortable": false,
+                        "sName": "${column.jsSimpleName?js_string}",
+                        "sTitle": "${column.displayName?js_string}",
+                        "fnRender": function (obj) {
+                            var val = obj.aData[index];
+                            var str = TDAR.common.htmlEncode(val);
+                            return str;
+                        }
+                    });
+                index++;
+            }
+            
+            TDAR.datatable.registerLookupDataTable(options);
+
+    }
+    
     return {
         extendSorting: _extendSorting,
         registerLookupDataTable: _registerLookupDataTable,

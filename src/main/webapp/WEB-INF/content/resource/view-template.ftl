@@ -576,57 +576,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     $(function () {
         'use strict';
         TDAR.common.initializeView();
-        <#if resource.resourceType.dataTableSupported>
-            <#if (dataset.dataTables?has_content)>
-                jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
-                $.extend($.fn.dataTableExt.oStdClasses, {
-                    "sWrapper": "dataTables_wrapper form-inline"
-                });
-
-//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
-                var options = {
-                    "sAjaxDataProp": "results",
-                    "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
-                    "bProcessing": true,
-                    "bServerSide": true,
-                    "bScrollInfinite": false,
-                    "bScrollCollapse": true,
-                    tableSelector: '#dataTable',
-                    sPaginationType: "bootstrap",
-                    sScrollX: "100%",
-                    //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
-                    "sScrollY": "",
-                    "aoColumns": [
-                        <#assign offset=0>
-                        <#if viewRowSupported>
-                            { "bSortable": false,
-                                "sName": "id_row_tdar",
-                                "sTitle": '<i class="icon-eye-open  icon-white"></i>',
-                                "fnRender": function (obj) {
-                                    return '<a href="/${resource.urlNamespace}/view-row?id=${resource.id?c}&dataTableId=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
-                                }
-                            },
-                            <#assign offset=1>
-                        </#if>
-                        <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
-                            <#if column.visible?? && column.visible>
-                                { "bSortable": false,
-                                    "sName": "${column.jsSimpleName?js_string}",
-                                    "sTitle": "${column.displayName?js_string}",
-                                    "fnRender": function (obj) {
-                                        var val = obj.aData[${column_index?c} + ${offset}];
-                                        var str = TDAR.common.htmlEncode(val);
-                                        return str;
-                                    }
-                                }<#if column_has_next >,</#if>
-                            </#if>
-                        </#list>
-                    ],
-                    "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
-                };
-                TDAR.datatable.registerLookupDataTable(options);
-            </#if>
-        </#if>
+        TDAR.datatable.initializeResourceDataTable(columns);
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>
