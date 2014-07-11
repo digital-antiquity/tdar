@@ -164,10 +164,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // mark the uploaded files as "read only"
         if (workflowResult.isSuccess()) {
             config.getFilestore().markSuccessfulUpload(ObjectType.RESOURCE, filesToProcess);
-            if (ticketId != null) {
-                PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
-                personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
-            }
+        }
+        if (ticketId != null) {
+            PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
+            personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
 
     }
