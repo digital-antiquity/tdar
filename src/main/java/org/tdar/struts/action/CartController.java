@@ -45,6 +45,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -374,6 +375,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             results = {
                     @Result(name = INVOICE, location = "cc-result.ftl")
             })
+    @HttpsOnly
     public String processPaymentResponse() throws TdarActionException {
         try {
             getLogger().trace("PROCESS RESPONSE {}", getParameters());

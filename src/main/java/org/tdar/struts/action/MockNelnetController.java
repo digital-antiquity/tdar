@@ -9,15 +9,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -81,7 +86,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     }
 
     private void sendResponse() throws TdarActionException {
-        String url = String.format("http://%s:%s/cart/process-external-payment-response", getHostName(), getHostPort());
+        String url = String.format("https://%s:%s/cart/process-external-payment-response", getHostName(), getHttpsPort());
         HttpPost postReq = new HttpPost(url);
         getLogger().info(url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
@@ -94,10 +99,18 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
         try {
             @SuppressWarnings({ "resource" })
-            HttpClientBuilder builder = HttpClientBuilder.create();
-            CloseableHttpClient httpClient = builder.build();
-            HttpResponse httpresponse = httpClient.execute(postReq);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));
+//            HttpClientBuilder builder = HttpClientBuilder.create();
+
+            
+            SSLContextBuilder sslBuilder = new SSLContextBuilder();
+            sslBuilder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                    sslBuilder.build());
+            CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(
+                    sslsf).build();
+
+            CloseableHttpResponse response = httpclient.execute(postReq);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             boolean seen = false;
             for (String line : IOUtils.readLines(rd)) {
                 if (line.contains("success")) {
@@ -108,7 +121,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
                 getLogger().warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
                 throw new TdarRecoverableRuntimeException("mockNelnetController.did_not_see_success");
             }
-            getLogger().info("response: {} ", httpresponse);
+            getLogger().info("response: {} ", response);
         } catch (Exception e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
         }
