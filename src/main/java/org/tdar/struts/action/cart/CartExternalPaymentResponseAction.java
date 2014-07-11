@@ -32,6 +32,7 @@ import java.util.Map;
 @Scope("prototype")
 @Namespace("/cart")
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
+    private static final long serialVersionUID = 0xDEADBEEF;
 
     private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
 

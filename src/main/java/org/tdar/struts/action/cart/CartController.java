@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.ParameterAware;
@@ -40,47 +41,28 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
+public class CartController extends AbstractCartController {
+    private static final long serialVersionUID = 1592977664145682926L;
 
     public static final String SUCCESS_COMPLETE = "success-complete";
     public static final String PROCESS_PAYMENT_REQUEST = "process-payment-request";
     public static final String SIMPLE = "simple";
-    private static final long serialVersionUID = 1592977664145682926L;
-    private List<BillingActivity> activities = new ArrayList<>();
-    private Long accountId = -1L;
-    private String billingPhone;
-    public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
-    private Account account;
-    public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
-    private Person owner;
-    private String callback;
-    private PricingType pricingType = null;
-    private String code;
-    private InputStream resultJson;
     private String redirectUrl;
-    private Map<String, String[]> parameters;
-    private boolean phoneRequired = false;
-    private boolean addressRequired = false;
-    private InputStream inputStream;
+    private Account account;
+
+    PaymentMethod paymentMethod;
+
+    private Long invoiceId = -1L;
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient InvoiceService cartService;
 
-    @Override
-    protected String save(Invoice persistable) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    protected void delete(Invoice persistable) {
-        throw new NotImplementedException();
-    }
+    @Autowired
+    private transient AuthorizationService authService;
 
     public boolean isNotNullOrZero(Long num) {
         if ((num == null) || (num < 1)) {
@@ -112,7 +94,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         @WriteableSession
     // @GetOnly
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
+            @Result(name = SUCCESS, type = "redirect", location = "/invoice/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = ADD, type = TYPE_REDIRECT, location = "add"),
             @Result(name = SUCCESS_COMPLETE, type = "redirect", location = URLConstants.DASHBOARD)
@@ -122,7 +104,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (Persistable.Base.isNullOrTransient(getInvoice())) {
             return ADD;
         }
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+
         Invoice invoice = getInvoice();
         if (!invoice.isModifiable()) {
             return SUCCESS;
@@ -131,19 +113,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (invoice.getTransactionStatus().isComplete()) {
             return ERROR;
         }
-        PaymentMethod paymentMethod = invoice.getPaymentMethod();
-        if (paymentMethod == null) {
-            throw new TdarRecoverableRuntimeException(getText("cartController.valid_payment_method_is_required"));
-        }
         String invoiceNumber = invoice.getInvoiceNumber();
 
-        setInvoice(cartService.processPayment(billingPhone, isPhoneRequired(), invoice, isAddressRequired(), paymentMethod));
         if (invoice.getTransactionStatus() == TransactionStatus.TRANSACTION_SUCCESSFUL) {
             return SUCCESS_COMPLETE;
-        }
-        setAccount(cartService.getAccountForInvoice(invoice));
-        if (getAccount() != null) {
-            setAccountId(getAccount().getId());
         }
         switch (paymentMethod) {
             case CHECK:
@@ -151,149 +124,70 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(invoice);
                 try {
+                    //fixme: i shouldn't need to "process" the invoice to figure out what the nelnet url is going to be
+                    cartService.processPayment("", false, invoice, false, paymentMethod);
                     setRedirectUrl(paymentTransactionProcessor.prepareRequest(invoice));
                 } catch (URIException e) {
                     getLogger().warn("error happend {}", e);
                 }
                 return POLLING;
+            //FIXME: any invoice modification for manual invoices needs to go into service layer. (and should be called via POST action)
             case INVOICE:
-                invoice.setInvoiceNumber(invoiceNumber);
             case MANUAL:
                 invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
                 getGenericService().saveOrUpdate(invoice);
-                return SUCCESS_ADD_ACCOUNT;
+                break;
         }
-        getSessionData().setInvoiceId(null);
         return SUCCESS;
     }
 
-    /**
-     * this is the endpoint used by the external payment processor to indicate the result of the
-     * pending transaction.
-     */
-    // fixme: move to CartApiController
-//    @SkipValidation
-//    @PostOnly
-//    @Action(value = PROCESS_EXTERNAL_PAYMENT_RESPONSE,
-//            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-//            results = {
-//                    @Result(name = INVOICE, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
-//            })
-    public String processPaymentResponse() throws TdarActionException {
-        try {
-            getLogger().trace("PROCESS RESPONSE {}", getParameters());
-            TransactionResponse response = paymentTransactionProcessor.setupTransactionResponse(getParameters());
-            // if transaction is valid (hashKey matches) then mark the session as writeable and go on
-            cartService.processTransactionResponse(response, paymentTransactionProcessor);
-        } catch (Exception e) {
-            getLogger().error("{}", e);
-        }
-        inputStream = new ByteArrayInputStream("success".getBytes());
-        return INVOICE;
-    }
-
-    @Override
-    public Class<Invoice> getPersistableClass() {
-        return Invoice.class;
-    }
-
-    @Override
-    public String loadAddMetadata() {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String loadEditMetadata() {
-        setActivities(cartService.getActiveBillingActivities());
+    @Actions({
+        //fancy-schmancy parameterized action that doesn't require url rewriting
+        @Action(value="/invoice/{invoiceId}", results={@Result(name="success", location="../cart/view.ftl")}),
+        //old-and-busted action that relies on url rewriting
+        @Action(value="view", results={@Result(name="success", location="view.ftl")}),
+    })
+    //FIXME: move to new InvoiceController  or create new view-invoice action on BillingAccountController
+    public String viewInvoice() {
         return SUCCESS;
-    }
-
-    @Override
-    public String loadViewMetadata() {
-        setAccount(cartService.getAccountForInvoice(getInvoice()));
-        return SUCCESS;
-    }
-
-    public Invoice getInvoice() {
-        return getPersistable();
-    }
-
-    @Override
-    public boolean isViewable() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-            return false;
-        }
-        if (authorizationService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isEditable() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-            return false;
-        }
-        if (authorizationService.can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
-            return true;
-        }
-        if (Persistable.Base.isNullOrTransient(getInvoice().getOwner()) && getInvoice().isModifiable()) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
     public void prepare() {
-        // Normally prepare() would get the persistable ID from the queryString. So we need to also look in the httpsession.
-        if (Persistable.Base.isNotNullOrTransient(getSessionData().getInvoiceId())) {
-            setId(getSessionData().getInvoiceId());
-        }
-        // now we can load the persistable
         super.prepare();
 
-        // if an unauthenticated user created this invoice, we have some fields left to fill-in
-        if (getInvoice().getOwner() == null) {
-            getInvoice().setOwner(getAuthenticatedUser());
-            // todo: need to also set this CartBillingAccountController if admin is creating an invoice
+        if(invoiceId != -1L ) {
+            setInvoice(getGenericService().find(Invoice.class, invoiceId));
         }
-        getInvoice().setTransactedBy(getAuthenticatedUser());
 
-    }
-
-    public void setInvoice(Invoice invoice) {
-        setPersistable(invoice);
-    }
-
-    public List<BillingActivity> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(List<BillingActivity> activities) {
-        this.activities = activities;
-    }
-
-    public List<PaymentMethod> getAllPaymentMethods() {
-        if (isBillingManager()) {
-            return Arrays.asList(PaymentMethod.values());
-        } else {
-            return Arrays.asList(PaymentMethod.CREDIT_CARD);
+        validateNotNull(getInvoice(), "cart.invoice_expected_but_not_found");
+        if(getInvoice() != null) {
+            paymentMethod = getInvoice().getPaymentMethod();
+            account = cartService.getAccountForInvoice(getInvoice());
         }
+
     }
 
-    public Long getAccountId() {
-        return accountId;
+    private boolean isViewable()  {
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+            return false;
+        }
+        if (authService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
+            return true;
+        }
+        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
+            return true;
+        }
+        return false;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    @Override
+    public void validate() {
+        if(!isViewable())  {
+            addActionError("you do not have permission to view this invoice");
+        }
+
+        validateNotNull(paymentMethod, "cartController.valid_payment_method_is_required");
     }
 
     public String getRedirectUrl() {
@@ -304,94 +198,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.redirectUrl = redirectUrl;
     }
 
-    @Override
-    public void setParameters(Map<String, String[]> arg0) {
-        this.parameters = arg0;
-        getLogger().trace("parameters: {} ", getParameters());
-    }
-
-    public Map<String, String[]> getParameters() {
-        return parameters;
-    }
-
-    public String getCallback() {
-        return callback;
-    }
-
-    public void setCallback(String callback) {
-        this.callback = callback;
-    }
-
-    public String getBillingPhone() {
-        return billingPhone;
-    }
-
-    public void setBillingPhone(String billingPhone) {
-        this.billingPhone = billingPhone;
-    }
-
-    public boolean isPhoneRequired() {
-        return phoneRequired;
-    }
-
-    public void setPhoneRequired(boolean phoneRequired) {
-        this.phoneRequired = phoneRequired;
-    }
-
-    public boolean isAddressRequired() {
-        return addressRequired;
-    }
-
-    public void setAddressRequired(boolean addressRequired) {
-        this.addressRequired = addressRequired;
-    }
-
-    public PricingType getPricingType() {
-        return pricingType;
-    }
-
-    public void setPricingType(PricingType pricingType) {
-        this.pricingType = pricingType;
-    }
-
-    public Person getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Person owner) {
-        this.owner = owner;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public Account getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    @Override
+    //if user fails validation here, we treat it as an error
+    public String getInputResultName() {
+        return ERROR;
     }
 
-    public InputStream getResultJson() {
-        return resultJson;
+    public void setInvoiceId(Long invoiceId) {
+        getLogger().info("setting invoice id to {}", invoiceId);
+        this.invoiceId = invoiceId;
     }
 
-    public void setResultJson(InputStream resultJson) {
-        this.resultJson = resultJson;
+    public void setId(Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
-
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
 }

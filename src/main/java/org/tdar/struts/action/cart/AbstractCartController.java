@@ -51,6 +51,18 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     }
 
     /**
+     * Add actionError if the specified object is null
+     *
+     * @param object  object to check for nulliosity
+     * @param textKey key of error message (the value supplied to to {@link #getText(String, Object...)}
+     */
+    protected final void validateNotNull(Object object, String textKey) {
+        if(object == null) {
+            addActionError(getText(textKey));
+        }
+    }
+
+    /**
      * Remove invoice from session and this object but don't remove it from the database
      */
     protected void clearPendingInvoice() {
@@ -58,11 +70,13 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         getSessionData().setInvoiceId(null);
     }
 
-    public Invoice getInvoice() {
+    //final for a reason (if you override this you likely did it on accident)
+    public final Invoice getInvoice() {
         return invoice;
     }
 
-    public void setInvoice(Invoice invoice) {
+    //final for a reason (if you override this you likely did it on accident)
+    public final void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
 
