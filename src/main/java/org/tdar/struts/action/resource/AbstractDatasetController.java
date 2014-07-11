@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
@@ -59,12 +60,15 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @Autowired
     private transient DatasetService datasetService;
-    
+
     @Autowired
     private transient DataTableService dataTableService;
 
     @Autowired
     private transient OntologyService ontologyService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
@@ -261,6 +265,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     private List<DataTableColumn> columnsToRemap;
+    private String dataTableColumnJson;
 
     /**
      * Used to render a row within a {@link Dataset}.
@@ -292,6 +297,23 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             }
         }
         return ERROR;
+    }
+
+    @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        super.loadCustomMetadata();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
+            Map<String, Object> col = new HashMap<>();
+            col.put("simpleName", dtc.getJsSimpleName());
+            col.put("displayName", dtc.getDisplayName());
+            result.add(col);
+        }
+        try {
+            setDataTableColumnJson(xmlService.convertToJson(result));
+        } catch (Exception e) {
+            getLogger().error("cannot convert to JSON: {}" , e);
+        }
     }
 
     /**
@@ -561,6 +583,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setRecordsPerPage(Integer recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
+    }
+
+    public String getDataTableColumnJson() {
+        return dataTableColumnJson;
+    }
+
+    public void setDataTableColumnJson(String dataTableColumnJson) {
+        this.dataTableColumnJson = dataTableColumnJson;
     }
 
 }

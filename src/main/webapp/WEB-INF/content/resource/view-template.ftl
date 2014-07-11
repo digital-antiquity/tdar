@@ -576,7 +576,13 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     $(function () {
         'use strict';
         TDAR.common.initializeView();
-        TDAR.datatable.initializeResourceDataTable(columns);
+        <#if dataTableColumnJson?has_content>
+        <#noescape>
+        var columns = ${dataTableColumnJson};
+        </#noescape>
+        TDAR.datatable.initalizeResourceDatasetDataTable(columns, ${viewRowSupported?string},${resource.id?c}, "${resource.urlNamespace}", ${dataTable.id?c});
+        </#if>
+
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>

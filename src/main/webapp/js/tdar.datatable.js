@@ -3,18 +3,16 @@ TDAR.datatable = function () {
     "use strict";
 
     /**
-     * Register a new dtatable control. By default, the datatable populates with resources editable by the user.
-     * Most of the initialization options required by the $.dataTable are handled by this function.
-     * However, you can override these functions by via the options argument in the constructor
-     * @param parms options object - properties in the object will override the defaults used to create the datatable.
-     *          see the DataTables.net documentation for full list of option.  Tdar-specific properties include:
-     *          tableSelector: jquery selector which contains the table to initialize/convert into a datatable
-     *          requestCallback: callback executed prior to performing ajax request. if it returns an object, those
-     *                              property name/value pairs are included in the ajax request,
-     *          selectableRows: boolean indicating whether the rows of the data table are selectable,
-     *          rowSelectionCallback: callback executed whenever user selects a row ,
-     *          "sAjaxSource": '/lookup/resource': url to request rowdata
-     *
+     * Register a new dtatable control. By default, the datatable populates with resources editable by the user. Most of the initialization options required by
+     * the $.dataTable are handled by this function. However, you can override these functions by via the options argument in the constructor
+     * 
+     * @param parms
+     *            options object - properties in the object will override the defaults used to create the datatable. see the DataTables.net documentation for
+     *            full list of option. Tdar-specific properties include: tableSelector: jquery selector which contains the table to initialize/convert into a
+     *            datatable requestCallback: callback executed prior to performing ajax request. if it returns an object, those property name/value pairs are
+     *            included in the ajax request, selectableRows: boolean indicating whether the rows of the data table are selectable, rowSelectionCallback:
+     *            callback executed whenever user selects a row , "sAjaxSource": '/lookup/resource': url to request rowdata
+     * 
      * @returns {*|jQuery|HTMLElement} reference to the datatable widget created by this element.
      */
     function _registerLookupDataTable(parms) {
@@ -131,13 +129,15 @@ TDAR.datatable = function () {
     }
 
     /**
-     * Prepare request data to be sent to tdar lookup request. This function will derive the startpage,
-     * recordsPerPage, and sortField any additional data to be sent to server should be returned by
-     * requestCallback(sSearch) where sSearch is the search term entered in the datatable search box (if any).
-     * @param aoData array of objects with "name" and "value" properties.
+     * Prepare request data to be sent to tdar lookup request. This function will derive the startpage, recordsPerPage, and sortField any additional data to be
+     * sent to server should be returned by requestCallback(sSearch) where sSearch is the search term entered in the datatable search box (if any).
+     * 
+     * @param aoData
+     *            array of objects with "name" and "value" properties.
      * @param aoColumns
      * @param requestCallback
-     * @returns {{startRecord: (j.defaults.iDisplayStart|*|int), recordsPerPage: (j.defaults.iDisplayLength|*|int), sortField: (string|g_settingsMap.person.tdarSortOption|g_settingsMap.institution.tdarSortOption|g_settingsMap.keyword.tdarSortOption|tdarSortOption)}}
+     * @returns {{startRecord: (j.defaults.iDisplayStart|*|int), recordsPerPage: (j.defaults.iDisplayLength|*|int), sortField:
+     *          (string|g_settingsMap.person.tdarSortOption|g_settingsMap.institution.tdarSortOption|g_settingsMap.keyword.tdarSortOption|tdarSortOption)}}
      * @private
      */
     function _convertRequest(aoData, aoColumns, requestCallback) {
@@ -166,6 +166,7 @@ TDAR.datatable = function () {
 
     /**
      * callback that renders the "id" column of the datatable.
+     * 
      * @param oObj
      * @returns {string}
      */
@@ -178,14 +179,16 @@ TDAR.datatable = function () {
         if (resourceType) {
             resourceType = resourceType.toLowerCase();
         }
-        //console.log("resource type:%s", resourceType);
+        // console.log("resource type:%s", resourceType);
         return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' + '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
     }
 
     /**
-     * datatable cell render callback:  this callback specifically renders a resource title.
-     * @param oObj row object
-     * @returns {string}  html to place insert into the cell
+     * datatable cell render callback: this callback specifically renders a resource title.
+     * 
+     * @param oObj
+     *            row object
+     * @returns {string} html to place insert into the cell
      */
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
@@ -200,9 +203,11 @@ TDAR.datatable = function () {
     }
 
     /**
-     * datatable cell render callback:  this callback emits the title and decription.
-     * @param oObj row object
-     * @returns {string}  html to place insert into the cell
+     * datatable cell render callback: this callback emits the title and decription.
+     * 
+     * @param oObj
+     *            row object
+     * @returns {string} html to place insert into the cell
      */
     function fnRenderTitleAndDescription(oObj) {
         var objResource = oObj.aData;
@@ -211,6 +216,7 @@ TDAR.datatable = function () {
 
     /**
      * initialize the datatable used for the dashboard page, as well as the datatable search controls.
+     * 
      * @param options
      * @private
      */
@@ -329,8 +335,11 @@ TDAR.datatable = function () {
 //
     /**
      * populate the dataTable.data('selectedRows') from the hidden inputs in #divSelectedResources (e.g. when rendering 'edit' or 'input' form)
-     * @param dataTable datatable widget
-     * @param resourcesTable the table that contains the selected datatable rows.
+     * 
+     * @param dataTable
+     *            datatable widget
+     * @param resourcesTable
+     *            the table that contains the selected datatable rows.
      * @private
      */
     function _registerResourceCollectionDataTable(dataTable, resourcesTable) {
@@ -342,7 +351,7 @@ TDAR.datatable = function () {
         $.each($('input', '#divSelectedResources'), function () {
             var elem = this;
             selectedRows[elem.value] = {id: elem.value, title: 'n/a', description: 'n/a'};
-            //console.debug('adding id to preselected rows:' + elem.value);
+            // console.debug('adding id to preselected rows:' + elem.value);
         });
         $dataTable.data('selectedRows', selectedRows);
 
@@ -351,7 +360,7 @@ TDAR.datatable = function () {
             $resourcesTable.hide();
         }
 
-        //bind row delete button
+        // bind row delete button
         $resourcesTable.on('click', 'button', function () {
             var button = this, resourceid = $(button).data("rid");
             _removeResourceClicked(resourceid, button, dataTable);
@@ -359,7 +368,8 @@ TDAR.datatable = function () {
     }
 
     /**
-     * row selected callback.  This callback constructs a table row for the "selected records" table
+     * row selected callback. This callback constructs a table row for the "selected records" table
+     * 
      * @param obj
      * @private
      */
@@ -367,11 +377,11 @@ TDAR.datatable = function () {
 
         // first, add the hidden input tag to the dom
         var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
-        //console.log("adding selected resource:" + tag);
+        // console.log("adding selected resource:" + tag);
         $('#divSelectedResources').append(tag);
 
         // next, add a new row to the 'selected items' table.
-        //FIXME: Really, Jim?  All this to render a button?
+        // FIXME: Really, Jim? All this to render a button?
         var $table = $('#tblCollectionResources');
         var $tbody = $('tbody', $table);
         var resourceTag = '';
@@ -396,12 +406,13 @@ TDAR.datatable = function () {
     }
 
     /**
-     *  row unselected callback:  remove the row of the "selected records" table
+     * row unselected callback: remove the row of the "selected records" table
+     * 
      * @param obj
      * @private
      */
     function _rowUnselected(obj) {
-        //console.log('removing selected reosurce:' + obj.id);
+        // console.log('removing selected reosurce:' + obj.id);
         $('#hrid' + obj.id).remove();
 
         var $row = $('#dtr_' + obj.id);
@@ -415,14 +426,16 @@ TDAR.datatable = function () {
     }
 
     /**
-     * This is similar to _rowUnselected, but instead of the data-
-     * table,  this callback executes when a user removed a selected entry via the delete button of the "currently
-     * selected rows" table.
-     *
-     * @param id id of the row object removed
-     * @param elem the delete button element
-     * @param dataTable the resource datatable
-     *
+     * This is similar to _rowUnselected, but instead of the data- table, this callback executes when a user removed a selected entry via the delete button of
+     * the "currently selected rows" table.
+     * 
+     * @param id
+     *            id of the row object removed
+     * @param elem
+     *            the delete button element
+     * @param dataTable
+     *            the resource datatable
+     * 
      * @private
      */
     function _removeResourceClicked(id, elem, dataTable) {
@@ -449,8 +462,8 @@ TDAR.datatable = function () {
     }
 
     /**
-     * pagination callback: this callback returns the vertical scroll position to the top of the page when the user
-     * navigates to a new page.
+     * pagination callback: this callback returns the vertical scroll position to the top of the page when the user navigates to a new page.
+     * 
      * @private
      */
     function _scrollOnPagination() {
@@ -461,16 +474,17 @@ TDAR.datatable = function () {
     }
 
     /**
-     * Define sorting behavior when user clicks on datatable columns.
-     * Currency detection courtesy of Allan Jardine, Nuno Gomes (http://legacy.datatables.net/plug-ins/type-detection)
+     * Define sorting behavior when user clicks on datatable columns. Currency detection courtesy of Allan Jardine, Nuno Gomes
+     * (http://legacy.datatables.net/plug-ins/type-detection)
+     * 
      * @private
      */
     function _extendSorting() {
-        //match anything that is not a currency symbol, seperator, or number (if some of these symbols appear identical then your IDE sucks)
-        //if regex matches we assume it is definitly not a currency (e.g. "apple"), if false it *may* be a currency (e.g. "$3")
+        // match anything that is not a currency symbol, seperator, or number (if some of these symbols appear identical then your IDE sucks)
+        // if regex matches we assume it is definitly not a currency (e.g. "apple"), if false it *may* be a currency (e.g. "$3")
         var _reDetect = /[^$₠₡₢₣₤₥₦₧₨₩₪₫€₭₮₯₰₱₲₳₴₵¢₶0123456789.,-]/;
 
-        //assuming we have detected a currency string, we use this regex to strip out symbols prior to sort
+        // assuming we have detected a currency string, we use this regex to strip out symbols prior to sort
         var _rePrep = /[^-\d.]/g
 
         function _fnCurrencyDetect(sData) {
@@ -492,17 +506,17 @@ TDAR.datatable = function () {
 
         function _fnCurrencySortDesc(a, b) {return b - a;}
 
-        //add our custom type detector to the front of the line
+        // add our custom type detector to the front of the line
         jQuery.fn.dataTableExt.aTypes.unshift(_fnCurrencyDetect);
 
-        //register our custom sorters
+        // register our custom sorters
         jQuery.fn.dataTableExt.oSort['tdar-currency-pre'] = _fnCurrencySortPrep;
         jQuery.fn.dataTableExt.oSort['tdar-currency-asc'] = _fnCurrencySortAsc;
         jQuery.fn.dataTableExt.oSort['tdar-currency-desc'] = _fnCurrencySortDesc;
     }
 
     function _fnRenderPersonId(oObj) {
-        //in spite of name, aData is an object containing the resource record for this row
+        // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
         var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
         return html;
@@ -576,16 +590,14 @@ TDAR.datatable = function () {
     }
 
     
-    function initalizeResourceDatasetDataTable(columns, viewRowSupported,resourceId, namespace, dataTableId) {
+    function _initalizeResourceDatasetDataTable(columns, viewRowSupported,resourceId, namespace, dataTableId) {
             jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
             $.extend($.fn.dataTableExt.oStdClasses, {
                 "sWrapper": "dataTables_wrapper form-inline"
             });
 
             var offset =0;
-            var browseUrl = "";
-            
-//    sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+            var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
             var options = {
                 "sAjaxDataProp": "results",
                 "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
@@ -596,7 +608,6 @@ TDAR.datatable = function () {
                 tableSelector: '#dataTable',
                 sPaginationType: "bootstrap",
                 sScrollX: "100%",
-                //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
                 "sScrollY": "",
                 "sAjaxSource": browseUrl
             };
@@ -608,24 +619,25 @@ TDAR.datatable = function () {
                     "sName": "id_row_tdar",
                     "sTitle": '<i class="icon-eye-open  icon-white"></i>',
                     "fnRender": function (obj) {
-                        return '<a href="/${resource.urlNamespace}/view-row?id='+resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                        return '<a href="/'+namespace+'/view-row?id='+resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                     }
                 });
                 offset++;
             };
-            var index = offset;
+
             for (var col in columns ) {
-                options.aoColumns.push(
+                if (columns.hasOwnProperty(col)) {
+                    options.aoColumns.push(
                     { "bSortable": false,
-                        "sName": "${column.jsSimpleName?js_string}",
-                        "sTitle": "${column.displayName?js_string}",
+                        "sName": col.simpleName,
+                        "sTitle": col.displayName,
                         "fnRender": function (obj) {
-                            var val = obj.aData[index];
+                            var val = obj.aData[offset];
                             var str = TDAR.common.htmlEncode(val);
                             return str;
                         }
                     });
-                index++;
+                }
             }
             
             TDAR.datatable.registerLookupDataTable(options);
@@ -641,6 +653,7 @@ TDAR.datatable = function () {
         registerResourceCollectionDataTable: _registerResourceCollectionDataTable,
         renderPersonId: _fnRenderPersonId,
         checkAllToggle: _checkAllToggle,
-        registerChild: _registerChild
+        registerChild: _registerChild,
+        initalizeResourceDatasetDataTable: _initalizeResourceDatasetDataTable
     };
 }();
