@@ -70,6 +70,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.ScriptException;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -89,6 +90,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
@@ -840,10 +842,34 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // testing on the mac :(
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
         webClient.getOptions().setUseInsecureSSL(true);
+//        webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
+        webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
+            
+            @Override
+            public void timeoutError(HtmlPage arg0, long arg1, long arg2) {
+                logger.error("JS timeoutError");
+            }
+            
+            @Override
+            public void scriptException(HtmlPage arg0, ScriptException arg1) {
+                logger.error("JS exception: {}", arg1);
+            }
+            
+            @Override
+            public void malformedScriptURL(HtmlPage arg0, String arg1, MalformedURLException arg2) {
+                logger.error("JS malformed exception: {} {}", arg1, arg2);                
+            }
+            
+            @Override
+            public void loadScriptError(HtmlPage arg0, URL arg1, Exception arg2) {
+                logger.error("JS load exception: {} {}", arg1, arg2);                
+                
+            }
+        });
         webClient.setCssErrorHandler(new ErrorHandler() {
             @Override
             public void warning(CSSParseException exception) throws CSSException {
