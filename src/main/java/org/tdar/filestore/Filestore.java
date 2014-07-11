@@ -392,4 +392,6 @@ public interface Filestore {
         }
 
     }
+
+    void markSuccessfulUpload(ObjectType type, List<InformationResourceFileVersion> filesToProcess);
 }

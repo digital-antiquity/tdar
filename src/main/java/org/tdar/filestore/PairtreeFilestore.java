@@ -12,6 +12,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -101,9 +102,6 @@ public class PairtreeFilestore extends BaseFilestore {
 
             if (version instanceof InformationResourceFileVersion) {
                 InformationResourceFileVersion irfv = (InformationResourceFileVersion) version;
-                if (irfv.isUploaded()) {
-                    outFile.setWritable(false);
-                }
 
                 updateVersionInfo(outFile, irfv);
             }
@@ -343,5 +341,17 @@ public class PairtreeFilestore extends BaseFilestore {
             cleanEmptyParents(dir.getParentFile());
         }
     }
+
+    @Override
+    public void markSuccessfulUpload(ObjectType type, List<InformationResourceFileVersion> filesToProcess) {
+        for (InformationResourceFileVersion version : filesToProcess) {
+            String absoluteFilePath = getAbsoluteFilePath(type, version);
+            File file = new File(absoluteFilePath);
+            if (version.isUploaded()) {
+                file.setWritable(false);
+            }
+        }
+    }
+
 
 }
