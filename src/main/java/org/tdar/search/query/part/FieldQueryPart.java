@@ -274,16 +274,15 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             Object fieldValue = getFieldValues().get(i);
             StringBuilder builder = new StringBuilder();
             if (SimpleSearch.class.isAssignableFrom(fieldValue.getClass())) {
-                builder.append(((SimpleSearch) fieldValue).getTitle());
+                fieldValue = ((SimpleSearch) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
-                builder.append(provider.getText(((Localizable) fieldValue).getLocaleKey()));
+                fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
             } else if (fieldValue instanceof HasLabel) {
-                builder.append(((HasLabel) fieldValue).getLabel());
+                fieldValue = ((HasLabel) fieldValue).getLabel();
             }
             builder.append(' ').append(fieldValue).append(' ');
             vals.add(builder.toString());
         }
-
         return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
