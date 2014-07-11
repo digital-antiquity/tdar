@@ -12,6 +12,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -103,12 +104,9 @@ public class PairtreeFilestore extends BaseFilestore {
             }
 
             if (version.getType() == Type.RESOURCE) {
-                if (version.getVersionType().isUploaded()) {
-                    outFile.setWritable(false);
-                }
-
                 updateVersionInfo(outFile, version);
             }
+            
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
                 version.setChecksumType(digest.getAlgorithm());
@@ -342,5 +340,17 @@ public class PairtreeFilestore extends BaseFilestore {
             cleanEmptyParents(dir.getParentFile());
         }
     }
+
+    @Override
+    public void markSuccessfulUpload(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
+        for (FileStoreFileProxy version : filesToProcess) {
+            String absoluteFilePath = getAbsoluteFilePath(type, version);
+            File file = new File(absoluteFilePath);
+            if (version.getVersionType().isUploaded() || version.getVersionType().isArchival()) {
+                file.setWritable(false);
+            }
+        }
+    }
+
 
 }

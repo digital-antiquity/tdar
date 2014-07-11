@@ -276,6 +276,19 @@ with that datapoint -->
         </#compress>
     </#macro>
 
+<#--function version of #truncate. -->
+    <#function fnTruncate text len=80>
+        <#if (text?length <= len)><#return text></#if>
+
+        <#local subtext = text?substring(0, len-3)?trim>
+        <#local words = subtext?split(' ')>
+        <#--if substring has several words,  cut on the last word -->
+        <#if (words?size > 3)>
+            <#local subtext = text?substring(0,text?last_index_of(' '))>
+        </#if>
+        <#return "${subtext}...">
+    </#function>
+
 <#-- Emit the container and script for a bar graph -->
     <#macro resourceBarGraph>
     <script>

@@ -85,7 +85,7 @@ View freemarker macros
         <a href="<@s.url value='/filestore/${version.id?c}/get'/>"
            onClick="TDAR.common.registerDownload('<@s.url value='/filestore/${version.id?c}/get'/>', '${id?c}')"
            <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
-           title="${version.filename?html}">
+           title="click to download: ${version.filename}">
             <@common.truncate version.filename 65 />
         </a><#if newline><br/></#if>
         <#else>
@@ -107,7 +107,7 @@ View freemarker macros
         <#else>
         <a href="<@s.url value='/filestore/${resource.id?c}/show-download-landing'/>" target="_blank"
            onclick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"
-           title="download all as zip">Download All</a>
+           title="download zip archive">Download All</a>
         </#if>
     </#macro>
 
@@ -486,18 +486,13 @@ View freemarker macros
         <#local numThumbnails = resource.visibleFilesWithThumbnails?size!0 />
         <#local numThumbnailsPerSection = 4 />
         <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
-        <#-- /images/image_unavailable_t.gif -->
-
-    <#--  from http://bootsnipp.com/snipps/thumbnail-carousel
-
-    <div class="hidden">
-    <p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
-    <p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
-    <p><strong># Indicators: </strong>${numIndicators}</p>
-    </div>
-
-
-    -->
+        <#--  from http://bootsnipp.com/snipps/thumbnail-carousel
+        <div class="hidden">
+        <p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
+        <p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
+        <p><strong># Indicators: </strong>${numIndicators}</p>
+        </div>
+        -->
         <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
             <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
 
@@ -579,6 +574,7 @@ View freemarker macros
         });
     </script>
     </#macro>
+
     <#macro _altText irfile description = irfile.description!"">
     ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if>
         <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if>
@@ -591,6 +587,15 @@ View freemarker macros
         </#if>
     </#macro>
 
+<#-- return best shot at image description (e.g. for use in alt-text). if image has no description,  go with resource title -->
+<#-- FIXME: replace occurances of #_altText in default branch with this -->
+<#function _imageDescription irfile resource maxlen=80>
+    <#local alt = (resource.title!'')>
+    <#if (resource.visibleFilesWithThumbnails?size > 0) && irfile.description?has_content>
+    <#local alt = irfile.description>
+    </#if>
+    <#return common.fnTruncate(alt, maxlen)>
+</#function>
 
 <#--emit a warning message  if the current resource we are rendering is under embargo -->
     <#macro embargoCheck showNotice=true>
@@ -665,17 +670,13 @@ View freemarker macros
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
     <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
-        <#local seenThumbnail = false/>
-        <#if resource_.supportsThumbnails && resource_.primaryThumbnail?has_content>
-            <#local seenThumbnail = true/>
-        </#if>
+        <#local seenThumbnail = (resource_.supportsThumbnails && resource_.primaryThumbnail?has_content) >
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
             <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />"
-                     title="${resource_.primaryThumbnail.filename}" alt="${resource_.primaryThumbnail.filename}"
+                     title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
-            <#t><#local seenThumbnail = true/><#t>
         <#else>
             <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
         </#if>
