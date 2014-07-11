@@ -95,7 +95,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
-    private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
+    private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE %s SET \"%s\"=NULL";
@@ -171,7 +171,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     "write", "xml", "xmlagg", "xmlattributes", "xmlbinary", "xmlcast", "xmlcomment", "xmlconcat", "xmldeclaration", "xmldocument",
                     "xmlelement", "xmlexists", "xmlforest", "xmliterate", "xmlnamespaces", "xmlparse", "xmlpi", "xmlquery", "xmlroot", "xmlschema",
                     "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone")
-           );
+            );
     public static final String DEFAULT_TYPE = "text";
     public static final String SCHEMA_NAME = "public";
     public static final int BATCH_SIZE = 5000;
@@ -219,7 +219,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             if (isAcceptableException(exception.getSQLException())) {
                 return;
             }
-            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table",exception, Arrays.asList(tableName));
+            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table", exception, Arrays.asList(tableName));
         }
     }
 
@@ -390,7 +390,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     }
 
     @Qualifier("tdarDataImportDataSource")
-    @Autowired(required=false)
+    @Autowired(required = false)
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -684,8 +684,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
      * @param codingSheet
      */
     @Override
-    public void translateInPlace(final DataTableColumn column,
-            final CodingSheet codingSheet) {
+    public void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet) {
         DataTable dataTable = column.getDataTable();
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
 
