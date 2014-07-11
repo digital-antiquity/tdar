@@ -568,7 +568,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             billingResponse = getDao().markWritable(billingResponse);
             getDao().saveOrUpdate(billingResponse);
             if (invoice != null) {
-                invoice = getDao().markWritable(invoice);
+                getDao().markUpdatable(invoice);
                 Person p = invoice.getOwner();
                 boolean found = false;
                 Address addressToSave = response.getAddress();
@@ -577,10 +577,14 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
                         found = true;
                     }
                 }
+
+                //if user provided an address to nelnet,  add that address to user's list of addresses
+                //fixme:  This is sketchy behavior. Just because I gave the payment processor my billing address does not imply I want to give it to tDAR.
                 if (!found) {
                     p.getAddresses().add(addressToSave);
                     getLogger().info(addressToSave.getAddressSingleLine());
-                    getDao().saveOrUpdate(addressToSave);
+                    //this will always fail(you can't save a transient addresss directly because  it is a child relation of person).  It's also unnecessary:  If p is on the session hibernate will save the address.
+                    //getDao().saveOrUpdate(addressToSave);
                     invoice.setAddress(addressToSave);
                 }
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);

@@ -26,6 +26,9 @@ import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
+import static org.tdar.core.bean.Persistable.Base.isNotTransient;
+import static org.tdar.core.bean.Persistable.Base.isTransient;
+
 @Component
 @Scope("prototype")
 @Results({
@@ -217,6 +220,11 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
     public String preview() {
+        //fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cart/new
+        if(isAuthenticated() && isTransient(getInvoice().getOwner())) {
+            getInvoice().setOwner(getAuthenticatedUser());
+            getInvoice().setTransactedBy(getAuthenticatedUser());
+        }
         try {
             setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraItemIds, extraItemQuantities, pricingType,
                     accountId));

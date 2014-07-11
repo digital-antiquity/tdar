@@ -8,6 +8,8 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
@@ -21,6 +23,8 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 /**
  * Created by JAMES on 6/14/2014.
  */
+@Component
+@Scope("prototype")
 @Namespace("/cart")
 @ParentPackage("secured")
 @Results({

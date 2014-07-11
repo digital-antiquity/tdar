@@ -1,5 +1,8 @@
 package org.tdar.core.bean;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -120,6 +123,7 @@ import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -1002,5 +1006,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
         SimpleMailMessage received = messages.remove(0);
         return received;
+    }
+
+    public String getText(String msgKey) {
+        String msg = MessageHelper.getMessage(msgKey);
+        assertThat("key should not be same as getText(key) (did you forget to add it to tdar-messages?)", msgKey, is( not( msg )));
+        return msg;
     }
 }
