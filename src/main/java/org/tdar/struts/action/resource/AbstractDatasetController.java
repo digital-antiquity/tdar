@@ -303,16 +303,18 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomMetadata();
         List<Map<String, Object>> result = new ArrayList<>();
-        for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
-            Map<String, Object> col = new HashMap<>();
-            col.put("simpleName", dtc.getJsSimpleName());
-            col.put("displayName", dtc.getDisplayName());
-            result.add(col);
+        if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
+            for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
+                Map<String, Object> col = new HashMap<>();
+                col.put("simpleName", dtc.getJsSimpleName());
+                col.put("displayName", dtc.getDisplayName());
+                result.add(col);
+            }
         }
         try {
             setDataTableColumnJson(xmlService.convertToJson(result));
         } catch (Exception e) {
-            getLogger().error("cannot convert to JSON: {}" , e);
+            getLogger().error("cannot convert to JSON: {}", e);
         }
     }
 

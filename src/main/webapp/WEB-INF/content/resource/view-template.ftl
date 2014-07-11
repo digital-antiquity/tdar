@@ -576,7 +576,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     $(function () {
         'use strict';
         TDAR.common.initializeView();
-        <#if dataTableColumnJson?has_content>
+        <#if dataTableColumnJson?has_content && (dataTable.id)?has_content>
         <#noescape>
         var columns = ${dataTableColumnJson};
         </#noescape>

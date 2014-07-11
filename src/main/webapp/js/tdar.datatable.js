@@ -609,10 +609,10 @@ TDAR.datatable = function () {
                 sPaginationType: "bootstrap",
                 sScrollX: "100%",
                 "sScrollY": "",
+                "aoColumns": [],
                 "sAjaxSource": browseUrl
             };
 
-            options.aoColumns = [];
             if (viewRowSupported) {
                 options.aoColumns.push(
                   { "bSortable": false,
@@ -624,13 +624,14 @@ TDAR.datatable = function () {
                 });
                 offset++;
             };
-
+            var size =0;
             for (var col in columns ) {
                 if (columns.hasOwnProperty(col)) {
+                    size++;
                     options.aoColumns.push(
                     { "bSortable": false,
-                        "sName": col.simpleName,
-                        "sTitle": col.displayName,
+                        "sName": columns[col].simpleName,
+                        "sTitle": columns[col].displayName,
                         "fnRender": function (obj) {
                             var val = obj.aData[offset];
                             var str = TDAR.common.htmlEncode(val);
@@ -639,8 +640,9 @@ TDAR.datatable = function () {
                     });
                 }
             }
-            
-            TDAR.datatable.registerLookupDataTable(options);
+            if (size > 0) {
+                TDAR.datatable.registerLookupDataTable(options);
+            }
 
     }
     
