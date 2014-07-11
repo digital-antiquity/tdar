@@ -126,7 +126,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         Map<String, Object> map = new HashMap<>();
         map.put("phase", phase);
         map.put("percentDone", percentDone);
-        getLogger().debug("phase: {} [{}%]", phase, percentDone);
+//        getLogger().debug("phase: {} [{}%]", phase, percentDone);
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
