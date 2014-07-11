@@ -1,6 +1,10 @@
 package org.tdar.struts.action.cart;
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
@@ -10,20 +14,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * Created by jimdevos on 7/7/14.
@@ -31,6 +31,7 @@ import java.util.Map;
 @Component
 @Scope("prototype")
 @Namespace("/cart")
+@HttpsOnly
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
     private static final long serialVersionUID = 0xDEADBEEF;
 
