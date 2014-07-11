@@ -156,13 +156,20 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
          */
-        new WorkflowResult(fileProxiesToProcess).addActionErrorsAndMessages(listener);
+        WorkflowResult workflowResult = new WorkflowResult(fileProxiesToProcess);
+        workflowResult.addActionErrorsAndMessages(listener);
 
-        // getDao().refreshAll(resource.getInformationResourceFiles());
+        // If successful and no errors:
+        // purge the filestore
+        // mark the uploaded files as "read only"
+        if (workflowResult.isSuccess()) {
+            config.getFilestore().markSuccessfulUpload(ObjectType.RESOURCE, filesToProcess);
+        }
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
+
     }
 
     /*
@@ -292,7 +299,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 columnsToUnmap.addAll(table.getDataTableColumns());
             }
         }
-        
+
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
         getDao().delete(columnsToRemove);
