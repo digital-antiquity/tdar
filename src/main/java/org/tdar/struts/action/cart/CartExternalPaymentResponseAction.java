@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Namespace("/cart")
-@HttpsOnly
+//@HttpsOnly
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
     private static final long serialVersionUID = 0xDEADBEEF;
 

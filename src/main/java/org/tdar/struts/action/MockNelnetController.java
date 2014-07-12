@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +18,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -76,11 +82,79 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     public String execute() throws ClientProtocolException, IOException, TdarActionException {
 
         processFakeResponse(getCcType(getCcnum()));
+//        sendResponse_old();
         sendResponse();
         return "success";
     }
 
-    private void sendResponse() throws TdarActionException {
+
+    /**
+     * return httpclient that trusts self-signed certs
+     *
+     * @return
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyManagementException
+     */
+    private CloseableHttpClient httpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
+        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        return httpclient;
+    }
+
+    /**
+     * send post request to specified  url with specified name/value pairs
+     * @param url
+     * @param parms
+     * @return
+     */
+    private CloseableHttpResponse doPost(String url, List<NameValuePair> parms ) {
+        HttpPost post = new HttpPost(url);
+        post.setEntity(new UrlEncodedFormEntity(parms, Consts.UTF_8));
+        CloseableHttpResponse httpResponse = null;
+        try {
+            httpResponse = httpClient().execute(post);
+        } catch (IOException|KeyStoreException|NoSuchAlgorithmException|KeyManagementException e) {
+            getLogger().error("so, this happened: {}", e);
+            addActionError(e.getMessage());
+        }
+        return httpResponse;
+    }
+
+
+    private void sendResponse() throws IOException, TdarActionException {
+        String url = String.format("https://%s:%s/cart/process-external-payment-response", getHostName(), getHttpsPort());
+        getLogger().debug("sending response to: {}", url);
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
+            if (!getResponseParams().containsKey(item.getKey()) || (item == NelnetTransactionItemResponse.KEY)) {
+                continue;
+            }
+            pairs.add(new BasicNameValuePair(item.getKey(), responseParams.get(item.getKey())[0]));
+        }
+        CloseableHttpResponse response = doPost(url, pairs);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        StringBuilder sb = new StringBuilder();
+        for (String line : IOUtils.readLines(rd)) {
+            sb.append(line);
+        }
+        String html = sb.toString();
+        boolean seen = html.contains("success");
+
+        if (!seen) {
+            getLogger().warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
+            throw new TdarRecoverableRuntimeException("mockNelnetController.did_not_see_success");
+        }
+
+        if(!getActionErrors().isEmpty()) {
+            throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
+        }
+
+    }
+
+    private void sendResponse_old() throws TdarActionException {
         String url = String.format("http://%s:%s/cart/process-external-payment-response", getHostName(), getHostPort());
         getLogger().debug("sending response to: {}", url);
         HttpPost postReq = new HttpPost(url);
@@ -101,6 +175,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
             BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));
             boolean seen = false;
             for (String line : IOUtils.readLines(rd)) {
+                getLogger().info(line);
                 if (line.contains("success")) {
                     seen = true;
                 }
