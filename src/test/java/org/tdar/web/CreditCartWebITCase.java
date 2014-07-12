@@ -174,6 +174,8 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         submitForm();
         loginAndSpecifyCC();
         selectAnyAccount();
+        assertCurrentUrlContains("/cart/choose-billing-account");
+        submitForm("Next Step: Payment");
         String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName = "test account 1";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);

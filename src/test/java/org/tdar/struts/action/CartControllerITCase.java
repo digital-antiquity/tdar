@@ -165,6 +165,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -186,6 +187,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid2() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -196,6 +198,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid3() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -230,6 +233,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentValid() throws TdarActionException, IOException {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
@@ -326,8 +330,10 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("This test should mimic invalid input, but doesn't appear to provide any invalid data")
+    //@Ignore("This test should mimic invalid input, but doesn't appear to provide any invalid data")
     public void testCartPaymentInvalidParams() throws TdarActionException, IOException {
+        setIgnoreActionErrors(true);
+
         //ensure that the cart controllers do not return success messages if you pass it bogus data
         String response;
         CartController controller = setupPaymentTests();
@@ -350,7 +356,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller.getRedirectUrl();
         String response2 = processMockResponse(invoice, redirectUrl, false);
-        assertEquals(Action.SUCCESS, response2);
+        assertEquals(Action.ERROR, response2);
         invoice = genericService.find(Invoice.class, invoiceId);
         // can't mark as failed b/c no way to validate package that has invoice ID
         assertEquals(TransactionStatus.PENDING_TRANSACTION, invoice.getTransactionStatus());
@@ -411,12 +417,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(CartExternalPaymentResponseAction.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.setParameters(mock.getResponseParams());
-        controller.prepare();
-        controller.validate();
         if (!isValid) {
             // fake tainted connection
             controller.setParameters(mock.getParams());
         }
+        controller.prepare();
+        controller.validate();
         String response2 = controller.processExternalPayment();
         return response2;
     }
@@ -424,22 +430,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     private void assertInMapAndEquals(Map<String, String[]> params, String key, String val) {
         assertTrue(params.containsKey(key));
         assertEquals(val, params.get(key)[0]);
-    }
-
-    @Test
-    @Rollback
-    @Ignore("jtd: I propose we remove this test. TDAR doesn't require it, and should probably be left to the descretion of the payment processor.")
-    public void testCartPaymentMissingPhone() throws TdarActionException {
-        CartController controller = setupPaymentTests();
-        controller.getInvoice().setPaymentMethod(PaymentMethod.CREDIT_CARD);
-        //controller.setPhoneRequired(true);
-        String msg = null;
-        try {
-            controller.processPayment();
-        } catch (Exception e) {
-            msg = e.getMessage();
-        }
-        assertEquals(getText("cartController.valid_phone_number_is_required"), msg);
     }
 
     private CartController setupPaymentTests() throws TdarActionException {

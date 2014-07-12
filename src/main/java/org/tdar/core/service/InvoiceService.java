@@ -568,7 +568,8 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             billingResponse = getDao().markWritable(billingResponse);
             getDao().saveOrUpdate(billingResponse);
             if (invoice != null) {
-                getDao().markUpdatable(invoice);
+                //if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient item in p.addresses)
+                invoice =  getDao().markWritable(invoice);
                 Person p = invoice.getOwner();
                 boolean found = false;
                 Address addressToSave = response.getAddress();
