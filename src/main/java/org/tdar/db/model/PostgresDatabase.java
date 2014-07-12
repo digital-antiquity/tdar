@@ -95,7 +95,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
-    private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
+    private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
+    private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE %s SET \"%s\"=NULL";
@@ -714,7 +715,18 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             jdbcTemplate.execute(createColumnSql);
 
         }
-        final String updateColumnSql = String.format(UPDATE_COLUMN_SET_VALUE, tableName, columnName, originalColumnName);
+        
+        String sql = UPDATE_COLUMN_SET_VALUE;
+        switch (columnDataType) {
+            case TEXT:
+            case VARCHAR:
+                sql = UPDATE_COLUMN_SET_VALUE_TRIM;
+                break;
+            default:
+                break;
+        }
+
+        final String updateColumnSql = String.format(sql, tableName, columnName, originalColumnName);
         logger.debug("translating column from " + tableName + " (" + columnName + ")");
         PreparedStatementCreator translateColumnPreparedStatementCreator = new PreparedStatementCreator() {
             @Override
