@@ -1,0 +1,33 @@
+# Instructions: This file contains configuration information for the LDAP authentication provider.
+# An additional configuration step is the create the relevant groups in the LDAP server.
+# The group names must be identical to those in org.tdar.core.service.external.auth.TdarGroup.java. (Example: tdar-users, tdar-admins etc)
+# The groups must also belong to the objectclass posixGroup.
+# Users are assumed to belong to objectclass inetOrgPerson. 
+
+# Mandatory configuration settings
+#---------------------------------
+
+# URL of ldap server
+ldap.url=ldap://localhost:389
+
+# All lookups will be relative to this base DN.
+ldap.baseDn=dc=tdar,dc=org
+
+# The managerDN specifies a user who has access to manage the LDAP directory tree (underneath the baseDN). Remember to specify that user's full DN here.
+ldap.managerDn=cn=Manager,dc=tdar,dc=org
+
+# The password for the directory manager
+ldap.managerPassword=password
+
+# The password reset url is where the the user will be redirected to if he/she clicks Forgot Password. A page to recover the user's password must be
+# placed here. A possible candidate is: http://ltb-project.org/wiki/documentation/self-service-password
+ldap.passwordResetURL=http://andsdb-sc18-test.latrobe.edu.au/ssp/?action=sendtoken
+
+# Optional configuration settings
+#---------------------------------
+
+# This optional parameter allow specifying a Relative Distinguished Name under which tdar users will be created.
+ldap.userRdn=
+
+# This optional parameter allow specifying a Relative Distinguished Name under which tdar groups will be created.
+ldap.groupRdn=ou=group

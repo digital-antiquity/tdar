@@ -1,0 +1,156 @@
+Define: Given I go to the self test page
+	NavigateTo /self-test.html
+
+Define: Then I can see '<page_title>'
+    AssertPageTitle is "<page_title>" 	
+	
+Define: And the header title is '<msg>' 
+	AssertValue id header-id text = "<msg>"
+	
+Define: And if I click the '<btn_text>' button
+    ClickSubmitButton "<btn_text>"
+    
+Define: Then I can see "<msg>" message  
+		AssertValue id show-text-on-button-click-text-div-id text = "<msg>"
+		
+Define: And I see "<option_value>" in select id <select_id>
+    AssertSelect id="<select_id>" text="<option_value>" is currently selected
+    
+Define: And I dont see "<option_value>" in select id <select_id>
+    AssertSelect id="<select_id>" text="<option_value>" is not currently selected
+    
+Define: Then I choose "<option_value>" in select id <select_id>      
+    ChooseOption "<option_value>" in id <select_id> 	
+    
+Define: And if I click the Click by id button
+	ClickById click-id
+	
+Define: Then I can see another "<msg>" message
+    AssertValue id show-text-on-id-click-text-div-id text = "<msg>"
+    
+Define: Then I see "<msg>" after a pause
+    FindByIdTimeout show-text-on-deplayed-id-click-text-div-id timeout = 10 secs
+
+Define: Given I enter "<txt>" into the text field
+	FindByTagAndAttributes tag="input" attributes=[name="named_text_field",maxlength="10",size="10"]
+	ClearAndSendKeys "<txt>"
+
+Define: Then the text field will contain "<txt>"	
+    FindByName "named_text_field"
+    AssertCurrentElement attribute="value" value="<txt>"
+#    AssertCurrentElement text="<txt>"
+
+Define: Given I enter "<txt>" another way into the text field
+	ClearAndSendKeys <txt> to id text-id
+ 	FindByXpath "id('text-id')"
+    AssertCurrentElement attribute="value" value="<txt>"
+
+Define: Given radio button with text "<rb_text>" is checked
+	FindRadioButton inside tag="label" with label="<rb_text>"
+	AssertRadioButton checked=true
+
+Define: Then radio button with text "<rb_text>" is checked
+	Given radio button with text "<rb_text>" is checked
+	
+Define: Given radio button with text "<rb_text>" is not checked
+	FindRadioButton inside tag="label" with label="<rb_text>"
+	AssertRadioButton checked=false
+	
+Define: Then I can check radio button with text "<rb_text>"	
+	FindRadioButton inside tag="label" with label="<rb_text>"
+	SetRadioButton checked=true	
+
+
+Define: Given checkbox with text "<cb_text>" is not checked
+	FindCheckbox inside tag="label" with label="<cb_text>"
+	AssertCheckBox checked=false
+
+Define: Then I can check checkbox with text "<cb_text>"
+	SetCheckedBox checked=true
+
+Define: And checkbox with text "<cb_text>" is checked
+	FindCheckbox inside tag="label" with label="<cb_text>"
+	AssertCheckBox checked=true
+
+    
+   
+Define: And the field located beneath the heading has the text '<txt>'
+	FindById parent_div_id
+	FindChild ByTagAndAttributes tag="span" attributes=[class="some_class"]
+	AssertCurrentElement text="<txt>"	 
+   
+Define: And I can click the link "<link_text>" and see "<txt>"
+	ClickLink "<link_text>"
+	FindById show-text-on-link-click-text-div-id
+	AssertCurrentElement text="<txt>"   
+	
+Define: And the table row <row>, column <col> contains "<txt>"
+	FindById table_id
+	AssertTableValue column <col>, row <row> contains text "<txt>"	
+	
+Define: Given I go to an external page such as Google
+    NavigateTo http://www.google.co.uk
+
+Define: Then the page title is "<page_title>"
+	AssertPageTitle is "<page_title>"
+	
+Define: And find by child works
+        FindByTagAndAttributes tag="div" attributes=[class="mini-profile"]
+        FindChild ByTagAndAttributes tag="a" attributes=[class="btn edit-button dialog-modal"]  
+        Click
+        AssertValue id mcshane-bug-div-id text = "mcshane"
+        AssertValue id mcshane-negative-bug-div-id text = "mcshane negative test"	
+
+
+Define: Given the context menu hasn't been clicked
+        FindById context-clicked-div 
+        AssertCurrentElement has attributes=[class="context-not-clicked"]
+        AssertCurrentElement text contains "Not clicked"
+        
+Define: And I click the context menu
+        FindById context-click-a
+        PerformContextClick
+        
+    
+Define: Then I see "context has been clicked"
+         FindById context-clicked-div
+         AssertCurrentElement has attributes=[class="context-clicked"]
+        AssertEventuallyContains context-clicked-div "context has been clicked"
+        
+        
+Define: Given that I've not double clicked the link
+         AssertValue id dbl-clicked-div text = "Not doubled clicked yet"
+        
+    
+Define: And I double click the link
+        FindById dbl-click-a
+        PerformDoubleClick
+        
+Define: Then I can see I've double clicked
+        AssertValue id dbl-clicked-div text = "element has been double clicked"
+        
+Define: And I can find the disabled text field
+        FindById postcode
+        AssertCurrentElement attribute="disabled" value="true"
+        
+Define: And I select the second option by looking at the text it contains
+        FindTagElementContainingText tag="option" text="two"
+        Click
+        
+Define: Then I find a row using column contents
+    FindById table-contents-tests
+    FindTableRowWithColumnsThatContainText ["My Name", "Where it all began...", "09:31"]
+    
+Define: And I can find and click the link "<linkText>" in the row    
+    FindElementInRow linkText="<linkText>"
+    Click
+    FindById show-text-on-link-click-in-row1
+    FindById show-text-on-link-click-in-row2 
+    # this won't have been hidden
+
+Define: Given I click the Dont click me button
+   ClickById pop-alert-button
+   
+Define: Then I see an Alert "<msg>"
+    DismissAlert with message "<msg>"
+            
