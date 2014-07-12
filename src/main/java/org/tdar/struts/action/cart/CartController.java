@@ -209,4 +209,8 @@ public class CartController extends AbstractCartController {
     public void setBillingPhone(String billingPhone) {
         this.billingPhone = billingPhone;
     }
+
+    public Long getAccountId() {
+        return account.getId();
+    }
 }
