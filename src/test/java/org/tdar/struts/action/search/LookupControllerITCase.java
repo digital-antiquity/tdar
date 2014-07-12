@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;

@@ -6,6 +6,10 @@
  */
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
@@ -16,15 +20,9 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.BillingAccountController;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
-import org.tdar.utils.MessageHelper;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin

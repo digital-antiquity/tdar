@@ -2,10 +2,8 @@ package org.tdar.web;
 
 import static org.junit.Assert.assertTrue;
 
-import org.apache.bcel.generic.GETSTATIC;
 import org.junit.Test;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.TestConfiguration;
 
 public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCase {

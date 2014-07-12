@@ -14,10 +14,6 @@ import org.tdar.core.service.XmlService;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-
 public class JsonObfuscationTestCase {
     private Logger logger = Logger.getLogger(getClass());
 

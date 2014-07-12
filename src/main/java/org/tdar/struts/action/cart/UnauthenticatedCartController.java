@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -25,9 +26,6 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
-
-import static org.tdar.core.bean.Persistable.Base.isNotTransient;
-import static org.tdar.core.bean.Persistable.Base.isTransient;
 
 @Component
 @Scope("prototype")
@@ -221,7 +219,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @PostOnly
     public String preview() {
         //fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cart/new
-        if(isAuthenticated() && isTransient(getInvoice().getOwner())) {
+        if(isAuthenticated() && Persistable.Base.isTransient(getInvoice().getOwner())) {
             getInvoice().setOwner(getAuthenticatedUser());
             getInvoice().setTransactedBy(getAuthenticatedUser());
         }

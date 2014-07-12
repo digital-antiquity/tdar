@@ -1,5 +1,12 @@
 package org.tdar.core.bean.entity;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -13,9 +20,6 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.service.GenericService;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
 
 public class PersonITCase extends AbstractIntegrationTestCase {
 

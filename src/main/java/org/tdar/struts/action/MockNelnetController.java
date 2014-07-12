@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;

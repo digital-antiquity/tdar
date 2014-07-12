@@ -35,7 +35,6 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
 

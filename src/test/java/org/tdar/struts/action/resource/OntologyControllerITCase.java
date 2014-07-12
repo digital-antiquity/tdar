@@ -38,7 +38,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.Pair;
 
 /**

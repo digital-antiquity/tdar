@@ -8,12 +8,12 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Length;
-import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable.Base;
 //import net.sf.json.JSONObject;
 //import net.sf.json.JsonConfig;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.Persistable.Base;
 
 /**
  * A JSON Object that represents the result of a financial transaction. Could be successful or failed.

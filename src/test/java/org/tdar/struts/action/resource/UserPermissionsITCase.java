@@ -27,7 +27,6 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;
 

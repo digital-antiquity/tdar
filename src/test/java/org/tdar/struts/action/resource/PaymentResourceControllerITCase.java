@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;

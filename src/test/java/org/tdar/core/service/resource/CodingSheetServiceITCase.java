@@ -25,7 +25,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * @author Adam Brin

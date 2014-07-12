@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * @author Adam Brin

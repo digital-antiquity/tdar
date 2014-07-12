@@ -61,7 +61,6 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 @Transactional

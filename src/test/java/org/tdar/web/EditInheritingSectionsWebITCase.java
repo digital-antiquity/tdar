@@ -21,8 +21,6 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";

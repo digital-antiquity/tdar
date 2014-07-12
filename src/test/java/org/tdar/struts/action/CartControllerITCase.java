@@ -1,14 +1,28 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.Action;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.billing.*;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
@@ -19,16 +33,14 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.struts.action.cart.*;
+import org.tdar.struts.action.cart.CartApiController;
+import org.tdar.struts.action.cart.CartBillingAccountController;
+import org.tdar.struts.action.cart.CartController;
+import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
+import org.tdar.struts.action.cart.UnauthenticatedCartController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.*;
+import com.opensymphony.xwork2.Action;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 

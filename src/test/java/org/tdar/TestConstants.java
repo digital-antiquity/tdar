@@ -1,7 +1,5 @@
 package org.tdar;
 
-import sun.print.PSStreamPrinterFactory;
-
 import java.util.regex.Pattern;
 
 public interface TestConstants {
