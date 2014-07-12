@@ -166,7 +166,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             for (InformationResourceFileVersion file : filesToProcess) {
                 proxies.add(file);
             }
-            config.getFilestore().markSuccessfulUpload(ObjectType.RESOURCE, proxies);
+            config.getFilestore().markReadOnly(ObjectType.RESOURCE, proxies);
         }
         if (ticketId != null) {
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);

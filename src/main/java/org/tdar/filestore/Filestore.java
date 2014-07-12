@@ -392,5 +392,5 @@ public interface Filestore {
 
     }
 
-    void markSuccessfulUpload(ObjectType type, List<FileStoreFileProxy> filesToProcess);
+    void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess);
 }

@@ -342,7 +342,7 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public void markSuccessfulUpload(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
+    public void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
         for (FileStoreFileProxy version : filesToProcess) {
             String absoluteFilePath = getAbsoluteFilePath(type, version);
             File file = new File(absoluteFilePath);
