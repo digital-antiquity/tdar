@@ -219,6 +219,8 @@ public class CartController extends AbstractCartController {
         this.invoiceId = invoiceId;
     }
 
+
+    @Deprecated
     public void setBillingPhone(String billingPhone) {
         this.billingPhone = billingPhone;
     }

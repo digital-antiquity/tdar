@@ -16,6 +16,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -76,7 +77,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
 
         try {
             cartService.processTransactionResponse(response, paymentTransactionProcessor);
-        } catch (IOException e) {
+        } catch (IOException|TdarRecoverableRuntimeException e) {
             getLogger().error("IO error occured when processing nelnet response", e);
             addActionError(e.getMessage());
             inputStream = new ByteArrayInputStream(ERROR.getBytes());
