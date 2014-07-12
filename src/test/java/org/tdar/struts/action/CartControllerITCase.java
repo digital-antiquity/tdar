@@ -165,7 +165,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -187,7 +186,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid2() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -198,7 +196,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentInvalid3() throws TdarActionException, IOException {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
@@ -233,7 +230,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("invoice service doesn't adequately handle address corner cases and should not be used")
     public void testCartPaymentValid() throws TdarActionException, IOException {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
@@ -330,10 +326,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    //@Ignore("This test should mimic invalid input, but doesn't appear to provide any invalid data")
     public void testCartPaymentInvalidParams() throws TdarActionException, IOException {
-        setIgnoreActionErrors(true);
-
         //ensure that the cart controllers do not return success messages if you pass it bogus data
         String response;
         CartController controller = setupPaymentTests();
