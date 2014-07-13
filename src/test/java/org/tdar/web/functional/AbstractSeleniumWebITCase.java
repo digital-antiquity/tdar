@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -94,6 +95,8 @@ public abstract class AbstractSeleniumWebITCase {
 
     // {@link #getText} is a slow operation. cache the results until next pageload.
     private String cachedPageText = null;
+    protected Dimension testSize = new Dimension(1024, 768);
+    protected Dimension originalSize;
 
     private boolean screenshotsAllowed = true;
     // if true, ignore all javascript errors during page navigation events
@@ -1242,6 +1245,20 @@ public abstract class AbstractSeleniumWebITCase {
         String newHandle = newHandles.iterator().next();
         return newHandle;
 
+    }
+
+    public void force1024x768() {
+        Dimension size2 = getDriver().manage().window().getSize();
+        if (size2 != testSize) {
+            originalSize = size2;
+        }
+        getDriver().manage().window().setSize(testSize);
+    }
+    
+    public void resetSize() {
+        if (originalSize != null) {
+            getDriver().manage().window().setSize(originalSize);
+        }
     }
 
 }

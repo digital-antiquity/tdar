@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.UserRegistration;
 
+import com.opensymphony.xwork2.interceptor.annotations.After;
+
 /**
  * Created by jimdevos on 6/25/14.
  */
@@ -32,14 +34,21 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     @Before
     public void cartTestBefore() {
         startWindow = getDriver().getWindowHandle();
+        force1024x768();
     }
-
+    
+    @After
+    public void cleanup() {
+        resetSize();
+    }
+    
     /**
      * Assert that user is logged out.
      */
     private void assertLoggedOut() {
         List<WebElement> selection = find(By.linkText("LOG IN")).toList();
-        assertThat("login button exists", selection, is(not(empty())));
+        logger.debug(getCurrentUrl());
+        assertThat("login button is missing", selection, is(not(empty())));
     }
 
     /**
