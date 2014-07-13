@@ -1590,7 +1590,17 @@ div.orgChart div.node.level1.special {
 .form-condensed label {
     margin-bottom:0;
 }
-
+.hero-unit.hero-condensed {
+    padding:30px 40px 20px 40px;
+    margin-top:10px;
+    margin-bottom:10px
+}
+.hero-unit.hero-condensed h1 {
+    /* fixme: this style mut be !important because of the article.h1 !important override. ideally both overrides should be removed. */
+    margin:0 !important; padding:0!important;
+}
+.hero-unit.hero-condesed h2 {
+}
 .form-condensed input, .form-condensed select {
     padding: 3px;
 }

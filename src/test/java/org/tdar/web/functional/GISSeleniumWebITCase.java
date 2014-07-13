@@ -152,18 +152,19 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logout();
         gotoPage(url);
         find(".media-body a").first().click();
-        waitFor("#loginUsername");
-        Thread.sleep(1000L);
+
         String username = TestConfiguration.getInstance().getAdminUsername();
         String password = TestConfiguration.getInstance().getAdminPassword();
         assertThat(username, not(isEmptyOrNullString()));
         assertThat(password, not(isEmptyOrNullString()));
-        find("#loginUsername").val(username);
+        waitFor("#loginUsername").val(username);
         find("#loginPassword").val(password);
-        find("#btnLogin").click();
+        submitForm("#loginForm [name=submit]");
         logger.debug("currentUrl: {}", getCurrentUrl());
         assertTrue(getCurrentUrl().contains("download") );
+        dismissModal();
 
     }
+
 
 }

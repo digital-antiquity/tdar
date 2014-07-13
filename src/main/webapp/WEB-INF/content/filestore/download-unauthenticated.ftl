@@ -15,17 +15,17 @@
     <title>Download: ${title}</title>
 </head>
 <body>
-<div class="hero-unit">
-    <h1>Please Login or Register to download your file</h1>
+<div class="hero-unit hero-condensed">
+    <h1>Please Register or Login</h1>
 
-    <p>The download you requested will begin momentarily</p>
+    <p>File downloads require  ${siteAcronym} membership.  Please complete the registration or login form to resume downloading this file.</p>
     <dl class="dl-horizontal">
         <ul class="inline">
-            <#if informationResourceFileVersion?has_content && (informationResourceFileVersion.informationResourceFile.latestThumbnail)?has_content && informationResourceFileVersion.informationResourceFile.latestThumbnail.visible >
+            <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.visible)!false) >
                 <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
                     title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
             <#else>
-                <#list informationResource.informationResourceFiles as irFile>
+                <#list (informationResource.informationResourceFiles)! as irFile>
                     <li>
                     <#if (irFile.latestThumbnail)?has_content && irFile.latestThumbnail.visible >
                     <img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
@@ -37,19 +37,16 @@
                 </#list>
             </#if>
         </ul>
-        <dt>File(s)</dt>
+        <dt>Filename</dt>
         <dd>${filename!"undefined"?html}</dd>
+        <dt>Status</dt>
+        <dd>login required</dd>
     </dl>
-    <p>
-        You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
-        automatically,
-        or if you would like to download the file again, please click on the link above.
-    </p>
 </div>
 
     <div class="row">
         <div class="span9" id="divRegistrationSection">
-            <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate"
+            <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="/filestore/process-download-registration">
                 <@s.token name='struts.csrf.token' />
                 <fieldset>
