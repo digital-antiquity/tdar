@@ -76,7 +76,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
@@ -130,7 +129,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    // @Ignore(value="Ignore until PDFBox 1.6.4; which fixes issue with JPEG procesing and the native C-Libraries")
     public void testReprocessInformationResourceFile() throws Exception {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
