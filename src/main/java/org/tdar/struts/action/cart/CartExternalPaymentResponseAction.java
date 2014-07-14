@@ -58,19 +58,23 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     public void prepare() {
         response = paymentTransactionProcessor.setupTransactionResponse(extraParameters);
         invoice = paymentTransactionProcessor.locateInvoice(response);
+        inputStream = new ByteArrayInputStream("success".getBytes());
     }
 
 
     @Override
     public void validate() {
         //TODO:check to see if invoice is modifiable
+        if(invoice == null) {
+            addActionError("Invoice not found.");
+        }
     }
 
     @WriteableSession
     @PostOnly
     @Action(value  = PROCESS_EXTERNAL_PAYMENT_RESPONSE, results = {
             @Result(name = "success", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
-            @Result(name = "error", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
+            @Result(name = "input", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
     })
     public String processExternalPayment() {
         getLogger().trace("PROCESS RESPONSE {}", extraParameters);
@@ -83,6 +87,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
             inputStream = new ByteArrayInputStream(ERROR.getBytes());
             return ERROR;
         }
+        //this is already done in prepare(), but some tests may not be calling prepare() prior to calling this method.
         inputStream = new ByteArrayInputStream("success".getBytes());
         handlePurchaseNotifications();
         return SUCCESS;

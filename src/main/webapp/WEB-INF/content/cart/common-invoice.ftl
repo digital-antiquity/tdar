@@ -62,7 +62,7 @@
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if (billingManager!false)>
-            <@s.a href="/cart/new?files=${invoice.numberOfFiles?c}&mb=${invoice.numberOfMb?c}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a>
+            <#noescape><@s.a href="/cart/new?files=${invoice.numberOfFiles?c}%26mb=${invoice.numberOfMb?c}%26code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape>
         </#if>
     </div>
 

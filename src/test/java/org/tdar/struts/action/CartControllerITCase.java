@@ -169,10 +169,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         BillingActivityModel model = new BillingActivityModel();
         genericService.save(model);
         BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F, model), 1);
+        simulateNewSession();
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
         String msg = TdarActionSupport.SUCCESS;
-
+        //this test fails intermittently unless we do a synchronize.  I have no idea why.
+        genericService.synchronize();
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
 
@@ -217,12 +219,21 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(billingItem.getActivity());
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
         //controller.getInvoice().setBillingPhone("123-415-9999");
+
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        genericService.saveOrUpdate(invoice);
+        //simulate the "process payment" action, which implicitly sets the invoice total amongst other things
+        simulateNewSession();
+        controller  = generateNewInitializedController(CartController.class);
+        controller.getSessionData().setInvoiceId(invoiceId);
+        controller.prepare();
+        controller.validate();
         String response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
-
         String redirectUrl = controller.getRedirectUrl();
+        //simulateNewSession();
+        invoice = genericService.find(Invoice.class, invoice.getId());
         String response2 = processMockResponse(invoice, redirectUrl, true);
         assertEquals(Action.SUCCESS, response2);
         return genericService.find(Invoice.class, invoiceId);
@@ -248,6 +259,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Long invoiceId = invoice.getId();
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         simulateCartUpdate(invoice);
+        simulateNewSession();
 
 
         CartController controller2 = generateNewInitializedController(CartController.class);
@@ -258,6 +270,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         response = controller2.processPayment();
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller2.getRedirectUrl();
+        invoice = controller2.getInvoice();
         String response2 = processMockResponse(invoice, redirectUrl, true);
         assertEquals(Action.SUCCESS, response2);
         invoice = genericService.find(Invoice.class, invoiceId);
@@ -324,9 +337,19 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(invoiceNumber, invoice.getInvoiceNumber());
     }
 
+    /**
+     * in the context of a web application, struts actions typically execute in their own hibernate session. if a single test executes multiple actions,
+     * it might be necessary to purge/clear the current session to ensure pending db transactions occur and to avoid loads from hibernate cache instead of the db.
+     */
+    private void simulateNewSession() {
+        genericService.synchronize();
+        genericService.clearCurrentSession();
+    }
+
     @Test
     @Rollback
     public void testCartPaymentInvalidParams() throws TdarActionException, IOException {
+        setIgnoreActionErrors(true);
         //ensure that the cart controllers do not return success messages if you pass it bogus data
         String response;
         CartController controller = setupPaymentTests();
@@ -339,6 +362,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         simulateCartUpdate(invoice);
 
+        simulateNewSession();
+
         //go back to cart/process-payment
         controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
@@ -348,6 +373,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller.getRedirectUrl();
+        invoice = controller.getInvoice();
+
         String response2 = processMockResponse(invoice, redirectUrl, false);
         assertEquals(Action.ERROR, response2);
         invoice = genericService.find(Invoice.class, invoiceId);
