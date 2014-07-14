@@ -199,3 +199,11 @@ insert into user_notification(date_created, message_key, message_type, user_id)
     WHERE pos_account.owner_id=tdar_user.id and pos_account.description like '%auto-gen%' and (tdar_user.last_login is null or tdar_user.last_login < '2013-01-01');
 
 alter table user_session rename column person_id to tdar_user_id;
+
+-- abrin 07/14/2014 unique indexes
+CREATE UNIQUE INDEX culture_keyword_label_unique on culture_keyword(lower(label));
+CREATE UNIQUE INDEX geographic_label_unique on geographic_keyword(lower(label));
+CREATE UNIQUE INDEX other_keyword_label_unique on other_keyword(lower(label));
+CREATE UNIQUE INDEX site_name_keyword_label_unique on site_name_keyword(lower(label));
+CREATE UNIQUE INDEX site_tpe_keyword_label_unique on site_type_keyword(lower(label));
+CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(label));
