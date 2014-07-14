@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.Action;
  * @author jimdevos
  * 
  */
-//@Ignore
+@Ignore
 public class PersonControllerSavingITCase extends AbstractAdminControllerITCase {
     // ADDING SO THAT WE DON'T HAVE KEY ISSUES WHEN TESTING
     private static final String PERSON_EMAIL = System.currentTimeMillis() + "personcontrollersavingitcaseemail@mailinator.com";
