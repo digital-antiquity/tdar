@@ -65,7 +65,6 @@
                 <interceptor-ref name="checkbox"/>
                 <!--  technically, this is not used or needed, but keeping it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect"/>
-                <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="params">
                     <!-- Mirror changes to the second entry below as well... -->
                     <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->

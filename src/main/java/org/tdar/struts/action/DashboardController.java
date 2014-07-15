@@ -141,15 +141,6 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
             }
         }
 
-        Long invoiceId = getSessionData().getInvoiceId();
-        getSessionData().clearPassthroughParameters();
-        if (invoiceId != null) {
-            Invoice invoice = genericService.find(Invoice.class, invoiceId);
-            if (!invoice.isModifiable()) {
-                invoiceId = null;
-            }
-            getSessionData().setInvoiceId(invoiceId);
-        }
         prepareProjectStuff();
         setupBookmarks();
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);

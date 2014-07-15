@@ -128,12 +128,7 @@ public class CartController extends AbstractCartController {
         return SUCCESS;
     }
 
-    @Actions({
-        //fancy-schmancy parameterized action that doesn't require url rewriting
-        @Action(value="/invoice/{invoiceId}", results={@Result(name="success", location="../cart/view.ftl")}),
-        //old-and-busted action that relies on url rewriting
-        @Action(value="view", results={@Result(name="success", location="view.ftl")}),
-    })
+    @Action("view")
     //FIXME: move to new InvoiceController  or create new view-invoice action on BillingAccountController
     public String viewInvoice() {
         return SUCCESS;
