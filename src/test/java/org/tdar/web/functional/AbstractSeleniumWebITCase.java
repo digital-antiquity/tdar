@@ -328,6 +328,9 @@ public abstract class AbstractSeleniumWebITCase {
                 if (TestConfiguration.isMac()) {
                     profile.setPreference("focusmanager.testmode", true);
                 }
+                profile.setPreference("browser.helperApps.alwaysAsk.force", false);
+                profile.setPreference("browser.helperApps.neverAsk.saveToDisk","text/csv,image/tiff,image/tif,application/xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                profile.setPreference("browser.download.manager.showWhenStarting",false);
                 driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
