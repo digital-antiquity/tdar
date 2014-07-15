@@ -32,6 +32,7 @@
                     title="${irFile.filename!""?html}" alt="${irFile.filename?html}" />
                     <#else>
                         ${irFile.filename}
+
                     </#if>
                     </li>
                 </#list>
@@ -48,12 +49,20 @@
         <div class="span9" id="divRegistrationSection">
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="/filestore/process-download-registration">
-                <@s.token name='struts.csrf.token' />
+                    <@s.token name='struts.csrf.token' />
                 <fieldset>
                     <legend>Register</legend>
-                    <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" source="download" />
-                    <@commonFields />
+                    <div class="authpane">
+                        <div class="authfields">
+                            <@auth.registrationFormFields detail="minimal" cols=9 beanPrefix="downloadRegistration" source="download" showSubmit=false/>
+                            <@commonFields />
+                        </div>
+                        <div class="form-actions" style="background-color: transparent">
+                            <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction" value="Register and Download" >
+                        </div>
+                    </div>
                 </fieldset>
+
             </@s.form>
 
         </div>
@@ -61,12 +70,19 @@
         <div class="span3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate"
                     enctype='multipart/form-data' action="process-download-login">
-                <@auth.login showLegend=true  beanPrefix="downloadUserLogin" >
-                    <div class="form-actions">
-                        <input type="submit" name="submit" class="btn btn-large" value="Login and Continue">
+                <fieldset>
+                    <legend>Login</legend>
+                    <div class="authpane">
+                        <div class="authfields">
+                            <@auth.login showLegend=false  beanPrefix="downloadUserLogin" >
+                                <@commonFields />
+                            </@auth.login>
+                        </div>
+                        <div class="form-actions">
+                            <input type="submit" name="submit" class="btn btn-mini submitButton tdar-button" value="Login and Download">
+                        </div>
                     </div>
-                    <@commonFields />
-                </@auth.login>
+                </fieldset>
             </@s.form>
 
         </div>

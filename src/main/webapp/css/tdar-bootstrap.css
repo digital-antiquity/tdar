@@ -1572,24 +1572,29 @@ div.orgChart div.node.level1.special {
 }
 
 .authfields {
-    min-height: 330px;
+    min-height: 350px;
 }
 .authpane .form-actions, .cartpane .form-actions {
     background-color: #ecdccc;
-    border: none;
 
 }
 
 /* we want the form fields in an authpane to be more vertically compact */
 
-.form-condensed .control-group {
+.form-condensed .control-group{
     margin-top: 0;
     margin-bottom: 5px;
 }
 
-.form-condensed label {
+.form-condensed label, .form-condensed  {
     margin-bottom:0;
 }
+
+.cartpane .form-actions, .authpane .form-actions {
+    border: none;
+}
+
+
 .hero-unit.hero-condensed {
     padding:30px 40px 20px 40px;
     margin-top:10px;
@@ -1607,10 +1612,6 @@ div.orgChart div.node.level1.special {
 
 .form-condensed select {
 }
-
-
-
-
 
 #divInvoiceSubtotal {
     border: 2px solid #bbb;
@@ -1636,4 +1637,3 @@ div.orgChart div.node.level1.special {
     width: 100%;
     font-size: 10pt;
 }
-

@@ -146,6 +146,7 @@
     <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
 
     <@s.hidden name="returnUrl" />
+
     <#nested />
     <script type="text/javascript">
         $(document).ready(function () {
@@ -155,16 +156,11 @@
 </#macro>
 
 <#macro tos beanPrefix>
-    <div class="control-group">
-        <label class="control-label">Terms of Use</label>
-        <div class="controls">
-            <span class="help-block">  </span>
-            <label class="checkbox">
-                <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
-                I have read and accept the ${siteAcronym}
-                <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
-            </label>
-        </div>
-    </div>
+    <span class="help-block">  </span>
+    <label class="checkbox">
+        <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
+        I have read and accept the ${siteAcronym}
+        <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
+    </label>
 </#macro>
 </#escape>
