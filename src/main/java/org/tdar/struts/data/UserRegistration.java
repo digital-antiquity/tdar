@@ -120,6 +120,13 @@ public class UserRegistration extends UserAuthData {
         return errors;
     }
 
+    /**
+     * Override to provide custom registration welcome new user message keys for downloading vs purchasing vs contributing.
+     */
+    public String getWelcomeNewUserMessageKey() {
+        return "authenticationService.welcome_new_user";
+    }
+
     public String getPassword() {
         return password;
     }
@@ -184,11 +191,9 @@ public class UserRegistration extends UserAuthData {
         this.affiliation = affiliation;
     }
 
-
     public List<UserAffiliation> getAffiliations() {
         return affiliations;
     }
-
 
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;

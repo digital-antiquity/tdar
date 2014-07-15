@@ -35,6 +35,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.MessageHelper;
@@ -68,6 +69,9 @@ public class AuthenticationService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private UserNotificationService userNotificationService;
 
     @Autowired
     private InstitutionDao institutionDao;
@@ -364,6 +368,7 @@ public class AuthenticationService {
         logger.debug("Trying to add user to auth service...");
 
         sendWelcomeEmail(person);
+        userNotificationService.info(person, reg.getWelcomeNewUserMessageKey());
         logger.info("Added user to auth service successfully.");
         // } else {
         // // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
@@ -378,7 +383,6 @@ public class AuthenticationService {
         }
         result.setPerson(person);
         return result;
-
     }
 
     private void sendWelcomeEmail(Person person) {
