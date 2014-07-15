@@ -40,9 +40,7 @@
         </ul>
         <dt>Filename</dt>
         <dd>${filename!"undefined"?html}</dd>
-        <dt>Status</dt>
-        <dd>login required</dd>
-    </dl>
+        </dl>
 </div>
 
     <div class="row">
