@@ -44,22 +44,6 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Ignore
-    // This was setup to test what goes on when you call merge, with a detached and non-detached version of an entity that an error happens
-    public void testHib() throws Exception {
-        Document doc = new Document();
-        doc.setTitle("t");
-        doc.setDescription("d");
-        doc.setDocumentType(DocumentType.OTHER);
-        doc.markUpdated(getAdminUser());
-        genericService.save(doc);
-        genericService.detachFromSession(doc);
-        TdarUser admin = genericService.find(TdarUser.class, getAdminUserId());
-        doc.setUploader(admin);
-        doc = genericService.merge(doc);
-    }
-
-    @Test
     @Rollback(true)
     public void testEqualsHashCode() {
         List<Dataset> datasets = datasetService.findAll();
