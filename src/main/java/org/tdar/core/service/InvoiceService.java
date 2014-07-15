@@ -1,11 +1,12 @@
 package org.tdar.core.service;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -378,7 +379,8 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Apply a @link Coupon to a @link Invoice
+     * Apply a @link Coupon to a @link Invoice, if the coupon is for more than an invoice, then we bump the cost of the invoice to match the value of the coupon
+     * code
      * 
      * @param persistable
      * @param user
@@ -389,6 +391,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (StringUtils.isEmpty(code)) {
             return;
         }
+        // find and validate the coupon
         Coupon coupon = locateRedeemableCoupon(code, user);
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
@@ -403,9 +406,14 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (coupon.getDateExpires().before(new Date())) {
             throw new TdarRecoverableRuntimeException("invoiceService.coupon_has_expired");
         }
+
+        // assign the coupon to invoice, and 'redeem' it
         invoice.setCoupon(coupon);
         coupon.setUser(user);
         coupon.setDateRedeemed(new Date());
+
+        // make sure the invoice cancels out the coupon by using all of it, i.e. if the invoice is for 1 file, but the coupon
+        // is for 5, the invoice will be changed to be for 5, as we can't break up coupons.
 
         Long files = invoice.getNumberOfFiles();
         Long mb = invoice.getNumberOfMb();
@@ -435,17 +443,17 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         return getDao().findCoupon(code, user);
     }
 
-    @Transactional(readOnly = false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, List<Long> extraItemIds,
-            List<Integer> extraItemQuantities, PricingType pricingType, Long accountId) {
-        boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
-        if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
-            throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
-        }
-
-        invoice.getItems().clear();
-        
+    /**
+     * Takes the controller specified list of Extra BillingItem(s) and quantities listed by ID and returns
+     * 
+     * @param extraItemIds
+     * @param extraItemQuantities
+     * @return
+     */
+    @Transactional
+    public Collection<BillingItem> lookupExtraBillingActivities(List<Long> extraItemIds, List<Integer> extraItemQuantities) {
         Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
+        Set<BillingItem> items = new HashSet<>();
         for (int i = 0; i < extraItemIds.size(); i++) {
             BillingActivity act = actIdMap.get(extraItemIds.get(i));
             Integer quantity = extraItemQuantities.get(i);
@@ -453,10 +461,39 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             if ((act == null) || (quantity == null) || (quantity < 1)) {
                 continue;
             }
-            getLogger().info("adding {}", act);
-            invoice.getItems().add(new BillingItem(act, quantity));
+            items.add(new BillingItem(act, quantity));
+        }
+        return items;
+
+    }
+
+    /**
+     * For a given invoice object, clear it and apply the appropriate BillingItems based on:
+     * 1) the PricingType evaluation (files, MB, etc)
+     * 2) any extra BillingItem(s) specfied by admins or for testing
+     * 3) a Coupon Code, if specified
+     * 
+     * @param invoice
+     * @param authenticatedUser
+     * @param code
+     * @param extraItems
+     * @param pricingType
+     * @param accountId
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, Collection<BillingItem> extraItems, PricingType pricingType,
+            Long accountId) {
+        boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
+        if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
+            throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
         }
 
+        // setup BillingItem(s) for Invoice
+        invoice.getItems().clear();
+        invoice.getItems().addAll(extraItems);
+
+        // redeem coupon code, we do this before calculating costs because the redemption may change the files and space
         redeemCode(invoice, invoice.getOwner(), code);
         List<BillingItem> items = new ArrayList<BillingItem>();
         if (pricingType != null) {
@@ -471,27 +508,17 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             invoice.getItems().addAll(items);
         }
 
+        // if somehow we have absolutely nothing in the invoice, error out
         if (CollectionUtils.isEmpty(invoice.getItems())) {
             throw new TdarRecoverableRuntimeException("cartController.no_items_found");
         }
 
         invoice.setTransactedBy(authenticatedUser);
 
-
-        TdarUser owner = invoice.getOwner();
-        // if we have an owner
-        if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
-            invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
-        } else {
-            // if we're logged in
-            if (authenticatedUser != null) {
-                invoice.setOwner(authenticatedUser);
-            } else {
-                // just in case, clear it as we may have a transient instance id=-1
-                invoice.setOwner(null);
-            }
-        }
+        // reconcile the Invoice owner, which could be different if you're an admin and running an invoice for someone else
+        updateInvoiceOwner(invoice, authenticatedUser, billingManager);
         invoice.markUpdated(authenticatedUser);
+
         // if invoice is persisted it will be read-only, so make it writable
         if (Persistable.Base.isNotNullOrTransient(invoice)) {
             genericDao.markUpdatable(invoice);
@@ -506,38 +533,55 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         return invoice;
     }
 
+    /**
+     * reconcile the Invoice owner, which could be different if you're an admin and running an invoice for someone else
+     * 
+     * @param invoice
+     * @param authenticatedUser
+     * @param billingManager
+     */
     @Transactional(readOnly = false)
-    public void updateOwner(Invoice invoice, TdarUser authenticatedUser) {
-        if (invoice.getOwner() == null) {
-            invoice.setOwner(authenticatedUser);
+    private void updateInvoiceOwner(Invoice invoice, TdarUser authenticatedUser, boolean billingManager) {
+        TdarUser owner = invoice.getOwner();
+        // if we have an owner
+        if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
+            invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
+        } else {
+            // if we're logged in
+            if (authenticatedUser != null) {
+                invoice.setOwner(authenticatedUser);
+            } else {
+                // just in case, clear it as we may have a transient instance id=-1
+                invoice.setOwner(null);
+            }
         }
-        if (invoice.getTransactedBy() == null) {
-            invoice.setTransactedBy(authenticatedUser);
-        }
-        getDao().saveOrUpdate(invoice);
     }
 
+    /**
+     * Finalizes a payment -- given an incoming transient invoice the service will find the existing invoice, and:
+     *  (a) update the Invoice with any payment info that it needs such as method, or reason
+     *  (b) mark it as final, so it cannot be modified
+     *  (c) confirm that the coupon is still valid
+     *  (d) change the transaction status:
+     *      1) if we have a coupon and that coupon is for the entire amount, complete transaciton
+     *      2) set status to PENDING_TRANSACTION
+     * 
+     * @param invoice_
+     * @param paymentMethod
+     * @return
+     */
     @Transactional(readOnly = false)
-    public Invoice processPayment(String billingPhone, boolean isPhoneRequired, Invoice invoice_, boolean isAddressRequired, PaymentMethod paymentMethod) {
-        Long phone = null;
-        if (StringUtils.isNotBlank(billingPhone)) {
-            phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
-        }
+    public Invoice finalizePayment(Invoice invoice_, PaymentMethod paymentMethod) {
 
-        if (isPhoneRequired && ((phone == null) || (phone.toString().length() < 10))) {
-            throw new TdarRecoverableRuntimeException("cartController.valid_phone_number_is_required");
-        }
-
-        invoice_.setAddress(getDao().loadFromSparseEntity(invoice_.getAddress(), Address.class));
-        if (isAddressRequired && Persistable.Base.isNullOrTransient(invoice_.getAddress())) {
-            throw new TdarRecoverableRuntimeException("cartController.a_biling_address_is_required");
+        Address address = getDao().loadFromSparseEntity(invoice_.getAddress(), Address.class);
+        if (Persistable.Base.isNotNullOrTransient(address)) {
+            invoice_.setAddress(address);
         }
 
         String otherReason = invoice_.getOtherReason();
         Invoice invoice = getDao().loadFromSparseEntity(invoice_, Invoice.class);
         invoice.setPaymentMethod(paymentMethod);
         invoice.setOtherReason(otherReason);
-        invoice.setBillingPhone(phone);
         // finalize the cost and cache it
         invoice.markFinal();
         getDao().saveOrUpdate(invoice);
@@ -557,7 +601,14 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         return invoice;
     }
-    
+
+    /**
+     * Processes the results of a NelNet transaction, first validating the response hash, logging the response, and then updating the invoice with all of the 
+     * information available, and finally sends an email.
+     * @param response
+     * @param paymentTransactionProcessor
+     * @throws IOException
+     */
     @Transactional(readOnly = false)
     public void processTransactionResponse(TransactionResponse response, PaymentTransactionProcessor paymentTransactionProcessor) throws IOException {
         if (paymentTransactionProcessor.validateResponse(response)) {
@@ -568,53 +619,72 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             billingResponse = getDao().markWritable(billingResponse);
             getDao().saveOrUpdate(billingResponse);
             if (invoice != null) {
-                //if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient item in p.addresses)
-                invoice =  getDao().markWritable(invoice);
-                Person p = invoice.getOwner();
-                boolean found = false;
-                Address addressToSave = response.getAddress();
-                for (Address address : p.getAddresses()) {
-                    if (address.isSameAs(addressToSave)) {
-                        found = true;
-                    }
-                }
-
-                //if user provided an address to nelnet,  add that address to user's list of addresses
-                //fixme:  This is sketchy behavior. Just because I gave the payment processor my billing address does not imply I want to give it to tDAR.
-                if (!found) {
-                    p.getAddresses().add(addressToSave);
-                    getLogger().info(addressToSave.getAddressSingleLine());
-                    //this will always fail(you can't save a transient addresss directly because  it is a child relation of person).  It's also unnecessary:  If p is on the session hibernate will save the address.
-                    //getDao().saveOrUpdate(addressToSave);
-                    invoice.setAddress(addressToSave);
-                }
+                // if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient
+                // item in p.addresses)
+                invoice = getDao().markWritable(invoice);
+                updateAddresses(response, invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 invoice.setResponse(billingResponse);
                 getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                Map<String, Object> map = new HashMap<>();
-                map.put("invoice", invoice);
-                map.put("date", new Date());
-                try {
-                    List<Person> people = new ArrayList<>();
-                    for (String email : StringUtils.split(TdarConfiguration.getInstance().getBillingAdminEmail(), ";")) {
-                        if (StringUtils.isBlank(email)) {
-                            continue;
-                        }
-                        Person person = new Person("Billing", "Info", email.trim());
-                        getDao().markReadOnly(person);
-                        people.add(person);
-                    }
-                    Email email = new Email();
-                    email.setSubject(MessageHelper.getMessage("cartController.subject"));
-                    for (Person person : people) {
-                        email.addToAddress(person.getEmail());
-                    }
-                    emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
-                } catch (Exception e) {
-                    getLogger().error("could not send email: {} ", e);
-                }
+                sendSuccessEmail(invoice);
                 getDao().saveOrUpdate(invoice);
             }
+        }
+    }
+
+    /**
+     * Sends a email to the user when the transaction is successful
+     * @param invoice
+     */
+    private void sendSuccessEmail(Invoice invoice) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("invoice", invoice);
+        map.put("date", new Date());
+        try {
+            List<Person> people = new ArrayList<>();
+            for (String email : StringUtils.split(TdarConfiguration.getInstance().getBillingAdminEmail(), ";")) {
+                if (StringUtils.isBlank(email)) {
+                    continue;
+                }
+                Person person = new Person("Billing", "Info", email.trim());
+                getDao().markReadOnly(person);
+                people.add(person);
+            }
+            Email email = new Email();
+            email.setSubject(MessageHelper.getMessage("cartController.subject"));
+            for (Person person : people) {
+                email.addToAddress(person.getEmail());
+            }
+            emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
+        } catch (Exception e) {
+            getLogger().error("could not send email: {} ", e);
+        }
+    }
+
+    /**
+     * updates a person's address to include the billing address from the response
+     * @param response
+     * @param invoice
+     */
+    private void updateAddresses(TransactionResponse response, Invoice invoice) {
+        TdarUser p = invoice.getOwner();
+        boolean found = false;
+        Address addressToSave = response.getAddress();
+        for (Address address : p.getAddresses()) {
+            if (address.isSameAs(addressToSave)) {
+                found = true;
+            }
+        }
+
+        // if user provided an address to nelnet, add that address to user's list of addresses
+        // fixme: This is sketchy behavior. Just because I gave the payment processor my billing address does not imply I want to give it to tDAR.
+        if (!found) {
+            p.getAddresses().add(addressToSave);
+            getLogger().info(addressToSave.getAddressSingleLine());
+            // this will always fail(you can't save a transient addresss directly because it is a child relation of person). It's also unnecessary: If p
+            // is on the session hibernate will save the address.
+            // getDao().saveOrUpdate(addressToSave);
+            invoice.setAddress(addressToSave);
         }
     }
 

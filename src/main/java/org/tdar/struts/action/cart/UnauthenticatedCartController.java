@@ -2,6 +2,7 @@ package org.tdar.struts.action.cart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -224,7 +226,8 @@ public class UnauthenticatedCartController extends AbstractCartController {
             getInvoice().setTransactedBy(getAuthenticatedUser());
         }
         try {
-            setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraItemIds, extraItemQuantities, pricingType,
+            Collection<BillingItem> extraBillingItems = cartService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
+            setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType,
                     accountId));
         } catch (Exception trex) {
             addActionError(trex.getLocalizedMessage());

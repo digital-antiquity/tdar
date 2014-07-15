@@ -36,8 +36,6 @@ public class CartController extends AbstractCartController {
     private String redirectUrl;
     private Account account;
 
-    private String billingPhone;
-
     PaymentMethod paymentMethod;
 
     private Long invoiceId = -1L;
@@ -100,7 +98,6 @@ public class CartController extends AbstractCartController {
         if (invoice.getTransactionStatus().isComplete()) {
             return ERROR;
         }
-        String invoiceNumber = invoice.getInvoiceNumber();
 
         if (invoice.getTransactionStatus() == TransactionStatus.TRANSACTION_SUCCESSFUL) {
             return SUCCESS_COMPLETE;
@@ -112,7 +109,7 @@ public class CartController extends AbstractCartController {
                 getGenericService().saveOrUpdate(invoice);
                 try {
                     //fixme: i shouldn't need to "process" the invoice to figure out what the nelnet url is going to be
-                    cartService.processPayment(billingPhone, false, invoice, false, paymentMethod);
+                    cartService.finalizePayment(invoice, paymentMethod);
                     setRedirectUrl(paymentTransactionProcessor.prepareRequest(invoice));
                 } catch (URIException e) {
                     getLogger().warn("error happend {}", e);
@@ -199,11 +196,6 @@ public class CartController extends AbstractCartController {
         this.invoiceId = invoiceId;
     }
 
-
-    @Deprecated
-    public void setBillingPhone(String billingPhone) {
-        this.billingPhone = billingPhone;
-    }
 
     public Long getAccountId() {
         return account.getId();

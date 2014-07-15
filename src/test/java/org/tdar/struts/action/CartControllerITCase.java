@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -266,7 +265,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller2.getSessionData().setInvoiceId(invoiceId);
         controller2.prepare();
         controller2.validate();
-        controller2.setBillingPhone("1234567890");
         response = controller2.processPayment();
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller2.getRedirectUrl();
@@ -285,7 +283,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = controller.getInvoice();
 
         //create an invoice,  then make some changes and save the invoice again
-        controller.setBillingPhone("(123) 456-7890");
         invoice.setPaymentMethod(PaymentMethod.MANUAL);
         String otherReason = "this is my reasoning";
         invoice.setOtherReason(otherReason);
@@ -312,7 +309,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response;
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
-        controller.setBillingPhone("123-456-7890");
         String invoiceNumber = "1234567890";
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
@@ -356,7 +352,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
-        controller.setBillingPhone("1234567890");
 
         //modify the invoice
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
@@ -391,22 +386,16 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
      * @return string result of the /cart/preview action
      */
     String simulateCartUpdate(Invoice invoice) {
-        UnauthenticatedCartController ucc = prepareCartNew(invoice.getId());
+        UnauthenticatedCartController ucc = generateNewInitializedController(UnauthenticatedCartController.class);
+        ucc.getSessionData().setInvoiceId(invoice.getId());
+        ucc.prepare();
+        ucc.validate();
         ucc.setInvoice(invoice);
         return ucc.preview();
     }
 
-    private UnauthenticatedCartController prepareCartNew(long id) {
-        UnauthenticatedCartController ucc = generateNewInitializedController(UnauthenticatedCartController.class);
-        ucc.getSessionData().setInvoiceId(id);
-        ucc.prepare();
-        ucc.validate();
-        return ucc;
-    }
 
-
-
-    private String processMockResponse(Invoice invoice, String redirectUrl, boolean isValid) throws TdarActionException {
+    private String processMockResponse(Invoice invoice, String redirectUrl, boolean makeInvalid) throws TdarActionException {
         CartExternalPaymentResponseAction controller;
         assertNotNull(redirectUrl);
         Map<String, String[]> params = new HashMap<>();
@@ -437,7 +426,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(CartExternalPaymentResponseAction.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.setParameters(mock.getResponseParams());
-        if (!isValid) {
+        if (!makeInvalid) {
             // fake tainted connection
             controller.setParameters(mock.getParams());
         }
@@ -460,9 +449,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         // String response = controller.addPaymentMethod();
         // assertEquals(Action.SUCCESS, response);
-        controller = generateNewInitializedController(CartController.class);
-        controller.getSessionData().setInvoiceId(invoiceId);
-        controller.prepare();
         return controller;
     }
 
