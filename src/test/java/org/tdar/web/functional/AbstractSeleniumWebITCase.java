@@ -61,6 +61,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -548,19 +549,27 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
+
     /**
      * Wait for specified css selector to match at least one element. Uses default timeout.
-     * 
-     * @param selector
+     * @param cssSelector
      * @return
      */
-    public WebElementSelection waitFor(String selector) {
-        return waitFor(selector, DEFAULT_WAITFOR_TIMEOUT);
+    public WebElementSelection waitFor(String cssSelector) {
+        return waitFor(By.cssSelector(cssSelector));
     }
 
+    /**
+     * Wait for specified css selector to match at least one element within specified timeout.
+     *
+     * @param cssSelector
+     * @param timeoutInSeconds
+     * @return elements matched by specified selector
+     */
     public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
+        //FIXME: rewrite in terms of waitFor(ExpectedCondition, int)
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
+        List<WebElement> elements =  wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
         WebElementSelection selection = new WebElementSelection(elements, driver);
         return selection;
     }
@@ -572,11 +581,46 @@ public abstract class AbstractSeleniumWebITCase {
      *            seconds to wait before timeout
      */
     public void waitFor(int timeInSeconds) {
+        //FIXME: rewrite in terms of waitFor(ExpectedCondition, int). Still bad but at least you can catch selenium exceptions.
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException e) {
             e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    /**
+     * Wait for at least one element matched by the specified locator. Uses default timeout.
+     * @param elementsLocator A selenium element "locator",  such as {@link By#xpath(String)}  or {@link By#cssSelector(String)}
+     * @return the matched elements wrapped in a WebElementSelection.
+     */
+    public WebElementSelection waitFor(By elementsLocator) {
+        List<WebElement> elements =  waitFor(ExpectedConditions.presenceOfAllElementsLocatedBy(elementsLocator));
+        WebElementSelection selection = new WebElementSelection(elements, driver);
+        return selection;
+    }
+
+    /**
+     * Wait for the specified expected condition. Uses default timeout.
+     * @param expectedCondition
+     * @param <T>
+     * @return
+     */
+    public<T> T waitFor(ExpectedCondition<T> expectedCondition) {
+        return waitFor(expectedCondition, DEFAULT_WAITFOR_TIMEOUT);
+    }
+
+    /**
+     * Wait for the specified expected condition within the specified timeout (in seconds)
+     * @param expectedCondition ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent}, {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
+     * @param timeoutInSeconds amount of time that this method suppresses ElementNotFoundException
+     * @param <T> object returned by the ExpectedCondition
+     * @return
+     */
+    public<T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        T value = wait.until(expectedCondition);
+        return value;
     }
 
     /**
@@ -597,10 +641,8 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(By by) {
-        logger.trace("find start: {}", by);
         WebElementSelection selection = new WebElementSelection(driver.findElements(by), driver);
-        logger.debug("criteria:{}\t  size:{}", by, selection.size());
-        logger.trace("find   end: {}", by);
+        logger.trace("criteria:{}\t  size:{}", by, selection.size());
         return selection;
     }
 
@@ -1092,6 +1134,8 @@ public abstract class AbstractSeleniumWebITCase {
         waitFor(TestConfiguration.getInstance().getWaitInt()); // kludge
         field.sendKeys(Keys.ARROW_DOWN);
         WebElementSelection menuItems = null;
+
+        //fixme: this  should be unnecessary -- WebDriverWait repeatedly executes predicate at set interval before timing out
         for (int i = 0; i < 30; i++) {
             if ((menuItems == null) || menuItems.isEmpty()) {
                 try {
