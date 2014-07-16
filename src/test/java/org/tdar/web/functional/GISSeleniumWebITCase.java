@@ -159,10 +159,12 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertThat(password, not(isEmptyOrNullString()));
         waitFor("#loginUsername").val(username);
         find("#loginPassword").val(password);
-        submitForm("#loginForm [name=submit]");
+        WebElementSelection buttons = find("#loginForm [name=submit]");
+        buttons.first().click();
+        Thread.sleep(5000);
         logger.debug("currentUrl: {}", getCurrentUrl());
         
-        assertTrue(getCurrentUrl().contains("download") );
+        assertTrue(getCurrentUrl().contains("confirm") );
         dismissModal();
 
     }

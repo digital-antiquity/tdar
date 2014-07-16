@@ -329,8 +329,11 @@ public abstract class AbstractSeleniumWebITCase {
                     profile.setPreference("focusmanager.testmode", true);
                 }
                 profile.setPreference("browser.helperApps.alwaysAsk.force", false);
-                profile.setPreference("browser.helperApps.neverAsk.saveToDisk","text/csv,image/tiff,image/tif,application/xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                profile.setPreference("browser.download.manager.showWhenStarting",false);
+			    profile.setPreference("browser.download.folderList",2);
+			    profile.setPreference("browser.download.manager.showWhenStarting",false);
+                profile.setPreference("browser.download.manager.showAlertOnComplete",false);
+				profile.setPreference("browser.helperApps.neverAsk.saveToDisk","text/csv,image/tiff,image/tif,application/xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				//			    profile.setPreference("browser.download.dir","c:\\downloads");
                 driver = new FirefoxDriver(fb, profile);
                 break;
             case CHROME:
