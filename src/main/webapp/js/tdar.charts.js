@@ -223,7 +223,8 @@
 
             var plot = $.jqplot(graphId, [data], _defaults);
             var context = "";
-            if (props.context != undefined) {
+            console.log(props.context);
+            if (props.context != undefined && props.context == false) {
                 context = "&useSubmitterContext=true";
             }
             $graph.bind('jqplotDataClick',
