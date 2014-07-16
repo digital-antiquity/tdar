@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.util.UserNotification;
-import org.tdar.core.bean.util.UserNotificationType;
+import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.notification.UserNotificationType;
 
 public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 

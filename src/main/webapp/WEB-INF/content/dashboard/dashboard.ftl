@@ -296,7 +296,11 @@
     <#list currentNotifications as notification>
         <div class="${notification.messageType} alert" id="note_${notification.id?c}">
         <button type="button" id="close_note_${notification.id?c}" class="close" data-dismiss="alert" data-dismiss-id="${notification.id?c}" >&times;</button>
+        <#if notification.messageDisplayType.normal>
         <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]
+        <#else>
+            <#include "../notifications/${notification.messageKey}.ftl" />
+        </#if>
         </div>
     </#list>
 

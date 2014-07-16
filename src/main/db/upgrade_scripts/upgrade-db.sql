@@ -207,3 +207,6 @@ CREATE UNIQUE INDEX other_keyword_label_unique on other_keyword(lower(label));
 CREATE UNIQUE INDEX site_name_keyword_label_unique on site_name_keyword(lower(label));
 CREATE UNIQUE INDEX site_tpe_keyword_label_unique on site_type_keyword(lower(label));
 CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(label));
+
+-- abrin 07/16/2014 notification type
+alter table user_notification add column display_type varchar(32) not null default 'NORMAL';
