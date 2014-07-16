@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -339,12 +340,15 @@ public class ImportService {
         }
         
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed 
-        Long oldId = resource.getId();
+//        Long oldId = resource.getId();
         String xml = xmlService.convertToXML(resource);
+        @SuppressWarnings("unchecked")
         R rec = (R) xmlService.parseXml(new StringReader(xml));
 
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);
+        rec.setDateCreated(new Date());
+
         if (rec instanceof InformationResource) {
             InformationResource originalIr = (InformationResource) resource;
             InformationResource informationResource = (InformationResource) rec;
