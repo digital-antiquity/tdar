@@ -37,18 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -1005,9 +994,43 @@ public abstract class AbstractSeleniumWebITCase {
             driver.switchTo().alert().accept();
         } catch (NoAlertPresentException ignored) {
             return false;
+        } catch(WebDriverException wde)  {
+            //try a few more times with kludgey version of dismissModal
+            return dismissModal(10);
         }
         return true;
     }
+
+    /**
+     * Workaround for Selenium <a href="https://code.google.com/p/selenium/issues/detail?id=3544">Issue 3544: WebDriver randomly fails to accept javascript alert windows (timing problem)</a>
+     *
+     * Keep trying to accept modal dialog every 100ms until successful.  Give up after specified attempts .
+     * This method assumes a modal is present and will give you a weird result if modal doesn't exist.
+     *
+     * @param attempts number of attempts before giving up
+     * @return true if accept worked.
+     */
+    private boolean  dismissModal(int attempts) {
+        boolean successful = false;
+        for(int i = 1; i <= attempts; i++) {
+            logger.debug("dissmiss modal:  attempt {} of {}",i , attempts);
+            try {
+                Alert statusConfirm = driver.switchTo().alert();
+                statusConfirm.accept();
+                successful = true;
+            } catch(WebDriverException ignored) {
+                logger.info("exception while trying to dismiss modal dialog:  attempt {} of {}",i , attempts);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException alsoIgnored) {}
+            }
+            if(successful) break; //don't judge me.
+        }
+        return successful;
+    }
+
+
+
 
     /**
      * when indicates whether the test should (try to) ignore modal windows that appear during the course of test.
