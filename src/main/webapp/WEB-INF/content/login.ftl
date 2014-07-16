@@ -23,6 +23,7 @@ vim:sts=2:sw=2:filetype=jsp
 <#assign formAction = nav.getFormUrl("/login/process") >
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal}">
     <@auth.login>    
+    <@s.hidden name="url" />
     <div class="form-actions">
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
         <div class="pull-right">

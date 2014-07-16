@@ -2,7 +2,6 @@ package org.tdar.struts.action.cart;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;

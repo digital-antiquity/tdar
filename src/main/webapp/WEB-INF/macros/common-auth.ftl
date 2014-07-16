@@ -145,8 +145,6 @@
     <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
     <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
 
-    <@s.hidden name="returnUrl" />
-
     <#nested />
     <script type="text/javascript">
         $(document).ready(function () {

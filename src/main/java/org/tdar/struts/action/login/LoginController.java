@@ -143,6 +143,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     }
 
     private String parseReturnUrl() {
+        getLogger().debug("url: {}, sessionUrl: {}", url, getSessionData().getReturnUrl());
         if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
             return null;
         }
