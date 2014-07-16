@@ -87,6 +87,8 @@
 
     <#if sessionData.tdarUser?has_content>
      <div id="email-form" class="hide">
+     <hr>
+        <h3>Send Email</h3>
         <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
           <div class="modal-header">
             <h3 class="success">Success</h3>
@@ -107,7 +109,8 @@
             </div>
         </div>
      <form id="followup">
-        <@s.select theme="tdar" name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
+     <br/>
+        <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
         <#assign contactId = resource.submitter.id />
         <#if contactProxies?has_content>
         <#list contactProxies as prox>
@@ -510,7 +513,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
             <#if sessionData.tdarUser?has_content>
                     <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
-                    <a href="/login?returnUrl=${currentUrl}">${txt} (requires login)</a>
+                    <a href="/login?returnUrl=${currentUrl}?showEmail">${txt} (requires login)</a>
             </#if>
             </div>            
             </li>
