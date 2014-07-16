@@ -60,7 +60,7 @@ ALTER table bookmarked_resource ADD foreign key (person_id) references tdar_user
 ALTER table resource ADD foreign key (submitter_id) references tdar_user;
 ALTER table resource ADD foreign key (uploader_id) references tdar_user;
 ALTER table resource ADD foreign key (updater_id) references tdar_user;
-ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user
+ALTER table resource_revision_log ADD foreign key (person_id) references tdar_user;
 ALTER table user_session ADD foreign key (person_id) references tdar_user;
 ALTER table collection ADD foreign key (owner_id) references tdar_user;
 ALTER table collection ADD foreign key (updater_id) references tdar_user;
@@ -206,4 +206,4 @@ CREATE UNIQUE INDEX geographic_label_unique on geographic_keyword(lower(label));
 CREATE UNIQUE INDEX other_keyword_label_unique on other_keyword(lower(label));
 CREATE UNIQUE INDEX site_name_keyword_label_unique on site_name_keyword(lower(label));
 CREATE UNIQUE INDEX site_tpe_keyword_label_unique on site_type_keyword(lower(label));
-CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(label));>>>>>>> theirs
+CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(label));
