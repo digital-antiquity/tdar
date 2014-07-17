@@ -132,7 +132,7 @@ public class CartController extends AbstractCartController {
             setInvoice(getGenericService().find(Invoice.class, invoiceId));
         }
 
-        validateNotNull(getInvoice(), "cart.invoice_expected_but_not_found");
+        validateNotNull(getInvoice(), "cartController.invoice_expected_but_not_found");
         if(getInvoice() != null) {
             paymentMethod = getInvoice().getPaymentMethod();
             account = cartService.getAccountForInvoice(getInvoice());

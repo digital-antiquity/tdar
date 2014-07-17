@@ -105,7 +105,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
         //at the very least, send invoice notification
         TdarUser recipient = invoice.getOwner();
 
-        String notificationKey = "cart.new_invoice_notification";
+        String notificationKey = "cartExternalPaymentResponseAction.new_invoice_notification";
         getLogger().info("sending notification:{} to:{}", notificationKey, recipient);
 
         notificationService.info(recipient, notificationKey);

@@ -121,7 +121,7 @@ public class FileSystemResourceDao {
                 toReturn.add(nodes.item(i).getTextContent());
             }
         } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("could not read javascript/css config file", e);
+            throw new TdarRecoverableRuntimeException("fileSystemResourceDao.wro_missing=", e);
         }
         return toReturn;
     }
