@@ -51,8 +51,12 @@
                     $modal.modal('show');
                 }
             });
+            
             e.preventDefault();
         });
+        if (window.location.href.indexOf("showEmail") > -1) {
+            $("#email-form").show();
+        }
     }
 
     TDAR.internalEmailForm = {

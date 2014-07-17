@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.util.UserNotification;
-import org.tdar.core.bean.util.UserNotificationType;
+import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.notification.UserNotificationType;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
 

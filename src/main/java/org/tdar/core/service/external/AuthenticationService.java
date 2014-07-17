@@ -25,9 +25,10 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.Email;
-import org.tdar.core.bean.util.UserNotification;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
@@ -370,7 +371,7 @@ public class AuthenticationService {
 
         sendWelcomeEmail(person);
         UserNotification info = userNotificationService.info(person, reg.getWelcomeNewUserMessageKey());
-        //info.set;
+        info.setMessageDisplayType(UserNotificationDisplayType.FREEMARKER);
         personDao.saveOrUpdate(info);
         logger.info("Added user to auth service successfully.");
         // } else {
