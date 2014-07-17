@@ -56,19 +56,18 @@ public class CartBillingAccountController extends AbstractCartController {
     public void prepare() {
         super.prepare();
 
-        //the account id may have been set already by the "add invoice" link on /billing/{id}/view
-        if(id == -1L && getInvoice() != null) {
+        // the account id may have been set already by the "add invoice" link on /billing/{id}/view
+        if (id == -1L && getInvoice() != null) {
             selectedAccount = invoiceService.getAccountForInvoice(getInvoice());
-            if(selectedAccount != null) {
+            if (selectedAccount != null) {
                 id = selectedAccount.getId();
             }
         } else {
             selectedAccount = getGenericService().find(Account.class, id);
         }
 
-
         TdarUser owner = getInvoice().getOwner();
-        if(owner == null) {
+        if (owner == null) {
             owner = getAuthenticatedUser();
         }
         getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(owner, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
@@ -100,7 +99,7 @@ public class CartBillingAccountController extends AbstractCartController {
 
     private void validate(Account account) {
         if (StringUtils.isBlank(account.getName())) {
-            //addActionError("Account name required");
+            // addActionError("Account name required");
             account.setName("Generated account for " + getAuthenticatedUser().getProperName());
         }
     }
@@ -115,7 +114,7 @@ public class CartBillingAccountController extends AbstractCartController {
     @WriteableSession
     public String processBillingAccountChoice() {
 
-        //if user came via unauthenticated page the owner/proxy may not be set.  If either is null, we set both to the current user
+        // if user came via unauthenticated page the owner/proxy may not be set. If either is null, we set both to the current user
         if (getInvoice().getOwner() == null || getInvoice().getTransactedBy() == null) {
             getInvoice().setOwner(getAuthenticatedUser());
             getInvoice().setTransactedBy(getAuthenticatedUser());
@@ -152,8 +151,7 @@ public class CartBillingAccountController extends AbstractCartController {
         }
     }
 
-
-    @Action(value = "choose-billing-account", results={@Result(name = "input", location = "choose-billing-account.ftl")})
+    @Action(value = "review", results = { @Result(name = INPUT, location = "review.ftl") })
     @GetOnly
     public String showBillingAccounts() {
         return SUCCESS;

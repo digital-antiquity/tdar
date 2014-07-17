@@ -16,9 +16,12 @@
 <h1>Confirm Selection</h1>
     <@invoicecommon.printInvoice />
 <#if sessionData.person?has_content>
+	<@s.form action='process-payment-request' method='post'>
     <div class="form-actions">
-        <a href="/cart/choose-billing-account" type="submit" class='btn btn-mini submitButton tdar-button'>Next Step: Choose Billing Account</a>
+    	<@s.token name='struts.csrf.token' />
+        <button type='submit' class='btn btn-mini tdar-button'>Pay now</button>
     </div>
+    </@s.form>        
 <#else>
     <div class="row">
         <div class="span9" id="divRegistrationSection">

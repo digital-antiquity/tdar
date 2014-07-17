@@ -23,6 +23,10 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
+/**
+ * Responsible for processing payments and viewing finalized invoices.
+ * 
+ */
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -43,20 +47,11 @@ public class CartController extends AbstractCartController {
     @Autowired
     private transient NelNetPaymentDao paymentTransactionProcessor;
 
-
-
     @Autowired
     private transient InvoiceService cartService;
 
     @Autowired
     private transient AuthorizationService authService;
-
-    public boolean isNotNullOrZero(Long num) {
-        if ((num == null) || (num < 1)) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
@@ -78,7 +73,7 @@ public class CartController extends AbstractCartController {
      * @throws TdarActionException
      */
     @SkipValidation
-        @WriteableSession
+    @WriteableSession
     // @GetOnly
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
             @Result(name = SUCCESS, type = "redirect", location = "/invoice/${invoice.id}"),
@@ -87,7 +82,7 @@ public class CartController extends AbstractCartController {
             @Result(name = SUCCESS_COMPLETE, type = "redirect", location = URLConstants.DASHBOARD)
     })
     @HttpsOnly
-    public String processPayment() throws TdarActionException {
+    public String processPaymentRequest() throws TdarActionException {
         if (Persistable.Base.isNullOrTransient(getInvoice())) {
             return ADD;
         }
@@ -117,9 +112,9 @@ public class CartController extends AbstractCartController {
         }
         return SUCCESS;
     }
-
+    
     @Action("view")
-    //FIXME: move to new InvoiceController  or create new view-invoice action on BillingAccountController
+    // FIXME: move to new InvoiceController or create new view-invoice action on BillingAccountController
     public String viewInvoice() {
         return SUCCESS;
     }
@@ -128,26 +123,26 @@ public class CartController extends AbstractCartController {
     public void prepare() {
         super.prepare();
 
-        if(invoiceId != -1L ) {
+        if (invoiceId != -1L) {
             setInvoice(getGenericService().find(Invoice.class, invoiceId));
         }
 
         validateNotNull(getInvoice(), "cartController.invoice_expected_but_not_found");
-        if(getInvoice() != null) {
+        if (getInvoice() != null) {
             paymentMethod = getInvoice().getPaymentMethod();
             account = cartService.getAccountForInvoice(getInvoice());
         }
 
-        if(paymentMethod == PaymentMethod.CREDIT_CARD) {
-            URL url  = paymentTransactionProcessor.buildPostUrl(getInvoice());
-            if(url != null) {
+        if (paymentMethod == PaymentMethod.CREDIT_CARD) {
+            URL url = paymentTransactionProcessor.buildPostUrl(getInvoice());
+            if (url != null) {
                 setRedirectUrl(url.toExternalForm());
             }
         }
 
     }
 
-    private boolean isViewable()  {
+    private boolean isViewable() {
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
@@ -162,7 +157,7 @@ public class CartController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if(!isViewable())  {
+        if (!isViewable()) {
             addActionError("you do not have permission to view this invoice");
         }
 
@@ -182,7 +177,7 @@ public class CartController extends AbstractCartController {
     }
 
     @Override
-    //if user fails validation here, we treat it as an error
+    // if user fails validation here, we treat it as an error
     public String getInputResultName() {
         return ERROR;
     }
@@ -195,7 +190,6 @@ public class CartController extends AbstractCartController {
     public void setId(Long invoiceId) {
         this.invoiceId = invoiceId;
     }
-
 
     public Long getAccountId() {
         return account.getId();

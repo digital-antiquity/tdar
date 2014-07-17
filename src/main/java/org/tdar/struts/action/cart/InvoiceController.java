@@ -29,13 +29,18 @@ import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
+/**
+ * Manages all aspects of creating and updating an invoice for files and storage for unauthenticated or authenticated users.
+ * 
+ * Hands off to the CartController for final payment, or the CartBillingAccountController for updating billing information.
+ */
 @Component
 @Scope("prototype")
 @Results({
         @Result(name = TdarActionSupport.RESULT_REDIRECT_START, location = TdarActionSupport.LOCATION_START, type = "redirect"),
 })
 @HttpsOnly
-public class UnauthenticatedCartController extends AbstractCartController {
+public class InvoiceController extends AbstractCartController {
 
     /*
      * 
@@ -158,7 +163,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * invoice:cc-result.ftl (fixme: should be streamResult)
      */
 
-    private static final String REVIEW = "review";
+    private static final String UNAUTHENTICATED_REVIEW = "review-unauthenticated";
 
     private static final long serialVersionUID = -9156927670405819626L;
 
@@ -172,7 +177,7 @@ public class UnauthenticatedCartController extends AbstractCartController {
 
     private PricingType pricingType = null;
 
-    //the following values may come from the query string.  If so, they override any current values on the invoice.
+    // the following values may come from the query string. If so, they override any current values on the invoice.
     private Long files;
     private Long mb;
     private Long accountId;
@@ -213,15 +218,15 @@ public class UnauthenticatedCartController extends AbstractCartController {
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "new.ftl"),
-                    @Result(name = SUCCESS, type = REDIRECT, location = REVIEW)
+                    @Result(name = SUCCESS, type = REDIRECT, location = UNAUTHENTICATED_REVIEW)
             // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
     // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
-    public String preview() {
-        //fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cart/new
-        if(isAuthenticated() && Persistable.Base.isTransient(getInvoice().getOwner())) {
+    public String unauthenticatedPreview() {
+        // fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cart/new
+        if (isAuthenticated() && Persistable.Base.isTransient(getInvoice().getOwner())) {
             getInvoice().setOwner(getAuthenticatedUser());
             getInvoice().setTransactedBy(getAuthenticatedUser());
         }
@@ -244,12 +249,14 @@ public class UnauthenticatedCartController extends AbstractCartController {
      * 
      * @return
      */
-    @Action(REVIEW)
+    @Action(UNAUTHENTICATED_REVIEW)
     @GetOnly
     public String showInvoice() {
         if (getInvoice() == null) {
             return "redirect-start";
         }
+//        Set<Account> availableAccounts = accountService.listAvailableAccountsForUser(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE);
+//        setAccounts(availableAccounts);
         return SUCCESS;
     }
 
@@ -296,19 +303,19 @@ public class UnauthenticatedCartController extends AbstractCartController {
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
 
-            //if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
-            if(!persistedInvoice.isModifiable()) {
+            // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
+            if (!persistedInvoice.isModifiable()) {
                 clearPendingInvoice();
             } else {
                 setInvoice(persistedInvoice);
             }
         }
 
-        // check for querystring overrides  (we anticipate will only happen in a GET)
-        if(files != null) {
+        // check for querystring overrides (we anticipate will only happen in a GET)
+        if (files != null) {
             getInvoice().setNumberOfFiles(files);
         }
-        if(mb != null) {
+        if (mb != null) {
             getInvoice().setNumberOfMb(mb);
         }
 
