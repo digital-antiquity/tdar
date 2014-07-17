@@ -23,7 +23,6 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.struts.action.TdarActionException;
 
 public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
@@ -32,7 +31,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountList() throws TdarActionException {
+    public void testAccountList() {
         TdarUser p = createAndSaveNewPerson();
         Account account = setupAccountForPerson(p);
         Account accountWithPermissions = new Account("my account");
@@ -54,7 +53,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountGroups() throws TdarActionException {
+    public void testAccountGroups() {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
@@ -131,7 +130,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountGroupPermissions() throws TdarActionException {
+    public void testAccountGroupPermissions()  {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
@@ -150,7 +149,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAvaliableActivities() throws TdarActionException {
+    public void testAvaliableActivities() {
         BillingActivityModel model = new BillingActivityModel();
         BillingActivity disabledDctivity = new BillingActivity();
         disabledDctivity.setEnabled(false);

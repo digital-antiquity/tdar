@@ -541,11 +541,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return super.getText(aTextName, Arrays.asList(args));
     }
 
-    public List<String> getJavascriptFiles() throws TdarActionException {
+    public List<String> getJavascriptFiles() {
         return filesystemResourceService.parseWroXML("js");
     }
 
-    public List<String> getCssFiles() throws TdarActionException {
+    public List<String> getCssFiles() {
         return filesystemResourceService.parseWroXML("css");
     }
 

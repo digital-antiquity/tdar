@@ -25,7 +25,6 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.DocumentController;
 
 /**
@@ -42,7 +41,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
 
     
     @Test
-    public void testAOPInterceptor() throws TdarActionException {
+    public void testAOPInterceptor() {
         DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         controller.prepare();

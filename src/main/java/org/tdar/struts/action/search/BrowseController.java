@@ -458,8 +458,12 @@ public class BrowseController extends AbstractLookupController {
         if (collaborators != null) {
             return collaborators;
         }
-        collaborators = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
-                dom);
+        try {
+            collaborators = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
+                    dom);
+        } catch (TdarRecoverableRuntimeException trre) {
+            getLogger().warn(trre.getLocalizedMessage());
+        }
         return collaborators;
     }
 
@@ -467,7 +471,11 @@ public class BrowseController extends AbstractLookupController {
         if (keywords != null) {
             return keywords;
         }
-        keywords = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+        try {
+            keywords = fileSystemResourceService.parseCreatorInfoLog("creatorInfoLog/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
+        } catch (TdarRecoverableRuntimeException trre) {
+            getLogger().warn(trre.getLocalizedMessage());
+        }
         return keywords;
     }
 

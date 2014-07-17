@@ -22,9 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.exception.StatusCode;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.utils.MessageHelper;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -111,7 +109,7 @@ public class FileSystemResourceDao {
         return template;
     }
 
-    public List<String> parseWroXML(String prefix) throws TdarActionException {
+    public List<String> parseWroXML(String prefix) {
         List<String> toReturn = new ArrayList<>();
         try {
             Document dom = getWroDom();
@@ -123,7 +121,7 @@ public class FileSystemResourceDao {
                 toReturn.add(nodes.item(i).getTextContent());
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file", e);
+            throw new TdarRecoverableRuntimeException("could not read javascript/css config file", e);
         }
         return toReturn;
     }
@@ -141,7 +139,7 @@ public class FileSystemResourceDao {
         return dom;
     }
 
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
+    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
         List<NodeModel> toReturn = new ArrayList<>();
         if (dom == null) {
             return toReturn;
@@ -170,7 +168,7 @@ public class FileSystemResourceDao {
                 toReturn.add(NodeModel.wrap(nodes.item(i)));
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, MessageHelper.getMessage("browseController.parse_creator_log"), e);
+            throw new TdarRecoverableRuntimeException("browseController.parse_creator_log", e);
         }
         return toReturn;
     }

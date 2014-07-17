@@ -31,7 +31,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.download.DownloadController;
 
 import com.opensymphony.xwork2.Action;
@@ -128,7 +127,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+    public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException {
 
         List<File> files = new ArrayList<>();
         File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
@@ -158,7 +157,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDownloadArchiveControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+    public void testDownloadArchiveControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException {
 
         List<File> files = new ArrayList<>();
         File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
@@ -181,7 +180,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException, TdarActionException {
+    public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException {
 
         Document doc = generateDocumentWithFileAndUseDefaultUser();
         genericService.saveOrUpdate(doc);
