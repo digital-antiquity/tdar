@@ -298,7 +298,14 @@
         <#if notification.messageDisplayType.normal>
         <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]
         <#else>
-            <#include "../notifications/${notification.messageKey}.ftl" />
+            <#local file = "../notifications/${notification.messageKey}.ftl" />
+            <#if !notification.messageKey?string?contains("..") >
+                <#attempt>
+                    <#include file />
+                <#recover>
+                    Could not load notification.
+                </#attempt>
+            </#if>
         </#if>
         </div>
     </#list>
