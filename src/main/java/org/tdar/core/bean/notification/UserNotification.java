@@ -1,4 +1,4 @@
-package org.tdar.core.bean.util;
+package org.tdar.core.bean.notification;
 
 import java.util.Date;
 
@@ -51,6 +51,10 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", length = 32, nullable = false)
     private UserNotificationType messageType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "display_type", length = 32, nullable = false)
+    private UserNotificationDisplayType messageDisplayType = UserNotificationDisplayType.NORMAL;
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -127,6 +131,14 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
             text = getMessageKey(); 
         }
         setMessage(text);
+    }
+
+    public UserNotificationDisplayType getMessageDisplayType() {
+        return messageDisplayType;
+    }
+
+    public void setMessageDisplayType(UserNotificationDisplayType messageDisplayType) {
+        this.messageDisplayType = messageDisplayType;
     }
 
 }

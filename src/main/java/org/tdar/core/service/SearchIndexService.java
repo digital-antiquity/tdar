@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -36,14 +38,19 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
+
+import com.hp.hpl.jena.sparql.pfunction.library.concat;
 
 @Service
 @Transactional(readOnly = true)
 public class SearchIndexService {
 
     private final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
+    public static final String INDEXING_COMPLETED = "indexing completed";
+    public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
 
     @Autowired
     private HibernateSearchDao hibernateSearchDao;
@@ -54,6 +61,9 @@ public class SearchIndexService {
     @Autowired
     private DatasetDao datasetDao;
 
+    @Autowired
+    private EmailService emailService;
+    
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
@@ -438,7 +448,16 @@ public class SearchIndexService {
 
     @Async
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
+        TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+        Date date = new Date();
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);
+        if (CONFIG.isProductionEnvironment()) {
+            Email email = new Email();
+            email.setSubject(INDEXING_COMPLETED);
+            email.setMessage(String.format(INDEXING_STARTED, toReindex, CONFIG.getHostName(), date, new Date()));
+            emailService.send(email);
+        }
+
     }
 }

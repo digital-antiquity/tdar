@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -99,7 +100,6 @@ public class ImportService {
     @Autowired
     private XmlService xmlService;
 
-
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
@@ -112,7 +112,7 @@ public class ImportService {
      * @throws Exception
      */
     public <R extends Resource> R bringObjectOntoSession(R incoming, TdarUser authorizedUser, boolean validate) throws Exception {
-        return bringObjectOntoSession(incoming, authorizedUser, null, null,validate);
+        return bringObjectOntoSession(incoming, authorizedUser, null, null, validate);
     }
 
     /**
@@ -216,7 +216,7 @@ public class ImportService {
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
             if (incomingResource instanceof InformationResource) {
-                // when we bring an object onto the session, 
+                // when we bring an object onto the session,
                 ((InformationResource) incomingResource).getInformationResourceFiles().clear();
             }
             incomingResource.copyImmutableFieldsFrom(existing);
@@ -326,6 +326,7 @@ public class ImportService {
 
     /**
      * Takes a record and round-trips it to XML to allow us to manipulate it and clone it with the session
+     * 
      * @param resource
      * @param user
      * @return
@@ -337,17 +338,21 @@ public class ImportService {
         if (!authenticationAndAuthorizationService.canEdit(user, resource)) {
             canEditResource = false;
         }
-        
-        // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed 
-        Long oldId = resource.getId();
+
+        // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed
+        // Long oldId = resource.getId();
         String xml = xmlService.convertToXML(resource);
+        @SuppressWarnings("unchecked")
         R rec = (R) xmlService.parseXml(new StringReader(xml));
 
         rec.setId(null);
         rec.setTitle(rec.getTitle() + COPY);
+        rec.setDateCreated(new Date());
+        InformationResource informationResource = null;
+
         if (rec instanceof InformationResource) {
             InformationResource originalIr = (InformationResource) resource;
-            InformationResource informationResource = (InformationResource) rec;
+            informationResource = (InformationResource) rec;
             informationResource.setExternalId(null);
             // reset project if user doesn't have rights to it
             if (originalIr.getProject() != Project.NULL) {
@@ -355,7 +360,7 @@ public class ImportService {
                     informationResource.setProject(originalIr.getProject());
                 }
             }
-            
+
             // remove files
             informationResource.getInformationResourceFiles().clear();
         }
@@ -366,6 +371,9 @@ public class ImportService {
                 latLong.obfuscate();
             }
             rec.getResourceCollections().clear();
+            if (informationResource != null) {
+                informationResource.setProject(Project.NULL);
+            }
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
             ResourceCollection irc = rec.getInternalResourceCollection();
@@ -391,8 +399,8 @@ public class ImportService {
             for (DataTable dt : dataset.getDataTables()) {
                 String name = dt.getName();
                 int index1 = name.indexOf(_);
-                int index2 = name.indexOf(_, index1 +1);
-                name = name.substring(0,index1) + "_0_" + name.substring(index2 + 1); 
+                int index2 = name.indexOf(_, index1 + 1);
+                name = name.substring(0, index1) + "_0_" + name.substring(index2 + 1);
                 dt.setName(name);
             }
             genericService.saveOrUpdate(dataset.getDataTables());

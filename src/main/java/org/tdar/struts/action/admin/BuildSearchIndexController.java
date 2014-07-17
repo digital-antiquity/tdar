@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +22,6 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.util.Email;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
@@ -43,9 +41,6 @@ import org.tdar.utils.activity.IgnoreActivity;
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
-    private static final String INDEXING_COMPLETED = "indexing completed";
-
-    public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
 
     private static final long serialVersionUID = -8927970945627420725L;
 
@@ -75,10 +70,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     })
     public String startIndex() {
         if (!isReindexing()) {
-            Date date = new Date();
             List<Class<? extends Indexable>> toReindex = new ArrayList<>();
             getLogger().info("{}", getIndexesToRebuild());
-            searchIndexService.getClassesToReindex(getIndexesToRebuild());
+            toReindex = searchIndexService.getClassesToReindex(getIndexesToRebuild());
 
             getLogger().info("to reindex: {}", toReindex);
             Person person = null;
@@ -91,12 +85,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
                 clss = toReindex;
             }
 
-            if (isProduction()) {
-                Email email = new Email();
-                email.setSubject(INDEXING_COMPLETED);
-                email.setMessage(String.format(INDEXING_STARTED, clss, getHostName(), date, new Date()));
-                emailService.send(email);
-            }
             getLogger().info("reindexing");
             if (isAsyncSave()) {
                 getLogger().info("reindexing async");

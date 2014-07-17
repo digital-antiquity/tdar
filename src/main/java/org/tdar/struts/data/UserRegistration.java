@@ -124,7 +124,7 @@ public class UserRegistration extends UserAuthData {
      * Override to provide custom registration welcome new user message keys for downloading vs purchasing vs contributing.
      */
     public String getWelcomeNewUserMessageKey() {
-        return "authenticationService.welcome_new_user";
+        return "welcome-user";
     }
 
     public String getPassword() {

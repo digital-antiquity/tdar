@@ -108,7 +108,6 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     public URL buildPostUrl(Invoice invoice) {
         URL url = null;
         try {
-
             NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretRequestWord());
             template.populateHashMapFromInvoice(invoice);
             template.constructHashKey();
