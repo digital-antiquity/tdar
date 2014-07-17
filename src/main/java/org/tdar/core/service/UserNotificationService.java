@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -87,6 +88,11 @@ public class UserNotificationService {
     }
 
     @Transactional
+    public UserNotification info(TdarUser user, String messageKey, UserNotificationDisplayType displayType) {
+        return createUserNotification(user, messageKey, UserNotificationType.INFO, displayType);
+    }
+
+    @Transactional
     public UserNotification error(TdarUser user, String messageKey) {
         return createUserNotification(user, messageKey, UserNotificationType.ERROR);
     }
@@ -97,9 +103,14 @@ public class UserNotificationService {
     }
 
     private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType) {
+        return createUserNotification(user, messageKey, messageType, UserNotificationDisplayType.NORMAL);
+    }
+
+    private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType, UserNotificationDisplayType displayType) {
         UserNotification notification = new UserNotification();
         notification.setMessageKey(messageKey);
         notification.setMessageType(messageType);
+        notification.setMessageDisplayType(displayType);
         notification.setTdarUser(user);
         genericDao.save(notification);
         return notification;

@@ -26,7 +26,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -235,8 +234,6 @@ public class AuthenticationService {
         return greatestPermissionGroup;
     }
 
-
-
     /*
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
@@ -279,7 +276,6 @@ public class AuthenticationService {
         return email.matches(EMAIL_VALID_REGEX);
     }
 
-    
     /**
      * allow for the clearing of the permissions cache. This is used both by "tests" and by the @link ScheduledProcessService to rest the
      * cache externally on a scheduled basis.
@@ -370,9 +366,7 @@ public class AuthenticationService {
         logger.debug("Trying to add user to auth service...");
 
         sendWelcomeEmail(person);
-        UserNotification info = userNotificationService.info(person, reg.getWelcomeNewUserMessageKey());
-        info.setMessageDisplayType(UserNotificationDisplayType.FREEMARKER);
-        personDao.saveOrUpdate(info);
+        userNotificationService.info(person, reg.getWelcomeNewUserMessageKey(), UserNotificationDisplayType.FREEMARKER);
         logger.info("Added user to auth service successfully.");
         // } else {
         // // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
@@ -519,7 +513,7 @@ public class AuthenticationService {
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         // we actually need to update two person instances: the persisted user record, and the detached user
         // associated with the session. We hide this detail from the caller.
-        TdarUser detachedUser = sessionData.getPerson();
+        TdarUser detachedUser = sessionData.getTdarUser();
         TdarUser persistedUser = personDao.find(TdarUser.class, detachedUser.getId());
         satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
