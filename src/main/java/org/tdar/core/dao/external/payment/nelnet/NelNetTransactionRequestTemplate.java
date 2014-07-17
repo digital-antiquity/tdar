@@ -1,8 +1,12 @@
 package org.tdar.core.dao.external.payment.nelnet;
 
 import java.io.Serializable;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.URIException;

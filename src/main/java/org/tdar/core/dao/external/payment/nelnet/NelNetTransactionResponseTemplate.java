@@ -97,33 +97,21 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         private int order;
 
         private NelnetTransactionItemResponse(String label, String key, int order) {
-            this.setKey(key);
-            this.setLabel(label);
-            this.setOrder(order);
+            this.key = key;
+            this.label = label;
+            this.order= order;
         }
 
         public String getKey() {
             return key;
         }
 
-        public void setKey(String key) {
-            this.key = key;
-        }
-
         public int getOrder() {
             return order;
         }
 
-        public void setOrder(int order) {
-            this.order = order;
-        }
-
         public String getLabel() {
             return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
         }
     }
 

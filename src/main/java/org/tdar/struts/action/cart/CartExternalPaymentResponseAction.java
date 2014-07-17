@@ -20,7 +20,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 

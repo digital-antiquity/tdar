@@ -1,6 +1,7 @@
 package org.tdar.struts.action.cart;
 
-import org.apache.commons.httpclient.URIException;
+import java.net.URL;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -16,14 +17,11 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
-import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-
-import java.net.URL;
 
 @Component
 @Scope("prototype")
