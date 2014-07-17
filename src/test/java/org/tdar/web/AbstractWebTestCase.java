@@ -113,6 +113,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
+    public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by", "problems with this submission");
+
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -632,6 +634,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return submitForm(defaultEditButton);
     }
 
+    public void submitFormWithoutErrorCheck() {
+        String defaultEditButton = "submitAction";
+        HtmlElement buttonWithName = getButtonWithName(defaultEditButton);
+        if (buttonWithName == null) {
+            defaultEditButton = "Save";
+        }
+        submitFormWithoutErrorCheck(defaultEditButton);
+    }
+
     public int submitForm(String buttonText) {
         submitFormWithoutErrorCheck(buttonText);
         int statusCode = internalPage.getWebResponse().getStatusCode();
@@ -708,8 +719,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                                                                                                   // rendering)
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
-
-    public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by", "problems with this submission");
 
     public void assertNoEscapeIssues() {
         String html = getPageCode().toLowerCase();

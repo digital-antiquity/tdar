@@ -60,7 +60,7 @@ public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCa
         String url = String.format(ENTITY_INSTITUTION_EDIT, 12517);
         gotoPage(url);
         setInput("name", UNIVERSITY_OF_TEST);
-        submitForm();
+        submitFormWithoutErrorCheck();
         // assertTextNotPresent(UNIVERSITY_OF_TEST);
         assertTextPresent("Cannot rename institution");
     }

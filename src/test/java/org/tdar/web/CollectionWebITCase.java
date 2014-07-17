@@ -175,7 +175,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         createInput("text", String.format(FMT_AUTHUSERS_EMAIL, 1), user.getEmail());
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, 1), GeneralPermissions.VIEW_ALL.toString());
 
-        submitForm();
+        submitFormWithoutErrorCheck();
 
         // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
 
@@ -227,7 +227,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             i++;
         }
 
-        submitForm();
+        submitFormWithoutErrorCheck();
 
         assertTrue(getPageText().contains("User does not exist"));
         assertTrue(getCurrentUrlPath().contains("/collection/save"));
