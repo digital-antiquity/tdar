@@ -121,7 +121,7 @@ public class FileSystemResourceDao {
                 toReturn.add(nodes.item(i).getTextContent());
             }
         } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("fileSystemResourceDao.wro_missing=", e);
+            throw new TdarRecoverableRuntimeException("fileSystemResourceDao.wro_missing", e);
         }
         return toReturn;
     }
