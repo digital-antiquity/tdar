@@ -203,7 +203,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private void searchCollectionsToo() {
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         buildResourceCollectionQuery(queryBuilder);
-
+        
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
             SearchResult result = new SearchResult();
@@ -214,7 +214,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             result.setRecordsPerPage(10);
 
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+            setMode("COLLECTION MINI");
             searchService.handleSearch(queryBuilder, result, this);
+            setMode("SEARCH");
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
             for (ResourceCollection col : getCollectionResults()) {
                 getAuthenticationAndAuthorizationService().applyTransientViewableFlag(col, getAuthenticatedUser());
@@ -303,8 +305,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private void buildResourceCollectionQuery(QueryBuilder queryBuilder) {
         queryBuilder.setOperator(Operator.AND);
-        if (StringUtils.isNotBlank(query)) {
-            queryBuilder.append(new GeneralSearchQueryPart(query));
+        
+        List<String> allFields = new ArrayList<>();
+        for (SearchParameters param : groups) {
+            allFields.addAll(param.getAllFields());
+        }
+        allFields.add(query);
+        
+        if (CollectionUtils.isNotEmpty(allFields)) {
+            queryBuilder.append(new GeneralSearchQueryPart(allFields));
         }
         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
 

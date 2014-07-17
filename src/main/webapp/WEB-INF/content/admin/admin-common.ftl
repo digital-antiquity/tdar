@@ -11,17 +11,22 @@
             <li class='dropdown'>
             <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
             <ul class='dropdown-menu'>
-            <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
-            <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
-            <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
-            <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
+                <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
+                <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
+                <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
+                <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
             </ul>
             </li>
             <li><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
             <li><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
             <#if billingManager || editor>
-                <li><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
-                <li><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
+                <li class="dropdown">
+                    <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Billing <b class='caret'></b></a>
+                    <ul class='dropdown-menu'>
+                        <li><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
+                        <li><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
+                    </ul>
+                </li>
             </#if>
             <#if administrator >
                 <li><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
