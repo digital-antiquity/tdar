@@ -98,11 +98,7 @@ public class UserNotificationService {
     }
 
     private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType, UserNotificationDisplayType displayType) {
-        UserNotification notification = new UserNotification();
-        notification.setMessageKey(messageKey);
-        notification.setMessageType(messageType);
-        notification.setMessageDisplayType(displayType);
-        notification.setTdarUser(user);
+        UserNotification notification = new UserNotification(messageKey, messageType, displayType, user);
         genericDao.save(notification);
         return notification;
     }
