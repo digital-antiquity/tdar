@@ -195,15 +195,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         // controller.setInformationResourceId(document.getId());
 
         controller.setInformationResourceFileVersionId(document.getFirstInformationResourceFile().getLatestPDF().getId());
-        try {
-            controller.prepare();
-            assertEquals(Action.SUCCESS, controller.execute());
-            assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
-        } catch (TdarActionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
+        controller.prepare();
+        assertEquals(Action.SUCCESS, controller.execute());
+        assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
 
     }
 

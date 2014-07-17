@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.DownloadResult;
 import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -52,7 +52,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
                     @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") })
     @HttpsOnly
     public String download() {
-        //not sure this is really needed, but...
+        // not sure this is really needed, but...
         if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion()) && Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
@@ -77,13 +77,12 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
      * return INPUT;
      * }
      */
-    
-    
+
     @Actions({
             @Action(value = THUMBNAIL),
             @Action(value = SM)
     })
-    public String thumbnail() throws TdarActionException {
+    public String thumbnail() {
         getSessionData().clearPassthroughParameters();
         if (Persistable.Base.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
@@ -101,8 +100,8 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             return FORBIDDEN;
         }
 
-        downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), getInformationResourceFileVersion());
-        return SUCCESS;
+        DownloadResult result = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this);
+        return result.name().toLowerCase();
     }
 
     @Override

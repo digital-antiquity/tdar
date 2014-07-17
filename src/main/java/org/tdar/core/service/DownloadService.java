@@ -18,7 +18,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +25,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.PdfCoverPageGenerationException;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.DownloadHandler;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
 
@@ -60,10 +60,13 @@ public class DownloadService {
 
     private final Cache<Long, List<Integer>> downloadLock;
 
+    private final AuthorizationService authorizationService;
+
     @Autowired
-    public DownloadService(PdfService pdfService, GenericService genericService) {
+    public DownloadService(PdfService pdfService, GenericService genericService, AuthorizationService authorizationService) {
         this.pdfService = pdfService;
         this.genericService = genericService;
+        this.authorizationService = authorizationService;
         this.downloadLock = CacheBuilder.newBuilder()
                 .concurrencyLevel(4)
                 .maximumSize(10000)
@@ -90,17 +93,6 @@ public class DownloadService {
         IOUtils.closeQuietly(zout);
     }
 
-    public void handleDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId, InformationResourceFileVersion... irFileVersions)
-            throws TdarActionException {
-        logger.debug("requested files:{}", irFileVersions);
-        if (ArrayUtils.isEmpty((irFileVersions))) {
-            throw new TdarRecoverableRuntimeException("error.unsupported_action");
-        }
-
-        List<FileDownloadStatistic> stats = handleActualDownload(authenticatedUser, dh, informationResourceId, irFileVersions);
-        registerDownload(stats);
-    }
-
     @Transactional(readOnly = false)
     public void registerDownload(List<FileDownloadStatistic> stats) {
         if (CollectionUtils.isNotEmpty(stats)) {
@@ -109,9 +101,9 @@ public class DownloadService {
     }
 
     @Transactional(readOnly = true)
-    public List<FileDownloadStatistic> handleActualDownload(Person authenticatedUser, DownloadHandler dh, Long informationResourceId,
-            InformationResourceFileVersion... irFileVersions)
-            throws TdarActionException {
+    public List<FileDownloadStatistic> handleActualDownload(TdarUser authenticatedUser, DownloadHandler dh, InformationResource informationResource,
+            InformationResourceFileVersion... irFileVersions) 
+    {
 
         Map<File, String> files = new HashMap<>();
         String mimeType = null;
@@ -139,7 +131,7 @@ public class DownloadService {
 
                 if (irFileVersions.length > 1) {
                     initDispositionPrefix(FileType.FILE_ARCHIVE, dh);
-                    fileName = String.format("files-%s.zip", informationResourceId);
+                    fileName = String.format("files-%s.zip", informationResource.getId());
 
                     mimeType = "application/zip";
                 } else {
@@ -159,21 +151,18 @@ public class DownloadService {
                 dh.setInputStream(new DeleteOnCloseFileInputStream(resourceFile));
             } else if (files.keySet().size() == 1) {
                 resourceFile = (File) files.keySet().toArray()[0];
-               dh.setInputStream(new FileInputStream(resourceFile));
+                dh.setInputStream(new FileInputStream(resourceFile));
             } else {
                 logger.info("No files present in files.keySet() - could be thumbnail request for file w/ deleted status");
-                throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
+                throw new FileNotFoundException("File not found:" + resourceFile);
             }
             dh.setFileName(fileName);
             dh.setContentLength(resourceFile.length());
             dh.setContentType(mimeType);
             logger.debug("downloading file:" + resourceFile.getCanonicalPath());
-        } catch (FileNotFoundException | NullPointerException ex) {
-            logger.error("Could not generate zip file to download: file not found", ex);
-            throw new TdarActionException(StatusCode.NOT_FOUND, "Could not generatefile to download");
-        } catch (IOException ex) {
+        } catch (NullPointerException | IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
-            throw new TdarActionException(StatusCode.NOT_FOUND, "Could not generate zip file to download");
+            throw new TdarRecoverableRuntimeException("downloadService.error_zip_generation");
         } finally {
             releaseDownloadLock(authenticatedUser, irFileVersions);
         }
@@ -229,17 +218,8 @@ public class DownloadService {
     }
 
     private void addFileToDownload(TextProvider provider, Map<File, String> downloadMap, Person authenticatedUser,
-            InformationResourceFileVersion irFileVersion, boolean includeCoverPage)
-            throws TdarActionException {
-        File resourceFile = null;
-        try {
-            resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFileVersion);
-        } catch (FileNotFoundException e1) {
-            handleFileNotFound(resourceFile);
-        }
-        if ((resourceFile == null) || !resourceFile.exists()) {
-            handleFileNotFound(resourceFile);
-        }
+            InformationResourceFileVersion irFileVersion, boolean includeCoverPage) {
+        File resourceFile = irFileVersion.getTransientFile();
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && includeCoverPage) {
@@ -255,14 +235,6 @@ public class DownloadService {
         downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
-    private void handleFileNotFound(File resourceFile) throws TdarActionException {
-        if (TdarConfiguration.getInstance().isProductionEnvironment()) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, "File not found");
-        } else {
-            logger.warn("FILE NOT FOUND: {}", resourceFile);
-        }
-    }
-
     // indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
     private void initDispositionPrefix(InformationResourceFile.FileType fileType, DownloadHandler dh) {
         if (InformationResourceFile.FileType.IMAGE != fileType) {
@@ -270,4 +242,55 @@ public class DownloadService {
         }
     }
 
+    public DownloadResult validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
+            InformationResource resourceToDownload, DownloadHandler dh) {
+        List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
+        if (Persistable.Base.isNotNullOrTransient(versionToDownload)) {
+            versionsToDownload.add(versionToDownload);
+        }
+
+        if (Persistable.Base.isNotNullOrTransient(resourceToDownload)) {
+            for (InformationResourceFile irf : resourceToDownload.getInformationResourceFiles()) {
+                if (irf.isDeleted()) {
+                    continue;
+                }
+                versionsToDownload.add(irf.getLatestUploadedOrArchivalVersion());
+                logger.trace("adding: {}", irf.getLatestUploadedVersion());
+            }
+        }
+        if (CollectionUtils.isEmpty(versionsToDownload)) {
+            return DownloadResult.ERROR;
+        }
+
+        for (InformationResourceFileVersion version : versionsToDownload) {
+            if (!authorizationService.canDownload(version, authenticatedUser)) {
+                logger.warn("thumbail request: resource is confidential/embargoed: {}", versionToDownload.getId());
+                return DownloadResult.FORBIDDEN;
+            }
+            File resourceFile = null;
+            try {
+                resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version);
+                version.setTransientFile(resourceFile);
+            } catch (FileNotFoundException e1) {
+                logger.error("FILE NOT FOUND: {}", version);
+                return DownloadResult.NOT_FOUND;
+            }
+            if ((resourceFile == null) || !resourceFile.exists()) {
+                logger.warn("FILE NOT FOUND: {}", resourceFile);
+                return DownloadResult.NOT_FOUND;
+            }
+        }
+        logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
+        try {
+            List<FileDownloadStatistic> stats = handleActualDownload(authenticatedUser, dh, resourceToDownload, versionsToDownload.toArray(new InformationResourceFileVersion[0]));
+            registerDownload(stats);
+//       } catch (FileNotFoundException fnf) {
+//            logger.error("FILE NOT FOUND: {}", fnf.getMessage());
+//            return DownloadResult.NOT_FOUND;
+        } catch (TdarRecoverableRuntimeException tre) {
+            logger.error("ERROR IN Download: {}", tre);
+            return DownloadResult.ERROR;
+        }
+        return DownloadResult.SUCCESS;
+    }
 }
