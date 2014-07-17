@@ -19,6 +19,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
 
 public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
@@ -41,8 +42,8 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     public void testDismissNotifications() {
         TdarUser user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
         getLogger().debug("created user with id: {}", user.getId());
-        UserNotification infoNotification = userNotificationService.info(user, "some info message");
-        UserNotification broadcastNotification = userNotificationService.broadcast("some broadcast message");
+        UserNotification infoNotification = userNotificationService.info(user, "some info message", UserNotificationDisplayType.NORMAL);
+        UserNotification broadcastNotification = userNotificationService.broadcast("some broadcast message", UserNotificationDisplayType.NORMAL);
         initialNotifications.addAll(Arrays.asList(broadcastNotification, infoNotification));
         List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(user);
         Collections.sort(currentNotifications);
@@ -71,10 +72,10 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         for (int i = 0; i < 5; i++) {
             TdarUser anotherUser = createAndSaveNewPerson(i + "usern@mailinator.com", "n" + i);
             otherUsers.add(anotherUser);
-            userNotificationService.info(anotherUser, "1st info for " + i);
-            userNotificationService.info(anotherUser, "2nd info for " + i);
-            userNotificationService.error(anotherUser, "1st error for " + i);
-            userNotificationService.warning(anotherUser, "1st warning for " + i);
+            userNotificationService.info(anotherUser, "1st info for " + i, UserNotificationDisplayType.NORMAL);
+            userNotificationService.info(anotherUser, "2nd info for " + i, UserNotificationDisplayType.NORMAL);
+            userNotificationService.error(anotherUser, "1st error for " + i, UserNotificationDisplayType.NORMAL);
+            userNotificationService.warning(anotherUser, "1st warning for " + i, UserNotificationDisplayType.NORMAL);
         }
         for (TdarUser otherUser : otherUsers) {
             List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(otherUser);
@@ -87,7 +88,7 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         }
         assertEquals("The original user should only have lithic.announce broadcast",
                 initialNotifications, userNotificationService.getCurrentNotifications(user));
-        UserNotification broadcast = userNotificationService.broadcast("this is a test of the emergency broadcast system");
+        UserNotification broadcast = userNotificationService.broadcast("this is a test of the emergency broadcast system", UserNotificationDisplayType.NORMAL);
         initialNotifications.add(0, broadcast);
         assertEquals("original user should have 2 broadcast messages now", initialNotifications, userNotificationService.getCurrentNotifications(user));
         for (TdarUser otherUser : otherUsers) {

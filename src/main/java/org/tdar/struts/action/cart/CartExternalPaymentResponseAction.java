@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -108,7 +109,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
         String notificationKey = "cartExternalPaymentResponseAction.new_invoice_notification";
         getLogger().info("sending notification:{} to:{}", notificationKey, recipient);
 
-        notificationService.info(recipient, notificationKey);
+        notificationService.info(recipient, notificationKey, UserNotificationDisplayType.NORMAL);
 
         //if user recently became a contributor by way of this invoice, send an additional notification
         //todo: how to figure this out?  user has only one account and account only has this invoice?
