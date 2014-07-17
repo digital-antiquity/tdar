@@ -106,7 +106,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     public List<BillingActivity> getActiveBillingActivities() {
-        List<BillingActivity> toReturn = new ArrayList<BillingActivity>();
+        List<BillingActivity> toReturn = new ArrayList<>();
         for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
             if (activity.getEnabled()) {
                 toReturn.add(activity);
@@ -559,12 +559,12 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Finalizes a payment -- given an incoming transient invoice the service will find the existing invoice, and:
-     *  (a) update the Invoice with any payment info that it needs such as method, or reason
-     *  (b) mark it as final, so it cannot be modified
-     *  (c) confirm that the coupon is still valid
-     *  (d) change the transaction status:
-     *      1) if we have a coupon and that coupon is for the entire amount, complete transaciton
-     *      2) set status to PENDING_TRANSACTION
+     * (a) update the Invoice with any payment info that it needs such as method, or reason
+     * (b) mark it as final, so it cannot be modified
+     * (c) confirm that the coupon is still valid
+     * (d) change the transaction status:
+     * 1) if we have a coupon and that coupon is for the entire amount, complete transaciton
+     * 2) set status to PENDING_TRANSACTION
      * 
      * @param invoice_
      * @param paymentMethod
@@ -603,8 +603,9 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Processes the results of a NelNet transaction, first validating the response hash, logging the response, and then updating the invoice with all of the 
+     * Processes the results of a NelNet transaction, first validating the response hash, logging the response, and then updating the invoice with all of the
      * information available, and finally sends an email.
+     * 
      * @param response
      * @param paymentTransactionProcessor
      * @throws IOException
@@ -634,6 +635,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * Sends a email to the user when the transaction is successful
+     * 
      * @param invoice
      */
     private void sendSuccessEmail(Invoice invoice) {
@@ -663,6 +665,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * updates a person's address to include the billing address from the response
+     * 
      * @param response
      * @param invoice
      */

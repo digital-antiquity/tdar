@@ -33,7 +33,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
         //// no need to take user to billing account selection if we no they don't have one
         //@Result(name = SUCCESS, location = "/cart/process-payment-request", type = "redirect")
         //route to the billing account selection page for now, even though user has one choice
-       @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CHOOSE_BILLING_ACCOUNT, type="redirect")
+       @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.REVIEW_PURCHASE, type="redirect")
 })
 @Namespace("/cart")
 @ParentPackage("default")

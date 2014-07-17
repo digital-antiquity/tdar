@@ -9,20 +9,21 @@
     <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <head>
-    <title>Choose A Billing Account</title>
+    <title>Review</title>
 </head>
 <body>
-<h1>Choose A Billing Account</h1>
+<h1>Review your purchase</h1>
 <div class="row">
     <div class="span12">
-        <div class="alert alert-info">
-            <@s.text name="cart.about_billing_accounts" />
-        </div>
+    	<@invoicecommon.printInvoice />	
         <div class="authpane">
         <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal billing-account-choice" enctype='multipart/form-data' action='process-billing-account-choice'>
             <@s.token name='struts.csrf.token' />
             <@s.hidden name="invoiceId" value="${invoice.id?c}" />
             <#if accounts?has_content>
+	        <div class="alert alert-info">
+            	<@s.text name="cart.about_billing_accounts" />
+	        </div>
                 <@s.select labelposition='top' label='Select Account' name='id' emptyOption="false" id="select-existing-account"
                 list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" />
             </#if>

@@ -62,13 +62,6 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public Account() {
-    }
-
-    public Account(String name) {
-        this.name = name;
-    }
-
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -103,11 +96,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Invoice> invoices = new HashSet<Invoice>();
+    private Set<Invoice> invoices = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Coupon> coupons = new HashSet<Coupon>();
+    private Set<Coupon> coupons = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
@@ -116,7 +109,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Resource> resources = new HashSet<Resource>();
+    private Set<Resource> resources = new HashSet<>();
 
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
@@ -128,6 +121,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private Long spaceUsedInBytes = 0L;
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
+    
+    public Account() {
+    }
+
+    public Account(String name) {
+        this.name = name;
+    }
 
     /**
      * @return the invoices
@@ -218,9 +218,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @Transient
     public Set<Resource> getFlaggedResources() {
-        Set<Resource> flagged = new HashSet<Resource>();
+        Set<Resource> flagged = new HashSet<>();
         for (Resource resource : getResources()) {
-            if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+            if (resource.getStatus().isFlaggedForBilling()) {
                 flagged.add(resource);
             }
         }

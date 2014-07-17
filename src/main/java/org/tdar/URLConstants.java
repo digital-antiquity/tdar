@@ -23,5 +23,5 @@ public interface URLConstants {
     String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}&startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "view?id=${resource.id}";
 	String MY_PROFILE = "/entity/person/myprofile";
-	String CHOOSE_BILLING_ACCOUNT = "/cart/choose-billing-account";
+	String REVIEW_PURCHASE = "/cart/review";
 }

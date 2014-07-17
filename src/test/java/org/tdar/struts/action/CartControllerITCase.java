@@ -36,7 +36,7 @@ import org.tdar.struts.action.cart.CartApiController;
 import org.tdar.struts.action.cart.CartBillingAccountController;
 import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
-import org.tdar.struts.action.cart.UnauthenticatedCartController;
+import org.tdar.struts.action.cart.InvoiceController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 import com.opensymphony.xwork2.Action;
@@ -56,18 +56,18 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testCartBasicInvalid() throws TdarActionException {
         setIgnoreActionErrors(true);
-        UnauthenticatedCartController controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
         controller.setInvoice(new Invoice());
         controller.prepare();
         String result = controller.execute();
         assertEquals(Action.SUCCESS, result);
-        controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        controller = generateNewInitializedController(InvoiceController.class);
         controller.setServletRequest(getServletPostRequest());
         String message = getText("invoiceService.specify_something");
         controller.setInvoice(new Invoice());
         controller.prepare();
         controller.validate();
-        String save = controller.preview();
+        String save = controller.unauthenticatedPreview();
         assertEquals(Action.INPUT, save);
 
         assertTrue(controller.getActionErrors().contains(message));
@@ -76,7 +76,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartBasicValid() throws TdarActionException {
-        UnauthenticatedCartController controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
         createAndTestInvoiceQuantity(controller, 10L, null);
     }
 
@@ -127,7 +127,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Account account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
         String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_);
-        UnauthenticatedCartController controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller, numberOfFilesForInvoice, code);
         Invoice invoice = genericService.find(Invoice.class, invoiceId);
         invoice.markFinal();
@@ -140,7 +140,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         //action errors are expected in this test
         setIgnoreActionErrors(true);
 
-        UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
 
@@ -158,7 +158,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartBasicAddress() throws TdarActionException {
-        UnauthenticatedCartController controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
         setupAndTestBillingAddress(controller);
     }
 
@@ -227,7 +227,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.getSessionData().setInvoiceId(invoiceId);
         controller.prepare();
         controller.validate();
-        String response = controller.processPayment();
+        String response = controller.processPaymentRequest();
         assertEquals(CartController.POLLING, response);
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
         String redirectUrl = controller.getRedirectUrl();
@@ -265,7 +265,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller2.getSessionData().setInvoiceId(invoiceId);
         controller2.prepare();
         controller2.validate();
-        response = controller2.processPayment();
+        response = controller2.processPaymentRequest();
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller2.getRedirectUrl();
         invoice = controller2.getInvoice();
@@ -293,7 +293,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
         controller.validate();
-        response = controller.processPayment();
+        response = controller.processPaymentRequest();
 
         assertEquals(CartController.SUCCESS, response);
         Long invoiceId = invoice.getId();
@@ -322,7 +322,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
         controller.validate();
-        response = controller.processPayment();
+        response = controller.processPaymentRequest();
         assertEquals(CartController.SUCCESS, response);
 
         Long invoiceId = invoice.getId();
@@ -364,7 +364,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
         controller.validate();
-        response = controller.processPayment();
+        response = controller.processPaymentRequest();
 
         assertEquals(CartController.POLLING, response);
         String redirectUrl = controller.getRedirectUrl();
@@ -386,12 +386,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
      * @return string result of the /cart/preview action
      */
     String simulateCartUpdate(Invoice invoice) {
-        UnauthenticatedCartController ucc = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController ucc = generateNewInitializedController(InvoiceController.class);
         ucc.getSessionData().setInvoiceId(invoice.getId());
         ucc.prepare();
         ucc.validate();
         ucc.setInvoice(invoice);
-        return ucc.preview();
+        return ucc.unauthenticatedPreview();
     }
 
 
@@ -442,7 +442,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private CartController setupPaymentTests() throws TdarActionException {
-        UnauthenticatedCartController controller_ = generateNewInitializedController(UnauthenticatedCartController.class);
+        InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
         Long invoiceId = setupAndTestBillingAddress(controller_);
         CartController controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoiceId);
@@ -455,12 +455,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testPaymentPermissions() {
-        UnauthenticatedCartController controller = generateNewController(UnauthenticatedCartController.class);
+        InvoiceController controller = generateNewController(InvoiceController.class);
         init(controller, getBasicUser());
         assertTrue(controller.getAllPaymentMethods().size() == 1);
         assertTrue(controller.getAllPaymentMethods().contains(PaymentMethod.CREDIT_CARD));
 
-        controller = generateNewController(UnauthenticatedCartController.class);
+        controller = generateNewController(InvoiceController.class);
         init(controller, getAdminUser());
         assertTrue(controller.getAllPaymentMethods().size() > 1);
         assertTrue(controller.getAllPaymentMethods().contains(PaymentMethod.CREDIT_CARD));
@@ -471,7 +471,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     // FIXME: I don't see billing address fields in our forms. do we directly collect address info?, does our payment processor send it to us, or is this
     // feature not used?
-    private Long setupAndTestBillingAddress(UnauthenticatedCartController controller_) throws TdarActionException {
+    private Long setupAndTestBillingAddress(InvoiceController controller_) throws TdarActionException {
         Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
         Address address2 = new Address(AddressType.MAILING, "2street", "notsurewhere", "california", "q234", "united states");
         Person user = getUser();
@@ -499,11 +499,11 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         return invoiceId;
     }
 
-    private Long createAndTestInvoiceQuantity(UnauthenticatedCartController controller, Long numberOfFiles, String code) throws TdarActionException {
+    private Long createAndTestInvoiceQuantity(InvoiceController controller, Long numberOfFiles, String code) throws TdarActionException {
         controller.prepare();
         String result = controller.execute();
         assertEquals(Action.SUCCESS, result);
-        controller = generateNewInitializedController(UnauthenticatedCartController.class);
+        controller = generateNewInitializedController(InvoiceController.class);
         controller.prepare();
         if (StringUtils.isNotBlank(code)) {
             controller.setCode(code);
@@ -511,7 +511,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setInvoice(new Invoice());
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
-        String save = controller.preview();
+        String save = controller.unauthenticatedPreview();
 
         assertEquals(Action.SUCCESS, save);
         // assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());

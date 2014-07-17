@@ -70,9 +70,9 @@ public class Invoice extends Base implements Updatable {
                 case PREPARED:
                     return false;
                 default:
-                    break;
+                    return true;
             }
-            return true;
+
         }
 
         public boolean isInvalid() {
@@ -82,6 +82,17 @@ public class Invoice extends Base implements Updatable {
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        public boolean isModifiable() {
+            switch (this) {
+                case TRANSACTION_FAILED:
+                case TRANSACTION_CANCELLED:
+                case TRANSACTION_SUCCESSFUL:
+                    return false;
+                default:
+                    return true;
             }
         }
 
@@ -95,19 +106,6 @@ public class Invoice extends Base implements Updatable {
             return MessageHelper.formatLocalizableKey(this);
         }
 
-    }
-
-    public Invoice() {
-    }
-
-    public Invoice(TdarUser owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
-        markUpdated(owner);
-        setPaymentMethod(method);
-        setNumberOfFiles(numberOfFiles);
-        setNumberOfMb(numberOfMb);
-        if (CollectionUtils.isNotEmpty(items)) {
-            getItems().addAll(items);
-        }
     }
 
     @NotNull
@@ -132,7 +130,7 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_date")
     private Date transactionDate;
 
-    @ManyToOne(optional = true , cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = true, name = "owner_id")
     private TdarUser owner;
 
@@ -174,6 +172,19 @@ public class Invoice extends Base implements Updatable {
     @JsonView(JsonLookupFilter.class)
     @Column(name = "transactionstatus", length = FieldLength.FIELD_LENGTH_25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
+
+    public Invoice() {
+    }
+
+    public Invoice(TdarUser owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
+        markUpdated(owner);
+        setPaymentMethod(method);
+        setNumberOfFiles(numberOfFiles);
+        setNumberOfMb(numberOfMb);
+        if (CollectionUtils.isNotEmpty(items)) {
+            getItems().addAll(items);
+        }
+    }
 
     /**
      * @return the dateCreated
@@ -395,14 +406,7 @@ public class Invoice extends Base implements Updatable {
     }
 
     public boolean isModifiable() {
-        switch (transactionStatus) {
-            case TRANSACTION_FAILED:
-            case TRANSACTION_CANCELLED:
-            case TRANSACTION_SUCCESSFUL:
-                return false;
-            default:
-                return true;
-        }
+        return transactionStatus.isModifiable();
     }
 
     public Float getCalculatedCost() {

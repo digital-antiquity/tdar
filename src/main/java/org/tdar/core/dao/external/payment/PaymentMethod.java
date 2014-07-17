@@ -4,6 +4,13 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * 
+ * Payment method used to settle the account balance on a given Invoice.
+ * 
+ * The INVOICE type is used to denote that the Invoice will be paid by manual invoice or purchase order, outside of Nelnet CC processing.
+ * 
+ */
 public enum PaymentMethod implements HasLabel, Localizable {
     CREDIT_CARD("Credit Card"),
     CHECK("Check"),
