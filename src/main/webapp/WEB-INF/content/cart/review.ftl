@@ -25,7 +25,7 @@
             	<@s.text name="cart.about_billing_accounts" />
 	        </div>
                 <@s.select labelposition='top' label='Select Account' name='id' emptyOption="false" id="select-existing-account"
-                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" />
+                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" value="id" />
             </#if>
             <div class="add-new hidden">
                 <h3>Create a new account</h3>

@@ -56,22 +56,30 @@ public class CartBillingAccountController extends AbstractCartController {
     public void prepare() {
         super.prepare();
 
+        Invoice invoice = getInvoice();
+        TdarUser owner = invoice.getOwner();
+        if (owner == null) {
+            owner = getAuthenticatedUser();
+            invoice.setOwner(owner);
+            getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
+        }
+        setAccounts(accountService.listAvailableAccountsForUser(owner));
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
-        if (id == -1L && getInvoice() != null) {
-            selectedAccount = invoiceService.getAccountForInvoice(getInvoice());
+        if (id == -1L && invoice != null) {
+            getLogger().debug("looking for account by invoice {}", invoice);
+            selectedAccount = invoiceService.getAccountForInvoice(invoice);
+            if (selectedAccount == null && ! getAccounts().isEmpty()) {
+                selectedAccount = getAccounts().iterator().next();
+            }
             if (selectedAccount != null) {
                 id = selectedAccount.getId();
             }
         } else {
             selectedAccount = getGenericService().find(Account.class, id);
         }
-
-        TdarUser owner = getInvoice().getOwner();
-        if (owner == null) {
-            owner = getAuthenticatedUser();
-        }
-        getAccounts().addAll(accountService.listAvailableAccountsForCartAccountSelection(owner, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-        getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccount());
+        getLogger().debug("selected account: {}", selectedAccount);
+        getLogger().debug("owner:{}\t accounts:{}", invoice.getOwner(), getAccounts());
+        // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new Account("Add an account"));
         }
@@ -79,8 +87,8 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (getInvoice() == null) {
-            addActionError("No invoice found");
+        if (! isValidInvoice() ) {
+            return;
         }
         if (isPostRequest()) {
             if (Persistable.Base.isNullOrTransient(getId())) {
@@ -100,7 +108,7 @@ public class CartBillingAccountController extends AbstractCartController {
     private void validate(Account account) {
         if (StringUtils.isBlank(account.getName())) {
             // addActionError("Account name required");
-            account.setName("Generated account for " + getAuthenticatedUser().getProperName());
+            account.setName("Default account for " + getInvoice().getOwner().getProperName());
         }
     }
 
@@ -116,8 +124,9 @@ public class CartBillingAccountController extends AbstractCartController {
 
         // if user came via unauthenticated page the owner/proxy may not be set. If either is null, we set both to the current user
         if (getInvoice().getOwner() == null || getInvoice().getTransactedBy() == null) {
-            getInvoice().setOwner(getAuthenticatedUser());
-            getInvoice().setTransactedBy(getAuthenticatedUser());
+            TdarUser user = getAuthenticatedUser();
+            getInvoice().setOwner(user);
+            getInvoice().setTransactedBy(user);
         }
 
         Account acct = account;

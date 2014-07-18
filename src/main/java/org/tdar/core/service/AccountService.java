@@ -667,11 +667,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     }
 
-    public Collection<? extends Account> listAvailableAccountsForCartAccountSelection(TdarUser owner, Status... status) {
-        Set<Account> accounts = listAvailableAccountsForUser(owner, status);
-        return accounts;
-    }
-
     @Transactional
     public void processBillingAccountChoice(Account acct, Invoice invoice, TdarUser authenticatedUser) {
         if (invoice.getOwner() == null) {

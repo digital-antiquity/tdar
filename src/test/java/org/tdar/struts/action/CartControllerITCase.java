@@ -67,7 +67,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setInvoice(new Invoice());
         controller.prepare();
         controller.validate();
-        String save = controller.unauthenticatedPreview();
+        String save = controller.processInvoice();
         assertEquals(Action.INPUT, save);
 
         assertTrue(controller.getActionErrors().contains(message));
@@ -391,7 +391,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         ucc.prepare();
         ucc.validate();
         ucc.setInvoice(invoice);
-        return ucc.unauthenticatedPreview();
+        return ucc.processInvoice();
     }
 
 
@@ -511,7 +511,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.setInvoice(new Invoice());
         controller.getInvoice().setNumberOfFiles(numberOfFiles);
         controller.setServletRequest(getServletPostRequest());
-        String save = controller.unauthenticatedPreview();
+        String save = controller.processInvoice();
 
         assertEquals(Action.SUCCESS, save);
         // assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
