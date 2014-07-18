@@ -33,13 +33,17 @@ public class AntiSpamHelper implements Serializable {
     private String reCaptchaText;
 
     private RecaptchaService recaptchaService;
-
+    
+    public AntiSpamHelper() {
+    }
+    
+    // FIXME: replace with RecaptchaService.getAntiSpamHelper() or AntiSpamService
     public AntiSpamHelper(RecaptchaService recaptchaService) {
+        logger.debug("recaptcha service: {}", recaptchaService);
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             setRecaptcha(recaptchaService.generateRecaptcha());
             setReCaptchaText(getRecaptcha().createRecaptchaHtml(null, null));
         }
-
     }
 
     public Long getTimeCheck() {

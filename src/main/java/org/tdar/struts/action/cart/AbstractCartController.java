@@ -15,24 +15,34 @@ import org.tdar.struts.data.AntiSpamHelper;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
+
 @Results({
         @Result(name = "redirect-start", location = "/cart/new", type = "redirect")
 })
+/**
+ * Base class for all cart based things. 
+ *
+ */
 public abstract class AbstractCartController extends AuthenticationAware.Base implements Preparable, ValidationWorkflowAware {
 
     private static final long serialVersionUID = -8162270388197212817L;
+
+    public static final String CART_NEW_LOCATION = "/cart/new";
 
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice;
     // list of billing accounts that the user may choose from when assigning the invoice
     private Set<Account> accounts = new HashSet<>();
 
+    protected String inputResultName = INPUT;
+
     // // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
     // private TdarUser owner = new TdarUser();
     // private Long ownerId;
 
     @Autowired
-    private transient RecaptchaService recaptchaService;
+    protected transient RecaptchaService recaptchaService;
+    // FIXME: this is unsafe, depends on order of initialization
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
 
     /**
@@ -52,12 +62,14 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     /**
      * Add actionError if the specified object is null
-     *
-     * @param object  object to check for nulliosity
-     * @param textKey key of error message (the value supplied to to {@link #getText(String, Object...)}
+     * 
+     * @param object
+     *            object to check for nulliosity
+     * @param textKey
+     *            key of error message (the value supplied to to {@link #getText(String, Object...)}
      */
     protected final void validateNotNull(Object object, String textKey) {
-        if(object == null) {
+        if (object == null) {
             addActionError(getText(textKey));
         }
     }
@@ -70,12 +82,12 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         getSessionData().setInvoiceId(null);
     }
 
-    //final for a reason (if you override this you likely did it on accident)
+    // final for a reason (if you override this you likely did it on accident)
     public final Invoice getInvoice() {
         return invoice;
     }
 
-    //final for a reason (if you override this you likely did it on accident)
+    // final for a reason (if you override this you likely did it on accident)
     public final void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
@@ -85,24 +97,15 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         invoice = loadPendingInvoice();
     }
 
-    // public TdarUser getOwner() {
-    // return owner;
-    // }
-    //
-    // // subclasses may set the owner, but we don't want this coming from struts
-    // protected void setOwner(TdarUser owner) {
-    // this.owner = owner;
-    // }
-    //
-    // public Long getOwnerId() {
-    // return ownerId;
-    // }
-    //
-    // public void setOwnerId(Long ownerId) {
-    // this.ownerId = ownerId;
-    // }
+    protected boolean isValidInvoice() {
+        if (invoice == null) {
+            addActionError(getText("abstractCartController.select_invoice"));
+            inputResultName = "redirect-start";
+            return false;
+        }
+        return true;
+    }
 
-    @Override
     /*
      * FIXME: I'm having second thoughts about this. The only alternative allen and I could think of was to
      * bypass validate() (i.e. don't add actionErrors to ensure the workflow interceptor calls execute), set a special
@@ -116,19 +119,11 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
      * That's much less opaque, but now sure how to go about implementing that behavior.
      */
     public String getInputResultName() {
-        if (getInvoice() == null) {
-            addActionError(getText("abstractCartController.select_invoice"));
-            return "redirect-start";
-        }
-        return INPUT;
+        return inputResultName;
     }
 
-    public AntiSpamHelper getH() {
+    public final AntiSpamHelper getH() {
         return h;
-    }
-
-    public void setH(AntiSpamHelper h) {
-        this.h = h;
     }
 
     public Set<Account> getAccounts() {

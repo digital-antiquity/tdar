@@ -52,7 +52,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     private String url;
     private String internalReturnUrl;
-    
+
     @Autowired
     private RecaptchaService recaptchaService;
 
@@ -104,11 +104,13 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             @Action(value = "process-cart-login",
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
-                            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.REVIEW_PURCHASE),
+                            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                             @Result(name = REDIRECT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                                     "returnUrl not expected for login from cart" }),
                             @Result(name = INPUT,
-                                    type = "redirectAction", params = { "actionName", "review", "namespace", "/cart" })
+                                    type = REDIRECT,
+                                    location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
+//                                    type = "redirectAction", params = { "actionName", "review-unauthenticated", "namespace", "/cart" })
                     })
     })
     @HttpsOnly

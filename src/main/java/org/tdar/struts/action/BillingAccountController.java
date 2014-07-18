@@ -67,12 +67,19 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
-    private Date exipres = new DateTime().plusYears(1).toDate();
+    private Date expires = new DateTime().plusYears(1).toDate();
 
     @Autowired
     private transient AccountService accountService;
     @Autowired
     private transient AuthorizationService authorizationService;
+    
+
+    @Action("/cart/view")
+    // FIXME: move to new InvoiceController or create new view-invoice action on BillingAccountController
+    public String viewInvoice() {
+        return SUCCESS;
+    }
 
     @SkipValidation
     @Action(value = CHOOSE, results = {
@@ -346,11 +353,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     public Date getExipres() {
-        return exipres;
+        return expires;
     }
 
     public void setExipres(Date exipres) {
-        this.exipres = exipres;
+        this.expires = exipres;
     }
 
     public Integer getQuantity() {

@@ -72,7 +72,6 @@ public class Invoice extends Base implements Updatable {
                 default:
                     return true;
             }
-
         }
 
         public boolean isInvalid() {
@@ -94,6 +93,10 @@ public class Invoice extends Base implements Updatable {
                 default:
                     return true;
             }
+        }
+        
+        public boolean isSuccessful() {
+            return this == TRANSACTION_SUCCESSFUL;
         }
 
         @Override
@@ -241,6 +244,9 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Float getTotal() {
+        if (total == null) {
+            return getCalculatedCost();
+        }
         return total;
     }
 

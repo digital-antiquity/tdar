@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.InvoiceService;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.GetOnly;
@@ -36,9 +35,6 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
  */
 @Component
 @Scope("prototype")
-@Results({
-        @Result(name = TdarActionSupport.RESULT_REDIRECT_START, location = TdarActionSupport.LOCATION_START, type = "redirect"),
-})
 @HttpsOnly
 public class InvoiceController extends AbstractCartController {
 
@@ -205,6 +201,7 @@ public class InvoiceController extends AbstractCartController {
             @Action("new"),
             @Action(value = "modify", results = { @Result(name = SUCCESS, location = "new.ftl") })
     })
+    @SkipValidation
     // @GetOnly
     public String execute() {
         return SUCCESS;
@@ -255,8 +252,8 @@ public class InvoiceController extends AbstractCartController {
         if (getInvoice() == null) {
             return "redirect-start";
         }
-//        Set<Account> availableAccounts = accountService.listAvailableAccountsForUser(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE);
-//        setAccounts(availableAccounts);
+        // Set<Account> availableAccounts = accountService.listAvailableAccountsForUser(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE);
+        // setAccounts(availableAccounts);
         return SUCCESS;
     }
 
@@ -302,7 +299,6 @@ public class InvoiceController extends AbstractCartController {
         // look for pending invoice in the session.
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
-
             // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
             if (!persistedInvoice.isModifiable()) {
                 clearPendingInvoice();
@@ -350,11 +346,7 @@ public class InvoiceController extends AbstractCartController {
 
     void setupActivities() {
         // we only care about the production+active activities
-        for (BillingActivity activity : cartService.getActiveBillingActivities()) {
-            // if (activity.isProduction()) {
-            getActivities().add(activity);
-            // }
-        }
+        getActivities().addAll(cartService.getActiveBillingActivities());
     }
 
     /**
@@ -363,9 +355,9 @@ public class InvoiceController extends AbstractCartController {
      */
     @Override
     public void validate() {
-        if (getInvoice() == null)
+        if (! isValidInvoice()) {
             return;
-
+        }
         // rule: invoice must not be finalized
         if (!getInvoice().isModifiable()) {
             addActionError(getText("cartController.cannot_modify"));

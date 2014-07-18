@@ -88,6 +88,7 @@ public class CartController extends AbstractCartController {
         }
 
         Invoice invoice = getInvoice();
+
         if (!invoice.isModifiable()) {
             return SUCCESS;
         }
@@ -103,6 +104,10 @@ public class CartController extends AbstractCartController {
             case CHECK:
                 break;
             case CREDIT_CARD:
+                URL url = paymentTransactionProcessor.buildPostUrl(getInvoice());
+                if (url != null) {
+                    setRedirectUrl(url.toExternalForm());
+                }
                 return POLLING;
             case INVOICE:
             case MANUAL:
@@ -112,34 +117,18 @@ public class CartController extends AbstractCartController {
         }
         return SUCCESS;
     }
-    
-    @Action("view")
-    // FIXME: move to new InvoiceController or create new view-invoice action on BillingAccountController
-    public String viewInvoice() {
-        return SUCCESS;
-    }
 
     @Override
     public void prepare() {
         super.prepare();
-
         if (invoiceId != -1L) {
             setInvoice(getGenericService().find(Invoice.class, invoiceId));
         }
-
         validateNotNull(getInvoice(), "cartController.invoice_expected_but_not_found");
         if (getInvoice() != null) {
             paymentMethod = getInvoice().getPaymentMethod();
             account = cartService.getAccountForInvoice(getInvoice());
         }
-
-        if (paymentMethod == PaymentMethod.CREDIT_CARD) {
-            URL url = paymentTransactionProcessor.buildPostUrl(getInvoice());
-            if (url != null) {
-                setRedirectUrl(url.toExternalForm());
-            }
-        }
-
     }
 
     private boolean isViewable() {

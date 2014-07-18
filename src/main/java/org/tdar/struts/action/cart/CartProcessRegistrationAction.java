@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.CartUserRegistration;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -29,11 +27,11 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.INPUT, location = "review.ftl"),
-        //// no need to take user to billing account selection if we no they don't have one
-        //@Result(name = SUCCESS, location = "/cart/process-payment-request", type = "redirect")
-        //route to the billing account selection page for now, even though user has one choice
-       @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.REVIEW_PURCHASE, type="redirect")
+        @Result(name = TdarActionSupport.INPUT, location = "review-unauthenticated.ftl"),
+        // // no need to take user to billing account selection if we no they don't have one
+        // @Result(name = SUCCESS, location = "/cart/process-payment-request", type = "redirect")
+        // route to the billing account selection page for now, even though user has one choice
+        @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CART_REVIEW_PURCHASE, type = "redirect")
 })
 @Namespace("/cart")
 @ParentPackage("default")
@@ -42,18 +40,18 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     private static final long serialVersionUID = -191583172083241851L;
 
     @Autowired
-    private RecaptchaService recaptchaService;
-    
-    @Autowired
     private AuthenticationService authenticationService;
 
-    private CartUserRegistration registrationInfo = new CartUserRegistration(recaptchaService);
-    private AntiSpamHelper h = registrationInfo.getH();
+    // FIXME: relying on order of initialization, possible bug
+    private CartUserRegistration registrationInfo = new CartUserRegistration(getH());
 
     @Override
     public void validate() {
+        if (! isValidInvoice()) {
+            return;
+        }
         getLogger().debug("validating registration request");
-        //a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
+        // a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
         List<String> errors = registrationInfo.validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
@@ -79,9 +77,8 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @Override
     public void prepare() {
         super.prepare();
-
-        //the TOU checkbox counds for both TOU and contributer agreement
-        if(registrationInfo.isAcceptTermsOfUse()) {
+        // the TOU checkbox counds for both TOU and contributer agreement
+        if (registrationInfo.isAcceptTermsOfUse()) {
             registrationInfo.setRequestingContributorAccess(true);
         }
 
@@ -100,11 +97,4 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         return registrationInfo;
     }
 
-    public AntiSpamHelper getH() {
-        return h;
-    }
-
-    public void setH(AntiSpamHelper h) {
-        this.h = h;
-    }
 }

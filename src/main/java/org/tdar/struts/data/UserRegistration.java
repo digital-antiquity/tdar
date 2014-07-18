@@ -37,11 +37,14 @@ public class UserRegistration extends UserAuthData {
     private UserAffiliation affiliation;
 
     public UserRegistration() {
+        this(new AntiSpamHelper());
     }
 
-
-    public UserRegistration(RecaptchaService recaptchaService) {
-        setH(new AntiSpamHelper(recaptchaService));
+    public UserRegistration(AntiSpamHelper h) {
+        if (h == null) {
+            h = new AntiSpamHelper();
+        }
+        setH(h);
     }
 
     public List<String> validate(TextProvider textProvider, AuthenticationService authService) {
