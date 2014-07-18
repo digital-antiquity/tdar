@@ -60,7 +60,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
 
     @Autowired
     private transient RecaptchaService reCaptchaService;
-    private UserRegistration registration = new UserRegistration(reCaptchaService);
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -68,7 +67,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Autowired
     private EntityService entityService;
     private String reminderEmail;
-    private AntiSpamHelper h = registration.getH();
+    private AntiSpamHelper h = new AntiSpamHelper(reCaptchaService);
+    private UserRegistration registration = new UserRegistration(h);
 
     public boolean isUsernameRegistered(String username) {
         getLogger().debug("testing username:", username);

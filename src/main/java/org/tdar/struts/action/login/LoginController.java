@@ -55,10 +55,8 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Autowired
     private RecaptchaService recaptchaService;
-
-    private UserLogin userLogin = new UserLogin(recaptchaService);
-
-    private AntiSpamHelper h = userLogin.getH();
+    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private UserLogin userLogin = new UserLogin(h);
 
     @Autowired
     private AuthenticationService authenticationService;

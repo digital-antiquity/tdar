@@ -66,8 +66,8 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
-    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(recaptchaService);
-    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(recaptchaService);
+    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(h);
+    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(h);
 
     public InformationResource getInformationResource() {
         return informationResource;
