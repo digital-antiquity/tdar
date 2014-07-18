@@ -388,9 +388,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(4L, invoice.getTotalNumberOfFiles().longValue());
         assertEquals(2L, invoice.getTotalResources().longValue());
         assertEquals(6L, invoice.getTotalSpaceInMb().longValue());
-        assertEquals(222.2, invoice.getCalculatedCost().floatValue(), 1);
-        assertEquals(null, invoice.getTotal());
-
+        assertEquals(222.2, invoice.getCalculatedCost().floatValue(), .1);
+        assertEquals(invoice.getCalculatedCost(), invoice.getTotal());
         // account is empty because invoice is not finalized
         assertEquals(0L, account.getTotalSpaceInMb().longValue());
         assertEquals(0L, account.getTotalNumberOfResources().longValue());
@@ -398,7 +397,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
-        assertEquals(222.2, invoice.getTotal().floatValue(), 1);
+        assertEquals(222.2, invoice.getTotal().floatValue(), .1);
         assertEquals(4L, account.getTotalNumberOfFiles().longValue());
         assertEquals(2L, account.getTotalNumberOfResources().longValue());
         assertEquals(6L, account.getTotalSpaceInMb().longValue());
