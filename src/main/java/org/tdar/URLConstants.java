@@ -20,4 +20,7 @@ public interface URLConstants {
     String CART_ADD = "/cart/new";
     String CART_REVIEW_PURCHASE = "/cart/review";
     String CART_REVIEW_UNAUTHENTICATED = "/cart/review-unauthenticated";
+
+    public static final String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
+    public static final String CART_NEW_LOCATION = "/cart/new";
 }

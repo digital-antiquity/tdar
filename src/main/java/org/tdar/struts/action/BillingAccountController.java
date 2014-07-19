@@ -73,13 +73,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private transient AccountService accountService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
-
-    @Action("/cart/view")
-    // FIXME: move to new InvoiceController or create new view-invoice action on BillingAccountController
-    public String viewInvoice() {
-        return SUCCESS;
-    }
 
     @SkipValidation
     @Action(value = CHOOSE, results = {

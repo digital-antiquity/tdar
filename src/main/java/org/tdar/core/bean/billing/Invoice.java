@@ -494,9 +494,16 @@ public class Invoice extends Base implements Updatable {
         this.couponValue = couponValue;
     }
 
+    /**
+     * NOTE: Returns transient data, not the actual data stored in this object. If invoked before
+     * getCalculatedCost() or initTotals() is called, all these values will be zero/empty (except the ID).
+     * 
+     * Consider emitting persistable values in addition to transient values. 
+     */
     @Override
     public String toString() {
-        return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
+        return String.format("%s files, %s mb, %s resources [calculated cost: $%s] %s (id: %d)", 
+                totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon, getId());
     }
 
     public boolean hasValidValue() {

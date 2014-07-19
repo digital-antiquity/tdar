@@ -1,16 +1,12 @@
 package org.tdar.web.functional;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +16,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.UserRegistration;
 
@@ -121,7 +118,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         //now we are on the review form (w/ registration/login forms)
         //fill out required user registration fields and submit form
-        assertThat(getCurrentUrl(), endsWith("cart/review"));
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         UserRegistration reg = createUserRegistration("bob");
         fillOut(reg);
         submitForm("#registrationForm .submitButton");
@@ -129,7 +126,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         //now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
-        assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
         int size = find(withLabel("account name")).size();
         assertThat(size, equalTo(1));
         //make sure that the form fields are present
@@ -137,7 +134,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         submitForm();
 
         //now we are on the process payment page.  click on the button to fire up a new window
-        assertThat(getCurrentUrl(), endsWith("cart/process-payment-request"));
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         find("#btnOpenPaymentWindow").click();
 
 
@@ -173,18 +170,18 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#divlarge button").click();
 
         // review
-        assertThat(getCurrentUrl(), endsWith("cart/review"));
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
         submitForm("#loginForm [type=submit]");
 
-        // choose billing account
-        assertThat(getCurrentUrl(), endsWith("cart/choose-billing-account"));
+        // choose 
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
         // we aren't testing billing account customization,  so we just advance to the next step
         submitForm();
 
         // process payment
-        assertThat(getCurrentUrl(), endsWith("cart/process-payment-request"));
+        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
         switchToNextWindow();

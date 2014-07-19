@@ -62,7 +62,13 @@
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if (billingManager!false)>
-            <#noescape><@s.a href="/cart/new?files=${invoice.numberOfFiles?c}%26mb=${invoice.numberOfMb?c}%26code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape>
+        	<@s.url var='prepopulatedInvoiceUrl' value='/cart/new'>
+        		<@s.param name='invoice.numberOfFiles'>${invoice.numberOfFiles?c}</@s.param>
+        		<@s.param name='invoice.numberOfMb'>${invoice.numberOfMb?c}</@s.param>
+        		<@s.param name='code'>${((invoice.coupon.code)!'')}</@s.param>
+        	</@s.url>
+        	<@s.a href='${prepopulatedInvoiceUrl}'>Customer Link</@s.a>
+            <#--<#noescape><@s.a href="/cart/new?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfFiles?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
         </#if>
     </div>
 

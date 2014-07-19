@@ -63,7 +63,7 @@ public interface AuthenticationAware extends SessionDataAware {
                 return null;
             }
         }
-        
+
         /**
          * This method centralizes a lot of the logic around rights checking ensuring a valid session and rights if needed
          * 
@@ -114,7 +114,8 @@ public interface AuthenticationAware extends SessionDataAware {
                             abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
                         } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                             // id not specified or not a number, so this is an invalid request
-                            abort(StatusCode.BAD_REQUEST, getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
+                            abort(StatusCode.BAD_REQUEST,
+                                    getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
                         }
                 }
             }
@@ -154,7 +155,7 @@ public interface AuthenticationAware extends SessionDataAware {
                 default:
                     break;
             }
-            String errorMessage = getText("abstractPersistableController.no_permissions"); 
+            String errorMessage = getText("abstractPersistableController.no_permissions");
             addActionError(errorMessage);
             abort(StatusCode.FORBIDDEN.withResultName(UNAUTHORIZED), errorMessage);
         }
@@ -162,8 +163,10 @@ public interface AuthenticationAware extends SessionDataAware {
         protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
             throw new TdarActionException(statusCode, errorMessage);
         }
-
-
+        
+        public AuthorizationService getAuthorizationService() {
+            return authorizationService;
+        }
 
         public boolean isAdministrator() {
             return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
@@ -215,7 +218,7 @@ public interface AuthenticationAware extends SessionDataAware {
             list.add(null);
             return list;
         }
-        
+
         /**
          * Return filtered list containing only valid id's (or null if given null)
          */

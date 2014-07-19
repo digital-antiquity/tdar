@@ -14,7 +14,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.service.InvoiceService;
@@ -131,25 +130,8 @@ public class CartController extends AbstractCartController {
         }
     }
 
-    private boolean isViewable() {
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-            return false;
-        }
-        if (authService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void validate() {
-        if (!isViewable()) {
-            addActionError("you do not have permission to view this invoice");
-        }
-
         validateNotNull(paymentMethod, "cartController.valid_payment_method_is_required");
     }
 
