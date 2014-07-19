@@ -204,12 +204,6 @@ public class InvoiceController extends AbstractCartController {
         return SUCCESS;
     }
     
-    @SkipValidation
-    @Action("/cart/view")
-    public String view() {
-        return SUCCESS;
-    }
-
     /**
      * process new/updated invoice request
      * 
