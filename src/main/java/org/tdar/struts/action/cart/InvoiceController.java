@@ -47,7 +47,7 @@ public class InvoiceController extends AbstractCartController {
      * 
      * 
      * AbstractCartController results:
-     * redirect-start: @"/cart/new"
+     * redirect-start: @"/cart/add"
      * 
      * UnauthenticatecCartController actions:
      * 
@@ -61,14 +61,14 @@ public class InvoiceController extends AbstractCartController {
      * /cart/process-choice.
      * method: get
      * results:
-     * success: new.ftl
+     * success: add.ftl
      * 
      * process-choice
      * notes: process new/updated invoice request
      * method: post
      * results:
      * success: review,
-     * input: new.ftl
+     * input: add.ftl
      * 
      * review
      * notes: review invoice selection, potentially show login/auth form
@@ -196,8 +196,8 @@ public class InvoiceController extends AbstractCartController {
      * @return
      */
     @Actions(value = {
-            @Action("new"),
-            @Action(value = "modify", results = { @Result(name = SUCCESS, location = "new.ftl") })
+            @Action("add"),
+            @Action(value = "modify", results = { @Result(name = SUCCESS, location = "add.ftl") })
     })
     @SkipValidation
     // @GetOnly
@@ -212,7 +212,7 @@ public class InvoiceController extends AbstractCartController {
      */
     @Action(value = "process-choice",
             results = {
-                    @Result(name = INPUT, location = "new.ftl"),
+                    @Result(name = INPUT, location = "add.ftl"),
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                     @Result(name = SUCCESS_UNAUTHENTICATED, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
             // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
@@ -220,7 +220,7 @@ public class InvoiceController extends AbstractCartController {
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
     public String processInvoice() {
-        // fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cart/new
+        // fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cartadd
         if (isAuthenticated() && Persistable.Base.isTransient(getInvoice().getOwner())) {
             getInvoice().setOwner(getAuthenticatedUser());
             getInvoice().setTransactedBy(getAuthenticatedUser());

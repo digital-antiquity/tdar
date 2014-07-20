@@ -27,7 +27,6 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     private static final String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
     private static final String CART_REVIEW2 = "/cart/review";
     private static final TestConfiguration CFG = TestConfiguration.getInstance();
-    private static final String CART_NEW = "/cart/new";
     @Autowired
     AccountService accountService;
 
@@ -43,7 +42,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartIncomplete() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "0");
         submitFormWithoutErrorCheck();
@@ -54,7 +53,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartFilesNoMB() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "100");
         submitForm();
@@ -77,7 +76,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartMBNoFiles() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "100");
         setInput("invoice.numberOfFiles", "0");
         submitForm();
@@ -90,7 +89,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartSuccess() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
@@ -105,7 +104,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testCartWithAccount() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
@@ -123,7 +122,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
      */
     @Test
     public void testAddCartToSameAccount() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
@@ -140,7 +139,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         //remember the account we chose/created;  we will assign our next invoice to this account
         String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         assertTrue(accountId != "-1");
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
@@ -169,7 +168,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testAddPaymentsToMultipleAccount() throws MalformedURLException {
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
@@ -181,7 +180,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         String accountName = "test account 1";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
         assertTrue(accountId != "-1");
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
@@ -205,7 +204,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartError() throws MalformedURLException {
         login(CFG.getAdminUsername(), CFG.getAdminPassword());
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         setExtraItem("error", "1");
@@ -221,7 +220,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartUnknown() throws MalformedURLException {
         login(CFG.getAdminUsername(), CFG.getAdminPassword());
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         setExtraItem("unknown", "1");
@@ -259,7 +258,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartDecline() throws MalformedURLException {
         login(CFG.getAdminUsername(), CFG.getAdminPassword());
-        gotoPage(CART_NEW);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
 

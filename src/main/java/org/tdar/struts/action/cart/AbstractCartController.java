@@ -17,7 +17,7 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
 
 @Results({
-        @Result(name = "redirect-start", location = "/cart/new", type = "redirect")
+        @Result(name = "redirect-start", location = "/cart/add", type = "redirect")
 })
 /**
  * Base class for all cart based things. 

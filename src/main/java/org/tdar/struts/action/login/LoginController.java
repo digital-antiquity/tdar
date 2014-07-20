@@ -3,6 +3,7 @@ package org.tdar.struts.action.login;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -103,12 +104,11 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                     interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                            @Result(name = REDIRECT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
+                            @Result(name = INPUT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                                     "returnUrl not expected for login from cart" }),
                             @Result(name = INPUT,
                                     type = REDIRECT,
                                     location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
-//                                    type = "redirectAction", params = { "actionName", "review-unauthenticated", "namespace", "/cart" })
                     })
     })
     @HttpsOnly

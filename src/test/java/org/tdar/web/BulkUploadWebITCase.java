@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -45,7 +46,6 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
-    private static final String CART_NEW = "/cart/new";
     @Autowired
     InvoiceService invoiceService;
 
@@ -110,7 +110,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
+            gotoPage(URLConstants.CART_ADD);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -228,7 +228,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     private String setupAccount(Map<String, String> extra, int numberOfMb, int numberOfFiles) throws MalformedURLException {
         String accountId = null;
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(CART_NEW);
+            gotoPage(URLConstants.CART_ADD);
             setInput("invoice.numberOfMb", numberOfMb);
             setInput("invoice.numberOfFiles", numberOfFiles);
             submitForm();

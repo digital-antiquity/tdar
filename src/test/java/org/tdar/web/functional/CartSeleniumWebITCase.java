@@ -112,7 +112,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     //ideal walk-through of purchase process for a visitor with no mistakes along the way.
     public void testVisitorPurchase() {
         //start at the cart page, and click one of the suggested packages
-        gotoPage("/cart/new");
+        gotoPage(URLConstants.CART_ADD);
         assertLoggedOut();
         find("#divlarge button").click();
 
@@ -164,7 +164,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
-        gotoPage("/cart/new");
+        gotoPage(URLConstants.CART_ADD);
         assertLoggedOut();
         // choose the large package
         find("#divlarge button").click();

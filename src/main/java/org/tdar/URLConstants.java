@@ -17,7 +17,7 @@ public interface URLConstants {
     String VIEW_RESOURCE_ID = "view?id=${resource.id}";
     String MY_PROFILE = "/entity/person/myprofile";
 
-    String CART_ADD = "/cart/new";
+    String CART_ADD = "/cart/add";
     String CART_REVIEW_PURCHASE = "/cart/review";
     String CART_REVIEW_UNAUTHENTICATED = "/cart/review-unauthenticated";
 
