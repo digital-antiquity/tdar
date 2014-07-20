@@ -23,6 +23,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class CreditCartWebITCase extends AbstractWebTestCase {
 
+    private static final String NEXT_STEP_PAYMENT = "Next Step: Payment";
+    private static final String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
+    private static final String CART_REVIEW2 = "/cart/review";
     private static final TestConfiguration CFG = TestConfiguration.getInstance();
     private static final String CART_NEW = "/cart/new";
     @Autowired
@@ -43,7 +46,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         gotoPage(CART_NEW);
         setInput("invoice.numberOfMb", "0");
         setInput("invoice.numberOfFiles", "0");
-        submitForm();
+        submitFormWithoutErrorCheck();
         assertCurrentUrlContains("process-choice");
         assertTextPresentInCode("55 USD");
         assertTextPresentInCode(MessageHelper.getMessage("invoiceService.specify_something"));
@@ -68,7 +71,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
             clickLinkOnPage("Log In");
             logger.debug(getCurrentUrlPath());
             completeLoginForm(CFG.getUsername(), CFG.getPassword(), false);
-            gotoPage("/cart/review");
+            gotoPage(CART_REVIEW2);
         }
     }
 
@@ -124,15 +127,15 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
-        assertCurrentUrlContains("/cart/review");
+        assertCurrentUrlContains(CART_REVIEW2);
         loginAndSpecifyCC();
 
         //expecting to be on the choose billing account page
-        assertCurrentUrlContains("/cart/review");
-        clickLinkWithText("Next Step: Choose Billing Account");
-        assertCurrentUrlContains("/cart/choose-billing-account");
+        assertCurrentUrlContains(CART_REVIEW2);
+//        submitForm("Next Step: Payment");
+//        assertCurrentUrlContains("/cart/choose-billing-account");
         selectAnyAccount();
-        submitForm("Next Step: Payment");
+        submitForm(NEXT_STEP_PAYMENT);
 
         //remember the account we chose/created;  we will assign our next invoice to this account
         String accountId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
@@ -143,16 +146,14 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         submitForm();
 
         //we should be on the 'review' page, just click through to the billing account page
-        assertCurrentUrlContains("/cart/review");
-        clickLinkWithText("Next Step: Choose Billing Account");
+        assertCurrentUrlContains(CART_REVIEW2);
 
         //we should now be on the "choose billing account" page.  Specify the same account that we used for the previous invoice.
-        assertCurrentUrlContains("/cart/choose-billing-account");
         setInput("id", accountId);
-        submitForm("Next Step: Payment");
+        submitForm(NEXT_STEP_PAYMENT);
 
         //now we should be on the process-payment page... i think?
-        assertCurrentUrlContains("/cart/process-payment-request");
+        assertCurrentUrlContains(CART_PROCESS_PAYMENT_REQUEST);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         gotoPage("/billing/"+ accountId);
 
@@ -174,8 +175,8 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         submitForm();
         loginAndSpecifyCC();
         selectAnyAccount();
-        assertCurrentUrlContains("/cart/choose-billing-account");
-        submitForm("Next Step: Payment");
+        submitForm(NEXT_STEP_PAYMENT);
+//        assertCurrentUrlContains("/cart/choose-billing-account");
         String invoiceId = testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName = "test account 1";
         String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
@@ -184,10 +185,10 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfMb", "10000");
         setInput("invoice.numberOfFiles", "12");
         submitForm();
-        assertCurrentUrlContains("/cart/review");
-        clickLinkWithText("Next Step: Choose Billing Account");
+        assertCurrentUrlContains(CART_REVIEW2);
+//        clickLinkWithText("Next Step: Choose Billing Account");
         setInput("id", accountId);
-        submitForm("Next Step: Payment");
+        submitForm(NEXT_STEP_PAYMENT);
         String invoiceId2 = testAccountPollingResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(INVOICE_ID);
         String accountName2 = "test account 2";
         String account = addInvoiceToNewAccount(invoiceId2, null, accountName2);

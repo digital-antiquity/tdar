@@ -93,7 +93,7 @@ public class CartBillingAccountController extends AbstractCartController {
             if (Persistable.Base.isNullOrTransient(getId())) {
                 validate(account);
             } else if (selectedAccount == null) {
-                addActionError("Invalid account selection");
+                addActionError(getText("cartController.invalid_account"));
             }
 
             // rule: payment method required

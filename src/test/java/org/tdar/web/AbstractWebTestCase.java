@@ -102,6 +102,8 @@ import com.gargoylesoftware.htmlunit.util.NameValuePair;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
+    private static final String CART_REVIEW = "/cart/review";
+
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
@@ -1228,7 +1230,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         toReturn.put(INVOICE_ID,getValue(INVOICE_ID));
 
         if (!getCurrentUrlPath().contains("process-payment-request")) {
-            gotoPage("/cart/choose-billing-account");
+            gotoPage(CART_REVIEW);
             submitForm("Next Step: Payment");
         }
         logger.debug("{}", toReturn);
@@ -1456,7 +1458,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
 
     public void selectAnyAccount() {
-        gotoPage("/cart/choose-billing-account");
+        gotoPage(CART_REVIEW);
 
         try {
             HtmlElement input = getInput("id");

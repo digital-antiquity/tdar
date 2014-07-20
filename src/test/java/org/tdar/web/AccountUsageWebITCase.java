@@ -107,7 +107,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
 
         gotoPage("/document/" + docid + "/edit");
-        assertTextPresent("Generated");
+        assertTextPresent("Default account for");
     }
 
     @Test

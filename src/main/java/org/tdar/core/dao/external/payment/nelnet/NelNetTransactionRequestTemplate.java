@@ -260,7 +260,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
     }
 
     public String constructUrlSuffix() throws URIException {
-        StringBuilder suffix = new StringBuilder();
+        StringBuilder suffix = new StringBuilder("?");
         for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
             String key = item.key;
             String value = values.get(key);

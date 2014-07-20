@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
@@ -94,7 +95,7 @@ public class Invoice extends Base implements Updatable {
                     return true;
             }
         }
-        
+
         public boolean isSuccessful() {
             return this == TRANSACTION_SUCCESSFUL;
         }
@@ -470,6 +471,9 @@ public class Invoice extends Base implements Updatable {
 
     @Transient
     public boolean isProxy() {
+        if (Persistable.Base.isNullOrTransient(owner) || Persistable.Base.isNullOrTransient(owner)) {
+            return false;
+        }
         return ObjectUtils.notEqual(owner, transactedBy);
     }
 
@@ -498,11 +502,11 @@ public class Invoice extends Base implements Updatable {
      * NOTE: Returns transient data, not the actual data stored in this object. If invoked before
      * getCalculatedCost() or initTotals() is called, all these values will be zero/empty (except the ID).
      * 
-     * Consider emitting persistable values in addition to transient values. 
+     * Consider emitting persistable values in addition to transient values.
      */
     @Override
     public String toString() {
-        return String.format("%s files, %s mb, %s resources [calculated cost: $%s] %s (id: %d)", 
+        return String.format("%s files, %s mb, %s resources [calculated cost: $%s] %s (id: %d)",
                 totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon, getId());
     }
 

@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Consts;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,9 +111,10 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
             template.constructHashKey();
             // NOTE: in knap and prior this was 'ASCII'; if we ever put true unicode characters into the request we may need to check for 
             // encoding issues with passing this data into the URL
-            String query = "?" + URLEncodedUtils.format(template.getNameValuePairs(),Consts.UTF_8 );
-            url = new URL(getTransactionPostUrl() +  query);
-        } catch (MalformedURLException e) {
+            // FIXME: this is cleaner, but doesn't produce an XHTML friendly url with &amp; encoded urls, so it fails tests
+//            String query = "?" + StringUtils.join(URLEncodedUtils.format(template.getNameValuePairs(),Consts.UTF_8 );
+            url = new URL(getTransactionPostUrl() +  template.constructUrlSuffix());
+        } catch (MalformedURLException | URIException e) {
             logger.error("malformed payment url", e);
         }
         return url;
