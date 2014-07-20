@@ -1,12 +1,15 @@
 package org.tdar.struts.action.cart;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -17,6 +20,7 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 @Scope("prototype")
 @HttpsOnly
 @ParentPackage("secured")
+@Namespace("/cart")
 public class ViewInvoiceAction extends AuthenticationAware.Base implements Preparable, ValidationWorkflowAware {
 
     private static final long serialVersionUID = -8280706863708228864L;
@@ -27,6 +31,9 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     
     private String inputResultName;
     
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Override
     public void prepare() {
         invoice = getGenericService().find(Invoice.class, id);
@@ -43,13 +50,13 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
         if (user.equals(getInvoice().getOwner())) {
             return;
         }
-        if (getAuthorizationService().cannot(InternalTdarRights.VIEW_BILLING_INFO, user)) {
+        if (authorizationService.cannot(InternalTdarRights.VIEW_BILLING_INFO, user)) {
             addActionError("You do not have permission to view this invoice.");
             inputResultName = FORBIDDEN;
         }
     }
     
-    @Action("/cart/view")
+    @Action("view")
     public String execute() {
         return SUCCESS;
     }

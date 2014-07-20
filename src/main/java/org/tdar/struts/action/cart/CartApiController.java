@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import org.tdar.struts.data.PricingOption;
         @Result(name = INPUT, type = JSONRESULT, params = { "stream", "resultJson", "status", "400" }),
         @Result(name = ERROR, type = JSONRESULT, params = { "stream", "resultJson", "status", "500" }),
 })
+@Namespace("/cart")
 public class CartApiController extends AbstractCartController {
 
     private static final long serialVersionUID = -1870193105271895297L;

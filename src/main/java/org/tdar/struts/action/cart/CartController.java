@@ -3,6 +3,7 @@ package org.tdar.struts.action.cart;
 import java.net.URL;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -29,6 +30,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@Namespace("/cart")
 public class CartController extends AbstractCartController {
     private static final long serialVersionUID = 1592977664145682926L;
 

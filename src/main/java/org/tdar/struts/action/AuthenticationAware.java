@@ -164,10 +164,6 @@ public interface AuthenticationAware extends SessionDataAware {
             throw new TdarActionException(statusCode, errorMessage);
         }
         
-        public AuthorizationService getAuthorizationService() {
-            return authorizationService;
-        }
-
         public boolean isAdministrator() {
             return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
         }

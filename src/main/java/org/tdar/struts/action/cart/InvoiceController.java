@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 @Component
 @Scope("prototype")
 @HttpsOnly
+@Namespace("/cart")
 public class InvoiceController extends AbstractCartController {
 
     /*
@@ -172,7 +174,6 @@ public class InvoiceController extends AbstractCartController {
     
     private String code;
 
-    // FIXME: unused?
     private PricingType pricingType = null;
     private Long accountId;
 
@@ -216,7 +217,6 @@ public class InvoiceController extends AbstractCartController {
                     @Result(name = SUCCESS_UNAUTHENTICATED, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
             // @Result(name = "authenticated", location = "/cart/show-billing-accounts", type = "redirect")
             })
-    // FIXME: pretty sure that code redemption is broken. e.g. what if user redeems a code and then wants to make changes to their order?
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
     public String processInvoice() {
