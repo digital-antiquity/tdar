@@ -34,8 +34,8 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     private Resource copy;
 
     @Action(value = "duplicate", results = {
-            @Result(name = SUCCESS, type = "freemarker", location="confirm-duplicate.ftl"),
-            @Result(name = INPUT, type = "freemarker", location = "duplicate-error.ftl")
+            @Result(name = SUCCESS, type = FREEMARKER, location="confirm-duplicate.ftl"),
+            @Result(name = INPUT, type = FREEMARKER, location = "duplicate-error.ftl")
     })
     public String execute() {
         if (!getAuthenticatedUser().isContributor()) {
@@ -49,7 +49,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
-                    @Result(name = INPUT, type = "freemarker", location = "duplicate_error.ftl")
+                    @Result(name = INPUT, type = FREEMARKER, location = "duplicate_error.ftl")
             })
     @PostOnly
     public String duplicate() {

@@ -175,7 +175,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private Long contentLength;
 
     @Action(value = "results", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
@@ -236,7 +236,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     @Action(value = "collections", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchCollections() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
@@ -249,7 +249,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     @Action(value = "institutions", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
@@ -263,7 +263,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     @Action(value = "people", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
@@ -335,7 +335,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         queryBuilder.append(qpg);
     }
 
-    @Action(value = "rss", results = { @Result(name = "success", type = "stream", params = {
+    @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
@@ -953,7 +953,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return exploreKeyword;
     }
 
-    @Action(value = "download", results = { @Result(name = "success", type = "stream", params = {
+    @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
             "attachment;filename=\"report.xls", "contentLength",

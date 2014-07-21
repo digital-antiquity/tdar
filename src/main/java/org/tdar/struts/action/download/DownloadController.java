@@ -29,8 +29,8 @@ import com.opensymphony.xwork2.Preparable;
                         "contentLength", "${contentLength}"
                 }
         ),
-        @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
-        @Result(name = TdarActionSupport.FORBIDDEN, type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
 @Component
@@ -56,7 +56,7 @@ public class DownloadController extends AbstractDownloadController implements Do
     }
 
     @Action(value = SHOW_DOWNLOAD_LANDING, results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "download-all.ftl") })
+            @Result(name = SUCCESS, type = FREEMARKER, location = "download-all.ftl") })
     public String showDownloadAllLandingPage() {
         return SUCCESS;
     }

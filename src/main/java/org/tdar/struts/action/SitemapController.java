@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "success", type = "stream",
+        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
                         "inputName", "inputStream"
                 }
         ),
-        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
-        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
 public class SitemapController extends AuthenticationAware.Base {

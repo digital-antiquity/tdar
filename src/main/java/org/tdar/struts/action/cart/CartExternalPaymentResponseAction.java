@@ -58,7 +58,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     public void prepare() {
         response = paymentTransactionProcessor.setupTransactionResponse(extraParameters);
         invoice = paymentTransactionProcessor.locateInvoice(response);
-        inputStream = new ByteArrayInputStream("success".getBytes());
+        inputStream = new ByteArrayInputStream(SUCCESS.getBytes());
     }
 
 
@@ -73,7 +73,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     @WriteableSession
     @PostOnly
     @Action(value  = PROCESS_EXTERNAL_PAYMENT_RESPONSE, results = {
-            @Result(name = "success", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
+            @Result(name = SUCCESS, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
             @Result(name = "input", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
     })
     public String processExternalPayment() {
@@ -88,7 +88,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
             return ERROR;
         }
         //this is already done in prepare(), but some tests may not be calling prepare() prior to calling this method.
-        inputStream = new ByteArrayInputStream("success".getBytes());
+        inputStream = new ByteArrayInputStream(SUCCESS.getBytes());
         handlePurchaseNotifications();
         return SUCCESS;
     }

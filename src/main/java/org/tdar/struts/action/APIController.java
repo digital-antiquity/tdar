@@ -149,7 +149,7 @@ public class APIController extends AuthenticationAware.Base {
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            xmlResultObject.put("message", "success");
+            xmlResultObject.put("message", SUCCESS);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {

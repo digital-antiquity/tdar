@@ -45,7 +45,7 @@ public class DismissUserNotificationAction extends AuthenticationAware.Base impl
     public String dismiss() {
         try {
             userNotificationService.dismiss(getAuthenticatedUser(), getNotification());
-            jsonResult.put("success", "success");
+            jsonResult.put(SUCCESS, SUCCESS);
         } catch (Exception e) {
             addActionError(e.getLocalizedMessage());
             return INPUT;

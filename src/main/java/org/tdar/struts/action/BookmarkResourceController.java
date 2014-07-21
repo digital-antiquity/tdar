@@ -58,13 +58,13 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 
     private void processResultToJson() {
         Map<String, Object> result = new HashMap<>();
-        result.put("success", success);
+        result.put(SUCCESS, success);
         setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
     }
 
     @Action(value = "bookmark",
             results = {
-                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = "redirect", location = URLConstants.BOOKMARKS)
             })
     public String bookmarkResourceAction() {
         success = bookmarkResource();
@@ -80,7 +80,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 
     @Action(value = "removeBookmark",
             results = {
-                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = "redirect", location = URLConstants.BOOKMARKS)
             })
     public String removeBookmarkAction() {
         success = removeBookmark();

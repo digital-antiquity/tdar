@@ -42,7 +42,7 @@ public class AdminMapController extends AuthenticationAware.Base {
     }
 
     @Action(value = "map", results = {
-            @Result(name = "success", location = "svg.ftl", type = "freemarker", params = { "contentType", "image/svg+xml" }) })
+            @Result(name = SUCCESS, location = "svg.ftl", type = FREEMARKER, params = { "contentType", "image/svg+xml" }) })
     @Override
     public String execute() {
         List<HomepageGeographicKeywordCache> caches = getGenericService().findAll(HomepageGeographicKeywordCache.class);

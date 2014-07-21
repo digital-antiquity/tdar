@@ -119,7 +119,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         return SUCCESS;
     }
 
-    @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
+    @Action(value = "build", results = { @Result(name = SUCCESS, location = "build.ftl") })
     public String build() {
         try {
             getLogger().info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());

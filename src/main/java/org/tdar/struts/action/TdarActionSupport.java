@@ -104,6 +104,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
+    public static final String FREEMARKER = "freemarker";
+
 
     /**
      * The system has authenticated the user and the user is authorized to perform the requested action, but

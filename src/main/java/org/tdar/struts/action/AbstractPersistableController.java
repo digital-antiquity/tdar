@@ -153,7 +153,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "view.ftl"),
-                    @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
                     @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
             })
     public String view() throws TdarActionException {

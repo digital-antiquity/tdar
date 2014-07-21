@@ -31,8 +31,8 @@ import com.opensymphony.xwork2.Preparable;
                         "contentLength", "${contentLength}"
                 }
         ),
-        @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
-        @Result(name = TdarActionSupport.FORBIDDEN, type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
 @Component
@@ -49,7 +49,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             results = {
                     @Result(name = SUCCESS, type = "redirect", location = DOWNLOAD_SINGLE_LANDING),
                     @Result(name = DOWNLOAD_ALL, type = "redirect", location = DOWNLOAD_ALL_LANDING),
-                    @Result(name = LOGIN, type = "freemarker", location = "download-unauthenticated.ftl") })
+                    @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
     @HttpsOnly
     public String download() {
         // not sure this is really needed, but...

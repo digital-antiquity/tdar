@@ -15,7 +15,6 @@ import org.tdar.struts.data.AntiSpamHelper;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
-
 @Results({
         @Result(name = "redirect-start", location = "/cart/add", type = "redirect")
 })
@@ -53,7 +52,8 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     protected Invoice loadPendingInvoice() {
         Long invoiceId = getSessionData().getInvoiceId();
         getLogger().debug("INVOICE ID: {}", invoiceId);
-        return getGenericService().find(Invoice.class, invoiceId);
+        Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+        return invoice;
     }
 
     protected void storePendingInvoice(Invoice invoice) {
@@ -105,7 +105,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         }
         return true;
     }
-    
+
     protected Long getInvoiceId() {
         return getSessionData().getInvoiceId();
     }

@@ -307,7 +307,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
-                    @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
                     @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
             })
     /**

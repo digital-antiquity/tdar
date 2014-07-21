@@ -36,7 +36,7 @@ public class SchemaController extends TdarActionSupport {
 
     @Override
     @Action(value = "current", results = {
-            @Result(name = "success", type = "stream", params = {
+            @Result(name = SUCCESS, type = "stream", params = {
                     "contentType", "text/xml",
                     "inputName", "inputStream"
             })

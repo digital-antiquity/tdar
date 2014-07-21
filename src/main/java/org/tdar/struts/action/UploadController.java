@@ -32,8 +32,8 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Scope("prototype")
 @ParentPackage("secured")
 @Results({
-        @Result(name = "exception", type = "httpheader", params = { "error", "500" }),
-        @Result(name = "input", type = "httpheader", params = { "error", "500" })
+        @Result(name = "exception", type = TdarActionSupport.HTTPHEADER, params = { "error", "500" }),
+        @Result(name = TdarActionSupport.INPUT , type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 public class UploadController extends AuthenticationAware.Base {
 
@@ -58,7 +58,7 @@ public class UploadController extends AuthenticationAware.Base {
     // indicates that client is not sending a ticket because the server should create a new ticket for this upload
     private boolean ticketRequested = false;
 
-    @Action(value = "index", results = { @Result(name = "success", location = "index.ftl") })
+    @Action(value = "index", results = { @Result(name = SUCCESS, location = "index.ftl") })
     public String index() {
 
         // get a claimcheck that all uploads will use

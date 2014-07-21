@@ -60,11 +60,11 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     private String ccnum = "";
 
     @Action(value = "setup-payment", results = {
-            @Result(name = "success", location = "setup-payment.ftl")
+            @Result(name = SUCCESS, location = "setup-payment.ftl")
     })
     public String setupPayment() {
 
-        return "success";
+        return SUCCESS;
     }
 
     private String getParamValue(NelnetTransactionItem item) {
@@ -80,7 +80,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
 
         processFakeResponse(getCcType(getCcnum()));
         sendResponse();
-        return "success";
+        return SUCCESS;
     }
 
     private void sendResponse() throws TdarActionException {
@@ -111,7 +111,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             boolean seen = false;
             for (String line : IOUtils.readLines(rd)) {
-                if (line.contains("success")) {
+                if (line.contains(SUCCESS)) {
                     seen = true;
                 }
             }

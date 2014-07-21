@@ -133,13 +133,13 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     // http://.../oai-pmh/oai?
     @Action(value = "oai", results = {
-            @Result(name = SUCCESS_GET_RECORD, location = "getRecord.ftl", type = "freemarker", params = {
+            @Result(name = SUCCESS_GET_RECORD, location = "getRecord.ftl", type = FREEMARKER, params = {
                     "contentType", "text/xml" }),
-            @Result(name = SUCCESS_IDENTIFY, location = "identify.ftl", type = "freemarker", params = { "contentType", "text/xml" }),
-            @Result(name = SUCCESS_LIST_IDENTIFIERS, location = "listIdentifiers.ftl", type = "freemarker", params = { "contentType", "text/xml" }),
-            @Result(name = SUCCESS_LIST_RECORDS, location = "listRecords.ftl", type = "freemarker", params = { "contentType", "text/xml" }),
-            @Result(name = SUCCESS_LIST_METADATA_FORMATS, location = "listMetadataFormats.ftl", type = "freemarker", params = { "contentType", "text/xml" }),
-            @Result(name = ERROR, location = "error.ftl", type = "freemarker", params = { "contentType", "text/xml" })
+            @Result(name = SUCCESS_IDENTIFY, location = "identify.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
+            @Result(name = SUCCESS_LIST_IDENTIFIERS, location = "listIdentifiers.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
+            @Result(name = SUCCESS_LIST_RECORDS, location = "listRecords.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
+            @Result(name = SUCCESS_LIST_METADATA_FORMATS, location = "listMetadataFormats.ftl", type = FREEMARKER, params = { "contentType", "text/xml" }),
+            @Result(name = ERROR, location = "error.ftl", type = FREEMARKER, params = { "contentType", "text/xml" })
     })
     public String oai() {
         OAIVerb verbToHandle = getVerbEnum();

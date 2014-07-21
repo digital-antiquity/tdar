@@ -55,10 +55,10 @@ public class UnapiController extends TdarActionSupport {
             results = {
                     @Result(name = FORMATS,
                             location = "unapi-formatlist.ftl",
-                            type = "freemarker",
+                            type = FREEMARKER,
                             params = { "contentType", "application/xml", "status", "300" }),
                     @Result(name = ASFORMAT, location = "${formatUrl}", type = "redirect"),
-                    @Result(name = NOFORMAT, type = "httpheader", params = { "status", "406" })
+                    @Result(name = NOFORMAT, type = HTTPHEADER, params = { "status", "406" })
             }
             )
             public String execute() {

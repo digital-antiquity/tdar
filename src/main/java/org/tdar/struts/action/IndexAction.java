@@ -97,10 +97,10 @@ public class IndexAction extends AuthenticationAware.Base {
             @Action("contact"),
             @Action("credit"),
             @Action(value = "opensearch", results = {
-                    @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
+                    @Result(name = SUCCESS, location = "opensearch.ftl", type = FREEMARKER, params = { "contentType", "application/xml" })
             }),
             @Action(value = "robots", results = {
-                    @Result(name = SUCCESS, location = "robots.ftl", type = "freemarker", params = { "contentType", "text/plain" })
+                    @Result(name = SUCCESS, location = "robots.ftl", type = FREEMARKER, params = { "contentType", "text/plain" })
             })
     })
     public String execute() {
@@ -126,13 +126,13 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
+    @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     public String worldMap() {
         resourceService.setupWorldMap(worldMapData);
         return SUCCESS;
     }
 
-    @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker",
+    @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
     public String featuredItems() {
         try {
@@ -152,7 +152,7 @@ public class IndexAction extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = "freemarker",
+    @Action(value = "resourceGraph", results = { @Result(name = SUCCESS, location = "resourceGraph.ftl", type = FREEMARKER,
             params = { "contentType", "text/html" }) })
     public String resourceStats() {
         setHomepageResourceCountCache(getGenericService().findAllWithL2Cache(HomepageResourceCountCache.class));

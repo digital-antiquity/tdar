@@ -47,7 +47,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             results = {
             @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
             @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING),
-                    @Result(name = INPUT, type = "freemarker", location = LOGIN_REGISTER_PROMPT)
+                    @Result(name = INPUT, type = FREEMARKER, location = LOGIN_REGISTER_PROMPT)
             })
     @HttpsOnly
     @WriteableSession

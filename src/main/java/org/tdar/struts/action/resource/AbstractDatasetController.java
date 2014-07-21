@@ -345,7 +345,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
                                     "contentType", "text/xml",
                                     "inputName", "xmlStream",
                             }),
-                    @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = TdarActionSupport.ERROR, type = HTTPHEADER, params = { "error", "404" }),
             })
     @SkipValidation
     public String getTableAsXml() {
