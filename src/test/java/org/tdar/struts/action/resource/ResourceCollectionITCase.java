@@ -323,7 +323,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.info");
         owner.setContributor(true);
 
         genericService.saveOrUpdate(owner);
@@ -379,7 +379,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.info");
         owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
@@ -464,7 +464,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.info");
         owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
@@ -574,7 +574,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
         String string = UUID.randomUUID().toString();
-        TdarUser person = new TdarUser(string, string, string + "@mailinator.com");
+        TdarUser person = new TdarUser(string, string, string + "@tdar.info");
         person.setContributor(true);
         genericService.saveOrUpdate(person);
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);

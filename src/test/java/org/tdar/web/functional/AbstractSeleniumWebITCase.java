@@ -1,10 +1,11 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -37,7 +39,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -65,6 +80,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.filestore.Filestore;
+import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.TestConfiguration.OS;
 import org.tdar.web.AbstractWebTestCase;
@@ -1333,5 +1349,77 @@ public abstract class AbstractSeleniumWebITCase {
             getDriver().manage().window().setSize(originalSize);
         }
     }
+
+    
+    /**
+     * think up values for use on a registration attempt that satisfy minimum required fields
+     * @return
+     */
+    public TdarUser createUser(String prefix) {
+        TdarUser user = new TdarUser();
+        String uuid = prefix + UUID.randomUUID().toString();
+        user.setEmail(uuid + "@tdar.org");
+        user.setFirstName("firstname");
+        user.setLastName("lastname");
+        user.setUsername(uuid);
+        return user;
+    }
+
+
+    /**
+     * create user-registration info with random username,email that satisfies minimum required fields
+     * @param userPrefix prefix applied to username, email, firstname, and lastname
+     * @return
+     */
+    public UserRegistration createUserRegistration(String userPrefix) {
+        UserRegistration reg = new UserRegistration();
+        TdarUser user = createUser(userPrefix);
+        reg.setPerson(user);
+        reg.setPassword("testPassword");
+        reg.setConfirmPassword(reg.getPassword());
+        reg.setConfirmEmail(user.getEmail());
+        reg.setRequestingContributorAccess(true);
+        reg.setAcceptTermsOfUse(true);
+        return reg;
+    }
+
+
+    /**
+     * fill out the user registration fields on the cart/review page.
+     * @param reg user registration information
+     */
+    public void fillOutRegistration(UserRegistration reg) {
+        //on firefox, autofoxus occurs after pageload(bugzilla: 717361). so we wait
+        waitForPageload();
+        TdarUser person = reg.getPerson();
+        find("#firstName").val(person.getFirstName());
+        find("#lastName").val(person.getLastName());
+        find("#emailAddress").val(person.getEmail());
+
+        assertThat(find("#confirmEmail").toList().size(), is(equalTo(1)));
+        find("#confirmEmail").val(reg.getConfirmEmail());
+        find("#password").val(reg.getPassword());
+        find("#confirmPassword").val(reg.getConfirmPassword());
+        find("#username").val(person.getUsername());
+        if(reg.isAcceptTermsOfUse() != find("#tou-id").isSelected()) {
+            find("#tou-id").click();
+        }
+        
+        
+        
+        if(reg.isRequestingContributorAccess() != find("#contributor-id").isSelected() ) {
+            find("#contributor-id").click();
+        }
+    }
+
+    /**
+     * Assert that user is logged out.
+     */
+    public void assertLoggedOut() {
+        List<WebElement> selection = find(By.linkText("LOG IN")).toList();
+        logger.debug(getCurrentUrl());
+        assertThat("login button is missing", selection, is(not(empty())));
+    }
+
 
 }

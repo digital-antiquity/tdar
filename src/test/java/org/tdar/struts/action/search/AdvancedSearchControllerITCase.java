@@ -764,10 +764,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
-        TdarUser submitter = new TdarUser("E", "deVos", "ecd@mailinator.com");
+        TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.info");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator(new Person("K", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator(new Person("K", "deVos", "kellyd@tdar.info"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
         // genericService.save(rc);
         doc.getResourceCreators().add(rc);

@@ -40,7 +40,7 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testDismissNotifications() {
-        TdarUser user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
+        TdarUser user = createAndSaveNewPerson("user-notification-test@tdar.info", "un");
         getLogger().debug("created user with id: {}", user.getId());
         UserNotification infoNotification = userNotificationService.info(user, "some info message", UserNotificationDisplayType.NORMAL);
         UserNotification broadcastNotification = userNotificationService.broadcast("some broadcast message", UserNotificationDisplayType.NORMAL);
@@ -68,9 +68,9 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testMultipleUserCurrentNotifications() {
         List<TdarUser> otherUsers = new ArrayList<>();
-        TdarUser user = createAndSaveNewPerson("user-notification-test@mailinator.com", "un");
+        TdarUser user = createAndSaveNewPerson("user-notification-test@tdar.info", "un");
         for (int i = 0; i < 5; i++) {
-            TdarUser anotherUser = createAndSaveNewPerson(i + "usern@mailinator.com", "n" + i);
+            TdarUser anotherUser = createAndSaveNewPerson(i + "usern@tdar.info", "n" + i);
             otherUsers.add(anotherUser);
             userNotificationService.info(anotherUser, "1st info for " + i, UserNotificationDisplayType.NORMAL);
             userNotificationService.info(anotherUser, "2nd info for " + i, UserNotificationDisplayType.NORMAL);

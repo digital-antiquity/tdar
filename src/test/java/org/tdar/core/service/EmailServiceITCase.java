@@ -18,7 +18,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
     @Test
     public void testMockMailSender() {
-        Person to = new Person(null, null, "toguy@mailinator.com");
+        Person to = new Person(null, null, "toguy@tdar.info");
         String mailBody = "this is a message body";
         String subject = "this is a subject";
         Email email = new Email();
@@ -42,7 +42,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         map.put("foo", "Hieronymous");
         map.put("bar", "Basho");
         Email email = new Email();
-        email.addToAddress("toguy@mailinator.com");
+        email.addToAddress("toguy@tdar.info");
         email.setSubject("test");
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();

@@ -113,9 +113,9 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Rollback
     public void testProtectedPersonRecordsCannotBeDeduped() {
         setIgnoreActionErrors(true);
-        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
-        Person protectedRecord1 = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
-        Person protectedRecord2 = createAndSaveNewPerson("protectedRrecord2@mailinator.com", "protectedRecord2");
+        Person person1 = createAndSaveNewPerson("person1@tdar.info", "person1");
+        Person protectedRecord1 = createAndSaveNewPerson("protectedRecord1@tdar.info", "protectedRecord1");
+        Person protectedRecord2 = createAndSaveNewPerson("protectedRrecord2@tdar.info", "protectedRecord2");
         genericService.saveOrUpdate(protectedRecord1);
         genericService.saveOrUpdate(protectedRecord2);
         controller.setEntityType(DedupeableType.PERSON);
@@ -130,8 +130,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Rollback
     public void testProtectedPersonRecordsCannotBeDeduped2() {
         setIgnoreActionErrors(true);
-        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
-        Person protectedRecord = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
+        Person person1 = createAndSaveNewPerson("person1@tdar.info", "person1");
+        Person protectedRecord = createAndSaveNewPerson("protectedRecord1@tdar.info", "protectedRecord1");
         genericService.saveOrUpdate(protectedRecord);
         controller.setEntityType(DedupeableType.PERSON);
         controller.getSelectedDupeIds().addAll(Arrays.asList(person1.getId(), protectedRecord.getId()));
@@ -184,7 +184,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         genericService.saveOrUpdate(rc);
 
         // reference via person.institution
-        Person person = new Person("john", "doe", "johndoe123@mailinator.com");
+        Person person = new Person("john", "doe", "johndoe123@tdar.info");
         person.setInstitution(dupe);
         genericService.saveOrUpdate(person);
     }

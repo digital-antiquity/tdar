@@ -336,7 +336,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
         Date date = new Date();
-        TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@mailinator.com");
+        TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@tdar.info");
         genericService.save(owner);
         rc.markUpdated(owner);
         rc.setName(name);
