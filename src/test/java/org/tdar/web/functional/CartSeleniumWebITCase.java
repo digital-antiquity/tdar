@@ -9,6 +9,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -16,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.struts.data.UserRegistration;
+import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.interceptor.annotations.After;
 
@@ -55,7 +59,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         UserRegistration reg = createUserRegistration("bob");
         fillOutRegistration(reg);
         // wait for spam check
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         submitForm("#registrationForm .submitButton");
 
 
@@ -139,6 +143,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
      */
     public void testInvoiceView() {
         //ensure that we have at least one valid invoice in the system
+        logout();
         testLoginPurchase();
         logout();
         loginAdmin();
@@ -149,13 +154,19 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //links to the invoices (we assume) are in column 1 of the table
         WebElementSelection invoiceLinks = find("#tblAllInvoices tr td:first-child a");
         logger.debug("invoice links:{}", invoiceLinks);
-        assertThat(invoiceLinks.toList(), is(not(empty())));
+        List<WebElement> list = invoiceLinks.toList();
+        assertThat(list, is(not(empty())));
 
+        List<Pair<String,String>> urls = new ArrayList<>();
         //for each invoice page,  mak
-        for(WebElement element : invoiceLinks) {
+        for(WebElement element : list) {
             String url = element.getAttribute("href");
             String path = url.substring(url.indexOf("/cart/"));
-            gotoPage(url);
+            urls.add(Pair.create(url, path));
+        }
+        
+        for (Pair<String,String> pair : urls) {
+            gotoPage(pair.getFirst());
 
             //assert that the this page seems like a legit invoice-view page
             assertThat(getSource(), stringContainsInOrder(asList("Invoice", "Account:", "Items", "Transaction Status:")));
@@ -166,7 +177,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
             //waitForPageload();
 
             //make sure billing account page also has a link back to the invoice-view page we just verified
-            assertThat(getSource(), stringContainsInOrder( asList( "Overall Usage", path)));
+            assertThat(getSource(), stringContainsInOrder( asList( "Overall Usage", pair.getSecond())));
         }
 
     }

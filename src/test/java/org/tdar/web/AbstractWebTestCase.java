@@ -712,11 +712,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * Assert that the page is not an error page and does or contain any inline stacktraces
      */
     public void assertNoErrorTextPresent() {
-        assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
-                                                                                                     // rendering)
+        checkForFreemarkerExceptions();
         for (String err : errorPatterns) {
             assertTextNotPresentIgnoreCase(err);
         }
+    }
+
+    public void checkForFreemarkerExceptions() {
+        assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
+                                                                                                     // rendering)
         assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
                                                                                                   // rendering)
         assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));

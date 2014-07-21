@@ -11,7 +11,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 
 import com.opensymphony.xwork2.TextProvider;
 
