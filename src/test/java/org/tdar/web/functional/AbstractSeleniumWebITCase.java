@@ -1263,6 +1263,11 @@ public abstract class AbstractSeleniumWebITCase {
 
     }
 
+    //FIXME: I originally exposed this because getText() was such a costly method,  but this 'fix' causes more problems in the form of returning outdated page text
+    /**
+     * clear the cached result of getText(). The test updates the pageText whenever it detects a navigation event.  However
+     * If you invoke navigation via javascript, it may be necessary to manually clear it.
+     */
     public void clearPageCache() {
         cachedPageText = null;
     }
