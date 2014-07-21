@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Action;
 @Ignore
 public class PersonControllerSavingITCase extends AbstractAdminControllerITCase {
     // ADDING SO THAT WE DON'T HAVE KEY ISSUES WHEN TESTING
-    private static final String PERSON_EMAIL = System.currentTimeMillis() + "personcontrollersavingitcaseemail@tdar.info";
+    private static final String PERSON_EMAIL = System.currentTimeMillis() + "personcontrollersavingitcaseemail@tdar.net";
     private static final String PERSON_FIRST_NAME_EXPECTED = "William";
     private static final String PERSON_FIRST_NAME_UPDATED = "Bill";
 

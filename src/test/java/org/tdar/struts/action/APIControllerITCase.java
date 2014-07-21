@@ -157,7 +157,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     // int count = 5;
     // List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
     // for (int i = 0; i < count; i++) {
-    // String email = "someperson" + i + "@tdar.info";
+    // String email = "someperson" + i + "@tdar.net";
     // Person person = entityService.findByEmail(email);
     // if (person == null) {
     // person = createAndSaveNewPerson(email, "someperson");

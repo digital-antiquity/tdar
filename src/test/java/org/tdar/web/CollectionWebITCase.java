@@ -167,7 +167,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createInput("hidden", "resources.id", fieldValue);
         }
 
-        Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.info");
+        Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
 
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, 1), ""); // leave the id blank
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, 1), user.getLastName());

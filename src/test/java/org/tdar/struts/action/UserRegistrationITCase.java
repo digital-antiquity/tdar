@@ -473,7 +473,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         TdarUser p = newPerson();
 
-        p.setEmail("foo.bar@tdar.info");
+        p.setEmail("foo.bar@tdar.net");
         p.setUsername(username);
         p.setFirstName("Testing auth");
         p.setLastName("User");

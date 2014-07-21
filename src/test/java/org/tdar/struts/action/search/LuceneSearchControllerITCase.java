@@ -488,11 +488,11 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         DateTimeZone dtz = DateTimeZone.forID("GMT");
 
         // first create two documents with two separate create dates
-        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.info", ""));
+        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.net", ""));
         DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
         document1.setDateCreated(dm1.toDate());
 
-        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.info", ""));
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.net", ""));
         DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
         document2.setDateCreated(dm2.toDate());
 
