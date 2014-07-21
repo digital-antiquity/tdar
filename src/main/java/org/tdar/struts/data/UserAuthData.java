@@ -3,12 +3,12 @@ package org.tdar.struts.data;
 import java.io.Serializable;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import com.opensymphony.xwork2.TextProvider;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
 
 public abstract class UserAuthData implements Serializable {
 

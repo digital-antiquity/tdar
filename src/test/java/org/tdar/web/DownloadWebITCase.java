@@ -61,7 +61,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent("Could not authenticate at this time");
         
         Map<String, String> personmap = new HashMap<>();
-        setupBasicUser(personmap , "downloadWebTest",DOWNLOAD_REGISTRATION);
+        setupBasicUser(personmap , "downloadwebtest",DOWNLOAD_REGISTRATION);
         personmap.put(DOWNLOAD_REGISTRATION +".acceptTermsOfUse", "true");
         deleteUser(personmap.get(DOWNLOAD_REGISTRATION + ".person.username"));
         personmap.remove("downloadRegistration.contributorReason");

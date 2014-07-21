@@ -46,8 +46,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
     @Test
     public void testVisitorDownload() throws InterruptedException {
         //start at the cart page, and click one of the suggested packages
+        logout();
         gotoPage(url);
-        assertLoggedOut();
         find(".download-file").get(0).click();
 
         //now we are on the review form (w/ registration/login forms)
@@ -72,8 +72,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginDownlaod() {
         // Starting page
         // go to the cart page and make sure we are logged out
+        logout();
         gotoPage(url);
-        assertLoggedOut();
         find(".download-file").get(0).click();
 
         //now we are on the review form (w/ registration/login forms)
