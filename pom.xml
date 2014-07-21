@@ -17,7 +17,7 @@
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
-        <apache.cxf.version>3.0.0</apache.cxf.version>
+        <apache.cxf.version>3.0.1</apache.cxf.version>
         <jena.version>2.11.2</jena.version>
         <clover.version>3.2.2</clover.version>
         <!-- /end managed versions -->
@@ -31,7 +31,7 @@
         <jetty.stop.port>12919</jetty.stop.port>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>11.1</geotools.version>
+        <geotools.version>11.2</geotools.version>
         <tika.version>1.5</tika.version>
         <batik.version>1.7</batik.version>
         <odata4j.version>0.7.0</odata4j.version>
@@ -231,7 +231,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.49c</version>
+            <version>1.49d</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
         </dependency>
         <dependency>
@@ -1011,7 +1011,7 @@
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -1186,7 +1186,7 @@
              <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>2.5.4</version>
                 <configuration>
                     <includeTests>false</includeTests>
                     <excludeFilterFile>src/main/resources/findbugs-exclude.xml</excludeFilterFile>
@@ -1775,7 +1775,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>2.5.4</version>
                 <configuration>
                     <failOnError>false</failOnError>
                     <findbugsXmlOutput>false</findbugsXmlOutput>
@@ -1819,7 +1819,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.11</version>
+                <version>2.12.1</version>
                 <configuration>
                     <enableRSS>false</enableRSS>
                     <includes>**\/*.java</includes>
