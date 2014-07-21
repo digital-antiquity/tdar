@@ -1355,9 +1355,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         String username = values.get("registration.person.username");
         if (true) {
-            TdarUser p = new TdarUser();
-            p.setUsername(username);
-            authService.getAuthenticationProvider().deleteUser(p);
+            deleteUser(username);
         }
         gotoPage("/");
         clickLinkOnPage("Sign Up");
@@ -1389,19 +1387,29 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setSessionUser(entityService.findByUsername(username));
     }
 
+    public void deleteUser(String username) {
+        TdarUser p = new TdarUser();
+        p.setUsername(username);
+        authService.getAuthenticationProvider().deleteUser(p);
+    }
+
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
-        personmap.put("registration.person.firstName", prefix + "firstName");
-        personmap.put("registration.person.lastName", prefix + "lastName");
-        personmap.put("registration.person.email", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.confirmEmail", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.person.username", prefix + "aaaaa@bbbbb.com");
-        personmap.put("registration.password", "secret");
-        personmap.put("registration.confirmPassword", "secret");
-        personmap.put("registration.institutionName", "institution");
-        personmap.put("registration.person.phone", "1234567890");
-        personmap.put("registration.contributorReason", "there is a reason");
+        setupBasicUser(personmap, prefix,"registration");
+    }
+    
+    public void setupBasicUser(Map<String, String> personmap, String prefix, String mapPrefix) {
+        personmap.put(mapPrefix + ".person.firstName", prefix + "firstName");
+        personmap.put(mapPrefix + ".person.lastName", prefix + "lastName");
+        personmap.put(mapPrefix + ".person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put(mapPrefix + ".confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put(mapPrefix + ".person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put(mapPrefix + ".password", "secret");
+        personmap.put(mapPrefix + ".confirmPassword", "secret");
+        personmap.put(mapPrefix + ".institutionName", "institution");
+        personmap.put(mapPrefix + ".person.phone", "1234567890");
+        personmap.put(mapPrefix + ".contributorReason", "there is a reason");
         // personmap.put("contributor", "true");
-        personmap.put("registration.affiliation", UserAffiliation.GRADUATE_STUDENT.name());
+        personmap.put(mapPrefix + ".affiliation", UserAffiliation.GRADUATE_STUDENT.name());
         // personmap.put("person.rpaNumber", "1234567890");
         // personmap.put("registration.acceptTermsOfUse","true");
         // personmap.put("registration.requestingContributorAccess", "true");

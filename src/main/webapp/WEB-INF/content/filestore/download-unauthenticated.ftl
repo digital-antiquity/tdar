@@ -20,7 +20,6 @@
 
     <p>In order to download files from ${siteAcronym}, you must register as a ${siteAcronym} User.  There is no charge for registering.</p>
     <p>We ask that you provide some information and affirm that you will abide by the ${siteAcronym} User Agreement, which simply states that you <em>(1)</em> will not use any of the information that you obtain from tDAR in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download</p>
-    <dl class="dl-horizontal">
         <ul class="inline">
             <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.visible)!false) >
                 <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
@@ -39,6 +38,7 @@
                 </#list>
             </#if>
         </ul>
+        <dl class="dl-horizontal">
         <dt>Filename</dt>
         <dd>${filename!"undefined"?html}</dd>
         </dl>
