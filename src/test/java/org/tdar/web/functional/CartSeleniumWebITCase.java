@@ -2,7 +2,9 @@ package org.tdar.web.functional;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -110,7 +112,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Test
     //ideal walk-through of purchase process for a visitor with no mistakes along the way.
-    public void testVisitorPurchase() {
+    public void testVisitorPurchase() throws InterruptedException {
         //start at the cart page, and click one of the suggested packages
         gotoPage(URLConstants.CART_ADD);
         assertLoggedOut();
@@ -121,6 +123,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         UserRegistration reg = createUserRegistration("bob");
         fillOut(reg);
+        // wait for spam check
+        Thread.sleep(2000);
         submitForm("#registrationForm .submitButton");
 
 

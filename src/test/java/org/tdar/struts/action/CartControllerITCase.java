@@ -359,6 +359,14 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
         simulateNewSession();
 
+        CartBillingAccountController cbac = generateNewInitializedController(CartBillingAccountController.class);
+        cbac.getSessionData().setInvoiceId(invoice.getId());
+        cbac.prepare();
+        cbac.validate();
+        response = cbac.processBillingAccountChoice();
+
+
+        simulateNewSession();
         //go back to cart/process-payment
         controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
