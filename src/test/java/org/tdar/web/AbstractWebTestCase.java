@@ -294,7 +294,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
             Tidy tidy = new Tidy(); // obtain a new Tidy instance
-            tidy.setXHTML(false); // set desired config options using tidy setters
+            tidy.setXHTML(true); // set desired config options using tidy setters
             tidy.setQuiet(true);
             // tidy.setOnlyErrors(true);
             // tidy.setShowWarnings(false);
