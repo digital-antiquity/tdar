@@ -16,9 +16,10 @@
 </head>
 <body>
 <div class="hero-unit hero-condensed">
-    <h1>Please Register or Login</h1>
+    <h1>Become a ${siteAcronym} Member Today</h1>
 
-    <p>File downloads require  ${siteAcronym} membership.  Please complete the registration or login form to resume downloading this file.</p>
+    <p>In order to download files from ${siteAcronym}, you must register as a ${siteAcronym} User.  There is no charge for registering.</p>
+    <p>We ask that you provide some information and affirm that you will abide by the ${siteAcronym} User Agreement, which simply states that you <em>(1)</em> will not use any of the information that you obtain from tDAR in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download</p>
     <dl class="dl-horizontal">
         <ul class="inline">
             <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.visible)!false) >
