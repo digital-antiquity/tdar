@@ -57,7 +57,7 @@
 
                     </div>
                     <div class="form-actions">
-                        <input type="submit" name="submit" class="btn btn-mini submitButton tdar-button" value="Login and Continue">
+                        <input type="submit" name="submitLogin" class="btn btn-mini submitButton tdar-button" value="Login and Continue">
                     </div>
                 </div>
                 </@auth.login>

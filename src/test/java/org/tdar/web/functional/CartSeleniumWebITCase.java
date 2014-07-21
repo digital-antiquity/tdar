@@ -1,6 +1,7 @@
 package org.tdar.web.functional;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -8,6 +9,7 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.tdar.URLConstants.CART_ADD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +51,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     //ideal walk-through of purchase process for a visitor with no mistakes along the way.
     public void testVisitorPurchase() throws InterruptedException {
         //start at the cart page, and click one of the suggested packages
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(CART_ADD);
         assertLoggedOut();
         find("#divlarge button").click();
 
@@ -103,7 +105,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(CART_ADD);
         assertLoggedOut();
         // choose the large package
         find("#divlarge button").click();
@@ -180,6 +182,46 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
             assertThat(getSource(), stringContainsInOrder( asList( "Overall Usage", pair.getSecond())));
         }
 
+    }
+
+    @Test
+    /**
+     * Assert that tdar gracefully handles invalid login in the purchase process.
+     */
+    public void testInvalidLogin() {
+        gotoPage(CART_ADD);
+        // choose the large package
+        find("#divlarge button").click();
+
+        //try to log in with a blank username (javascript whould catch this,  but we want to make sure we handle server-side too
+        find(withLabel("Username")).val("");
+
+        //bypass jquery validation by calling form.submit() vs. clicking the submit button
+        executeJavascript("document.loginForm.submit()");
+        waitForPageload();
+
+        assertThat(getSource(), containsString("tDAR encountered the following problems with this submission"));
+        assertThat(getCurrentUrl(), endsWith("/cart/process-cart-login"));
+    }
+
+    @Test
+    /**
+     * Assert that tdar gracefully handles invalid login in the purchase process.
+     */
+    public void testInvalidRegistration() {
+        gotoPage(CART_ADD);
+        // choose the large package
+        find("#divlarge button").click();
+
+        //make sure at least one required field is blank before submitting form
+        find("#username").val("");
+
+        //bypass jquery validation by calling form.submit() vs. clicking the submit button
+        executeJavascript("document.registrationForm.submit()");
+        waitForPageload();
+
+        assertThat(getSource(), containsString("tDAR encountered the following problems with this submission"));
+        assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
 
 
