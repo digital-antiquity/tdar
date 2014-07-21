@@ -294,7 +294,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
             Tidy tidy = new Tidy(); // obtain a new Tidy instance
-            tidy.setXHTML(true); // set desired config options using tidy setters
+            tidy.setXHTML(false); // set desired config options using tidy setters
             tidy.setQuiet(true);
             // tidy.setOnlyErrors(true);
             // tidy.setShowWarnings(false);
@@ -303,6 +303,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 StringWriter errs = new StringWriter();
                 tidy.setErrout(new PrintWriter(errs, true));
                 tidy.parse(internalPage.getWebResponse().getContentAsStream(), baos);
+//                String[] lines = getPageBodyCode().split("\r\n");
                 StringBuilder errors = new StringBuilder();
                 for (String line : StringUtils.split(errs.toString(), "\n")) {
                     boolean skip = false;
@@ -312,6 +313,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                             logger.trace("skipping: {} ", line);
                         }
                     }
+                    // FIXME: add regex to get line number from error: line 291 column 180 - Warning: unescaped & or unknown entity "&amount"
+                    // then check for URL
+                    
                     if (skip) {
                         continue;
                     }

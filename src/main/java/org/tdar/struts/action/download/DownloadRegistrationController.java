@@ -35,7 +35,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @Action(value = "process-download-registration",
             interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${sessionData.informationResourceId}&informationResourceFileVersionId=${sessionData.informationResourceFileVersionId}")
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
             })
     @HttpsOnly
     @PostOnly
@@ -66,5 +66,10 @@ public class DownloadRegistrationController extends AbstractDownloadController i
         List<String> errors = getDownloadRegistration().validate(this, authenticationService);
         getLogger().debug("found errors {}", errors);
         addActionErrors(errors);
+    }
+    
+    @Override
+    public void prepare() {
+        super.prepare();
     }
 }
