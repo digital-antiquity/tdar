@@ -10,6 +10,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import net.sf.ehcache.constructs.web.ShutdownListener;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter;
@@ -71,7 +73,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
         container.addListener(RequestContextListener.class);
         container.addListener(StrutsListener.class);
-
+        container.addListener(ShutdownListener.class);
+        
         TdarConfiguration configuration = TdarConfiguration.getInstance();
         if (configuration.isOdataEnabled()) {
             ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
