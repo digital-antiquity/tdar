@@ -154,6 +154,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         return inputStream;
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -167,6 +168,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         return fileName;
     }
 
+    @Override
     public Long getContentLength() {
         return contentLength;
     }

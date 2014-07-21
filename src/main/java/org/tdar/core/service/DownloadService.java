@@ -159,7 +159,7 @@ public class DownloadService {
             dh.setFileName(fileName);
             dh.setContentLength(resourceFile.length());
             dh.setContentType(mimeType);
-            logger.debug("downloading file:" + resourceFile.getCanonicalPath());
+            logger.debug("downloading file: {} [{} {}]" ,  resourceFile.getCanonicalPath(), mimeType, resourceFile.length());
         } catch (NullPointerException | IOException ex) {
             logger.error("Could not generate zip file to download: IO exeption", ex);
             throw new TdarRecoverableRuntimeException("downloadService.error_zip_generation");

@@ -79,6 +79,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.TestConfiguration;
@@ -90,6 +91,9 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 public abstract class AbstractSeleniumWebITCase {
+
+    public static final String AUTO_DOWNLOAD_MIME_TYPES = "application/pdf, text/csv, image/tiff, image/tif";
+    //, application/xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
     // default timeout used for waitFor()
     public static final int DEFAULT_WAITFOR_TIMEOUT = 20;
@@ -338,7 +342,7 @@ public abstract class AbstractSeleniumWebITCase {
 			    profile.setPreference("browser.download.folderList",2);
 			    profile.setPreference("browser.download.manager.showWhenStarting",false);
                 profile.setPreference("browser.download.manager.showAlertOnComplete",false);
-				profile.setPreference("browser.helperApps.neverAsk.saveToDisk","text/csv,image/tiff,image/tif,application/xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				profile.setPreference("browser.helperApps.neverAsk.saveToDisk",AUTO_DOWNLOAD_MIME_TYPES);
 				//			    profile.setPreference("browser.download.dir","c:\\downloads");
                 driver = new FirefoxDriver(fb, profile);
                 break;
@@ -1401,15 +1405,22 @@ public abstract class AbstractSeleniumWebITCase {
         find("#password").val(reg.getPassword());
         find("#confirmPassword").val(reg.getConfirmPassword());
         find("#username").val(person.getUsername());
-        if(reg.isAcceptTermsOfUse() != find("#tou-id").isSelected()) {
-            find("#tou-id").click();
+        WebElementSelection touId = find("#tou-id");
+        if(reg.isAcceptTermsOfUse() != touId.isSelected()) {
+            touId.click();
         }
         
         
-        
-        if(reg.isRequestingContributorAccess() != find("#contributor-id").isSelected() ) {
-            find("#contributor-id").click();
+        WebElementSelection contribId = null;
+        try {
+            contribId = find("#contributor-id");
+            if(contribId != null && reg.isRequestingContributorAccess() != contribId.isSelected() ) {
+                contribId.click();
+            }
+        } catch (TdarRecoverableRuntimeException e) {
+            // doesn't exist
         }
+        
     }
 
     /**

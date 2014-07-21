@@ -20,7 +20,11 @@ public interface DownloadHandler extends ActionMessageErrorSupport, TextProvider
 
     void setDispositionPrefix(String string);
 
-    public boolean isEditor();
+    boolean isEditor();
 
     boolean isCoverPageIncluded();
+    
+    String getContentType();
+    
+    Long getContentLength();
 }
