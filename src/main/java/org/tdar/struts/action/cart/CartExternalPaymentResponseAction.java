@@ -1,10 +1,9 @@
 package org.tdar.struts.action.cart;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
 
+import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
@@ -37,6 +36,8 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     private static final long serialVersionUID = 0xDEADBEEF;
 
     private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
+    public static final String NELNET_RESPONSE_SUCCESS = "success";
+    public static final String NELNET_RESPONSE_FAILURE = "failure";
 
     @Autowired
     UserNotificationService notificationService;
@@ -48,7 +49,6 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     private transient InvoiceService cartService;
 
     private Invoice invoice;
-    private InputStream inputStream;
     private TransactionResponse response;
 
     //nelnet can send us a whole slew of name/value pairs. It would be too cumbersome to write controller getter/setter methods so we just stuff them here
@@ -58,7 +58,6 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     public void prepare() {
         response = paymentTransactionProcessor.setupTransactionResponse(extraParameters);
         invoice = paymentTransactionProcessor.locateInvoice(response);
-        inputStream = new ByteArrayInputStream(SUCCESS.getBytes());
     }
 
 
@@ -74,7 +73,10 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     @PostOnly
     @Action(value  = PROCESS_EXTERNAL_PAYMENT_RESPONSE, results = {
             @Result(name = SUCCESS, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
-            @Result(name = "input", type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" })
+            @Result(name = INPUT, type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "400" }),
+            //fixme: jtd I'm not sure if the following mapping is safe.  Can an exception occur when the action object is undefined? And if so,  will struts still attempt to populate the result with action object properties?
+            @Result(name = "exception", type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "500" }),
+            @Result(name = ERROR, type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "400" })
     })
     public String processExternalPayment() {
         getLogger().trace("PROCESS RESPONSE {}", extraParameters);
@@ -84,11 +86,9 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
         } catch (IOException|TdarRecoverableRuntimeException e) {
             getLogger().error("IO error occured when processing nelnet response", e);
             addActionError(e.getMessage());
-            inputStream = new ByteArrayInputStream(ERROR.getBytes());
             return ERROR;
         }
         //this is already done in prepare(), but some tests may not be calling prepare() prior to calling this method.
-        inputStream = new ByteArrayInputStream(SUCCESS.getBytes());
         handlePurchaseNotifications();
         return SUCCESS;
     }
@@ -116,12 +116,18 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     }
 
     public InputStream getInputStream() {
-        return inputStream;
+        return toStream(NELNET_RESPONSE_SUCCESS);
     }
 
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public InputStream getErrorInputStream() {
+        return toStream(NELNET_RESPONSE_FAILURE);
     }
+
+    private InputStream toStream(String str) {
+        //Assumpution: nelnet docs do not specify a charset, however, "success" and "failure" have same bytes in utf7, utf8, and western-iso-8859
+        return new ReaderInputStream( new StringReader(str), "utf-8");
+    }
+
 
     @Override
     public void setParameters(Map<String, String[]> parameters) {
