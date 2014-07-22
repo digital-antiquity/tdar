@@ -748,4 +748,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("use.cdn", true);
     }
 
+    public boolean shouldAutoDownload() {
+        return assistant.getBooleanProperty("js.autodownload", true);
+    }
+
 }

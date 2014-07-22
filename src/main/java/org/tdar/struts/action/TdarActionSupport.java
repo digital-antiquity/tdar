@@ -613,4 +613,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isUseCDN() {
         return getTdarConfiguration().shouldUseCDN();
     }
+
+    public boolean isShouldAutoDownload() {
+        return getTdarConfiguration().shouldAutoDownload();
+    }
 }

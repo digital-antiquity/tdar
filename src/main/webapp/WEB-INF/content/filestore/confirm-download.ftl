@@ -23,14 +23,14 @@
 <div class="row">
 </div>
 
+
+<#if shouldAutoDownload>
 <script>
-
-
     $(function () {
         TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersion.id?c}');
     });
-
-
 </script>
+</#if>
+
 </body>
 </#escape>
