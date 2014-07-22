@@ -125,14 +125,14 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     public String sendNewPassword() {
         Person person = entityService.findByEmail(reminderEmail);
         if (person == null || !(person instanceof TdarUser)) {
-            addActionError("Sorry, we didn't find a user with this email.");
+            addActionError(getText("userAccountController.email_invalid"));
             return INPUT;
         }
 
         // use crowd to handle user management? post to
         // http://dev.tdar.org/crowd/console/forgottenpassword!default.action
         // or just redirect there?
-        addActionError("This isn't implemented yet.");
+        addActionError(getText("userAccountController.not_implemented"));
         return SUCCESS;
     }
 

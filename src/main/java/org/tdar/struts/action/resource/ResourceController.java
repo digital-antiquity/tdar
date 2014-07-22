@@ -87,7 +87,7 @@ public class ResourceController extends AuthenticationAware.Base {
         InformationResource informationResource = getGenericService().find(InformationResource.class, resourceId);
         if (informationResource == null) {
             getLogger().error("trying to edit information resource but it was null.");
-            addActionError("Information resource wasn't loaded properly, please file a bug report.  Thanks!");
+            addActionError(getText("resourceController.invalid"));
             return INPUT;
         }
         if (resourceType == null) {

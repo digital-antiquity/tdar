@@ -74,7 +74,7 @@ public class CartLoginController extends AbstractCartController implements Valid
         switch (status) {
             case ERROR:
             case NEW:
-                addActionMessage("User is in crowd, but not in local db");
+                addActionMessage(getText("loginController.user_not_in_local_db"));
                 return INPUT;
             default:
                 break;
