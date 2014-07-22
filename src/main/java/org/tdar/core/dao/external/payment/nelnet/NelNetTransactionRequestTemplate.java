@@ -259,18 +259,6 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         this.values = values;
     }
 
-    public String constructUrlSuffix() throws URIException {
-        StringBuilder suffix = new StringBuilder("?");
-        for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
-            String key = item.key;
-            String value = values.get(key);
-            if (values.containsKey(key) && StringUtils.isNotBlank(value) && StringUtils.isNotBlank(key)) {
-                suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&amp;");
-            }
-        }
-        return suffix.toString();
-    }
-
     /**
      * return list of name/value pair entries, omitting entries with blank values
      * @return

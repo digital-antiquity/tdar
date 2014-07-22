@@ -7,6 +7,7 @@ import java.io.File;
 
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.tdar.struts.data.UserRegistration;
 /**
  * Created by adam on 7/21/14.
  */
+@Ignore
 public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());

@@ -115,8 +115,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
-    public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by", "problems with this submission");
-
+    public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
+            "problems with this submission");
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -257,7 +257,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             fail(StringUtils.join(errors.toArray()));
         }
 
-        
     }
 
     public Long createResourceFromType(ResourceType rt, String title) {
@@ -303,7 +302,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 StringWriter errs = new StringWriter();
                 tidy.setErrout(new PrintWriter(errs, true));
                 tidy.parse(internalPage.getWebResponse().getContentAsStream(), baos);
-//                String[] lines = getPageBodyCode().split("\r\n");
+                String[] lines = getPageCode().split("\n");
                 StringBuilder errors = new StringBuilder();
                 for (String line : StringUtils.split(errs.toString(), "\n")) {
                     boolean skip = false;
@@ -313,9 +312,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                             logger.trace("skipping: {} ", line);
                         }
                     }
+                    if (!skip && line.contains("unknown entity")) {
+                        String part = line.substring(5, line.indexOf("column"));
+                        int lineNum = Integer.parseInt(part.trim());
+                        String lineText = lines[lineNum - 1];
+                        logger.debug("{}: {}", lineNum, lineText);
+                        if (lineText.toLowerCase().contains("http")) {
+                            //NOTE: we may need to make this more strict in the future
+                            // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
+                            skip = true;
+                            logger.debug("skipping encoding in URL");
+                        }
+                    }
                     // FIXME: add regex to get line number from error: line 291 column 180 - Warning: unescaped & or unknown entity "&amount"
                     // then check for URL
-                    
+
                     if (skip) {
                         continue;
                     }
@@ -865,7 +876,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // testing on the mac :(
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
         webClient.getOptions().setUseInsecureSSL(true);
-//        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        // webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
         CookieManager cookieMan = new CookieManager();
         cookieMan = webClient.getCookieManager();
@@ -874,26 +885,26 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
-            
+
             @Override
             public void timeoutError(HtmlPage arg0, long arg1, long arg2) {
                 logger.error("JS timeoutError");
             }
-            
+
             @Override
             public void scriptException(HtmlPage arg0, ScriptException arg1) {
                 logger.error("JS exception: {}", arg1);
             }
-            
+
             @Override
             public void malformedScriptURL(HtmlPage arg0, String arg1, MalformedURLException arg2) {
-                logger.error("JS malformed exception: {} {}", arg1, arg2);                
+                logger.error("JS malformed exception: {} {}", arg1, arg2);
             }
-            
+
             @Override
             public void loadScriptError(HtmlPage arg0, URL arg1, Exception arg2) {
-                logger.error("JS load exception: {} {}", arg1, arg2);                
-                
+                logger.error("JS load exception: {} {}", arg1, arg2);
+
             }
         });
         webClient.setCssErrorHandler(new ErrorHandler() {
@@ -1096,8 +1107,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", Long.toString(fileId));
         createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
-        
+
     }
+
     public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
         addFileProxyFields(rowNum, restriction, filename, -1L, FileAction.ADD);
     }
@@ -1231,11 +1243,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } catch (Exception e) {
         }
     }
-    protected Map<String,String> testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
+
+    protected Map<String, String> testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         // assertCurrentUrlContains("/simple");
         Map<String, String> toReturn = new HashMap<>();
-        toReturn.put(ACCOUNT_ID,getValue(ACCOUNT_ID));
-        toReturn.put(INVOICE_ID,getValue(INVOICE_ID));
+        toReturn.put(ACCOUNT_ID, getValue(ACCOUNT_ID));
+        toReturn.put(INVOICE_ID, getValue(INVOICE_ID));
 
         if (!getCurrentUrlPath().contains("process-payment-request")) {
             gotoPage(CART_REVIEW);
@@ -1244,8 +1257,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         logger.debug("{}", toReturn);
         logger.info("TOTAL::: " + total);
         if (!total.equals("0")) {
-            toReturn.put(ACCOUNT_ID,getValue(ACCOUNT_ID));
-            toReturn.put(INVOICE_ID,getValue(INVOICE_ID));
+            toReturn.put(ACCOUNT_ID, getValue(ACCOUNT_ID));
+            toReturn.put(INVOICE_ID, getValue(INVOICE_ID));
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("Click Here To Begin Payment Process");
             URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + toReturn.get(INVOICE_ID));
@@ -1398,9 +1411,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
-        setupBasicUser(personmap, prefix,"registration");
+        setupBasicUser(personmap, prefix, "registration");
     }
-    
+
     public void setupBasicUser(Map<String, String> personmap, String prefix, String mapPrefix) {
         personmap.put(mapPrefix + ".person.firstName", prefix + "firstName");
         personmap.put(mapPrefix + ".person.lastName", prefix + "lastName");
@@ -1471,7 +1484,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public String toString() {
         return getPageText();
     }
-
 
     public void selectAnyAccount() {
         gotoPage(CART_REVIEW);
