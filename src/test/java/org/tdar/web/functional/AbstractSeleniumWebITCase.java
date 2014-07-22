@@ -341,7 +341,14 @@ public abstract class AbstractSeleniumWebITCase {
 			    profile.setPreference("browser.download.folderList",2);
 			    profile.setPreference("browser.download.manager.showWhenStarting",false);
                 profile.setPreference("browser.download.manager.showAlertOnComplete",false);
+                profile.setPreference("browser.helperApps.alwaysAsk.force", false);
 				profile.setPreference("browser.helperApps.neverAsk.saveToDisk",AUTO_DOWNLOAD_MIME_TYPES);
+				profile.setPreference("pdfjs.disabled", true);
+				// Use this to disable Acrobat plugin for previewing PDFs in Firefox (if you have Adobe reader installed on your computer)
+				profile.setPreference("plugin.scan.Acrobat", "99.0");
+				profile.setPreference("plugin.scan.plid.all", false);
+				
+				
 				//			    profile.setPreference("browser.download.dir","c:\\downloads");
                 driver = new FirefoxDriver(fb, profile);
                 break;

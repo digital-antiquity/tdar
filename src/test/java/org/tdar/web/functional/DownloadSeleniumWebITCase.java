@@ -7,8 +7,8 @@ import java.io.File;
 
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -18,7 +18,6 @@ import org.tdar.struts.data.UserRegistration;
 /**
  * Created by adam on 7/21/14.
  */
-@Ignore
 public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
@@ -63,7 +62,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
 
         //now we are on the "choose billing account" page. just click through to next page
-        waitForPageload();
+        waitFor(ExpectedConditions.titleContains("Download: "));
+        dismissModal();
         assertThat(getCurrentUrl(), StringContains.containsString(AbstractDownloadController.CONFIRM));
     }
 
@@ -71,7 +71,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
     //ideal walkthrough of purchase process for logged-out-user process with no mistakes
     //todo: create By.buttonWithLabel (finds submit input with matching value -or- button with matching text node)
     //todo: create By.inputWithLabel  (finds element referred by for-attribute or child elements)
-    public void testLoginDownlaod() {
+    public void testLoginDownlaod() throws InterruptedException {
         // Starting page
         // go to the cart page and make sure we are logged out
         logout();
@@ -84,9 +84,11 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
+        Thread.sleep(2000);
         submitForm("#loginForm [type=submit]");
 
-        waitForPageload();
+        waitFor(ExpectedConditions.titleContains("Download: "));
+        dismissModal();
         assertThat(getCurrentUrl(), StringContains.containsString(AbstractDownloadController.CONFIRM));
     }
 
