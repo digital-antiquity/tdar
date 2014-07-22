@@ -32,7 +32,6 @@ import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 
 /**
@@ -46,9 +45,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     // private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
-
-    @Autowired
-    private SitemapGeneratorProcess sitemap;
 
     @Autowired
     RebuildHomepageCache homepage;
@@ -144,11 +140,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertTrue(mock.getBatchIdQueue().isEmpty());
         mock.cleanup();
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
-    }
-
-    @Test
-    public void testSitemapGen() {
-        sitemap.execute();
     }
 
     @Test

@@ -32,7 +32,7 @@ public class SitemapController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 3087341894996134904L;
 
-    private String filename;
+    private String filename = "sitemap_index.xml";
     private InputStream inputStream;
 
     @Override
@@ -43,10 +43,10 @@ public class SitemapController extends AuthenticationAware.Base {
         if (file.exists() && file.isFile()) {
             try {
                 setInputStream(new FileInputStream(file));
+                return SUCCESS;
             } catch (FileNotFoundException e) {
                 getLogger().error("file not found {}", e);
             }
-            return SUCCESS;
         }
         return NOT_FOUND;
     }
