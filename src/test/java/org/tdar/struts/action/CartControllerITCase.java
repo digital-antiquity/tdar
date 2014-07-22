@@ -32,11 +32,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.struts.action.cart.CartApiController;
-import org.tdar.struts.action.cart.CartBillingAccountController;
-import org.tdar.struts.action.cart.CartController;
-import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
-import org.tdar.struts.action.cart.InvoiceController;
+import org.tdar.struts.action.cart.*;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 import com.opensymphony.xwork2.Action;
@@ -178,7 +174,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException, IOException {
-        CartApiController controller = generateNewInitializedController(CartApiController.class);
+        CartApiPollingAction controller = generateNewInitializedController(CartApiPollingAction.class);
         controller.getSessionData().setInvoiceId(invoiceId);
         controller.prepare();
         String pollingCheck = controller.pollingCheck();

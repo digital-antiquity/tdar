@@ -46,47 +46,11 @@ public class CartApiController extends AbstractCartController {
     private InputStream resultJson;
     private String callback;
 
-    //indicates that validation phase should also verify that action is authorized
-    private boolean authorizationRequired = false;
-
     @Autowired
     XmlService xmlService;
 
     @Autowired
     private transient InvoiceService cartService;
-
-    @Override
-    public void prepare() {
-        super.prepare();
-    }
-
-
-    @Override
-    public void validate() {
-        super.validate();
-
-        // this is roughly equivalent to implementing isEditable() and making the following checkValidRequest call
-        // checkValidRequest(AbstractPersistableController.RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
-        //fixme: consider breaking out polling-check into it's own action class
-        //authorized actions require additional validation steps
-        if(authorizationRequired) {
-            if (isTransient(getAuthenticatedUser())) {
-                addActionError("cart.must_be_logged_in");
-            }
-
-            if(getInvoice() == null) {
-                addActionError("cart.invoice_required");
-            }
-
-            if (userCannot(EDIT_BILLING_INFO)) {
-                if (!getAuthenticatedUser().equals(getInvoice().getOwner())) {
-                    addActionError("cart.invoice_lookup_not_authorized");
-                }
-            }
-        }
-
-    }
 
     /**
      * calculate estimated price when user specifies custom files/mb
@@ -100,13 +64,6 @@ public class CartApiController extends AbstractCartController {
             addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
         setResultJson(getPricingOptions());
-        return SUCCESS;
-    }
-
-
-    @Action("polling-check")
-    public String pollingCheck() throws TdarActionException, IOException {
-        setResultJson(getInvoice());
         return SUCCESS;
     }
 
