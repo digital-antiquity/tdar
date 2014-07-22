@@ -12,20 +12,30 @@
     <title>Review</title>
 </head>
 <body>
+<div>
+    <@invoicecommon.proxyNotice />
+</div>
 <h1>Review your purchase</h1>
 <div class="row">
-    <div class="span12">
-    	<@invoicecommon.printInvoice />	
-        <div class="authpane">
+    <div class="span5 " >
+        <h3>Invoice Details</h3>
+        <@invoicecommon.printInvoice />
+        <h3>Invoice Summary</h3>
+        <@invoicecommon.printSubtotal invoice/>
+    </div>
+
+    <div class="span7">
+        <h3>Choose A Billing Account</h3>
+        <div class="cartpane">
         <@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal billing-account-choice" enctype='multipart/form-data' action='process-billing-account-choice'>
             <@s.token name='struts.csrf.token' />
             <@s.hidden name="invoiceId" value="${invoice.id?c}" />
             <#if accounts?has_content>
-	        <div class="alert alert-info">
-            	<@s.text name="cart.about_billing_accounts" />
-	        </div>
-                <@s.select labelposition='top' label='Select Account' name='id' emptyOption="false" id="select-existing-account"
-                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" value="id" />
+            <div class="alert alert-info">
+                <@s.text name="cart.about_billing_accounts" />
+            </div>
+            <@s.select labelposition='top' label='Select Account' name='id' emptyOption="false" id="select-existing-account"
+            list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" value="id" />
             </#if>
             <div class="add-new hidden">
                 <h3>Create a new account</h3>
@@ -39,15 +49,6 @@
         </@s.form>
         </div>
 
-    </div>
-</div>
-
-
-<div class="row">
-    <div class="span9"></div>
-    <div class="span3">
-        <@invoicecommon.proxyNotice />
-        <@invoicecommon.printSubtotal invoice />
     </div>
 </div>
 

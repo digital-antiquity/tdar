@@ -113,6 +113,12 @@
                         <@s.textfield name="code" label="Redeem Code" />
                         <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction"
                                value="Next: Review & Choose Payment Method">
+
+                        <#if invoice??>
+                            <h3>Current Invoice</h3>
+                            <@invoicecommon.printSubtotal invoice />
+                        </#if>
+
                     </div>
                 </div>
 
@@ -149,15 +155,6 @@
                         </#if>
                     </div>
                 </div>
-
-                <#if invoice??>
-                    <div class="row">
-                        <div class="span9"></div>
-                        <div class="span3">
-                            <@invoicecommon.printSubtotal invoice />
-                        </div>
-                    </div>
-                </#if>
 
             </div>
         </div>

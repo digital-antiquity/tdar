@@ -9,12 +9,22 @@
     <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <head>
-    <title>Review Billing Information</title>
+    <title>Confirm Selection: Login Required</title>
 </head>
 
 <body>
-<h1>Confirm Selection</h1>
-    <@invoicecommon.printInvoice />
+    <@invoicecommon.proxyNotice />
+
+<h1>Confirm Selection: Login Required</h1>
+<div class="row">
+    <div class="span5 " >
+        <h3>Invoice Details</h3>
+        <@invoicecommon.printInvoice />
+        <h3>Invoice Summary</h3>
+        <@invoicecommon.printSubtotal invoice/>
+        <p></p>
+    </div>
+</div>
 <#if sessionData.person?has_content>
 	<@s.form action='process-payment-request' method='post'>
     <div class="form-actions">
@@ -66,17 +76,6 @@
 
     </div>
 </#if>
-
-<div class="row">
-    <div class="span9"></div>
-    <div class="span3">
-        <#if authenticatedUser?has_content>
-            <p>prepared for: ${authenticatedUser.properName}</p>
-        </#if>
-        <@invoicecommon.proxyNotice />
-        <@invoicecommon.printSubtotal invoice />
-    </div>
-</div>
 
 </body>
 </#escape>

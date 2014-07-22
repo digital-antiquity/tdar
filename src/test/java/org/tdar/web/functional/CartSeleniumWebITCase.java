@@ -171,7 +171,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
             gotoPage(pair.getFirst());
 
             //assert that the this page seems like a legit invoice-view page
-            assertThat(getSource(), stringContainsInOrder(asList("Invoice", "Account:", "Items", "Transaction Status:")));
+            assertThat(getSource(), stringContainsInOrder(asList("Invoice", "Account:", "Transaction Status:")));
 
 
             //click on the link to the billing account for this invoice

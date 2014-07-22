@@ -2,7 +2,6 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
     <#macro printInvoice>
-    <h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/modify" />" class="small">(modify)</a></#if></h3>
     <table class="tableFormat">
         <tr>
             <th>Item</th>
@@ -46,6 +45,9 @@
             </th>
         </tr>
     </table>
+    <#if invoice.modifiable>
+        <@s.a href="/cart/modify" cssClass="tdar-button small">Modify This Invoice</@s.a>
+    </#if>
     </#macro>
 
 <#macro invoiceOwner invoice>
@@ -55,9 +57,11 @@
 
     <#macro printSubtotal invoice>
     <div id="divInvoiceSubtotal" class="invoice-subtotal">
-        <h3>Subtotal</h3>
-        <span class="amt">$${invoice.calculatedCost}</span>
+        <#--<h3>Subtotal</h3>-->
+        <#--<span class="amt">$${invoice.calculatedCost}</span>-->
+        <#if invoice.owner??>
         <span class="item-desc"><@invoiceOwner invoice/></span>
+        </#if>
         <span class="item-desc">${invoice.numberOfFiles} files / ${invoice.numberOfMb}mb</span>
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>

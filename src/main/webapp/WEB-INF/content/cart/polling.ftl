@@ -1,9 +1,11 @@
+<#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
 <#escape _untrusted as _untrusted?html>
 <h1>Processing Payment</h1>
 
 <div class="row" >
     <div class="span8" style="height:450px">
         <div class="cartpane" style="height:420px">
+            <h3>Instructions</h3>
             <p>
                 <b>Do not close this window</b>.
                 tDAR uses an external payment gateway through Arizona State University called NelNet. Please use the NelNet forms to complete your tDAR payment.
@@ -19,6 +21,10 @@
             <p>
                 Once your payment has been <i>successfully completed</i> you will be able to start creating resources in tDAR.
             </p>
+
+            <h3>Invoice Information</h3>
+            <@invoicecommon.printSubtotal invoice />
+
         </div>
     </div>
 
