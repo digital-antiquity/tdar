@@ -68,10 +68,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
     }
 
     @Test
-    //ideal walkthrough of purchase process for logged-out-user process with no mistakes
-    //todo: create By.buttonWithLabel (finds submit input with matching value -or- button with matching text node)
-    //todo: create By.inputWithLabel  (finds element referred by for-attribute or child elements)
-    public void testLoginDownlaod() throws InterruptedException {
+    public void testLoginDownload() throws InterruptedException {
         // Starting page
         // go to the cart page and make sure we are logged out
         logout();
