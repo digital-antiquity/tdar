@@ -34,6 +34,7 @@ public class UserRegistration extends UserAuthData {
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
+    private String welcomeNewUserMessageKey = "welcome-user";
 
     public UserRegistration() {
         this(new AntiSpamHelper());
@@ -123,10 +124,15 @@ public class UserRegistration extends UserAuthData {
     }
 
     /**
-     * Override to provide custom registration welcome new user message keys for downloading vs purchasing vs contributing.
+     * Returns the message key used for the notification sent to the user upon successful registration
+     * @return
      */
-    public String getWelcomeNewUserMessageKey() {
-        return "welcome-user";
+    public final String getWelcomeNewUserMessageKey() {
+        return welcomeNewUserMessageKey;
+    }
+
+    public final void setWelcomeNewUserMessageKey(String key) {
+        welcomeNewUserMessageKey = key;
     }
 
     public String getPassword() {
