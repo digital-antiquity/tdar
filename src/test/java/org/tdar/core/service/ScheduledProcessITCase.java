@@ -96,12 +96,21 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     WeeklyFilestoreLoggingProcess fsp;
 
+    @Autowired
+    ScheduledProcessService scheduledProcessService;
+
+    @Test
+    @Rollback
+    public void testOptimize() {
+        searchIndexService.optimizeAll();
+    }
+    
     @Test
     @Rollback
     public void testVerifyProcess() {
         fsp.execute();
-        sendEmailProcess.setEmailService(emailService);
-        sendEmailProcess.execute();
+        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.runScheduledProcessesInQueue();
         SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));

@@ -154,7 +154,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String verifyFilestore() throws IOException {
-        scheduledProcessService.verifyTdarFiles();
+        scheduledProcessService.cronVerifyTdarFiles();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -163,7 +163,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String updateDois() throws IOException {
-        scheduledProcessService.updateDois();
+        scheduledProcessService.cronUpdateDois();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }

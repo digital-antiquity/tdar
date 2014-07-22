@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +60,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
 
+    TdarConfiguration config = TdarConfiguration.getInstance();
+
     @Autowired
     private transient SearchIndexService searchIndexService;
     @Autowired
@@ -82,7 +83,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Once a week, on Sundays, generate some static, cached stats for use by the admin area and general system
      */
     @Scheduled(cron = "12 0 0 * * SUN")
-    public void generateWeeklyStats() {
+    public void cronGenerateWeeklyStats() {
         queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
         queue(scheduledProcessMap.get(OccurranceStatisticsUpdateProcess.class));
         queue(scheduledProcessMap.get(CreatorAnalysisProcess.class));
@@ -92,7 +93,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Check that our Authentication System (Crowd /LDAP ) is actually running
      */
     @Scheduled(fixedDelay = FIVE_MIN_MS)
-    public void checkAuthService() {
+    public void cronCheckAuthService() {
         if (!authenticationService.getProvider().isConfigured()) {
             logger.error("Unconfigured provider: {}", authenticationService.getProvider());
         }
@@ -103,7 +104,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Tell Lucene to Optimize it's indexes
      */
     @Scheduled(cron = "16 0 0 * * SUN")
-    public void optimizeSearchIndexes() {
+    public void cronOptimizeSearchIndexes() {
         logger.info("Optimizing indexes");
         searchIndexService.optimizeAll();
     }
@@ -113,12 +114,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      */
     @Scheduled(fixedDelay = ONE_HOUR_MS)
-    public void clearPermissionsCache() {
+    public void cronClearPermissionsCache() {
         authenticationService.clearPermissionsCache();
     }
 
    @Scheduled(fixedDelay = FIVE_MIN_MS)
-   public void queueEmail() {
+   public void cronQueueEmail() {
        queue(scheduledProcessMap.get(SendEmailProcess.class));
    }
 
@@ -126,7 +127,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Generate DOIs
      */
     @Scheduled(cron = "16 15 0 * * *")
-    public void updateDois() {
+    public void cronUpdateDois() {
         logger.info("updating DOIs");
         queue(scheduledProcessMap.get(DoiProcess.class));
     }
@@ -135,7 +136,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Update the Sitemap.org sitemap files
      */
     @Scheduled(cron = "20 15 0 * * *")
-    public void updateSitemap() {
+    public void cronUpdateSitemap() {
         logger.info("updating Sitemaps");
         queue(scheduledProcessMap.get(SitemapGeneratorProcess.class));
     }
@@ -144,7 +145,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Update the Homepage's Featured Resources
      */
     @Scheduled(cron = "1 15 0 * * *")
-    public void updateHomepage() {
+    public void cronUpdateHomepage() {
         queue(scheduledProcessMap.get(RebuildHomepageCache.class));
     }
 
@@ -154,13 +155,8 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * @throws IOException
      */
     @Scheduled(cron = "50 0 0 * * SUN")
-    @Async
-    public void verifyTdarFiles() throws IOException {
+    public void cronVerifyTdarFiles() throws IOException {
         queue(scheduledProcessMap.get(WeeklyFilestoreLoggingProcess.class));
-    }
-
-    private TdarConfiguration getTdarConfiguration() {
-        return TdarConfiguration.getInstance();
     }
 
     /**
@@ -183,7 +179,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
                 logger.warn("skipping disabled process {}", process);
                 continue;
             }
-            if (getTdarConfiguration().shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
+            if (config.shouldRunPeriodicEvents() && process.isSingleRunProcess()) {
                 logger.debug("adding {} to the process queue {}", process.getDisplayName(), scheduledProcessQueue);
                 queue(process);
             }
@@ -208,10 +204,14 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      */
     @Scheduled(fixedDelay = 10000)
     @Transactional(readOnly = false, noRollbackFor = { TdarRecoverableRuntimeException.class })
-    public void runScheduledProcesses() {
+    public void cronScheduledProcesses() {
         if (CollectionUtils.isEmpty(scheduledProcessQueue)) {
             return;
         }
+        runScheduledProcessesInQueue();
+    }
+
+    protected void runScheduledProcessesInQueue() {
         logger.debug("processes in Queue: {}", scheduledProcessQueue);
         ScheduledProcess<Persistable> process = scheduledProcessQueue.iterator().next();
         // FIXME: merge UpgradeTask and ScheduledProcess at some point, so that UpgradeTask-s are
@@ -225,7 +225,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             scheduledProcessQueue.remove(process);
             return;
         }
-        if (genericService.getActiveSessionCount() > getTdarConfiguration().getSessionCountLimitForBackgroundTasks()) {
+        if (genericService.getActiveSessionCount() > config.getSessionCountLimitForBackgroundTasks()) {
             logger.debug("SKIPPING SCHEDULED PROCESSES, TOO MANY ACTIVE PROCESSES");
             return;
         }
@@ -316,7 +316,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * Every few minutes, trim the activity queue so it doesn't get too big
      */
     @Scheduled(fixedDelay = TWO_MIN_MS)
-    public void trimActivityQueue() {
+    public void cronTrimActivityQueue() {
         logger.trace("trimming activity queue");
         ActivityManager.getInstance().cleanup(System.currentTimeMillis() - TWO_MIN_MS);
         logger.trace("end trimming activity queue");
