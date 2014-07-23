@@ -1,0 +1,13 @@
+language: java
+before_script:
+    - psql -U postgres -c "create extension postgis"
+    - psql -c 'create user tdar CREATEDB;' -U postgres
+    - psql -c 'create database test_tdardata; create database test_tdarmetadata;' -U tdar
+
+install:
+    - mvn -Psetup-new-instance install -DskipTest=true 
+
+script:
+    - mvn -Ptest verify
+
+env: DB=postgres MAVEN_OPTS="-Xmx1536m -Xms1024m -XX:MaxPermSize=512m"
