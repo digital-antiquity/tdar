@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -416,7 +417,8 @@ public class Resource implements Persistable, JsonModel,
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
-    @JoinColumn(name = "resource_id")
+    @JoinColumn(name = "resource_id",foreignKey =@javax.persistence.ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+    //see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5, 
     @ForeignKey(name = "none")
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
