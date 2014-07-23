@@ -36,4 +36,8 @@ public enum PaymentMethod implements HasLabel, Localizable {
     private void setLabel(String label) {
         this.label = label;
     }
+    
+    public boolean isCreditCard() {
+        return this == CREDIT_CARD;
+    }
 }
