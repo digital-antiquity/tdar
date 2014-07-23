@@ -3,7 +3,8 @@ language: java
 before_install:
     - psql -U postgres -c "create extension postgis"
     - psql -c 'create user tdar CREATEDB;' -U postgres
-    - psql -c 'create database test_tdardata; create database test_tdarmetadata;' -U tdar -d template1
+    - psql -c 'create database test_tdardata' -U tdar -d template1
+    - psql -c 'create database test_tdarmetadata' -U tdar -d template1
 
 install:
     - mvn -Psetup-new-instance install -DskipTest=true 
