@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

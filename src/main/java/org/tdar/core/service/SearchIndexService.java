@@ -42,8 +42,6 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
 
-import com.hp.hpl.jena.sparql.pfunction.library.concat;
-
 @Service
 @Transactional(readOnly = true)
 public class SearchIndexService {

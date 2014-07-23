@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;

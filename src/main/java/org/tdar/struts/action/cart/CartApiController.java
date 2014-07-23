@@ -1,8 +1,8 @@
 package org.tdar.struts.action.cart;
 
-import static org.tdar.struts.action.TdarActionSupport.ERROR;
-import static org.tdar.struts.action.TdarActionSupport.INPUT;
-import static org.tdar.struts.action.TdarActionSupport.SUCCESS;
+import static com.opensymphony.xwork2.Action.ERROR;
+import static com.opensymphony.xwork2.Action.INPUT;
+import static com.opensymphony.xwork2.Action.SUCCESS;
 import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 import java.io.ByteArrayInputStream;

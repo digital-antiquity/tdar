@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 
 import com.opensymphony.xwork2.TextProvider;
 
