@@ -5,4 +5,6 @@ archaeological investigations. tDAR’s development and maintenance are governed
 an organization dedicated to ensuring the long-term preservation of irreplaceable archaeological data and to broadening
 the access to these data. 
 
+[![Build Status](https://travis-ci.org/digital-antiquity/tdar.svg?branch=develop)](https://travis-ci.org/digital-antiquity/tdar)
 For more information, please visit http://www.tdar.org
+
