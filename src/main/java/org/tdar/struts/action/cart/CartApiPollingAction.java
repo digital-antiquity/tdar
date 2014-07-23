@@ -1,8 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import static org.tdar.core.bean.Persistable.Base.isTransient;
-import static org.tdar.core.dao.external.auth.InternalTdarRights.EDIT_BILLING_INFO;
-
 import java.io.IOException;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,6 +7,8 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.TdarActionException;
 
 /**
@@ -24,7 +23,7 @@ public class CartApiPollingAction extends CartApiController {
 
     @Override
     public void validate() {
-        if (isTransient(getAuthenticatedUser())) {
+        if (Persistable.Base.isTransient(getAuthenticatedUser())) {
             addActionError(getText("cartApiPollingController.must_be_logged_in"));
         }
 
@@ -32,7 +31,7 @@ public class CartApiPollingAction extends CartApiController {
             addActionError(getText("cartApiPollingController.invoice_required"));
         }
 
-        if (userCannot(EDIT_BILLING_INFO)) {
+        if (userCannot(InternalTdarRights.EDIT_BILLING_INFO)) {
             if (!getAuthenticatedUser().equals(getInvoice().getOwner())) {
                 addActionError(getText("cartApiPollingController.invoice_lookup_not_authorized"));
             }

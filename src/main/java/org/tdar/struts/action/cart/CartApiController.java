@@ -1,14 +1,11 @@
 package org.tdar.struts.action.cart;
 
-import static com.opensymphony.xwork2.Action.ERROR;
-import static com.opensymphony.xwork2.Action.INPUT;
-import static com.opensymphony.xwork2.Action.SUCCESS;
-import static org.tdar.core.bean.Persistable.Base.isTransient;
-import static org.tdar.core.dao.external.auth.InternalTdarRights.EDIT_BILLING_INFO;
+import static org.tdar.struts.action.TdarActionSupport.ERROR;
+import static org.tdar.struts.action.TdarActionSupport.INPUT;
+import static org.tdar.struts.action.TdarActionSupport.SUCCESS;
 import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +19,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.XmlService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.PricingOption;
 
 

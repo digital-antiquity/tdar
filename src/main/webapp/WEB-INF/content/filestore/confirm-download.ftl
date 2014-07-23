@@ -27,6 +27,7 @@
 <#if shouldAutoDownload>
 <script>
     $(function () {
+    alert("HI");
         TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersion.id?c}');
     });
 </script>

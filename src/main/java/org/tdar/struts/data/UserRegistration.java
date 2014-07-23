@@ -1,11 +1,11 @@
 package org.tdar.struts.data;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
@@ -14,7 +14,6 @@ import org.tdar.core.service.external.AuthenticationService;
 
 import com.opensymphony.xwork2.TextProvider;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -75,22 +74,22 @@ public class UserRegistration extends UserAuthData {
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             getLogger().debug("contributor reason too long");
-            errors.add(String.format(textProvider.getText("userAccountController.could_not_authenticate_at_this_time"), "Contributor Reason",
-                    MAXLENGTH_CONTRIBUTOR));
+            errors.add(String.format(textProvider.getText("userAccountController.error_maxlength",
+                      textProvider.getText("userRegistration.contributor_reason"), Arrays.asList(MAXLENGTH_CONTRIBUTOR))));
         }
 
         // firstName required
-        if (isBlank(getPerson().getFirstName())) {
+        if (StringUtils.isBlank(getPerson().getFirstName())) {
             errors.add(textProvider.getText("userAccountController.enter_first_name"));
         }
 
         // lastName required
-        if (isBlank(getPerson().getLastName())) {
+        if (StringUtils.isBlank(getPerson().getLastName())) {
             errors.add(textProvider.getText("userAccountController.enter_last_name"));
         }
 
         // username required
-        if (isBlank(getPerson().getUsername())) {
+        if (StringUtils.isBlank(getPerson().getUsername())) {
             errors.add(textProvider.getText("userAccountController.error_missing_username"));
 
             // username must not be claimed
@@ -103,7 +102,7 @@ public class UserRegistration extends UserAuthData {
         }
 
         // confirmation email required
-        if (isBlank(confirmEmail)) {
+        if (StringUtils.isBlank(confirmEmail)) {
             errors.add(textProvider.getText("userAccountController.error_confirm_email"));
 
             // email + confirmation email must match
@@ -111,9 +110,9 @@ public class UserRegistration extends UserAuthData {
             errors.add(textProvider.getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + password-confirmation
-        if (isBlank(password)) {
+        if (StringUtils.isBlank(password)) {
             errors.add(textProvider.getText("userAccountController.error_choose_password"));
-        } else if (isBlank(confirmPassword)) {
+        } else if (StringUtils.isBlank(confirmPassword)) {
             errors.add(textProvider.getText("userAccountController.error_confirm_password"));
         } else if (!new EqualsBuilder().append(getPassword(), getConfirmPassword()).isEquals()) {
             errors.add(textProvider.getText("userAccountController.error_passwords_dont_match"));

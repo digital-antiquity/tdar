@@ -34,8 +34,8 @@ import net.sf.json.JSONSerializer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -288,7 +288,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             try {
                 JSONObject.fromObject(getPageCode());
             } catch (Exception e) {
-                Assert.fail(String.format("%s : %s: %s", e.getMessage(), ExceptionUtils.getFullStackTrace(e), getPageCode()));
+                Assert.fail(String.format("%s : %s: %s", e.getMessage(), ExceptionUtils.getRootCauseStackTrace(e), getPageCode()));
             }
         }
         if (internalPage.getWebResponse().getContentType().toLowerCase().contains("html")) {
