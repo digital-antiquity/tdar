@@ -93,7 +93,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Institution findInstitutionByName(String name) {
-        return institutionDao.findByName(name);
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        return institutionDao.findByName(name.trim());
     }
 
     /**
@@ -126,10 +129,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Person findByEmail(String email) {
-        if ((email == null) || email.isEmpty()) {
+        if (StringUtils.isBlank(email)) {
             return null;
         }
-        return getDao().findByEmail(email);
+        return getDao().findByEmail(email.trim());
     }
 
     /**
@@ -140,10 +143,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Person findByUsername(String username) {
-        if ((username == null) || username.isEmpty()) {
+        if (StringUtils.isBlank(username)) {
             return null;
         }
-        return getDao().findByUsername(username);
+        return getDao().findByUsername(username.trim());
     }
 
     /**
