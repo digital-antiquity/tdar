@@ -56,7 +56,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(DOWNLOAD_REGISTRATION + ".h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitFormWithoutErrorCheck("submitAction");
         checkForFreemarkerExceptions();
-        assertTextPresent(getText("userAccountController.email_invalid"));
+        assertTextPresent("find a user with this email");
         assertTextPresent("You must accept the Terms of Service");
         assertTextNotPresent("Could not authenticate at this time");
         
