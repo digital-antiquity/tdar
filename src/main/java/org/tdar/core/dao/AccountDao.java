@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,8 +33,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 /**
  * $Id$
  * 
- * Provides DAO access for Person entities, including a variety of methods for
- * looking up a Person in tDAR.
+ * DAO access for Accounts
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -50,11 +50,9 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     @SuppressWarnings("unchecked")
     public Set<Account> findAccountsForUser(Person user, Status... statuses) {
         if (ArrayUtils.isEmpty(statuses)) {
-            statuses = new Status[2];
-            statuses[0] = Status.ACTIVE;
-            statuses[1] = Status.FLAGGED_ACCOUNT_BALANCE;
+            statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
-        Set<Account> accountGroups = new HashSet<Account>();
+        Set<Account> accountGroups = new HashSet<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameterList("statuses", statuses);
@@ -103,7 +101,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
         Query query = getCurrentSession().createSQLQuery(sql);
 
-        Map<Long, Account> accountIdMap = new HashMap<Long, Account>();
+        Map<Long, Account> accountIdMap = new HashMap<>();
         for (Object objs : query.list()) {
             Object[] obj = (Object[]) objs;
             Long resourceId = ((BigInteger) obj[0]).longValue();
@@ -129,8 +127,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public void updateAccountInfo(Account account, ResourceEvaluator re) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
-        @SuppressWarnings("unchecked")
-        List<Status> statuses = new ArrayList<Status>(CollectionUtils.disjunction(Arrays.asList(Status.values()), re.getUncountedResourceStatuses()));
+        List<Status> statuses = new ArrayList<>(CollectionUtils.disjunction(Arrays.asList(Status.values()), re.getUncountedResourceStatuses()));
         query.setParameterList("statuses", statuses);
         Long totalFiles = 0L;
         Long totalSpaceInBytes = 0L;
@@ -186,7 +183,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
                 throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }
         }
-        if (!invoice.getCoupon().getId().equals(coupon.getId())) {
+        if (! Objects.equals(invoice.getCoupon().getId(), coupon.getId())) {
             throw new TdarRecoverableRuntimeException("accountDao.coupon_assigned_wrong");
         }
     }

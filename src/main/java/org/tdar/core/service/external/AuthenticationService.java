@@ -60,7 +60,7 @@ public class AuthenticationService {
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
      * track these permissions for short periods of time. Logging out and logging in should reset this
      */
-    private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<>();
+    private final WeakHashMap<TdarUser, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
@@ -81,7 +81,7 @@ public class AuthenticationService {
 
     @Transactional(readOnly = true)
     public TdarUser findByUsername(String username) {
-        if ((username == null) || username.isEmpty()) {
+        if (StringUtils.isEmpty(username)) {
             return null;
         }
         return personDao.findByUsername(username);
@@ -159,32 +159,32 @@ public class AuthenticationService {
             throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
         }
 
-        TdarUser person = personDao.findByUsername(userLogin.getLoginUsername());
-        if (person == null) {
+        TdarUser tdarUser = personDao.findByUsername(userLogin.getLoginUsername());
+        if (tdarUser == null) {
             // FIXME: person exists in Crowd but not in tDAR..
             logger.debug("Person successfully authenticated by authentication service but not present in site database: {}", userLogin.getLoginUsername());
-            person = new TdarUser();
-            person.setUsername(userLogin.getLoginUsername());
+            tdarUser = new TdarUser();
+            tdarUser.setUsername(userLogin.getLoginUsername());
             // how to pass along authentication information..?
             // username was in Crowd but not in tDAR? Redirect them to the account creation page
             return AuthenticationStatus.NEW;
         }
 
-        if (!person.isActive()) {
+        if (!tdarUser.isActive()) {
             throw new TdarRecoverableRuntimeException("auth.cannot.deleted");
         }
 
         // enable us to force group cache to be cleared
-        clearPermissionsCache(person);
+        clearPermissionsCache(tdarUser);
 
-        if (!isMember(person, TdarGroup.TDAR_USERS)) {
+        if (!isMember(tdarUser, TdarGroup.TDAR_USERS)) {
             throw new TdarRecoverableRuntimeException("auth.cannot.notmember");
         }
 
-        logger.debug(String.format("%s (%s) logged in from %s using: %s", userLogin.getLoginUsername(), person.getEmail(), request.getRemoteAddr(),
+        logger.debug(String.format("%s (%s) logged in from %s using: %s", userLogin.getLoginUsername(), tdarUser.getEmail(), request.getRemoteAddr(),
                 request.getHeader("User-Agent")));
-        createAuthenticationToken(person, sessionData);
-        personDao.registerLogin(person);
+        createAuthenticationToken(tdarUser, sessionData);
+        personDao.registerLogin(tdarUser);
         return AuthenticationStatus.AUTHENTICATED;
     }
 
@@ -202,11 +202,11 @@ public class AuthenticationService {
      * @link Person
      * and then updates the cache (HashMap)
      */
-    synchronized boolean checkAndUpdateCache(TdarUser person, TdarGroup requestedPermissionsGroup) {
-        TdarGroup greatestPermissionGroup = groupMembershipCache.get(person);
+    synchronized boolean checkAndUpdateCache(TdarUser tdarUser, TdarGroup requestedPermissionsGroup) {
+        TdarGroup greatestPermissionGroup = groupMembershipCache.get(tdarUser);
         if (greatestPermissionGroup == null) {
-            greatestPermissionGroup = findGroupWithGreatestPermissions(person);
-            groupMembershipCache.put(person, greatestPermissionGroup);
+            greatestPermissionGroup = findGroupWithGreatestPermissions(tdarUser);
+            groupMembershipCache.put(tdarUser, greatestPermissionGroup);
         }
         return greatestPermissionGroup.hasGreaterPermissions(requestedPermissionsGroup);
     }
@@ -288,9 +288,9 @@ public class AuthenticationService {
     /*
      * Removes a specific @link Person from the Permissions cache (e.g. when they log out).
      */
-    public synchronized void clearPermissionsCache(Person person) {
-        logger.debug("Clearing group membership cache of entry for : {}", person);
-        groupMembershipCache.remove(person);
+    public synchronized void clearPermissionsCache(TdarUser tdarUser) {
+        logger.debug("Clearing group membership cache of entry for : {}", tdarUser);
+        groupMembershipCache.remove(tdarUser);
     }
 
     /**

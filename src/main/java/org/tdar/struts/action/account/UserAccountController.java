@@ -151,16 +151,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         if (registration == null || registration.getPerson() == null || !isPostRequest()) {
             return INPUT;
         }
-        AuthenticationResult result = null;
-
-        //If user indicates they want to be a contributor, show them the 'contributor' flavor of the new-user welcome message.
-        if(registration.isRequestingContributorAccess()) {
-            registration.setWelcomeNewUserMessageKey("welcome-user-contributor");
-        }
-
         try {
-            result = authenticationService.addAndAuthenticateUser(
-                    registration, getServletRequest(), getServletResponse(), getSessionData());
+            AuthenticationResult result = authenticationService.addAndAuthenticateUser(registration, getServletRequest(), getServletResponse(), getSessionData());
             if (result.getType().isValid()) {
                 registration.setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));

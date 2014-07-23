@@ -27,8 +27,9 @@ import org.tdar.core.dao.TdarNamedQueries;
 /**
  * $Id$
  * 
- * Provides DAO access for Person entities, including a variety of methods for
- * looking up a Person in tDAR.
+ * Provides DAO access for Person entities.
+ * 
+ * FIXME: replace with TdarUserDao?
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -65,14 +66,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
     }
 
-    public TdarUser findUserByEmail(final String username) {
-        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("email", username.toLowerCase())).uniqueResult();
+    public TdarUser findUserByEmail(final String email) {
+        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("email", email.toLowerCase())).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
     public Set<Person> findByLastName(String lastName) {
         Criteria criteria = getCriteria().add(Restrictions.eq("lastName", lastName));
-        return new HashSet<Person>(criteria.list());
+        return new HashSet<>(criteria.list());
     }
 
     // find people with the same firstName, lastName, or institution (if specified)
@@ -80,7 +81,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Set<Person> findByPerson(Person person) {
         // if the email address is set then all other fields are moot
         if (StringUtils.isNotBlank(person.getEmail())) {
-            Set<Person> hs = new HashSet<Person>();
+            Set<Person> hs = new HashSet<>();
             hs.add(findByEmail(person.getEmail()));
             return hs;
         }
@@ -132,7 +133,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Criteria criteria = getCriteria();
         criteria.add(Restrictions.eq("lastName", lastName));
         criteria.add(Restrictions.eq("firstName", firstName));
-        return new HashSet<Person>(criteria.list());
+        return new HashSet<>(criteria.list());
     }
 
     @Override
@@ -157,7 +158,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     @SuppressWarnings("unchecked")
     public Set<Long> findAllContributorIds() {
-        Set<Long> ids = new HashSet<Long>();
+        Set<Long> ids = new HashSet<>();
         for (Number obj_ : (List<Number>) getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
             ids.add(obj_.longValue());
         }

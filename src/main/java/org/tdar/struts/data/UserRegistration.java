@@ -1,19 +1,16 @@
 package org.tdar.struts.data;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.external.AuthenticationService;
 
 import com.opensymphony.xwork2.TextProvider;
-
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -32,7 +29,6 @@ public class UserRegistration extends UserAuthData {
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
     private UserAffiliation affiliation;
-    private String welcomeNewUserMessageKey = "welcome-user";
 
     public UserRegistration() {
         this(new AntiSpamHelper());
@@ -74,7 +70,7 @@ public class UserRegistration extends UserAuthData {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             getLogger().debug("contributor reason too long");
             errors.add(String.format(textProvider.getText("userAccountController.error_maxlength",
-                      textProvider.getText("userRegistration.contributor_reason"), Arrays.asList(MAXLENGTH_CONTRIBUTOR))));
+                    textProvider.getText("userRegistration.contributor_reason"), Arrays.asList(MAXLENGTH_CONTRIBUTOR))));
         }
 
         // firstName required
@@ -105,7 +101,7 @@ public class UserRegistration extends UserAuthData {
             errors.add(textProvider.getText("userAccountController.error_confirm_email"));
 
             // email + confirmation email must match
-        } else if (!new EqualsBuilder().append(getPerson().getEmail(), getConfirmEmail()).isEquals()) {
+        } else if (! StringUtils.equals(getPerson().getEmail(), getConfirmEmail())) {
             errors.add(textProvider.getText("userAccountController.error_emails_dont_match"));
         }
         // validate password + password-confirmation
@@ -113,7 +109,7 @@ public class UserRegistration extends UserAuthData {
             errors.add(textProvider.getText("userAccountController.error_choose_password"));
         } else if (StringUtils.isBlank(confirmPassword)) {
             errors.add(textProvider.getText("userAccountController.error_confirm_password"));
-        } else if (!new EqualsBuilder().append(getPassword(), getConfirmPassword()).isEquals()) {
+        } else if (!StringUtils.equals(getPassword(), getConfirmPassword())) {
             errors.add(textProvider.getText("userAccountController.error_passwords_dont_match"));
         }
 
@@ -123,14 +119,9 @@ public class UserRegistration extends UserAuthData {
 
     /**
      * Returns the message key used for the notification sent to the user upon successful registration
-     * @return
      */
     public final String getWelcomeNewUserMessageKey() {
-        return welcomeNewUserMessageKey;
-    }
-
-    public final void setWelcomeNewUserMessageKey(String key) {
-        welcomeNewUserMessageKey = key;
+        return isRequestingContributorAccess() ? "welcome-user-contributor" : "welcome-user";
     }
 
     public String getPassword() {

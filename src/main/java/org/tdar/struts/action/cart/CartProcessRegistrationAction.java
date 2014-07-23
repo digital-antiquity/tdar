@@ -63,7 +63,6 @@ public class CartProcessRegistrationAction extends AbstractCartController {
     @PostOnly
     public String processRegistration() {
         getLogger().debug("processing registration for person {} {}", registrationInfo.getPerson(), registrationInfo.isRequestingContributorAccess());
-        registrationInfo.setWelcomeNewUserMessageKey("welcome-user-contributor");
         AuthenticationResult result = authenticationService.addAndAuthenticateUser(
                 registrationInfo, getServletRequest(), getServletResponse(), getSessionData());
         if (result.getType().isValid()) {

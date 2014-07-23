@@ -53,19 +53,23 @@ import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 
+/**
+ * FIXME: getting too big, needs refactoring. also rename to BillingService?
+ * 
+ */
 @Transactional(readOnly = true)
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
     @Autowired
     private transient GenericDao genericDao;
-    
+
     @Autowired
     private AuthorizationService authorizationService;
 
     @Autowired
     private transient EmailService emailService;
-    
+
     @Autowired
     private transient XmlService xmlService;
 
@@ -595,9 +599,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return true;
         }
         logger.trace("mode: {}", mode);
-        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles(), space,
-                files, resource.getId(), resource.getStatus() };
-        logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})", log);
+        logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})",
+                helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(),
+                helper.getAvailableNumberOfFiles(), space, files, resource.getId(), resource.getStatus());
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && ((helper.getAvailableSpaceInBytes() - space) < 0)) {
             logger.debug("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
@@ -941,7 +945,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return lowestByMB;
     }
 
-
     /**
      * Confirm that @link Coupon can be used (Not assigned, not expired)
      * 
@@ -952,7 +955,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         getDao().checkCouponStillValidForCheckout(coupon, invoice);
     }
-    
+
     /**
      * Apply a @link Coupon to a @link Invoice, if the coupon is for more than an invoice, then we bump the cost of the invoice to match the value of the coupon
      * code
@@ -1070,7 +1073,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         // redeem coupon code, we do this before calculating costs because the redemption may change the files and space
         redeemCode(invoice, invoice.getOwner(), code);
-        List<BillingItem> items = new ArrayList<BillingItem>();
+        List<BillingItem> items = new ArrayList<>();
         if (pricingType != null) {
             items = calculateActivities(invoice, pricingType).getItems();
         } else {
