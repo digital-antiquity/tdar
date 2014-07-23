@@ -65,7 +65,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
     public void validate() {
         //TODO:check to see if invoice is modifiable
         if(invoice == null) {
-            addActionError("Invoice not found.");
+            addActionError(getText("cartExternalPaymentResponseAction.invoice_not_found"));
         }
     }
 

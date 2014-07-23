@@ -56,12 +56,13 @@ public class LocalizationTestCase {
         logger.debug(exceptionRegex);
         Pattern pattern = Pattern.compile(("^.+((get(Text|Message))|" + exceptionRegex + ")\\(\\s*\"([^\"]+)\".+"));
         Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main/java"), new String[] { "java" }, true);
+        Iterator<File> iterateFiles2 = FileUtils.iterateFiles(new File("src/main/java"), new String[] { "java" }, true);
         Pattern pattern2 = Pattern.compile("^.+(add(ActionError|ActionMessage)(\\w*))\\(\\s*\\\"([^\"]+)\\\"\\.*\\).+");
         //FIXME: add support for addFieldError
         List<String> results = new ArrayList<>();
         while (iterateFiles.hasNext()) {
             handleFile(pattern, iterateFiles.next());
-            results.addAll(handleInvalidUse(pattern2, iterateFiles.next()));
+            results.addAll(handleInvalidUse(pattern2, iterateFiles2.next()));
         }
 
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {

@@ -52,7 +52,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     @Override
     public void validate() {
         if (invoice == null) {
-            addActionError("No invoice found.");
+            addActionError(getText("viewInvoiceAction.not_found"));
             inputResultName = BAD_REQUEST;
             return;
         }
@@ -61,7 +61,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
             return;
         }
         if (authorizationService.cannot(InternalTdarRights.VIEW_BILLING_INFO, user)) {
-            addActionError("You do not have permission to view this invoice.");
+            addActionError(getText("viewInvoiceAction.not_allowed"));
             inputResultName = FORBIDDEN;
         }
     }
