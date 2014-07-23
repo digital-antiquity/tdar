@@ -57,7 +57,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         UserRegistration reg = createUserRegistration("bob");
         fillOutRegistration(reg);
         // wait for spam check
-        Thread.sleep(4000);
+        Thread.sleep(3000);
         submitForm("#registrationForm .submitButton");
 
 
@@ -81,7 +81,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
-        Thread.sleep(4000);
+        Thread.sleep(3000);
         submitForm("#loginForm [type=submit]");
 
         waitFor(ExpectedConditions.titleContains("Download: "));
