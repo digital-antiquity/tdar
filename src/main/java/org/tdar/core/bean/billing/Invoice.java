@@ -471,10 +471,10 @@ public class Invoice extends Base implements Updatable {
 
     @Transient
     public boolean isProxy() {
-        if (Persistable.Base.isNullOrTransient(owner) || Persistable.Base.isNullOrTransient(owner)) {
+        if (Persistable.Base.isNullOrTransient(owner) || Persistable.Base.isNullOrTransient(transactedBy)) {
             return false;
         }
-        return ObjectUtils.notEqual(owner, transactedBy);
+        return ObjectUtils.notEqual(owner.getId(), transactedBy.getId());
     }
 
     @Override

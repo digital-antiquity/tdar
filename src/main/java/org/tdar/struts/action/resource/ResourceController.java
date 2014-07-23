@@ -1,8 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -35,7 +32,7 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public static final String BILLING = "billing";
 
-    private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
+//    private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
 
     @Autowired
     private transient AccountService accountService;
