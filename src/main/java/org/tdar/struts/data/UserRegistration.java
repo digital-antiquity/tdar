@@ -23,7 +23,6 @@ public class UserRegistration extends UserAuthData {
     private static final long serialVersionUID = -378621821868811122L;
     private static final int MAXLENGTH_CONTRIBUTOR = FieldLength.FIELD_LENGTH_512;
 
-    @SuppressWarnings("unchecked")
     private List<UserAffiliation> affiliations = Arrays.asList(UserAffiliation.values());
     private String password;
     private String confirmPassword;
