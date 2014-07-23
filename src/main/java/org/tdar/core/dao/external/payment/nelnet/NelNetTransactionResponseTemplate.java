@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -135,7 +136,8 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
                 new Comparator<NelnetTransactionItemResponse>() {
                     @Override
                     public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
-                        return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                        //NOTE: watch change in objectUtils compare and numberUtils
+                        return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
                     }
                 });
 

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -323,7 +323,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected void addActionErrorWithException(String message, Throwable exception) {
-        String trace = ExceptionUtils.getFullStackTrace(exception);
+        String trace = ExceptionUtils.getStackTrace(exception);
 
         getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception), exception, trace });
         if (exception instanceof TdarActionException) {

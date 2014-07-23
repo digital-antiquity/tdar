@@ -2,8 +2,8 @@ package org.tdar.search.query.part;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
 
     @Override
     public String getDescriptionHtml(TextProvider provider) {
-        return StringEscapeUtils.escapeHtml(getDescription(provider));
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

@@ -10,7 +10,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Norms;

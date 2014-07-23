@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * Java exceptions are serializable: in the traditional sense of byte flattening... However, when attempting to transfer them via XML the lack of a no
@@ -32,7 +32,7 @@ public class ExceptionWrapper implements Serializable {
 
     public ExceptionWrapper(String string, Throwable e) {
         this.message = string;
-        this.stackTrace = ExceptionUtils.getFullStackTrace(e);
+        this.stackTrace = ExceptionUtils.getStackTrace(e);
         this.code = ExceptionWrapper.convertExceptionToCode(stackTrace);
     }
 
@@ -75,7 +75,7 @@ public class ExceptionWrapper implements Serializable {
         if (t == null) {
             return CODE_NULL_STACKTRACE;
         }
-        String trace = ExceptionUtils.getFullStackTrace(t);
+        String trace = ExceptionUtils.getStackTrace(t);
         String code = Integer.toHexString(trace.hashCode());
         return code.toUpperCase();
     }

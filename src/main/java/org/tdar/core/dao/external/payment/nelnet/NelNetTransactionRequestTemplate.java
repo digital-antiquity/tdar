@@ -11,8 +11,9 @@ import java.util.List;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -126,7 +127,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         Collections.sort(list, new Comparator<NelnetTransactionItem>() {
             @Override
             public int compare(NelnetTransactionItem o1, NelnetTransactionItem o2) {
-                return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
             }
         });
 

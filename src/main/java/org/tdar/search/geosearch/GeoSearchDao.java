@@ -14,10 +14,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -157,7 +157,7 @@ public class GeoSearchDao {
                 default:
                     break;
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException("Fips Search not implemented");
         }
 
         public String getLimitColumn() {
@@ -171,7 +171,7 @@ public class GeoSearchDao {
                 default:
                     break;
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException("Fips search not implemented");
         }
 
         public String getLabelColumn() {

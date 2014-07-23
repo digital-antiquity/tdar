@@ -1,6 +1,6 @@
 package org.tdar.struts.data;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Validatable;
 import org.tdar.utils.Pair;
 

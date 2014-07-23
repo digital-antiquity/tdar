@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.antlr.runtime.tree.Tree;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;

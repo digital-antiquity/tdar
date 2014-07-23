@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.ValidationEvent;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class JaxbValidationEvent implements Serializable {
 
@@ -53,7 +53,7 @@ public class JaxbValidationEvent implements Serializable {
 
     @Override
     public String toString() {
-        String err = ExceptionUtils.getFullStackTrace(event.getLinkedException());
+        String err = ExceptionUtils.getStackTrace(event.getLinkedException());
 
         return String.format("[%s] %s line: %s column: %s  { %s } %s ", getSeverity(), event.getMessage(), event.getLocator().getLineNumber(), event
                 .getLocator().getColumnNumber(), line, err);

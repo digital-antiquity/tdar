@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;

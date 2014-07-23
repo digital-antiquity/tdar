@@ -2,7 +2,7 @@ package org.tdar.core.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
