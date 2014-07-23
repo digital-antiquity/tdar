@@ -27,11 +27,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
-                fns.add(pers.getFirstName());
+                fns.add(pers.getFirstName().trim());
                 hasName = true;
             }
             if (StringUtils.isNotBlank(pers.getLastName())) {
-                lns.add(pers.getLastName());
+                lns.add(pers.getLastName().trim());
                 hasName = true;
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
@@ -52,10 +52,10 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             }
 
             if (StringUtils.isNotBlank(pers.getEmail())) {
-                ems.add(pers.getEmail());
+                ems.add(pers.getEmail().trim());
             }
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
-                String institution = pers.getInstitutionName();
+                String institution = pers.getInstitutionName().trim();
                 institution = PhraseFormatter.ESCAPED.format(institution);
                 // institution = PhraseFormatter.WILDCARD.format(institution);
                 if (institution.contains(" ")) {
