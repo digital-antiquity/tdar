@@ -49,7 +49,7 @@ public class DownloadController extends AbstractDownloadController implements Do
         getSessionData().clearPassthroughParameters();
 
         String status = execute();
-        if (status != SUCCESS) {
+        if (!status.equalsIgnoreCase(SUCCESS)) {
             return status;
         }
         return CONFIRM;

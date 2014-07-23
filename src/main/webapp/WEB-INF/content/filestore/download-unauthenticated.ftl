@@ -28,13 +28,13 @@
 
         <p>We ask that you provide some information and affirm that you will abide by the tDAR User Agreement, which simply states that you <em>(1)</em> will not use any of the information that you obtain from tDAR in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download.</p>
         <ul class="inline">
-            <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.visible)!false) >
+            <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.viewable)!false) >
                 <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
                     title="${informationResourceFileVersion.filename?html}" alt="${informationResourceFileVersion.filename?html}" /></li>
             <#else>
                 <#list (informationResource.informationResourceFiles)! as irFile>
                     <li>
-                    <#if (irFile.latestThumbnail)?has_content && irFile.latestThumbnail.visible >
+                    <#if (irFile.latestThumbnail)?has_content && irFile.latestThumbnail.viewable >
                     <img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${irFile.latestThumbnail.id?c}" />" 
                     title="${irFile.filename!""?html}" alt="${irFile.filename?html}" />
                     <#else>
