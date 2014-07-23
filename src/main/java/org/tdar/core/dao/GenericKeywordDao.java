@@ -56,7 +56,7 @@ public class GenericKeywordDao extends GenericDao {
     @Transactional
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
         // FIXME: turn this into a generic named query?
-        return findByPropertyIgnoreCase(cls, LABEL, label);
+        return findByPropertyIgnoreCase(cls, LABEL, StringUtils.trim(label));
     }
 
     @Transactional
