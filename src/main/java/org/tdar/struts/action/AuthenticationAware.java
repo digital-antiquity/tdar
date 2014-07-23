@@ -44,6 +44,10 @@ public interface AuthenticationAware extends SessionDataAware {
 
     boolean isBillingManager();
 
+    /**
+     * FIXME: move to top level abstract class or partial interface.
+     *
+     */
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
         private static final long serialVersionUID = -7792905441259237588L;
@@ -244,6 +248,10 @@ public interface AuthenticationAware extends SessionDataAware {
         @Override
         public boolean isBillingManager() {
             return authorizationService.isBillingManager(getAuthenticatedUser());
+        }
+        
+        public AuthorizationService getAuthorizationService() {
+            return authorizationService;
         }
 
     }

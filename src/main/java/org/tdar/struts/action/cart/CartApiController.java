@@ -1,8 +1,6 @@
 package org.tdar.struts.action.cart;
 
-import static com.opensymphony.xwork2.Action.ERROR;
-import static com.opensymphony.xwork2.Action.INPUT;
-import static com.opensymphony.xwork2.Action.SUCCESS;
+import static com.opensymphony.xwork2.Action.*;
 import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 import java.io.ByteArrayInputStream;
@@ -10,14 +8,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.opensymphony.xwork2.Preparable;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.InvoiceService;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.PricingOption;
+
+import com.opensymphony.xwork2.Preparable;
 
 
 /**
@@ -45,7 +48,7 @@ public class CartApiController extends AbstractCartController implements Prepara
     XmlService xmlService;
 
     @Autowired
-    private transient InvoiceService cartService;
+    private transient AccountService accountService;
 
     /**
      * calculate estimated price when user specifies custom files/mb
@@ -54,9 +57,9 @@ public class CartApiController extends AbstractCartController implements Prepara
     @Action("api")
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-            addPricingOption(cartService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-            addPricingOption(cartService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+            addPricingOption(accountService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
         setResultJson(getPricingOptions());
         return SUCCESS;

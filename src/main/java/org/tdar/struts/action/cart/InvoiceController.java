@@ -23,7 +23,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.AccountService;
-import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.GetOnly;
@@ -49,7 +48,7 @@ public class InvoiceController extends AbstractCartController {
 
     private List<Long> extraItemIds = new ArrayList<>();
     private List<Integer> extraItemQuantities = new ArrayList<>();
-    
+
     private String code;
 
     private PricingType pricingType = null;
@@ -57,9 +56,6 @@ public class InvoiceController extends AbstractCartController {
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
-
-    @Autowired
-    private transient InvoiceService cartService;
 
     @Autowired
     private transient AccountService accountService;
@@ -82,7 +78,7 @@ public class InvoiceController extends AbstractCartController {
     public String execute() {
         return SUCCESS;
     }
-    
+
     /**
      * process new/updated invoice request
      * 
@@ -104,8 +100,8 @@ public class InvoiceController extends AbstractCartController {
             getInvoice().setTransactedBy(getAuthenticatedUser());
         }
         try {
-            Collection<BillingItem> extraBillingItems = cartService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
-            setInvoice(cartService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType,
+            Collection<BillingItem> extraBillingItems = accountService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
+            setInvoice(accountService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType,
                     accountId));
         } catch (Exception trex) {
             addActionError(trex.getLocalizedMessage());
@@ -212,7 +208,7 @@ public class InvoiceController extends AbstractCartController {
 
     void setupActivities() {
         // we only care about the production+active activities
-        getActivities().addAll(cartService.getActiveBillingActivities());
+        getActivities().addAll(accountService.getActiveBillingActivities());
     }
 
     /**
@@ -221,7 +217,7 @@ public class InvoiceController extends AbstractCartController {
      */
     @Override
     public void validate() {
-        if (! isValidInvoice()) {
+        if (!isValidInvoice()) {
             return;
         }
         // rule: invoice must not be finalized

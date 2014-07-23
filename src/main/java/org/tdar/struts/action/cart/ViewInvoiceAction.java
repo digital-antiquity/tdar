@@ -10,8 +10,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.InvoiceService;
-import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -32,12 +31,9 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     private Invoice invoice;
     
     private String inputResultName;
-    
-    @Autowired
-    private AuthorizationService authorizationService;
 
     @Autowired
-    private InvoiceService invoiceService;
+    private AccountService accountService;
 
     private Account account;
     
@@ -45,7 +41,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     public void prepare() {
         invoice = getGenericService().find(Invoice.class, id);
         if (invoice != null) {
-            setAccount(invoiceService.getAccountForInvoice(invoice));
+            setAccount(accountService.getAccountForInvoice(invoice));
         }
     }
     
@@ -60,7 +56,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
         if (user.equals(getInvoice().getOwner())) {
             return;
         }
-        if (authorizationService.cannot(InternalTdarRights.VIEW_BILLING_INFO, user)) {
+        if (getAuthorizationService().cannot(InternalTdarRights.VIEW_BILLING_INFO, user)) {
             addActionError(getText("viewInvoiceAction.not_allowed"));
             inputResultName = FORBIDDEN;
         }

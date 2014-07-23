@@ -25,7 +25,6 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.InvoiceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 
@@ -51,9 +50,6 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
 
     @Autowired
     private transient AccountService accountService;
-
-    @Autowired
-    private transient InvoiceService invoiceService;
 
     @Autowired
     private transient EntityService entityService;
@@ -152,9 +148,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
 
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
-            PricingOption option = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
-            PricingOption option2 = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
-            PricingOption option3 = invoiceService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
+            PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
+            PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+            PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
             logger.info("****** RE : " + re.toString());
             logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), properName, option, option2, option3, re.getFilesUsed(),
                     re.getResourcesUsed(),

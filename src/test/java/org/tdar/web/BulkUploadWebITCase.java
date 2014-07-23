@@ -6,10 +6,7 @@
  */
 package org.tdar.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -25,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
@@ -35,7 +31,6 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
@@ -45,9 +40,6 @@ import org.tdar.junit.RunWithTdarConfiguration;
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
-
-    @Autowired
-    InvoiceService invoiceService;
 
     @Test
     public void testInvalidBulkUpload() {

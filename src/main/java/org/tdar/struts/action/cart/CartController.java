@@ -1,5 +1,7 @@
 package org.tdar.struts.action.cart;
 
+import static org.tdar.URLConstants.CART_ADD;
+
 import java.net.URL;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -17,13 +19,11 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.service.InvoiceService;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-
-import static org.tdar.URLConstants.CART_ADD;
 
 /**
  * Responsible for processing payments and viewing finalized invoices.
@@ -51,7 +51,7 @@ public class CartController extends AbstractCartController {
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
-    private transient InvoiceService cartService;
+    private transient AccountService accountService;
 
     @Autowired
     private transient AuthorizationService authService;
@@ -131,7 +131,7 @@ public class CartController extends AbstractCartController {
         validateNotNull(getInvoice(), "cartController.invoice_expected_but_not_found");
         if (getInvoice() != null) {
             paymentMethod = getInvoice().getPaymentMethod();
-            account = cartService.getAccountForInvoice(getInvoice());
+            account = accountService.getAccountForInvoice(getInvoice());
         }
     }
 

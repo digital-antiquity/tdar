@@ -360,6 +360,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addFieldError(fieldName, errorMessage);
     }
     
+    // FIXME: shouldn't we just getText() every message here or add addActionErrorMessageKey(String messageKey)
     @Override
     public void addActionError(String message) {
         getLogger().debug("ACTIONERROR:: {}", message);

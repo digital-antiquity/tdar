@@ -16,7 +16,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
-import org.tdar.core.service.InvoiceService;
 import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -48,9 +47,6 @@ public class CartBillingAccountController extends AbstractCartController {
     @Autowired
     private transient AccountService accountService;
 
-    @Autowired
-    private transient InvoiceService invoiceService;
-
     @Override
     public void prepare() {
         super.prepare();
@@ -66,8 +62,8 @@ public class CartBillingAccountController extends AbstractCartController {
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
         if (id == -1L && invoice != null) {
             getLogger().debug("looking for account by invoice {}", invoice);
-            selectedAccount = invoiceService.getAccountForInvoice(invoice);
-            if (selectedAccount == null && ! getAccounts().isEmpty()) {
+            selectedAccount = accountService.getAccountForInvoice(invoice);
+            if (selectedAccount == null && !getAccounts().isEmpty()) {
                 selectedAccount = getAccounts().iterator().next();
             }
             if (selectedAccount != null) {
@@ -86,7 +82,7 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (! isValidInvoice() ) {
+        if (!isValidInvoice()) {
             return;
         }
         if (isPostRequest()) {
@@ -149,7 +145,7 @@ public class CartBillingAccountController extends AbstractCartController {
                 break;
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(invoice);
-                invoiceService.finalizePayment(invoice, paymentMethod);
+                accountService.finalizePayment(invoice, paymentMethod);
                 break;
             case INVOICE:
             case MANUAL:
