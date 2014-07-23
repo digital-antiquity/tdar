@@ -202,7 +202,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
             getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
         }

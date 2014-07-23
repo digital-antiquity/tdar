@@ -14,7 +14,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -188,12 +187,12 @@ public class GeoSearchDao {
     /*
      * generic method for performing query
      */
-    public List<Map<String, Object>> findAll(String sql) {
+    public List<Map<String, Object>> findAll(String sql, Object... params) {
         logger.trace(sql);
         List<Map<String, Object>> queryForList = new ArrayList<Map<String, Object>>();
         if (isEnabled()) {
             try {
-                queryForList = getJdbcTemplate().queryForList(sql);
+                queryForList = getJdbcTemplate().queryForList(sql, params);
             } catch (EmptyResultDataAccessException e) {
                 logger.trace("no results found for query");
             } catch (CannotGetJdbcConnectionException e) {
@@ -210,10 +209,10 @@ public class GeoSearchDao {
     /*
      * generic method for performing query
      */
-    public Map<String, Object> findFirst(String sql) {
+    public Map<String, Object> findFirst(String sql, Object... params) {
         Map<String, Object> queryForList = new HashMap<String, Object>();
         try {
-            queryForList = getJdbcTemplate().queryForMap(sql);
+            queryForList = getJdbcTemplate().queryForMap(sql, params);
         } catch (EmptyResultDataAccessException e) {
             logger.trace("no results found for query");
         } catch (CannotGetJdbcConnectionException e) {
@@ -227,7 +226,7 @@ public class GeoSearchDao {
     }
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings
-    @Autowired(required=false)
+    @Autowired(required = false)
     @Lazy(true)
     public void setDataSource(@Qualifier("tdarGeoDataSource") DataSource dataSource) {
         try {
@@ -350,7 +349,7 @@ public class GeoSearchDao {
     public SvgMapWrapper getMapSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
         String sql = constructSVGQuery(strokeWidth, searchPrefix, searchSuffix, table, limit);
         SvgMapWrapper wrapper = new SvgMapWrapper();
-        List<Map<String, Object>> findAll = findAll(sql);
+        List<Map<String, Object>> findAll = findAll(sql, limit);
         for (Map<String, Object> row : findAll) {
             for (Object val : row.values()) {
                 wrapper.getSqlXml().add((SQLXML) val);
@@ -359,11 +358,14 @@ public class GeoSearchDao {
         logger.info(sql);
 
         sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
-        if (StringUtils.isNotBlank(limit)) {
-            sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
-        }
+        Map<String, Object> envelope = null;
         logger.info(sql);
-        Map<String, Object> envelope = findFirst(sql);
+        if (StringUtils.isNotBlank(limit)) {
+            sql += String.format(" and %s='?'", table.getLimitColumn());
+            envelope = findFirst(sql, limit);
+        } else {
+            envelope = findFirst(sql);
+        }
         if ((envelope != null) && (envelope.get(POLYGON) != null)) {
             PGgeometry poly = (PGgeometry) envelope.get(POLYGON);
             logger.trace(poly.getGeometry().toString());
@@ -394,7 +396,7 @@ public class GeoSearchDao {
     public static String constructSVGQuery(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
         String ret = String.format(QUERY_SVG, table.getIdColumn(), table.getLabelColumn(), strokeWidth, searchPrefix, searchSuffix, table.getTableName());
         if (StringUtils.isNotBlank(limit)) {
-            ret += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
+            ret += String.format(" and %s='?'", table.getLimitColumn());
         }
         return ret;
     }
