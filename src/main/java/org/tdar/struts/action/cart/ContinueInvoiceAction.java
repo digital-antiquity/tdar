@@ -16,6 +16,7 @@ import org.tdar.struts.action.AuthenticationAware;
 @ParentPackage("default")
 public class ContinueInvoiceAction extends AuthenticationAware.Base {
 
+    private static final String SUCCESS_UNAUTH = "success-unauth";
     private static final long serialVersionUID = -5124643538589250147L;
     private Long invoiceId;
 
@@ -37,13 +38,18 @@ public class ContinueInvoiceAction extends AuthenticationAware.Base {
     @Action(value = "continue",
             results = {
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                    @Result(name = "success-unauth", type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED),
+                    @Result(name = SUCCESS_UNAUTH, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED),
                     @Result(name = INPUT, type = REDIRECT, location = URLConstants.CART_ADD)
             })
     public String execute() {
         getLogger().debug("setting invoice id {} on the session", invoiceId);
         getSessionData().setInvoiceId(invoiceId);
-        return isAuthenticated() ? SUCCESS : "success-unauth";
+        // stupid personal preferenence, cannot read turnarys well
+        if (isAuthenticated() ) {
+            return SUCCESS;
+        } else {
+             return SUCCESS_UNAUTH;
+        }
     }
 
     public Long getInvoiceId() {

@@ -35,6 +35,8 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/cart")
 // @HttpsOnly
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
+    public static final String CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION = "cartExternalPaymentResponseAction.new_invoice_notification";
+
     private static final long serialVersionUID = 0xDEADBEEF;
 
     public static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
@@ -111,10 +113,9 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
         // at the very least, send invoice notification
         TdarUser recipient = invoice.getOwner();
 
-        String notificationKey = "cartExternalPaymentResponseAction.new_invoice_notification";
-        getLogger().info("sending notification:{} to:{}", notificationKey, recipient);
+        getLogger().info("sending notification:{} to:{}", CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION, recipient);
 
-        notificationService.info(recipient, notificationKey);
+        notificationService.info(recipient, CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION);
 
         // if user recently became a contributor by way of this invoice, send an additional notification
         // todo: how to figure this out? user has only one account and account only has this invoice?

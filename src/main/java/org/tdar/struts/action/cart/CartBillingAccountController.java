@@ -64,6 +64,8 @@ public class CartBillingAccountController extends AbstractCartController {
         }
         setAccounts(accountService.listAvailableAccountsForUser(owner));
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
+        
+        //FIXME: move to service layer
         if (id == -1L && invoice != null) {
             getLogger().debug("looking for account by invoice {}", invoice);
             selectedAccount = accountService.getAccountForInvoice(invoice);
@@ -134,7 +136,7 @@ public class CartBillingAccountController extends AbstractCartController {
             acct = selectedAccount;
         }
         accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
-
+        //FIXME: Move to service layer
         updateInvoiceStatus();
 
         return SUCCESS;

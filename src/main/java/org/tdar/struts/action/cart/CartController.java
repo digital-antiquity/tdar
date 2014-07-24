@@ -1,6 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import static org.tdar.URLConstants.CART_ADD;
 
 import java.net.URL;
 
@@ -21,6 +20,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -77,9 +77,9 @@ public class CartController extends AbstractCartController {
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
             @Result(name = SUCCESS, type = "redirect", location = "/invoice/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
-            @Result(name = ADD, type = TYPE_REDIRECT, location = "add"),
+            @Result(name = ADD, type = TYPE_REDIRECT, location = TdarActionSupport.ADD),
             @Result(name = SUCCESS_COMPLETE, type = "redirect", location = URLConstants.DASHBOARD),
-            @Result(name = ERROR, type = "redirect", location = CART_ADD)
+            @Result(name = ERROR, type = "redirect", location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     public String processPaymentRequest() throws TdarActionException {
@@ -111,6 +111,7 @@ public class CartController extends AbstractCartController {
                 return POLLING;
             case INVOICE:
             case MANUAL:
+                //FIXME: Transactional, move to service layer
                 invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
                 getGenericService().saveOrUpdate(invoice);
                 break;
