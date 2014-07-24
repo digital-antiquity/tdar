@@ -4,9 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,11 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 
+import static com.opensymphony.xwork2.Action.ERROR;
+import static com.opensymphony.xwork2.Action.INPUT;
+import static com.opensymphony.xwork2.Action.SUCCESS;
+import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
+
 /**
  * Created by jimdevos on 7/22/14.
  */
@@ -22,6 +25,11 @@ import org.tdar.struts.action.TdarActionException;
 @Scope("prototype")
 @Namespace("/cart")
 @ParentPackage("secured")
+@Results({
+        @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }),
+        @Result(name = INPUT, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "400" }),
+        @Result(name = ERROR, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "500" }),
+})
 public class CartApiPollingAction extends AbstractCartController {
 
     private static final long serialVersionUID = 0xDEAD_BEEF;

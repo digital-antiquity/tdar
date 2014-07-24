@@ -1,8 +1,7 @@
 package org.tdar.struts.action.cart;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,9 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.AntiSpamHelper;
 
-import com.opensymphony.xwork2.Preparable;
-import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Results({
         @Result(name = "redirect-start", location = URLConstants.CART_ADD, type = "redirect")
@@ -32,7 +32,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
     private Invoice invoice;
     // list of billing accounts that the user may choose from when assigning the invoice
-    private Set<Account> accounts = new HashSet<>();
+    private List<Account> accounts = new ArrayList<>();
 
     protected String inputResultName = INPUT;
 
@@ -48,7 +48,6 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     /**
      * Return a pending invoice if found in session scope
      * 
-     * @return
      */
     protected Invoice loadPendingInvoice() {
         Long invoiceId = getSessionData().getInvoiceId();
@@ -131,11 +130,11 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         return h;
     }
 
-    public Set<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
 }

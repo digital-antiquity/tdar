@@ -122,6 +122,19 @@
             });
         });
         $(form).change();
+
+        var validator = $(form).validate({
+            rules: {
+                "invoice.otherReason": {
+                    required: "#MetadataForm_invoice_paymentMethodINVOICE:checked, #MetadataForm_invoice_paymentMethodMANUAL:checked"
+                }
+            },
+            messages: {
+                "invoice.otherReason": "If 'invoice', specify an invoice/work-order number; if 'other',  please describe why you are creating this invoice."
+
+            }
+
+        });
     };
 
     var _initPolling = function () {

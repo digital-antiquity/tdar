@@ -45,7 +45,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         accountWithPermissions.getAuthorizedMembers().add(p);
         genericService.saveOrUpdate(accountWithPermissions);
 
-        Set<Account> accountsForUser = accountService.listAvailableAccountsForUser(p);
+        List<Account> accountsForUser = accountService.listAvailableAccountsForUser(p);
         assertTrue(accountsForUser.contains(account));
         assertTrue(accountsForUser.contains(accountWithPermissions));
 

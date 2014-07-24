@@ -1388,6 +1388,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local strutsPrefix="${prefix}${_index}" />
         <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
         <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local idIdElement=idIdElement?replace(".","_") /> <#-- strip dots to make css selectors easier to write  -->
         <#local requiredClass><#if required>required</#if></#local>
         <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
         <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>

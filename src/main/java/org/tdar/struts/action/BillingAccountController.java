@@ -1,13 +1,5 @@
 package org.tdar.struts.action;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +32,8 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
+import java.util.*;
+
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -54,7 +48,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String NEW_ACCOUNT = "new_account";
     private static final String LIST_INVOICES = "listInvoices";
     private Long invoiceId;
-    private Set<Account> accounts = new HashSet<>();
+    private List<Account> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
 
@@ -192,7 +186,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
      * Temporary controller to fix issue where deleted items were counted wrong/differently before
      * we're changing the values here automatically
      * 
-     * @return
+     * @return stuff
      */
     @SkipValidation
     @Action(value = FIX_FOR_DELETE_ISSUE, results = {
@@ -260,11 +254,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         this.invoiceId = invoiceId;
     }
 
-    public Set<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
 

@@ -63,8 +63,8 @@
 
                             <div class="row">
                                 <@pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
-    	    	      		    <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
-	               			    <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+                                <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
+                                <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
                             </div>
                         </div>
                     </div>
@@ -122,64 +122,67 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="span6">
-                        <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
+                <#if administrator || billingManager>
+                <div class="divAdminLand admin-well">
+
+                <h3>Invoice Owner</h3>
+
+                <div class="control-group">
+                    <label class="control-label">Invoice Owner</label>
+                    <div class="controls">
+                    <#--if no owner specified already, supply a 'blank' user -->
+                            <@edit.registeredUserRow prefix="invoice.owner"
+                    person=((invoice.owner)!blankAuthorizedUser.user)
+                    _indexNumber=""
+                    includeRepeatRow=false/>
+
+                        <span class="help-block">
+                            Use this field if you wish to create a <em>proxy invoice</em> on behalf of another user.
+                        </span>
+                    </div>
+                </div>
+
+
+                <#if (billingManager && allPaymentMethods?size > 1)>
+                    <h3>Payment Method</h3>
+                    <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
+                    listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD" />
+                </#if>
+
+                <@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />
+
+                <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
                         <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
-                        <#if administrator || editor >
-                            <hr>
-                            <p><b>For Admin Use Only:</b></p>
-                            <table class="table tableFormat">
+                            <h3>Nelnet: Extra Parameters</h3>
+                            <div class="alert alert-warning">
+                                This section allows you to send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
+                                    if the previous sentence sounds like gibberish.
+                            </div>
+                            <table class="table table-bordered table-compact">
                                 <thead>
                                 <tr>
-                                    <th>Quantity</th>
                                     <th>Item</th>
+                                    <th>Quantity</th>
                                 </tr>
                                 </thead>
+                                <tbody>
                                 <#list activities as act>
                                     <#if !act.production >
                                         <tr>
-                                            <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2"/></td>
                                             <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
+                                            <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
                                         </tr>
                                     </#if>
                                 </#list>
+                                </tbody>
                             </table>
 
-                            <#if (billingManager && allPaymentMethods?size > 1)>
-                                <h3>Choose Payment Method</h3>
-                                <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-                                listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD" />
-                            </#if>
-
-                        </#if>
-                    </div>
                 </div>
+                </#if>
 
             </div>
         </div>
     </div>
-
-
-        <#if billingManager>
-        <div class="admin-only">
-            <h1>Choose the Invoice Owner</h1>
-
-            <div class="control-group">
-                <label class="control-label">Invoice Owner</label>
-
-                <div class="controls">
-                    <#--if no owner specified already, supply a 'blank' user -->
-                    <@edit.registeredUserRow prefix="invoice.owner"
-                        person=((invoice.owner)!blankAuthorizedUser.user)
-                        _indexNumber=""
-                        includeRepeatRow=false/>
-
-            <@nav.clearDeleteButton id="clearAssignedOwner" />
-                </div>
-            </div>
-        </div>
-        </#if>
 
 
     </@s.form>

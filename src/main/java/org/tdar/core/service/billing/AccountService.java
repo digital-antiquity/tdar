@@ -68,9 +68,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param statuses
      * @return
      */
-    public Set<Account> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
+    public List<Account> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
         if (Persistable.Base.isNullOrTransient(user)) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
         return getDao().findAccountsForUser(user, statuses);
     }
@@ -168,7 +168,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     @Transactional(readOnly = false)
     public boolean hasSpaceInAnAccount(TdarUser user, ResourceType type, boolean createAccountIfNeeded) {
-        Set<Account> accounts = listAvailableAccountsForUser(user);
+        List<Account> accounts = listAvailableAccountsForUser(user);
         for (Account account : accounts) {
             logger.trace("evaluating account {}", account.getName());
             if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
@@ -193,7 +193,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional(readOnly = false)
-    public Account createAccountForUserIfNeeded(TdarUser user, Set<Account> accounts, Invoice invoice) {
+    public Account createAccountForUserIfNeeded(TdarUser user, List<Account> accounts, Invoice invoice) {
         Account account = null;
         if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
             account = accounts.iterator().next();

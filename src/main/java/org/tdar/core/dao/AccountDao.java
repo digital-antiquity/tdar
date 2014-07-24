@@ -48,11 +48,11 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Account> findAccountsForUser(Person user, Status... statuses) {
+    public List<Account> findAccountsForUser(Person user, Status... statuses) {
         if (ArrayUtils.isEmpty(statuses)) {
             statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
-        Set<Account> accountGroups = new HashSet<>();
+        List<Account> accountGroups = new ArrayList<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameterList("statuses", statuses);

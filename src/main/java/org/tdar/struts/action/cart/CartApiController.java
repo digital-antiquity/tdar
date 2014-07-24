@@ -30,8 +30,8 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Results({
         @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }),
-        @Result(name = INPUT, type = JSONRESULT, params = { "stream", "resultJson", "status", "400" }),
-        @Result(name = ERROR, type = JSONRESULT, params = { "stream", "resultJson", "status", "500" }),
+        @Result(name = INPUT, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "400" }),
+        @Result(name = ERROR, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "500" }),
 })
 @ParentPackage("default")
 @Namespace("/cart")
