@@ -11,8 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.service.DownloadResult;
-import org.tdar.core.service.DownloadService;
+import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DownloadHandler;
@@ -25,10 +24,10 @@ import com.opensymphony.xwork2.Preparable;
 @Results({
         @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
-                        "contentType", "${contentType}",
-                        "inputName", "inputStream",
-                        "contentDisposition", "${dispositionPrefix}filename=\"${fileName}\"",
-                        "contentLength", "${contentLength}"
+                        "contentType", "${downloadTransferObject.mimeType}",
+                        "inputName", "downloadTransferObject.inputStream",
+                        "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${fileName}\"",
+                        "contentLength", "${downloadTransferObject.contentLength}"
                 }
         ),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
@@ -100,8 +99,8 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             return FORBIDDEN;
         }
 
-        DownloadResult result = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this);
-        return result.name().toLowerCase();
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this));
+        return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
     @Override

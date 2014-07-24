@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +14,7 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -24,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
@@ -63,18 +66,17 @@ public class PdfService {
      * 
      * @param submitter
      * @param version
+     * @param document 
      * @return
      * @throws COSVisitorException
      * @throws IOException
      * @throws URISyntaxException
      */
-    public File mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException,
-            URISyntaxException {
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document) throws PdfCoverPageGenerationException {
         try {
-            InformationResource informationResource = version.getInformationResourceFile().getInformationResource();
-            if (version.getExtension().equalsIgnoreCase("PDF") && (informationResource instanceof Document)) {
+            logger.debug("IR: {}, {} {}" , document, version, version.getExtension());
+            if (version.getExtension().equalsIgnoreCase("PDF") ) {
                 // get the tDAR document and get the path to the template
-                Document document = (Document) version.getInformationResourceFile().getInformationResource();
                 String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
@@ -84,12 +86,14 @@ public class PdfService {
                 template = createCoverPage(provider, submitter, template, document, version.getInformationResourceFile().getDescription());
 
                 // merge the two PDFs
-
+                logger.debug("calling merge on: {}", version);
                 return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             } else {
+                logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
             }
         } catch (Throwable e) {
+            logger.debug("IR: merge issue",e);
             throw new PdfCoverPageGenerationException("pdfService.could_not_add_cover_page", e);
         }
     }
@@ -101,16 +105,41 @@ public class PdfService {
      * @return
      * @throws IOException
      * @throws COSVisitorException
+     * @throws InterruptedException 
      */
-    private File mergePDFs(File... files) throws IOException, COSVisitorException {
-        PDFMergerUtility merger = new PDFMergerUtility();
-        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
-        merger.setDestinationStream(new FileOutputStream(outputFile));
+    private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
+        final PDFMergerUtility merger = new PDFMergerUtility();
+//        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
+        PipedInputStream inputStream = new PipedInputStream(2048);
+        logger.debug("before declaring output stream");
+        final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
+        logger.debug("before declaring destination");
+        merger.setDestinationStream(pipedOutputStream);
         for (File file : files) {
             merger.addSource(file);
         }
-        merger.mergeDocuments();
-        return outputFile;
+        logger.debug("before calling merge");
+        Thread thread = new Thread(
+                new Runnable(){
+                  public void run(){
+                    try {
+                        merger.mergeDocuments();
+                    } catch (COSVisitorException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    IOUtils.closeQuietly(pipedOutputStream);
+                  }
+                }
+              );
+        thread.start();
+        logger.debug("done calling merge");
+//        thread.join();
+        logger.debug("closed?");
+        return inputStream;
     }
 
     /**

@@ -7,8 +7,9 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.service.DownloadService;
 import org.tdar.core.service.PdfService;
+import org.tdar.core.service.download.DownloadService;
+import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
@@ -38,6 +39,8 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     @Autowired
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
 
+    private DownloadTransferObject downloadTransferObject;
+
     public static final String GET = "get";
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
     public static final String DOWNLOAD_SUFFIX = "informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}";
@@ -49,7 +52,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private Long informationResourceFileVersionId;
     private Long informationResourceId;
-    private transient InputStream inputStream;
+//    private transient InputStream inputStream;
     private String contentType;
     private String fileName;
     private Long contentLength;
@@ -149,10 +152,10 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     
 
-    @Override
-    public InputStream getInputStream() {
-        return inputStream;
-    }
+//    @Override
+//    public InputStream getInputStream() {
+//        return inputStream;
+//    }
 
     @Override
     public String getContentType() {
@@ -195,7 +198,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     @Override
     public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
+//        this.inputStream = inputStream;
     }
 
     @Override
@@ -220,5 +223,19 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     public void setCoverPageIncluded(boolean coverPageIncluded) {
         this.coverPageIncluded = coverPageIncluded;
+    }
+
+    public DownloadTransferObject getDownloadTransferObject() {
+        return downloadTransferObject;
+    }
+
+    public void setDownloadTransferObject(DownloadTransferObject downloadTransferObject) {
+        getLogger().debug("setting download object: {}", downloadTransferObject);
+        this.downloadTransferObject = downloadTransferObject;
+    }
+
+    @Override
+    public InputStream getInputStream() throws Exception {
+        return downloadTransferObject.getInputStream();
     }
 }

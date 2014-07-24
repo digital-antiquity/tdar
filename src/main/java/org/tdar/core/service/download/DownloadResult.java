@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.download;
 
 public enum DownloadResult {
     ERROR,

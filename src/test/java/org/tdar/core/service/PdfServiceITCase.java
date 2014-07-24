@@ -1,7 +1,10 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -48,7 +51,9 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a aa aa aa aa aa aa
         // aa aa aa aa aa aa a aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa a");
-        File merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion);
-        logger.debug("{}", merged);
+        InputStream merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion, document);
+        File tempFile = File.createTempFile("temp_merge", "pdf");
+        IOUtils.copy(merged, new FileOutputStream(tempFile));
+        logger.debug("{}",tempFile) ;
     }
 }

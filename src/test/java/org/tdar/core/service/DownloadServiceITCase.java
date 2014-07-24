@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -30,8 +31,10 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.service.download.DownloadService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.download.DownloadController;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
@@ -118,11 +121,16 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             map.put(file, null);
         }
         File dest = new File(ROOT_DEST, "everything.zip");
+fail("re-implement");
+//        InputStream merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion);
+//        File tempFile = File.createTempFile("temp_merge", "pdf");
+//        IOUtils.copy(merged, new FileOutputStream(tempFile));
+//        logger.debug("{}",tempFile) ;
 
-        downloadService.generateZipArchive(map, dest);
-        assertTrue("file should have been created", dest.exists());
-        assertTrue("file should be non-empty", dest.length() > 0);
-        assertArchiveContents(map.keySet(), dest);
+//        downloadService.generateZipArchive(map, dest);
+//        assertTrue("file should have been created", dest.exists());
+//        assertTrue("file should be non-empty", dest.length() > 0);
+//        assertArchiveContents(map.keySet(), dest);
     }
 
     @Test
@@ -145,9 +153,10 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         logger.info(controller.getFileName());
         File file = File.createTempFile("test", ".zip");
         FileOutputStream output = new FileOutputStream(file);
-        IOUtils.copy(controller.getInputStream(), output);
-        IOUtils.closeQuietly(output);
-        IOUtils.closeQuietly(controller.getInputStream());
+        fail("broken");
+//        IOUtils.copy(controller.getInputStream(), output);
+//        IOUtils.closeQuietly(output);
+//        IOUtils.closeQuietly(controller.getInputStream());
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
 

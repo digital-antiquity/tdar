@@ -1,5 +1,7 @@
 package org.tdar.struts.action.download;
 
+import java.io.InputStream;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -9,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.service.DownloadResult;
-import org.tdar.core.service.DownloadService;
+import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -23,10 +24,10 @@ import com.opensymphony.xwork2.Preparable;
 @Results({
         @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
-                        "contentType", "${contentType}",
+                        "contentType", "${downloadTransferObject.mimeType}",
                         "inputName", "inputStream",
-                        "contentDisposition", "${dispositionPrefix}filename=\"${fileName}\"",
-                        "contentLength", "${contentLength}"
+                        "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${fileName}\"",
+                        "contentLength", "${downloadTransferObject.contentLength}"
                 }
         ),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
@@ -72,8 +73,8 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
-        DownloadResult result = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this);
-        return result.name().toLowerCase();
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this));
+        return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
     @Action(value = DOWNLOAD_ALL)
@@ -82,9 +83,14 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
-        DownloadResult result = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), this);
-        return result.name().toLowerCase();
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), this));
+        return getDownloadTransferObject().getResult().name().toLowerCase();
 
+    }
+
+    @Override
+    public InputStream getInputStream() throws Exception {
+        return getDownloadTransferObject().getInputStream();
     }
 
 }
