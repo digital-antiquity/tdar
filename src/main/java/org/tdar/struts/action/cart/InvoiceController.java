@@ -2,6 +2,7 @@ package org.tdar.struts.action.cart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -99,12 +101,11 @@ public class InvoiceController extends AbstractCartController {
             getInvoice().setTransactedBy(user);
         }
         try {
-            Invoice processedInvoice = invoiceService.processInvoice(getInvoice(),
-                    user, code, extraItemIds, extraItemQuantities, pricingType, accountId);
-            setInvoice(processedInvoice);
-        } catch (Exception exception) {
-            getLogger().error("Could not process invoice {} - {}", getInvoice(), exception);
-            addActionError(exception.getLocalizedMessage());
+            Collection<BillingItem> extraBillingItems = invoiceService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
+            setInvoice(invoiceService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType,
+                    accountId));
+        } catch (Exception trex) {
+            addActionError(trex.getLocalizedMessage());
             return INPUT;
         }
         storePendingInvoice(getInvoice());
