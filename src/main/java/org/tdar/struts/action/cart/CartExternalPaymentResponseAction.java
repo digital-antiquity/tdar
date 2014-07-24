@@ -37,7 +37,7 @@ import com.opensymphony.xwork2.Preparable;
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
     private static final long serialVersionUID = 0xDEADBEEF;
 
-    private static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
+    public static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
     public static final String NELNET_RESPONSE_SUCCESS = "success";
     public static final String NELNET_RESPONSE_FAILURE = "failure";
 
