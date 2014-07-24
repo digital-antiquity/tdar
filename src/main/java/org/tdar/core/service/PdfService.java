@@ -109,7 +109,6 @@ public class PdfService {
      */
     private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergerUtility merger = new PDFMergerUtility();
-//        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
         PipedInputStream inputStream = new PipedInputStream(2048);
         logger.debug("before declaring output stream");
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
@@ -118,7 +117,9 @@ public class PdfService {
         for (File file : files) {
             merger.addSource(file);
         }
-        logger.debug("before calling merge");
+
+        // Separate thread needed here to call merge
+        //FIXME: handle exceptions better
         Thread thread = new Thread(
                 new Runnable(){
                   public void run(){
@@ -137,8 +138,6 @@ public class PdfService {
               );
         thread.start();
         logger.debug("done calling merge");
-//        thread.join();
-        logger.debug("closed?");
         return inputStream;
     }
 
