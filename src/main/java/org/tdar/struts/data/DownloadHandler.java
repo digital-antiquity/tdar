@@ -12,7 +12,7 @@ public interface DownloadHandler extends ActionMessageErrorSupport, TextProvider
 
     void setInputStream(InputStream inputStream);
 
-    InputStream getInputStream();
+    InputStream getInputStream() throws Exception;
 
     void setContentType(String mimeType);
 
