@@ -95,6 +95,10 @@
             <url>http://repository.codehaus.org/</url>
         </repository>
         <repository>
+            <id>local-dev</id>
+            <url>http://dev.tdar.org/repo/</url>
+        </repository>
+        <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
