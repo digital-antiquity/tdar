@@ -109,6 +109,10 @@ public class PdfService {
      */
     private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergerUtility merger = new PDFMergerUtility();
+        /* FIXME:
+         * only change i might suggest is to switch the initialization order to emphasize that the PipedOutputStream is where the data is coming from. At first
+         * I thought you were reading the data into the PipedInputStream to send to the PipedOutputStream because of the way they were initialized
+         */
         PipedInputStream inputStream = new PipedInputStream(2048);
         logger.debug("before declaring output stream");
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
