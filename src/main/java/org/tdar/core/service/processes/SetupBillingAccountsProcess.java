@@ -22,9 +22,10 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 
@@ -52,6 +53,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
     private transient AccountService accountService;
 
     @Autowired
+    private transient InvoiceService invoiceService;
+
+    @Autowired
     private transient EntityService entityService;
 
     @Autowired
@@ -72,7 +76,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
 
     @Override
     public List<Long> findAllIds() {
-        return new ArrayList<Long>(entityService.findAllContributorIds());
+        return new ArrayList<>(entityService.findAllContributorIds());
     }
 
     @Override
@@ -87,7 +91,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
         }
         int endIndex = Math.min(queue.size(), 100);
         List<Long> sublist = queue.subList(0, endIndex);
-        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+        ArrayList<Long> batch = new ArrayList<>(sublist);
         sublist.clear();
         logger.trace("batch {}", batch);
         return resourceService.findAll(Resource.class, batch);
@@ -95,7 +99,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
 
     @Override
     public void process(TdarUser person) {
-        List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
+        List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;
         for (BillingActivity activity : activeBillingActivities) {
@@ -148,14 +152,14 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser>
 
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
-            PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
-            PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
-            PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
-            logger.info("****** RE : " + re.toString());
-            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), properName, option, option2, option3, re.getFilesUsed(),
-                    re.getResourcesUsed(),
-                    re.getSpaceUsedInMb()));
-            List<BillingItem> items = new ArrayList<BillingItem>();
+            PricingOption option = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
+            PricingOption option2 = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+            PricingOption option3 = invoiceService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
+            logger.info("****** RE : {}", re.toString());
+            logger.info("{}|{}|{}|{}|{}|{}|{}|{}",
+                    person.getId(), properName, option, option2, option3, re.getFilesUsed(),
+                    re.getResourcesUsed(), re.getSpaceUsedInMb());
+            List<BillingItem> items = new ArrayList<>();
             logger.info(" {}  {} ", Long.valueOf(spaceUsedInMb).intValue(), Long.valueOf(filesUsed).intValue());
             items.add(new BillingItem(oneMbActivity, Long.valueOf(spaceUsedInMb).intValue()));
             items.add(new BillingItem(oneFileActivity, Long.valueOf(filesUsed).intValue()));

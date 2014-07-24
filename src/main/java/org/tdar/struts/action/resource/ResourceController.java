@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AuthenticationAware;
 
 /**

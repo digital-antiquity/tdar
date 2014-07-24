@@ -13,14 +13,14 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.billing.InvoiceService;
 
 public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    AccountService accountService;
+    InvoiceService invoiceService;
 
     @Autowired
     GenericService genericService;
@@ -98,7 +98,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {
         invoice.setNumberOfFiles(numberOfFiles);
         invoice.setNumberOfMb(numberOfMb);
-        List<BillingItem> billingItems = accountService.calculateCheapestActivities(invoice).getItems();
+        List<BillingItem> billingItems = invoiceService.calculateCheapestActivities(invoice).getItems();
         logger.info("{} ", billingItems);
         return billingItems;
     }

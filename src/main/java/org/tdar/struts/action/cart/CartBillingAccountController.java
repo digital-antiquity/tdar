@@ -15,7 +15,8 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -44,6 +45,9 @@ public class CartBillingAccountController extends AbstractCartController {
     // Or a user can specify a new account name
     private Account account = new Account();
 
+    @Autowired
+    private transient InvoiceService invoiceService;
+    
     @Autowired
     private transient AccountService accountService;
 
@@ -145,7 +149,7 @@ public class CartBillingAccountController extends AbstractCartController {
                 break;
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(invoice);
-                accountService.finalizePayment(invoice, paymentMethod);
+                invoiceService.finalizePayment(invoice, paymentMethod);
                 break;
             case INVOICE:
             case MANUAL:

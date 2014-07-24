@@ -48,9 +48,10 @@ public class CartLoginController extends AbstractCartController implements Valid
 
     private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
     private UserLogin userLogin = new UserLogin(h);
-    
+
+    // FIXME: is this still needed? revisit
     @Action(value = "process-cart-login",
-//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                     @Result(name = INPUT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
@@ -86,7 +87,7 @@ public class CartLoginController extends AbstractCartController implements Valid
     @Override
     public void prepare() {
         super.prepare();
-        //FIXME: this should not be necessary, but is one of the challenges of returning input and not having the session available anymore
+        // FIXME: this should not be necessary, but is one of the challenges of returning input and not having the session available anymore
         if (getInvoice() != null) {
             getLogger().debug("items:{} ", getInvoice().getItems());
         }

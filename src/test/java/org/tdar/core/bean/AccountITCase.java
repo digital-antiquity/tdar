@@ -40,7 +40,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.data.FileProxy;
 
 public class AccountITCase extends AbstractIntegrationTestCase {

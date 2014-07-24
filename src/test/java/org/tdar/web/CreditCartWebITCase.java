@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.MessageHelper;
@@ -28,10 +28,10 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
     private static final String CART_REVIEW2 = "/cart/review";
     private static final TestConfiguration CFG = TestConfiguration.getInstance();
     @Autowired
-    AccountService accountService;
+    private InvoiceService invoiceService;
 
     public Long getItemId(String name) {
-        for (BillingActivity activity : accountService.getActiveBillingActivities()) {
+        for (BillingActivity activity : invoiceService.getActiveBillingActivities()) {
             if (activity.getName().equalsIgnoreCase(name)) {
                 logger.info("{} {} ", activity.getName(), activity.getId());
                 return activity.getId();

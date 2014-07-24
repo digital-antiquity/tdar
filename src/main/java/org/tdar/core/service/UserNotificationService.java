@@ -81,15 +81,30 @@ public class UserNotificationService {
     public UserNotification broadcast(String messageKey, UserNotificationDisplayType displayType) {
         return createUserNotification(null, messageKey, UserNotificationType.SYSTEM_BROADCAST, displayType);
     }
+    
+    @Transactional
+    public UserNotification info(TdarUser user, String messageKey) {
+        return info(user, messageKey, UserNotificationDisplayType.NORMAL);
+    }
 
     @Transactional
     public UserNotification info(TdarUser user, String messageKey, UserNotificationDisplayType displayType) {
         return createUserNotification(user, messageKey, UserNotificationType.INFO, displayType);
     }
-
+    
+    @Transactional
+    public UserNotification error(TdarUser user, String messageKey) {
+        return error(user, messageKey, UserNotificationDisplayType.NORMAL);
+    }
+    
     @Transactional
     public UserNotification error(TdarUser user, String messageKey, UserNotificationDisplayType displayType) {
         return createUserNotification(user, messageKey, UserNotificationType.ERROR, displayType);
+    }
+    
+    @Transactional
+    public UserNotification warning(TdarUser user, String messageKey) {
+        return warning(user, messageKey, UserNotificationDisplayType.NORMAL);
     }
 
     @Transactional

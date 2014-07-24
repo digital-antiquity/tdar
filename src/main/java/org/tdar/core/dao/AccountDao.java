@@ -169,7 +169,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         if (Persistable.Base.isNotNullOrTransient(user)) {
             query.setParameter("ownerId", user.getId());
         } else {
-            query.setParameter("ownerId",  null);
+            query.setParameter("ownerId", null);
         }
         return (Coupon) query.uniqueResult();
     }
@@ -183,7 +183,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
                 throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }
         }
-        if (! Objects.equals(invoice.getCoupon().getId(), coupon.getId())) {
+        if (!Objects.equals(invoice.getCoupon().getId(), coupon.getId())) {
             throw new TdarRecoverableRuntimeException("accountDao.coupon_assigned_wrong");
         }
     }
@@ -191,12 +191,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public Account getAccountForInvoice(Invoice invoice) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
         query.setParameter("id", invoice.getId());
-        Object obj = query.uniqueResult();
-        if (obj != null) {
-            logger.debug("{}", obj);
-            return (Account) obj;
-        }
-        return null;
+        return (Account) query.uniqueResult();
     }
 
 }

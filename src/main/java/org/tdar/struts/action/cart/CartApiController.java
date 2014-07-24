@@ -16,8 +16,8 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.data.PricingOption;
 
 import com.opensymphony.xwork2.Preparable;
@@ -48,7 +48,7 @@ public class CartApiController extends AbstractCartController implements Prepara
     XmlService xmlService;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient InvoiceService invoiceService;
 
     /**
      * calculate estimated price when user specifies custom files/mb
@@ -57,9 +57,9 @@ public class CartApiController extends AbstractCartController implements Prepara
     @Action("api")
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-            addPricingOption(accountService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-            addPricingOption(accountService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+            addPricingOption(invoiceService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(invoiceService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+            addPricingOption(invoiceService.getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
         setResultJson(getPricingOptions());
         return SUCCESS;

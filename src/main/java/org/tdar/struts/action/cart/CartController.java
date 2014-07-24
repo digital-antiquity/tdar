@@ -19,8 +19,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.service.AccountService;
-import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -43,7 +42,7 @@ public class CartController extends AbstractCartController {
     private String redirectUrl;
     private Account account;
 
-    PaymentMethod paymentMethod;
+    private PaymentMethod paymentMethod;
 
     private Long invoiceId = -1L;
 
@@ -52,9 +51,6 @@ public class CartController extends AbstractCartController {
 
     @Autowired
     private transient AccountService accountService;
-
-    @Autowired
-    private transient AuthorizationService authService;
 
     /**
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL

@@ -1,8 +1,6 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Set;
@@ -23,11 +21,16 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 
 public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     AccountService accountService;
+    
+    @Autowired
+    InvoiceService invoiceService;
 
     @Test
     @Rollback
@@ -163,7 +166,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         ctivity.setName("active");
         genericService.saveOrUpdate(ctivity);
 
-        List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
+        List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         assertTrue(activeBillingActivities.contains(ctivity));
         assertFalse(activeBillingActivities.contains(disabledDctivity));
     }

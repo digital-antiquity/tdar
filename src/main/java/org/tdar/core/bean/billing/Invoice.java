@@ -518,6 +518,12 @@ public class Invoice extends Base implements Updatable {
         return true;
     }
 
+    public void setDefaultPaymentMethod() {
+        if (paymentMethod == null) {
+            setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        }
+    }
+
     private boolean isLessThan(Long val, long comp) {
         if (val == null) {
             return false;

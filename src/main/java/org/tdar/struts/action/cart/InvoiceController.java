@@ -2,7 +2,6 @@ package org.tdar.struts.action.cart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -16,13 +15,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.GetOnly;
@@ -58,7 +56,7 @@ public class InvoiceController extends AbstractCartController {
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
-    private transient AccountService accountService;
+    private transient InvoiceService invoiceService;
 
     /**
      * This is the first step of the purchase process. The user specifies the number of files/mb or chooses a
@@ -95,16 +93,18 @@ public class InvoiceController extends AbstractCartController {
     @PostOnly
     public String processInvoice() {
         // fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cartadd
+        TdarUser user = getAuthenticatedUser();
         if (isAuthenticated() && Persistable.Base.isTransient(getInvoice().getOwner())) {
-            getInvoice().setOwner(getAuthenticatedUser());
-            getInvoice().setTransactedBy(getAuthenticatedUser());
+            getInvoice().setOwner(user);
+            getInvoice().setTransactedBy(user);
         }
         try {
-            Collection<BillingItem> extraBillingItems = accountService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
-            setInvoice(accountService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType,
-                    accountId));
-        } catch (Exception trex) {
-            addActionError(trex.getLocalizedMessage());
+            Invoice processedInvoice = invoiceService.processInvoice(getInvoice(),
+                    user, code, extraItemIds, extraItemQuantities, pricingType, accountId);
+            setInvoice(processedInvoice);
+        } catch (Exception exception) {
+            getLogger().error("Could not process invoice {} - {}", getInvoice(), exception);
+            addActionError(exception.getLocalizedMessage());
             return INPUT;
         }
         storePendingInvoice(getInvoice());
@@ -122,8 +122,6 @@ public class InvoiceController extends AbstractCartController {
         if (getInvoice() == null) {
             return "redirect-start";
         }
-        // Set<Account> availableAccounts = accountService.listAvailableAccountsForUser(getInvoice().getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE);
-        // setAccounts(availableAccounts);
         return SUCCESS;
     }
 
@@ -169,17 +167,17 @@ public class InvoiceController extends AbstractCartController {
         // look for pending invoice in the session.
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
-            // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
-            if (!persistedInvoice.isModifiable()) {
-                clearPendingInvoice();
-            } else {
+            if (persistedInvoice.isModifiable()) {
                 setInvoice(persistedInvoice);
+            } else {
+                // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
+                clearPendingInvoice();
             }
         }
 
-        // set default
-        if (getInvoice() != null && getInvoice().getPaymentMethod() == null) {
-            getInvoice().setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        // set default payment method
+        if (getInvoice() != null) {
+            getInvoice().setDefaultPaymentMethod();
         }
 
     }
@@ -208,7 +206,7 @@ public class InvoiceController extends AbstractCartController {
 
     void setupActivities() {
         // we only care about the production+active activities
-        getActivities().addAll(accountService.getActiveBillingActivities());
+        getActivities().addAll(invoiceService.getActiveBillingActivities());
     }
 
     /**
