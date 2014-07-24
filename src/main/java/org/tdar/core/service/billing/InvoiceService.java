@@ -23,7 +23,6 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
-import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
@@ -33,7 +32,6 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
@@ -41,7 +39,6 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
@@ -49,64 +46,33 @@ import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.utils.MessageHelper;
 
-@Transactional(readOnly = true)
 @Service
-public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
+@Transactional
+public class InvoiceService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private GenericDao genericDao;
 
     @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
+    private transient GenericDao genericDao;
+
     @Autowired
-    private transient XmlService xmlService;
+    private transient AccountDao accountDao;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient EmailService emailService;
 
-    /**
-     * Find the account (if exists) associated with the invoice
-     * 
-     * @param invoice
-     * @return
-     */
-    public Account getAccountForInvoice(Invoice invoice) {
-        return getDao().getAccountForInvoice(invoice);
-    }
-
-    /**
-     * Find all accounts for user: return accounts that are active and have not met their quota
-     * 
-     * @param user
-     * @param statuses
-     * @return
-     */
-    public Set<Account> listAvailableAccountsForUser(Person user, Status... statuses) {
-        if (Persistable.Base.isNullOrTransient(user)) {
-            return Collections.emptySet();
-        }
-        return getDao().findAccountsForUser(user, statuses);
-    }
-
-    /**
-     * Find all accounts for user: return accounts that are active and have not met their quota
-     * 
-     * @param user
-     * @return
-     */
-    public List<Invoice> listUnassignedInvoicesForUser(Person user) {
-        if (Persistable.Base.isNullOrTransient(user)) {
-            return Collections.emptyList();
-        }
-        return getDao().findUnassignedInvoicesForUser(user);
-    }
+    @Autowired
+    private transient XmlService xmlService;
 
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
      * 
      * @return
      */
+    @Transactional(readOnly = true)
     public List<BillingActivity> getActiveBillingActivities() {
         List<BillingActivity> toReturn = new ArrayList<>();
         for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
@@ -117,27 +83,6 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         Collections.sort(toReturn);
         logger.trace("{}", toReturn);
         return toReturn;
-
-    }
-
-    /**
-     * We know that we will change pricing from time to time, so, a @link BillingActivityModel allows us to represent different models at the same time. Return
-     * the current model.
-     * 
-     * @return
-     */
-    public BillingActivityModel getLatestActivityModel() {
-        List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
-        BillingActivityModel latest = null;
-        for (BillingActivityModel model : findAll) {
-            if (!model.getActive()) {
-                continue;
-            }
-            if ((latest == null) || (latest.getVersion() == null) || (model.getVersion() > latest.getVersion())) {
-                latest = model;
-            }
-        }
-        return latest;
     }
 
     /**
@@ -157,6 +102,88 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         return null;
+    }
+
+    /**
+     * Given an @link Invoice calculate the cheapeset Pricing Option
+     * 
+     * @param invoice
+     * @return
+     */
+    public PricingOption calculateCheapestActivities(Invoice invoice) {
+        PricingOption lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+
+        // If we are using the ok amount of space for that activity...
+        if (lowestByFiles != null) {
+            logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
+        }
+        if (lowestByMB != null) {
+            logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
+        }
+        if ((lowestByMB == null) || ((lowestByFiles != null) && (lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()))) {
+            return lowestByFiles;
+        }
+        return lowestByMB;
+    }
+
+    /**
+     * Takes the controller specified list of Extra BillingItem(s) and quantities listed by ID and returns
+     * 
+     * @param extraItemIds
+     * @param extraItemQuantities
+     * @return
+     */
+    @Transactional
+    public Collection<BillingItem> lookupExtraBillingActivities(List<Long> extraItemIds, List<Integer> extraItemQuantities) {
+        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
+        Set<BillingItem> items = new HashSet<>();
+        for (int i = 0; i < extraItemIds.size(); i++) {
+            BillingActivity act = actIdMap.get(extraItemIds.get(i));
+            Integer quantity = extraItemQuantities.get(i);
+            logger.trace("{} {} {}", extraItemIds.get(i), act, quantity);
+            if ((act == null) || (quantity == null) || (quantity < 1)) {
+                continue;
+            }
+            items.add(new BillingItem(act, quantity));
+        }
+        return items;
+
+    }
+
+    /**
+     * Calculate @link PricingOption based on @link PricingType calculation
+     * 
+     * @param invoice
+     * @param pricingType
+     * @return
+     */
+    public PricingOption calculateActivities(Invoice invoice, PricingType pricingType) {
+        switch (pricingType) {
+            case SIZED_BY_FILE_ABOVE_TIER:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+            case SIZED_BY_FILE_ONLY:
+                return getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+            case SIZED_BY_MB:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        }
+        return null;
+    }
+
+    /**
+     * Calculate rate purely on space
+     * 
+     * @param option
+     * @param spaceActivity
+     * @param spaceNeeded
+     */
+    public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
+        BillingItem extraSpace;
+        if ((spaceNeeded > 0) && (spaceActivity != null)) {
+            int qty = (int) Base.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
+            extraSpace = new BillingItem(spaceActivity, qty);
+            option.getItems().add(extraSpace);
+        }
     }
 
     /**
@@ -186,7 +213,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (!exact) {
             option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
         }
-        List<BillingItem> items = new ArrayList<BillingItem>();
+        List<BillingItem> items = new ArrayList<>();
         logger.info("files: {} mb: {}", numFiles, numMb);
 
         for (BillingActivity activity : getActiveBillingActivities()) {
@@ -245,22 +272,6 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Calculate rate purely on space
-     * 
-     * @param option
-     * @param spaceActivity
-     * @param spaceNeeded
-     */
-    public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
-        BillingItem extraSpace;
-        if ((spaceNeeded > 0) && (spaceActivity != null)) {
-            int qty = (int) Base.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
-            extraSpace = new BillingItem(spaceActivity, qty);
-            option.getItems().add(extraSpace);
-        }
-    }
-
-    /**
      * As we can bill by different things, # of Files, # of MB, we want to find out what the cheapest method by MB.
      * 
      * @param numFiles_
@@ -282,7 +293,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
-        List<BillingItem> items = new ArrayList<BillingItem>();
+        List<BillingItem> items = new ArrayList<>();
         BillingActivity spaceActivity = getSpaceActivity();
         if ((spaceActivity != null) && ((numFiles == null) || (numFiles.intValue() == 0))) {
             calculateSpaceActivity(option, spaceActivity, spaceInMb);
@@ -328,56 +339,74 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Given an @link Invoice calculate the cheapeset Pricing Option
+     * For a given invoice object, clear it and apply the appropriate BillingItems based on:
+     * 1) the PricingType evaluation (files, MB, etc)
+     * 2) any extra BillingItem(s) specfied by admins or for testing
+     * 3) a Coupon Code, if specified
+     * 
+     * FIXME: too many method parameters
      * 
      * @param invoice
-     * @return
-     */
-    public PricingOption calculateCheapestActivities(Invoice invoice) {
-        PricingOption lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
-        PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
-
-        // If we are using the ok amount of space for that activity...
-        if (lowestByFiles != null) {
-            logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
-        }
-        if (lowestByMB != null) {
-            logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
-        }
-        if ((lowestByMB == null) || ((lowestByFiles != null) && (lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()))) {
-            return lowestByFiles;
-        }
-        return lowestByMB;
-    }
-
-    /**
-     * Calculate @link PricingOption based on @link PricingType calculation
-     * 
-     * @param invoice
+     * @param authenticatedUser
+     * @param code
+     * @param extraItems
      * @param pricingType
+     * @param accountId
      * @return
      */
-    public PricingOption calculateActivities(Invoice invoice, PricingType pricingType) {
-        switch (pricingType) {
-            case SIZED_BY_FILE_ABOVE_TIER:
-                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
-            case SIZED_BY_FILE_ONLY:
-                return getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
-            case SIZED_BY_MB:
-                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
-        }
-        return null;
-    }
+    @Transactional(readOnly = false)
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, List<Long> extraItemIds,
+            List<Integer> extraItemQuantities, PricingType pricingType, Long accountId)
+    {
+        Collection<BillingItem> extraItems = lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
 
-    /**
-     * Confirm that @link Coupon can be used (Not assigned, not expired)
-     * 
-     * @param coupon
-     * @param invoice
-     */
-    @Transactional
-    public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
-        getDao().checkCouponStillValidForCheckout(coupon, invoice);
+        boolean billingManager = authorizationService.isBillingManager(authenticatedUser);
+        if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
+            throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
+        }
+
+        // setup BillingItem(s) for Invoice
+        invoice.getItems().clear();
+        invoice.getItems().addAll(extraItems);
+
+        // redeem coupon code, we do this before calculating costs because the redemption may change the files and space
+        redeemCode(invoice, invoice.getOwner(), code);
+        List<BillingItem> items = new ArrayList<>();
+        if (pricingType != null) {
+            items = calculateActivities(invoice, pricingType).getItems();
+        } else {
+            PricingOption activities2 = calculateCheapestActivities(invoice);
+            if (activities2 != null) {
+                items = activities2.getItems();
+            }
+        }
+        if (CollectionUtils.isNotEmpty(items)) {
+            invoice.getItems().addAll(items);
+        }
+
+        // if somehow we have absolutely nothing in the invoice, error out
+        if (CollectionUtils.isEmpty(invoice.getItems())) {
+            throw new TdarRecoverableRuntimeException("cartController.no_items_found");
+        }
+
+        invoice.setTransactedBy(authenticatedUser);
+
+        // reconcile the Invoice owner, which could be different if you're an admin and running an invoice for someone else
+        updateInvoiceOwner(invoice, authenticatedUser, billingManager);
+        invoice.markUpdated(authenticatedUser);
+
+        // if invoice is persisted it will be read-only, so make it writable
+        if (Persistable.Base.isNotNullOrTransient(invoice)) {
+            genericDao.markUpdatable(invoice);
+            genericDao.markUpdatable(invoice.getItems());
+        }
+        genericDao.saveOrUpdate(invoice);
+        if (Persistable.Base.isNotNullOrTransient(accountId)) {
+            Account account = genericDao.find(Account.class, accountId);
+            account.getInvoices().add(invoice);
+        }
+
+        return invoice;
     }
 
     /**
@@ -426,113 +455,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             invoice.setNumberOfMb(coupon.getNumberOfMb());
         }
 
-        getDao().saveOrUpdate(coupon);
-    }
-
-    /**
-     * Find the @link Coupon based on the String code.
-     * 
-     * @param code
-     * @param user
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Coupon locateRedeemableCoupon(String code, TdarUser user) {
-        logger.debug("locate coupon: {} for: {} ", code, user);
-        if (StringUtils.isBlank(code)) {
-            return null;
-        }
-        return getDao().findCoupon(code, user);
-    }
-
-    /**
-     * Takes the controller specified list of Extra BillingItem(s) and quantities listed by ID and returns
-     * 
-     * @param extraItemIds
-     * @param extraItemQuantities
-     * @return
-     */
-    @Transactional
-    public Collection<BillingItem> lookupExtraBillingActivities(List<Long> extraItemIds, List<Integer> extraItemQuantities) {
-        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getActiveBillingActivities());
-        Set<BillingItem> items = new HashSet<>();
-        for (int i = 0; i < extraItemIds.size(); i++) {
-            BillingActivity act = actIdMap.get(extraItemIds.get(i));
-            Integer quantity = extraItemQuantities.get(i);
-            getLogger().trace("{} {} {}", extraItemIds.get(i), act, quantity);
-            if ((act == null) || (quantity == null) || (quantity < 1)) {
-                continue;
-            }
-            items.add(new BillingItem(act, quantity));
-        }
-        return items;
-
-    }
-
-    /**
-     * For a given invoice object, clear it and apply the appropriate BillingItems based on:
-     * 1) the PricingType evaluation (files, MB, etc)
-     * 2) any extra BillingItem(s) specfied by admins or for testing
-     * 3) a Coupon Code, if specified
-     * 
-     * @param invoice
-     * @param authenticatedUser
-     * @param code
-     * @param extraItems
-     * @param pricingType
-     * @param accountId
-     * @return
-     */
-    @Transactional(readOnly = false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, Collection<BillingItem> extraItems, PricingType pricingType,
-            Long accountId) {
-        boolean billingManager = authenticationAndAuthorizationService.isBillingManager(authenticatedUser);
-        if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
-            throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
-        }
-
-        // setup BillingItem(s) for Invoice
-        invoice.getItems().clear();
-        invoice.getItems().addAll(extraItems);
-
-        // redeem coupon code, we do this before calculating costs because the redemption may change the files and space
-        redeemCode(invoice, invoice.getOwner(), code);
-        List<BillingItem> items = new ArrayList<BillingItem>();
-        if (pricingType != null) {
-            items = calculateActivities(invoice, pricingType).getItems();
-        } else {
-            PricingOption activities2 = calculateCheapestActivities(invoice);
-            if (activities2 != null) {
-                items = activities2.getItems();
-            }
-        }
-        if (CollectionUtils.isNotEmpty(items)) {
-            invoice.getItems().addAll(items);
-        }
-
-        // if somehow we have absolutely nothing in the invoice, error out
-        if (CollectionUtils.isEmpty(invoice.getItems())) {
-            throw new TdarRecoverableRuntimeException("cartController.no_items_found");
-        }
-
-        invoice.setTransactedBy(authenticatedUser);
-
-        // reconcile the Invoice owner, which could be different if you're an admin and running an invoice for someone else
-        updateInvoiceOwner(invoice, authenticatedUser, billingManager);
-        invoice.markUpdated(authenticatedUser);
-
-        // if invoice is persisted it will be read-only, so make it writable
-        if (Persistable.Base.isNotNullOrTransient(invoice)) {
-            genericDao.markUpdatable(invoice);
-            genericDao.markUpdatable(invoice.getItems());
-        }
-        getDao().saveOrUpdate(invoice);
-        if (Persistable.Base.isNotNullOrTransient(accountId)) {
-            Account account = genericDao.find(Account.class, accountId);
-            account.getInvoices().add(invoice);
-        }
-
-        return invoice;
+        genericDao.saveOrUpdate(coupon);
     }
 
     /**
@@ -547,7 +470,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         TdarUser owner = invoice.getOwner();
         // if we have an owner
         if (billingManager && Persistable.Base.isNotNullOrTransient(owner)) {
-            invoice.setOwner(getDao().find(TdarUser.class, owner.getId()));
+            invoice.setOwner(genericDao.find(TdarUser.class, owner.getId()));
         } else {
             // if we're logged in
             if (authenticatedUser != null) {
@@ -575,19 +498,19 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional(readOnly = false)
     public Invoice finalizePayment(Invoice invoice_, PaymentMethod paymentMethod) {
 
-        Address address = getDao().loadFromSparseEntity(invoice_.getAddress(), Address.class);
+        Address address = genericDao.loadFromSparseEntity(invoice_.getAddress(), Address.class);
         if (Persistable.Base.isNotNullOrTransient(address)) {
             invoice_.setAddress(address);
         }
 
         String otherReason = invoice_.getOtherReason();
-        Invoice invoice = getDao().loadFromSparseEntity(invoice_, Invoice.class);
+        Invoice invoice = genericDao.loadFromSparseEntity(invoice_, Invoice.class);
         invoice.setPaymentMethod(paymentMethod);
         invoice.setOtherReason(otherReason);
         // finalize the cost and cache it
         invoice.markFinal();
-        getDao().saveOrUpdate(invoice);
-        getLogger().info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice_.getId(), invoice_.getTotal());
+        genericDao.saveOrUpdate(invoice);
+        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", invoice_.getId(), invoice_.getTotal());
 
         // if the discount brings the total cost down to 0, then skip the credit card process
         if ((invoice.getTotal() <= 0) && CollectionUtils.isNotEmpty(invoice.getItems())) {
@@ -596,12 +519,39 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
                 checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-            getDao().saveOrUpdate(invoice);
+            genericDao.saveOrUpdate(invoice);
         } else {
             invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
         }
 
         return invoice;
+    }
+
+    /**
+     * Find the @link Coupon based on the String code.
+     * 
+     * @param code
+     * @param user
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Coupon locateRedeemableCoupon(String code, TdarUser user) {
+        logger.debug("locate coupon: {} for: {} ", code, user);
+        if (StringUtils.isBlank(code)) {
+            return null;
+        }
+        return accountDao.findCoupon(code, user);
+    }
+
+    /**
+     * Confirm that @link Coupon can be used (Not assigned, not expired)
+     * 
+     * @param coupon
+     * @param invoice
+     */
+    @Transactional
+    public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
+        accountDao.checkCouponStillValidForCheckout(coupon, invoice);
     }
 
     /**
@@ -615,22 +565,22 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional(readOnly = false)
     public void processTransactionResponse(TransactionResponse response, PaymentTransactionProcessor paymentTransactionProcessor) throws IOException {
         if (paymentTransactionProcessor.validateResponse(response)) {
-            getDao().markWritable();
+            genericDao.markWritable();
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
 
             BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
-            billingResponse = getDao().markWritable(billingResponse);
-            getDao().saveOrUpdate(billingResponse);
+            billingResponse = genericDao.markWritable(billingResponse);
+            genericDao.saveOrUpdate(billingResponse);
             if (invoice != null) {
                 // if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient
                 // item in p.addresses)
-                invoice = getDao().markWritable(invoice);
+                invoice = genericDao.markWritable(invoice);
                 updateAddresses(response, invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 invoice.setResponse(billingResponse);
-                getLogger().info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 sendSuccessEmail(invoice);
-                getDao().saveOrUpdate(invoice);
+                genericDao.saveOrUpdate(invoice);
             }
         }
     }
@@ -651,7 +601,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
                     continue;
                 }
                 Person person = new Person("Billing", "Info", email.trim());
-                getDao().markReadOnly(person);
+                genericDao.markReadOnly(person);
                 people.add(person);
             }
             Email email = new Email();
@@ -661,7 +611,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
             emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
         } catch (Exception e) {
-            getLogger().error("could not send email: {} ", e);
+            logger.error("could not send email: {} ", e);
         }
     }
 
@@ -685,10 +635,10 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Account, Accou
         // fixme: This is sketchy behavior. Just because I gave the payment processor my billing address does not imply I want to give it to tDAR.
         if (!found) {
             p.getAddresses().add(addressToSave);
-            getLogger().info(addressToSave.getAddressSingleLine());
+            logger.info(addressToSave.getAddressSingleLine());
             // this will always fail(you can't save a transient addresss directly because it is a child relation of person). It's also unnecessary: If p
             // is on the session hibernate will save the address.
-            // getDao().saveOrUpdate(addressToSave);
+            // genericDao.saveOrUpdate(addressToSave);
             invoice.setAddress(addressToSave);
         }
     }
