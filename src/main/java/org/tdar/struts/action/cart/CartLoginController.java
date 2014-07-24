@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.RecaptchaService;
@@ -75,7 +76,9 @@ public class CartLoginController extends AbstractCartController implements Valid
         switch (status) {
             case ERROR:
             case NEW:
-                addActionMessage(getText("loginController.user_not_in_local_db"));
+                if(!TdarConfiguration.getInstance().isProductionEnvironment()) {
+                    addActionMessage(getText("loginController.user_not_in_local_db"));
+                }
                 return INPUT;
             default:
                 break;
