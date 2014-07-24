@@ -338,13 +338,12 @@ public class InvoiceService {
         return option;
     }
 
+
     /**
      * For a given invoice object, clear it and apply the appropriate BillingItems based on:
      * 1) the PricingType evaluation (files, MB, etc)
      * 2) any extra BillingItem(s) specfied by admins or for testing
      * 3) a Coupon Code, if specified
-     * 
-     * FIXME: too many method parameters
      * 
      * @param invoice
      * @param authenticatedUser
@@ -355,14 +354,16 @@ public class InvoiceService {
      * @return
      */
     @Transactional(readOnly = false)
-    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, List<Long> extraItemIds,
-            List<Integer> extraItemQuantities, PricingType pricingType, Long accountId)
-    {
-        Collection<BillingItem> extraItems = lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
-
+    public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, Collection<BillingItem> extraItems, PricingType pricingType,
+            Long accountId) {
         boolean billingManager = authorizationService.isBillingManager(authenticatedUser);
         if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
             throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
+        }
+
+        if (Persistable.Base.isNotNullOrTransient(authenticatedUser) && Persistable.Base.isTransient(invoice.getOwner())) {
+            invoice.setOwner(authenticatedUser);
+            invoice.setTransactedBy(authenticatedUser);
         }
 
         // setup BillingItem(s) for Invoice
@@ -371,7 +372,7 @@ public class InvoiceService {
 
         // redeem coupon code, we do this before calculating costs because the redemption may change the files and space
         redeemCode(invoice, invoice.getOwner(), code);
-        List<BillingItem> items = new ArrayList<>();
+        List<BillingItem> items = new ArrayList<BillingItem>();
         if (pricingType != null) {
             items = calculateActivities(invoice, pricingType).getItems();
         } else {
