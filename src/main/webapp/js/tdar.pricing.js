@@ -127,12 +127,21 @@
             rules: {
                 "invoice.otherReason": {
                     required: "#MetadataForm_invoice_paymentMethodINVOICE:checked, #MetadataForm_invoice_paymentMethodMANUAL:checked"
-                }
+                },
+                "invoice.paymentMethod": "required"
             },
             messages: {
                 "invoice.otherReason": "If 'invoice', specify an invoice/work-order number; if 'other',  please describe why you are creating this invoice."
 
+            },
+            errorClass: "text-error",
+            errorPlacement: function($error, $element) {
+//                if($element.is("type[radio]")) {
+                    $error.appendTo($element.closest(".controls"));
+//                }
             }
+
+
 
         });
     };

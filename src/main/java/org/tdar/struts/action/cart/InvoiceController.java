@@ -95,7 +95,6 @@ public class InvoiceController extends AbstractCartController {
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly
     public String processInvoice() {
-        // fixme: if logged in but no owner specified, set it here - this should probably go in prepare(), but it would conflict w/ other /cartadd
         try {
             setInvoice(invoiceService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType, accountId));
         } catch (Exception trex) {

@@ -146,7 +146,7 @@
                 <#if (billingManager && allPaymentMethods?size > 1)>
                     <h3>Payment Method</h3>
                     <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-                    listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD" />
+                    listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />
                 </#if>
 
                 <@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />
