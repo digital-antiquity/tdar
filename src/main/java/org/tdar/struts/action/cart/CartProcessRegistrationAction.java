@@ -47,7 +47,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (! isValidInvoice()) {
+        if (! validateInvoice()) {
             return;
         }
         getLogger().debug("validating registration request");

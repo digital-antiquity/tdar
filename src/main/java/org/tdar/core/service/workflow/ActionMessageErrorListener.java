@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.ErrorListener;
-
+//FIXME: this class doesn't follow a listener pattern and so the name is confusing.  A better name might be ActionMessageErrorContainer  or ActionMessageErrorSupportImpl (if you're down w/ that sort of naming scheme)
 public class ActionMessageErrorListener implements Serializable, ActionMessageErrorSupport {
 
     private static final long serialVersionUID = 4957723037281137599L;

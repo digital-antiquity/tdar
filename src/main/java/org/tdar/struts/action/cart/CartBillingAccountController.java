@@ -88,7 +88,7 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (!isValidInvoice()) {
+        if (!validateInvoice()) {
             return;
         }
         if (isPostRequest()) {

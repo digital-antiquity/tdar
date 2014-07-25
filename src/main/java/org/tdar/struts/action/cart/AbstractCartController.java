@@ -67,11 +67,15 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
      *            object to check for being null
      * @param textKey
      *            key of error message (the value supplied to to {@link #getText(String, Object...)}
+     *
+     * @return true if object is valid, otherwise false
+     *
      */
-    protected final void validateNotNull(Object object, String textKey) {
+    protected final boolean validateNotNull(Object object, String textKey) {
         if (object == null) {
             addActionError(getText(textKey));
         }
+        return object != null;
     }
 
     /**
@@ -97,9 +101,14 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
         invoice = loadPendingInvoice();
     }
 
-    protected boolean isValidInvoice() {
-        if (invoice == null) {
-            addActionError(getText("abstractCartController.select_invoice"));
+    /**
+     * Validates an invoices. If invoice is not valid,  this method adds an actionError <strong>and also changes the input result name to 'redirect-start'
+     * </strong> (the assumption being that the user cannot correct the issue by doing anything other than going back to the start of the cart workflow).
+     *
+     * @return true if valid (invoice is not null), otherwise false
+     */
+    protected boolean validateInvoice() {
+        if (!validateNotNull(invoice, "abstractCartController.select_invoice")) {
             inputResultName = "redirect-start";
             return false;
         }

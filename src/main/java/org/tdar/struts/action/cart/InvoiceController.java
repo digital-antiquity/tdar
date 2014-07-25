@@ -211,7 +211,7 @@ public class InvoiceController extends AbstractCartController {
      */
     @Override
     public void validate() {
-        if (!isValidInvoice()) {
+        if (!validateInvoice()) {
             return;
         }
         // rule: invoice must not be finalized
