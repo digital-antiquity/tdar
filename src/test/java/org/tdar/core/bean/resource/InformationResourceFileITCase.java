@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +26,12 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
@@ -35,6 +39,9 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     InformationResourceFileService informationResourceFileService;
+
+    @Autowired
+    InformationResourceFileVersionDao informationResourceFileVersionDao;
 
     @Autowired
     InformationResourceService informationResourceService;
@@ -224,6 +231,38 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             genericService.synchronize();
 
         }
+    }
+
+    
+    @Rollback(true)
+    @Test
+    public void testVersionDeletion() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
+        InformationResourceFileVersion version = getVersion(irFile, VersionType.WEB_LARGE);
+        File file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version, false);
+        assertTrue(file.exists());
+        version = getVersion(irFile, VersionType.WEB_MEDIUM);
+        file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version, true);
+        assertFalse(file.exists());
+
+        version = getVersion(irFile, VersionType.WEB_SMALL);
+        file = version.getTransientFile();
+        informationResourceFileVersionDao.delete(version);
+        assertTrue(file.exists());
+
+        
+    }
+
+    private InformationResourceFileVersion getVersion(InformationResourceFile irFile, VersionType type) throws FileNotFoundException {
+        InformationResourceFileVersion version = irFile.getCurrentVersion(type);
+        assertNotNull(version);
+        Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+        File file = filestore.retrieveFile(ObjectType.RESOURCE, version);
+        version.setTransientFile(file);
+        return version;
     }
 
 }
