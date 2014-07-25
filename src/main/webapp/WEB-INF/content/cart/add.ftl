@@ -122,6 +122,7 @@
 
     <#if administrator || billingManager>
     <div class="divAdminLand admin-well">
+            <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
 
         <h3>Invoice Owner</h3>
 
@@ -135,7 +136,7 @@
             includeRepeatRow=false/>
 
                 <span class="help-block">
-                    Use this field if you wish to create a <em>proxy invoice</em> on behalf of another user.
+                    Use this field to create a <em>proxy invoice</em> on behalf of another user.
                 </span>
             </div>
         </div>
@@ -143,37 +144,38 @@
 
         <#if (billingManager && allPaymentMethods?size > 1)>
             <h3>Payment Method</h3>
-            <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-            listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />
+            <#--<@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"-->
+            <#--listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />-->
+            <@invoicecommon.paymentMethod />
         </#if>
 
-        <@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />
+        <#--<@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />-->
 
         <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
-                <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
-                    <h3>Nelnet: Extra Parameters</h3>
-                    <div class="alert alert-warning">
-                        This section allows you to send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
-                            if the previous sentence sounds like gibberish.
-                    </div>
-                    <table class="table table-bordered table-compact">
-                        <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <#list activities as act>
-                            <#if !act.production >
-                                <tr>
-                                    <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
-                                    <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
-                                </tr>
-                            </#if>
-                        </#list>
-                        </tbody>
-                    </table>
+
+        <h3>Nelnet: Extra Parameters</h3>
+        <div class="alert alert-warning">
+            This lets us send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
+                if the previous sentence sounded like gibberish.
+        </div>
+        <table class="table table-bordered table-compact">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#list activities as act>
+                <#if !act.production >
+                    <tr>
+                        <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
+                        <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
+                    </tr>
+                </#if>
+            </#list>
+            </tbody>
+        </table>
 
     </div>
     </#if>

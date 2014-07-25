@@ -949,22 +949,28 @@ TDAR.common = function () {
         _switchDocType($(".doctype input[type=radio]:checked"));
     }
 
+    //FIXME: refactor/dedupe switchType (TDAR-3989)
     /**
-     * For use with document edit page.  display relevant fieldsets corresponding to the current "document type"
-     * @param radio
-     * @param container
+     * Toggle the display of certain elements based on the value of a specified radio button.
+     *
+     * This function shows .typeToggle elements that also have css class which matches the radio's value, and hides all other .typeToggle elements.
+     *
+     * @param radio element/selector
+     * @param container element/selector. Context for .typeToggle search.
      */
     var _switchType = function (radio, container) {
-        var type = $(radio).val().toLowerCase();
+        var val = $(radio).val();
+        var type = (typeof val !== 'undefined') ? val.toLowerCase() : "SWITCHTYPEDEFAULT";
+        type = "." + type;
 
         console.debug('switchType:start:' + type);
         var $container = $(container);
-        $(".typeToggle", $container).hide();
-        $($("." + type), $container).show();
+        $container.find(".typeToggle").hide();
+        $container.find(type).show();
 
     }
 
-    //FIXME: can switchType and switchDocType be refactored? at very least they need better names
+    //FIXME: can switchType and switchDocType be refactored? at very least they need better names (TDAR-3989)
     /**
      * Similar to switchType, but this (i think)) swaps out labels and descriptions for inputs that are re-used by
      * multiple document types.
