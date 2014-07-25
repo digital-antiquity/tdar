@@ -210,3 +210,8 @@ CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(labe
 
 -- abrin 07/16/2014 notification type
 alter table user_notification add column display_type varchar(32) not null default 'NORMAL';
+-- abrin 05/11/2014
+create index information_resource_file_ir2 on information_resource_file(information_resource_id);
+
+-- abrin 07/24/2014
+alter table creator_view_statistics drop constraint creator_view_statistics_creator_id_fkey;
