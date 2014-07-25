@@ -78,9 +78,9 @@
 
     </#macro>
 
-    <#macro paymentMethod includePhone=true>
+    <#macro paymentMethod includePhone=false>
         <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-        listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />
+        listValue="label"    cssClass="transactionType" emptyOption='false' />
 
         <#if includePhone>
         <div class="typeToggle credit_card invoice manual">
@@ -93,34 +93,6 @@
     <div class="typeToggle manual">
         <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
     </div>
-
-        <@edit.submit fileReminder=false label="Next: Process Payment"/>
-
-    <script>
-        $(document).ready(function () {
-            'use strict';
-            TDAR.common.initEditPage($('#MetadataForm')[0]);
-            $(".transactionType[type=radio]").click(function () {
-                TDAR.common.switchType(this, '#MetadataForm');
-            });
-            if (!$(".transactionType[type=radio]:checked").length) {
-                $(".transactionType[type=radio]").first().click();
-            }
-            TDAR.common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
-
-            $("#MetadataForm").submit(function () {
-                if ($("#MetadataForm_invoice_billingPhone").val()) {
-                    $("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig, ""));
-                }
-            });
-
-            if (${(((invoice.calculatedCost)!0) <= 0)?string}) {
-                $(".fadeIfZeroed").fadeTo('fast', .5);
-            }
-
-        });
-
-    </script>
 
     </#macro>
 

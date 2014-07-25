@@ -123,16 +123,21 @@
         });
         $(form).change();
 
+        _setupPaymentMethodPivot();
+
         var validator = $(form).validate({
             rules: {
                 "invoice.otherReason": {
-                    required: "#MetadataForm_invoice_paymentMethodINVOICE:checked, #MetadataForm_invoice_paymentMethodMANUAL:checked"
+                    required: "#MetadataForm_invoice_paymentMethodMANUAL:checked"
+                },
+                "invoice.invoiceNumber": {
+                    required: "#MetadataForm_invoice_paymentMethodINVOICE:checked"
                 },
                 "invoice.paymentMethod": "required"
             },
             messages: {
-                "invoice.otherReason": "If 'invoice', specify an invoice/work-order number; if 'other',  please describe why you are creating this invoice."
-
+                "invoice.invoiceNumber": "Specify the customer invoice/work-order number.",
+                "invoice.otherReason": "For manual invoices, describe why you are creating this invoice."
             },
             errorClass: "text-error",
             errorPlacement: function($error, $element) {
@@ -140,11 +145,21 @@
                     $error.appendTo($element.closest(".controls"));
 //                }
             }
-
-
-
         });
+        console.log("validtor:", validator);
     };
+
+    /**
+     * setup the pivot pane toggle for the paymentMethod field
+     * @private
+     */
+    var _setupPaymentMethodPivot = function() {
+        $(".transactionType[type=radio]").click(function () {
+            TDAR.common.switchType(this, '#MetadataForm');
+        });
+        //switch to the right pane on init
+        TDAR.common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
+    }
 
     var _initPolling = function () {
         _updateProgress();
