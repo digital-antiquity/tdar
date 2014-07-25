@@ -183,7 +183,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         Object result = new HashMap<String, Object>();
 
         try {
-            if ((project != null) && !project.isTransient()) {
+            if (Persistable.Base.isNotNullOrTransient(project)) {
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 // obfuscationService.obfuscate(project, user);
                 result = project;

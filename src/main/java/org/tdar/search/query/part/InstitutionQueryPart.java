@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
 
@@ -30,7 +31,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         boolean containsSpaces = false;
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
             for (Institution inst : getFieldValues()) {
-                names.add(inst.getName().trim());
+                names.add(StringUtils.trim(inst.getName()));
                 if (inst.getName().trim().contains(" ")) {
                     containsSpaces = true;
                 }

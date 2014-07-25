@@ -39,7 +39,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 fns.add(wildcardName);
                 lns.add(wildcardName);
                 group.setOperator(Operator.OR);
-                String wildcard = new String(wildcardName);
+                String wildcard = StringUtils.trim(new String(wildcardName));
                 wildcard = PhraseFormatter.ESCAPED.format(wildcard);
                 wildcard = PhraseFormatter.WILDCARD.format(wildcard);
                 if (wildcard.contains(" ")) {
@@ -52,10 +52,10 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             }
 
             if (StringUtils.isNotBlank(pers.getEmail())) {
-                ems.add(pers.getEmail().trim());
+                ems.add(StringUtils.trim(pers.getEmail()));
             }
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
-                String institution = pers.getInstitutionName().trim();
+                String institution = StringUtils.trim(pers.getInstitutionName());
                 institution = PhraseFormatter.ESCAPED.format(institution);
                 // institution = PhraseFormatter.WILDCARD.format(institution);
                 if (institution.contains(" ")) {

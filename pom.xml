@@ -95,10 +95,6 @@
             <url>http://repository.codehaus.org/</url>
         </repository>
         <repository>
-            <id>local-dev</id>
-            <url>http://dev.tdar.org/repo/</url>
-        </repository>
-        <repository>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -565,12 +561,6 @@
                     <groupId>javassist</groupId>
                 </exclusion>
             </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-config-browser-plugin</artifactId>
-            <version>${struts2.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -2018,6 +2008,14 @@
                 <the.jdbc.password>tdar</the.jdbc.password>
                 <webapp.deploy.dir>/opt/webapps/tdar</webapp.deploy.dir>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts2-config-browser-plugin</artifactId>
+                    <version>${struts2.version}</version>
+                    <!-- LICENSE: APACHE 2.0 -->
+                </dependency>
+            </dependencies>
         </profile>
         <profile>
             <id>production</id>

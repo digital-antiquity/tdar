@@ -34,8 +34,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "cltkwd_appr", columnList = "approved, id")
 })
 @Indexed(index = "Keyword")
-@Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.CultureKeyword")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.CultureKeyword")
 @Cacheable
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
@@ -46,12 +46,19 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private CultureKeyword parent;
+
+    public CultureKeyword() {
+    }
+
+    public CultureKeyword(String string) {
+        setLabel(string);
+    }
 
     @XmlAttribute
     @Override

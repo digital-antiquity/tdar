@@ -193,7 +193,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
             getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
             fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
         }

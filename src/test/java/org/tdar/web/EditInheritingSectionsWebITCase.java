@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -18,6 +19,7 @@ import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -82,6 +84,8 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     @Test
     @Rollback(true)
     public void testProjectJson() {
+        Set<CultureKeyword> cultureKeywords = projectService.find(PARENT_PROJECT_ID).getCultureKeywords();
+        logger.debug("cultureKeywords: {}", cultureKeywords);
         gotoPageWithoutErrorCheck("/project/" + PARENT_PROJECT_ID + "/json");
         String json = getPageCode();
         logger.debug("page json:" + json);
