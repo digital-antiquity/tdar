@@ -1593,7 +1593,7 @@ div.orgChart div.node.level1.special {
 
 /* styles for purchasing pages  */
 .authpane, .cartpane {
-    background-color: #ecdccc;
+    background-color: #f3f0ee;
     padding: 0.5em;
     border-radius: 0.5em
 }
@@ -1602,7 +1602,7 @@ div.orgChart div.node.level1.special {
     min-height: 350px;
 }
 .authpane .form-actions, .cartpane .form-actions {
-    background-color: #ecdccc;
+    background-color: #f3f0ee;
 
 }
 
@@ -1662,6 +1662,9 @@ div.orgChart div.node.level1.special {
     display:inline-block;
     width: 100%;
     font-size: 10pt;
+}
+.table-invoice tr .invoice-total {
+    font-size: 23pt;
 }
 
 div.tdar-rates {

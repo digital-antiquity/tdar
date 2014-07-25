@@ -2,7 +2,8 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
     <#macro printInvoice>
-    <table class="tableFormat">
+    <!-- FOR testing total:$${invoice.calculatedCost!0} -->
+    <table class="table  table-invoice">
         <tr>
             <th>Item</th>
             <th>Quantity</th>
@@ -37,17 +38,13 @@
                 <td></td>
             </tr>
         </#if>
-        <tr>
-            <th colspan=6><em>Total:</em></th>
-            <th><#if invoice.proxy && !billingManager>N/A<#else>$${invoice.calculatedCost!0}
-                <!-- FOR testing total:$${invoice.calculatedCost!0} -->
-            </#if>
-            </th>
-        </tr>
+        <tfoot>
+            <tr>
+                <th colspan=6>Total:</th>
+                <th class="invoice-total">$${invoice.calculatedCost!0}</th>
+            </tr>
+        </tfoot>
     </table>
-    <#if invoice.modifiable>
-        <@s.a href="/cart/modify" cssClass="tdar-button small">Modify This Invoice</@s.a>
-    </#if>
     </#macro>
 
 <#macro invoiceOwner invoice>
@@ -66,12 +63,7 @@
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if (billingManager!false)>
-        	<@s.url var='prepopulatedInvoiceUrl' value='/cart/add'>
-        		<@s.param name='invoice.numberOfFiles'>${invoice.numberOfFiles?c}</@s.param>
-        		<@s.param name='invoice.numberOfMb'>${invoice.numberOfMb?c}</@s.param>
-        		<@s.param name='code'>${((invoice.coupon.code)!'')}</@s.param>
-        	</@s.url>
-        	<@s.a href='${prepopulatedInvoiceUrl}'>Customer Link</@s.a>
+        	<@s.a href="/cart/continue?invoiceId=${invoice.id?c}"  >Customer Link</@s.a>
             <#--<#noescape><@s.a href="/cart/add?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfFiles?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
         </#if>
     </div>
@@ -120,4 +112,14 @@
         </#if>
     </#macro>
 
+    <#--Show invoice information that is pertinent only to admins, billing-managers -->
+    <#macro invoiceAdminSection invoice>
+        <#if (!billingManager && !admin)><#return></#if>
+    <div class="admin-well">
+        <dl>
+            <dt>Invoice Type</dt>
+            <dd>${invoice.proxy?string("Proxy Invoice", "Normal Invoice")}</dd>
+        </dl>
+    </div>
+    </#macro>
     </#escape>
