@@ -175,7 +175,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
 
             //click on the link to the billing account for this invoice
-            find("#articleBody a").first().click();
+            find("#articleBody a.accountLink").first().click();
             //waitForPageload();
 
             //make sure billing account page also has a link back to the invoice-view page we just verified

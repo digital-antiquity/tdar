@@ -58,7 +58,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         fillOutRegistration(reg);
         // wait for spam check
         Thread.sleep(3000);
-        submitForm("#registrationForm .submitButton");
+        WebElementSelection buttons = find("#loginForm [type=submit]");
+        buttons.first().click();
 
 
         //now we are on the "choose billing account" page. just click through to next page
@@ -82,7 +83,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
         Thread.sleep(3000);
-        submitForm("#loginForm [type=submit]");
+        WebElementSelection buttons = find("#loginForm [type=submit]");
+        buttons.first().click();
 
         waitFor(ExpectedConditions.titleContains("Download: "));
         dismissModal();
