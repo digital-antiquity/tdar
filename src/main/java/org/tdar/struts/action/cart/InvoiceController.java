@@ -214,6 +214,14 @@ public class InvoiceController extends AbstractCartController {
         if (!validateInvoice()) {
             return;
         }
+        //unbox to zero if null
+        long mb = getInvoice().getNumberOfMb();
+        long files = getInvoice().getNumberOfFiles();
+
+        if(isPostRequest() && mb == 0L && files == 0L ) {
+            addActionError(getText("cartController.specify_mb_or_files"));
+        }
+
         // rule: invoice must not be finalized
         if (!getInvoice().isModifiable()) {
             addActionError(getText("cartController.cannot_modify"));
