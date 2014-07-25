@@ -43,6 +43,7 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.Pair;
 
 /**
@@ -58,6 +59,7 @@ import org.tdar.utils.Pair;
  */
 @ParentPackage("secured")
 @Component
+@HttpsOnly
 @Scope("prototype")
 @Namespace("/batch")
 public class BulkUploadController extends AbstractInformationResourceController<Image> {

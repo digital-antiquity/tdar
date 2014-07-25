@@ -175,6 +175,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
+    @HttpsOnly
     @Action(value = DELETE,
 // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
 //            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },

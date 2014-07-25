@@ -28,6 +28,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -38,6 +39,7 @@ import java.util.*;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/billing")
+@HttpsOnly
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
     public static final String UPDATE_QUOTAS = "updateQuotas";
