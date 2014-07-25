@@ -97,13 +97,13 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
         }
-        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getTdarUser())) {
-            String msg = String.format("user %s does not have permissions to download %s", getSessionData().getTdarUser(), irFileVersion);
+        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getAuthenticatedUser())) {
+            String msg = String.format("user %s does not have permissions to download %s", getAuthenticatedUser(), irFileVersion);
             getLogger().warn(msg);
             return FORBIDDEN;
         }
         setInformationResourceId(irFileVersion.getInformationResourceId());
-        getLogger().info("user {} downloaded {}", getSessionData().getTdarUser(), irFileVersion);
+        getLogger().info("user {} downloaded {}", getAuthenticatedUser(), irFileVersion);
         downloadService.handleDownload(getAuthenticatedUser(), this, getInformationResourceId(), irFileVersion);
         return SUCCESS;
     }
@@ -129,7 +129,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             return ERROR;
         }
 
-        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getTdarUser())) {
+        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getAuthenticatedUser())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
             return FORBIDDEN;
         }
@@ -150,7 +150,7 @@ public class DownloadController extends AuthenticationAware.Base implements Down
             if (irf.isDeleted()) {
                 continue;
             }
-            if (!getAuthenticationAndAuthorizationService().canDownload(irf, getSessionData().getTdarUser())) {
+            if (!getAuthenticationAndAuthorizationService().canDownload(irf, getAuthenticatedUser())) {
                 getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
                 return FORBIDDEN;
             }

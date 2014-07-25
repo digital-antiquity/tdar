@@ -59,8 +59,8 @@ public interface AuthenticationAware extends SessionDataAware {
             if (getSessionData() == null) {
                 return null;
             }
-            if (Persistable.Base.isNotNullOrTransient(getSessionData().getTdarUser())) {
-                return getGenericService().find(TdarUser.class, getSessionData().getTdarUser().getId());
+            if (Persistable.Base.isNotNullOrTransient(getSessionData().getTdarUserId())) {
+                return getGenericService().find(TdarUser.class, getSessionData().getTdarUserId());
             } else {
                 return null;
             }

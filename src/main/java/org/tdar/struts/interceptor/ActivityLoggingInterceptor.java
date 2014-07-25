@@ -5,7 +5,9 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
@@ -35,6 +37,8 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
 
     @Autowired
     private transient ReflectionService reflectionService;
+    @Autowired
+    private transient GenericService genericService;
     private SessionData sessionData;
 
     @Override
@@ -50,9 +54,9 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
 
         Activity activity = null;
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
-            activity = new Activity(ServletActionContext.getRequest());
+            activity = new Activity(ServletActionContext.getRequest(), null);
             if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
-                activity.setUser(sessionData.getTdarUser());
+                activity.setUser(genericService.find(TdarUser.class, sessionData.getTdarUserId()));
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
             logger.debug("<< activity begin: {} ", activity);

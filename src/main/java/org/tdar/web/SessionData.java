@@ -26,18 +26,14 @@ public class SessionData implements Serializable {
 
     private String returnUrl;
     private String[] parameters;
+    private Long tdarUserId;
 
-    @Deprecated
-    public TdarUser getPerson() {
-        return getTdarUser();
-    }
-
-    public TdarUser getTdarUser() {
-        if (authenticationToken == null) {
-            return null;
-        }
-        return authenticationToken.getTdarUser();
-    }
+//    public TdarUser getTdarUser() {
+//        if (authenticationToken == null) {
+//            return null;
+//        }
+//        return authenticationToken.getTdarUser();
+//    }
 
     public AuthenticationToken getAuthenticationToken() {
         return authenticationToken;
@@ -94,12 +90,20 @@ public class SessionData implements Serializable {
         return parameters;
     }
 
-    public boolean isContributor() {
-        TdarUser tdarUser = getTdarUser();
-        if (tdarUser == null) {
-            return false;
-        }
-        return tdarUser.getContributor();
+//    public boolean isContributor() {
+//        TdarUser tdarUser = getTdarUser();
+//        if (tdarUser == null) {
+//            return false;
+//        }
+//        return tdarUser.getContributor();
+//    }
+
+    public Long getTdarUserId() {
+        return tdarUserId;
+    }
+
+    public void setTdarUserId(Long tdarUserId) {
+        this.tdarUserId = tdarUserId;
     }
 
 }

@@ -831,12 +831,12 @@ public class AuthenticationAndAuthorizationService implements Accessible {
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         // we actually need to update two person instances: the persisted user record, and the detached user
         // associated with the session. We hide this detail from the caller.
-        TdarUser detachedUser = sessionData.getPerson();
-        TdarUser persistedUser = personDao.find(TdarUser.class, detachedUser.getId());
-        satisfyPrerequisites(detachedUser, notices);
+        Long detachedUserId = sessionData.getTdarUserId();
+        TdarUser persistedUser = personDao.find(TdarUser.class, detachedUserId);
+//        satisfyPrerequisites(detachedUserId, notices);
         satisfyPrerequisites(persistedUser, notices);
         personDao.saveOrUpdate(persistedUser);
-        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+//        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUserId, detachedUserId.getTosVersion(), detachedUserId.getContributorAgreementVersion());
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 
