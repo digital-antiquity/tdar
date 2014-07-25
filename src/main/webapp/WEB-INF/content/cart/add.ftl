@@ -35,29 +35,37 @@
         <@common.jsErrorLog />
         <h1>What would you like to put into tDAR?</h1>
 
-    <p>In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
-        not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper
-        preservation of materials uploaded to tDAR.</p>
+        <h3>About Invoices and Accounts</h3>
+        <p>
+            In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
+            not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper
+            preservation of materials uploaded to tDAR.
+        </p>
 
-    <p><strong>Managing Accounts</strong><br>Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user
-        they choose.</p>
+        <#--<h3>Account Management</h3>-->
+        <p>
+            Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user
+            they choose.
+        </p>
 
-    <h2>Rates &amp; Calculator</h2>
 
     <#assign showSuggested=!administrator && actionName != 'modify'/>
 
     <div class="row">
-        <div class="span12">
+        <div class="span4" style="min-height:30em">
+            <@rates />
+
+        </div>
+        <div class="span8">
             <ul class="nav nav-tabs">
                 <li class="<#if showSuggested>active</#if>">
                     <a href="#suggested" data-toggle="tab">Suggested</a>
                 </li>
                 <li class="<#if !showSuggested>active</#if>"><a href="#custom" data-toggle="tab">Rate Calculator (Customize) &amp; All Rates</a></li>
             </ul>
-            <div class="tab-content row">
-                <div id="suggested" class="tab-pane <#if showSuggested>active</#if> span12">
+            <div class="tab-content">
+                <div id="suggested" class="tab-pane <#if showSuggested>active</#if> ">
                     <div class="row">
-                        <@rates />
                         <div class="span8">
                             <h2>Suggested Levels</h2>
 
@@ -69,9 +77,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="custom" class="tab-pane <#if !showSuggested>active</#if> span12">
+                <div id="custom" class="tab-pane <#if !showSuggested>active</#if>">
                     <div class="row">
-                        <@rates />
                         <div class="span8">
                             <h2>Cost Calculator</h2>
 
@@ -107,83 +114,85 @@
                         </div>
                     </div>
                 </div>
+            </div> <!-- End of tab hell. You made it! -->
 
-                <div class="row">
-                    <div class="span8 offset4">
-                        <@s.textfield name="code" label="Redeem Code" />
-                        <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction"
-                               value="Next: Review & Choose Payment Method">
-
-                        <#if invoice??>
-                            <h3>Current Invoice</h3>
-                            <@invoicecommon.printSubtotal invoice />
-                        </#if>
-
-                    </div>
-                </div>
-
-                <#if administrator || billingManager>
-                <div class="divAdminLand admin-well">
-
-                <h3>Invoice Owner</h3>
-
-                <div class="control-group">
-                    <label class="control-label">Invoice Owner</label>
-                    <div class="controls">
-                    <#--if no owner specified already, supply a 'blank' user -->
-                            <@edit.registeredUserRow prefix="invoice.owner"
-                    person=((invoice.owner)!blankAuthorizedUser.user)
-                    _indexNumber=""
-                    includeRepeatRow=false/>
-
-                        <span class="help-block">
-                            Use this field if you wish to create a <em>proxy invoice</em> on behalf of another user.
-                        </span>
-                    </div>
-                </div>
-
-
-                <#if (billingManager && allPaymentMethods?size > 1)>
-                    <h3>Payment Method</h3>
-                    <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-                    listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />
-                </#if>
-
-                <@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />
-
-                <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
-                        <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
-                            <h3>Nelnet: Extra Parameters</h3>
-                            <div class="alert alert-warning">
-                                This section allows you to send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
-                                    if the previous sentence sounds like gibberish.
-                            </div>
-                            <table class="table table-bordered table-compact">
-                                <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Quantity</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <#list activities as act>
-                                    <#if !act.production >
-                                        <tr>
-                                            <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
-                                            <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
-                                        </tr>
-                                    </#if>
-                                </#list>
-                                </tbody>
-                            </table>
-
-                </div>
-                </#if>
-
-            </div>
         </div>
     </div>
 
+
+    <#if administrator || billingManager>
+    <div class="divAdminLand admin-well">
+
+        <h3>Invoice Owner</h3>
+
+        <div class="control-group">
+            <label class="control-label">Invoice Owner</label>
+            <div class="controls">
+            <#--if no owner specified already, supply a 'blank' user -->
+                    <@edit.registeredUserRow prefix="invoice.owner"
+            person=((invoice.owner)!blankAuthorizedUser.user)
+            _indexNumber=""
+            includeRepeatRow=false/>
+
+                <span class="help-block">
+                    Use this field if you wish to create a <em>proxy invoice</em> on behalf of another user.
+                </span>
+            </div>
+        </div>
+
+
+        <#if (billingManager && allPaymentMethods?size > 1)>
+            <h3>Payment Method</h3>
+            <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
+            listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />
+        </#if>
+
+        <@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />
+
+        <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
+                <@s.hidden name="accountId" value="${(accountId!-1)?c}" />
+                    <h3>Nelnet: Extra Parameters</h3>
+                    <div class="alert alert-warning">
+                        This section allows you to send arbitrary parameters to Nelnet, our payment processor.  Please skip this section
+                            if the previous sentence sounds like gibberish.
+                    </div>
+                    <table class="table table-bordered table-compact">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list activities as act>
+                            <#if !act.production >
+                                <tr>
+                                    <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
+                                    <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2" theme="simple"/></td>
+                                </tr>
+                            </#if>
+                        </#list>
+                        </tbody>
+                    </table>
+
+    </div>
+    </#if>
+
+    <#if invoice??>
+    <div class="well">
+        <h3>Current Invoice</h3>
+        <@invoicecommon.printSubtotal invoice />
+    </div>
+    </#if>
+
+    <div class="row">
+        <div class="span12">
+            <@s.textfield name="code" label="Redeem Code" />
+            <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction"
+                   value="Next: Review & Choose Payment Method">
+
+        </div>
+    </div>
 
     </@s.form>
 
@@ -201,7 +210,7 @@
 </body>
 
     <#macro rates>
-    <div class="span3" style="border-right: 1px dashed #bbb;padding-right: 40px;">
+    <div class="tdar-rates" >
         <h2>Rates</h2>
         <table class="tableFormat table">
             <tr>

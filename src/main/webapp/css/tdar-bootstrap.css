@@ -1663,3 +1663,7 @@ div.orgChart div.node.level1.special {
     width: 100%;
     font-size: 10pt;
 }
+
+div.tdar-rates {
+    border-right: 1px dashed #bbb;padding-right: 40px;
+}
