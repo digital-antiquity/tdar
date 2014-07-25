@@ -26,7 +26,6 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.data.DownloadHandler;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -73,30 +72,31 @@ public class DownloadService {
     }
 
     @Transactional(readOnly = true)
-    public DownloadTransferObject handleActualDownload(DownloadHandler dh, DownloadTransferObject dto)
+    public DownloadTransferObject handleActualDownload(DownloadTransferObject dto)
     {
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
 
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
             }
-            addFileToDownload(dh, dto.getAuthenticatedUser(), irFileVersion, dh.isCoverPageIncluded(), dto);
+            addFileToDownload(irFileVersion, dto);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
 
-                addStatistics(dh, dto, irFile);
+                addStatistics(dto, irFile);
 
             }
         }
         return dto;
     }
 
-    private void addStatistics(DownloadHandler dh, DownloadTransferObject dto, InformationResourceFile irFile) {
+    private void addStatistics(DownloadTransferObject dto, InformationResourceFile irFile) {
         // don't count download stats if you're downloading your own stuff
-        if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), dto.getAuthenticatedUser()) && !dh.isEditor()) {
+        TdarUser user = dto.getAuthenticatedUser();
+        if (!Persistable.Base.isEqual(irFile.getInformationResource().getSubmitter(), user) && !authorizationService.isEditor(user)) {
             FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
             dto.getStatistics().add(stat);
         }
@@ -150,13 +150,12 @@ public class DownloadService {
         return Persistable.Base.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
     }
 
-    private void addFileToDownload(TextProvider provider, TdarUser authenticatedUser,
-            InformationResourceFileVersion irFileVersion, boolean includeCoverPage, DownloadTransferObject dto) {
+    private void addFileToDownload(InformationResourceFileVersion irFileVersion, DownloadTransferObject dto) {
         DownloadFile resourceFile = new DownloadFile(irFileVersion.getTransientFile());
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
-        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && includeCoverPage) {
-            resourceFile = new DownloadPdfFile((Document)dto.getInformationResource(), irFileVersion, pdfService, authenticatedUser, provider);
+        if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
+            resourceFile = new DownloadPdfFile((Document)dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(), dto.getTextProvider());
         }
         
         if (InformationResourceFile.FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
@@ -170,7 +169,7 @@ public class DownloadService {
 
     @Transactional(readOnly=false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload, DownloadHandler dh) {
+            InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(versionToDownload)) {
             versionsToDownload.add(versionToDownload);
@@ -191,7 +190,9 @@ public class DownloadService {
             resourceToDownload = genericService.find(Document.class, informationResource.getId());
             }
         }
-        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser);
+        
+        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser, textProvider);
+        dto.setIncludeCoverPage(includeCoverPage);
 
         if (CollectionUtils.isEmpty(versionsToDownload)) {
             dto.setResult(DownloadResult.ERROR);
@@ -221,7 +222,7 @@ public class DownloadService {
         }
         logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
         try {
-            handleActualDownload(dh, dto);
+            handleActualDownload(dto);
             registerDownload(dto.getStatistics());
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);

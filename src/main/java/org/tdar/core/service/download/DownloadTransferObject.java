@@ -1,6 +1,7 @@
 package org.tdar.core.service.download;
 
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -19,6 +20,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Represents a transfer object for a download. The DownloadService will build this and pass it back to the DownloadController, the controller will then
@@ -44,12 +47,15 @@ public class DownloadTransferObject implements Serializable {
     private InputStream stream;
     private DownloadResult result;
     private TdarUser authenticatedUser;
-
+    private boolean includeCoverPage;
     private String dispositionPrefix;
+    private TextProvider textProvider;
 
-    public DownloadTransferObject(InformationResource resourceToDownload, List<InformationResourceFileVersion> versionsToDownload, TdarUser user) {
+    public DownloadTransferObject(InformationResource resourceToDownload, List<InformationResourceFileVersion> versionsToDownload, TdarUser user,
+            TextProvider textProvider) {
         this.informationResource = resourceToDownload;
         this.versionsToDownload = versionsToDownload;
+        this.setTextProvider(textProvider);
         this.setAuthenticatedUser(user);
     }
 
@@ -109,18 +115,36 @@ public class DownloadTransferObject implements Serializable {
 
     private InputStream getZipInputStream() throws Exception {
         PipedInputStream is = new PipedInputStream();
-        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new PipedOutputStream(is)));
-        for (DownloadFile df : downloads) {
-            String filename = df.getFileName();
+        final ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new PipedOutputStream(is)));
+        final List<DownloadFile> downloadFiles = downloads;
+        Thread thread = new Thread(
+                new Runnable() {
+                    public void run() {
+                        try {
+                            for (DownloadFile df : downloadFiles) {
+                                String filename = df.getFileName();
 
-            ZipEntry zentry = new ZipEntry(filename);
-            zout.putNextEntry(zentry);
-            InputStream fin = df.getInputStream();
-            logger.debug("adding to archive: {}", df.getFileName());
-            IOUtils.copy(fin, zout);
-            IOUtils.closeQuietly(fin);
-        }
-        IOUtils.closeQuietly(zout);
+                                ZipEntry zentry = new ZipEntry(filename);
+                                zout.putNextEntry(zentry);
+                                InputStream fin = df.getInputStream();
+                                logger.debug("adding to archive: {}", df.getFileName());
+                                IOUtils.copy(fin, zout);
+                                IOUtils.closeQuietly(fin);
+                            }
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } finally {
+                            IOUtils.closeQuietly(zout);
+                        }
+                    }
+                }
+                );
+        thread.start();
+
         return is;
     }
 
@@ -180,6 +204,22 @@ public class DownloadTransferObject implements Serializable {
     @Override
     public String toString() {
         return StringUtils.join(downloads.toArray());
+    }
+
+    public boolean isIncludeCoverPage() {
+        return includeCoverPage;
+    }
+
+    public void setIncludeCoverPage(boolean includeCoverPage) {
+        this.includeCoverPage = includeCoverPage;
+    }
+
+    public TextProvider getTextProvider() {
+        return textProvider;
+    }
+
+    public void setTextProvider(TextProvider textProvider) {
+        this.textProvider = textProvider;
     }
 
 }

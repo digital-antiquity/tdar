@@ -5,7 +5,6 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,30 +12,15 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.DownloadHandler;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("default")
 @Namespace("/filestore")
-@Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
-                params = {
-                        "contentType", "${downloadTransferObject.mimeType}",
-                        "inputName", "downloadTransferObject.inputStream",
-                        "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${fileName}\"",
-                        "contentLength", "${downloadTransferObject.contentLength}"
-                }
-        ),
-        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
-
-})
 @Component
 @Scope("prototype")
-public class UnauthenticatedDownloadController extends AbstractDownloadController implements DownloadHandler, Preparable {
+public class UnauthenticatedDownloadController extends AbstractDownloadController implements Preparable {
 
     private static final long serialVersionUID = 3682702108165100228L;
     @Autowired
@@ -99,7 +83,7 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             return FORBIDDEN;
         }
 
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 

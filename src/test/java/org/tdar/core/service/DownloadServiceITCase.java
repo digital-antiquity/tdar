@@ -31,10 +31,11 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.service.download.DownloadFile;
 import org.tdar.core.service.download.DownloadService;
+import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.download.DownloadController;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
@@ -46,6 +47,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     @Autowired
     DownloadService downloadService;
     int COVER_PAGE_WIGGLE_ROOM = 155_000;
+
+    @Autowired
+    PdfService pdfService;
 
     @Before
     public void prepareDir() throws IOException {
@@ -68,7 +72,6 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
 
-        ArchiveInputStream ais = null;
         Map<String, Long> nameSize = unzipArchive(archive);
         List<String> errs = new ArrayList<>();
         for (File expected : expectedFiles) {
@@ -99,8 +102,9 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
 
     public Map<String, Long> unzipArchive(File archive) {
         Map<String, Long> files = new HashMap<>();
+        ZipFile zipfile = null;
         try {
-            ZipFile zipfile = new ZipFile(archive);
+            zipfile = new ZipFile(archive);
             for (Enumeration e = zipfile.entries(); e.hasMoreElements();) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
                 files.put(entry.getName(), entry.getSize());
@@ -108,6 +112,10 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
             }
         } catch (Exception e) {
             logger.error("Error while extracting file " + archive, e);
+        } finally {
+            if (zipfile!=null) {
+                IOUtils.closeQuietly(zipfile);
+            }
         }
         return files;
     }
@@ -115,27 +123,27 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     // get some files from the test dir and put them into an archive stream
     @Test
     @Rollback
-    public void testDownloadArchiveService() throws IOException {
-        Map<File, String> map = new HashMap<>();
+    public void testDownloadArchiveService() throws Exception {
+        DownloadTransferObject dto = new DownloadTransferObject();
+        List<File> files = new ArrayList<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            map.put(file, null);
+            dto.getDownloads().add(new DownloadFile(file));
+            files.add(file);
         }
         File dest = new File(ROOT_DEST, "everything.zip");
-fail("re-implement");
-//        InputStream merged = pdfService.mergeCoverPage(MessageHelper.getInstance(), getBasicUser(), originalVersion);
-//        File tempFile = File.createTempFile("temp_merge", "pdf");
-//        IOUtils.copy(merged, new FileOutputStream(tempFile));
-//        logger.debug("{}",tempFile) ;
+        InputStream inputStream = dto.getInputStream();
+        IOUtils.copy(inputStream, new FileOutputStream(dest));
+        IOUtils.closeQuietly(inputStream);
+        logger.debug("{}", dest);
 
-//        downloadService.generateZipArchive(map, dest);
-//        assertTrue("file should have been created", dest.exists());
-//        assertTrue("file should be non-empty", dest.length() > 0);
-//        assertArchiveContents(map.keySet(), dest);
+         assertTrue("file should have been created", dest.exists());
+         assertTrue("file should be non-empty", dest.length() > 0);
+         assertArchiveContents(files, dest);
     }
 
     @Test
     @Rollback
-    public void testDownloadArchiveController() throws IOException, InstantiationException, IllegalAccessException {
+    public void testDownloadArchiveController() throws Exception {
 
         List<File> files = new ArrayList<>();
         File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
@@ -150,13 +158,14 @@ fail("re-implement");
         controller.setInformationResourceId(document.getId());
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.downloadZipArchive());
-        logger.info(controller.getFileName());
+        DownloadTransferObject downloadTransferObject = controller.getDownloadTransferObject();
+        logger.info(downloadTransferObject.getFileName());
         File file = File.createTempFile("test", ".zip");
+        
         FileOutputStream output = new FileOutputStream(file);
-        fail("broken");
-//        IOUtils.copy(controller.getInputStream(), output);
-//        IOUtils.closeQuietly(output);
-//        IOUtils.closeQuietly(controller.getInputStream());
+         IOUtils.copy(downloadTransferObject.getInputStream(), output);
+         IOUtils.closeQuietly(output);
+         IOUtils.closeQuietly(downloadTransferObject.getInputStream());
         assertTrue("file should have been created", file.exists());
         assertTrue("file should be non-empty", file.length() > 0);
 
@@ -184,7 +193,7 @@ fail("re-implement");
         DownloadController controller = generateNewInitializedController(DownloadController.class, getAdminUser());
         controller.setInformationResourceId(document.getId());
         assertEquals(Action.ERROR, controller.downloadZipArchive());
-        logger.info(controller.getFileName());
+//        logger.info(controller.getDownloadTransferObject().getFileName());
     }
 
     @Test
@@ -205,7 +214,7 @@ fail("re-implement");
         controller.setInformationResourceFileVersionId(document.getFirstInformationResourceFile().getLatestPDF().getId());
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.execute());
-        assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getFileName());
+        assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getDownloadTransferObject().getFileName());
 
     }
 

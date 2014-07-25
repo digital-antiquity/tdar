@@ -6,12 +6,14 @@ import java.io.InputStream;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.exception.PdfCoverPageGenerationException;
 import org.tdar.core.service.PdfService;
 
 import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Represents a PDF File to be downloaded, generates a cover page as needed
+ * 
  * @author abrin
  *
  */
@@ -25,24 +27,28 @@ public class DownloadPdfFile extends DownloadFile {
     private Document document;
 
     public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider) {
-        super(null);
+        super(irFileVersion.getTransientFile());
         this.version = irFileVersion;
         this.pdfService = pdfService;
         this.person = person;
         this.provider = provider;
         this.document = ir;
     }
-    
+
     @Override
     public InputStream getInputStream() throws Exception {
         getLogger().debug("person: {} version: {} provider: {}", person, version, provider);
-        return new BufferedInputStream(pdfService.mergeCoverPage(provider, person, version, document));
+        InputStream inputStream = null;
+        try {
+            inputStream = pdfService.mergeCoverPage(provider, person, version, document);
+        } catch (PdfCoverPageGenerationException pcpe) {
+            inputStream = super.getInputStream();
+        }
+        return new BufferedInputStream(inputStream);
     }
-    
+
     public String getFileName() {
         return version.getFilename();
     }
-
-
 
 }

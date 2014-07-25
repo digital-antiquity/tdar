@@ -466,7 +466,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             dc.setInformationResourceFileVersionId(translatedFile.getLatestTranslatedVersion().getId());
             dc.prepare();
             dc.execute();
-            assertEquals("bigsheet_translated.xls", dc.getFileName());
+            assertEquals("bigsheet_translated.xls", dc.getDownloadTransferObject().getFileName());
 
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);

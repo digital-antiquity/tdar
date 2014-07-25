@@ -66,16 +66,17 @@ public class PdfService {
      * 
      * @param submitter
      * @param version
-     * @param document 
+     * @param document
      * @return
      * @throws COSVisitorException
      * @throws IOException
      * @throws URISyntaxException
      */
-    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document) throws PdfCoverPageGenerationException {
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document)
+            throws PdfCoverPageGenerationException {
         try {
-            logger.debug("IR: {}, {} {}" , document, version, version.getExtension());
-            if (version.getExtension().equalsIgnoreCase("PDF") ) {
+            logger.debug("IR: {}, {} {}", document, version, version.getExtension());
+            if (version.getExtension().equalsIgnoreCase("PDF")) {
                 // get the tDAR document and get the path to the template
                 String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
@@ -93,7 +94,7 @@ public class PdfService {
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
             }
         } catch (Throwable e) {
-            logger.debug("IR: merge issue",e);
+            logger.debug("IR: merge issue", e);
             throw new PdfCoverPageGenerationException("pdfService.could_not_add_cover_page", e);
         }
     }
@@ -105,11 +106,12 @@ public class PdfService {
      * @return
      * @throws IOException
      * @throws COSVisitorException
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
         final PDFMergerUtility merger = new PDFMergerUtility();
-        /* FIXME:
+        /*
+         * FIXME:
          * only change i might suggest is to switch the initialization order to emphasize that the PipedOutputStream is where the data is coming from. At first
          * I thought you were reading the data into the PipedInputStream to send to the PipedOutputStream because of the way they were initialized
          */
@@ -123,23 +125,24 @@ public class PdfService {
         }
 
         // Separate thread needed here to call merge
-        //FIXME: handle exceptions better
+        // FIXME: handle exceptions better
         Thread thread = new Thread(
-                new Runnable(){
-                  public void run(){
-                    try {
-                        merger.mergeDocuments();
-                    } catch (COSVisitorException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                new Runnable() {
+                    public void run() {
+                        try {
+                            merger.mergeDocuments();
+                        } catch (COSVisitorException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } finally {
+                            IOUtils.closeQuietly(pipedOutputStream);
+                        }
                     }
-                    IOUtils.closeQuietly(pipedOutputStream);
-                  }
                 }
-              );
+                );
         thread.start();
         logger.debug("done calling merge");
         return inputStream;

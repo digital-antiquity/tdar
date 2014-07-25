@@ -1,42 +1,26 @@
 package org.tdar.struts.action.download;
 
-import java.io.InputStream;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
+import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.DownloadHandler;
 
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/filestore")
-@Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
-                params = {
-                        "contentType", "${downloadTransferObject.mimeType}",
-                        "inputName", "inputStream",
-                        "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${fileName}\"",
-                        "contentLength", "${downloadTransferObject.contentLength}"
-                }
-        ),
-        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
-
-})
 @Component
 @Scope("prototype")
-public class DownloadController extends AbstractDownloadController implements DownloadHandler, Preparable {
+public class DownloadController extends AbstractDownloadController implements Preparable {
 
     @Autowired
     private transient DownloadService downloadService;
@@ -49,9 +33,9 @@ public class DownloadController extends AbstractDownloadController implements Do
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        String status = execute();
-        if (!status.equalsIgnoreCase(SUCCESS)) {
-            return status;
+        DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this);
+        if (dto.getResult() != DownloadResult.SUCCESS) {
+            return SUCCESS;
         }
         return CONFIRM;
     }
@@ -73,7 +57,7 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
@@ -83,14 +67,8 @@ public class DownloadController extends AbstractDownloadController implements Do
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(), this));
         return getDownloadTransferObject().getResult().name().toLowerCase();
 
     }
-
-    @Override
-    public InputStream getInputStream() throws Exception {
-        return getDownloadTransferObject().getInputStream();
-    }
-
 }

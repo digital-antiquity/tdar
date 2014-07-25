@@ -1,12 +1,14 @@
 package org.tdar.struts.action.download;
 
-import java.io.InputStream;
-
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
@@ -15,14 +17,30 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.DownloadHandler;
 import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.data.DownloadUserRegistration;
 
 import com.opensymphony.xwork2.Preparable;
 
-public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable, DownloadHandler {
+@Namespace("/filestore")
+@Component
+@Scope("prototype")
+@Results({
+    @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+            params = {
+                    "contentType", "${downloadTransferObject.mimeType}",
+                    "inputName", "downloadTransferObject.inputStream",
+                    "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${downloadTransferObject.fileName}\"",
+                    "contentLength", "${downloadTransferObject.contentLength}"
+            }
+    ),
+    @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+    @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
+
+})
+public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -1831798412944149017L;
     @Autowired
@@ -52,14 +70,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public static final String DOWNLOAD_ALL = "downloadAllAsZip";
     private Long informationResourceFileVersionId;
     private Long informationResourceId;
-//    private transient InputStream inputStream;
-    private String contentType;
-    private String fileName;
-    private Long contentLength;
-    private Integer version;
     private boolean coverPageIncluded = true;
-    private VersionType type;
-    private String dispositionPrefix = "";
 
 
     
@@ -150,73 +161,6 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         }
     }
 
-    
-
-//    @Override
-//    public InputStream getInputStream() {
-//        return inputStream;
-//    }
-
-    @Override
-    public String getContentType() {
-        return contentType;
-    }
-
-    @Override
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    @Override
-    public Long getContentLength() {
-        return contentLength;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public VersionType getType() {
-        return type;
-    }
-
-    public void setType(VersionType type) {
-        this.type = type;
-    }
-
-    public String getDispositionPrefix() {
-        return dispositionPrefix;
-    }
-
-    @Override
-    public void setInputStream(InputStream inputStream) {
-//        this.inputStream = inputStream;
-    }
-
-    @Override
-    public void setContentType(String mimeType) {
-        this.contentType = mimeType;
-    }
-
-    @Override
-    public void setContentLength(long length) {
-        this.contentLength = length;
-    }
-
-    @Override
-    public void setDispositionPrefix(String string) {
-        this.dispositionPrefix = string;
-    }
-
-    @Override
     public boolean isCoverPageIncluded() {
         return coverPageIncluded;
     }
@@ -232,10 +176,5 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public void setDownloadTransferObject(DownloadTransferObject downloadTransferObject) {
         getLogger().debug("setting download object: {}", downloadTransferObject);
         this.downloadTransferObject = downloadTransferObject;
-    }
-
-    @Override
-    public InputStream getInputStream() throws Exception {
-        return downloadTransferObject.getInputStream();
     }
 }
