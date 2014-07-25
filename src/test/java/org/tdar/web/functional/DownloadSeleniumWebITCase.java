@@ -60,7 +60,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         Thread.sleep(3000);
         WebElementSelection buttons = find("#loginForm [type=submit]");
         buttons.first().click();
-
+        Thread.sleep(1000);
 
         //now we are on the "choose billing account" page. just click through to next page
         waitFor(ExpectedConditions.titleContains("Download: "));
@@ -85,6 +85,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         Thread.sleep(3000);
         WebElementSelection buttons = find("#loginForm [type=submit]");
         buttons.first().click();
+        Thread.sleep(1000);
 
         waitFor(ExpectedConditions.titleContains("Download: "));
         dismissModal();

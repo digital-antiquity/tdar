@@ -14,6 +14,7 @@ import static org.tdar.URLConstants.CART_ADD;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -139,10 +140,10 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     }
 
 
-    @Test
     /**
      * Confirm that the invoice-view page (/cart/view?id=123) works as well as inbound links from other pages
      */
+    @Test
     public void testInvoiceView() {
         //ensure that we have at least one valid invoice in the system
         logout();
@@ -175,9 +176,9 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
 
             //click on the link to the billing account for this invoice
-            find("#articleBody a.accountLink").first().click();
-            //waitForPageload();
-
+            find("a.accountLink").first().click();
+            waitForPageload();
+            Assert.assertTrue(getCurrentUrl().contains("billing"));
             //make sure billing account page also has a link back to the invoice-view page we just verified
             assertThat(getSource(), stringContainsInOrder( asList( "Overall Usage", pair.getSecond())));
         }
