@@ -116,9 +116,7 @@ public class PdfService {
          * I thought you were reading the data into the PipedInputStream to send to the PipedOutputStream because of the way they were initialized
          */
         PipedInputStream inputStream = new PipedInputStream(2048);
-        logger.debug("before declaring output stream");
         final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
-        logger.debug("before declaring destination");
         merger.setDestinationStream(pipedOutputStream);
         for (File file : files) {
             merger.addSource(file);
@@ -131,12 +129,8 @@ public class PdfService {
                     public void run() {
                         try {
                             merger.mergeDocuments();
-                        } catch (COSVisitorException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                        } catch (Exception e) {
+                            logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
                         } finally {
                             IOUtils.closeQuietly(pipedOutputStream);
                         }
@@ -144,7 +138,7 @@ public class PdfService {
                 }
                 );
         thread.start();
-        logger.debug("done calling merge");
+        logger.trace("done with PDF Merge");
         return inputStream;
     }
 

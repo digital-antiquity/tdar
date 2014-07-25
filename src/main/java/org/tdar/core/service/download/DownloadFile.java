@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a file to be downloaded
+ * 
  * @author abrin
  *
  */
@@ -19,6 +20,7 @@ public class DownloadFile implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private File file;
+
     public DownloadFile(File file) {
         this.file = file;
     }
@@ -30,8 +32,13 @@ public class DownloadFile implements Serializable {
     public String getFileName() {
         return this.file.getName();
     }
-    
+
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s) ", file.getName(), file.length());
     }
 }

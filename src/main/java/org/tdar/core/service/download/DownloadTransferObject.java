@@ -1,7 +1,6 @@
 package org.tdar.core.service.download;
 
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -131,12 +130,8 @@ public class DownloadTransferObject implements Serializable {
                                 IOUtils.copy(fin, zout);
                                 IOUtils.closeQuietly(fin);
                             }
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
                         } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            logger.error("exception when processing zip file: {}", e.getMessage(), e);
                         } finally {
                             IOUtils.closeQuietly(zout);
                         }
