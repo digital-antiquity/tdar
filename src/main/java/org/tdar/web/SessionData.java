@@ -99,6 +99,9 @@ public class SessionData implements Serializable {
 //    }
 
     public Long getTdarUserId() {
+        if (authenticationToken == null) {
+            return null;
+        }
         return authenticationToken.getTdarUserId();
     }
 //
