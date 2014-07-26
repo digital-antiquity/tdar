@@ -58,7 +58,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         fillOutRegistration(reg);
         // wait for spam check
         Thread.sleep(3000);
-        WebElementSelection buttons = find("#loginForm [type=submit]");
+        WebElementSelection buttons = find("#registrationForm [type=submit]");
         buttons.first().click();
         Thread.sleep(1000);
 
