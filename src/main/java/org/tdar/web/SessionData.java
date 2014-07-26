@@ -26,7 +26,7 @@ public class SessionData implements Serializable {
 
     private String returnUrl;
     private String[] parameters;
-    private Long tdarUserId;
+//    private Long tdarUserId;
 
 //    public TdarUser getTdarUser() {
 //        if (authenticationToken == null) {
@@ -99,11 +99,11 @@ public class SessionData implements Serializable {
 //    }
 
     public Long getTdarUserId() {
-        return tdarUserId;
+        return authenticationToken.getTdarUserId();
     }
-
-    public void setTdarUserId(Long tdarUserId) {
-        this.tdarUserId = tdarUserId;
-    }
+//
+//    public void setTdarUserId(Long tdarUserId) {
+//        this.tdarUserId = tdarUserId;
+//    }
 
 }
