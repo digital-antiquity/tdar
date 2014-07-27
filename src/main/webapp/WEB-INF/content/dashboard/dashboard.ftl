@@ -257,7 +257,7 @@
             <#if authenticatedUser.penultimateLogin??>
                 <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
             </#if>
-            <a href="<@s.url value='/entity/person/edit?id=${sessionData.tdarUser.id?c}'/>">edit your profile</a>
+            <a href="<@s.url value='/entity/person/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
         </div>
 
         <#if payPerIngestEnabled>
