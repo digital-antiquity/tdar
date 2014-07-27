@@ -1,18 +1,19 @@
 package org.tdar.web.functional;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.titleContains;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
+import static org.tdar.struts.action.TdarActionSupport.CONFIRM;
 
 import java.io.File;
 
-import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.struts.action.download.AbstractDownloadController;
 import org.tdar.struts.data.UserRegistration;
 
 /**
@@ -21,11 +22,7 @@ import org.tdar.struts.data.UserRegistration;
 public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
-
-    // handle of window created at beginning of test
-    String startWindow = null;
-
-    private static String url;
+    String documentViewUrl;
     
     @Before
     public void createDocument() {
@@ -38,22 +35,23 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         setFieldByName("projectId", "-1");
         uploadFileAsync(FileAccessRestriction.PUBLIC, new File(TEST_DOCUMENT));
         submitForm();
-        url = getCurrentUrl();
+        documentViewUrl = getCurrentUrl();
+        //if something went wrong we'd probably be on /document/save.action
+        assertThat(documentViewUrl, containsString("/document/"));
+        assertThat(documentViewUrl, not( containsString("/document/save")));
         logout();
-
     }
-
 
     @Test
     public void testVisitorDownload() throws InterruptedException {
         //start at the cart page, and click one of the suggested packages
         logout();
-        gotoPage(url);
+        gotoPage(documentViewUrl);
         find(".download-file").get(0).click();
 
         //now we are on the review form (w/ registration/login forms)
         //fill out required user registration fields and submit form
-        assertThat(getCurrentUrl(), StringContains.containsString("download"));
+        assertThat(getCurrentUrl(), containsString("download"));
         UserRegistration reg = createUserRegistration("bob");
         fillOutRegistration(reg);
         // wait for spam check
@@ -63,33 +61,28 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         Thread.sleep(1000);
 
         //now we are on the "choose billing account" page. just click through to next page
-        waitFor(ExpectedConditions.titleContains("Download: "));
+        waitFor(titleContains("Download: "));
         dismissModal();
-        assertThat(getCurrentUrl(), StringContains.containsString(AbstractDownloadController.CONFIRM));
+        assertThat(getCurrentUrl(), containsString(CONFIRM));
     }
 
     @Test
-    public void testLoginDownload() throws InterruptedException {
-        // Starting page
-        // go to the cart page and make sure we are logged out
+    public void testLoginDownload() {
+        //go to document-view page (while logged-out) and  click on one of the file download links
         logout();
-        gotoPage(url);
-        find(".download-file").get(0).click();
+        gotoPage(documentViewUrl);
+        find(".download-file").first().click();
 
-        //now we are on the review form (w/ registration/login forms)
-        //fill out required user registration fields and submit form
-        assertThat(getCurrentUrl(), StringContains.containsString("download"));
+        //we should now be on the download authentication page.
+        assertThat(getCurrentUrl(), containsString("download"));
 
+        //fill out the "login" form and submit
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
-        Thread.sleep(3000);
-        WebElementSelection buttons = find("#loginForm [type=submit]");
-        buttons.first().click();
-        Thread.sleep(1000);
+        submitForm("#loginForm [type=submit]");
 
-        waitFor(ExpectedConditions.titleContains("Download: "));
-        dismissModal();
-        assertThat(getCurrentUrl(), StringContains.containsString(AbstractDownloadController.CONFIRM));
+        //At this point we need to hurry before the autodownload starts (in 4 seconds or so).  Confirm we're on the right page and then bail out!
+        waitFor(titleContains("Download: "));
+        assertThat(getCurrentUrl(), containsString(CONFIRM));
     }
-
 }

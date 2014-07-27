@@ -987,10 +987,15 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
+
+    @Deprecated
+    //FIXME: api cleanup: hamcrest assertions would work better here
     protected boolean sourceContains(String substring) {
         return getSource().contains(substring);
     }
 
+    //FIXME: api clianup: hamcrest assertions would work better here
+    @Deprecated
     protected boolean textContains(String substring) {
         return getText().toLowerCase().contains(substring.toLowerCase());
     }

@@ -1,5 +1,8 @@
 package org.tdar.web;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -71,16 +74,23 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         gotoPage("/billing/" + accountId);
         setInput("numberOfFiles", "1");
         submitForm("Create Voucher");
+
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
-        logger.info("=======================================================\n" + code);
+
+        logger.info("coupon code is:" + code);
         gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfFiles", "1");
         setInput("code", code);
         submitForm();
-        accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
 
+        //sanity check: after submitting the cart form we should wind up on the review page.
+        assertThat(getCurrentUrlPath(), containsString("/review"));
+
+        accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         gotoPage("/logout");
     }
+
+
 
     @Test
     public void testAccountListWhenEditingAsAdmin() throws Exception {

@@ -11,7 +11,9 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download}" class="manual-download">${informationResourceFileVersion.filename?html}</a></dd>
+        <dd><a href="${download}" class="manual-download" <#if shouldAutoDownload>data-auto-download</#if>
+               data-versionid="${informationResourceFileVersion.id?c}" >${informationResourceFileVersion.filename?html}</a>
+        </dd>
     </dl>
     <p>
         You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
@@ -23,14 +25,9 @@
 <div class="row">
 </div>
 
-
-<#if shouldAutoDownload>
 <script>
-    $(function () {
-        TDAR.download.setup('<@s.url value="${download}"/>', '${informationResourceFileVersion.id?c}');
-    });
+    $(function(){TDAR.download.setup()});
 </script>
-</#if>
 
 </body>
 </#escape>

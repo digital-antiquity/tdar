@@ -189,7 +189,7 @@
 
     <div class="row">
         <div class="span12">
-            <@s.textfield name="code" label="Redeem Code" />
+            <@s.textfield name="code" label="Redeem Code" cssClass="input-xxlarge" />
             <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction"
                    value="Next: Review & Choose Payment Method">
 

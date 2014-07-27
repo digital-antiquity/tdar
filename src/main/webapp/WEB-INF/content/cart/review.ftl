@@ -16,9 +16,9 @@
     <@invoicecommon.proxyNotice />
 </div>
 <h1>Review your purchase</h1>
-<@s.form name='change-account' id='change-account'  method='post' cssClass="form-horizontal billing-account-choice form-condensed" enctype='multipart/form-data' action='process-billing-account-choice'>
+<@s.form name='change-account' id='change-account'  method='post' cssClass="billing-account-choice form-condensed" enctype='multipart/form-data' action='process-billing-account-choice'>
 <div class="row">
-    <div class="span6 " >
+    <div class="span7 " >
         <h3>Invoice Information</h3>
         <div class="cartpane" style="min-height: 350px">
             <div class="" >
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="span6">
+    <div class="span5">
         <h3>Choose A Billing Account</h3>
         <div class="cartpane" style="min-height: 350px">
             <div class="" >

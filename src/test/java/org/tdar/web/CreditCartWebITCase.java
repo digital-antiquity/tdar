@@ -48,7 +48,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         submitFormWithoutErrorCheck();
         assertCurrentUrlContains("process-choice");
         assertTextPresentInCode("55 USD");
-        assertTextPresentInCode(MessageHelper.getMessage("invoiceService.specify_something"));
+        assertTextPresentInCode(getText("cartController.specify_mb_or_files"));
     }
 
     @Test

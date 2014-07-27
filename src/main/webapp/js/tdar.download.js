@@ -13,12 +13,23 @@
         document.location = url;
     };
 
-    var _setup = function(url, versionId) {
+    /**
+     * Scan for auto-download links and, if found, queue download to start in a few seconds.
+     * @private
+     */
+    var _setup = function() {
+        //look for link data-auto-download boolean attribute.  Terminate if none found.
+        var $link = $("a[data-auto-download]").first();
+        if($link.length === 0) return;
+
+        //grap url, irf.id from link, set a timer to call _autodownload
+        var url = $link[0].href;
+        var versionId = $link.data("versionId");
         var DOWNLOAD_WAIT_SECONDS = 4;
-        var id = setTimeout(_autoDownload(url, versionId), DOWNLOAD_WAIT_SECONDS * 1000);
+        var id = setTimeout(function() {_autoDownload(url, versionId)}, DOWNLOAD_WAIT_SECONDS * 1000);
     
-        //cancel auto-download if user beats us to the clock
-        $('.manual-download').click(function () {
+        //cancel auto-download if user clicks on link before timeout fires
+        $link.click(function () {
             clearTimeout(id);
             _register(url, versionId);
             return true;

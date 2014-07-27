@@ -133,23 +133,30 @@
     </#list>
 </table>
 </#if>
+<h3> Create Voucher</h3>
 <div class="well">
-    <h3> Create Voucher</h3>
 	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
-        <@s.token name='struts.csrf.token' />
         <div class="row">
             <div class="span4">
+	            <@s.hidden name="id" value="${account.id?c!-1}" />
                 <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
-	    <@s.hidden name="id" value="${account.id?c!-1}" />    
-		<@s.textfield name="exipres" cssClass="date  input-small datepicker" label="Date Expires" />
+		        <@s.textfield name="exipres" cssClass="date  input-small datepicker" label="Date Expires" />
             </div>
             <div class="span4">
-                <@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"/>
-		<@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB"/>
+                <@s.textfield name="numberOfFiles" cssClass="integer" label="Number of Files"  value=""/>
+		        <@s.textfield name="numberOfMb" cssClass="integer" label="Number of MB" value="" />
             </div>
         </div>
-        <@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />
+        <div class="row">
+            <div class="span8">
+                <div class="control-group">
+                    <div class="controls">
+                        <@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </@s.form>
 </div>
 
@@ -212,11 +219,27 @@
 </table>
 
 <script>
-    $(document).ready(function () {
-        $('.datepicker').datepicker({
-            dateFormat: 'm/d/y'
+    //FIXME: replace with declaritive implementation e.g <input type="text" name="expiration"  data-datepicker  data-dateformat="m/d/y">
+    //FIXME: validation errors are ugly due to bootstrap layout issues in form.  Better than no validation, but need to fix.
+    $(function() {
+        //register datepickers and validation rules
+        $("#create-code")
+            .find('.datepicker').datepicker({dateFormat: 'm/d/y'})
+            .end().validate({
+                    errorClass: "text-error",
+                    rules: {
+                        numberOfFiles: {
+                            required: function(el) {
+                                return $.trim($("#create-code_numberOfMb").val()) < 1
+                            }
+                        }
+                    },
+                    messages: {
+                        numberOfFiles: {
+                            required:"Specify a value for Files or MB",
+                        }
+                    }
         });
-
     });
 </script>
 </body>

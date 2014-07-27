@@ -214,9 +214,11 @@ public class InvoiceController extends AbstractCartController {
         if (!validateInvoice()) {
             return;
         }
-        //unbox to zero if null
-        long mb = getInvoice().getNumberOfMb();
-        long files = getInvoice().getNumberOfFiles();
+
+        Long mb = getInvoice().getNumberOfMb();
+        Long files = getInvoice().getNumberOfFiles();
+        if(mb == null) mb = 0L;
+        if(files == null) files = 0L;
 
         if(isPostRequest() && mb == 0L && files == 0L ) {
             addActionError(getText("cartController.specify_mb_or_files"));
