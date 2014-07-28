@@ -32,6 +32,7 @@ public class SessionData implements Serializable {
     public void clearAuthenticationToken() {
         this.parameters = null;
         this.returnUrl = null;
+		this.tdarUserId = null;
     }
 
     public boolean isAuthenticated() {
