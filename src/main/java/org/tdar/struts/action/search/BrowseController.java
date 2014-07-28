@@ -31,7 +31,6 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -260,12 +259,11 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception: {}", e.getMessage());
                 }
                 
-                // hide creator pages for contributors with no resources contributed
-                if (creator.getCreatorType() == CreatorType.PERSON ) {
-                    Person person  = ((Person)creator);
-                    if (getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && person.isHiddenIfNotCited()) {
-                        throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
-                    }
+                // hide creator pages from public for contributors with no resources contributed
+                if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && 
+                        creator.isHiddenIfNotCited()) {
+                    throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
                 }
             }
             FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);

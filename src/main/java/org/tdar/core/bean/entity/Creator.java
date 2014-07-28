@@ -449,6 +449,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.occurrence = occurrence;
     }
 
+    @XmlTransient
     public boolean isHiddenIfNotCited() {
         return hiddenIfNotCited;
     }
