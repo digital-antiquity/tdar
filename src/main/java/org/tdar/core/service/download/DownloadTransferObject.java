@@ -32,6 +32,8 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class DownloadTransferObject implements Serializable {
 
+    private static final String ZIP_MIME_TYPE = "application/zip";
+
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final long serialVersionUID = 7856219475924463528L;
@@ -91,8 +93,8 @@ public class DownloadTransferObject implements Serializable {
     }
 
     public String getMimeType() {
-        if (CollectionUtils.size(downloads) > 1) {
-            mimeType = "application/zip";
+        if (isZipDownload()) {
+            mimeType = ZIP_MIME_TYPE;
         }
         return mimeType;
     }
@@ -102,7 +104,7 @@ public class DownloadTransferObject implements Serializable {
     }
 
     public String getFileName() {
-        if (CollectionUtils.size(downloads) > 1) {
+        if (isZipDownload()) {
             return String.format("files-%s.zip", getInformationResource().getId());
         }
         return fileName;
@@ -112,7 +114,7 @@ public class DownloadTransferObject implements Serializable {
         logger.debug("calling getInputStream");
         InputStream stream = null;
         try {
-            if (CollectionUtils.size(downloads) > 1) {
+            if (isZipDownload()) {
                 stream = new DownloadLockInputStream(getZipInputStream(), this);
             }
             logger.debug("{}", downloads.get(0));
@@ -200,7 +202,15 @@ public class DownloadTransferObject implements Serializable {
     }
 
     public Long getContentLength() {
-        return contentLength;
+        if (isZipDownload()) {
+            return contentLength;
+        } else {
+            return downloads.get(0).getFileLength();
+        }
+    }
+
+    private boolean isZipDownload() {
+        return CollectionUtils.size(downloads) > 1;
     }
 
     public void setContentLength(Long contentLength) {

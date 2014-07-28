@@ -41,4 +41,9 @@ public class DownloadFile implements Serializable {
     public String toString() {
         return String.format("%s (%s) ", file.getName(), file.length());
     }
+
+    public Long getFileLength() {
+        return this.file.length();
+        
+    }
 }

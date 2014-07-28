@@ -51,4 +51,9 @@ public class DownloadPdfFile extends DownloadFile {
         return version.getFilename();
     }
 
+    @Override
+    public Long getFileLength() {
+        // we have a cover page, so we have no idea about length
+        return null;
+    }
 }
