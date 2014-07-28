@@ -11,7 +11,7 @@
     <p>The download you requested will begin momentarily</p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download}" class="manual-download" <#if shouldAutoDownload>data-auto-download</#if>
+        <dd><a href="${download}" class="manual-download " id="manual-download" <#if shouldAutoDownload>data-auto-download</#if>
                data-versionid="${informationResourceFileVersion.id?c}" >${informationResourceFileVersion.filename?html}</a>
         </dd>
     </dl>

@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -124,7 +123,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testDownloadArchiveService() throws Exception {
-        DownloadTransferObject dto = new DownloadTransferObject();
+        DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         List<File> files = new ArrayList<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
             dto.getDownloads().add(new DownloadFile(file));

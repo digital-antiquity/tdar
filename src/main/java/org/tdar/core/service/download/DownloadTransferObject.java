@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
+import org.tdar.struts.action.download.ReleaseDownloadLockInputStream;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -50,15 +51,19 @@ public class DownloadTransferObject implements Serializable {
     private String dispositionPrefix;
     private TextProvider textProvider;
 
+    private DownloadService downloadService;
+
     public DownloadTransferObject(InformationResource resourceToDownload, List<InformationResourceFileVersion> versionsToDownload, TdarUser user,
-            TextProvider textProvider) {
+            TextProvider textProvider, DownloadService downloadService) {
         this.informationResource = resourceToDownload;
         this.versionsToDownload = versionsToDownload;
+        this.downloadService = downloadService;
         this.setTextProvider(textProvider);
         this.setAuthenticatedUser(user);
     }
 
-    public DownloadTransferObject() {
+    public DownloadTransferObject(DownloadService downloadService) {
+        this.downloadService = downloadService;
     }
 
     public InputStream getStream() {
@@ -103,13 +108,20 @@ public class DownloadTransferObject implements Serializable {
         return fileName;
     }
 
-    public InputStream getInputStream() throws Exception {
+    public InputStream getInputStream() {
         logger.debug("calling getInputStream");
-        if (CollectionUtils.size(downloads) > 1) {
-            return getZipInputStream();
+        downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
+        InputStream stream = null;
+        try {
+            if (CollectionUtils.size(downloads) > 1) {
+                stream = new ReleaseDownloadLockInputStream(getZipInputStream(), this);
+            }
+            logger.debug("{}", downloads.get(0));
+            stream = new ReleaseDownloadLockInputStream(downloads.get(0).getInputStream(), this);
+        } catch (Exception e) {
+            logger.error("Exception in download", e);
         }
-        logger.debug("{}", downloads.get(0));
-        return downloads.get(0).getInputStream();
+        return stream;
     }
 
     private InputStream getZipInputStream() throws Exception {
@@ -215,6 +227,10 @@ public class DownloadTransferObject implements Serializable {
 
     public void setTextProvider(TextProvider textProvider) {
         this.textProvider = textProvider;
+    }
+
+    public void releaseLock() {
+        downloadService.releaseDownloadLock(authenticatedUser, versionsToDownload);
     }
 
 }

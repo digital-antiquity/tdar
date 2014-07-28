@@ -102,14 +102,15 @@ public class DownloadService {
         }
     }
 
-    private void releaseDownloadLock(TdarUser authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
-        if (isUnauthenticatedOrThumbnail(authenticatedUser, irFileVersions)) {
+    public void releaseDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
+        InformationResourceFileVersion[] array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
             return;
         }
         Long key = authenticatedUser.getId();
         List<Integer> list = downloadLock.getIfPresent(key);
         if (CollectionUtils.isNotEmpty(list)) {
-            list.remove(new Integer(irFileVersions.hashCode()));
+            list.remove(new Integer(array.hashCode()));
         }
 
         if (CollectionUtils.isEmpty(list))
@@ -117,8 +118,9 @@ public class DownloadService {
         downloadLock.invalidate(key);
     }
 
-    private void enforceDownloadLock(TdarUser authenticatedUser, InformationResourceFileVersion[] irFileVersions) {
-        if (isUnauthenticatedOrThumbnail(authenticatedUser, irFileVersions)) {
+    public void enforceDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
+        InformationResourceFileVersion[] array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
             return;
         }
         Long key = authenticatedUser.getId();
@@ -126,7 +128,7 @@ public class DownloadService {
         if (list == null) {
             list = new ArrayList<>();
         }
-        if (list.contains(irFileVersions.hashCode())) {
+        if (list.contains(array.hashCode())) {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.duplicate_download");
             } else {
@@ -142,7 +144,7 @@ public class DownloadService {
             }
         }
 
-        list.add(new Integer(irFileVersions.hashCode()));
+        list.add(new Integer(versionsToDownload.hashCode()));
         downloadLock.put(key, list);
     }
 
@@ -191,7 +193,7 @@ public class DownloadService {
             }
         }
         
-        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser, textProvider);
+        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser, textProvider, this);
         dto.setIncludeCoverPage(includeCoverPage);
 
         if (CollectionUtils.isEmpty(versionsToDownload)) {

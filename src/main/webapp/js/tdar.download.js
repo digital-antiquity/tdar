@@ -19,11 +19,13 @@
      */
     var _setup = function() {
         //look for link data-auto-download boolean attribute.  Terminate if none found.
+        //FIXME: shouldn't this work, link by link?
         var $link = $("a[data-auto-download]").first();
         if($link.length === 0) return;
 
         //grap url, irf.id from link, set a timer to call _autodownload
         var url = $link[0].href;
+        //FIXME: deal with ZIP case
         var versionId = $link.data("versionId");
         var DOWNLOAD_WAIT_SECONDS = 4;
         var id = setTimeout(function() {_autoDownload(url, versionId)}, DOWNLOAD_WAIT_SECONDS * 1000);

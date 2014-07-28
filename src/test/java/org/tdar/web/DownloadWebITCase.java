@@ -37,11 +37,13 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("downloadUserLogin.h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         // try successfully
         setInput("downloadUserLogin.loginUsername", getAdminUsername());
-        // wrong on purpose
         setInput("downloadUserLogin.loginPassword", getAdminPassword());
         submitForm("submit");
-        logger.debug(webClient.getCurrentWindow().getEnclosedPage().getWebResponse().getContentType());
         assertCurrentUrlContains("filestore/confirm");
+        DomNodeList<DomNode> manualLink = htmlPage.getDocumentElement().querySelectorAll("#manual-download");
+        String url = manualLink.get(0).getAttributes().getNamedItem("href").getTextContent();
+        logger.debug("DOWNLOAD URL: {}", url);
+        gotoPage(url);
     }
 
     @Test
@@ -72,8 +74,9 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("submitAction");
         
         // complete
-        logger.debug(webClient.getCurrentWindow().getEnclosedPage().getWebResponse().getContentType());
+
         assertCurrentUrlContains("filestore/confirm");
+//        ("#manual-download");
     }
 
 }
