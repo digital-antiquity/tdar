@@ -276,8 +276,10 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception", e);
                 }
                 
-                // hide creator pages for contributors with no resources contributed
-                if (getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && creator.isHiddenIfNotCited()) {
+                // hide creator pages from public for contributors with no resources contributed
+                if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && 
+                        creator.isHiddenIfNotCited()) {
                     throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
                 }
             }
