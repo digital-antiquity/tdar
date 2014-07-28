@@ -19,7 +19,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
-import org.tdar.struts.action.download.ReleaseDownloadLockInputStream;
+import org.tdar.struts.action.download.DownloadLockInputStream;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -110,14 +110,13 @@ public class DownloadTransferObject implements Serializable {
 
     public InputStream getInputStream() {
         logger.debug("calling getInputStream");
-        downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
         InputStream stream = null;
         try {
             if (CollectionUtils.size(downloads) > 1) {
-                stream = new ReleaseDownloadLockInputStream(getZipInputStream(), this);
+                stream = new DownloadLockInputStream(getZipInputStream(), this);
             }
             logger.debug("{}", downloads.get(0));
-            stream = new ReleaseDownloadLockInputStream(downloads.get(0).getInputStream(), this);
+            stream = new DownloadLockInputStream(downloads.get(0).getInputStream(), this);
         } catch (Exception e) {
             logger.error("Exception in download", e);
         }
@@ -231,6 +230,10 @@ public class DownloadTransferObject implements Serializable {
 
     public void releaseLock() {
         downloadService.releaseDownloadLock(authenticatedUser, versionsToDownload);
+    }
+
+    public void registerDownloadLock() {
+        downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
     }
 
 }

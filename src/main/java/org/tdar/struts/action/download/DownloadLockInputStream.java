@@ -12,17 +12,19 @@ import org.tdar.core.service.download.DownloadTransferObject;
 /*
  * Closes a DownloadLock when stream is closed
  */
-public class ReleaseDownloadLockInputStream extends BufferedInputStream implements Serializable {
+public class DownloadLockInputStream extends BufferedInputStream implements Serializable {
     
     private static final long serialVersionUID = 7091418668985623975L;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private DownloadTransferObject dto;
-    public ReleaseDownloadLockInputStream(InputStream in, DownloadTransferObject dto) {
+
+    public DownloadLockInputStream(InputStream in, DownloadTransferObject dto) {
         super(in);
         this.dto = dto;
+        dto.registerDownloadLock();
     }
 
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    
     @Override
     public void close() throws IOException {
         super.close();
