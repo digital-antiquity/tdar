@@ -44,10 +44,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final List<Dataset> dataSets = new ArrayList<Dataset>();
@@ -92,10 +90,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = true;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final List<Dataset> dataSets = new ArrayList<Dataset>();
@@ -133,10 +129,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -179,10 +173,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = true;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -226,10 +218,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised1 = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -280,10 +270,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = true;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -329,10 +317,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -377,10 +363,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final List<Dataset> dataSets = new ArrayList<Dataset>();
 
@@ -441,10 +425,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = true;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final List<Dataset> dataSets = new ArrayList<Dataset>();
@@ -504,10 +486,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final DataTable dataTable = new DataTable();
@@ -555,10 +535,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = true;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final DataTable dataTable = new DataTable();
@@ -609,10 +587,8 @@ public class ODataRepositoryServiceTest {
         final boolean isAuthorised = false;
 
         SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final DataTable dataTable = new DataTable();
@@ -658,11 +634,9 @@ public class ODataRepositoryServiceTest {
 
         final boolean isAuthorised = true;
 
-        SessionData sessionData = new SessionData();
-        AuthenticationToken authenticationToken = new AuthenticationToken();
         final TdarUser person = setupPerson();
-        authenticationToken.setTdarUser(person);
-        sessionData.setAuthenticationToken(authenticationToken);
+        SessionData sessionData = new SessionData();
+        sessionData.setTdarUser(person);
 
         final Dataset dataSet = new Dataset();
         final DataTable dataTable = new DataTable();

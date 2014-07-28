@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.TdarUser;
 
@@ -26,31 +27,15 @@ public class SessionData implements Serializable {
 
     private String returnUrl;
     private String[] parameters;
-//    private Long tdarUserId;
-
-//    public TdarUser getTdarUser() {
-//        if (authenticationToken == null) {
-//            return null;
-//        }
-//        return authenticationToken.getTdarUser();
-//    }
-
-    public AuthenticationToken getAuthenticationToken() {
-        return authenticationToken;
-    }
+    private Long tdarUserId;
 
     public void clearAuthenticationToken() {
-        this.authenticationToken = null;
         this.parameters = null;
         this.returnUrl = null;
     }
 
-    public void setAuthenticationToken(AuthenticationToken authenticationToken) {
-        this.authenticationToken = authenticationToken;
-    }
-
     public boolean isAuthenticated() {
-        return (authenticationToken != null) && authenticationToken.isValid();
+        return Persistable.Base.isNotNullOrTransient(tdarUserId);
     }
 
     @Override
@@ -90,23 +75,16 @@ public class SessionData implements Serializable {
         return parameters;
     }
 
-//    public boolean isContributor() {
-//        TdarUser tdarUser = getTdarUser();
-//        if (tdarUser == null) {
-//            return false;
-//        }
-//        return tdarUser.getContributor();
-//    }
-
     public Long getTdarUserId() {
-        if (authenticationToken == null) {
-            return null;
-        }
-        return authenticationToken.getTdarUserId();
+        return tdarUserId;
     }
-//
-//    public void setTdarUserId(Long tdarUserId) {
-//        this.tdarUserId = tdarUserId;
-//    }
+
+    public void setTdarUser(TdarUser user) {
+        if (Persistable.Base.isNotNullOrTransient(user)) {
+            this.tdarUserId = user.getId();
+        } else {
+            this.tdarUserId = null;
+        }
+    }
 
 }

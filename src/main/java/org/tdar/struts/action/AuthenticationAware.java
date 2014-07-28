@@ -60,7 +60,6 @@ public interface AuthenticationAware extends SessionDataAware {
                 return null;
             }
             Long tdarUserId = getSessionData().getTdarUserId();
-            getLogger().debug("userId: {}", tdarUserId);
             if (Persistable.Base.isNotNullOrTransient(tdarUserId)) {
                 return getGenericService().find(TdarUser.class, tdarUserId);
             } else {

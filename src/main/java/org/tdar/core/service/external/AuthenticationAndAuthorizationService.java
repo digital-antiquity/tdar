@@ -3,7 +3,6 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +30,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -730,9 +728,7 @@ public class AuthenticationAndAuthorizationService implements Accessible {
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
     public void createAuthenticationToken(TdarUser person, SessionData session) {
-        AuthenticationToken token = AuthenticationToken.create(person);
-        personDao.save(token);
-        session.setAuthenticationToken(token);
+        session.setTdarUser(person);
     }
 
     /*
@@ -971,9 +967,6 @@ public class AuthenticationAndAuthorizationService implements Accessible {
 
     @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        AuthenticationToken token = sessionData.getAuthenticationToken();
-        token.setSessionEnd(new Date());
-        personDao.update(token);
         sessionData.clearAuthenticationToken();
         getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
