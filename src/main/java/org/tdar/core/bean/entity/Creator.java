@@ -180,6 +180,9 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<>();
 
+    @Column(nullable = false, name = "hidden", columnDefinition = "boolean default FALSE")
+    private boolean hiddenIfNotCited = Boolean.FALSE;
+
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
@@ -444,6 +447,14 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     public void setOccurrence(Long occurrence) {
         this.occurrence = occurrence;
+    }
+
+    public boolean isHiddenIfNotCited() {
+        return hiddenIfNotCited;
+    }
+
+    public void setHiddenIfNotCited(boolean hiddenIfNotCited) {
+        this.hiddenIfNotCited = hiddenIfNotCited;
     }
 
 }

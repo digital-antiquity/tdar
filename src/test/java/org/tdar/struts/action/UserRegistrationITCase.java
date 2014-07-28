@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ResourceBundle.Control;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -29,7 +28,6 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.Action;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.vividsolutions.jts.util.Assert;
 
 import freemarker.template.Configuration;

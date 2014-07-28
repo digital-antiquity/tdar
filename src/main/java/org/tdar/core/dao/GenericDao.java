@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.IntrospectionHelper.Creator;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -101,7 +102,11 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
-        return getCurrentSession().createQuery(String.format("select id from %s where status in ('ACTIVE')", persistentClass.getName())).list();
+        if (persistentClass.isAssignableFrom(Creator.class)) {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
+        } else {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_CREATOR_BY_ID, persistentClass.getName())).list();
+        }
     }
 
     @SuppressWarnings("unchecked")

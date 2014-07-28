@@ -214,4 +214,6 @@ public interface TdarNamedQueries {
     String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
     String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
 
+    String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
+    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and (hidden=FALSE or occurrence > 0 )";
 }
