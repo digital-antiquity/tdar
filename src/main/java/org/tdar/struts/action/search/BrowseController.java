@@ -31,7 +31,6 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
