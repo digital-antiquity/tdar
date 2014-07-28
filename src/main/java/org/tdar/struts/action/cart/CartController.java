@@ -75,7 +75,7 @@ public class CartController extends AbstractCartController {
     @WriteableSession
     // @GetOnly
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/invoice/${invoice.id}"),
+            @Result(name = SUCCESS, type = "redirect", location = "/cart/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = ADD, type = TYPE_REDIRECT, location = TdarActionSupport.ADD),
             @Result(name = SUCCESS_COMPLETE, type = "redirect", location = URLConstants.DASHBOARD),

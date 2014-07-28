@@ -10,6 +10,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.tdar.URLConstants.CART_ADD;
+import static org.tdar.core.dao.external.payment.PaymentMethod.MANUAL;
+import static org.tdar.core.dao.external.payment.PaymentMethod.INVOICE;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -225,5 +228,21 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
 
+
+    // @Test
+    // public void testManualInvoice() {
+    //     loginAdmin();
+    //     gotoPage(CART_ADD);
+
+    //     //admins get ability to select extra paymeent options
+    //     assertThat( find(withLabel(MANUAL.getLabel()), hasSize(1));
+    //     assertThat( find(withLabel(INVOICE.getLabel())), hasSize(1));
+
+    //     //fill out the form and select manual invoice
+    //     find( withLabel("Number of Files")).val("100");
+    //     find( withLabel(MANUAL.getLabel())).click();
+
+    //     submitForm();
+    // }
 
 }
