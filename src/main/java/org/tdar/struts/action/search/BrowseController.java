@@ -260,12 +260,11 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception: {}", e.getMessage());
                 }
                 
-                // hide creator pages for contributors with no resources contributed
-                if (creator.getCreatorType() == CreatorType.PERSON ) {
-                    Person person  = ((Person)creator);
-                    if (getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && person.isHiddenIfNotCited()) {
-                        throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
-                    }
+                // hide creator pages from public for contributors with no resources contributed
+                if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && 
+                        creator.isHiddenIfNotCited()) {
+                    throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
                 }
             }
             FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
