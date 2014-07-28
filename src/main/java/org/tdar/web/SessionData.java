@@ -34,6 +34,7 @@ public class SessionData implements Serializable {
 
     public void clearPassthroughParameters() {
         this.returnUrl = null;
+		this.tdarUserId = null;
     }
 
     public boolean isAuthenticated() {
