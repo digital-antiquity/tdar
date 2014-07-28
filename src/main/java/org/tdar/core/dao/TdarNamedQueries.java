@@ -222,4 +222,6 @@ public interface TdarNamedQueries {
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
     String RESOURCE_ACCESS_COUNT = "resource.exactAccessCount";
 
+    String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
+    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and (hidden=FALSE or occurrence > 0 )";
 }

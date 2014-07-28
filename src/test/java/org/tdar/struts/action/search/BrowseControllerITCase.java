@@ -42,6 +42,36 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
+    public void testBrowsePersonHiddenWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+        getBasicUser().setHiddenIfNotCited(true);
+        getBasicUser().setOccurrence(0L);
+        genericService.saveOrUpdate(getBasicUser());
+        testBrowseController(getBasicUser());
+    }
+
+    @Test
+    @Rollback
+    public void testBrowsePersonHiddenWithout() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+        TdarUser person = new TdarUser();
+        person.setFirstName("test");
+        person.setLastName("test");
+        person.markUpdated(getAdminUser());
+        person.setHiddenIfNotCited(true);
+        person.setOccurrence(0L);
+        genericService.saveOrUpdate(person);
+        genericService.synchronize();
+        boolean expectedException = false;
+        controller.setId(person.getId());
+        try {
+            assertEquals(Action.SUCCESS, controller.browseCreators());
+        } catch (TdarActionException ex) {
+            expectedException = true;
+        }
+        assertTrue("Exception expected but not found", expectedException);
+    }
+
+    @Test
+    @Rollback
     public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Institution institution = new Institution("testBrowseControllerInstitution");
         genericService.save(institution);
