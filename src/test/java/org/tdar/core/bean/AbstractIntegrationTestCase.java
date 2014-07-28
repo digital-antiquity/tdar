@@ -499,13 +499,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected void init(TdarActionSupport controller, TdarUser user) {
         if (controller != null) {
+            TdarUser user_ = null;
             controller.setSessionData(getSessionData());
             if ((user != null) && Persistable.Base.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
-                TdarUser user_ = genericService.find(TdarUser.class, user.getId());
-                controller.getSessionData().setTdarUser(user_);
-            } 
+                user_ = genericService.find(TdarUser.class, user.getId());
+            }
+            controller.getSessionData().setTdarUser(user_);
         }
     }
 
@@ -988,7 +989,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public SimpleMailMessage checkMailAndGetLatest() {
         sendEmailProcess.execute();
         sendEmailProcess.cleanup();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender)emailService.getMailSender()).getMessages();
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
         assertTrue("should have a mail in our 'inbox'", messages.size() > 0);
 
         SimpleMailMessage received = messages.remove(0);
