@@ -33,7 +33,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     private AuthenticationService authenticationService;
 
     @Action(value = "process-download-registration",
-            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
             })

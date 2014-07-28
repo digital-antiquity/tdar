@@ -43,7 +43,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     private GenericService genericService;
 
     @Action(value = "process-download-login",
-            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
             @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
             @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING),

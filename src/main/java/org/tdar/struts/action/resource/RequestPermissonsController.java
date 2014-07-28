@@ -77,7 +77,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     }
 
     @Action(value = "process-access-request",
-            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}"),
                     @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",

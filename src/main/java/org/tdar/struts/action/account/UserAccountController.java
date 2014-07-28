@@ -138,7 +138,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
 
     @Actions({
             @Action(value = "register",
-                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+//                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                             @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") })

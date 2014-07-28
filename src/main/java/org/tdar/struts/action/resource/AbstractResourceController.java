@@ -282,7 +282,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Action(value = SAVE,
-            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),

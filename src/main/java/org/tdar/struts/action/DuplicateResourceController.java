@@ -46,7 +46,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     }
 
     @Action(value = "duplicate-final",
-            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
                     @Result(name = INPUT, type = FREEMARKER, location = "duplicate_error.ftl")
