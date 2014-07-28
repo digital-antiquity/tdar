@@ -157,3 +157,4 @@ create index information_resource_file_ir2 on information_resource_file(informat
 
 -- abrin 07/24/2014
 alter table creator_view_statistics drop constraint creator_view_statistics_creator_id_fkey;
+alter table creator add column hidden_if_unreferenced

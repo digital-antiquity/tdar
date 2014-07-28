@@ -180,7 +180,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<>();
 
-    @Column(nullable = false, name = "hidden", columnDefinition = "boolean default FALSE")
+    @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
     private boolean hiddenIfNotCited = Boolean.FALSE;
 
     private transient Float score = -1f;
