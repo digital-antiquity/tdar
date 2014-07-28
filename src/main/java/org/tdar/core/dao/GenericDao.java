@@ -31,6 +31,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -116,7 +117,11 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
-        return getCurrentSession().createQuery(String.format("select id from %s where status in ('ACTIVE')", persistentClass.getName())).list();
+        if (persistentClass.isAssignableFrom(Creator.class)) {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
+        } else {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_CREATOR_BY_ID, persistentClass.getName())).list();
+        }
     }
 
     @SuppressWarnings("unchecked")

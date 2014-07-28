@@ -126,7 +126,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             else if (classLevelRequiresGroupAnnotation != null) {
                 group = classLevelRequiresGroupAnnotation.value();
             }
-            TdarUser user = sessionData.getTdarUser();
+            TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
                 // user is authenticated and authorized to perform requested action
                 return interceptPendingNotices(invocation, user);

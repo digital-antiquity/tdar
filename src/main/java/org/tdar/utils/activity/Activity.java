@@ -10,6 +10,7 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.web.SessionData;
 
 public class Activity implements Serializable {
@@ -47,7 +48,7 @@ public class Activity implements Serializable {
                 request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
     }
 
-    public Activity(HttpServletRequest httpServletRequest) {
+    public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
         this();
         HttpServletRequest request = ServletActionContext.getRequest();
         this.name = String.format("%s:%s?%s [%s]", request.getMethod(), request.getServletPath(),
@@ -57,7 +58,7 @@ public class Activity implements Serializable {
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
         if (sessionData != null) {
-            setUser(sessionData.getTdarUser());
+            setUser(user);
         }
     }
 

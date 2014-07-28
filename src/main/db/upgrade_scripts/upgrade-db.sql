@@ -214,4 +214,7 @@ alter table user_notification add column display_type varchar(32) not null defau
 create index information_resource_file_ir2 on information_resource_file(information_resource_id);
 
 -- abrin 07/24/2014
-alter table creator_view_statistics drop constraint creator_view_statistics_creator_id_fkey;>>>>>>> theirs
+alter table creator_view_statistics drop constraint creator_view_statistics_creator_id_fkey;
+
+-- abrin 07/27/2014
+alter table creator add column hidden_if_unreferenced>>>>>>> theirs

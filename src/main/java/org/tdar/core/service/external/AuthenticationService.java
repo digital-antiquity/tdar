@@ -238,9 +238,9 @@ public class AuthenticationService {
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
     public void createAuthenticationToken(TdarUser person, SessionData session) {
-        AuthenticationToken token = AuthenticationToken.create(person);
-        personDao.save(token);
-        session.setAuthenticationToken(token);
+//        AuthenticationToken token = AuthenticationToken.create(person);
+//        personDao.save(token);
+        session.setTdarUser(person);
     }
 
     /*
@@ -436,9 +436,9 @@ public class AuthenticationService {
 
     @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        AuthenticationToken token = sessionData.getAuthenticationToken();
-        token.setSessionEnd(new Date());
-        personDao.update(token);
+//        AuthenticationToken token = sessionData.getAuthenticationToken();
+//        token.setSessionEnd(new Date());
+//        personDao.update(token);
         sessionData.clearAuthenticationToken();
         getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
@@ -513,12 +513,12 @@ public class AuthenticationService {
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         // we actually need to update two person instances: the persisted user record, and the detached user
         // associated with the session. We hide this detail from the caller.
-        TdarUser detachedUser = sessionData.getTdarUser();
-        TdarUser persistedUser = personDao.find(TdarUser.class, detachedUser.getId());
-        satisfyPrerequisites(detachedUser, notices);
+//        TdarUser detachedUser = sessionData.getTdarUser();
+        TdarUser persistedUser = personDao.find(TdarUser.class, sessionData.getTdarUserId());
+//        satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
         personDao.saveOrUpdate(persistedUser);
-        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+//        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 

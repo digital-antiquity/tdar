@@ -123,9 +123,9 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
         getGenericService().saveOrUpdate(person);
 
         // If the user is editing their own profile, refresh the session object if needed
-        if (getAuthenticatedUser().equals(person)) {
-            getSessionData().getAuthenticationToken().setTdarUser(person);
-        }
+//        if (getAuthenticatedUser().equals(person)) {
+//            getSessionData().getAuthenticationToken().setTdarUser(person);
+//        }
         if (passwordResetRequested) {
             authenticationService.getAuthenticationProvider().resetUserPassword(person);
         }

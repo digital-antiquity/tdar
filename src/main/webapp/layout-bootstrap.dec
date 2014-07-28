@@ -34,7 +34,7 @@
 <head>
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
-        <!-- logged-in-as: ${sessionData.tdarUser.email} -->
+        <!-- logged-in-as: ${authenticatedUser.email} -->
     </#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -282,7 +282,7 @@
                     <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
                     <#if authenticatedUser??>
                         - <@s.text name="footer.logged_in_as"/>: <a
-                            href="<@s.url value="/browse/creators/${sessionData.tdarUser.id?c}"/>">${sessionData.tdarUser.email}</a>
+                            href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.email}</a>
                     </#if>
                 </small>
             </p>

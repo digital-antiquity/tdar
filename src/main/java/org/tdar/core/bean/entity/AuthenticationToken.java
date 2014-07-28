@@ -4,8 +4,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,9 +26,8 @@ public class AuthenticationToken extends Persistable.Base {
 
     public final static AuthenticationToken INVALID = new AuthenticationToken();
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "tdar_user_id", nullable = false)
-    private TdarUser tdarUser;
+    @Column(name = "tdar_user_id", nullable = false)
+    private Long tdarUserId;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, name = "session_start")
@@ -45,18 +42,11 @@ public class AuthenticationToken extends Persistable.Base {
             throw new NullPointerException(MessageHelper.getMessage("authenticationToken.undefined_person"));
         }
         AuthenticationToken token = new AuthenticationToken();
-        token.setTdarUser(tdarUser);
+        token.setTdarUserId(tdarUser.getId());
         token.setSessionStart(new Date());
         return token;
     }
 
-    public TdarUser getTdarUser() {
-        return tdarUser;
-    }
-
-    public void setTdarUser(TdarUser tdarUser) {
-        this.tdarUser = tdarUser;
-    }
 
     public Date getSessionStart() {
         return sessionStart;
@@ -73,7 +63,7 @@ public class AuthenticationToken extends Persistable.Base {
      */
     @Transient
     public boolean isValid() {
-        return (tdarUser != null) && tdarUser.isRegistered();
+        return (Persistable.Base.isNotNullOrTransient(getTdarUserId()));
     }
 
     public Date getSessionEnd() {
@@ -86,6 +76,21 @@ public class AuthenticationToken extends Persistable.Base {
 
     @Override
     public String toString() {
-        return "auth token for " + tdarUser + " with id: " + getId();
+        return "auth token for UserId:" + getTdarUserId() + " with id: " + getId();
+    }
+
+
+    public Long getTdarUserId() {
+        return tdarUserId;
+    }
+
+
+    public void setTdarUserId(Long tdarUserId) {
+        this.tdarUserId = tdarUserId;
+    }
+
+
+    public void setTdarUser(TdarUser person) {
+        setTdarUserId(person.getId());
     }
 }

@@ -61,8 +61,9 @@ public interface AuthenticationAware extends SessionDataAware {
             if (getSessionData() == null) {
                 return null;
             }
-            if (Persistable.Base.isNotNullOrTransient(getSessionData().getTdarUser())) {
-                return getGenericService().find(TdarUser.class, getSessionData().getTdarUser().getId());
+            Long tdarUserId = getSessionData().getTdarUserId();
+            if (Persistable.Base.isNotNullOrTransient(tdarUserId)) {
+                return getGenericService().find(TdarUser.class, tdarUserId);
             } else {
                 return null;
             }
@@ -205,7 +206,8 @@ public interface AuthenticationAware extends SessionDataAware {
         }
 
         public boolean isContributor() {
-            return isAuthenticated() && getAuthenticatedUser().isRegistered() && getAuthenticatedUser().getContributor();
+            TdarUser authenticatedUser = getAuthenticatedUser();
+            return isAuthenticated() && authenticatedUser.isRegistered() && authenticatedUser.getContributor();
         }
 
         @Override

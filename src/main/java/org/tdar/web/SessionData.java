@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**
@@ -22,31 +22,12 @@ public class SessionData implements Serializable {
 
     private static final long serialVersionUID = 2786144717909265676L;
 
-    private AuthenticationToken authenticationToken;
-
     private String returnUrl;
     private String[] parameters;
+    private Long tdarUserId;
     private Long invoiceId;
 
-    @Deprecated
-
-    public TdarUser getPerson() {
-        return getTdarUser();
-    }
-
-    public TdarUser getTdarUser() {
-        if (authenticationToken == null) {
-            return null;
-        }
-        return authenticationToken.getTdarUser();
-    }
-
-    public AuthenticationToken getAuthenticationToken() {
-        return authenticationToken;
-    }
-
     public void clearAuthenticationToken() {
-        this.authenticationToken = null;
         this.parameters = null;
         clearPassthroughParameters();
     }
@@ -54,18 +35,14 @@ public class SessionData implements Serializable {
     public void clearPassthroughParameters() {
         this.returnUrl = null;
     }
-    
-    public void setAuthenticationToken(AuthenticationToken authenticationToken) {
-        this.authenticationToken = authenticationToken;
-    }
 
     public boolean isAuthenticated() {
-        return (authenticationToken != null) && authenticationToken.isValid();
+        return Persistable.Base.isNotNullOrTransient(tdarUserId);
     }
 
     @Override
     public String toString() {
-        return String.format("Auth token: %s [object id: %s]", authenticationToken, super.toString());
+        return String.format("Auth user: %s [object id: %s]", tdarUserId, super.toString());
     }
 
     public String getReturnUrl() {
@@ -100,12 +77,16 @@ public class SessionData implements Serializable {
         return parameters;
     }
 
-    public boolean isContributor() {
-        TdarUser tdarUser = getTdarUser();
-        if (tdarUser == null) {
-            return false;
+    public Long getTdarUserId() {
+        return tdarUserId;
+    }
+
+    public void setTdarUser(TdarUser user) {
+        if (Persistable.Base.isNotNullOrTransient(user)) {
+            this.tdarUserId = user.getId();
+        } else {
+            this.tdarUserId = null;
         }
-        return tdarUser.getContributor();
     }
 
     public Long getInvoiceId() {

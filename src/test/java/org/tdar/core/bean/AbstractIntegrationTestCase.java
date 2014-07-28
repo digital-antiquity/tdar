@@ -73,7 +73,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -512,13 +511,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 TdarUser user_ = genericService.find(TdarUser.class, user.getId());
-                AuthenticationToken token = AuthenticationToken.create(user_);
-                controller.getSessionData().setAuthenticationToken(token);
-                genericService.save(token);
-                // genericService.detachFromSession(user_);
-            } else {
-                controller.getSessionData().setAuthenticationToken(new AuthenticationToken());
-            }
+                controller.getSessionData().setTdarUser(user_);
+            } 
         }
     }
 
