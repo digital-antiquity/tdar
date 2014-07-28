@@ -552,11 +552,39 @@ TDAR.maps = function ($, TDAR) {
             var markers = new Array();
             var infowindows = new Array();
             var i = 0;
+            //http://gis.stackexchange.com/questions/7430/google-maps-zoom-level-ratio
+            // tDAR scales work inversely from Google Maps, 0 for us is very precise, vs. google where 19 is.  tDAR scales range from 0-6
+            var googleScale = myMap.zoom;
+            console.log(googleScale);
             $("ol.MAP li").each(function () {
                 i++;
                 var $this = $(this);
-                if ($this.attr("data-lat") && $this.attr('data-long')) {
-                    console.log($this.attr("data-lat") + " " + $this.attr('data-long'));
+                var scale = parseInt($this.attr("data-scale"));
+                var hide = false;
+                if (scale !== undefined) {
+                    switch (scale) {
+                        case 0:
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4: 
+    //                        break;
+                        case 5: 
+    //                        break;
+                        case 6:
+                            if (googleScale > 4) {
+                                hide = true;
+                            }
+                            break;
+                    }
+                }
+                
+                if ($this.attr("data-lat") && $this.attr('data-long') && hide == false) {
+                    console.log("scale: " + scale + ": " +$this.attr("data-lat") + " " + $this.attr('data-long'));
                     var infowindow = new google.maps.InfoWindow({
                         content: $this.html()
                     });
