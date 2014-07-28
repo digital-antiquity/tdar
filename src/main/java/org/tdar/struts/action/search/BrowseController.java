@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -30,6 +31,7 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -45,7 +47,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.DirectoryType;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -258,6 +259,14 @@ public class BrowseController extends AbstractLookupController {
                 } catch (ParseException e) {
                     getLogger().warn("search parse exception: {}", e.getMessage());
                 }
+                
+                // hide creator pages for contributors with no resources contributed
+                if (creator.getCreatorType() == CreatorType.PERSON ) {
+                    Person person  = ((Person)creator);
+                    if (getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && person.isHiddenIfNotCited()) {
+                        throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+                    }
+                }
             }
             FileStoreFile personInfo = new FileStoreFile(DirectoryType.SUPPORT, getId(), getId() + XML);
             try {
@@ -284,18 +293,6 @@ public class BrowseController extends AbstractLookupController {
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
-
-    // @Action(value = "materials", results = { @Result(location = "results.ftl") })
-    // public String browseMaterialTypes() {
-    // setResults(getResourceService().findResourceLinkedValues(MaterialKeyword.class));
-    // return SUCCESS;
-    // }
-    //
-    // @Action(value = "places", results = { @Result(location = "results.ftl") })
-    // public String browseInvestigationTypes() {
-    // setResults(getResourceService().findResourceLinkedValues(InvestigationType.class));
-    // return SUCCESS;
-    // }
 
     public Creator getCreator() {
         return creator;
