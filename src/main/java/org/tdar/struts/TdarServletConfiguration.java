@@ -74,7 +74,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         container.addListener(RequestContextListener.class);
         container.addListener(StrutsListener.class);
         container.addListener(ShutdownListener.class);
-        
+
         TdarConfiguration configuration = TdarConfiguration.getInstance();
         if (configuration.isOdataEnabled()) {
             ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
@@ -85,14 +85,16 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
         FilterRegistration urlRewrite = container.getFilterRegistration("UrlRewriteFilter");
-        configureCorsFilter(container, configuration);
+        if (configuration.getContentSecurityPolicyEnabled()) {
+            configureCorsFilter(container, configuration);
+        }
         urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
 
         configureStrutsAndSiteMeshFilters(container);
-        
+
     }
 
     private void configureStrutsAndSiteMeshFilters(ServletContext container) {
@@ -105,7 +107,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     }
 
     private void configureCorsFilter(ServletContext container, TdarConfiguration configuration) {
-        //http://software.dzhuvinov.com/cors-filter-configuration.html
+        // http://software.dzhuvinov.com/cors-filter-configuration.html
         Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
         corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
         corsFilter.setInitParameter("cors.preflight.maxage", "3600");
