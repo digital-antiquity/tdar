@@ -601,7 +601,6 @@ public class InvoiceService {
         sendNotificationEmail(invoice);
 
         if (invoice.getTransactionStatus().isSuccessful()) {
-            // at the very least, send invoice notification
             TdarUser recipient = invoice.getOwner();
             logger.info("sending notification:{} to:{}", CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION, recipient);
             notificationService.info(recipient, CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION);
