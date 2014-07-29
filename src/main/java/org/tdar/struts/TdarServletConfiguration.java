@@ -86,7 +86,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
         FilterRegistration urlRewrite = container.getFilterRegistration("UrlRewriteFilter");
-        urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
         if (configuration.getContentSecurityPolicyEnabled()) {
             logger.debug("enabling cors");
             configureCorsFilter(container);
@@ -97,6 +96,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
         configureStrutsAndSiteMeshFilters(container);
 
+        // NOTE: this needs to be last to avoid a race-condition whereby the web.xml is not parsed before trying to read the urlRewrite filter
+        urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
     }
 
     private void configureStrutsAndSiteMeshFilters(ServletContext container) {
