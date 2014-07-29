@@ -30,12 +30,12 @@ public class SessionData implements Serializable {
     public void clearAuthenticationToken() {
         this.parameters = null;
         this.tdarUserId = null;
+        this.invoiceId = null;
         clearPassthroughParameters();
     }
 
     public void clearPassthroughParameters() {
         this.returnUrl = null;
-        this.invoiceId = null;
     }
 
     public boolean isAuthenticated() {
