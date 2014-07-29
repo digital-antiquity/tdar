@@ -39,6 +39,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
@@ -51,6 +52,7 @@ import org.tdar.utils.MessageHelper;
 public class InvoiceService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION = "cartExternalPaymentResponseAction.new_invoice_notification";
 
     @Autowired
     private transient GenericDao genericDao;
@@ -66,6 +68,10 @@ public class InvoiceService {
 
     @Autowired
     private transient XmlService xmlService;
+
+    @Autowired
+    private transient UserNotificationService notificationService;
+
 
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
@@ -414,7 +420,7 @@ public class InvoiceService {
      * Apply a @link Coupon to a @link Invoice, if the coupon is for more than an invoice, then we bump the cost of the invoice to match the value of the coupon
      * code
      * 
-     * @param persistable
+     * @param invoice
      * @param user
      * @param code
      */
@@ -489,7 +495,7 @@ public class InvoiceService {
      * (b) mark it as final, so it cannot be modified
      * (c) confirm that the coupon is still valid
      * (d) change the transaction status:
-     * 1) if we have a coupon and that coupon is for the entire amount, complete transaciton
+     * 1) if we have a coupon and that coupon is for the entire amount, complete transaction
      * 2) set status to PENDING_TRANSACTION
      * 
      * @param invoice_
@@ -580,18 +586,38 @@ public class InvoiceService {
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 invoice.setResponse(billingResponse);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                sendSuccessEmail(invoice);
                 genericDao.saveOrUpdate(invoice);
+                //send notifications.  if any error happens we want to log it but not rollback the transaction
+                handlePurchaseNotifications(invoice);
             }
         }
     }
 
     /**
-     * Sends a email to the user when the transaction is successful
+     * Send notifications to a user following a successful transaction
+     */
+    private void handlePurchaseNotifications(Invoice invoice) {
+        //always send the notification admin email, but only send the dashboard notification to the user if the transaction was successful
+        sendNotificationEmail(invoice);
+
+        if (invoice.getTransactionStatus().isSuccessful()) {
+            // at the very least, send invoice notification
+            TdarUser recipient = invoice.getOwner();
+            logger.info("sending notification:{} to:{}", CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION, recipient);
+            notificationService.info(recipient, CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION);
+        } else {
+            logger.info("invoice transaction not successful:{}", invoice);
+        }
+    }
+
+
+
+    /**
+     * Sends a email to the billing admin when a transaction is complete
      * 
      * @param invoice
      */
-    private void sendSuccessEmail(Invoice invoice) {
+    private void sendNotificationEmail(Invoice invoice) {
         Map<String, Object> map = new HashMap<>();
         map.put("invoice", invoice);
         map.put("date", new Date());

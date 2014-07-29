@@ -35,16 +35,12 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/cart")
 // @HttpsOnly
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
-    public static final String CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION = "cartExternalPaymentResponseAction.new_invoice_notification";
 
     private static final long serialVersionUID = 0xDEADBEEF;
 
     public static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
     public static final String NELNET_RESPONSE_SUCCESS = "success";
     public static final String NELNET_RESPONSE_FAILURE = "failure";
-
-    @Autowired
-    private transient UserNotificationService notificationService;
 
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
@@ -95,31 +91,9 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
             addActionError(e.getMessage());
             return ERROR;
         }
-        // this is already done in prepare(), but some tests may not be calling prepare() prior to calling this method.
-        handlePurchaseNotifications();
         return SUCCESS;
     }
 
-    /**
-     * Send notifications to a user following a successful transaction
-     */
-    private void handlePurchaseNotifications() {
-        // for now, we only care about sending notification if the transaction was successful
-        if (!invoice.getTransactionStatus().isSuccessful()) {
-            getLogger().info("invoice transaction not successful:{}", invoice);
-            return;
-        }
-
-        // at the very least, send invoice notification
-        TdarUser recipient = invoice.getOwner();
-
-        getLogger().info("sending notification:{} to:{}", CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION, recipient);
-
-        notificationService.info(recipient, CART_EXTERNAL_PAYMENT_RESPONSE_ACTION_NEW_INVOICE_NOTIFICATION);
-
-        // if user recently became a contributor by way of this invoice, send an additional notification
-        // todo: how to figure this out? user has only one account and account only has this invoice?
-    }
 
     public InputStream getInputStream() {
         return toStream(NELNET_RESPONSE_SUCCESS);
