@@ -726,7 +726,7 @@ public class TdarConfiguration {
         return assistant.getStringProperty("content.security.policy.additions", "");
     }
 
-    public Boolean getContentSecurityPolicyEnabled() {
+    public boolean getContentSecurityPolicyEnabled() {
         return assistant.getBooleanProperty("content.security.policy.enabled", false);
     }
 

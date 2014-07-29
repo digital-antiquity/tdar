@@ -55,6 +55,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
     }
 
+    TdarConfiguration configuration = TdarConfiguration.getInstance();
+
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         if (StringUtils.isNotBlank(failureMessage)) {
@@ -75,7 +77,6 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         container.addListener(StrutsListener.class);
         container.addListener(ShutdownListener.class);
 
-        TdarConfiguration configuration = TdarConfiguration.getInstance();
         if (configuration.isOdataEnabled()) {
             ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
             oData.setLoadOnStartup(1);
@@ -85,10 +86,11 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
 
         FilterRegistration urlRewrite = container.getFilterRegistration("UrlRewriteFilter");
-        if (configuration.getContentSecurityPolicyEnabled()) {
-            configureCorsFilter(container, configuration);
-        }
         urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
+        if (configuration.getContentSecurityPolicyEnabled()) {
+            logger.debug("enabling cors");
+            configureCorsFilter(container);
+        }
 
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
@@ -106,8 +108,9 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         strutsExecute.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
     }
 
-    private void configureCorsFilter(ServletContext container, TdarConfiguration configuration) {
-        // http://software.dzhuvinov.com/cors-filter-configuration.html
+    private void configureCorsFilter(ServletContext container) {
+        // http://software.dzhuvinov.com/cors-filter-configuration.html [doesn't work]
+        // https://github.com/eBay/cors-filter [seems to not work with same-origin post requests on alpha
         Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
         corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
         corsFilter.setInitParameter("cors.preflight.maxage", "3600");
