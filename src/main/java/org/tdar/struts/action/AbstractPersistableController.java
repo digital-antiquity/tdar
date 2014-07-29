@@ -159,7 +159,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
-        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
+//        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
 
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
 
@@ -227,7 +227,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String save() throws TdarActionException {
         // checkSession();
-        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
+//        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
@@ -398,7 +398,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
-        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
+//        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         checkForNonContributorCrud();
         logAction("EDITING");
