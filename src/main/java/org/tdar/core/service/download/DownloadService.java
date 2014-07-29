@@ -103,7 +103,10 @@ public class DownloadService {
     }
 
     public void releaseDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
-        InformationResourceFileVersion[] array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        InformationResourceFileVersion[] array = new InformationResourceFileVersion[0];
+        if (versionsToDownload != null) {
+            array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        }
         if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
             return;
         }
@@ -119,7 +122,10 @@ public class DownloadService {
     }
 
     public void enforceDownloadLock(TdarUser authenticatedUser, List<InformationResourceFileVersion> versionsToDownload) {
-        InformationResourceFileVersion[] array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        InformationResourceFileVersion[] array = new InformationResourceFileVersion[0];
+        if (versionsToDownload != null) {
+            array = versionsToDownload.toArray(new InformationResourceFileVersion[0]);
+        }
         if (isUnauthenticatedOrThumbnail(authenticatedUser, array)) {
             return;
         }
