@@ -75,6 +75,7 @@
                 dataType: 'jsonp',
                 crossDomain: true,
                 type: 'POST',
+                xhrFields: { withCredentials: true },
                 success: function (data) {
                     var checked = "checked";
                     $est.html("");
@@ -173,6 +174,7 @@
             url: url,
             dataType: 'json',
             type: 'POST',
+            xhrFields: { withCredentials: true },
             success: function (data) {
                 if (data.transactionStatus == 'PENDING_TRANSACTION') {
                     $("#polling-status").html("checking status ...");
