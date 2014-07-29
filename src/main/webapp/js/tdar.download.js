@@ -20,7 +20,7 @@
     var _setup = function() {
         //look for link data-auto-download boolean attribute.  Terminate if none found.
         //FIXME: shouldn't this work, link by link?
-        var $link = $("a[data-auto-download]").first();
+        var $link = $("[data-auto-download]").first();
         if($link.length === 0) return;
 
         //grap url, irf.id from link, set a timer to call _autodownload
