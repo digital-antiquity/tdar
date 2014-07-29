@@ -69,6 +69,24 @@ public class TdarConfiguration {
         this("/tdar.properties");
     }
 
+    public void printConfig() {
+        logger.info("---------------------------------------------");
+        logger.info("| Name:{} ({})",getRepositoryName(), isProductionEnvironment());
+        logger.info("| ");
+        logger.info("| HostName: {}  SecureHost: {}", getBaseUrl(), getBaseSecureUrl());
+        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled() );
+        logger.info("| MailHost: {}", getSmtpHost() );
+        logger.info("| ");
+        logger.info("| Storage:");
+        logger.info("| FileStoreLocation: {}", getFileStoreLocation());
+        logger.info("| PersonalFileStoreLocation: {}", getPersonalFileStoreLocation());
+        logger.info("| ");
+        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents() );
+        logger.info("| PayPerIngest: {}", isPayPerIngestEnabled());
+        logger.info("| CORS Hosts: {} ({})", getAllAllowedDomains(), getContentSecurityPolicyEnabled());
+        logger.info("---------------------------------------------");
+    }
+
     /*
      * Do not use this except for via the @MultipleTdarConfigurationRunner
      */
@@ -81,9 +99,13 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
     }
 
-    //FIXME: This function needs javadoc -- I assume there is a reason why initialize() cant/shouldn't happen in constructor (or lazy-init in getInstance()).
+    // FIXME: This function needs javadoc -- I assume there is a reason why initialize() cant/shouldn't happen in constructor (or lazy-init in getInstance()).
     public void initialize() {
         logger.debug("initializing filestore and setup");
+        
+        if (isProductionEnvironment()) {
+            printConfig();
+        }
         // initPersonalFilestorePath();
         initializeStopWords();
         intializeCouponCodes();
@@ -210,6 +232,7 @@ public class TdarConfiguration {
     }
 
     boolean personalFilestorePathInitialized = false;
+
     // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
     private void initPersonalFilestorePath() {
         if (personalFilestorePathInitialized) {
@@ -715,8 +738,9 @@ public class TdarConfiguration {
         List<String> baseUrls = new ArrayList<>();
         baseUrls.add(getBaseSecureUrl());
         baseUrls.add(getBaseUrl());
-        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com","netda.bootstrapcdn.com","ajax.aspnetcdn.com","typekit.com","api.recaptcha.net"));
-        for (String term : StringUtils.split(getContentSecurityPolicyAdditions(), " ") ) {
+        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com", "netda.bootstrapcdn.com", "ajax.aspnetcdn.com",
+                "typekit.com", "api.recaptcha.net"));
+        for (String term : StringUtils.split(getContentSecurityPolicyAdditions(), " ")) {
             term = StringUtils.trim(term);
             if (StringUtils.isBlank(term)) {
                 continue;
