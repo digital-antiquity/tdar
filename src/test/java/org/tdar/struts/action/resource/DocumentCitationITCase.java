@@ -98,6 +98,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         // a simple test to see if we even get back a non-blank dc document
         navigateTo(DOC_TDAR_ID);
         String xml = getDcXml();
+        logger.debug(xml);
         assertTrue(xml.length() > 0);
     }
 
