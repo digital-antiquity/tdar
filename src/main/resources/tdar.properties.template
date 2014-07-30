@@ -54,7 +54,7 @@ mail.smtp.host=localhost
 
 # The email address for the sysadmin, tDAR uses this to send notifications about problems or for users to report issues to
 # default: tdar-svn@lists.asu.edu
-sysadmin.email=
+#sysadmin.email=
 
 # the email address used for "contacting the service"
 # default: info@digitalantiquity.org
@@ -66,13 +66,13 @@ app.contact.email=info@digitalantiquity.org
 ####################################
 
 # whether payments are enabled
-pay.per.contribution.enabled
+pay.per.contribution.enabled=false
 
 # email address of the Billing Admin
-billing.admin.email
+#billing.admin.email
 
 # the file to be used for values for the coupon codes
-coupon.codes.file
+#coupon.codes.file
 
 
 #############################
@@ -80,13 +80,13 @@ coupon.codes.file
 #############################
 
 # the ID of the collection that should be used to find featured items
-featured.colletion.id=-1
+#featured.colletion.id=-1
 
 # the URL for the "news" webpage
-news.url
+#news.url
 
 # the URL for the "news" RSS Feed
-news.rssFeed
+#news.rssFeed
 
 
 
@@ -243,10 +243,10 @@ is.geolocation.to.be.used=false
 copyright.fields.enabled=false
 
 # whether users should be prompted for the LicenseType of an InformationResource
-licenses.enabled
+licenses.enabled=false
 
 # the default LicenseType to use
-default.license.type
+#default.license.type
 
 # Should the user be allowed to expose their email and phone number to anonymous users
 privacy.controls.enabled=false
@@ -284,7 +284,7 @@ obfuscation.interceptor.disabled= false
 tos.url=http://www.tdar.org/about/policies/terms-of-use/
 
 # terms of service version
-tos.version
+#tos.version
 
 # Contributors agreement URL
 # default: http://www.tdar.org/about/policies/contributors-agreement/
@@ -301,20 +301,20 @@ contributor.agreement.version
 use.WebFilePreprocessing = false
 
 # whether the static content is served on another server
-static.content.enabled
+static.content.enabled=false
 
 # the hostname of the static content server
-static.content.host
+#static.content.host
 
 # the default http port for static content
-static.content.port
+#static.content.port
 
 # the ssl http port for static content
-static.content.sslPort
+#static.content.sslPort
 
 # content security policy enabled
 #default = true
-content.security.policy.enabled = true
+content.security.policy.enabled = false
 
 # the additions to the content security policy headers
 # http://www.html5rocks.com/en/tutorials/security/content-security-policy/
@@ -335,7 +335,7 @@ userids.to.ignore
 guest.user.id
 
 # whether the user should be able to enter an RPA number
-rpa.enabled
+rpa.enabled=true
 
 
 ###################################
@@ -374,12 +374,12 @@ creator.analytics.days.to.process=10
 #kettle input path: the directory that the kettle ETL tool will scan for input (for loading FAIMS data)
 kettle.input.path=
 
-odata.enabled
+odata.enabled=false
 
-embargo.period
+embargo.period=5
 
 upload.maxFilesPerResource=50
 
-archive.enabled
-video.enabled
-xml.export.enabled
+archive.enabled=false
+video.enabled=false
+xml.export.enabled=false

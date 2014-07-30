@@ -726,8 +726,8 @@ public class TdarConfiguration {
         return assistant.getStringProperty("content.security.policy.additions", "");
     }
 
-    public Boolean getContentSecurityPolicyEnabled() {
-        return assistant.getBooleanProperty("content.security.policy.enabled", true);
+    public boolean getContentSecurityPolicyEnabled() {
+        return assistant.getBooleanProperty("content.security.policy.enabled", false);
     }
 
     public boolean ignoreMissingFilesInFilestore() {

@@ -60,6 +60,8 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         person.setOccurrence(0L);
         genericService.saveOrUpdate(person);
         genericService.synchronize();
+        controller = generateNewController(BrowseController.class);
+        init(controller, null);
         boolean expectedException = false;
         controller.setId(person.getId());
         try {

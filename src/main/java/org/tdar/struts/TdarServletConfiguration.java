@@ -28,6 +28,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
@@ -55,6 +56,8 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         }
     }
 
+    TdarConfiguration configuration = TdarConfiguration.getInstance();
+
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         if (StringUtils.isNotBlank(failureMessage)) {
@@ -63,19 +66,43 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(TdarAppConfiguration.class);
         container.addListener(new ContextLoaderListener(rootContext));
-        ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
-        cxf.setLoadOnStartup(1);
-        cxf.addMapping("/services/*");
-        ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);
-        freemarker.setInitParameter("default_encoding", "UTF-8");
-        freemarker.setLoadOnStartup(1);
-        freemarker.addMapping("*.dec");
+        configureCxfForTag(container);
+        configureFreemarker(container);
 
         container.addListener(RequestContextListener.class);
         container.addListener(StrutsListener.class);
         container.addListener(ShutdownListener.class);
-        
-        TdarConfiguration configuration = TdarConfiguration.getInstance();
+
+        configureOdata(container);
+
+        configureUrlRewriteRule(container);
+
+        if (configuration.getContentSecurityPolicyEnabled()) {
+            logger.debug("enabling cors");
+            configureCorsFilter(container);
+        }
+
+        Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
+        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
+
+        configureStrutsAndSiteMeshFilters(container);
+
+    }
+
+    private void configureFreemarker(ServletContext container) {
+        ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker", FreemarkerDecoratorServlet.class);
+        freemarker.setInitParameter("default_encoding", "UTF-8");
+        freemarker.setLoadOnStartup(1);
+        freemarker.addMapping("*.dec");
+    }
+
+    private void configureCxfForTag(ServletContext container) {
+        ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
+        cxf.setLoadOnStartup(1);
+        cxf.addMapping("/services/*");
+    }
+
+    private void configureOdata(ServletContext container) {
         if (configuration.isOdataEnabled()) {
             ServletRegistration.Dynamic oData = container.addServlet("odata", SpringServlet.class);
             oData.setLoadOnStartup(1);
@@ -83,16 +110,13 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
             oData.setInitParameter("javax.ws.rs.Application", "org.odata4j.jersey.producer.resources.ODataApplication");
             oData.setInitParameter("odata4j.producerfactory", "org.tdar.odata.server.TDarProducerFactory");
         }
+    }
 
-        FilterRegistration urlRewrite = container.getFilterRegistration("UrlRewriteFilter");
-        configureCorsFilter(container, configuration);
-        urlRewrite.addMappingForUrlPatterns(allDispacherTypes, false, ALL_PATHS);
-
-        Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
-        openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
-
-        configureStrutsAndSiteMeshFilters(container);
-        
+    private void configureUrlRewriteRule(ServletContext container) {
+        Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);
+        urlRewriteFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+        urlRewriteFilter.setInitParameter("confReloadCheckInterval", "-1");
+        urlRewriteFilter.setInitParameter("logLevel", "INFO");
     }
 
     private void configureStrutsAndSiteMeshFilters(ServletContext container) {
@@ -104,8 +128,9 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
         strutsExecute.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
     }
 
-    private void configureCorsFilter(ServletContext container, TdarConfiguration configuration) {
-        //http://software.dzhuvinov.com/cors-filter-configuration.html
+    private void configureCorsFilter(ServletContext container) {
+        // http://software.dzhuvinov.com/cors-filter-configuration.html [doesn't work]
+        // https://github.com/eBay/cors-filter [seems to not work with same-origin post requests on alpha
         Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
         corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
         corsFilter.setInitParameter("cors.preflight.maxage", "3600");

@@ -75,6 +75,7 @@
                 dataType: 'jsonp',
                 crossDomain: true,
                 type: 'POST',
+                xhrFields: { withCredentials: true },
                 success: function (data) {
                     //var data = _parseApidata(rawdata);
                     var checked = "checked";
@@ -176,6 +177,7 @@
             url: url,
             dataType: 'json',
             type: 'POST',
+            xhrFields: { withCredentials: true },
             success: function (data) {
                 if (data.transactionStatus == 'PENDING_TRANSACTION') {
                     $("#polling-status").html("checking status ...");

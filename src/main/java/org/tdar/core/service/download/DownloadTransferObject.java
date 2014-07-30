@@ -110,19 +110,13 @@ public class DownloadTransferObject implements Serializable {
         return fileName;
     }
 
-    public InputStream getInputStream() {
+    public InputStream getInputStream() throws Exception {
         logger.debug("calling getInputStream");
-        InputStream stream = null;
-        try {
-            if (isZipDownload()) {
-                stream = new DownloadLockInputStream(getZipInputStream(), this);
-            }
-            logger.debug("{}", downloads.get(0));
-            stream = new DownloadLockInputStream(downloads.get(0).getInputStream(), this);
-        } catch (Exception e) {
-            logger.error("Exception in download", e);
+        if (CollectionUtils.size(downloads) > 1) {
+            return new DownloadLockInputStream(getZipInputStream(), this);
         }
-        return stream;
+        logger.debug("{}", downloads.get(0));
+        return new DownloadLockInputStream(downloads.get(0).getInputStream(), this);
     }
 
     private InputStream getZipInputStream() throws Exception {
