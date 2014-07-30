@@ -220,6 +220,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional(readOnly = true)
     private void unmapDataTablesForFile(Dataset dataset, InformationResourceFile irFile) {
         String fileName = irFile.getFilename();
+        List<DataTable> tables = new ArrayList<>();
         switch (FilenameUtils.getExtension(fileName).toLowerCase()) {
             case "tab":
             case "csv":
@@ -228,12 +229,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 name = datasetDao.normalizeTableName(name);
                 DataTable dt = dataset.getDataTableByGenericName(name);
                 logger.info("removing {}", dt);
-                cleanupUnusedTablesAndColumns(dataset, Arrays.asList(dt), null);
-                // dataset.getDataTableByGenericName(name)
+                tables.add(dt);
                 break;
             default:
-                cleanupUnusedTablesAndColumns(dataset, dataset.getDataTables(), null);
+                tables.addAll(dataset.getDataTables());
+                break;
         }
+        cleanupUnusedTablesAndColumns(dataset, tables, null);
     }
 
     /*
@@ -293,7 +295,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional(readOnly = true)
     public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         logger.info("deleting unmerged tables: {}", tablesToRemove);
-        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>(columnsToRemove);
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        if (CollectionUtils.isNotEmpty(columnsToRemove)) {
+            for (DataTableColumn column : columnsToRemove) {
+                columnsToUnmap.add(column);
+            }
+        }
         for (DataTable table : tablesToRemove) {
             if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
                 columnsToUnmap.addAll(table.getDataTableColumns());
