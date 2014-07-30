@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -53,6 +53,7 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class PdfService {
 
+    private static final int MAX_DESCRIPTION_LENGTH = 512;
     private static final String DOT_PDF = ".pdf";
     private static final String COVER_PAGE = "cover_page";
     private static final int LEFT_MARGIN = 73;
@@ -89,7 +90,14 @@ public class PdfService {
                 File template = fileDao.loadTemplate(path);
 
                 // create the cover page
-                template = createCoverPage(provider, submitter, template, document, version.getInformationResourceFile().getDescription());
+                String description = version.getInformationResourceFile().getDescription();
+                if (description.length() > 640) {
+                    BreakIterator instance = BreakIterator.getWordInstance();
+                    instance.setText(description);
+                    int after = instance.following(MAX_DESCRIPTION_LENGTH);
+                    description = description.substring(0, after) + "...";
+                }
+                template = createCoverPage(provider, submitter, template, document, description);
 
                 // merge the two PDFs
                 logger.debug("calling merge on: {}", version);
@@ -202,13 +210,6 @@ public class PdfService {
                 LEFT_MARGIN,
                 cursorPositionFromBottom, true, page);
 
-        if (StringUtils.isNotBlank(description)) {
-            cursorPositionFromBottom = writeOnPage(content, "", PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
-            cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, PdfFontHelper.HELVETICA_TEN_POINT,
-                    LEFT_MARGIN,
-                    cursorPositionFromBottom);
-        }
-
         String doi = document.getDoi();
         if (StringUtils.isBlank(doi)) {
             doi = document.getExternalId();
@@ -219,6 +220,13 @@ public class PdfService {
                     LEFT_MARGIN, cursorPositionFromBottom);
 
         }
+        if (StringUtils.isNotBlank(description)) {
+            cursorPositionFromBottom = writeOnPage(content, "", PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
+            cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, PdfFontHelper.HELVETICA_TEN_POINT,
+                    LEFT_MARGIN,
+                    cursorPositionFromBottom);
+        }
+        
         cursorPositionFromBottom = 200;
         List<Object> byOn = new ArrayList<>();
         byOn.add(submitter.getProperName());
