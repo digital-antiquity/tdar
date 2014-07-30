@@ -76,6 +76,7 @@
                 crossDomain: true,
                 type: 'POST',
                 success: function (data) {
+                    //var data = _parseApidata(rawdata);
                     var checked = "checked";
                     $est.html("");
                     var defaultsubtotal = 100000000000000000;
@@ -103,12 +104,14 @@
                         //(i +1), data[i].model, data[i].subtotal );
                         var total_files = 0;
                         var total_mb = 0;
-                        if (item.parts && item.parts.length > 0) {
-                            for (var j = 0; j < item.parts.length; j++) {
-                                var part = item.parts[j];
-                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb * part.quantity, part.subtotal);
-                                total_files += part.numFiles * part.quantity;
-                                total_mb += part.numMb * part.quantity;
+                        if (item.items && item.items.length > 0) {
+                            for (var j = 0; j < item.items.length; j++) {
+                                var part = item.items[j];
+                                part.name = part.activity.numberOfFiles ===0 ?  "Extra Space" : "Files";
+                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>",
+                                        part.name, part.activity.numberOfFiles * part.quantity, part.activity.numberOfMb * part.quantity, part.subtotal);
+                                total_files += part.activity.numberOfFiles * part.quantity;
+                                total_mb += part.activity.numberOfMb * part.quantity;
                                 $est.append(line);
                             }
                         }
