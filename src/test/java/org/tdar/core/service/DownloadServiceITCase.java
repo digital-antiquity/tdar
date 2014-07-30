@@ -126,7 +126,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         List<File> files = new ArrayList<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
-            dto.getDownloads().add(new DownloadFile(file));
+            dto.getDownloads().add(new DownloadFile(file, file.getName()));
             files.add(file);
         }
         File dest = new File(ROOT_DEST, "everything.zip");

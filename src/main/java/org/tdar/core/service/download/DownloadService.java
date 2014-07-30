@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -72,14 +74,18 @@ public class DownloadService {
     }
 
     @Transactional(readOnly = true)
-    public DownloadTransferObject handleActualDownload(DownloadTransferObject dto)
-    {
+    public DownloadTransferObject contructDownloadTransferObject(DownloadTransferObject dto) {
+        Set<String> files = new HashSet<>();
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
 
             if (irFileVersion.getInformationResourceFile().isDeleted()) {
                 continue;
             }
-            addFileToDownload(irFileVersion, dto);
+            String fileToDownload = addFileToDownload(irFileVersion, dto);
+            if (files.contains(fileToDownload)) {
+                throw new TdarRecoverableRuntimeException("downloadService.duplicate_file_in_zip");
+            }
+            files.add(fileToDownload);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
@@ -158,8 +164,11 @@ public class DownloadService {
         return Persistable.Base.isNullOrTransient(authenticatedUser) || CollectionUtils.size(irFileVersions) == 1 && irFileVersions[0].isThumbnail();
     }
 
-    private void addFileToDownload(InformationResourceFileVersion irFileVersion, DownloadTransferObject dto) {
-        DownloadFile resourceFile = new DownloadFile(irFileVersion.getTransientFile());
+    private String addFileToDownload(InformationResourceFileVersion irFileVersion, DownloadTransferObject dto) {
+        File transientFile = irFileVersion.getTransientFile();
+        // setting original filename on file
+        String actualFilename = irFileVersion.getInformationResourceFile().getFilename();
+        DownloadFile resourceFile = new DownloadFile(transientFile,actualFilename);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
@@ -171,6 +180,7 @@ public class DownloadService {
         }
 
         dto.getDownloads().add(resourceFile);
+        return actualFilename;
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
@@ -230,7 +240,7 @@ public class DownloadService {
         }
         logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
         try {
-            handleActualDownload(dto);
+            contructDownloadTransferObject(dto);
             registerDownload(dto.getStatistics());
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);

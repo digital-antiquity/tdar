@@ -20,9 +20,10 @@ public class DownloadFile implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private File file;
-
-    public DownloadFile(File file) {
+    private String originalFilename;
+    public DownloadFile(File file, String string) {
         this.file = file;
+        this.originalFilename = string;
     }
 
     public InputStream getInputStream() throws Exception {
@@ -30,7 +31,7 @@ public class DownloadFile implements Serializable {
     }
 
     public String getFileName() {
-        return this.file.getName();
+        return originalFilename;
     }
 
     public Logger getLogger() {
