@@ -296,7 +296,12 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional(readOnly = true)
     public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         getLogger().info("deleting unmerged tables: {}", tablesToRemove);
-        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>(columnsToRemove);
+        ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+        if (CollectionUtils.isNotEmpty(columnsToRemove)) {
+            for (DataTableColumn column : columnsToRemove) {
+                columnsToUnmap.add(column);
+            }
+        }
 
         for (DataTable table : tablesToRemove) {
             if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
