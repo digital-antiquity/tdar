@@ -34,8 +34,9 @@ public class DownloadController extends AbstractDownloadController implements Pr
         getSessionData().clearPassthroughParameters();
 
         DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this);
+        setInformationResource(dto.getInformationResource());
         if (dto.getResult() != DownloadResult.SUCCESS) {
-            return SUCCESS;
+//            return ERROR;
         }
         return CONFIRM;
     }

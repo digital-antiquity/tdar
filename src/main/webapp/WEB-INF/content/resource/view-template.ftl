@@ -277,31 +277,7 @@
     </#macro>
 
 
-<h2>Cite this Record</h2>
-<div class="citeMe">
-	<#assign citation>
-${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if>
-${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
-    </#assign>
-    <p class="sml">
-		<#noescape>${citation}</#noescape>
-        <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
-            <br/>
-            <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
-        </#if>
-    </p>
-   <div class="links">
-<ul class="inline">
-<#assign url>http://${hostName}<#if hostPort != 80>:${hostPort}</#if>/${currentUrl?url}</#assign>
-<li><a href="https://twitter.com/share" onClick="TDAR.common.registerShare('twitter','${currentUrl}','${id?c}')" >Tweet this</a></li>
-<li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${id?c}')">Share on Facebook</a></li>
-
-<li><a 
-    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}"</#noescape>
-     onClick="TDAR.common.registerShare('email','${currentUrl}','${id?c}')">Email a link to a Friend</a></li>
-
-</ul></div>
-</div>
+<@view.resourceCitation resource />
 <hr/>
 
     <#if resource.resourceType.supporting >
