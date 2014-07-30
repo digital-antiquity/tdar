@@ -55,20 +55,23 @@ public class CartBillingAccountController extends AbstractCartController {
     public void prepare() {
         super.prepare();
 
-        Invoice invoice = getInvoice();
-        TdarUser owner = invoice.getOwner();
+        if (!validateInvoice()) {
+            return;
+        }
+
+        TdarUser owner = getInvoice().getOwner();
         if (owner == null) {
             owner = getAuthenticatedUser();
-            invoice.setOwner(owner);
+            getInvoice().setOwner(owner);
             getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
         }
         setAccounts(accountService.listAvailableAccountsForUser(owner));
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
         
         //FIXME: move to service layer
-        if (id == -1L && invoice != null) {
-            getLogger().debug("looking for account by invoice {}", invoice);
-            selectedAccount = accountService.getAccountForInvoice(invoice);
+        if (id == -1L && getInvoice() != null) {
+            getLogger().debug("looking for account by invoice {}", getInvoice());
+            selectedAccount = accountService.getAccountForInvoice(getInvoice());
             if (selectedAccount == null && !getAccounts().isEmpty()) {
                 selectedAccount = getAccounts().iterator().next();
             }
@@ -79,7 +82,7 @@ public class CartBillingAccountController extends AbstractCartController {
             selectedAccount = getGenericService().find(Account.class, id);
         }
         getLogger().debug("selected account: {}", selectedAccount);
-        getLogger().debug("owner:{}\t accounts:{}", invoice.getOwner(), getAccounts());
+        getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
         // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new Account("Add an account"));
@@ -88,9 +91,6 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (!validateInvoice()) {
-            return;
-        }
         if (isPostRequest()) {
             if (Persistable.Base.isNullOrTransient(getId())) {
                 validate(account);
