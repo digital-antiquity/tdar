@@ -92,6 +92,23 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         
     }
     
+
+    @Test
+    @Rollback
+    public void testDeleteIssue() {
+        docValMap.put(PROJECT_ID_FIELDNAME, "3805");
+        String filename = docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA.xlsx" );
+        uploadDataset();
+        Long datasetId = extractTdarIdFromCurrentURL();
+
+        gotoPage("/dataset/" + datasetId + "/edit");
+        setInput("fileProxies[0].action", FileAction.DELETE);
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("dataset/save"));
+        assertFalse(getPageText().contains(filename));
+        
+    }
+
     @Test
     @Rollback(true)
     public void testCreateDatasetRecordSpitalfields() {
