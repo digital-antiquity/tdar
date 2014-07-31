@@ -36,7 +36,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
         DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this);
         setInformationResource(dto.getInformationResource());
         if (dto.getResult() != DownloadResult.SUCCESS) {
-//            return ERROR;
+            return ERROR;
         }
         return CONFIRM;
     }

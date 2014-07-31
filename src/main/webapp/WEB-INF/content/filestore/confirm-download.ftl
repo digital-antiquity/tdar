@@ -22,7 +22,7 @@
     </dl>
     <a class="btn btn-large btn-primary" href="<@s.url value="/dashboard" />">Return to dashboard</a>
     <hr/>    
-    <@view.resourceCitation informationResource />
+    <@view.resourceCitation resource=informationResource />
     
 </div>
 <div class="row">

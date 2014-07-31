@@ -65,7 +65,6 @@ public class DownloadService {
 
     }
 
-
     @Transactional(readOnly = false)
     public void registerDownload(List<FileDownloadStatistic> stats) {
         if (CollectionUtils.isNotEmpty(stats)) {
@@ -88,7 +87,8 @@ public class DownloadService {
             files.add(fileToDownload);
             dto.setFileName(irFileVersion.getFilename());
             if (!irFileVersion.isDerivative()) {
-                logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance().getSiteAcronym(),
+                logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance()
+                        .getSiteAcronym(),
                         irFileVersion.getInformationResourceFile().getInformationResource().getId());
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
 
@@ -168,13 +168,14 @@ public class DownloadService {
         File transientFile = irFileVersion.getTransientFile();
         // setting original filename on file
         String actualFilename = irFileVersion.getInformationResourceFile().getFilename();
-        DownloadFile resourceFile = new DownloadFile(transientFile,actualFilename);
+        DownloadFile resourceFile = new DownloadFile(transientFile, actualFilename);
 
         // If it's a PDF, add the cover page if we can, if we fail, just send the original file
         if (irFileVersion.getExtension().equalsIgnoreCase("PDF") && dto.isIncludeCoverPage()) {
-            resourceFile = new DownloadPdfFile((Document)dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(), dto.getTextProvider());
+            resourceFile = new DownloadPdfFile((Document) dto.getInformationResource(), irFileVersion, pdfService, dto.getAuthenticatedUser(),
+                    dto.getTextProvider());
         }
-        
+
         if (InformationResourceFile.FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
             dto.setDispositionPrefix("attachment;");
         }
@@ -184,8 +185,7 @@ public class DownloadService {
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
-
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
             InformationResource resourceToDownload, boolean includeCoverPage, TextProvider textProvider) {
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
@@ -203,12 +203,12 @@ public class DownloadService {
             }
         } else {
             // trying to address a casting issue where we're getting a javassist version and not a tdar information resource
-            InformationResource informationResource = versionsToDownload.get(0).getInformationResourceFile().getInformationResource();
-            if (informationResource.getResourceType().isDocument()) {
-            resourceToDownload = genericService.find(Document.class, informationResource.getId());
+            resourceToDownload = versionsToDownload.get(0).getInformationResourceFile().getInformationResource();
+            if (resourceToDownload.getResourceType().isDocument()) {
+                resourceToDownload = genericService.find(Document.class, resourceToDownload.getId());
             }
         }
-        
+
         DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser, textProvider, this);
         dto.setIncludeCoverPage(includeCoverPage);
 
