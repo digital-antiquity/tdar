@@ -1,6 +1,8 @@
 (function (TDAR, $) {
     'use strict';
 
+    var POLLING_INTERVAL = 1500; //poll every 1.5s
+
     //parse string to integer.  replace blank and NaN with 0.
     var _parse = function (num) {
         var _num = num.replace(",", "");
@@ -170,9 +172,12 @@
     };
     
     var _updateProgress = function() {
-        console.log("updating progress");
+        var invoiceid = $("#polling-status").data("invoiceid");
+        if(typeof invoiceid === "undefined") {
+            throw "invoiceid not specified";
+        }
+        var url= "/cart/" + invoiceid + "/polling-check";
 
-        var url = pollingUrl;
         $.ajax({
             url: url,
             dataType: 'json',
@@ -181,7 +186,7 @@
             success: function (data) {
                 if (data.transactionStatus == 'PENDING_TRANSACTION') {
                     $("#polling-status").html("checking status ...");
-                    setTimeout(TDAR.pricing.updateProgress, TIMEOUT);
+                    setTimeout(_updateProgress, POLLING_INTERVAL);
                 } else {
                     $("#polling-status").html("done: " + data.transactionStatus);
                     if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
