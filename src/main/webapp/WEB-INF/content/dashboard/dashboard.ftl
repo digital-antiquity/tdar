@@ -34,17 +34,17 @@
               <!-- Carousel items -->
               <div class="carousel-inner">
                 <div class="active item">
-                    <img class="" src="#" width=120 height=150 alt="Read the Manual"/>
+                    <img class="" src="<@s.url value="/images/dashboard/learn.png"/>" width=120 height=150 alt="Read the Manual"/>
                         Read the Manual
                 </div>
                     <#if (showBuy)>
                     <div class="item">
-                        <img class="" src="#" width=120 height=150 alt="Purchase Space"/>
+                        <img class="" src="<@s.url value="/images/dashboard/upload.png"/>" width=120 height=150 alt="Purchase Space"/>
                             Buy tDAR now
                     </div>
                     </#if>
                 <div class="item">
-                        <img class="" src="#" width=120 height=150 alt="Explore"/>
+                        <img class="" src="<@s.url value="/images/dashboard/explore.png"/>" width=120 height=150 alt="Explore"/>
                             Explore Content now
                 </div>
               </div>
