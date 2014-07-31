@@ -2,12 +2,7 @@ package org.tdar.core.service.resource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -27,6 +22,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -301,14 +297,21 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 columnsToUnmap.add(column);
             }
         }
+        Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
         for (DataTable table : tablesToRemove) {
             if ((table != null) && CollectionUtils.isNotEmpty(table.getDataTableColumns())) {
                 columnsToUnmap.addAll(table.getDataTableColumns());
             }
+            relationshipsToRemove.addAll(table.getRelationships());
         }
 
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
+
+        //remove affected relationships prior to deleting columns
+        dataset.getRelationships().removeAll(relationshipsToRemove);
+        getDao().delete(relationshipsToRemove);
+
         getDao().delete(columnsToRemove);
         dataset.getDataTables().removeAll(tablesToRemove);
     }

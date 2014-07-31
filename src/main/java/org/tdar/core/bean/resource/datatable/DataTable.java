@@ -187,7 +187,9 @@ public class DataTable extends Persistable.Base {
      * 
      * @return the set of relationships
      */
-    private Set<DataTableRelationship> getRelationships() {
+    @XmlTransient
+    @Transient
+    public  Set<DataTableRelationship> getRelationships() {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (DataTableRelationship r : dataset.getRelationships()) {
             // return the relationship if this table is either the relationship's foreign or local table
