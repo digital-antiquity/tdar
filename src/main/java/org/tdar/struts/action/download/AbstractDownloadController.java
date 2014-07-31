@@ -74,7 +74,9 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
 
     
+    // the resource being downloaded (or the resource that the file is being downloade from)
     private InformationResource informationResource;
+    // the specific version to be downloaded, if just one
     private InformationResourceFileVersion informationResourceFileVersion;
 
     @Autowired
