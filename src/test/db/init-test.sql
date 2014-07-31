@@ -2701,7 +2701,6 @@ SELECT setval('resource_creator_id_seq', (SELECT MAX(id) FROM resource_creator)+
 SELECT setval('resource_note_id_seq', (SELECT MAX(id) FROM resource_note)+1);
 SELECT setval('stats_id_seq', (SELECT MAX(id) FROM stats)+1);
 SELECT setval('upgrade_task_id_seq', (SELECT MAX(id) FROM upgrade_task)+1);
-SELECT setval('user_session_id_seq', (SELECT MAX(id) FROM user_session)+1);
 SELECT setval('collection_id_seq', (SELECT MAX(id) FROM collection)+1);
 SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
 UPDATE information_resource set inheriting_cultural_information=true where id=4230;

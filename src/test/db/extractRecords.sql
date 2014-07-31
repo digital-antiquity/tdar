@@ -270,7 +270,6 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('resource_note_id_seq', (SELECT MAX(id) FROM resource_note)+1);
 --DONT-PROCESS-- SELECT setval('stats_id_seq', (SELECT MAX(id) FROM stats)+1);
 --DONT-PROCESS-- SELECT setval('upgrade_task_id_seq', (SELECT MAX(id) FROM upgrade_task)+1);
---DONT-PROCESS-- SELECT setval('user_session_id_seq', (SELECT MAX(id) FROM user_session)+1);
 
 --DONT-PROCESS-- SELECT setval('collection_id_seq', (SELECT MAX(id) FROM collection)+1);
 --DONT-PROCESS-- SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
