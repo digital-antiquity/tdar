@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -165,16 +164,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
-    }
-
-    /**
-     * Find the @link AuthenticationToken by Id
-     * 
-     * @param id
-     * @return
-     */
-    public AuthenticationToken findAuthenticationToken(Long id) {
-        return getDao().find(AuthenticationToken.class, id);
     }
 
     /**

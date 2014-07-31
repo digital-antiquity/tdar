@@ -17,7 +17,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
@@ -304,7 +303,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 TdarUser person = genericService.find(TdarUser.class, p.getId());
                 boolean deleteUser = authService.getAuthenticationProvider().deleteUser(person);
                 assertTrue("could not delete user", deleteUser);
-                genericService.delete(genericService.findAll(AuthenticationToken.class));
                 genericService.delete(person);
                 return null;
             }
