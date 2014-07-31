@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,8 +68,6 @@ public class IndexController extends AuthenticationAware.Base {
 
     private List<SyndEntry> rssEntries;
 
-    private String sitemapFile = "sitemap_index.xml";
-
     @HttpOnlyIfUnauthenticated
     @Actions({
             @Action(value = "page-not-found", results = { @Result(name = ERROR, type = "freemarkerhttp",
@@ -93,7 +90,7 @@ public class IndexController extends AuthenticationAware.Base {
     @HttpOnlyIfUnauthenticated
     @Override
     @Actions({
-            @Action("terms"),
+//            @Action("terms"),
             @Action("contact"),
             @Action("credit"),
             @Action(value = "opensearch", results = {
@@ -104,10 +101,6 @@ public class IndexController extends AuthenticationAware.Base {
             })
     })
     public String execute() {
-        File file = new File(getTdarConfiguration().getSitemapDir(), sitemapFile);
-        if (!file.exists()) {
-            setSitemapFile("sitemap1.xml.gz");
-        }
         return SUCCESS;
     }
 
@@ -195,14 +188,6 @@ public class IndexController extends AuthenticationAware.Base {
 
     public void setRssEntries(List<SyndEntry> rssEntries) {
         this.rssEntries = rssEntries;
-    }
-
-    public String getSitemapFile() {
-        return sitemapFile;
-    }
-
-    public void setSitemapFile(String sitemapFile) {
-        this.sitemapFile = sitemapFile;
     }
 
     public HashMap<String, HomepageGeographicKeywordCache> getWorldMapData() {

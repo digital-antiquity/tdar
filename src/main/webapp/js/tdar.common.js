@@ -722,11 +722,6 @@ TDAR.common = function () {
                 //$divSearchContext.removeClass("active");
             });
         }
-
-        //init bootstrap image gallery (if found)
-        $(".image-carousel").each(function(idx, elem) {
-            _initImageGallery(elem);
-        })
     };
 
     /**
@@ -1172,7 +1167,12 @@ TDAR.common = function () {
         return bytes.toFixed(1) + ' ' + units[u];
     };
     
-    function _initImageGallery() {
+    function _initImageGalleryForView() {
+        //init bootstrap image gallery (if found)
+        $(".image-carousel").each(function(idx, elem) {
+            _initImageGallery(elem);
+        })
+
         $(".thumbnailLink").click(function () {
             var $this = $(this);
             $("#bigImage").attr('src', $this.data('url'));
@@ -1223,7 +1223,7 @@ TDAR.common = function () {
 
         "collectionTreeview": _collectionTreeview,
         "humanFileSize": humanFileSize,
-        "initImageGallery": _initImageGallery
+        "initImageGallery": _initImageGalleryForView
     });
 
     return self;
