@@ -60,6 +60,9 @@ mail.smtp.host=localhost
 # default: info@digitalantiquity.org
 app.contact.email=info@digitalantiquity.org
 
+# should the system send emails to the "from" address instead of the to (for testing)
+# default: false
+#email.to.tester=
 
 ####################################
 ## Billing and Purchasing Settings

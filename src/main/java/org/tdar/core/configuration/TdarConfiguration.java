@@ -75,7 +75,7 @@ public class TdarConfiguration {
         logger.info("| ");
         logger.info("| HostName: {}  SecureHost: {}", getBaseUrl(), getBaseSecureUrl());
         logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled() );
-        logger.info("| MailHost: {}", getSmtpHost() );
+        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester() );
         logger.info("| ");
         logger.info("| Storage:");
         logger.info("| FileStoreLocation: {}", getFileStoreLocation());
@@ -774,6 +774,10 @@ public class TdarConfiguration {
 
     public boolean shouldAutoDownload() {
         return assistant.getBooleanProperty("js.autodownload", true);
+    }
+
+    public boolean isSendEmailToTester() {
+        return assistant.getBooleanProperty("email.to.tester", false);
     }
 
 }

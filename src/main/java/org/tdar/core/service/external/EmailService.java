@@ -151,7 +151,10 @@ public class EmailService {
     public void constructEmail(Person from, Person to, Resource resource, String subject, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericService.markWritable(email);
-        email.setFrom(from.getEmail());
+        email.setFrom(getTdarConfiguration().getDefaultFromEmail());
+        if (TdarConfiguration.getInstance().isSendEmailToTester()) {
+            email.setTo(from.getEmail());
+        }
         email.setTo(to.getEmail());
         email.setSubject(type.name() + " " + subject);
         Map<String, Object> map = new HashMap<>();
