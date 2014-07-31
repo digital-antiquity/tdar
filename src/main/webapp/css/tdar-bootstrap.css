@@ -1666,6 +1666,22 @@ div.orgChart div.node.level1.special {
 .table-invoice tr .invoice-total {
     font-size: 23pt;
 }
+/* bootstrap overrides .text-right for tables (because reasons) */
+.table-invoice .text-right {
+    text-align:right;
+}
+.table-invoice thead {
+    background-color: #eee;
+    border-top: 1px solid #999;
+}
+.table-invoice thead th {
+    padding-bottom: 3px;
+}
+
+.table-invoice tbody tr:first-child td{
+    border-top: 1px solid #999;
+}
+
 
 div.tdar-rates {
     border-right: 1px dashed #bbb;padding-right: 40px;

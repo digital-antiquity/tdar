@@ -4,15 +4,17 @@
     <#macro printInvoice>
     <!-- FOR testing total:$${invoice.calculatedCost!0} -->
     <table class="table  table-invoice">
-        <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Cost</th>
-            <th>Files</th>
-            <th>Space</th>
-            <th>Resources</th>
-            <th>Subtotal</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+                <th>Files</th>
+                <th>Space</th>
+                <th>Resources</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
         <#list invoice.items as item>
             <tr>
                 <td>${item.activity.name}</td>
@@ -40,8 +42,8 @@
         </#if>
         <tfoot>
             <tr>
-                <th colspan=6>Total:</th>
-                <th class="invoice-total">$${invoice.calculatedCost!0}</th>
+                <th>Total:</th>
+                <th colspan=6 class="invoice-total text-right">$${invoice.calculatedCost!0}</th>
             </tr>
         </tfoot>
     </table>
@@ -63,7 +65,7 @@
         <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
         <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
         <#if (billingManager!false)>
-        	<@s.a href="/cart/continue?invoiceId=${invoice.id?c}"  >Customer Link</@s.a>
+            <@s.a href="/cart/continue?invoiceId=${invoice.id?c}"  >Customer Link</@s.a>
             <#--<#noescape><@s.a href="/cart/add?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfFiles?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
         </#if>
     </div>
