@@ -25,6 +25,7 @@ public class HomepageFeaturedItemCache extends Persistable.Base implements Compa
     private static final long serialVersionUID = 4401314235170180736L;
 
     @OneToOne
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResource resource;
 
     public HomepageFeaturedItemCache() {

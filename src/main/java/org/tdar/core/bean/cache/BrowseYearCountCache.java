@@ -1,8 +1,12 @@
 package org.tdar.core.bean.cache;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * This caches the counts of resources-per-year for the browse page.
@@ -12,6 +16,8 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "explore_cache_year")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.BrowseYearCountCache")
 public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCache, Integer> {
 
     private static final long serialVersionUID = -1407077845657074783L;
