@@ -1627,7 +1627,7 @@ div.orgChart div.node.level1.special {
     margin-top:10px;
     margin-bottom:10px
 }
-.hero-unit.hero-condensed h1 {letter-spacing: ;
+.hero-unit.hero-condensed h1 {
     /* fixme: this style mut be !important because of the article.h1 !important override. ideally both overrides should be removed. */
     margin:0 !important; padding:0!important;
 }
@@ -1685,4 +1685,8 @@ div.orgChart div.node.level1.special {
 
 div.tdar-rates {
     border-right: 1px dashed #bbb;padding-right: 40px;
+}
+
+.tdar-button {
+    line-height: normal;
 }
