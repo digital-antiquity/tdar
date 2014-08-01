@@ -16,7 +16,7 @@ new resource. </p>
 </ul>  
 </div>
 <div class="span6">
-<img src="" title="Duplicate image" alt="duplicate"/>
+<img src="<@s.url value="/images/duplicate.png"/>" title="Duplicate image" alt="duplicate"/>
 </div>
 </div>
     <@s.form name='deleteForm' id='deleteForm'  method='post' action='duplicate-final'>
