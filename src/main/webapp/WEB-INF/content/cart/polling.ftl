@@ -37,10 +37,11 @@
 
 <div class="row">
     <div class="span12">
-        <p>
+        <span class="badge pull-right" id="polling-status" data-invoiceid="${invoice.id?c}"></span>
+        <div class="form-actions">
             <a class="button" id="btnOpenPaymentWindow" href="<#noescape>${redirectUrl}</#noescape>" target="_blank">Click Here To Begin Payment Process</a>
             <em>Note: opens in a new window</em>.
-        </p>
+        </div>
     </div>
 </div>
 
@@ -50,9 +51,6 @@
         <@s.hidden name="accountId" value="${accountId?c}" />
         </#if>    
 </form>
-<div class="" id="polling-status" data-invoiceid="${invoice.id?c}">
-
-</div>
 <div id="async-errors">
 </div>
 <script>

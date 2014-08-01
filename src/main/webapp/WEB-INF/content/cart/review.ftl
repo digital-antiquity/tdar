@@ -22,10 +22,10 @@
         <h3>Invoice Information</h3>
         <div class="cartpane" style="min-height: 350px">
             <div class="" >
-                <@invoicecommon.printSubtotal invoice/>
                 <h3>Invoice Details</h3>
                 <@invoicecommon.printInvoice />
-
+                <h3>Invoice Summary</h3>
+                <@invoicecommon.printSubtotal invoice/>
             </div>
         </div>
     </div>
@@ -64,9 +64,9 @@
         <#--</#if>-->
         <div class="form-actions">
             <#if invoice.modifiable>
-                <@s.a href="/cart/modify" cssClass="tdar-button">Modify This Invoice</@s.a>
+                <@s.a href="/cart/modify" cssClass="button muted">Modify This Invoice</@s.a>
             </#if>
-            <@s.submit name="submit" value="Next Step: Payment" cssClass="btn btn-mini tdar-button"/>
+            <@s.submit name="submit" value="Next Step: Payment" cssClass="tdar-button"/>
 
         </div>
 
