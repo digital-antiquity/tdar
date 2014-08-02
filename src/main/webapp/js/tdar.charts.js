@@ -348,7 +348,13 @@
                 seriesDefaults : {
                     lineWidth : 1,
                     showLabel : true,
-                    showMarker : false
+                    showMarker : false,
+                    pointLabels : {
+                        show : false,
+                        location : 'n',
+                        hideZeros : true,
+                        edgeTolerance : -35
+                    }
                 }
             };
 
