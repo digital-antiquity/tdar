@@ -1,10 +1,19 @@
 package org.tdar.struts.action.cart;
 
+import static com.opensymphony.xwork2.Action.ERROR;
+import static com.opensymphony.xwork2.Action.INPUT;
+import static com.opensymphony.xwork2.Action.SUCCESS;
+import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,11 +21,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
-
-import static com.opensymphony.xwork2.Action.ERROR;
-import static com.opensymphony.xwork2.Action.INPUT;
-import static com.opensymphony.xwork2.Action.SUCCESS;
-import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 /**
  * Created by jimdevos on 7/22/14.

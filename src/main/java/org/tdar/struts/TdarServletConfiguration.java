@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
 import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;

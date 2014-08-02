@@ -22,6 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public class DownloadController extends AbstractDownloadController implements Preparable {
 
+    private static final String CONFIRM_DOWNLOAD_FTL = "confirm-download.ftl";
     @Autowired
     private transient DownloadService downloadService;
     @Autowired
@@ -29,7 +30,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private static final long serialVersionUID = 7548544212676661097L;
 
-    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = "confirm-download.ftl") })
+    @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
@@ -42,7 +43,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
     }
 
     @Action(value = SHOW_DOWNLOAD_LANDING, results = {
-            @Result(name = SUCCESS, type = FREEMARKER, location = "confirm-download.ftl") })
+            @Result(name = SUCCESS, type = FREEMARKER, location = CONFIRM_DOWNLOAD_FTL) })
     public String showDownloadAllLandingPage() {
         return SUCCESS;
     }

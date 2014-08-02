@@ -1,9 +1,10 @@
 package org.tdar.struts.result;
 
-import com.opensymphony.xwork2.ActionInvocation;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.struts2.dispatcher.StreamResult;
 
-import javax.servlet.http.HttpServletResponse;
+import com.opensymphony.xwork2.ActionInvocation;
 
 /**
  * StreamResult with the ability to specify http status (default is {@link org.apache.commons.httpclient.HttpStatus#SC_OK}.)

@@ -12,7 +12,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
