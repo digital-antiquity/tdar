@@ -171,7 +171,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     public static final String DEFAULT_TYPE = "text";
     public static final String SCHEMA_NAME = "public";
     public static final int BATCH_SIZE = 5000;
-    public static final int MAX_NAME_SIZE = 63;
+    public static final int MAX_NAME_SIZE = 52;
     public static final int MAX_ALLOWED_COLUMNS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
