@@ -89,6 +89,7 @@ public class FileProxyService {
             if (proxy == null) {
                 logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
                 proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
+                proxy.setCreatedByServer(true);
                 finalProxyList.add(proxy);
             }
             proxy.setFile(file);

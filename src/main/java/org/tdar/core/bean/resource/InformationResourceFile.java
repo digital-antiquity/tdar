@@ -113,6 +113,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     return true;
             }
         }
+
+        public boolean updatesMetadata() {
+            switch (this) {
+                case ADD:
+                case MODIFY_METADATA:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum FileType {

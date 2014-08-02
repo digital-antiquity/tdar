@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,6 +45,7 @@ import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.Pair;
 
 /**
  * $Id: AbstractInformationResourceService.java 1466 2011-01-18 20:32:38Z abrin$
@@ -78,17 +80,19 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Adds a @link InformationResourceFile to a resource given a file proxy. This method handles the full process of creating the metadata and
      * InformationResourceFileVersions to a file when processing it
      */
-    private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
+    private void addInformationResourceFile(InformationResource resource, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
+        InformationResourceFile irFile = proxy.getInformationResourceFile();
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
         getDao().saveOrUpdate(resource);
         irFile.setInformationResource(resource);
-        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
-        setInformationResourceFileMetadata(irFile, proxy);
+        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(proxy));
+        setInformationResourceFileMetadata(proxy);
         for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
             getLogger().debug("Creating new version {}", additionalVersion);
-            createVersionMetadataAndStore(irFile, additionalVersion);
+            additionalVersion.setInformationResourceFile(proxy.getInformationResourceFile());
+            createVersionMetadataAndStore(additionalVersion);
         }
         getDao().saveOrUpdate(irFile);
         resource.add(irFile);
@@ -120,33 +124,10 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
 
         // prepare the metadata
-        processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
-        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
-        List<InformationResourceFile> irFiles = new ArrayList<>();
-
-        /*
-         * For each file Proxy, if it needs to be run through a workflow (eg. it's not just a MODIFY_METADATA call), then do it, otherwise, skip it
-         */
-        for (FileProxy proxy : fileProxiesToProcess) {
-            if (!proxy.getAction().requiresWorkflowProcessing()) {
-                continue;
-            }
-
-            InformationResourceFile irFile = proxy.getInformationResourceFile();
-            irFiles.add(irFile);
-            InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-            getLogger().trace("version: {} proxy: {} ", version, proxy);
-            getDao().saveOrUpdate(irFile);
-            switch (version.getFileVersionType()) {
-                case UPLOADED:
-                case UPLOADED_ARCHIVAL:
-                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                    filesToProcess.add(version);
-                    break;
-                default:
-                    getLogger().debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
-            }
-        }
+        List<FileProxy> cleanedProxies = processMetadataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
+        Pair<List<InformationResourceFile>, List<InformationResourceFileVersion>> filesAndVersions = convertProxiesToFilesAndVersions(cleanedProxies);
+        List<InformationResourceFileVersion> filesToProcess = filesAndVersions.getSecond();
+        List<InformationResourceFile> irFiles = filesAndVersions.getFirst();
 
         // make sure we're only doing this if we have files to process
         if (irFiles.size() > 0) {
@@ -176,6 +157,35 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
 
+    }
+
+    private Pair<List<InformationResourceFile>, List<InformationResourceFileVersion>> convertProxiesToFilesAndVersions(List<FileProxy> cleanedProxies) {
+        List<InformationResourceFile> irFiles = new ArrayList<>();
+        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>();
+        /*
+         * For each file Proxy, if it needs to be run through a workflow (eg. it's not just a MODIFY_METADATA call), then do it, otherwise, skip it
+         */
+        for (FileProxy proxy : cleanedProxies) {
+            if (!proxy.getAction().requiresWorkflowProcessing()) {
+                continue;
+            }
+            logger.debug("PROCESSING: {}", proxy);
+            InformationResourceFile irFile = proxy.getInformationResourceFile();
+            irFiles.add(irFile);
+            InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
+            getLogger().trace("version: {} proxy: {} ", version, proxy);
+            getDao().saveOrUpdate(irFile);
+            switch (version.getFileVersionType()) {
+                case UPLOADED:
+                case UPLOADED_ARCHIVAL:
+                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                    filesToProcess.add(version);
+                    break;
+                default:
+                    getLogger().debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+            }
+        }
+        return Pair.create(irFiles, filesToProcess);
     }
 
     /*
@@ -247,39 +257,31 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * FileProxy action
      */
     @Transactional
-    public void processMetadataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
+    public List<FileProxy> processMetadataForFileProxies(InformationResource informationResource, FileProxy... incomingProxies) throws IOException {
+        List<FileProxy> proxies = new ArrayList<FileProxy>(Arrays.asList(incomingProxies));
+        proxies = validateFileProxies(proxies, informationResource);
         for (FileProxy proxy : proxies) {
             getLogger().debug("applying {} to {}", proxy, informationResource);
-            // will be reassigned in a REPLACE or ADD_DERIVATIVE
-            InformationResourceFile irFile = new InformationResourceFile();
-            irFile.setFilename(proxy.getFilename());
-            if (proxy.getAction().requiresExistingIrFile()) {
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    getLogger().error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
-                    return;
-                }
-            }
 
             switch (proxy.getAction()) {
                 case MODIFY_METADATA:
                     // set sequence number and confidentiality
-                    setInformationResourceFileMetadata(irFile, proxy);
-                    getDao().update(irFile);
+                    setInformationResourceFileMetadata(proxy);
+                    getDao().update(proxy.getInformationResourceFile());
                     break;
                 case REPLACE:
                     // explicit fall through to ADD after loading the existing irFile to be replaced.
                 case ADD:
-                    addInformationResourceFile(informationResource, irFile, proxy);
+                    addInformationResourceFile(informationResource, proxy);
                     break;
                 case ADD_DERIVATIVE:
-                    createVersionMetadataAndStore(irFile, proxy);
+                    createVersionMetadataAndStore(proxy);
                     break;
                 case DELETE:
-                    irFile.setDeleted(true);
-                    getDao().update(irFile);
+                    proxy.getInformationResourceFile().setDeleted(true);
+                    getDao().update(proxy.getInformationResourceFile());
                     if (informationResource instanceof Dataset) {
-                        unmapDataTablesForFile((Dataset) informationResource, irFile);
+                        unmapDataTablesForFile((Dataset) informationResource, proxy.getInformationResourceFile());
                     }
                     break;
                 case NONE:
@@ -288,8 +290,56 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 default:
                     break;
             }
+        }
+        return proxies;
+    }
+
+    private List<FileProxy> validateFileProxies(List<FileProxy> proxies, InformationResource informationResource) {
+        List<FileProxy> serverCreated = new ArrayList<>();
+        List<FileProxy> rollbackIssues = new ArrayList<>();
+
+        for (FileProxy proxy : proxies) {
+            getLogger().debug("applying {} to {}", proxy, informationResource);
+            if (proxy.isCreatedByServer()) {
+                serverCreated.add(proxy);
+            }
+
+            // will be reassigned in a REPLACE or ADD_DERIVATIVE
+            InformationResourceFile irFile = new InformationResourceFile();
+            irFile.setFilename(proxy.getFilename());
+            if (proxy.getAction().requiresExistingIrFile()) {
+                irFile = findInformationResourceFile(proxy);
+
+                if (irFile == null) {
+                    // handling error case user is on the input page (rolled-back transaction for upload) we have a sequence # for an IRFile, but that file
+                    // does not exist
+                    if (Persistable.Base.isNotNullOrTransient(proxy.getFileId())) {
+                        logger.debug("resetting: {} {}", proxy, proxy.getAction());
+                        rollbackIssues.add(proxy);
+                        if (proxy.getAction() == FileAction.REPLACE) {
+                            irFile = new InformationResourceFile();
+                            proxy.setAction(FileAction.ADD);
+                        }
+                        if (proxy.getAction() == FileAction.DELETE) {
+                            proxy.setAction(FileAction.NONE);
+                        }
+                    } else {
+                        throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getFilename(),
+                                proxy.getAction(), proxy.getFileId()));
+                    }
+                }
+            }
             proxy.setInformationResourceFile(irFile);
         }
+        // if we have a 1:1 relationship between server created proxies and rollback issues (proxies w/ids that don't exist), remove the server-created files
+        // as they're more than likely hanging out in the personal filestore and not being cleaned out
+        logger.debug("rollbackIssues: {}", rollbackIssues);
+        if (CollectionUtils.isNotEmpty(serverCreated) && Objects.equals(serverCreated.size(), rollbackIssues.size())) {
+            logger.debug("removing: {}", serverCreated);
+            proxies.removeAll(serverCreated);
+            logger.debug("after: {}", proxies);
+        }
+        return proxies;
     }
 
     /*
@@ -316,7 +366,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // first unmap all columns from the removed tables
         datasetDao.unmapAllColumnsInProject(dataset.getProject().getId(), Persistable.Base.extractIds(columnsToUnmap));
 
-        //remove affected relationships prior to deleting columns
+        // remove affected relationships prior to deleting columns
         dataset.getRelationships().removeAll(relationshipsToRemove);
         getDao().delete(relationshipsToRemove);
 
@@ -328,7 +378,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Copies all of the appropriate metadata from a @link FileProxy to an @link InformationResourceFile . This includes confidentiality settings, embargo
      * settings description, and date.
      */
-    private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
+    private void setInformationResourceFileMetadata(FileProxy fileProxy) {
+        InformationResourceFile irFile = fileProxy.getInformationResourceFile();
         irFile.setRestriction(fileProxy.getRestriction());
         Integer sequenceNumber = fileProxy.getSequenceNumber();
         if (fileProxy.getRestriction() == FileAccessRestriction.EMBARGOED) {
@@ -342,7 +393,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             irFile.setDateMadePublic(null);
         }
 
-        if ((fileProxy.getAction() == FileAction.MODIFY_METADATA) || (fileProxy.getAction() == FileAction.ADD)) {
+        if (fileProxy.getAction().updatesMetadata()) {
             irFile.setDescription(fileProxy.getDescription());
             irFile.setFileCreatedDate(fileProxy.getFileCreatedDate());
         }
@@ -404,7 +455,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Creates an @link InformationResourceFile and adds appropriate metadata and stores the file in the filestore.
      */
     @Transactional(readOnly = false)
-    private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
+    private InformationResourceFileVersion createVersionMetadataAndStore(FileProxy fileProxy) throws IOException {
+        InformationResourceFile irFile = fileProxy.getInformationResourceFile();
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if ((fileProxy.getFile() == null) || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found", Arrays.asList(fileProxy.getFilename()));
