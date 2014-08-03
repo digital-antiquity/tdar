@@ -777,7 +777,11 @@ public class TdarConfiguration {
     }
 
     public boolean isSendEmailToTester() {
-        return assistant.getBooleanProperty("email.to.tester", false);
+        boolean dflt = false;
+        if (!isProductionEnvironment()) {
+            dflt = true;
+        }
+        return assistant.getBooleanProperty("email.to.tester", dflt);
     }
 
 }

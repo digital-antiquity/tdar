@@ -40,7 +40,7 @@
             _switchContributorReasonDisplay($(this).is(':checked'));
         });
         var contributor = $("#contributor-id").is(':checked');
-        switchContributorReasonDisplay(contributor);
+        _switchContributorReasonDisplay(contributor);
 
         TDAR.common.initRegformValidation("#accountForm");
 
