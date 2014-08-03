@@ -65,8 +65,11 @@
                 <#-- printing item tag start / -->
                     <${itemTag_} class="listItem ${itemClass!''}"
                     <#if orientation == 'MAP' && resource.latLongVisible >
-                        data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-                        data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
+                        <#local box = resource.firstActiveLatitudeLongitudeBox />
+                        data-lat="${box.centerLatitude?c}"
+                        data-long="${box.centerLongitude?c}"
+                        data-lat-length="${box.absoluteLatLength?c}"
+                        data-long-length="${box.absoluteLongLength?c}"
                         data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
                     </#if>
                     id="resource-${resource.id?c}">
