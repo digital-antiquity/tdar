@@ -684,7 +684,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 incomingResourceCreators.add(resourceCreator);
                 getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
             } else {
-                getLogger().debug("can't create creator from proxy {} {}", proxy);
+                getLogger().trace("can't create creator from proxy {} {}", proxy);
             }
         }
 
