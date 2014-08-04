@@ -376,18 +376,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             return;
         }
         for (String error : errors.getActionErrors()) {
-            addActionError(getText(error));
+            this.addActionError(getText(error));
         }
 
         Map<String, List<String>> fieldErrors = errors.getFieldErrors();
         for (String field : fieldErrors.keySet()) {
             for (String error : fieldErrors.get(field)) {
-                addFieldError(field, getText(error));
+                this.addFieldError(field, getText(error));
             }
         }
 
         for (String msg : errors.getActionMessages()) {
-            getActionMessages().add(getText(msg));
+            this.addActionMessage(getText(msg));
         }
 
         for (String msg : errors.getStackTraces()) {
@@ -637,5 +637,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isShouldAutoDownload() {
         return getTdarConfiguration().shouldAutoDownload();
+    }
+
+    public void registerErrorListener(ErrorListener listener) {
+        this.errorListener = listener;
     }
 }

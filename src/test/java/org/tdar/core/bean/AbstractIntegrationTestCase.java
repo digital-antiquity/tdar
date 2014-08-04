@@ -530,7 +530,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             } else {
                 init((TdarActionSupport) controller);
             }
-//            ((TdarActionSupport) controller).registerErrorListener(this);
+            ((TdarActionSupport) controller).registerErrorListener(this);
         }
         return controller;
     }
