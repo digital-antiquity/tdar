@@ -372,6 +372,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     // FIXME: when replacing ActionErrors above, this will not need the getText calls
     protected void processErrorObject(ErrorTransferObject errors) {
         getLogger().debug("found errors {}", errors);
+        if (errors == null) {
+            return;
+        }
         for (String error : errors.getActionErrors()) {
             addActionError(getText(error));
         }

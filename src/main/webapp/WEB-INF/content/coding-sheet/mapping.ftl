@@ -25,11 +25,11 @@
         </div>
 
         <div class="control-group">
-            <label class="control-label">Mappings</label>
+            <label class="control-label">Mappings</label><span>Coding Rule Term (Code)
             <#list codingRules as rule>
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
                     <@s.hidden name='codingRules[${rule_index?c}].id' />
-                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].formattedTerm' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
 
                     <div class="span1">
                         <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
