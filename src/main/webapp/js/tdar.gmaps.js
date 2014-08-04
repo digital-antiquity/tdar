@@ -30,6 +30,13 @@ TDAR.maps = function ($, TDAR) {
                 strokeWeight: 2,
                 fillColor: "#FF0000",
                 fillOpacity: 0.15
+            },
+            MULTI_RESOURCE: {
+                strokeColor: '#68838B',
+                strokeOpacity: 0.8,
+                strokeWeight: 1,
+                fillColor: '#68838B',
+                fillOpacity: 0.35,
             }
         }
     };
@@ -597,11 +604,11 @@ TDAR.maps = function ($, TDAR) {
                             break;
                     }
                 }
-                var lat = $this.attr("data-lat");
-                var long = $this.attr("data-long");
+                var lat = parseFloat($this.attr("data-lat"));
+                var long = parseFloat($this.attr("data-long"));
                 var scale = $this.attr("data-scale");
-                var latLen = $this.attr("data-lat-length");
-                var longLen = $this.attr("data-long-length");
+                var latLen = parseFloat($this.attr("data-lat-length"));
+                var longLen = parseFloat($this.attr("data-long-length"));
                 var latMin = lat - latLen/2;
                 var latMax = lat + latLen/2;
                 var longMin = long - longLen/2;
@@ -617,20 +624,12 @@ TDAR.maps = function ($, TDAR) {
                         icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|7a1501|FFFFFF',
                         title: $("a.resourceLink", $this).text()
                     });
-                    var rectangle = new google.maps.Rectangle({
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        map: myMap,
-                        bounds: new google.maps.LatLngBounds(
-                          new google.maps.LatLng(latMax, longMax),
-                          new google.maps.LatLng(latMin, longMin))
-                      });
-                        
-//                        _addBoundDirectlytoMap(myMap, _defaults.rectStyleOptions.RESOURCE, latMin, longMin, latMax, longMax);
-                    console.log(latMin + "," + longMin  + " x\n" + latMax + "," + longMax);
+                    var config = {
+                            visible:false
+                    };
+                    $.extend(config, _defaults.rectStyleOptions.MULTI_RESOURCE);
+                    
+                    var rectangle = _addBoundDirectlytoMap(myMap, config, latMin, longMin, latMax, longMax);
                     var $marker = $(".icon-map-marker", $this);
                     $marker.click(function () {
                         myMap.panTo(marker.getPosition());
@@ -653,6 +652,14 @@ TDAR.maps = function ($, TDAR) {
                             this.close(myMap);
                         });
                         infowindow.open(myMap, marker);
+                    });
+
+                    google.maps.event.addListener(marker, 'mouseover', function () {
+                        $marker.data("rec").setVisible(true);
+                    });
+
+                    google.maps.event.addListener(marker, 'mouseout', function () {
+                        $marker.data("rec").setVisible(false);
                     });
 
                     markers[markers.length] = marker;
