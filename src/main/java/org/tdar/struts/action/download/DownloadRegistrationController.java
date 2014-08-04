@@ -1,7 +1,5 @@
 package org.tdar.struts.action.download;
 
-import java.util.List;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -10,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -62,9 +61,8 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = getDownloadRegistration().validate(this, authenticationService);
-        getLogger().debug("found errors {}", errors);
-        addActionErrors(errors);
+        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService);
+        processErrorObject(errors);
     }
     
     @Override

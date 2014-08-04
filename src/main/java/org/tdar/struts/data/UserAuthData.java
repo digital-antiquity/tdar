@@ -1,14 +1,12 @@
 package org.tdar.struts.data;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import com.opensymphony.xwork2.TextProvider;
+import org.tdar.core.service.ErrorTransferObject;
 
 public abstract class UserAuthData implements Serializable {
 
@@ -17,7 +15,7 @@ public abstract class UserAuthData implements Serializable {
     private AntiSpamHelper h;
     private TdarUser person = new TdarUser();
 
-    protected void checkForSpammers(TextProvider textProvider, List<String> errors, boolean ignoreTimecheck) {
+    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck) {
         // SPAM CHECKING
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
@@ -28,7 +26,7 @@ public abstract class UserAuthData implements Serializable {
             }
             getH().checkForSpammers(ignoreTimecheck);
         } catch (TdarRecoverableRuntimeException tre) {
-            errors.add(textProvider.getText(tre.getMessage()));
+            errors.getActionErrors().add(tre.getMessage());
         }
     }
 

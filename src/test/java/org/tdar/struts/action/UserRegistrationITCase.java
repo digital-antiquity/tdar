@@ -232,7 +232,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             String execute = setupValidUserInController(controller, email);
             // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
             logger.info("errors:{}", controller.getActionErrors());
-            assertTrue(controller.getActionErrors().size() > 0);
+            assertTrue(controller.getFieldErrors().size() > 0);
         }
     }
 
@@ -366,7 +366,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue(p.getId().equals(-1L));
         controller.validate();
         assertTrue("expecting user existing",
-                controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
+                controller.getFieldErrors().get("username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
     }
 
     private String getFirstFieldError(UserAccountController controller) {
@@ -382,7 +382,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
+        assertTrue("expecting password", controller.getFieldErrors().get("password").contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
     }
 
     @Test
@@ -396,7 +396,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.getRegistration().setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm email", controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
+        assertTrue("expecting confirm email", controller.getFieldErrors().get("confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
     }
 
     @Test
@@ -414,7 +414,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
         controller.getRegistration().setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm password", controller.getActionErrors()
+        logger.debug("E:{}", controller.getFieldErrors().get("confirmPassword"));
+        assertTrue("expecting confirm password", controller.getFieldErrors().get("confirmPassword")
                 .contains(MessageHelper.getMessage("userAccountController.error_confirm_password")));
     }
 
@@ -452,7 +453,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.validate();
         assertTrue("expecting matching passwords",
                 controller.getActionErrors().contains(MessageHelper.getMessage("userAccountController.error_passwords_dont_match")));
-        assertEquals(3, controller.getActionErrors().size());
+        assertEquals(2, controller.getActionErrors().size());
     }
 
     @Override

@@ -98,6 +98,7 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -115,7 +116,6 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.ErrorListener;
@@ -345,9 +345,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
             // PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId
-            ActionMessageErrorListener listener = new ActionMessageErrorListener();
-            informationResourceService.importFileProxiesAndProcessThroughWorkflow(ir, null, null, listener, Arrays.asList(proxy));
-            if (listener.hasActionErrors()) {
+            ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(ir, null, null, Arrays.asList(proxy));
+            if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
                 throw new TdarRecoverableRuntimeException(String.format("errors ocurred while processing file: %s", listener));
             }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
@@ -531,7 +530,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             } else {
                 init((TdarActionSupport) controller);
             }
-            ((TdarActionSupport) controller).registerErrorListener(this);
+//            ((TdarActionSupport) controller).registerErrorListener(this);
         }
         return controller;
     }

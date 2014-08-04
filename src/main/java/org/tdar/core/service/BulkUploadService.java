@@ -51,7 +51,6 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
@@ -308,8 +307,6 @@ public class BulkUploadService {
                     continue;
                 }
 
-                ActionMessageErrorListener listener = new ActionMessageErrorListener();
-                
                 // get the resource we're working with
                 InformationResource informationResource = (InformationResource) manifestProxy.getResourcesCreated().get(fileName);
 
@@ -322,14 +319,13 @@ public class BulkUploadService {
                 genericDao.saveOrUpdate(informationResource);
                 
                 // process files
-                informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
-                        Arrays.asList(fileProxy));
+                ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, Arrays.asList(fileProxy));
                 
                 // make sure we're up-to-date  (needed for thread issues)
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
                 manifestProxy.getResourcesCreated().put(fileName, informationResource);
                 manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-                if (listener.hasActionErrors()) {
+                if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
                     manifestProxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
                 }
             } catch (Exception e) {
@@ -575,7 +571,6 @@ public class BulkUploadService {
      */
     private void createResourceAndAddToProxyList(final InformationResource image, final BulkManifestProxy proxy, String fileName,
             ResourceType suggestTypeForFile) {
-        ActionMessageErrorListener listener = new ActionMessageErrorListener();
         Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
         if (InformationResource.class.isAssignableFrom(resourceClass)) {
             logger.info("saving " + fileName + "..." + suggestTypeForFile);
@@ -586,9 +581,6 @@ public class BulkUploadService {
             informationResource.setDescription(" ");
 
             proxy.getResourcesCreated().put(fileName, informationResource);
-            if (listener.hasActionErrors()) {
-                proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
-            }
         }
     }
 

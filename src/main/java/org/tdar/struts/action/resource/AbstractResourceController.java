@@ -68,6 +68,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -1146,7 +1147,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() instanceof InformationResource) {
             InformationResource ir = (InformationResource) getResource();
             try {
-                informationResourceService.reprocessInformationResourceFiles(ir, this);
+                ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
+                processErrorObject(errors);
             } catch (Exception e) {
                 // consider removing the "sorry we were unable to ... just showing error message"
                 // addActionErrorWithException(null, e);

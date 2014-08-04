@@ -1,8 +1,5 @@
 package org.tdar.struts.action.download;
 
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -11,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
@@ -83,10 +81,10 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     @Override
     public void validate() {
-        List<String> validate = getDownloadUserLogin().validate(this, authorizationService);
-        addActionErrors(validate);
+        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService);
+        processErrorObject(errors);
 
-        if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
+        if (!isPostRequest() || errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getDownloadUserLogin().getLoginUsername());
         }
     }

@@ -1,10 +1,7 @@
 package org.tdar.struts.data;
 
-import java.util.List;
-
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-
-import com.opensymphony.xwork2.TextProvider;
 
 public class CartUserRegistration extends UserRegistration {
 
@@ -17,14 +14,14 @@ public class CartUserRegistration extends UserRegistration {
     }
 
     @Override
-    public List<String> validate(TextProvider textProvider, AuthenticationService authService) {
+    public ErrorTransferObject validate(AuthenticationService authService) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {
             setAcceptTermsOfUse(true);
             setRequestingContributorAccess(true);
         }
-        List<String> validate = super.validate(textProvider, authService);
+        ErrorTransferObject validate = super.validate(authService);
         if (!isRequestingContributorAccess()) {
-            validate.add(textProvider.getText("userAccountController.require_contributor_agreement"));
+            validate.addFieldError("requestingContributorAccess", "userAccountController.require_contributor_agreement");
         }
         return validate;
     }

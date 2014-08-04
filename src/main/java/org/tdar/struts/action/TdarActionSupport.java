@@ -27,10 +27,10 @@ import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -52,7 +52,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @Scope("prototype")
 @Controller
-public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware, ActionMessageErrorSupport {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
@@ -99,13 +99,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String VIEW = "view";
     public static final String EDIT = "edit";
     public static final String JSON = "json";
-	public static final String BILLING = "billing";
-	public static final String CONTRIBUTOR = "contributor";
+    public static final String BILLING = "billing";
+    public static final String CONTRIBUTOR = "contributor";
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
     public static final String FREEMARKER = "freemarker";
-
 
     /**
      * The system has authenticated the user and the user is authorized to perform the requested action, but
@@ -134,7 +133,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-    
+
     @Autowired
     private transient GenericService genericService;
 
@@ -359,7 +358,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         super.addFieldError(fieldName, errorMessage);
     }
-    
+
     // FIXME: shouldn't we just getText() every message here or add addActionErrorMessageKey(String messageKey)
     @Override
     public void addActionError(String message) {
@@ -370,7 +369,31 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addActionError(message);
     }
 
-    @Override
+    // FIXME: when replacing ActionErrors above, this will not need the getText calls
+    protected void processErrorObject(ErrorTransferObject errors) {
+        getLogger().debug("found errors {}", errors);
+        for (String error : errors.getActionErrors()) {
+            addActionError(getText(error));
+        }
+
+        Map<String, List<String>> fieldErrors = errors.getFieldErrors();
+        for (String field : fieldErrors.keySet()) {
+            for (String error : fieldErrors.get(field)) {
+                addFieldError(field, getText(error));
+            }
+        }
+
+        for (String msg : errors.getActionMessages()) {
+            getActionMessages().add(getText(msg));
+        }
+
+        for (String msg : errors.getStackTraces()) {
+            getStackTraces().add(msg);
+        }
+
+        setMoreInfoUrlKey(errors.getMoreInfoUrlKey());
+    }
+
     public List<String> getStackTraces() {
         return stackTraces;
     }
@@ -559,7 +582,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return moreInfoUrlKey;
     }
 
-    @Override
     public void setMoreInfoUrlKey(String moreInfoUrl) {
         this.moreInfoUrlKey = moreInfoUrl;
     }
@@ -592,12 +614,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         }
         return false;
     }
-    
+
     public void addActionErrors(List<String> errors) {
         if (CollectionUtils.isEmpty(errors)) {
             return;
         }
-        for (String error: errors) {
+        for (String error : errors) {
             addActionError(error);
         }
     }
@@ -606,11 +628,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return filesystemResourceService.getWroDir();
     }
 
-    @Override
-    public void registerErrorListener(ErrorListener e) {
-        this.errorListener = e;
-    }
-    
     public boolean isUseCDN() {
         return getTdarConfiguration().shouldUseCDN();
     }

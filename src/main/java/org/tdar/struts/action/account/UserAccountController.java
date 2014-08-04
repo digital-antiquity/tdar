@@ -1,7 +1,5 @@
 package org.tdar.struts.action.account;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -18,6 +16,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -227,9 +226,9 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        List<String> errors = registration.validate(this, authenticationService);
-        getLogger().debug("found errors {}", errors);
-        addActionErrors(errors);
+        ErrorTransferObject errors = registration.validate(authenticationService);
+        processErrorObject(errors);
     }
+
 
 }

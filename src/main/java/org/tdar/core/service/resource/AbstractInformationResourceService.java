@@ -34,9 +34,9 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFileProxy;
@@ -116,11 +116,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * which is likely a controller.
      */
     @Transactional
-    public void importFileProxiesAndProcessThroughWorkflow(T resource, TdarUser user, Long ticketId, ActionMessageErrorSupport listener,
+    public ErrorTransferObject importFileProxiesAndProcessThroughWorkflow(T resource, TdarUser user, Long ticketId,
             List<FileProxy> fileProxiesToProcess) throws IOException {
         if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
             getLogger().debug("Nothing to process, returning.");
-            return;
+            return null;
         }
 
         // prepare the metadata
@@ -140,7 +140,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
          */
         WorkflowResult workflowResult = new WorkflowResult(fileProxiesToProcess);
-        workflowResult.addActionErrorsAndMessages(listener);
+        ErrorTransferObject errorsAndMessages = workflowResult.getActionErrorsAndMessages();
 
         // If successful and no errors:
         // purge the filestore
@@ -156,7 +156,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
             personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
-
+        return errorsAndMessages;
     }
 
     private Pair<List<InformationResourceFile>, List<InformationResourceFileVersion>> convertProxiesToFilesAndVersions(List<FileProxy> cleanedProxies) {
@@ -421,7 +421,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
      * Given an @link InformationResource, find all of the latest versions and reprocess them.
      */
     @Transactional(readOnly = false)
-    public void reprocessInformationResourceFiles(T ir, ActionMessageErrorSupport listener) throws Exception {
+    public ErrorTransferObject reprocessInformationResourceFiles(T ir) throws Exception {
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             if (irFile.isDeleted()) {
@@ -443,14 +443,16 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // this is a known case where we need to purge the session
         // getDao().synchronize();
 
+        ErrorTransferObject eto = null;
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             final WorkflowContext workflowContext = irFile.getWorkflowContext();
             // may be null for "skipped" or composite file
             if ((workflowContext != null) && !workflowContext.isProcessedSuccessfully()) {
-                new WorkflowResult(workflowContext).addActionErrorsAndMessages(listener);
+                WorkflowResult workflowResult = new WorkflowResult(workflowContext);
+                eto = workflowResult.getActionErrorsAndMessages();
             }
         }
-
+        return eto;
     }
 
     /*

@@ -1,7 +1,5 @@
 package org.tdar.struts.action.cart;
 
-import java.util.List;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.CartUserRegistration;
@@ -52,9 +51,8 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         }
         getLogger().debug("validating registration request");
         // a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
-        List<String> errors = registrationInfo.validate(this, authenticationService);
-        getLogger().debug("found errors {}", errors);
-        addActionErrors(errors);
+        ErrorTransferObject errors = registrationInfo.validate(authenticationService);
+        processErrorObject(errors);
     }
 
     @WriteableSession

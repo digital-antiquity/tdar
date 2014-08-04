@@ -1,8 +1,5 @@
 package org.tdar.struts.action.login;
 
-import java.util.List;
-
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
@@ -180,10 +178,10 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Override
     public void validate() {
-        List<String> validate = userLogin.validate(this, authorizationService);
-        addActionErrors(validate);
+        ErrorTransferObject errors = userLogin.validate(authorizationService);
+        processErrorObject(errors);
 
-        if (!isPostRequest() || CollectionUtils.isNotEmpty(validate)) {
+        if (!isPostRequest() || errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", userLogin.getLoginUsername());
         }
     }
