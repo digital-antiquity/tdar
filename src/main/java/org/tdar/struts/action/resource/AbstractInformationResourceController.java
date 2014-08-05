@@ -434,9 +434,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         String retval = super.loadAddMetadata();
         resolveProject();
         Project obsProj = getGenericService().find(Project.class, getProjectId());
-        obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
+//        obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(),null);
         return retval;
+    }
+    
+    @Override
+    public String loadEditMetadata() throws TdarActionException {
+        setProjectId(getResource().getProjectId());
+        return super.loadEditMetadata();
     }
 
     protected void loadInformationResourceProperties() {
