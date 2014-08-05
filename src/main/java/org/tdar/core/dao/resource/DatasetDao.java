@@ -240,7 +240,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
         Map<Long, Resource> resultMap = new HashMap<>();
-        logger.debug("convert proxy to resource");
+        logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {
                 resultMap.put(prox.getId(), prox.generateResource());
@@ -248,7 +248,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 logger.error("{}", e);
             }
         }
-        logger.debug("resorting results");
+        logger.trace("resorting results");
         for (Long id : ids) {
             toReturn.add(resultMap.get(id));
         }
