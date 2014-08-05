@@ -106,6 +106,7 @@ public class CartBillingAccountController extends AbstractCartController {
         }
     }
 
+    //FIXME: this method is mis-named, and does stuff that belongs in the service layer (or at least in the actual controller execute method).
     private void validate(Account account) {
         if (StringUtils.isBlank(account.getName())) {
             // addActionError("Account name required");

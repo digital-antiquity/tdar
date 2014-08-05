@@ -675,4 +675,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().saveOrUpdate(acct);
 
     }
+
+    @Transactional
+    /**
+     * Create a billing account with a default name and assign it to the specified invoice.
+     */
+    public void processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {
+        Account account = new Account();
+        TdarUser owner = invoice.getOwner() == null ? invoice.getOwner() : authenticatedUser;
+        account.setName("Default account for " + owner.getProperName());
+        processBillingAccountChoice(account, invoice, authenticatedUser);
+    }
 }
