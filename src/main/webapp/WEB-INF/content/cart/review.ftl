@@ -15,9 +15,10 @@
 <div>
     <@invoicecommon.proxyNotice />
 </div>
-<h1>Review your purchase</h1>
+<h1>Review Your Purchase</h1>
 <@s.form name='change-account' id='change-account'  method='post' cssClass="billing-account-choice form-condensed" enctype='multipart/form-data' action='process-billing-account-choice'>
 <div class="row">
+    <#if accounts?has_content>
     <div class="span7 " >
         <h3>Invoice Information</h3>
         <div class="cartpane" style="min-height: 350px">
@@ -29,7 +30,6 @@
             </div>
         </div>
     </div>
-
     <div class="span5">
         <h3>Choose A Billing Account</h3>
         <div class="cartpane" style="min-height: 350px">
@@ -56,6 +56,20 @@
         </div>
 
     </div>
+        <#else>
+            <div class="span12" >
+                <h3>Invoice Information</h3>
+                <div class="cartpane" style="min-height: 350px">
+                    <div class="" >
+                        <h3>Invoice Details</h3>
+                        <@invoicecommon.printInvoice />
+                        <h3>Invoice Summary</h3>
+                        <@invoicecommon.printSubtotal invoice/>
+                    </div>
+                </div>
+            </div>
+
+    </#if>
 </div>
 <div class="row">
     <div class="span12">
