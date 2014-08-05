@@ -36,6 +36,9 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -244,6 +247,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
             setMinObfuscatedLatitude();
@@ -258,6 +262,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             setMaxObfuscatedLatitude();
@@ -272,6 +277,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             setMinObfuscatedLongitude();
@@ -286,6 +292,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             setMaxObfuscatedLongitude();
@@ -584,6 +591,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public Integer getScale() {
         Integer toReturn = -1;
         if (!isInitialized()) {

@@ -833,6 +833,7 @@ public class Resource implements Persistable, JsonModel,
         return getLatitudeLongitudeBoxes();
     }
 
+    @JsonView(JsonProjectLookupFilter.class)
     public LatitudeLongitudeBox getFirstActiveLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(getActiveLatitudeLongitudeBoxes())) {
             return null;

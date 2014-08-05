@@ -99,11 +99,11 @@ TDAR.inheritance = (function () {
         // FIXME: update the parent latlong box (i.e. the red box not the brown
         // box)..p_miny, pmaxy, etc. etc.
         // console.warn(rawJson.firstLatitudeLongitudeBox)
-        if (rawJson.firstLatitudeLongitudeBox) {
-            obj.spatialInformation['minx'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLongitude;
-            obj.spatialInformation['maxx'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLongitude;
-            obj.spatialInformation['miny'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLatitude;
-            obj.spatialInformation['maxy'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLatitude;
+        if (rawJson.firstActiveLatitudeLongitudeBox) {
+            obj.spatialInformation['minx'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude;
+            obj.spatialInformation['maxx'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude;
+            obj.spatialInformation['miny'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude;
+            obj.spatialInformation['maxy'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude;
         }
 
         //now build out individual/institutional credit
