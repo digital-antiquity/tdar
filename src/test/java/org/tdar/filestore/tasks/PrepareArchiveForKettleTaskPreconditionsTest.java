@@ -47,15 +47,10 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     }
 
     @Test
-    public void mustBeArchiveResourceType() {
+    public void mustBeArchiveResourceType() throws Exception {
         task.getWorkflowContext().setResourceType(ResourceType.DOCUMENT);
-        try {
-            task.run();
-            assertTrue("Should not be here", false);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("The Extract Archive Task has been called for a non archive resource!"));
-        }
+        task.run();
+        assertFalse(task.getWorkflowContext().isProcessedSuccessfully());
     }
 
     @Test

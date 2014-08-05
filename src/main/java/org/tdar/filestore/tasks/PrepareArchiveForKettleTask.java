@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
@@ -119,9 +118,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
         // reality check: do we have an archive?
-        final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
-        if (Archive.class != resourceClass) {
-            recordErrorAndExit("The Extract Archive Task has been called for a non archive resource! Resource class was: " + resourceClass);
+        if (!ctx.getResourceType().isArchive()) {
+            return;
         }
 
         // if we can't get the archive, we don't have enough information to run...
