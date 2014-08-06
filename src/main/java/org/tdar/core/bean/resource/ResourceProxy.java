@@ -39,6 +39,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 
 /**
  * This ResourceProxy class is designed to handle one of the major performance issues with Hibernate, that being the insane lookup queries that Hibernate
@@ -138,6 +139,10 @@ public class ResourceProxy implements Serializable {
     @Immutable
     @Fetch(FetchMode.JOIN)
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<>();
+
+
+    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    private Boolean inheritingSpatialInformation = false;
 
     @Override
     public String toString() {
@@ -296,6 +301,7 @@ public class ResourceProxy implements Serializable {
             }
             ir.setProject(project);
 
+            ir.setInheritingSpatialInformation(this.inheritingSpatialInformation);
         }
         logger.trace("done generation");
         return res;
@@ -315,6 +321,14 @@ public class ResourceProxy implements Serializable {
 
     public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
+    }
+
+    public Boolean isInheritingSpatialInformation() {
+        return inheritingSpatialInformation;
+    }
+
+    public void setInheritingSpatialInformation(Boolean inheritingSpatialInformation) {
+        this.inheritingSpatialInformation = inheritingSpatialInformation;
     }
 
 }
