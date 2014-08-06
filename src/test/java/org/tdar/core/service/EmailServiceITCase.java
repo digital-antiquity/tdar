@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -40,6 +42,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(received.getTo()[0], to.getEmail());
 
         assertThat(email.getStatus(), is( SENT));
+        //implicit assumption that something that is marked sent has a sent-date
+        assertThat(email.getDateSent(), is( not( nullValue())));
     }
 
 
