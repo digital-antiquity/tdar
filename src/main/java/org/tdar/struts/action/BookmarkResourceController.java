@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 /**
  * $Id$
@@ -50,6 +51,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     private InputStream resultJson;
 
     @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @PostOnly
     public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
         processResultToJson();
@@ -72,6 +74,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     }
 
     @Action(value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @PostOnly
     public String removeBookmarkAjaxAction() {
         success = removeBookmark();
         processResultToJson();
