@@ -13,6 +13,11 @@ public class UserLogin extends UserAuthData {
     private static final long serialVersionUID = -4359468001090001733L;
     private String loginUsername;
     private String loginPassword;
+    
+    public String getPrefix() {
+        return "userLogin.";
+    };
+
 
     public UserLogin(AntiSpamHelper h) {
         setH(h);
@@ -45,11 +50,11 @@ public class UserLogin extends UserAuthData {
         ErrorTransferObject errors = new ErrorTransferObject();
 
         if (isBlank(getLoginUsername())) {
-            errors.addFieldError("loginUsername", "loginController.error_missing_username");
+            errors.addFieldError(getPrefix() + "loginUsername", "loginController.error_missing_username");
         }
 
         if (isBlank(getLoginPassword())) {
-            errors.addFieldError("loginPassword", "loginController.error_choose_password");
+            errors.addFieldError(getPrefix() + "loginPassword", "loginController.error_choose_password");
         }
 
         checkForSpammers(errors, true);

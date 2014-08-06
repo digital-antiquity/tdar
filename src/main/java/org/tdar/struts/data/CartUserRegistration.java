@@ -14,6 +14,11 @@ public class CartUserRegistration extends UserRegistration {
     }
 
     @Override
+    public String getPrefix() {
+        return "registrationInfo.";
+    };
+    
+    @Override
     public ErrorTransferObject validate(AuthenticationService authService) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {
             setAcceptTermsOfUse(true);
@@ -21,7 +26,7 @@ public class CartUserRegistration extends UserRegistration {
         }
         ErrorTransferObject validate = super.validate(authService);
         if (!isRequestingContributorAccess()) {
-            validate.addFieldError("requestingContributorAccess", "userAccountController.require_contributor_agreement");
+            validate.addFieldError(getPrefix() + "requestingContributorAccess", "userAccountController.require_contributor_agreement");
         }
         return validate;
     }

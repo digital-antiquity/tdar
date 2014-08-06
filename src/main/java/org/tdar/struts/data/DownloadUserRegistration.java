@@ -12,6 +12,11 @@ public class DownloadUserRegistration extends UserRegistration {
         super();
     }
 
+    @Override
+    public String getPrefix() {
+        return "downloadRegistration.";
+    };
+
     public DownloadUserRegistration(AntiSpamHelper h) {
         super(h);
     }
