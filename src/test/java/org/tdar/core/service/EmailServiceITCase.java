@@ -1,13 +1,17 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.tdar.core.bean.notification.Email.Status.SENT;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
@@ -17,6 +21,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
     
     @Test
+    @Rollback
     public void testMockMailSender() {
         Person to = new Person(null, null, "toguy@tdar.net");
         String mailBody = "this is a message body";
@@ -33,6 +38,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(received.getText(), mailBody);
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], to.getEmail());
+
+        assertThat(email.getStatus(), is( SENT));
     }
 
 

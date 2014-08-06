@@ -21,7 +21,7 @@ public class Email extends Persistable.Base {
     private static final String SEPARATOR_CHARS = ";";
     private static final long serialVersionUID = -5791173542997998092L;
 
-    public enum Status {
+    public static enum Status {
         QUEUED,
         ERROR,
         SENT;
@@ -143,5 +143,12 @@ public class Email extends Persistable.Base {
 
     public void setDateSent(Date dateSent) {
         this.dateSent = dateSent;
+    }
+
+    @Override
+    public String toString() {
+        String fmt  = "[id:%-5d from:%-20s to:%-20s sub:%-20s tries:%-3d status:%-6s]";
+        String msg = String.format(fmt, getId(),  from, to, StringUtils.left(subject, 20), numberOfTries, status);
+        return msg;
     }
 }
