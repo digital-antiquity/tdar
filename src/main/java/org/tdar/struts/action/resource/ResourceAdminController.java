@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
@@ -24,6 +27,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -48,12 +52,16 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
     private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
     private List<ResourceRevisionLog> logEntries;
+    private Set<ResourceCollection> effectiveResourceCollections = new HashSet<>();
 
     private Resource resource;
     private Long id;
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private XmlService xmlService;
@@ -73,6 +81,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
                         resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }
+        setEffectiveResourceCollections(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
         return SUCCESS;
     }
 
@@ -151,6 +160,16 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+
+    public Set<ResourceCollection> getEffectiveResourceCollections() {
+        return effectiveResourceCollections;
+    }
+
+
+    public void setEffectiveResourceCollections(Set<ResourceCollection> effectiveResourceCollections) {
+        this.effectiveResourceCollections = effectiveResourceCollections;
     }
 
 }

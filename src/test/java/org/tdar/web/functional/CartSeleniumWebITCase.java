@@ -10,9 +10,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.tdar.URLConstants.CART_ADD;
-import static org.tdar.core.dao.external.payment.PaymentMethod.MANUAL;
-import static org.tdar.core.dao.external.payment.PaymentMethod.INVOICE;
-
 
 import java.util.ArrayList;
 import java.util.List;

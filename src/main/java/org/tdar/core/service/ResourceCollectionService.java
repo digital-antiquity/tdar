@@ -708,4 +708,20 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
         saveOrUpdate(internal);
     }
+
+    @Transactional
+    public Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
+        Set<ResourceCollection> tempSet = new HashSet<>();
+        for (ResourceCollection collection : resource.getSharedResourceCollections()) {
+            if ((collection != null) && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
+                tempSet.addAll(collection.getHierarchicalResourceCollections());
+            }
+        }
+        ResourceCollection internal = resource.getInternalResourceCollection();
+        if ((internal != null) &&
+                CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
+            tempSet.add(internal);
+        }
+        return tempSet;
+    }
 }

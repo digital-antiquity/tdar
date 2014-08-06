@@ -7,10 +7,14 @@
         <name>XML Namespace Document</name>
         <note>
             The XML namespace URI for tDAR is
-            "http://www.tdar.org/namespace". This namespace URI should never
-            change. The following rule redirects from the namespace URI to a page
-            where the namespace is currently documented. If the location of the
-            documentation changes, the &lt;to&gt; element below should be updated
+            "http://www.tdar.org/namespace". This namespace URI should
+            never
+            change. The following rule redirects from the namespace
+            URI to a page
+            where the namespace is currently documented. If
+            the location of the
+            documentation changes, the &lt;to&gt;
+            element below should be updated
             to follow it.
         </note>
         <from>/namespace</from>
@@ -22,7 +26,8 @@
         <name>deal with annoying fishing excursions...</name>
         <from>/(wp|wordpress|old|blog|wp-admin|signup)/?.*</from>
         <to>/page-not-found</to>
-        <!-- this does not work in Tomcat for some reason <set status="404" /> -->
+        <!-- this does not work in Tomcat for some reason <set status="404" 
+            /> -->
     </rule>
 
     <rule>
@@ -30,8 +35,8 @@
         <to>/services/</to>
     </rule>
 
-    <!-- <rule> <note>removing trailing bad request info from get request</note>
-        <from>^/(document|dataset|project|image|coding-sheet|ontology|sensory-data)/(\d+)([^1234567890\?#/])(.*)</from>
+    <!-- <rule> <note>removing trailing bad request info from get request</note> 
+        <from>^/(document|dataset|project|image|coding-sheet|ontology|sensory-data)/(\d+)([^1234567890\?#/])(.*)</from> 
         <to>/$1/$2</to> </rule> -->
 
     <rule>
@@ -178,8 +183,8 @@
         <to>/search/results$1</to>
     </rule>
 
-    <!-- when run at the root context; the struts2 freemarker setup does not
-        seem to properly route requests through the servlet; hence requests from
+    <!-- when run at the root context; the struts2 freemarker setup does 
+        not seem to properly route requests through the servlet; hence requests from 
         http://localhost/ are routed to /about -->
     <rule>
         <from>^/$</from>
@@ -238,25 +243,25 @@
         <to>/ontology/node?id=$1&amp;iri=$2&amp;$3</to>
     </rule>
 
-<!-- 
     <rule>
-        <from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check|review|finalreview)$
-        </from>
-        <to>/$1/$3?id=$2</to>
+        <from>^/cart/(\d+)/polling-check</from>
+        <to>/cart/polling-check?id=$1</to>
     </rule>
     <outbound-rule>
-        <from>^/(cart|billing)/(address|credit|choose|simple|polling|polling-check|review|finalreview)\?id=([0-9]+)$
-        </from>
-        <to>/$1/$3/$2</to>
+        <from>^/cart/polling-check?id=(\d+)</from>
+        <to>/cart/$1/polling-check</to>
     </outbound-rule>
- -->
+    
+    <!-- <rule> <from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check|review|finalreview)$ 
+        </from> <to>/$1/$3?id=$2</to> </rule> <outbound-rule> <from>^/(cart|billing)/(address|credit|choose|simple|polling|polling-check|review|finalreview)\?id=([0-9]+)$ 
+        </from> <to>/$1/$3/$2</to> </outbound-rule> -->
     <!-- XXX: could use this instead to deal with relative links (maybe) -->
     <!-- <outbound-rule> -->
     <!-- <from>(view|edit|upload|delete|columns|citations)\?id=([0-9]+)$</from> -->
     <!-- <to>$2/$1</to> -->
     <!-- </outbound-rule> -->
 
-    <!-- all requests for a resource supplying just an id should go to it's
+    <!-- all requests for a resource supplying just an id should go to it's 
         view action -->
     <rule>
         <from>^/(project|dataset|ontology|billing|image|audio|video|document|cart|sensory-data|coding-sheet|collection|archive|geospatial)/([0-9]+)$
@@ -302,20 +307,12 @@
     </outbound-rule>
 
 
-    <!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to>
-        </rule> <outbound-rule> <from>^/document/add\?documentType=([A-Z_]+)$</from>
+    <!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to> 
+        </rule> <outbound-rule> <from>^/document/add\?documentType=([A-Z_]+)$</from> 
         <to>/document/add/$1</to> </outbound-rule> -->
-        <!-- 
-    <rule>
-        <from>^/document/(source|related)/([0-9]+)$</from>
-        <to>/document/$1?linkedResourceId=$2</to>
-    </rule>
-
-    <outbound-rule>
-        <from>^/document/(source|related)\?linkedResourceId=([0-9]+)$</from>
-        <to>/document/$1/$2</to>
-    </outbound-rule>
- -->
+    <!-- <rule> <from>^/document/(source|related)/([0-9]+)$</from> <to>/document/$1?linkedResourceId=$2</to> 
+        </rule> <outbound-rule> <from>^/document/(source|related)\?linkedResourceId=([0-9]+)$</from> 
+        <to>/document/$1/$2</to> </outbound-rule> -->
     <rule>
         <from>^/resource/add/([0-9]+)$</from>
         <to>/resource/add?projectId=$1</to>
@@ -386,15 +383,9 @@
         <to>$1$2$3</to>
     </outbound-rule>
 
-    <!--  be careful with this where possible (it could have issues with things like the TAG Gateway)
-    <outbound-rule>
-        <from>^/(search|project|collection)/(.+)\.action\?(.*)$</from>
-        <to>/$1/$2?$3</to>
-    </outbound-rule>
-    <outbound-rule>
-        <from>^/(search|project|collection)/(.+)\.action$</from>
-        <to>/$1/$2</to>
-    </outbound-rule>
- -->
+    <!-- be careful with this where possible (it could have issues with things 
+        like the TAG Gateway) <outbound-rule> <from>^/(search|project|collection)/(.+)\.action\?(.*)$</from> 
+        <to>/$1/$2?$3</to> </outbound-rule> <outbound-rule> <from>^/(search|project|collection)/(.+)\.action$</from> 
+        <to>/$1/$2</to> </outbound-rule> -->
 
 </urlrewrite>

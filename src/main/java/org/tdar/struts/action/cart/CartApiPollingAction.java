@@ -21,6 +21,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 /**
  * Created by jimdevos on 7/22/14.
@@ -65,6 +66,7 @@ public class CartApiPollingAction extends AbstractCartController {
     /**
      * Simply return the invoice associated with the user's session.  The client will continue polling until the invoice status changes from pending_transaction to success (or failed)
      */
+    @PostOnly
     public String pollingCheck() throws TdarActionException, IOException {
         setResultJson(getInvoice());
         return SUCCESS;
