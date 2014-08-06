@@ -62,12 +62,12 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
             @Result(name = SUCCESS, location = "../resource/admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {
-        setResourceLogEntries(resourceService.getLogsForResource(resource));
+        setResourceLogEntries(resourceService.getLogsForResource(getResource()));
         setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
-                Arrays.asList(resource.getId())));
-        if (resource instanceof InformationResource) {
+                Arrays.asList(getResource().getId())));
+        if (getResource() instanceof InformationResource) {
             int i = 0;
-            for (InformationResourceFile file : ((InformationResource) resource).getInformationResourceFiles()) {
+            for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
                 i++;
                 getDownloadStats().put(String.format("%s. %s", i, file.getFilename()),
                         resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
@@ -80,7 +80,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
     @Override
     public void prepare() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
-            resource = resourceService.find(getId());
+            setResource(resourceService.find(getId()));
         } else {
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
@@ -141,6 +141,16 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+
+    public Resource getResource() {
+        return resource;
+    }
+
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
 }

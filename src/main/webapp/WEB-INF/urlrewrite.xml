@@ -207,6 +207,16 @@
     </rule>
 
     <rule>
+        <from>^/project/(\d+)/json</from>
+        <to>/project/json?id=$1</to>
+    </rule>
+    <outbound-rule>
+        <from>^/project/json\?id=(\d+)$
+        </from>
+        <to>/project/$1/json</to>
+    </outbound-rule>
+
+    <rule>
         <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(view|edit|delete|columns|mapping)\??(.*)$
         </from>
         <to>/$1/$3?id=$2</to>

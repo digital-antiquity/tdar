@@ -10,6 +10,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.MessageHelper;
 
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
@@ -23,7 +24,7 @@ public class HttpMethodInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
             return doPostIntercept(invocation);
-        } else if (request.getMethod().equalsIgnoreCase("get")) {
+        } else if (request.getMethod().equalsIgnoreCase("get") || Objects.equal(invocation.getProxy().getMethod(), "delete")) {
             // not annotated... business as usual.
             return invocation.invoke();
         } else {
