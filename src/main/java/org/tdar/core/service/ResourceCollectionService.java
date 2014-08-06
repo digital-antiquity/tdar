@@ -501,7 +501,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            authuser instance to serve as a frame of reference when deriving the approprate
      *            value for the 'viewable' property of each child ResourceCollection in the returned
      *            list.
-     * @return a list containing the provided 'parent' collection and any descendant collections (if any). Futhermore
+     * @return a list containing the other 'root' collections besides the one initially specified
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
      */
