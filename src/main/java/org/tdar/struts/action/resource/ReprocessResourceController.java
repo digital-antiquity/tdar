@@ -1,8 +1,12 @@
 package org.tdar.struts.action.resource;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -22,6 +26,10 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
+@Component
+@Scope("prototype")
+@ParentPackage("secured")
+@Namespace("/resource")
 public class ReprocessResourceController extends AuthenticationAware.Base implements Preparable, CrudAction<InformationResource> {
 
     private static final long serialVersionUID = 7557491462701114284L;
@@ -103,7 +111,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             resource = resourceService.find(getId());
         } else {
-            addActionError("reprocessResourceController.valid_resource_required");
+            addActionError(getText("reprocessResourceController.valid_resource_required"));
         }
     }
 

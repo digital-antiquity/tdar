@@ -107,7 +107,6 @@ import org.tdar.utils.EmailMessageType;
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
-    public static final String ADMIN = "admin";
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -172,7 +171,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> geographicKeywords;
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
     private List<CoverageDate> coverageDates;
-    private List<ResourceRevisionLog> logEntries;
     // citation data.
     // private List<String> sourceCitations;
     private List<SourceCollection> sourceCollections;
@@ -190,10 +188,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceCollection> viewableResourceCollections;
 
-    private List<ResourceRevisionLog> resourceLogEntries;
-
-    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
-    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -1135,51 +1129,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return viewableResourceCollections;
     }
 
-    @SkipValidation
-    @Action(value = ADMIN, results = {
-            @Result(name = SUCCESS, location = "../resource/admin.ftl")
-    })
-    public String viewAdmin() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
-        // view();
-        setResourceLogEntries(resourceService.getLogsForResource(getPersistable()));
-        setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
-                Arrays.asList(getPersistable().getId())));
-        if (getPersistable() instanceof InformationResource) {
-            int i = 0;
-            for (InformationResourceFile file : ((InformationResource) getPersistable()).getInformationResourceFiles()) {
-                i++;
-                getDownloadStats().put(String.format("%s. %s", i, file.getFilename()),
-                        resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
-            }
-        }
-        return SUCCESS;
-    }
-
-    public List<ResourceRevisionLog> getLogEntries() {
-        return logEntries;
-    }
-
-    public void setLogEntries(List<ResourceRevisionLog> logEntries) {
-        this.logEntries = logEntries;
-    }
-
-    public List<ResourceRevisionLog> getResourceLogEntries() {
-        return resourceLogEntries;
-    }
-
-    public void setResourceLogEntries(List<ResourceRevisionLog> resourceLogEntries) {
-        this.resourceLogEntries = resourceLogEntries;
-    }
-
-    public List<AggregateViewStatistic> getUsageStatsForResources() {
-        return usageStatsForResources;
-    }
-
-    public void setUsageStatsForResources(List<AggregateViewStatistic> usageStatsForResources) {
-        this.usageStatsForResources = usageStatsForResources;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -1203,14 +1152,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return false;
     }
 
-    public Map<String, List<AggregateDownloadStatistic>> getDownloadStats() {
-        return downloadStats;
-    }
-
-    public void setDownloadStats(Map<String, List<AggregateDownloadStatistic>> downloadStats) {
-        this.downloadStats = downloadStats;
-    }
-
     public Person getSubmitter() {
         return submitter;
     }
@@ -1225,22 +1166,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
         this.resourceRelationships = resourceRelationships;
-    }
-
-    public String getJsonStats() {
-        String json = "null";
-        // FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this? Also, why bail if only one is null?
-        if ((usageStatsForResources == null) || (downloadStats == null)) {
-            return json;
-        }
-
-        try {
-            json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
-        } catch (IOException e) {
-            getLogger().error("failed to convert stats to json", e);
-            json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
-        }
-        return json;
     }
 
     public boolean isUserAbleToReTranslate() {
