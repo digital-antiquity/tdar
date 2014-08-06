@@ -22,7 +22,8 @@
         <jena.version>2.11.1</jena.version>
         <clover.version>3.2.2</clover.version>
         <!-- /end managed versions -->
-        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m
+            -XX:MaxPermSize=512m</jvm.args>
         <generated.schema.dir>target/generated/db</generated.schema.dir>
         <generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.7.5</wro4j.version>
@@ -1124,44 +1125,19 @@
 
     <reporting>
         <plugins>
-<!--             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <includes>
-                        <include>${project.basedir}/src/main/java/**/*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-
+            <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jxr-plugin</artifactId> 
+                <version>2.3</version> <configuration> <includes> <include>${project.basedir}/src/main/java/**/*.java</include> 
+                </includes> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+                <artifactId>maven-checkstyle-plugin</artifactId> <version>2.11</version> 
+                <configuration> <enableRSS>false</enableRSS> <includes>**\/*.java</includes> 
+                <enableRulesSummary>true</enableRulesSummary> <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory> 
+                <configLocation>src/main/resources/check_style.xml</configLocation> </configuration> 
+                </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-pmd-plugin</artifactId> 
+                <version>3.0.1</version> <configuration> <rulesets> <ruleset>rulesets/java/braces.xml</ruleset> 
+                <ruleset>rulesets/java/naming.xml</ruleset> <ruleset>rulesets/java/optimizations.xml</ruleset> 
+                <ruleset>rulesets/java/sunsecure.xml</ruleset> </rulesets> </configuration> 
+                </plugin> -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <enableRSS>false</enableRSS>
-                    <includes>**\/*.java</includes>
-                    <enableRulesSummary>true</enableRulesSummary>
-                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-                    <configLocation>src/main/resources/check_style.xml</configLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <rulesets>
-                        <ruleset>rulesets/java/braces.xml</ruleset>
-                        <ruleset>rulesets/java/naming.xml</ruleset>
-                        <ruleset>rulesets/java/optimizations.xml</ruleset>
-                        <ruleset>rulesets/java/sunsecure.xml</ruleset>
-                    </rulesets>
-                </configuration>
-            </plugin>
- -->
-             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>2.5.3</version>
@@ -1206,11 +1182,11 @@
                 <version>${clover.version}</version>
                 <configuration>
                     <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
-					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
-					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
-					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
-					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-					bZloaUUnmm
+                                      mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+                                      QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+                                      xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+                                      mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+                                      bZloaUUnmm
 					]]></license>
                     <configuration>
                         <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
@@ -1364,11 +1340,11 @@
                 <version>${clover.version}</version>
                 <configuration>
                     <license><![CDATA[rMrNURWpXQHaLRhRdgkEQUkUOOnieVBQFVQPreSbWjkXom
-					mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
-					QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
-					xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
-					mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
-					bZloaUUnmm
+                            mi2KvNPg36OZ1l82HG0ctoyr2K1bkHvvRzbQXkvm7yilg0
+                            QoNrTXNRRQpqONnnNqPxxnrNmRnQomRRqQuSsxVQSXuTXW
+                            xRVwvwtWuVSvxVxwnvusVTtWsNMmnmqmUUnptuqtsmmmmm
+                            mUUnptuqtsmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+                            bZloaUUnmm
 					]]></license>
                     <!-- <cloverDatabase>${java.io.tmpdir}/clover/database/</cloverDatabase> -->
                     <!-- <cloverOutputDirectory>${java.io.tmpdir}/clover/</cloverOutputDirectory> -->
@@ -1560,7 +1536,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                        <exportAntProperties>true</exportAntProperties>
+                            <exportAntProperties>true</exportAntProperties>
                             <target>
                                 <condition property="hg.location"
                                     value="/usr/local/bin/hg">
@@ -1574,18 +1550,21 @@
                                     value="hg" />
                                 <echo
                                     message=" using mercurial from: ${hg.location}" />
-                                    <mkdir dir="target"/>
-                                    <mkdir dir="target/classes"/>
+                                <mkdir dir="target" />
+                                <mkdir dir="target/classes" />
                                 <exec output="target/classes/version.txt"
                                     executable="${hg.location}">
                                     <arg line="id -n" />
                                 </exec>
-                                 <loadfile property="hg.version" srcFile="target/classes/version.txt"/>
-                                 <loadfile property="hg.version.as_dir" srcFile="target/classes/version.txt">
-                                     <filterchain>
-                                        <deletecharacters chars="\t\r\n+"/>
+                                <loadfile property="hg.version"
+                                    srcFile="target/classes/version.txt" />
+                                <loadfile property="hg.version.as_dir"
+                                    srcFile="target/classes/version.txt">
+                                    <filterchain>
+                                        <deletecharacters
+                                            chars="\t\r\n+" />
                                     </filterchain>
-                                 </loadfile>
+                                </loadfile>
                             </target>
                         </configuration>
                     </execution>
@@ -2081,7 +2060,8 @@
                                         <mkdir dir="target/generated" />
                                         <mkdir dir="target/generated/db" />
                                         <mkdir dir="target/generated/webapp" />
-                                        <mkdir dir="target/generated/webapp-test" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
                                     </target>
                                 </configuration>
                             </execution>
@@ -2117,8 +2097,9 @@
                         </configuration>
                     </plugin>
                     <plugin>
-						<!-- this is to put an extra copy where other things like the tDAR website 
-							can deal with it. JS doesn't change that often so, it should be okay -->
+                        <!-- this is to put an extra copy where other things 
+                            like the tDAR website can deal with it. JS doesn't change that often so, 
+                            it should be okay -->
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>1.7</version>
                         <executions>
@@ -2129,9 +2110,11 @@
                                 </goals>
                                 <configuration>
                                     <target>
-	                                    <copy todir="${project.build.directory}/generated/webapp/wro/">
-	                                    	<fileset dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}"/>
-	                                    </copy>
+                                        <copy
+                                            todir="${project.build.directory}/generated/webapp/wro/">
+                                            <fileset
+                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}" />
+                                        </copy>
                                     </target>
                                 </configuration>
                             </execution>
