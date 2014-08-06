@@ -51,9 +51,7 @@ import org.tdar.utils.Pair;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
-    public static final String RETRANSLATE = "retranslate";
     public static final String COLUMNS = "columns";
-    public static final String REIMPORT = "reimport";
     private static final long serialVersionUID = 6368347724977529964L;
     public static final String SAVE_VIEW = "SAVE_VIEW";
     public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
@@ -158,30 +156,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private PaginationHelper paginationHelper;
     private InputStream xmlStream;
 
-    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String reimport() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        // note this ignores the quota changes -- it's on us
-        datasetService.reprocess(getDataResource());
-        return SUCCESS;
-    }
-
-    /**
-     * Retranslates the given dataset.
-     * XXX: does this need a WritableSession?
-     */
-    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String retranslate() throws TdarActionException {
-        // note this ignores the quota changes -- it's on us
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        for (DataTable table : getDataResource().getDataTables()) {
-            datasetService.retranslate(table.getDataTableColumns());
-        }
-        datasetService.createTranslatedFile(getDataResource());
-        return SUCCESS;
-    }
 
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {

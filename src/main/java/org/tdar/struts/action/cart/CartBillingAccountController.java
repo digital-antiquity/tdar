@@ -17,7 +17,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.billing.InvoiceService;
-import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -163,7 +162,6 @@ public class CartBillingAccountController extends AbstractCartController {
     }
 
     @Action(value = "review", results = { @Result(name = INPUT, location = "review.ftl") })
-    @GetOnly
     public String showBillingAccounts() {
         return SUCCESS;
     }
