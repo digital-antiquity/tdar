@@ -68,7 +68,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -106,7 +105,6 @@ import org.tdar.utils.EmailMessageType;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
-    private static final String REPROCESS = "reprocess";
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
     public static final String ADMIN = "admin";
 
@@ -1133,32 +1131,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         viewableResourceCollections = new ArrayList<>(collections);
         return viewableResourceCollections;
-    }
-
-    @SkipValidation
-    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String reprocess() throws TdarActionException {
-        getLogger().info("reprocessing");
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        // FIXME: trying to avoid concurrent modification exceptions
-        // NOTE: this processes deleted ones again too
-        // NOTE2: this is ignored in the quota on purpose -- it's on us
-        if (getResource() instanceof InformationResource) {
-            InformationResource ir = (InformationResource) getResource();
-            try {
-                ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
-                processErrorObject(errors);
-            } catch (Exception e) {
-                // consider removing the "sorry we were unable to ... just showing error message"
-                // addActionErrorWithException(null, e);
-                addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
-            }
-            if (hasActionErrors()) {
-                return ERROR;
-            }
-        }
-        return SUCCESS;
     }
 
     @SkipValidation

@@ -6,11 +6,14 @@ import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
@@ -27,6 +30,9 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     private static final long serialVersionUID = -8015985036235809392L;
 
+    @Autowired
+    private InformationResourceService informationResourceService;
+    
     @Override
     protected String save(Archive persistable) throws TdarActionException {
         List<FileProxy> fileProxies = getFileProxies();
@@ -43,7 +49,17 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
             }
         }
         if (isOnlyMetadataChanged && getArchive().isDoImportContent()) {
-            reprocess();
+            try {
+                ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(getResource());
+                processErrorObject(errors);
+            } catch (Exception e) {
+                // consider removing the "sorry we were unable to ... just showing error message"
+                // addActionErrorWithException(null, e);
+                addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
+            }
+            if (hasActionErrors()) {
+                return ERROR;
+            }
         }
         return SUCCESS;
     }

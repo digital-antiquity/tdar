@@ -24,7 +24,6 @@ import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.GetOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
@@ -111,7 +110,6 @@ public class InvoiceController extends AbstractCartController {
      * @return
      */
     @Action(URLConstants.CART_REVIEW_UNAUTHENTICATED)
-    @GetOnly
     public String showInvoice() {
         if (getInvoice() == null) {
             return "redirect-start";
