@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -53,58 +52,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
 
-    /**
-     * Reconcile an existing set of @link Resource entities on a @link ResourceCollection with a set of incomming @link Resource entities, remove unmatching
-     * 
-     * @param persistable
-     * @param authenticatedUser
-     * @param resources
-     * @return
-     */
-    @Transactional
-    public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resources) {
-        Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
-        List<Resource> toRemove = new ArrayList<Resource>(); // not in incoming but in existing collection
-        List<Resource> toEvaluate = new ArrayList<Resource>(resources); // in incoming but not existing
-        List<Resource> ineligibleResources = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
-        for (Resource resource : persistable.getResources()) {
-            if (!incomingIdMap.containsKey(resource.getId())) {
-                resource.getResourceCollections().remove(persistable);
-                toRemove.add(resource);
-            }
-            toEvaluate.remove(resource);
-        }
-        logger.info("incoming: {} existing: {} new: {}", resources.size(), persistable.getResources().size(), toEvaluate.size());
-        // toEvaluate should retain the "new" resources to the collection
-
-        // set the deleted resources aside first
-        List<Resource> deletedResources = findAllResourcesWithStatus(persistable, Status.DELETED, Status.FLAGGED, Status.DUPLICATE,
-                Status.FLAGGED_ACCOUNT_BALANCE);
-
-        persistable.getResources().removeAll(toRemove);
-        saveOrUpdate(persistable);
-        List<Resource> rehydratedIncomingResources = getDao().loadFromSparseEntities(toEvaluate, Resource.class);
-        logger.info("{} ", authenticatedUser);
-        for (Resource resource : rehydratedIncomingResources) {
-            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
-                ineligibleResources.add(resource);
-            } else {
-                resource.getResourceCollections().add(persistable);
-            }
-        }
-        // remove all of the undesirable resources that that the user just tried to add
-        rehydratedIncomingResources.removeAll(ineligibleResources);
-        // getResourceCollectionService().findAllChildCollections(persistable, CollectionType.SHARED);
-        persistable.getResources().addAll(rehydratedIncomingResources);
-
-        // add all the deleted resources that were already in the colleciton
-        persistable.getResources().addAll(deletedResources);
-        saveOrUpdate(persistable);
-        if (ineligibleResources.size() > 0) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add", ineligibleResources);
-        }
-        return rehydratedIncomingResources;
-    }
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -723,5 +670,39 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             tempSet.add(internal);
         }
         return tempSet;
+    }
+
+    @Transactional(readOnly = false)
+    public void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+            List<Resource> resourcesToRemove) {
+        Set<Resource> resources = persistable.getResources();
+        List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
+        List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
+        for (Resource resource : resourcesToAdd) {
+            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+                ineligibleToAdd.add(resource);
+            } else {
+                resource.getResourceCollections().add(persistable);
+                resources.add(resource);
+            }
+        }
+
+        for (Resource resource : resourcesToRemove) {
+            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+                ineligibleToAdd.add(resource);
+            } else {
+                resource.getResourceCollections().remove(persistable);
+                resources.remove(resource);
+            }
+        }
+
+        saveOrUpdate(persistable);
+        if (ineligibleToAdd.size() > 0) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add", ineligibleToAdd);
+        }
+
+        if (ineligibleToRemove.size() > 0) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove", ineligibleToRemove);
+        }
     }
 }

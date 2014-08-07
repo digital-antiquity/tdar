@@ -170,7 +170,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setVisible(visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getResources().addAll(resources);
+            controller.getToAdd().addAll(Persistable.Base.extractIds(resources));
         }
 
         if (users != null) {

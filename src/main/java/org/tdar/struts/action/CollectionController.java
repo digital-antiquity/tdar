@@ -71,7 +71,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient AuthorizationService authorizationService;
 
     private static final long serialVersionUID = 5710621983240752457L;
-    private List<Resource> resources = new ArrayList<>();
+//    private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new ArrayList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
@@ -92,6 +92,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
+    private List<Long> toRemove = new ArrayList<>();
+    private List<Long> toAdd  = new ArrayList<>();
     private List<Project> allSubmittedProjects;
 
     @Override
@@ -134,20 +136,12 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
 
+        List<Resource> resourcesToRemove = resourceService.findAll(Resource.class, toRemove);
+        List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
+        getLogger().debug("toAdd: {}", resourcesToAdd);
+        getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
-
-        resources.addAll(getRetainedResources());
-        List<Resource> rehydratedIncomingResources = resourceCollectionService.reconcileIncomingResourcesForCollection(persistable,
-                getAuthenticatedUser(), resources);
-        getLogger().trace("{}", rehydratedIncomingResources);
-        getLogger().debug("RESOURCES {}", persistable.getResources());
-        getLogger().trace("resources (original):{}", resources);
-        getLogger().trace("resources (retained):{}", getRetainedResources());
-        getGenericService().saveOrUpdate(persistable);
-        // resetting for "error" state -- if authorizedUsersForCollection fails, we make sure that resources is properly hydrated and setup so we can produce a
-        // nicer "input" page
-        resources = rehydratedIncomingResources;
-        resources.removeAll(getRetainedResources());
+        resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
         return SUCCESS;
@@ -242,7 +236,6 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
         prepareProjectSection();
-        resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -270,29 +263,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     })
     public String edit() throws TdarActionException {
         String result = super.edit();
-        getLogger().trace(" resources (original:{}", resources);
-        getLogger().trace("resources (retained):{}", getRetainedResources());
-        resources.removeAll(getRetainedResources());
         return result;
     }
 
-    /**
-     * resources that that the current user is prohibited from removing when editing a collection
-     * 
-     * @return
-     */
-    private List<Resource> getRetainedResources() {
-        List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : getPersistable().getResources()) {
-            getLogger().trace("retain?: {}", resource);
-            getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-            boolean canEdit = authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
-            if (!canEdit) {
-                retainedResources.add(resource);
-            }
-        }
-        return retainedResources;
-    }
 
     @Override
     public void loadExtraViewMetadata() {
@@ -345,21 +318,6 @@ public class CollectionController extends AbstractPersistableController<Resource
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
         getLogger().debug("lucene: end");
-    }
-
-    /**
-     * @return the resources
-     */
-    public List<Resource> getResources() {
-        return resources;
-    }
-
-    /**
-     * @param resources
-     *            the resources to set
-     */
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
     }
 
     public List<Long> getSelectedResourceIds() {
@@ -583,7 +541,7 @@ public class CollectionController extends AbstractPersistableController<Resource
      * @return
      */
     public boolean isBigCollection() {
-        return (getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {
@@ -601,6 +559,22 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
         this.allResourceCollections = allResourceCollections;
+    }
+
+    public List<Long> getToAdd() {
+        return toAdd;
+    }
+
+    public void setToAdd(List<Long> toAdd) {
+        this.toAdd = toAdd;
+    }
+
+    public List<Long> getToRemove() {
+        return toRemove;
+    }
+
+    public void setToRemove(List<Long> toRemove) {
+        this.toRemove = toRemove;
     }
 
 }

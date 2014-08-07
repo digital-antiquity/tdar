@@ -148,13 +148,27 @@
             </div>
 
             <div id="divSelectedResources">
-                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list>
+<#--                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list> -->
             </div>
         </div>
 
         <div class="glide">
             <h2>Selected Resources</h2>
-            <@view.resourceCollectionTable tbid="tblCollectionResources"/>
+    <table class="table table-condensed table-hover" id="tblCollectionResources">
+        <colgroup>
+            <col style="width:4em">
+            <col>
+            <col style="width:3em">
+        </colgroup>
+        <thead>
+        <tr>
+            <th style="width: 4em">ID
+            <th colspan="2">Name
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
         </div>
 
 
@@ -170,18 +184,9 @@
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
-
-                //remind users that adding a project does not also add the project's contents
-                $("#resource_datatable").on("change", ".datatable-checkbox.project", function () {
-                    if ($("#divNoticeContainer").is(":visible")) {
-                        return;
-                    }
-                    if ($(this).is(":checked")) {
-                        $("#divNoticeContainer").show();
-                    }
-                });
-
-            });
+                TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
+                        //remind users that adding a project does not also add the project's contents
+        });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />
