@@ -109,7 +109,7 @@ public class UserRegistration extends UserAuthData {
         if (StringUtils.isBlank(password)) {
             errors.addFieldError(getPrefix() + "password", "userAccountController.error_choose_password");
         } else if (StringUtils.isBlank(confirmPassword)) {
-            errors.addFieldError("confirmPassword", "userAccountController.error_confirm_password");
+            errors.addFieldError(getPrefix() + "confirmPassword", "userAccountController.error_confirm_password");
         } else if (!StringUtils.equals(getPassword(), getConfirmPassword())) {
             errors.getActionErrors().add("userAccountController.error_passwords_dont_match");
         }

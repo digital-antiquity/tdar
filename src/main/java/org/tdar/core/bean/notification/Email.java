@@ -21,7 +21,7 @@ public class Email extends Persistable.Base {
     private static final String SEPARATOR_CHARS = ";";
     private static final long serialVersionUID = -5791173542997998092L;
 
-    public static enum Status {
+    public enum Status {
         QUEUED,
         ERROR,
         SENT;
