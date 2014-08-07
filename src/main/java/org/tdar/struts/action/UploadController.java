@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -68,6 +69,7 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
                     @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" , "statusCode","400"})
             })

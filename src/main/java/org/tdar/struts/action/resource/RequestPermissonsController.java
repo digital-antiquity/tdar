@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -76,7 +77,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     }
 
     @Action(value = "process-access-request",
-//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}"),
                     @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",

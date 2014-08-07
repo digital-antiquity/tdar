@@ -15,6 +15,7 @@ import java.util.SortedMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.slf4j.Logger;
@@ -156,7 +157,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private PaginationHelper paginationHelper;
     private InputStream xmlStream;
 
-
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
@@ -207,11 +207,13 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "save-column-metadata", results = {
-            @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
-            @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
-            @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
-    })
+    @Action(value = "save-column-metadata",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
+            })
     /**
      * Saves column metadata for each column in a given DataTable (set on the controller and retrievable via getDataTable()).
      * 
@@ -278,7 +280,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         }
         return ERROR;
     }
-    
 
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {

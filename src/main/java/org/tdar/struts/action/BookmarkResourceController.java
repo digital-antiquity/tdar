@@ -20,6 +20,8 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
+import com.opensymphony.xwork2.Preparable;
+
 /**
  * $Id$
  * 
@@ -32,7 +34,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
-public class BookmarkResourceController extends AuthenticationAware.Base {
+public class BookmarkResourceController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -5396034976314292120L;
 
@@ -50,12 +52,28 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     private String callback;
     private InputStream resultJson;
 
+    private Resource resource;
+
+    private TdarUser person;
+
     @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     @PostOnly
     public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
         processResultToJson();
         return SUCCESS;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        resource = resourceService.find(resourceId);
+        person = getAuthenticatedUser();
+        if (resource == null) {
+            addActionError(getText("bookmarkResourceController.no_resource"));
+        }
+        if (person == null) {
+            addActionError(getText("bookmarkResourceController.no_user"));
+        }
     }
 
     private void processResultToJson() {
@@ -91,24 +109,12 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
     }
 
     private boolean bookmarkResource() {
-        Resource resource = resourceService.find(resourceId);
-        if (resource == null) {
-            getLogger().trace("no resource with id: " + resourceId);
-            return false;
-        }
-        TdarUser person = getAuthenticatedUser();
         getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
         return bookmarkedResourceService.bookmarkResource(resource, person);
     }
 
     private boolean removeBookmark() {
-        Resource resource = resourceService.find(resourceId);
-        if (resource == null) {
-            getLogger().warn("no resource with id: " + resourceId);
-            return false;
-        }
         getLogger().trace("removing bookmark for resource: " + resource.getId());
-        TdarUser person = getAuthenticatedUser();
         return bookmarkedResourceService.removeBookmark(resource, person);
     }
 
