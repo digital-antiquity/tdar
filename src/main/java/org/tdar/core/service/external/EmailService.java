@@ -1,6 +1,7 @@
 package org.tdar.core.service.external;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -188,6 +189,17 @@ public class EmailService {
             genericService.saveOrUpdate(email);
         }
         
+    }
+
+    public List<Email> findEmailsWithStatus(Status status) {
+        List<Email> allEmails = genericService.findAll(Email.class);
+        List<Email> toReturn = new ArrayList<>();
+        for (Email email : allEmails) {
+            if (email.getStatus() == status) {
+                toReturn.add(email);
+            }
+        }
+        return toReturn;
     }
 
 }
