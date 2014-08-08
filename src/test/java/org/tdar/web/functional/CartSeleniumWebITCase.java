@@ -10,9 +10,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.tdar.URLConstants.CART_ADD;
-import static org.tdar.core.dao.external.payment.PaymentMethod.MANUAL;
-import static org.tdar.core.dao.external.payment.PaymentMethod.INVOICE;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +69,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         //now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
-        int size = find(withLabel("account name")).size();
-        assertThat(size, equalTo(1));
-        //make sure that the form fields are present
 
         submitForm();
 
