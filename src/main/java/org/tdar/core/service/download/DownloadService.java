@@ -177,7 +177,7 @@ public class DownloadService {
         }
 
         if (InformationResourceFile.FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
-            dto.setDispositionPrefix("attachment;");
+            dto.setAttachment(true);
         }
 
         dto.getDownloads().add(resourceFile);
