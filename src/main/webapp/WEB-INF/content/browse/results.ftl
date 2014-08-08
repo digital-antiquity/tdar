@@ -79,6 +79,9 @@
 
     <div itemscope itemtype="${scope}">
         <meta itemprop="name" content="${creator.properName}"/>
+        <#if creator.url?has_content>
+            <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);">${creator.url?html}</a>
+        </#if>
 
         <#if creator.institution??>
 
@@ -88,11 +91,8 @@
         <@common.description creator.description />
 
         <#if creator.synonyms?has_content>
-            <p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
+            <p class="small"><b>Alternate Names:</b> <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
             </p>
-        </#if>
-        <#if creator.url?has_content>
-            <a href="${creator.url?html}" onclick="TDAR.common.outboundLink(this);">${creator.url?html}</a>
         </#if>
         <br/>
         <#if creator.creatorType.person>

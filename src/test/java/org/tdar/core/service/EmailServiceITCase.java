@@ -1,6 +1,10 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -8,15 +12,18 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
     
     @Test
+    @Rollback
     public void testMockMailSender() {
         Person to = new Person(null, null, "toguy@tdar.net");
         String mailBody = "this is a message body";
@@ -33,6 +40,10 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(received.getText(), mailBody);
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], to.getEmail());
+
+        assertEquals(email.getStatus(), Status.SENT);
+        //implicit assumption that something that is marked sent has a sent-date
+        assertThat(email.getDateSent(), is( not( nullValue())));
     }
 
 

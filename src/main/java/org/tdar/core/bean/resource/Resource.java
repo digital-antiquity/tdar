@@ -844,8 +844,10 @@ public class Resource implements Persistable, JsonModel,
     @Transient
     @XmlTransient
     @JSONTransient
+    //@DidWeMentionThisPropertyIsTransient
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
+        logger.trace("hasConfidentialFiles:{}\t latLongBox:{}", hasConfidentialFiles(), latLongBox);
         if (hasConfidentialFiles() || (latLongBox == null)) {
             logger.trace("latLong for {} is confidential or null", getId());
             return Boolean.FALSE;

@@ -226,7 +226,7 @@ public class SearchIndexService {
      */
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         logger.info("indexing collection async");
-        List<ResourceCollection> collections = resourceCollectionService.buildCollectionTreeForController(collectionToReindex, null, CollectionType.SHARED);
+        List<ResourceCollection> collections = resourceCollectionService.getAllChildCollections(collectionToReindex);
         collections.add(collectionToReindex);
         Set<Resource> resources = new HashSet<Resource>();
         for (ResourceCollection collection : collections) {

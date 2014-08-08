@@ -33,6 +33,10 @@ public class UserRegistration extends UserAuthData {
     public UserRegistration() {
         this(new AntiSpamHelper());
     }
+    
+    public String getPrefix() {
+        return "registration.";
+    }
 
     public UserRegistration(AntiSpamHelper h) {
         if (h == null) {
@@ -53,49 +57,49 @@ public class UserRegistration extends UserAuthData {
             }
 
             if (!authService.isValidUsername(getPerson().getUsername())) {
-                errors.addFieldError("username", "userAccountController.username_invalid");
+                errors.addFieldError(getPrefix() + "username", "userAccountController.username_invalid");
             }
 
             if (!authService.isValidEmail(getPerson().getEmail())) {
-                errors.addFieldError("email", "userAccountController.email_invalid");
+                errors.addFieldError(getPrefix() + "email", "userAccountController.email_invalid");
             }
         }
 
         if (!acceptTermsOfUse) {
-            errors.addFieldError("require_tos", "userAccountController.require_tos");
+            errors.addFieldError(getPrefix() + "require_tos", "userAccountController.require_tos");
         }
 
         // contributorReason
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             getLogger().debug("contributor reason too long");
-            errors.addFieldError("contributorReason", "userAccountController.error_reason_maxlength");
+            errors.addFieldError(getPrefix() + "contributorReason", "userAccountController.error_reason_maxlength");
         }
 
         // firstName required
         if (StringUtils.isBlank(getPerson().getFirstName())) {
-            errors.addFieldError("first_name", "userAccountController.enter_first_name");
+            errors.addFieldError(getPrefix() + "first_name", "userAccountController.enter_first_name");
         }
 
         // lastName required
         if (StringUtils.isBlank(getPerson().getLastName())) {
-            errors.addFieldError("last_name", "userAccountController.enter_last_name");
+            errors.addFieldError(getPrefix() + "last_name", "userAccountController.enter_last_name");
         }
 
         // username required
         if (StringUtils.isBlank(getPerson().getUsername())) {
-            errors.addFieldError("username", "userAccountController.error_missing_username");
+            errors.addFieldError(getPrefix() + "username", "userAccountController.error_missing_username");
         } else {
             TdarUser existingUser = authService.findByUsername(getPerson().getUsername());
             if (existingUser != null && existingUser.isRegistered()) {
                 getLogger().debug("username was already registered: ", getPerson().getUsername());
-                errors.addFieldError("username", "userAccountController.error_username_already_registered");
+                errors.addFieldError(getPrefix() + "username", "userAccountController.error_username_already_registered");
             }
         }
 
         // confirmation email required
         if (StringUtils.isBlank(confirmEmail)) {
-            errors.addFieldError("confirmEmail", "userAccountController.error_confirm_email");
+            errors.addFieldError(getPrefix() + "confirmEmail", "userAccountController.error_confirm_email");
 
             // email + confirmation email must match
         } else if (!StringUtils.equals(getPerson().getEmail(), getConfirmEmail())) {
@@ -103,9 +107,9 @@ public class UserRegistration extends UserAuthData {
         }
         // validate password + password-confirmation
         if (StringUtils.isBlank(password)) {
-            errors.addFieldError("password", "userAccountController.error_choose_password");
+            errors.addFieldError(getPrefix() + "password", "userAccountController.error_choose_password");
         } else if (StringUtils.isBlank(confirmPassword)) {
-            errors.addFieldError("confirmPassword", "userAccountController.error_confirm_password");
+            errors.addFieldError(getPrefix() + "confirmPassword", "userAccountController.error_confirm_password");
         } else if (!StringUtils.equals(getPassword(), getConfirmPassword())) {
             errors.getActionErrors().add("userAccountController.error_passwords_dont_match");
         }

@@ -366,7 +366,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue(p.getId().equals(-1L));
         controller.validate();
         assertTrue("expecting user existing",
-                controller.getFieldErrors().get("username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
+                controller.getFieldErrors().get("registration.username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
     }
 
     private String getFirstFieldError(UserAccountController controller) {
@@ -382,7 +382,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setEmail(TESTING_EMAIL);
         controller.getRegistration().setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getFieldErrors().get("password").contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
+        assertTrue("expecting password", controller.getFieldErrors().get("registration.password").contains(MessageHelper.getMessage("userAccountController.error_choose_password")));
     }
 
     @Test
@@ -396,7 +396,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.getRegistration().setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm email", controller.getFieldErrors().get("confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
+        assertTrue("expecting confirm email", controller.getFieldErrors().get("registration.confirmEmail").contains(MessageHelper.getMessage("userAccountController.error_confirm_email")));
     }
 
     @Test
@@ -414,8 +414,8 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setConfirmEmail(TESTING_EMAIL);
         controller.getRegistration().setPassword("password");
         controller.validate();
-        logger.debug("E:{}", controller.getFieldErrors().get("confirmPassword"));
-        assertTrue("expecting confirm password", controller.getFieldErrors().get("confirmPassword")
+        logger.debug("E:{}", controller.getFieldErrors().get("registration.confirmPassword"));
+        assertTrue("expecting confirm password", controller.getFieldErrors().get("registration.confirmPassword")
                 .contains(MessageHelper.getMessage("userAccountController.error_confirm_password")));
     }
 

@@ -8,6 +8,11 @@ public class DownloadUserLogin extends UserLogin {
         super(h);
     }
 
+    @Override
+    public String getPrefix() {
+        return "downloadUserLogin.";
+    };
+
     public DownloadUserLogin() {
         super(null);
     }

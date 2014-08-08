@@ -111,7 +111,7 @@ public class EmailService {
             message.setText(email.getMessage());
             mailSender.send(message);
             email.setStatus(Status.SENT);
-            email.setDate(new Date());
+            email.setDateSent(new Date());
         } catch (MailException me) {
             email.setNumberOfTries(email.getNumberOfTries() - 1);
             email.setErrorMessage(me.getMessage());
