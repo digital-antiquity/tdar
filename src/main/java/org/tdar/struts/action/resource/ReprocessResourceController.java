@@ -22,7 +22,6 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.CrudAction;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -50,7 +49,6 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     private Long id;
 
     @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
     public String reprocess() throws TdarActionException {
         getLogger().info("reprocessing");
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -70,7 +68,6 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     }
 
     @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (resource instanceof Dataset) {
@@ -89,7 +86,6 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
      * XXX: does this need a WritableSession?
      */
     @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
     public String retranslate() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (resource instanceof Dataset) {
@@ -110,6 +106,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     public void prepare() {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             resource = resourceService.find(getId());
+            resource = getGenericService().markWritable(resource);
         } else {
             addActionError(getText("reprocessResourceController.valid_resource_required"));
         }

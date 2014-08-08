@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
@@ -81,7 +82,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
                         resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }
-        setEffectiveResourceCollections(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
         return SUCCESS;
     }
 
@@ -170,6 +171,16 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
 
     public void setEffectiveResourceCollections(Set<ResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
+    }
+
+    public List<GeneralPermissions> getAvailablePermissions() {
+        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
+        for (GeneralPermissions permission : GeneralPermissions.values()) {
+            if ((permission.getContext() == null) || Resource.class.isAssignableFrom(permission.getContext())) {
+                permissions.add(permission);
+            }
+        }
+        return permissions;
     }
 
 }
