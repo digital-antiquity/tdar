@@ -23,6 +23,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericService;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -148,7 +149,7 @@ public class EmailService {
     }
 
     @Transactional(readOnly = false)
-    public void constructEmail(Person from, Person to, Resource resource, String subject, String messageBody, EmailMessageType type) {
+    public Email constructEmail(Person from, Person to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericService.markWritable(email);
         email.setFrom(getTdarConfiguration().getDefaultFromEmail());
@@ -156,7 +157,12 @@ public class EmailService {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        email.setSubject(type.name() + " " + subject);
+        String subject = String.format("%s: %s", TdarConfiguration.getInstance().getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()));
+        if (StringUtils.isNotBlank(subjectSuffix)) {
+            subject += " - " + subjectSuffix;
+        } 
+        email.setSubject(subject);
+        email.setStatus(Status.IN_REVIEW);
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
@@ -168,6 +174,7 @@ public class EmailService {
         map.put("type", type);
         email.setMessage(messageBody);
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
+        return email;
 
     }
 

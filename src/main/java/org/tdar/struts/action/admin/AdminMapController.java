@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,7 +20,7 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")
-// @ParentPackage("secured")
+@ParentPackage("secured")
 @Namespace("/admin/map")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class AdminMapController extends AuthenticationAware.Base {

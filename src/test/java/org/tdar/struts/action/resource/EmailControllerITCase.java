@@ -1,12 +1,13 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.EmailController;
@@ -33,6 +34,10 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
             ec.prepare();
             ec.execute();
             genericService.synchronize();
+            Email email = ec.getEmail();
+            assertEquals(Status.IN_REVIEW, email.getStatus());
+            email.setStatus(Status.QUEUED);
+            genericService.saveOrUpdate(email);
             SimpleMailMessage received = checkMailAndGetLatest();
             assertTrue(received.getText().contains("this is a test"));
         }

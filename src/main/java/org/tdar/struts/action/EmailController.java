@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
@@ -52,13 +53,15 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Autowired
     private transient GenericService genericService;
 
+    private Email email;
+
     @Action(value = "deliver", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
             @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
     })
     @PostOnly
     public String execute() {
-        emailService.constructEmail(from, to, resource, subject, messageBody, type);
+        setEmail(emailService.constructEmail(from, to, resource, subject, messageBody, type));
         jsonResult.put("status", "QUEUED");
 
         return SUCCESS;
@@ -180,6 +183,14 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public Email getEmail() {
+        return email;
+    }
+
+    public void setEmail(Email email) {
+        this.email = email;
     }
 
 }
