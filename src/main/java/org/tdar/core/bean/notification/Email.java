@@ -22,6 +22,7 @@ public class Email extends Persistable.Base {
     private static final long serialVersionUID = -5791173542997998092L;
 
     public enum Status {
+        IN_REVIEW,
         QUEUED,
         ERROR,
         SENT;
