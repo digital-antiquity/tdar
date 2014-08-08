@@ -57,43 +57,43 @@ public class UserRegistration extends UserAuthData {
             }
 
             if (!authService.isValidUsername(getPerson().getUsername())) {
-                errors.addFieldError(getPrefix() + "username", "userAccountController.username_invalid");
+                errors.addFieldError(getPrefix() + "person.username", "userAccountController.username_invalid");
             }
 
             if (!authService.isValidEmail(getPerson().getEmail())) {
-                errors.addFieldError(getPrefix() + "email", "userAccountController.email_invalid");
+                errors.addFieldError(getPrefix() + "person.email", "userAccountController.email_invalid");
             }
         }
 
         if (!acceptTermsOfUse) {
-            errors.addFieldError(getPrefix() + "require_tos", "userAccountController.require_tos");
+            errors.addFieldError(getPrefix() + "acceptTermsOfUse", "userAccountController.require_tos");
         }
 
         // contributorReason
         if (StringUtils.length(getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             getLogger().debug("contributor reason too long");
-            errors.addFieldError(getPrefix() + "contributorReason", "userAccountController.error_reason_maxlength");
+            errors.addFieldError(getPrefix() + "person.contributorReason", "userAccountController.error_reason_maxlength");
         }
 
         // firstName required
         if (StringUtils.isBlank(getPerson().getFirstName())) {
-            errors.addFieldError(getPrefix() + "first_name", "userAccountController.enter_first_name");
+            errors.addFieldError(getPrefix() + "person.firstName", "userAccountController.enter_first_name");
         }
 
         // lastName required
         if (StringUtils.isBlank(getPerson().getLastName())) {
-            errors.addFieldError(getPrefix() + "last_name", "userAccountController.enter_last_name");
+            errors.addFieldError(getPrefix() + "person.lastName", "userAccountController.enter_last_name");
         }
 
         // username required
         if (StringUtils.isBlank(getPerson().getUsername())) {
-            errors.addFieldError(getPrefix() + "username", "userAccountController.error_missing_username");
+            errors.addFieldError(getPrefix() + "person.username", "userAccountController.error_missing_username");
         } else {
             TdarUser existingUser = authService.findByUsername(getPerson().getUsername());
             if (existingUser != null && existingUser.isRegistered()) {
                 getLogger().debug("username was already registered: ", getPerson().getUsername());
-                errors.addFieldError(getPrefix() + "username", "userAccountController.error_username_already_registered");
+                errors.addFieldError(getPrefix() + "person.username", "userAccountController.error_username_already_registered");
             }
         }
 

@@ -3,6 +3,7 @@ package org.tdar.core.service.external;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -176,6 +177,17 @@ public class EmailService {
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
         return email;
 
+    }
+
+    @Transactional(readOnly=false)
+    public void changeEmailStatus(Status action, List<Email> emails) {
+        for (Email email : emails) {
+            genericService.markUpdatable(email);
+            logger.debug("changing email[id={}] status from: {} to: {}", email.getId(), email.getStatus(), action);
+            email.setStatus(action);
+            genericService.saveOrUpdate(email);
+        }
+        
     }
 
 }
