@@ -36,6 +36,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -179,7 +180,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     @Action(value = DELETE,
 // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
-//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
@@ -216,13 +217,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @Action(value = SAVE,
-//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = "edit.ftl")
             })
     @WriteableSession
+    @PostOnly
     @HttpsOnly
     public String save() throws TdarActionException {
         // checkSession();

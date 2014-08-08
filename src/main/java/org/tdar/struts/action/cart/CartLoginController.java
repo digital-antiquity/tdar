@@ -18,6 +18,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -61,6 +62,7 @@ public class CartLoginController extends AbstractCartController implements Valid
             })
     @HttpsOnly
     @WriteableSession
+    @PostOnly
     public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", getUserLogin().getLoginUsername());
 

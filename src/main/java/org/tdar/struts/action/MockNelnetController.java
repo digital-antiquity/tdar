@@ -36,6 +36,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate.NelnetTransactionItemResponse;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 
 @Component
 @Scope("prototype")
@@ -76,6 +77,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
 
     @Action("process-payment")
     @Override
+    @PostOnly
     public String execute() throws ClientProtocolException, IOException, TdarActionException {
 
         processFakeResponse(getCcType(getCcnum()));

@@ -36,6 +36,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bouncycastle.asn1.cmp.PollRepContent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -318,7 +319,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                         String lineText = lines[lineNum - 1];
                         logger.debug("{}: {}", lineNum, lineText);
                         if (lineText.toLowerCase().contains("http")) {
-                            //NOTE: we may need to make this more strict in the future
+                            // NOTE: we may need to make this more strict in the future
                             // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
                             skip = true;
                             logger.debug("skipping encoding in URL");
@@ -1285,8 +1286,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected String getAccountPollingRequest(URL polingUrl) {
-        WebWindow openWindow = webClient.openWindow(polingUrl, "polling" + System.currentTimeMillis());
-        return openWindow.getEnclosedPage().getWebResponse().getContentAsString();
+        try {
+            WebWindow openWindow = webClient.openWindow(null, "polling" + System.currentTimeMillis());
+            Page page = openWindow.getWebClient().getPage(new WebRequest(polingUrl, HttpMethod.POST));
+            logger.debug(page.toString());
+            return page.getWebResponse().getContentAsString();
+        } catch (Exception e) {
+            logger.error("error in polling", e);
+            return null;
+        }
     }
 
     /*
@@ -1452,23 +1460,29 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected void reindex() {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
-        gotoPage("/admin/searchindex/checkstatus");
-        logger.debug(getPageCode());
-        int count = 0;
-        while (!getPageCode().contains("\"percentDone\":100")) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                fail("InterruptedException during reindex.  sorry.");
+        try {
+            URL url = new URL(getBaseUrl() +"/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
+
+            logger.debug(getPageCode());
+            int count = 0;
+            while (!getPageCode().contains("\"percentDone\":100")) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    fail("InterruptedException during reindex.  sorry.");
+                }
+                internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
+                if ((count % 10) == 5) {
+                    logger.info(getPageCode());
+                }
+                if (count == 1000) {
+                    fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
+                }
+                count++;
             }
-            gotoPage("/admin/searchindex/checkstatus?userId=" + getAdminUserId());
-            if ((count % 10) == 5) {
-                logger.info(getPageCode());
-            }
-            if (count == 1000) {
-                fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
-            }
-            count++;
+        } catch (Exception e) {
+            fail("exception in reindexing");
         }
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.tdar.core.bean.Persistable;
@@ -34,7 +35,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "save-address", results = {
+    @Action(value = "save-address", 
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+    results = {
             @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
             @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}"),
             @Result(name = INPUT, location = "../address-info.ftl")
@@ -64,7 +67,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "delete-address", results = {
+    @Action(value = "delete-address", 
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
             @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
     })
     public String deleteAddress() throws TdarActionException {

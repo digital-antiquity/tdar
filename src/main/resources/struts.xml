@@ -41,13 +41,13 @@
             <result-type name="streamhttp" class="org.tdar.struts.result.StreamHttpStatusResult"/>
         </result-types>
         <interceptors>
+            <interceptor name="authenticate" class="org.tdar.struts.interceptor.AuthenticationInterceptor"/>
             <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
             <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
             <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
             <interceptor name="cacheControl" class="org.tdar.struts.interceptor.CacheControlInterceptor"/>
             <interceptor name="activityLogging" class="org.tdar.struts.interceptor.ActivityLoggingInterceptor"/>
-<!--             <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
- -->            <interceptor-stack name="tdarDefaultStack">
+            <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">
                     <param name="logEnabled">true</param>
                     <param name="logLevel">ERROR</param>
@@ -74,15 +74,20 @@
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
-                <interceptor-ref name="fileUpload">
-	<!--
-	 ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
-		AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
-		<param name="maximumSize">8589934592</param> 
-		-->
-                </interceptor-ref>
                 <interceptor-ref name="staticParams"/>
                 <interceptor-ref name="actionMappingParams"/>
+            </interceptor-stack>
+
+            <interceptor-stack name="tdarDefaultStackWritable" >
+                <interceptor-ref name="authenticate" />
+                <interceptor-ref name='tdarDefaultStack'/>
+                <interceptor-ref name="fileUpload">
+                    <!--
+                     ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS THE TEMP DIRECTORY 
+                        AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED 
+                        <param name="maximumSize">8589934592</param> 
+                    -->
+                </interceptor-ref>
                 <interceptor-ref name="params">
                     <!-- See AbstractPersistableController.prepare() for more detail on why this entry occurs twice -->
                     <param name="excludeParams">(.*\.|^|.*|\[('|"))(c|C)lass(\.|('|")]|\[).*,^dojo\..*,^struts\..*,^session\..*,^request\..*,^application\..*,^servlet(Request|Response)\..*,^parameters\..*,^action:.*,^method:.*,_tdar\..*</param>
@@ -95,14 +100,30 @@
                     <param name="excludeMethods">input,back,cancel,browse</param>
                 </interceptor-ref>
             </interceptor-stack>
+
+
             <interceptor-stack name="unauthenticatedStack">
                 <interceptor-ref name="tdarDefaultStack"/>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
             </interceptor-stack>
+
+            <interceptor-stack name="authenticatedStack">
+                <interceptor-ref name="authenticate" />
+                <interceptor-ref name="unauthenticatedStack"/>
+            </interceptor-stack>
+        
             <interceptor-stack name='csrfDefaultStack'>
                 <interceptor-ref name='tokenSession'/>
                 <interceptor-ref name='tdarDefaultStack'/>
             </interceptor-stack>
         </interceptors>
+        
         <default-interceptor-ref name="unauthenticatedStack"/>
         <global-results>
             <result name="access-denied" type="redirect">/access-denied</result>
@@ -154,10 +175,8 @@
     </package>
     <package name="secured" extends="default" abstract="true">
         <interceptors>
-            <interceptor name="authenticate" class="org.tdar.struts.interceptor.AuthenticationInterceptor"/>
             <interceptor-stack name="editAuthenticatedStack">
-                <interceptor-ref name="authenticate"/>
-                <interceptor-ref name="tdarDefaultStack">
+                <interceptor-ref name="tdarDefaultStackWritable">
                     <param name="validation.validateAnnotatedMethodOnly">true</param>
                 </interceptor-ref>
             </interceptor-stack>
@@ -166,6 +185,6 @@
                 <interceptor-ref name='editAuthenticatedStack' />
             </interceptor-stack>
         </interceptors>
-        <default-interceptor-ref name="editAuthenticatedStack"/>
+        <default-interceptor-ref name="authenticatedStack"/>
     </package>
 </struts>

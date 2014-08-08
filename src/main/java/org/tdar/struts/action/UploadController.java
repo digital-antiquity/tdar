@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -24,6 +25,7 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
 @SuppressWarnings("serial")
@@ -67,9 +69,11 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action(value = "upload",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
                     @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" , "statusCode","400"})
             })
+    @PostOnly
     public String upload() {
         PersonalFilestoreTicket ticket = null;
         getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);

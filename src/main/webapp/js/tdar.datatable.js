@@ -286,7 +286,7 @@ TDAR.datatable = function () {
             selectableRows: _options.isSelectable,
             rowSelectionCallback: function (id, obj, isAdded) {
                 if (isAdded) {
-                    _rowSelected(obj);
+                    _rowSelected(obj,true);
                 } else {
                     _rowUnselected(obj);
                 }
@@ -373,12 +373,14 @@ TDAR.datatable = function () {
      * @param obj
      * @private
      */
-    function _rowSelected(obj) {
+    function _rowSelected(obj, add) {
 
         // first, add the hidden input tag to the dom
-        var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
+        var tag = '<input type="hidden" name="toAdd" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
         // console.log("adding selected resource:" + tag);
-        $('#divSelectedResources').append(tag);
+        if (add) {
+            $('#divSelectedResources').append(tag);
+        }
 
         // next, add a new row to the 'selected items' table.
         // FIXME: Really, Jim? All this to render a button?
@@ -455,7 +457,7 @@ TDAR.datatable = function () {
             // $div.hide();
             $table.hide();
         }
-
+        $dataTable.after("<input type='hidden' name='toRemove' value='"+id+"'/>");
         // if the datatable is on a page that shows the corresponding checkbox, clear the checkbox it
         $('#cbEntityId_' + id, $dataTable).prop('checked', false);
 
@@ -589,6 +591,37 @@ TDAR.datatable = function () {
         }
     }
 
+    function _initializeCollectionAddRemove(id) {
+        if (parseInt(id) > -1) {
+            $.ajax({
+                traditional: true, 
+                dataType: 'jsonp',
+                url: "/lookup/resource",
+                xhrFields: {
+                    withCredentials: true
+                },
+                data: {
+                    collectionId: id,
+                    recordsPerPage: 1000
+                },
+                success: function (_data) {
+                    $.each(_data.resources, function(index, el) {
+                    _rowSelected(el,false) });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("ajax query failed:" + errorThrown);
+                }
+            });
+        }
+        $("#resource_datatable").on("change", ".datatable-checkbox.project", function () {
+            if ($("#divNoticeContainer").is(":visible")) {
+                return;
+            }
+            if ($(this).is(":checked")) {
+                $("#divNoticeContainer").show();
+            }
+        });
+    };
     
     function _initalizeResourceDatasetDataTable(columns, viewRowSupported,resourceId, namespace, dataTableId) {
             jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
@@ -656,6 +689,7 @@ TDAR.datatable = function () {
         renderPersonId: _fnRenderPersonId,
         checkAllToggle: _checkAllToggle,
         registerChild: _registerChild,
-        initalizeResourceDatasetDataTable: _initalizeResourceDatasetDataTable
+        initalizeResourceDatasetDataTable: _initalizeResourceDatasetDataTable,
+        registerAddRemoveSection: _initializeCollectionAddRemove
     };
 }();

@@ -74,7 +74,7 @@
     <#list resourceLogEntries as entry>
         <tr>
             <td>${entry.timestamp}</td>
-            <td>${entry.person.properName}</td>
+            <td>${(entry.person.properName)!''}</td>
             <td>${entry.logMessage}</td>
         </tr>
     </#list>

@@ -65,11 +65,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     public static final String REASON = "because";
 
 
-    public void bookmarkResource(Resource r, TdarUser user) {
+    public void bookmarkResource(Resource r, TdarUser user) throws Exception {
         bookmarkResource(r, false, user);
     }
 
-    public void removeBookmark(Resource r, TdarUser user) {
+    public void removeBookmark(Resource r, TdarUser user) throws Exception {
         removeBookmark(r, false, user);
     }
 
@@ -98,10 +98,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) {
+    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
+        bookmarkController.prepare();
         if (ajax) {
             bookmarkController.bookmarkResourceAjaxAction();
         } else {
@@ -119,7 +120,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         Assert.assertTrue("should have seen resource in bookmark list",seen);
     }
 
-    public void removeBookmark(Resource r, boolean ajax, TdarUser user) {
+    public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : user.getBookmarkedResources()) {
@@ -131,6 +132,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         Assert.assertTrue("should have seen resource in bookmark list",seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
+        bookmarkController.prepare();
         if (ajax) {
             bookmarkController.removeBookmarkAjaxAction();
         } else {
@@ -170,7 +172,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setVisible(visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getResources().addAll(resources);
+            controller.getToAdd().addAll(Persistable.Base.extractIds(resources));
         }
 
         if (users != null) {

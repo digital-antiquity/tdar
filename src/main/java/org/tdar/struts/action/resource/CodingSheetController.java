@@ -8,6 +8,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -28,6 +29,7 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
@@ -120,8 +122,11 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     }
 
     @WriteableSession
+    @PostOnly
     @SkipValidation
-    @Action(value = SAVE_MAPPING, results = {
+    @Action(value = SAVE_MAPPING,
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
             @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
             @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
