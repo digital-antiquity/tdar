@@ -22,7 +22,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -235,7 +234,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
 
         prepareDataTableSection();
-        resources.addAll(getPersistable().getResources());
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
