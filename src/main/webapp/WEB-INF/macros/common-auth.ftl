@@ -8,6 +8,7 @@
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
 <#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart" embedded=true>
+    <@common.chromeAutofillWorkaround />
 <#if embedded>
     <@common.embeddedAntiSpam bean=beanPrefix />
 <#else>

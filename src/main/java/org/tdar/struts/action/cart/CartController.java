@@ -73,7 +73,6 @@ public class CartController extends AbstractCartController {
      */
     @SkipValidation
     @WriteableSession
-    // @GetOnly
     @Action(value = PROCESS_PAYMENT_REQUEST, results = {
             @Result(name = SUCCESS, type = "redirect", location = "/cart/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
@@ -96,7 +95,6 @@ public class CartController extends AbstractCartController {
         if (invoice.getTransactionStatus().isComplete()) {
             return ERROR;
         }
-
         if (invoice.getTransactionStatus() == TransactionStatus.TRANSACTION_SUCCESSFUL) {
             return SUCCESS_COMPLETE;
         }

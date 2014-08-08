@@ -23,6 +23,7 @@
 <h1>${pageTitle}</h1>
 
     <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
+    <@common.chromeAutofillWorkaround />
     <@s.token name='struts.csrf.token' />
     <@common.jsErrorLog />
     <div class="row">

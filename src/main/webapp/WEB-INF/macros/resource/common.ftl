@@ -855,4 +855,16 @@ with that datapoint -->
         </#if>
     </#macro>
 
+
+<#-- remove chrome autofill hack when no longer necessary TDAR-4043 -->
+<#--starting w/ Chrome 34, chrome ignores the autocomplete=off directive in password fields.  This in itself is not so bad (really), but it leads to
+tdar usability issues when combined with Chrome's "login form detection".  Specifically, chrome always autofills the first password input it encounters (regardless
+if there are multiple password inputs, e.g. a confirm-password-change form),  and then assumes that the preceeding text field is a username field (which is not
+true for our registration page or our profile page).-->
+<#macro chromeAutofillWorkaround>
+<input type="text"  name="_cr42-1" value="" style="display:none">
+<input type="password" name="_cr42-2" value="" style="display:none">
+</#macro>
+
 </#escape>
+

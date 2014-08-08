@@ -136,15 +136,18 @@ public class CartBillingAccountController extends AbstractCartController {
             acct = selectedAccount;
         }
         accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
-        //FIXME: Move to service layer
         updateInvoiceStatus();
 
         return SUCCESS;
     }
 
+    //FIXME: Move to service layer
     private void updateInvoiceStatus() {
         Invoice invoice = getInvoice();
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
+
+        //Assume that an invoice owner will always want to see the contributor menus.
+        invoice.getOwner().setContributor(true);
 
         switch (paymentMethod) {
             case CHECK:

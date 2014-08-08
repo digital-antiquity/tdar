@@ -189,7 +189,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
         if (isPostRequest() && DELETE.equals(getDelete())) {
-            checkForNonContributorCrud();
             if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
                 addActionError(getText("abstractPersistableController.cannot_delete"));
                 return CONFIRM;
@@ -365,7 +364,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
-        checkForNonContributorCrud();
         logAction("CREATING");
         return loadAddMetadata();
     }
@@ -401,7 +399,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         // ensureValidEditRequest();
 //        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        checkForNonContributorCrud();
         logAction("EDITING");
         return loadEditMetadata();
     }

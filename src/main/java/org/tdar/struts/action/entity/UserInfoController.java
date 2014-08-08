@@ -84,6 +84,12 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
     }
 
     @Override
+    public void prepare() {
+        super.prepare();
+        contributor = getPersistable().isContributor();
+    }
+
+    @Override
     public void validate() {
         super.validate();
         validateEmailRequiredForActiveUsers();
@@ -118,14 +124,11 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
         getPersistable().setContributor(contributor);
+        checkForNonContributorCrud();
 
         savePersonInfo(person);
         getGenericService().saveOrUpdate(person);
 
-        // If the user is editing their own profile, refresh the session object if needed
-//        if (getAuthenticatedUser().equals(person)) {
-//            getSessionData().getAuthenticationToken().setTdarUser(person);
-//        }
         if (passwordResetRequested) {
             authenticationService.getAuthenticationProvider().resetUserPassword(person);
         }

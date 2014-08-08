@@ -73,9 +73,6 @@
 </div>
 <div class="row">
     <div class="span12">
-        <#--<#if invoice??>-->
-            <#--<@invoicecommon.invoiceAdminSection invoice />-->
-        <#--</#if>-->
         <div class="form-actions">
             <#if invoice.modifiable>
                 <@s.a href="/cart/modify" cssClass="button muted">Modify This Invoice</@s.a>
