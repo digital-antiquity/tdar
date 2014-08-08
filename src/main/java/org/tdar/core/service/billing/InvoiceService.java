@@ -2,6 +2,7 @@ package org.tdar.core.service.billing;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -631,7 +632,7 @@ public class InvoiceService {
                 people.add(person);
             }
             Email email = new Email();
-            email.setSubject(MessageHelper.getMessage("cartController.subject"));
+            email.setSubject(MessageHelper.getMessage("cartController.subject", Arrays.asList(invoice.getId(), invoice.getTransactedBy().getProperName())));
             for (Person person : people) {
                 email.addToAddress(person.getEmail());
             }
