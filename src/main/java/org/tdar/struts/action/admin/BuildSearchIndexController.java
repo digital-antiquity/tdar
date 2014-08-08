@@ -29,6 +29,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
@@ -105,6 +106,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     @IgnoreActivity
     @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = JSONRESULT) })
+    @PostOnly
     public String checkStatusAsync() {
         Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         if (activity != null) {

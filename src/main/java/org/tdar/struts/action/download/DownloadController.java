@@ -30,6 +30,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
 
     private static final long serialVersionUID = 7548544212676661097L;
 
+    private boolean forceAttachment = false;
+
     @Action(value = CONFIRM, results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
@@ -60,6 +62,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
+        getDownloadTransferObject().setAttachment(forceAttachment);
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
@@ -72,5 +75,13 @@ public class DownloadController extends AbstractDownloadController implements Pr
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(), this));
         return getDownloadTransferObject().getResult().name().toLowerCase();
 
+    }
+
+    public boolean isForceAttachment() {
+        return forceAttachment;
+    }
+
+    public void setForceAttachment(boolean forceAttachment) {
+        this.forceAttachment = forceAttachment;
     }
 }

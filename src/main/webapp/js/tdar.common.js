@@ -829,7 +829,7 @@ TDAR.common = function () {
         }
         var newclass = "tdar-icon-" + newstate;
 
-        $.getJSON(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.post(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();

@@ -238,7 +238,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             e.printStackTrace();
         }
         logger.info("results: {} ", controller.getResults());
-        logger.info("results: {} ", controller.getResources());
+//        logger.info("results: {} ", controller.getResources());
         assertTrue(controller.getResults().contains(normal));
         assertTrue(controller.getResults().contains(draft));
         genericService.delete(controller.getResourceCollection().getAuthorizedUsers());
@@ -347,13 +347,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection = null;
         init(controller, owner);
         controller.prepare();
+        for (Document doc : docList) {
+            controller.getToRemove().add(doc.getId());
+        }
         controller.setServletRequest(getServletPostRequest());
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
 
         // clear the list of incoming resources, then save
-        controller.getResources().clear(); // strictly speaking this line is not
-                                           // necessary.
+//        controller.getResources().clear(); // strictly speaking this line is not
+//                                           // necessary.
         controller.save();
 
         evictCache();
@@ -824,7 +827,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
         resourceCollection.setSortBy(SortOption.ID);
-        controller.getResources().add(document);
+        controller.getToAdd().add(document.getId());
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         assertFalse(result.equals(Action.SUCCESS));
@@ -834,7 +837,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection = null;
         controller.prepare();
         controller.edit();
-        assertEquals(0, controller.getResources().size());
         assertEquals(0, controller.getResourceCollection().getResources().size());
 
     }
@@ -864,7 +866,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         cc.prepare();
         cc.getResourceCollection().setName("test");
         cc.getResourceCollection().setDescription("test");
-        cc.getResources().add(document);
+        cc.getToAdd().add(document.getId());
         assertWeFailedToSave(cc);
     }
 
@@ -1157,7 +1159,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Long pid = project.getId();
 
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getResources().add(project);
+        controller.getToAdd().add(project.getId());
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -1182,15 +1184,18 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         projectController.setId(pid);
         projectController.prepare();
         projectController.setDelete(TdarActionSupport.DELETE);
+        projectController.setAsync(false);
         projectController.delete();
+        genericService.synchronize();
         searchIndexService.flushToIndexes();
-
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.setId(rcid);
         controller.prepare();
-        controller.edit();
-        assertEquals("deleted resource should not appear on edit page", 0, controller.getResources().size());
+        controller.view();
+        List<Long> results = Persistable.Base.extractIds(controller.getResults());
+        logger.debug("pid: {}  | {}", pid, results);
+        Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
 
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
@@ -1245,10 +1250,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
-        logger.info("resources:{}", controller.getResources());
+//        logger.info("resources:{}", controller.getResources());
         logger.info("?:{}", controller.getResults());
         logger.info("?:{}", controller.getResourceCollection().getResources());
-        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
+        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }
 
     @Test
@@ -1264,7 +1269,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // Long pid = project.getId();
         Project proxy = new Project(project.getId(), project.getTitle());
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getResources().add(proxy);
+        controller.getToAdd().add(proxy.getId());
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -1299,7 +1304,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);
         List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(authUser));
         controller.setAuthorizedUsers(authList);
-        controller.getResources().add(proxy);
+        controller.getToAdd().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         controller.save();

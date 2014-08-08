@@ -24,6 +24,7 @@ import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserLogin;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Validateable;
@@ -98,6 +99,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                     })
     })
     @HttpsOnly
+    @PostOnly
     @WriteableSession
     public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", userLogin.getLoginUsername());

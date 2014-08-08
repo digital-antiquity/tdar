@@ -15,6 +15,7 @@ import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
@@ -48,6 +49,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
             })
     @HttpsOnly
     @WriteableSession
+    @PostOnly
     public String authenticate() {
         getLogger().debug("Trying to authenticate username:{}", getDownloadUserLogin().getLoginUsername());
 

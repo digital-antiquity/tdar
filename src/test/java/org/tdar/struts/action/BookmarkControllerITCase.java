@@ -23,7 +23,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testBookmarkedResource() {
+    public void testBookmarkedResource() throws Exception {
         Document document = createNewDocument();
         bookmarkResource(document,getUser());
         bookmarkResource(document,getUser());
@@ -32,7 +32,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testUnBookmarkedResource() {
+    public void testUnBookmarkedResource() throws Exception {
         Document document = createNewDocument();
         TdarUser user = genericService.find(TdarUser.class, getUserId());
         bookmarkResource(document, user);
@@ -43,7 +43,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testAjaxBookmarkedResource() {
+    public void testAjaxBookmarkedResource() throws Exception {
         Document document = createNewDocument();
         bookmarkResource(document, true, getUser());
         bookmarkResource(document, getUser());
@@ -52,7 +52,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testAjaxRemoveBookmarkedResource() {
+    public void testAjaxRemoveBookmarkedResource() throws Exception {
         Document document = createNewDocument();
         TdarUser user = genericService.find(TdarUser.class, getUserId());
         bookmarkResource(document, true, user);

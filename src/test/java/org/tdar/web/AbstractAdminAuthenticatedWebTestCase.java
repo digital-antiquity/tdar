@@ -36,10 +36,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         for (int i = 0; i < someResources.size(); i++) {
             Resource resource = someResources.get(i);
             // FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax. fix it so that it can.
-            String fieldName = "resources[" + i + "].id";
+            String fieldName = "toAdd[" + i + "]";
             String fieldValue = "" + resource.getId();
             logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
-            createInput("hidden", "resources.id", fieldValue);
+            createInput("hidden", fieldName, fieldValue);
         }
         submitForm();
     }

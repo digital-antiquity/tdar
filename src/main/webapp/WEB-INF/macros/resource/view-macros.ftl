@@ -122,10 +122,10 @@ View freemarker macros
             <h2> Admin File Actions</h2>
             <ul>
                 <#if resource.resourceType.dataTableSupported>
-                <li><a href="<@s.url value='/${resource.urlNamespace}/reimport?id=${resource.id?c}' />">Reimport this dataset</a></li>
-                <li><a href="<@s.url value='/${resource.urlNamespace}/retranslate?id=${resource.id?c}' />">Retranslate this dataset</a></li>
+                <li><a href="<@s.url value='/resource/reimport?id=${resource.id?c}' />">Reimport this dataset</a></li>
+                <li><a href="<@s.url value='/resource/retranslate?id=${resource.id?c}' />">Retranslate this dataset</a></li>
                 </#if>
-            <li><a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives
+            <li><a href="<@s.url value='/resource/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives
                 for this resource</a></li>
             </#if>
         </#if>
@@ -155,7 +155,7 @@ View freemarker macros
             Data column(s) in this dataset have been associated with coding sheet(s) and translated:
             <#if userAbleToReTranslate>
                 <br>
-                <small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> -
+                <small>(<a href="<@s.url value='/resource/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> -
                     <b>Note: this process may take some time</b>)
                 </small>
             </#if>

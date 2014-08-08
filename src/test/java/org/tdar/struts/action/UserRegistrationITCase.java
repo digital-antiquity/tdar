@@ -366,7 +366,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue(p.getId().equals(-1L));
         controller.validate();
         assertTrue("expecting user existing",
-                controller.getFieldErrors().get("registration.username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
+                controller.getFieldErrors().get("registration.person.username").contains(MessageHelper.getMessage("userAccountController.error_username_already_registered")));
     }
 
     private String getFirstFieldError(UserAccountController controller) {

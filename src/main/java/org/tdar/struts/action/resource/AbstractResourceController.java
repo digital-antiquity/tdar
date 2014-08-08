@@ -1,22 +1,17 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -50,8 +45,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -59,16 +52,12 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
-import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -80,12 +69,11 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.struts.data.UsageStats;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
@@ -106,9 +94,7 @@ import org.tdar.utils.EmailMessageType;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
-    private static final String REPROCESS = "reprocess";
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
-    public static final String ADMIN = "admin";
 
     private static final long serialVersionUID = 8620875853247755760L;
 
@@ -173,7 +159,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> geographicKeywords;
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
     private List<CoverageDate> coverageDates;
-    private List<ResourceRevisionLog> logEntries;
     // citation data.
     // private List<String> sourceCitations;
     private List<SourceCollection> sourceCollections;
@@ -191,10 +176,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceCollection> viewableResourceCollections;
 
-    private List<ResourceRevisionLog> resourceLogEntries;
-
-    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
-    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -283,13 +264,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Action(value = SAVE,
-//            interceptorRefs = { @InterceptorRef("csrfAuthenticatedStack") },
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
             })
     @WriteableSession
+    @PostOnly
     @HttpsOnly
     @Override
     /**
@@ -744,18 +726,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private void loadEffectiveResourceCollections() {
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
-        Set<ResourceCollection> tempSet = new HashSet<>();
-        for (ResourceCollection collection : getResourceCollections()) {
-            if ((collection != null) && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
-                tempSet.addAll(collection.getHierarchicalResourceCollections());
-            }
-        }
-        ResourceCollection internal = getResource().getInternalResourceCollection();
-        if ((internal != null) &&
-                CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
-            tempSet.add(internal);
-        }
-        getEffectiveResourceCollections().addAll(tempSet);
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
     public List<String> getSiteNameKeywords() {
@@ -1135,77 +1106,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return viewableResourceCollections;
     }
 
-    @SkipValidation
-    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String reprocess() throws TdarActionException {
-        getLogger().info("reprocessing");
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        // FIXME: trying to avoid concurrent modification exceptions
-        // NOTE: this processes deleted ones again too
-        // NOTE2: this is ignored in the quota on purpose -- it's on us
-        if (getResource() instanceof InformationResource) {
-            InformationResource ir = (InformationResource) getResource();
-            try {
-                ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
-                processErrorObject(errors);
-            } catch (Exception e) {
-                // consider removing the "sorry we were unable to ... just showing error message"
-                // addActionErrorWithException(null, e);
-                addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
-            }
-            if (hasActionErrors()) {
-                return ERROR;
-            }
-        }
-        return SUCCESS;
-    }
-
-    @SkipValidation
-    @Action(value = ADMIN, results = {
-            @Result(name = SUCCESS, location = "../resource/admin.ftl")
-    })
-    public String viewAdmin() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
-        // view();
-        setResourceLogEntries(resourceService.getLogsForResource(getPersistable()));
-        setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
-                Arrays.asList(getPersistable().getId())));
-        if (getPersistable() instanceof InformationResource) {
-            int i = 0;
-            for (InformationResourceFile file : ((InformationResource) getPersistable()).getInformationResourceFiles()) {
-                i++;
-                getDownloadStats().put(String.format("%s. %s", i, file.getFilename()),
-                        resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
-            }
-        }
-        return SUCCESS;
-    }
-
-    public List<ResourceRevisionLog> getLogEntries() {
-        return logEntries;
-    }
-
-    public void setLogEntries(List<ResourceRevisionLog> logEntries) {
-        this.logEntries = logEntries;
-    }
-
-    public List<ResourceRevisionLog> getResourceLogEntries() {
-        return resourceLogEntries;
-    }
-
-    public void setResourceLogEntries(List<ResourceRevisionLog> resourceLogEntries) {
-        this.resourceLogEntries = resourceLogEntries;
-    }
-
-    public List<AggregateViewStatistic> getUsageStatsForResources() {
-        return usageStatsForResources;
-    }
-
-    public void setUsageStatsForResources(List<AggregateViewStatistic> usageStatsForResources) {
-        this.usageStatsForResources = usageStatsForResources;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -1229,14 +1129,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return false;
     }
 
-    public Map<String, List<AggregateDownloadStatistic>> getDownloadStats() {
-        return downloadStats;
-    }
-
-    public void setDownloadStats(Map<String, List<AggregateDownloadStatistic>> downloadStats) {
-        this.downloadStats = downloadStats;
-    }
-
     public Person getSubmitter() {
         return submitter;
     }
@@ -1251,22 +1143,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceRelationships(List<ResourceRelationship> resourceRelationships) {
         this.resourceRelationships = resourceRelationships;
-    }
-
-    public String getJsonStats() {
-        String json = "null";
-        // FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this? Also, why bail if only one is null?
-        if ((usageStatsForResources == null) || (downloadStats == null)) {
-            return json;
-        }
-
-        try {
-            json = xmlService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
-        } catch (IOException e) {
-            getLogger().error("failed to convert stats to json", e);
-            json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
-        }
-        return json;
     }
 
     public boolean isUserAbleToReTranslate() {

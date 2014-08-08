@@ -63,7 +63,7 @@
         function updateProgress() {
         console.log("updateProgress");
             var url = "<@s.url value="checkstatus"/>?userId=${authenticatedUser.id?c}&";
-            $.getJSON(url, function (data) {
+            $.post(url, function (data) {
                 _checkStatus(data);
             });
         }

@@ -38,6 +38,8 @@ public class DownloadTransferObject implements Serializable {
 
     private static final long serialVersionUID = 7856219475924463528L;
 
+    private static final String ATTACHMENT = "attachment;";
+
     private List<FileDownloadStatistic> statistics = new ArrayList<>();
     private List<DownloadFile> downloads = new ArrayList<>();
 
@@ -238,6 +240,10 @@ public class DownloadTransferObject implements Serializable {
 
     public void registerDownloadLock() {
         downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
+    }
+    
+    public void setAttachment(boolean isAttachment) {
+        this.setDispositionPrefix(ATTACHMENT);
     }
 
 }
