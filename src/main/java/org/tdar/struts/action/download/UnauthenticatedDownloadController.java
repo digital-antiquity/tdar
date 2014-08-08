@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -81,7 +82,10 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
         }
 
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
-        return getDownloadTransferObject().getResult().name().toLowerCase();
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
+            return getDownloadTransferObject().getResult().name().toLowerCase();
+        }
+       return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
     @Override

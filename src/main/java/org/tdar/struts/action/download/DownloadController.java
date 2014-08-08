@@ -63,6 +63,10 @@ public class DownloadController extends AbstractDownloadController implements Pr
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
         getDownloadTransferObject().setAttachment(forceAttachment);
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
+            return getDownloadTransferObject().getResult().name().toLowerCase();
+        }
+
         return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
@@ -73,6 +77,9 @@ public class DownloadController extends AbstractDownloadController implements Pr
             return ERROR;
         }
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(), this));
+        if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
+            return getDownloadTransferObject().getResult().name().toLowerCase();
+        }
         return getDownloadTransferObject().getResult().name().toLowerCase();
 
     }
