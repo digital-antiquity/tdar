@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -31,6 +33,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.ErrorListener;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -136,6 +139,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient GenericService genericService;
+
+    @Autowired
+    private transient AccountService accountService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
 
@@ -641,5 +647,22 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public void registerErrorListener(ErrorListener listener) {
         this.errorListener = listener;
+    }
+
+    public boolean isShowUpload() {
+        if (sessionData.isAuthenticated()) {
+            TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
+            if (user.isContributor()) {
+                return true;
+            }
+            if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+                List<Account> accounts = accountService.listAvailableAccountsForUser(user);
+                if (CollectionUtils.isNotEmpty(accounts)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
     }
 }

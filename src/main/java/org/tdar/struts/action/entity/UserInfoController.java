@@ -126,8 +126,8 @@ public class UserInfoController extends AbstractPersonController<TdarUser> {
         getPersistable().setProxyNote(proxyNote);
         if (getPersistable().getContributor() == false && contributor) {
             authenticationService.satisfyPrerequisite(getPersistable(), AuthNotice.CONTRIBUTOR_AGREEMENT);
-            getPersistable().setContributor(contributor);
         }
+        getPersistable().setContributor(contributor);
         checkForNonContributorCrud();
 
         savePersonInfo(person);
