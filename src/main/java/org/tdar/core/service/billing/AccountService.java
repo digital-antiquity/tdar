@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ServiceInterface;
@@ -686,4 +688,24 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         account.setName("Default account for " + owner.getProperName());
         processBillingAccountChoice(account, invoice, authenticatedUser);
     }
+
+    @Transactional
+    public Account reconcileSelectedAccount(long id, Invoice invoice, Account account, List<Account> accounts) {
+        Account selectedAccount = null;
+        if (id == -1L && invoice != null) {
+            getLogger().debug("looking for account by invoice {}", invoice);
+            if (account != null && StringUtils.isNotBlank(account.getName())) {
+                selectedAccount = account;
+            } else {
+                selectedAccount = getAccountForInvoice(invoice);
+                if (selectedAccount == null && accounts.isEmpty()) {
+                    selectedAccount = accounts.iterator().next();
+                }
+            }
+        } else {
+            selectedAccount = genericDao.find(Account.class, id);
+        }
+        return selectedAccount;
+    }
+
 }

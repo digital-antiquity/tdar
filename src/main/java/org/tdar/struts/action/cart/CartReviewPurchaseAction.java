@@ -1,24 +1,20 @@
 package org.tdar.struts.action.cart;
 
-import java.util.Arrays;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.billing.InvoiceService;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+
+import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
 /**
  * Created by JAMES on 6/14/2014.
@@ -27,12 +23,11 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @Namespace("/cart")
 @ParentPackage("secured")
-@Results({
-        @Result(name = "redirect-payment", type = "redirect", location = "/cart/process-payment-request"),
-})
-public class CartBillingAccountController extends AbstractCartController {
+public class CartReviewPurchaseAction extends AbstractCartController implements ValidationWorkflowAware {
 
-    private static final long serialVersionUID = 563992082346864102L;
+    private static final long serialVersionUID = -6055688199405862384L;
+
+    public static final String REVIEW = "review";
 
     // id of one of the account chosen from the dropdown list
     private long id = -1L;
@@ -66,12 +61,19 @@ public class CartBillingAccountController extends AbstractCartController {
         setAccounts(accountService.listAvailableAccountsForUser(owner));
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
 
-        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts());
-        if (selectedAccount != null) {
-            id = selectedAccount.getId();
+        if (id == -1L && getInvoice() != null) {
+            getLogger().debug("looking for account by invoice {}", getInvoice());
+            selectedAccount = accountService.getAccountForInvoice(getInvoice());
+            if (selectedAccount == null && !getAccounts().isEmpty()) {
+                selectedAccount = getAccounts().iterator().next();
+            }
+            if (selectedAccount != null) {
+                id = selectedAccount.getId();
+            }
+        } else {
+            selectedAccount = getGenericService().find(Account.class, id);
         }
 
-        
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
         // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
@@ -82,49 +84,22 @@ public class CartBillingAccountController extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (Persistable.Base.isNullOrTransient(getId())) {
-            if (StringUtils.isBlank(account.getName())) {
-                account.setName(getText("cartBillingAccountController.default_account", Arrays.asList(getInvoice().getOwner().getProperName())));
-            }
-        } else if (selectedAccount == null) {
-            addActionError(getText("cartController.invalid_account"));
-        }
-
         // rule: payment method required
+        if (getInvoice() == null) {
+            addActionMessage(getText("abstractCartController.select_invoice"));
+            return;
+        }
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));
         }
-        
     }
 
-    /**
-     * Assign invoice to (pre-existing or new) billing account.
-     * 
-     * @return
-     */
-    @Action(value = "process-billing-account-choice", results = { @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
-    @PostOnly
-    @WriteableSession
-    public String processBillingAccountChoice() {
+    @Action(value = REVIEW, results = { @Result(name = INPUT, type = REDIRECT, location = URLConstants.CART_ADD) })
+    public String execute() {
         if (!getInvoice().isModifiable()) {
-            addActionError(getText("cartController.cannot_modify_completed_invoice"));
-            return REDIRECT_START;
+            addActionMessage(getText("cartController.cannot_modify_completed_invoice"));
+            return INPUT;
         }
-
-        // if user came via unauthenticated page the owner/proxy may not be set. If either is null, we set both to the current user
-        if (getInvoice().getOwner() == null || getInvoice().getTransactedBy() == null) {
-            TdarUser user = getAuthenticatedUser();
-            getInvoice().setOwner(user);
-            getInvoice().setTransactedBy(user);
-        }
-
-        Account acct = account;
-        // prevent params-prepare-params from modifying pre-existing account
-        if (selectedAccount != null) {
-            acct = selectedAccount;
-        }
-        accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
-        invoiceService.updateInvoiceStatus(getInvoice());
 
         return SUCCESS;
     }

@@ -73,7 +73,6 @@ public class InvoiceService {
     @Autowired
     private transient UserNotificationService notificationService;
 
-
     /**
      * Return defined @link BillingActivity entries that are enabled. A billing activity represents a type of charge (uses ASU Verbage)
      * 
@@ -345,7 +344,6 @@ public class InvoiceService {
         return option;
     }
 
-
     /**
      * For a given invoice object, clear it and apply the appropriate BillingItems based on:
      * 1) the PricingType evaluation (files, MB, etc)
@@ -588,7 +586,7 @@ public class InvoiceService {
                 invoice.setResponse(billingResponse);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 genericDao.saveOrUpdate(invoice);
-                //send notifications.  if any error happens we want to log it but not rollback the transaction
+                // send notifications. if any error happens we want to log it but not rollback the transaction
                 handlePurchaseNotifications(invoice);
             }
         }
@@ -598,7 +596,7 @@ public class InvoiceService {
      * Send notifications to a user following a successful transaction
      */
     private void handlePurchaseNotifications(Invoice invoice) {
-        //always send the notification admin email, but only send the dashboard notification to the user if the transaction was successful
+        // always send the notification admin email, but only send the dashboard notification to the user if the transaction was successful
         sendNotificationEmail(invoice);
 
         if (invoice.getTransactionStatus().isSuccessful()) {
@@ -609,8 +607,6 @@ public class InvoiceService {
             logger.info("invoice transaction not successful:{}", invoice);
         }
     }
-
-
 
     /**
      * Sends a email to the billing admin when a transaction is complete
@@ -667,6 +663,25 @@ public class InvoiceService {
             // is on the session hibernate will save the address.
             // genericDao.saveOrUpdate(addressToSave);
             invoice.setAddress(addressToSave);
+        }
+    }
+
+    @Transactional
+    public void updateInvoiceStatus(Invoice invoice) {
+        PaymentMethod paymentMethod = invoice.getPaymentMethod();
+
+        switch (paymentMethod) {
+            case CHECK:
+                break;
+            case CREDIT_CARD:
+                genericDao.saveOrUpdate(invoice);
+                finalizePayment(invoice, paymentMethod);
+                break;
+            case INVOICE:
+            case MANUAL:
+                invoice.setTransactionStatus(Invoice.TransactionStatus.TRANSACTION_SUCCESSFUL);
+                genericDao.saveOrUpdate(invoice);
+                break;
         }
     }
 

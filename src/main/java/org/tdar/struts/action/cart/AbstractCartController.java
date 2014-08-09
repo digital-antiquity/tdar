@@ -27,6 +27,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     private static final long serialVersionUID = -8162270388197212817L;
 
+    public static final String REDIRECT_START = "redirect-start";
     public static final String SUCCESS_UNAUTHENTICATED = "success-unauthenticated";
 
     // Invoice sitting in the user's 'cart'. This is a pending invoice until the payment-processor contacts our REST endpoint and gives the OK
@@ -109,7 +110,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
      */
     protected boolean validateInvoice() {
         if (!validateNotNull(invoice, "abstractCartController.select_invoice")) {
-            inputResultName = "redirect-start";
+            inputResultName = REDIRECT_START;
             return false;
         }
         return true;
