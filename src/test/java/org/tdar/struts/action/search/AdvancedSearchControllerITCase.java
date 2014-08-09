@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -61,6 +62,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 @Transactional
@@ -687,6 +689,36 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testResourceUpdated() throws java.text.ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Document document = new Document();
+        document.setTitle("just before");
+        document.setDescription("just before");
+        document.markUpdated(getAdminUser());
+        document.setDateUpdated(format.parse("2010-03-04"));
+        genericService.saveOrUpdate(document);
+        Document documentAfter = new Document();
+        documentAfter.setTitle("just after");
+        documentAfter.setDescription("just after");
+        documentAfter.markUpdated(getAdminUser());
+        documentAfter.setDateUpdated(format.parse("2010-07-23"));
+        genericService.saveOrUpdate(documentAfter);
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
+        controller.setSortField(SortOption.DATE_UPDATED);
+        SearchParameters params = new SearchParameters();
+        params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
+        controller.getG().add(params);
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
+        for (Resource r : controller.getResults()) {
+            logger.debug("{} - {} - {}", r.getId(), r.getDateUpdated(), r.getTitle());
+        }
+        assertFalse(controller.getResults().contains(documentAfter));
+        assertFalse(controller.getResults().contains(document));
+    }
+
+    @Test
+    @Rollback
     public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException {
         // Create a document w/ some other keywords, then try to find that document in a search
         OtherKeyword ok = new OtherKeyword();
@@ -1126,7 +1158,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         fail();
         return null;
     }
-
 
     protected boolean resultsContainId(Long id) {
         boolean found = false;

@@ -285,6 +285,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private String collectionSearch() {
         setLookupSource(LookupSource.COLLECTION);
+        setMode("COLLECTION SEARCH:");
         determineCollectionSearchTitle();
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         buildResourceCollectionQuery(queryBuilder);
