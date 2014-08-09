@@ -37,7 +37,8 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "LA 9219");
         assertMatches(compile, "AR-03-12-01-1927");
         assertMatches(compile, "38AK933");
-
+        assertMatches(compile, "AZ U:9:1(ASM)");
+        assertMatches(compile, "AZ U:9:1 (ASM)");
     }
 
     @Test
