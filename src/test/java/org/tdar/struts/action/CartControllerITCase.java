@@ -15,13 +15,10 @@ import static org.tdar.utils.SimpleHttpUtils.post;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -41,13 +38,16 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.struts.action.cart.*;
+import org.tdar.struts.action.cart.CartApiPollingAction;
+import org.tdar.struts.action.cart.CartBillingAccountController;
+import org.tdar.struts.action.cart.CartController;
+import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
+import org.tdar.struts.action.cart.InvoiceController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.utils.Pair;
+import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
-import org.tdar.utils.Pair;
-import org.tdar.utils.SimpleHttpUtils;
-import org.tdar.utils.TestConfiguration;
 
 public class CartControllerITCase extends AbstractResourceControllerITCase {
 
@@ -255,7 +255,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
         SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
-        assertTrue(received.getSubject().contains(getText("cartController.subject")));
+        assertTrue(received.getSubject().contains("Billing Transaction"));
         assertTrue(received.getText().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
     }
