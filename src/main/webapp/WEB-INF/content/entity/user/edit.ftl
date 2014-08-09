@@ -74,13 +74,18 @@
             <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
 
             <#if privacyControlsEnabled>
+            
                 <@s.checkbox label='Make phone public?' name="person.phonePublic" id="phone-public" />
                 <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines,
                     and visitors who are not logged in.</em></p>
             </#if>
 
-            <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
-
+            <label class="checkbox">
+                <@s.checkbox name="contributor" id="contributor-id" theme="simple"/>
+                       I accept the ${siteAcronym}
+                        <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                        and wish to add ${siteAcronym} content.
+            </label>
 
 
             <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information"
