@@ -682,25 +682,22 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /**
      * Create a billing account with a default name and assign it to the specified invoice.
      */
-    public void processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {
+    private Account processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {
         Account account = new Account();
         TdarUser owner = invoice.getOwner() == null ? invoice.getOwner() : authenticatedUser;
         account.setName("Default account for " + owner.getProperName());
-        processBillingAccountChoice(account, invoice, authenticatedUser);
+        return account;
     }
 
     @Transactional
     public Account reconcileSelectedAccount(long id, Invoice invoice, Account account, List<Account> accounts) {
         Account selectedAccount = null;
-        if (id == -1L && invoice != null) {
-            getLogger().debug("looking for account by invoice {}", invoice);
+        if (id == -1L) {
             if (account != null && StringUtils.isNotBlank(account.getName())) {
+                getLogger().debug("looking for account by invoice {}", invoice);
                 selectedAccount = account;
             } else {
-                selectedAccount = getAccountForInvoice(invoice);
-                if (selectedAccount == null && accounts.isEmpty()) {
-                    selectedAccount = accounts.iterator().next();
-                }
+                selectedAccount = processBillingAccountChoice(invoice, invoice.getOwner());
             }
         } else {
             selectedAccount = genericDao.find(Account.class, id);

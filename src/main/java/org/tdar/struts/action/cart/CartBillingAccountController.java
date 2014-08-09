@@ -63,30 +63,16 @@ public class CartBillingAccountController extends AbstractCartController {
             getInvoice().setOwner(owner);
             getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
         }
-        setAccounts(accountService.listAvailableAccountsForUser(owner));
-        // the account id may have been set already by the "add invoice" link on /billing/{id}/view
 
         selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts());
-        if (selectedAccount != null) {
-            id = selectedAccount.getId();
-        }
-
         
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
-        // FIXME: seems weird to be here, how about adding this as an option in the FTL select instead?
-        if (CollectionUtils.isNotEmpty(getAccounts())) {
-            getAccounts().add(new Account("Add an account"));
-        }
     }
 
     @Override
     public void validate() {
-        if (Persistable.Base.isNullOrTransient(getId())) {
-            if (StringUtils.isBlank(account.getName())) {
-                account.setName(getText("cartBillingAccountController.default_account", Arrays.asList(getInvoice().getOwner().getProperName())));
-            }
-        } else if (selectedAccount == null) {
+        if (selectedAccount == null && Persistable.Base.isNotNullOrTransient(id)) {
             addActionError(getText("cartController.invalid_account"));
         }
 
@@ -102,7 +88,9 @@ public class CartBillingAccountController extends AbstractCartController {
      * 
      * @return
      */
-    @Action(value = "process-billing-account-choice", results = { @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
+    @Action(value = "process-billing-account-choice", results = { 
+            @Result(name = INPUT, location = "review.ftl"),
+            @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
     @PostOnly
     @WriteableSession
     public String processBillingAccountChoice() {
@@ -118,12 +106,7 @@ public class CartBillingAccountController extends AbstractCartController {
             getInvoice().setTransactedBy(user);
         }
 
-        Account acct = account;
-        // prevent params-prepare-params from modifying pre-existing account
-        if (selectedAccount != null) {
-            acct = selectedAccount;
-        }
-        accountService.processBillingAccountChoice(acct, getInvoice(), getAuthenticatedUser());
+        accountService.processBillingAccountChoice(selectedAccount, getInvoice(), getAuthenticatedUser());
         invoiceService.updateInvoiceStatus(getInvoice());
 
         return SUCCESS;
