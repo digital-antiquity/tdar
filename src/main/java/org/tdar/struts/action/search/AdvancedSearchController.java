@@ -173,6 +173,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     // contentLength for excel download requests
     private Long contentLength;
+    private boolean collectionSearchBoxVisible = false;
 
     @Action(value = "results", results = {
             @Result(name = SUCCESS, location = "results.ftl"),
@@ -207,7 +208,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private void searchCollectionsToo() {
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         buildResourceCollectionQuery(queryBuilder);
-        
+
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
             SearchResult result = new SearchResult();
@@ -217,8 +218,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             result.setStartRecord(0);
             result.setRecordsPerPage(10);
 
+            result.setMode("COLLECTION MINI");
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-            setMode("COLLECTION MINI");
             searchService.handleSearch(queryBuilder, result, this);
             setMode("SEARCH");
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
@@ -310,13 +311,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private void buildResourceCollectionQuery(QueryBuilder queryBuilder) {
         queryBuilder.setOperator(Operator.AND);
-        
-        List<String> allFields = new ArrayList<>();
-        for (SearchParameters param : groups) {
-            allFields.addAll(param.getAllFields());
-        }
-        allFields.add(query);
-        
+
+        List<String> allFields = getAllGeneralQueryFields();
+
         if (CollectionUtils.isNotEmpty(allFields)) {
             queryBuilder.append(new GeneralSearchQueryPart(allFields));
         }
@@ -334,6 +331,21 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
 
         queryBuilder.append(qpg);
+    }
+
+    private List<String> getAllGeneralQueryFields() {
+        List<String> allFields = new ArrayList<>();
+        for (SearchParameters param : groups) {
+            for (String val : param.getAllFields()) {
+                if (StringUtils.isNotBlank(val)) {
+                    allFields.add(val);
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(query)) {
+            allFields.add(query);
+        }
+        return allFields;
     }
 
     @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
@@ -470,6 +482,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
         queryBuilder.append(topLevelQueryPart);
 
+        if (topLevelQueryPart.isEmpty() || CollectionUtils.isNotEmpty(getAllGeneralQueryFields())) {
+            setCollectionSearchBoxVisible(true);
+        }
         reservedQueryPart = processReservedTerms(this);
         queryBuilder.append(reservedQueryPart);
 
@@ -1160,6 +1175,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setCollectionTotalRecords(int collectionTotalRecords) {
         this.collectionTotalRecords = collectionTotalRecords;
+    }
+
+    public boolean isCollectionSearchBoxVisible() {
+        return collectionSearchBoxVisible;
+    }
+
+    public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
+        this.collectionSearchBoxVisible = collectionSearchBoxVisible;
     }
 
 }

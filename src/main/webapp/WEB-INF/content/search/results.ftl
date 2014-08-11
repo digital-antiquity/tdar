@@ -138,7 +138,7 @@
 
     <div class="tdarresults">
 
-    <#if ( lookupSource='RESOURCE' && collectionTotalRecords > 0)>
+    <#if ( lookupSource='RESOURCE' && collectionSearchBoxVisible && collectionTotalRecords > 0)>
     <div class="collectionResultsBox">
         <h4>Related Collections</h4>
         <div class="row">
