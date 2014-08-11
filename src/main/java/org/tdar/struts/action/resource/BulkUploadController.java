@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -44,6 +45,7 @@ import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
 
 /**
@@ -164,11 +166,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
-    @Action(value = "validate-template", results = {
+    @Action(value = "validate-template", 
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
             @Result(name = INPUT, type = "redirect", location = "template-prepare"),
             @Result(name = VALIDATE_ERROR, type = "redirect", location = "template-prepare"),
             @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation
+    @PostOnly
     public String templateValidate() {
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         if (CollectionUtils.isEmpty(getUploadedFiles()) || (getUploadedFiles().get(0) == null)) {
@@ -214,6 +219,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @SkipValidation
     @Action(value = "checkstatus", 
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @PostOnly
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
         if (reciever != null) {

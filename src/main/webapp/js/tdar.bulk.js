@@ -21,7 +21,7 @@
                 if (data.percentDone != 100) {
                     $("#progressbar").progressbar("option", "value", data.percentDone);
                     $("#buildStatus").empty().append(data.phase);
-                    setTimeout(updateProgress, TIMEOUT);
+                    setTimeout(_updateProgress, TIMEOUT);
                 } else {
                     $("#progressbar").progressbar("option", "value", 100);
                     $('#divUploadComplete').show();
