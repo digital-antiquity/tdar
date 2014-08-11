@@ -666,8 +666,15 @@ public class InvoiceService {
         }
     }
 
+    /**
+     * Ensure an invoice has the correct state after setting the invoice's billing account
+     * @param invoice
+     */
     @Transactional
     public void updateInvoiceStatus(Invoice invoice) {
+        //Assume that an invoice owner will always want to see the contributor menus.
+        invoice.getOwner().setContributor(true);
+
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
 
         switch (paymentMethod) {
