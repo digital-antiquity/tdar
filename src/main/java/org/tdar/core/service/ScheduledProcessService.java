@@ -33,6 +33,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
+import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -47,6 +48,18 @@ import org.tdar.utils.MessageHelper;
  * This is a catch-all class that tracked all Scheduled, or "cronned" processes.
  * 
  * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
+ * 
+ * *
+ * <p>
+ * Example patterns:
+ * <ul>
+ * <li>"0 0 * * * *" = the top of every hour of every day.</li>
+ * <li>"*&#47;10 * * * * *" = every ten seconds.</li>
+ * <li>"0 0 8-10 * * *" = 8, 9 and 10 o'clock of every day.</li>
+ * <li>"0 0/30 8-10 * * *" = 8:00, 8:30, 9:00, 9:30 and 10 o'clock every day.</li>
+ * <li>"0 0 9-17 * * MON-FRI" = on the hour nine-to-five weekdays</li>
+ * <li>"0 0 0 25 12 ?" = every Christmas Day at midnight</li>
+ * </ul>
  * 
  * For more information on cron syntax, see {@link http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06}.
  * 
@@ -90,6 +103,15 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     /**
+     * Generate DOIs
+     */
+    @Scheduled(cron = "1 15 0 * * *")
+    public void cronDailyEmail() {
+        logger.info("updating Daily EmailIs");
+        queue(scheduledProcessMap.get(DailyEmailProcess.class));
+    }
+
+    /**
      * Check that our Authentication System (Crowd /LDAP ) is actually running
      */
     @Scheduled(fixedDelay = FIVE_MIN_MS)
@@ -118,10 +140,10 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         authenticationService.clearPermissionsCache();
     }
 
-   @Scheduled(fixedDelay = FIVE_MIN_MS)
-   public void cronQueueEmail() {
-       queue(scheduledProcessMap.get(SendEmailProcess.class));
-   }
+    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    public void cronQueueEmail() {
+        queue(scheduledProcessMap.get(SendEmailProcess.class));
+    }
 
     /**
      * Generate DOIs

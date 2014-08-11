@@ -32,6 +32,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -52,7 +53,7 @@ import org.tdar.web.SessionData;
 @EnableScheduling
 @EnableCaching
 @ImportResource(value = { "classpath:/spring-local-settings.xml" })
-public class TdarAppConfiguration implements Serializable, SchedulingConfigurer {
+public class TdarAppConfiguration implements Serializable, SchedulingConfigurer, AsyncConfigurer {
 
     private static final long serialVersionUID = 6038273491995542363L;
     @Transient
@@ -145,6 +146,7 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize(2);
         pool.setMaxPoolSize(5);
+        pool.setThreadNamePrefix("pool-");
         pool.setWaitForTasksToCompleteOnShutdown(true);
         return pool;
     }
@@ -154,4 +156,14 @@ public class TdarAppConfiguration implements Serializable, SchedulingConfigurer 
         return Executors.newScheduledThreadPool(2);
     }
 
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("async-");
+        executor.initialize();
+        return executor;
+    }
 }
