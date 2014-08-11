@@ -22,6 +22,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
+    private boolean useProximity = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public GeneralSearchQueryPart() {
@@ -63,11 +64,15 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
             FieldQueryPart<String> phrase = new FieldQueryPart<String>(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             // FIXME: magic words
-            phrase.setProximity(4);
+            if (useProximity) {
+                phrase.setProximity(4);
+            }
             phrase.setBoost(PHRASE_BOOST);
             primary.append(phrase);
-            titlePart.setProximity(3);
-            descriptionPart.setProximity(4);
+            if (useProximity) {
+                titlePart.setProximity(3);
+                descriptionPart.setProximity(4);
+            }
         }
 
         primary.append(titlePart.setBoost(TITLE_BOOST));
@@ -109,6 +114,14 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     @Override
     public String getDescriptionHtml(TextProvider provider) {
         return StringEscapeUtils.escapeHtml4(getDescription(provider));
+    }
+
+    public boolean isUseProximity() {
+        return useProximity;
+    }
+
+    public void setUseProximity(boolean useProximity) {
+        this.useProximity = useProximity;
     }
 
 }
