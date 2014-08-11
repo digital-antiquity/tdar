@@ -602,7 +602,7 @@ TDAR.datatable = function () {
                 },
                 data: {
                     collectionId: id,
-                    recordsPerPage: 1000
+                    recordsPerPage: 100
                 },
                 success: function (_data) {
                     $.each(_data.resources, function(index, el) {
