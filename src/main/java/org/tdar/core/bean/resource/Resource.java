@@ -723,6 +723,7 @@ public class Resource implements Persistable, JsonModel,
     @Override
     @Fields({
             @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
@@ -767,8 +768,9 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Override
-    @Field
-    // @Boost(1.2f)
+    @Fields({
+        @Field,
+        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))})
     public String getDescription() {
         return description;
     }

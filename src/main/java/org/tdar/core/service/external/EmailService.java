@@ -101,7 +101,7 @@ public class EmailService {
             genericService.saveOrUpdate(email);
         }
         if (email.getStatus() != Status.QUEUED) {
-            logger.debug("email rejected -- not queued {}", email.getStatus());
+            logger.trace("email rejected -- not queued {}", email.getStatus());
             return;
         }
         enforceFromAndTo(email);

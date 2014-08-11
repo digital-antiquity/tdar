@@ -57,7 +57,7 @@ public class XMLFilestoreLogger implements Serializable {
             return;
         }
 
-        logger.debug("serializing record to XML: [{}] {}", resource.getClass().getSimpleName().toUpperCase(), resource.getId());
+        logger.trace("serializing record to XML: [{}] {}", resource.getClass().getSimpleName().toUpperCase(), resource.getId());
         try {
             StorageMethod rotate = StorageMethod.DATE;
             // rotate.setRotations(5);

@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.junit.Assert;
@@ -476,6 +477,47 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         testResourceCounts(getBasicUser());
     }
 
+    @Test
+    @Rollback(true)
+    public void testTitleSiteCodeMatching() {
+        List<String> titles = Arrays.asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)", 
+                "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)", 
+                "Phase 2 Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, the Former Maricopa County Sheriff’s Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)", 
+                "Final Data Recovery And Burial Removal At Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa Counry Sheriff's Substation, Washington And 48th Streets, Phoenix, Arizona (2008)", 
+                "Pueblo Grande (AZ U:9:1(ASM)): Unit 15, Washington and 48th Streets: Soil Systems, Inc. Kitchell Development Testing and Data Recovery (The Former Maricopa County Sheriff's Substation) ", 
+                "Archaeological Testing of Unit 13 at Pueblo Grande, AZ U:9:1(ASM), Arizona Federal Credit Union Property, 44th and Van Buren Streets, Phoenix, Maricopa County, Arizona (1998)", 
+                "Archaeological Testing And Burial Removal Of Unit 11 At Pueblo Grande, AZ U:9:1(ASM), DMB Property, 44th And Van Buren Streets, Phoenix, Maricopa County, Arizona -- DRAFT REPORT (1998)", 
+                "Pueblo Grande (AZ U:9:1(ASM)): Unit 13, Northeast Corner of Van Buren and 44th Streets: Soil Systems, Inc. AZ Federal Credit Union Testing and Data Recovery Project ", 
+                "POLLEN AND MACROFLORAL ANAYSIS AT THE WATER USERS SITE, AZ U:6:23(ASM), ARIZONA (1990)", 
+                "Partial Data Recovery and Burial Removal at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (2002)", 
+                "MACROFLORAL AND PROTEIN RESIDUE ANALYSIS AT SITE AZ U:15:18(ASM), CENTRAL ARIZONA (1996)", 
+                "Pueblo Grande (AZ U:9:1(ASM)) Soil Systems, Inc. Master Provenience Table: Projects, Unit Numbers, and Feature Numbers (2008)");
+        
+        List<Document> docs = new ArrayList<>();
+        List<Document> badMatches = new ArrayList<>();
+        for (String title : titles) {
+            Document doc = new Document();
+            doc.setTitle(title);
+            doc.setDescription(title);
+            doc.markUpdated(getBasicUser());
+            genericService.saveOrUpdate(doc);
+            if (title.contains("MACROFLORAL")) {
+                badMatches.add(doc);
+            }
+        }
+        genericService.synchronize();
+        searchIndexService.indexCollection(docs);
+        searchIndexService.flushToIndexes();
+        controller.setQuery("AZ U:9:1(ASM)");
+        controller.setRecordsPerPage(1000);
+        doSearch();
+        List<Resource> results = controller.getResults();
+        logger.debug("results: {}",results);
+        assertTrue("controller should not contain titles with MACROFLORAL",CollectionUtils.containsAny(results, badMatches));
+        assertTrue("controller should not contain titles with MACROFLORAL",CollectionUtils.containsAll(results.subList(results.size()-3, results.size()), badMatches));
+        
+    }
+    
     @Test
     @Rollback(true)
     public void testResultCountsAdmin() {

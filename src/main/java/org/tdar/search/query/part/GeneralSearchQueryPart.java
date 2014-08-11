@@ -62,6 +62,8 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
+            titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE_PHRASE, cleanedQueryString);
+            descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION_PHRASE, cleanedQueryString);
             FieldQueryPart<String> phrase = new FieldQueryPart<String>(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             // FIXME: magic words
             if (useProximity) {
