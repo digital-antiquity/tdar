@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <name>Switzerland 1837</name>
+    <description></description>
+    <Style>
+      <ListStyle id="hideChildren">
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+
+    <LookAt>
+      <longitude>8.53988488112386</longitude>
+      <latitude>46.76361669986410</latitude>
+      <altitude>0</altitude>
+      <range>580404</range>
+      <tilt>0</tilt>
+      <heading>0</heading>
+    </LookAt>
+    <NetworkLink>
+      <name>0/0/0.png</name>
+      <Region>
+        <Lod>
+          <minLodPixels>-1</minLodPixels>
+          <maxLodPixels>-1</maxLodPixels>
+        </Lod>
+        <LatLonAltBox>
+          <north>51.75114266466272</north>
+          <south>45.29255819097144</south>
+          <east>12.01983949603397</east>
+          <west>5.56125502234270</west>
+        </LatLonAltBox>
+      </Region>
+      <Link>
+        <href>0/0/0.kmz</href>
+        <viewRefreshMode>onRegion</viewRefreshMode>
+      </Link>
+    </NetworkLink>
+  </Document>
+</kml>
