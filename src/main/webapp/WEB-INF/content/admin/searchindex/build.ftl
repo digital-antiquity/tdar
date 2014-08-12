@@ -19,7 +19,7 @@
                         if (confirmed) {
                             this.disabled = true;
                             $buildStatus.empty().append("Building Index...");
-                            setTimeout(startIndex, 2000);
+                            setTimeout(startIndex, 6000);
                         }
                     });
         });
