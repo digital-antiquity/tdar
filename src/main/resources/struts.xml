@@ -33,6 +33,7 @@
           name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
     <package name="default" extends="struts-default" namespace="/">
+    <!--  based tDAR stack - this is not complete, but effectively used as a "prefix" for other stacks -->
         <result-types>
             <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
             <result-type name="xmldocument" class="org.tdar.struts.result.XMLDocumentResult"/>
@@ -80,6 +81,7 @@
             </interceptor-stack>
 
             <interceptor-stack name="tdarDefaultStackWritable" >
+            <!--  used for when we are opening a Writable hibernate session, should be used sparingly  -->
                 <interceptor-ref name="authenticate" />
                 <interceptor-ref name='tdarDefaultStack'/>
                 <interceptor-ref name="fileUpload">
@@ -104,6 +106,7 @@
 
 
             <interceptor-stack name="unauthenticatedStack">
+            <!--  default stack for tDAR - not writable, does not have params-prepare-params -->
                 <interceptor-ref name="tdarDefaultStack"/>
                 <interceptor-ref name="conversionError"/>
                 <interceptor-ref name="validation">
@@ -115,6 +118,7 @@
             </interceptor-stack>
 
             <interceptor-stack name="authenticatedStack">
+                <!--  unauthenticated stack + authentication and user agreement -->
                 <interceptor-ref name="authenticate" />
                 <interceptor-ref name="unauthenticatedStack"/>
                 <interceptor-ref name="userAgreement" />
@@ -178,6 +182,7 @@
     <package name="secured" extends="default" abstract="true">
         <interceptors>
             <interceptor-stack name="editAuthenticatedStack">
+                <!--  used explicitly when working with a writable hibernate session -->
                 <interceptor-ref name="tdarDefaultStackWritable">
                     <param name="validation.validateAnnotatedMethodOnly">true</param>
                 </interceptor-ref>
