@@ -581,8 +581,10 @@ public class InvoiceService {
                 // if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient
                 // item in p.addresses)
                 invoice = genericDao.markWritable(invoice);
-                updateAddresses(response, invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+                // Assume that an invoice owner will always want to see the contributor menus.
+                invoice.getOwner().setContributor(true);
+                updateAddresses(response, invoice);
                 invoice.setResponse(billingResponse);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 genericDao.saveOrUpdate(invoice);
@@ -668,11 +670,12 @@ public class InvoiceService {
 
     /**
      * Ensure an invoice has the correct state after setting the invoice's billing account
+     * 
      * @param invoice
      */
     @Transactional
     public void updateInvoiceStatus(Invoice invoice) {
-        //Assume that an invoice owner will always want to see the contributor menus.
+        // Assume that an invoice owner will always want to see the contributor menus.
         invoice.getOwner().setContributor(true);
 
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
@@ -690,6 +693,14 @@ public class InvoiceService {
                 genericDao.saveOrUpdate(invoice);
                 break;
         }
+    }
+
+    @Transactional(readOnly = false)
+    public void completeManualInvoice(Invoice invoice) {
+        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+        invoice.getOwner().setContributor(true);
+        genericDao.saveOrUpdate(invoice);
+
     }
 
 }

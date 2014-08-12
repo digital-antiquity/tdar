@@ -19,6 +19,7 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -51,6 +52,9 @@ public class CartController extends AbstractCartController {
 
     @Autowired
     private transient AccountService accountService;
+
+    @Autowired
+    private transient InvoiceService invoiceService;
 
     /**
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
@@ -109,9 +113,7 @@ public class CartController extends AbstractCartController {
                 return POLLING;
             case INVOICE:
             case MANUAL:
-                //FIXME: Transactional, move to service layer
-                invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-                getGenericService().saveOrUpdate(invoice);
+                invoiceService.completeManualInvoice(invoice);
                 break;
         }
         return SUCCESS;
