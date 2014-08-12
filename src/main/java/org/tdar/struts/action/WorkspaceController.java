@@ -41,6 +41,7 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.Preparable;
@@ -111,6 +112,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
                     @Result(name = SUCCESS, location = "select-columns.ftl"),
                     @Result(name = INPUT, location = "select-tables.ftl")
             })
+    @PostOnly
     public String selectColumns() {
         // FIXME: do we want to log this step? Perhaps, but there's no resource being modified, and resource parameter isn't nullable.
         if (CollectionUtils.isEmpty(tableIds)) {
@@ -136,6 +138,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
                     @Result(name = SUCCESS, location = "filter.ftl"),
                     @Result(name = INPUT, location = "select-columns.ftl")
             })
+    @PostOnly
     public String filterDataValues() {
         try {
             // each column could have its own distinct ontology in the future. at the moment we assume that
@@ -182,6 +185,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
                     @Result(name = SUCCESS, location = "display-filtered-results.ftl"),
                     @Result(name = INPUT, location = "filter.ftl")
             })
+    @PostOnly
     public String displayFilteredResults() {
         getLogger().trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         String integrationContextXml = "";
