@@ -78,6 +78,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -256,8 +257,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    // @Boost(1.2f)
-    @Field
+    @Fields({
+        @Field,
+        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+    })
     @Override
     @JsonView(JsonLookupFilter.class)
     public String getDescription() {
@@ -581,7 +584,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Field
+    @Fields({
+        @Field,
+        @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+    })
     // @Boost(1.5f)
     @Override
     public String getTitle() {
