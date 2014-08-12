@@ -218,14 +218,17 @@ TDAR.fileupload = (function (TDAR, $) {
             });
         }
 
-        //disable submit button during file transfer;
-        var $submitButtons = $(".submitButton");
+        // disable submit/upload buttons during file transfer (TDAR-3884);
         $fileupload.bind("fileuploadsent", function () {
-            $submitButtons.prop("disabled", true)
+            console.log("disabling stuff");
+            $(".submitButton, #fileAsyncUpload").prop("disabled", true);
+            $(".fileinput-button").addClass("disabled");
 
             //re-enable when complete regardless of outcome
         }).bind("fileuploadfinished", function () {
-            $submitButtons.prop("disabled", false);
+            $(".submitButton, #fileAsyncUpload").prop("disabled", false);
+            $(".fileinput-button").removeClass("disabled");
+            console.log("enabling stuff");
         });
 
         return helper;
