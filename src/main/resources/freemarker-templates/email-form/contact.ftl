@@ -6,8 +6,10 @@ message:
 ${message}
 
 
-You may reply to this email to correspond with ${from.properName}. 
+You may to correspond with ${from.properName} via ${from.email}. 
 
 Kind regards,
 
 Staff at The Center for Digital Antiquity
+
+Note: please do not reply to this automated email

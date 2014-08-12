@@ -9,10 +9,12 @@ ${message}
 
 ---
 
-You may reply to this email to correspond with ${from.properName}.  To make 
+You may correspond with ${from.properName} via ${from.email}.  To make 
 edits to your tDAR resource, log-in to tDAR and visit ${baseUrl}/${resource.urlNamespace}/${resource.id?c}.  
 Select the edit tab at the top of the page, make any changes, and press save. 
 
 Kind regards,
 
 Staff at The Center for Digital Antiquity
+
+Note: please do not reply to this automated email

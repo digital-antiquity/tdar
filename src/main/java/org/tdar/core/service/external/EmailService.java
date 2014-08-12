@@ -159,7 +159,7 @@ public class EmailService {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String subject = String.format("%s: %s", TdarConfiguration.getInstance().getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()));
+        String subject = String.format("%s: %s [id: %s] %s", TdarConfiguration.getInstance().getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(), from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
         } 
