@@ -189,9 +189,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
     listValue='label'  headerValue="Date Type" headerKey="NONE"
     list=allCoverageTypes />
-        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" />
-        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
-        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
+        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small trim" name="coverageDates[${proxy_index}].startDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small trim" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge trim" name="coverageDates[${proxy_index}].description"  maxlength=255 />
        <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
     </div>
     </#macro>
@@ -672,12 +672,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass} trim" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
             autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
             name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
             title="${surnameTitle}"
             />
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass} trim" placeholder="First Name"  readonly=isDisabled autocomplete="off"
             name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
@@ -699,10 +699,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </#if>
         </div>
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} trim" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} trim" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
         autocompleteIdElement="#${idIdElement}"
         autocompleteName="institution"
         autocompleteParentElement="#${rowIdElement}"
@@ -1441,7 +1441,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass}" placeholder="Institution Name" autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="name"
             autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${institutionPrefix}.name" maxlength="255"

@@ -560,7 +560,7 @@ TDAR.common = function () {
         //prepwork prior to form submit (trimming fields)
         $form.submit(function (f) {
             try {
-                $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function (idx, elem) {
+                $.each($('.date, .number, .trim, .keywordAutocomplete'), function (idx, elem) {
                     if ($(elem).val() !== undefined) {
                         $(elem).val($.trim($(elem).val()));
                     }
@@ -1248,7 +1248,6 @@ $(document).ready(function () {
     }
 
     TDAR.common.sessionTimeoutWarning();
-
     $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
 
 });

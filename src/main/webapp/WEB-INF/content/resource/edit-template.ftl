@@ -120,7 +120,7 @@
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini trim" required=true
                 maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
                 </div>
             </#if>
