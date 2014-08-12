@@ -22,6 +22,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * Created by jimdevos on 7/22/14.
@@ -37,7 +38,8 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 })
 public class CartApiPollingAction extends AbstractCartController {
 
-    private static final long serialVersionUID = 0xDEAD_BEEF;
+    private static final long serialVersionUID = 3205742744549028287L;
+
     private InputStream resultJson;
     private String callback;
 
@@ -81,7 +83,7 @@ public class CartApiPollingAction extends AbstractCartController {
     }
 
     public void setResultJson(Object resultObject) {
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, null, getCallback()).getBytes()));
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, JsonLookupFilter.class, getCallback()).getBytes()));
     }
 
     public String getCallback() {
