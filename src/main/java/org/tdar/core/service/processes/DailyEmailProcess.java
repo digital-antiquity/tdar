@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,19 +81,22 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
                 people.add(user);
             }
         }
-        Email email = new Email();
-        email.setDate(new Date());
-        email.setFrom(config.getDefaultFromEmail());
-        email.setTo(config.getContactEmail());
-        email.setSubject(String.format("There are %s user emails to review ", people.size()));
-        Map<String, Object> dataModel = initDataModel();
-        dataModel.put("users", people);
-        dataModel.put("totalUsers", people.size());
-        emailService.queueWithFreemarkerTemplate("email_new_users.ftl", dataModel, email);
+
+        if (CollectionUtils.isNotEmpty(people)) {
+            Email email = new Email();
+            email.setDate(new Date());
+            email.setFrom(config.getDefaultFromEmail());
+            email.setTo(config.getContactEmail());
+            email.setSubject(String.format("There are %s user emails to review ", people.size()));
+            Map<String, Object> dataModel = initDataModel();
+            dataModel.put("users", people);
+            dataModel.put("totalUsers", people.size());
+            emailService.queueWithFreemarkerTemplate("email_new_users.ftl", dataModel, email);
+        }
     }
 
     private Map<String, Object> initDataModel() {
-        Map<String,Object> dataModel = new HashMap<>();
+        Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("siteAcronym", config.getSiteAcronym());
         dataModel.put("siteUrl", config.getBaseUrl());
         dataModel.put("date", new Date());
@@ -101,15 +105,17 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
 
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
-        Map<String,Object> dataModel = initDataModel();
-        dataModel.put("emails", emails);
-        dataModel.put("totalEmails", emails.size());
-        Email email = new Email();
-        email.setDate(new Date());
-        email.setFrom(config.getDefaultFromEmail());
-        email.setTo(config.getContactEmail());
-        email.setSubject(String.format("There are %s user emails to review ", emails.size()));
-        emailService.queueWithFreemarkerTemplate("email_review_message.ftl", dataModel, email);
+        if (CollectionUtils.isNotEmpty(emails)) {
+            Map<String, Object> dataModel = initDataModel();
+            dataModel.put("emails", emails);
+            dataModel.put("totalEmails", emails.size());
+            Email email = new Email();
+            email.setDate(new Date());
+            email.setFrom(config.getDefaultFromEmail());
+            email.setTo(config.getContactEmail());
+            email.setSubject(String.format("There are %s user emails to review ", emails.size()));
+            emailService.queueWithFreemarkerTemplate("email_review_message.ftl", dataModel, email);
+        }
     }
 
     /**
