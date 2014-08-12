@@ -12,7 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.InvoiceService;

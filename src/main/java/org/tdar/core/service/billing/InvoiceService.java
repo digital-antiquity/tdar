@@ -28,7 +28,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -689,7 +689,7 @@ public class InvoiceService {
                 break;
             case INVOICE:
             case MANUAL:
-                invoice.setTransactionStatus(Invoice.TransactionStatus.TRANSACTION_SUCCESSFUL);
+                invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
                 genericDao.saveOrUpdate(invoice);
                 break;
         }
