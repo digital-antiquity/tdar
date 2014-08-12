@@ -6,10 +6,15 @@
  */
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +38,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.WebRequest;
 
 /**
  * @author Adam Brin
@@ -277,8 +286,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         // logger.info(getPageCode());
         assertTextPresentInCode("The upload process is complete");
         String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
-        gotoPage(statusPage);
-        logger.info(getPageCode());
+        loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,
         while (!getPageCode().contains("\"percentDone\":100")) {
@@ -287,8 +295,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             } catch (InterruptedException e) {
                 fail("InterruptedException during bulk upload.  sorry.");
             }
-            gotoPage(statusPage);
-            logger.info(getPageCode());
+            loadStatusPage(statusPage);
             if (count == 1000) {
                 fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
             }
@@ -296,6 +303,15 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         }
         if (expectSuccess && !getPageCode().contains("errors\":\"\"")) {
             Assert.fail(getPageBodyCode());
+        }
+    }
+
+    private void loadStatusPage(String statusPage) {
+        try {
+            internalPage = webClient.getPage(new WebRequest(new URL(getBaseSecureUrl() + statusPage), HttpMethod.POST));
+            logger.info(getPageCode());
+        } catch (FailingHttpStatusCodeException | IOException e1) {
+            fail("could not load status page:" + e1.getMessage());
         }
     }
 

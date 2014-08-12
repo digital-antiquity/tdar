@@ -179,6 +179,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return CONFIG.getBaseUrl();
     }
 
+    public static String getBaseSecureUrl() {
+        return CONFIG.getBaseSecureUrl();
+    }
+
+    
+    
     public Page getPage(String localPath) {
         try {
             if (localPath.startsWith("http")) {
