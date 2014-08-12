@@ -1,4 +1,6 @@
 <#escape _untrusted as _untrusted?html>
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+
 <#if informationResourceFileVersion?has_content>
     <#assign title>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
     <#assign filename>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
@@ -12,21 +14,16 @@
 
 <html>
 <head>
-    <title>Download: ${title}</title>
+    <title>Download: ${title} (Login Required)</title>
 </head>
 <body>
+        <h1>Download: ${title}</h1>
 <div class="hero-unit hero-condensed">
-        <#--<h1>Register as a ${siteAcronym} User Today</h1>-->
-        <#--<p>In order to download files from ${siteAcronym}, you must register as a ${siteAcronym} User.  There is no charge for registering.</p>-->
-        <#--<p>We ask that you provide some information and affirm that you will abide by the ${siteAcronym} User Agreement, which simply states that you <em>(1)</em> will not use any of the information that you obtain from tDAR in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download</p>-->
-        <h1>Register as a ${siteAcronym} User Today</h1>
-        <p>You Must Register or Login In Order to Download Files from tDAR</p>
+<h2 class="red">Log in / Registration Required</h2>
+        <p>You must register orlLog in to download files from ${siteAcronym}. If you already are a registered ${siteAcronym} User, please log in. Otherwise, please register below.  There is no charge for registering.</p>
 
-        <p>If you already are a registered tDAR User, please Login.</p>
-
-        <p>Otherwise, please register as a tDAR User.  There is no charge for registering.</p>
-
-        <p>We ask that you provide some information and affirm that you will abide by the <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">tDAR User Agreement</@s.a>, which simply states that you <em>(1)</em> will not use any of the information that you obtain from tDAR in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download.</p>
+        <p>We ask that you provide some information and affirm that you will abide by the <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">${siteAcronym} User Agreement</@s.a>, 
+          <@helptext.userAgreementSummary /></p>
         <ul class="inline">
             <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.viewable)!false) >
                 <li><img src="<@s.url value="/filestore/sm?informationResourceFileVersionId=${informationResourceFileVersion.informationResourceFile.latestThumbnail.id?c}" />"
