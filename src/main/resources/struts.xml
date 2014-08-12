@@ -43,6 +43,7 @@
         </result-types>
         <interceptors>
             <interceptor name="authenticate" class="org.tdar.struts.interceptor.AuthenticationInterceptor"/>
+            <interceptor name="trim" class="org.tdar.struts.interceptor.TrimInterceptor"/>
             <interceptor name="userAgreement" class="org.tdar.struts.interceptor.UserAgreementInterceptor"/>
             <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
             <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
@@ -68,6 +69,9 @@
                 <interceptor-ref name="checkbox"/>
                 <!--  technically, this is not used or needed, but keeping it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="trim">
+                    <param name="excludedParams">uploadFiles,userLogin.loginPassword,registration.password,registration.confirmPassword,downloadRegistration.password,downloadRegistration.confirmPassword,downloadUserLogin.loginPassword,reg.password,reg.confirmPassword</param>
+                </interceptor-ref>
                 <interceptor-ref name="params">
                     <!-- Mirror changes to the second entry below as well... -->
                     <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
