@@ -1,5 +1,5 @@
 TDAR.namespace("datatable");
-TDAR.datatable = function () {
+TDAR.datatable = function() {
     "use strict";
 
     /**
@@ -18,19 +18,19 @@ TDAR.datatable = function () {
     function _registerLookupDataTable(parms) {
         _extendSorting();
         // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
-        var doNothingCallback = function () {
+        var doNothingCallback = function() {
         };
         var options = {
-            tableSelector: '#dataTable',
-            requestCallback: doNothingCallback,
-            selectableRows: false,
-            rowSelectionCallback: doNothingCallback,
-            "sAjaxSource": '/lookup/resource',
-            "sAjaxDataProp": 'resources',
-            "bJQueryUI": false,
-            "sScrollY": "350px",
-            "sScrollX": "100%",
-            fnDrawCallback: function () {
+            tableSelector : '#dataTable',
+            requestCallback : doNothingCallback,
+            selectableRows : false,
+            rowSelectionCallback : doNothingCallback,
+            "sAjaxSource" : '/lookup/resource',
+            "sAjaxDataProp" : 'resources',
+            "bJQueryUI" : false,
+            "sScrollY" : "350px",
+            "sScrollX" : "100%",
+            fnDrawCallback : function() {
                 // if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
                 if ($(":checkbox:not(:checked)", $dataTable).length == 0) {
                     $('#cbCheckAllToggle').prop('checked', true);
@@ -47,41 +47,41 @@ TDAR.datatable = function () {
         $dataTable.data('selectedRows', {});
 
         var dataTableOptions = {
-            "bScrollCollapse": true,
-            "bProcessing": true,
-            "bServerSide": true,
+            "bScrollCollapse" : true,
+            "bProcessing" : true,
+            "bServerSide" : true,
             // "sAjaxDataProp": sAjaxDataProp,
             // "aoColumns": aoColumns
 
             // intercept the server request, and translate the parameters to server
             // format. similarly, take the json returned by the jserver
             // and translate to format expected by the client.
-            "fnServerData": function _fnServerData(sSource, aoData, fnCallback) {
+            "fnServerData" : function _fnServerData(sSource, aoData, fnCallback) {
 
                 $.ajax({
-                    traditional: true, // please don't convert my arrays to php arrays. php is dumb.
-                    dataType: 'jsonp',
-                    url: sSource,
-                    xhrFields: {
-                        withCredentials: true
+                    traditional : true, // please don't convert my arrays to php arrays. php is dumb.
+                    dataType : 'jsonp',
+                    url : sSource,
+                    xhrFields : {
+                        withCredentials : true
                     },
-                    data: _convertRequest(aoData, options.aoColumns, options.requestCallback),
-                    success: function (_data) {
+                    data : _convertRequest(aoData, options.aoColumns, options.requestCallback),
+                    success : function(_data) {
                         // intercept data returned by server, translate to client format
                         var recordInfo = {
-                            iTotalDisplayRecords: _data.totalRecords,
-                            iTotalRecords: _data.totalRecords
+                            iTotalDisplayRecords : _data.totalRecords,
+                            iTotalRecords : _data.totalRecords
                         };
                         if (typeof _data.totalRecords === "undefined") {
                             recordInfo = {
-                                    iTotalDisplayRecords: _data.status.totalRecords,
-                                    iTotalRecords: _data.status.totalRecords
-                                };
+                                iTotalDisplayRecords : _data.status.totalRecords,
+                                iTotalRecords : _data.status.totalRecords
+                            };
                         }
                         $.extend(_data, recordInfo);
                         fnCallback(_data);
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
+                    error : function(jqXHR, textStatus, errorThrown) {
                         console.error("ajax query failed:" + errorThrown);
                     }
                 });
@@ -92,7 +92,7 @@ TDAR.datatable = function () {
         if (options.selectableRows) {
             options.aoColumns[0].fnRender = fnRenderIdColumn;
             options.aoColumns[0].bUseRendered = false;
-            dataTableOptions["fnRowCallback"] = function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            dataTableOptions["fnRowCallback"] = function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
                 var id = $cb.val();
@@ -104,7 +104,7 @@ TDAR.datatable = function () {
 
             // register datatable checkbox changes. maintain a hashtable of all of the currently selected items.
             // call the rowSelectionCallback whenever something changes
-            $dataTable.delegate('input[type=checkbox]', 'change', function () {
+            $dataTable.delegate('input[type=checkbox]', 'change', function() {
                 var $elem = $(this); // here 'this' is checkbox
                 var id = $elem.val();
                 var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]);
@@ -143,20 +143,22 @@ TDAR.datatable = function () {
     function _convertRequest(aoData, aoColumns, requestCallback) {
         var oData = {};
         // first convert the request from array of key/val pairs to map<string,string>.
-        $.each(aoData, function () {
+        $.each(aoData, function() {
             oData[this.name] = this.value;
         });
 
         // derive sort column from the field name and reversed status
         var tdarSortOption = aoColumns[oData["iSortCol_0"]].tdarSortOption;
-        var sSortReversed = {desc: 'true'}[oData["sSortDir_0"]];
+        var sSortReversed = {
+            desc : 'true'
+        }[oData["sSortDir_0"]];
         if (sSortReversed) {
             tdarSortOption += '_REVERSE';
         }
         var translatedData = {
-            startRecord: oData.iDisplayStart,
-            recordsPerPage: oData.iDisplayLength,
-            sortField: tdarSortOption
+            startRecord : oData.iDisplayStart,
+            recordsPerPage : oData.iDisplayLength,
+            sortField : tdarSortOption
         };
 
         $.extend(translatedData, requestCallback(oData.sSearch));
@@ -180,7 +182,8 @@ TDAR.datatable = function () {
             resourceType = resourceType.toLowerCase();
         }
         // console.log("resource type:%s", resourceType);
-        return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' + '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
+        return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' +
+                '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
     }
 
     /**
@@ -193,7 +196,8 @@ TDAR.datatable = function () {
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) + '</a>';
+        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
+                '</a>';
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
             html += " " + objResource.status;
@@ -249,90 +253,101 @@ TDAR.datatable = function () {
 
         jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
         $.extend($.fn.dataTableExt.oStdClasses, {
-            "sWrapper": "dataTables_wrapper form-inline"
+            "sWrapper" : "dataTables_wrapper form-inline"
         });
         // sDom:'<"datatabletop"ilrp>t<>', //omit the search box
 
         var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
 
-        var aoColumns_ = [
-            { "mDataProp": "title", fnRender: _fnRenderTitle, bUseRendered: false, "bSortable": false},
-            { "mDataProp": "resourceTypeLabel", "bSortable": false }
-        ];
+        var aoColumns_ = [ {
+            "mDataProp" : "title",
+            fnRender : _fnRenderTitle,
+            bUseRendered : false,
+            "bSortable" : false
+        }, {
+            "mDataProp" : "resourceTypeLabel",
+            "bSortable" : false
+        } ];
         // make id the first column when datatable is selectable
         if (_options.isSelectable) {
-            aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth: '5em', "bSortable": false});
+            aoColumns_.unshift({
+                "mDataProp" : "id",
+                tdarSortOption : "ID",
+                sWidth : '5em',
+                "bSortable" : false
+            });
         }
         var $dataTable = _registerLookupDataTable({
-            tableSelector: '#resource_datatable',
-            sAjaxSource: '/lookup/resource',
-            "bLengthChange": true,
-            "bFilter": false,
-            aoColumns: aoColumns_,
+            tableSelector : '#resource_datatable',
+            sAjaxSource : '/lookup/resource',
+            "bLengthChange" : true,
+            "bFilter" : false,
+            aoColumns : aoColumns_,
             // "sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  // no text filter!
-            sAjaxDataProp: 'resources',
-            requestCallback: function (searchBoxContents) {
-                return {title: searchBoxContents,
-                    'resourceTypes': $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
-                    'includedStatuses': $("#statuses").val() == undefined ? "" : $("#statuses").val(),
-                    'sortField': $("#sortBy").val(),
-                    'term': $("#query").val(),
-                    'projectId': $("#project-selector").val(),
-                    'collectionId': $("#collection-selector").val(),
-                    useSubmitterContext: !_options.isAdministrator
+            "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
+            sAjaxDataProp : 'resources',
+            requestCallback : function(searchBoxContents) {
+                return {
+                    title : searchBoxContents,
+                    'resourceTypes' : $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
+                    'includedStatuses' : $("#statuses").val() == undefined ? "" : $("#statuses").val(),
+                    'sortField' : $("#sortBy").val(),
+                    'term' : $("#query").val(),
+                    'projectId' : $("#project-selector").val(),
+                    'collectionId' : $("#collection-selector").val(),
+                    useSubmitterContext : !_options.isAdministrator
                 }
             },
-            selectableRows: _options.isSelectable,
-            rowSelectionCallback: function (id, obj, isAdded) {
+            selectableRows : _options.isSelectable,
+            rowSelectionCallback : function(id, obj, isAdded) {
                 if (isAdded) {
-                    _rowSelected(obj,true);
+                    _rowSelected(obj, true);
                 } else {
                     _rowUnselected(obj);
                 }
             }
         });
 
-        $("#project-selector").change(function () {
+        $("#project-selector").change(function() {
             var projId = $(this).val();
             $.cookie("tdar_datatable_selected_project", projId);
             $("#resource_datatable").dataTable().fnDraw();
         });
 
-        $("#collection-selector").change(function () {
+        $("#collection-selector").change(function() {
             var projId = $(this).val();
             $.cookie("tdar_datatable_selected_collection", projId);
             $("#resource_datatable").dataTable().fnDraw();
         });
 
-        $("#resourceTypes").change(function () {
+        $("#resourceTypes").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
             $.cookie($(this).attr("id"), $(this).val());
         });
 
-        $("#statuses").change(function () {
+        $("#statuses").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
             $.cookie($(this).attr("id"), $(this).val());
         });
 
-        $("#sortBy").change(function () {
+        $("#sortBy").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
             $.cookie($(this).attr("id"), $(this).val());
         });
 
-        $("#query").change(function () {
+        $("#query").change(function() {
             $("#resource_datatable").dataTable().fnDraw();
             $.cookie($(this).attr("id"), $(this).val());
         });
 
-        $("#query").bindWithDelay("keyup", function () {
+        $("#query").bindWithDelay("keyup", function() {
             $("#resource_datatable").dataTable().fnDraw();
         }, 500);
 
         _scrollOnPagination();
     }
 
-//
+    //
     /**
      * populate the dataTable.data('selectedRows') from the hidden inputs in #divSelectedResources (e.g. when rendering 'edit' or 'input' form)
      * 
@@ -348,9 +363,13 @@ TDAR.datatable = function () {
         var $resourcesTable = $(resourcesTable);
         var selectedRows = {};
 
-        $.each($('input', '#divSelectedResources'), function () {
+        $.each($('input', '#divSelectedResources'), function() {
             var elem = this;
-            selectedRows[elem.value] = {id: elem.value, title: 'n/a', description: 'n/a'};
+            selectedRows[elem.value] = {
+                id : elem.value,
+                title : 'n/a',
+                description : 'n/a'
+            };
             // console.debug('adding id to preselected rows:' + elem.value);
         });
         $dataTable.data('selectedRows', selectedRows);
@@ -361,7 +380,7 @@ TDAR.datatable = function () {
         }
 
         // bind row delete button
-        $resourcesTable.on('click', 'button', function () {
+        $resourcesTable.on('click', 'button', function() {
             var button = this, resourceid = $(button).data("rid");
             _removeResourceClicked(resourceid, button, dataTable);
         });
@@ -457,7 +476,7 @@ TDAR.datatable = function () {
             // $div.hide();
             $table.hide();
         }
-        $dataTable.after("<input type='hidden' name='toRemove' value='"+id+"'/>");
+        $dataTable.after("<input type='hidden' name='toRemove' value='" + id + "'/>");
         // if the datatable is on a page that shows the corresponding checkbox, clear the checkbox it
         $('#cbEntityId_' + id, $dataTable).prop('checked', false);
 
@@ -469,8 +488,10 @@ TDAR.datatable = function () {
      * @private
      */
     function _scrollOnPagination() {
-        $(".dataTables_paginate a").click(function () {
-            $(".dataTables_scrollBody").animate({scrollTop: 0 });
+        $(".dataTables_paginate a").click(function() {
+            $(".dataTables_scrollBody").animate({
+                scrollTop : 0
+            });
             return true;
         });
     }
@@ -491,7 +512,7 @@ TDAR.datatable = function () {
 
         function _fnCurrencyDetect(sData) {
             var ret = null;
-            if(typeof sData !== "string" || _reDetect.test(sData)) {
+            if (typeof sData !== "string" || _reDetect.test(sData)) {
                 ret = null;
             } else {
                 ret = "tdar-currency";
@@ -500,13 +521,17 @@ TDAR.datatable = function () {
         }
 
         function _fnCurrencySortPrep(a) {
-            a = (a === "-") ? 0 : a.replace( _rePrep, "" );
+            a = (a === "-") ? 0 : a.replace(_rePrep, "");
             return parseFloat(a);
         }
 
-        function _fnCurrencySortAsc(a, b) {return a - b;}
+        function _fnCurrencySortAsc(a, b) {
+            return a - b;
+        }
 
-        function _fnCurrencySortDesc(a, b) {return b - a;}
+        function _fnCurrencySortDesc(a, b) {
+            return b - a;
+        }
 
         // add our custom type detector to the front of the line
         jQuery.fn.dataTableExt.aTypes.unshift(_fnCurrencyDetect);
@@ -525,22 +550,43 @@ TDAR.datatable = function () {
     }
     function _registerUserLookupDatatable() {
         var settings = {
-            tableSelector: '#dataTable',
-            sAjaxSource: '/lookup/person',
-            "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
-            sPaginationType: "bootstrap",
-            "bLengthChange": true,
-            "bFilter": true,
-            sAjaxDataProp: 'people',
-            selectableRows: false,
-            aoColumns: [
-                {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID', bSortable: false, fnRender: TDAR.datatable.renderPersonId},
-                {sTitle: "First", mDataProp: "firstName", tdarSortOption: 'FIRST_NAME', bSortable: false},
-                {sTitle: "Last", mDataProp: "lastName", tdarSortOption: 'LAST_NAME', bSortable: false},
-                {sTitle: "Email", mDataProp: "email", tdarSortOption: 'CREATOR_EMAIL', bSortable: false}
-            ],
-            requestCallback: function () {
-                return {minLookupLength: 0, registered: 'true', term: $("#dataTable_filter input").val()};
+            tableSelector : '#dataTable',
+            sAjaxSource : '/lookup/person',
+            "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+            sPaginationType : "bootstrap",
+            "bLengthChange" : true,
+            "bFilter" : true,
+            sAjaxDataProp : 'people',
+            selectableRows : false,
+            aoColumns : [ {
+                sTitle : "id",
+                bUseRendered : false,
+                mDataProp : "id",
+                tdarSortOption : 'ID',
+                bSortable : false,
+                fnRender : TDAR.datatable.renderPersonId
+            }, {
+                sTitle : "First",
+                mDataProp : "firstName",
+                tdarSortOption : 'FIRST_NAME',
+                bSortable : false
+            }, {
+                sTitle : "Last",
+                mDataProp : "lastName",
+                tdarSortOption : 'LAST_NAME',
+                bSortable : false
+            }, {
+                sTitle : "Email",
+                mDataProp : "email",
+                tdarSortOption : 'CREATOR_EMAIL',
+                bSortable : false
+            } ],
+            requestCallback : function() {
+                return {
+                    minLookupLength : 0,
+                    registered : 'true',
+                    term : $("#dataTable_filter input").val()
+                };
             }
         };
 
@@ -556,7 +602,7 @@ TDAR.datatable = function () {
             $(checked).click();
         }
     }
-    
+
     function _registerChild(id, title) {
         var _windowOpener = null;
         // swallow cors exception. this can happen if window is a child but not an adhoc target
@@ -594,102 +640,108 @@ TDAR.datatable = function () {
     function _initializeCollectionAddRemove(id) {
         if (parseInt(id) > -1) {
             $.ajax({
-                traditional: true, 
-                dataType: 'jsonp',
-                url: "/lookup/resource",
-                xhrFields: {
-                    withCredentials: true
+                traditional : true,
+                dataType : 'jsonp',
+                url : "/lookup/resource",
+                xhrFields : {
+                    withCredentials : true
                 },
-                data: {
-                    collectionId: id,
-                    recordsPerPage: 100
+                data : {
+                    collectionId : id,
+                    recordsPerPage : 100
                 },
-                success: function (_data) {
+                success : function(_data) {
                     $.each(_data.resources, function(index, el) {
-                    _rowSelected(el,false) });
+                        _rowSelected(el, false);
+                    });
+                    $datatable.after("<p>Note this is the first 100 resources in this colection.</p>")
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error : function(jqXHR, textStatus, errorThrown) {
                     console.error("ajax query failed:" + errorThrown);
                 }
             });
         }
-        $("#resource_datatable").on("change", ".datatable-checkbox.project", function () {
-            if ($("#divNoticeContainer").is(":visible")) {
+        var $datatable = $("#resource_datatable");
+        var $container = $("#divNoticeContainer");
+        $datatable.on("change", ".datatable-checkbox.project", function() {
+            if ($container.is(":visible")) {
                 return;
             }
             if ($(this).is(":checked")) {
-                $("#divNoticeContainer").show();
+                $container.show();
             }
         });
-    };
-    
-    function _initalizeResourceDatasetDataTable(columns, viewRowSupported,resourceId, namespace, dataTableId) {
-            jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
-            $.extend($.fn.dataTableExt.oStdClasses, {
-                "sWrapper": "dataTables_wrapper form-inline"
+    }
+
+    function _initalizeResourceDatasetDataTable(columns, viewRowSupported, resourceId, namespace, dataTableId) {
+        jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
+        $.extend($.fn.dataTableExt.oStdClasses, {
+            "sWrapper" : "dataTables_wrapper form-inline"
+        });
+
+        var offset = 0;
+        var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
+        var options = {
+            "sAjaxDataProp" : "results",
+            "sDom" : "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
+            "bProcessing" : true,
+            "bServerSide" : true,
+            "bScrollInfinite" : false,
+            "bScrollCollapse" : true,
+            tableSelector : '#dataTable',
+            sPaginationType : "bootstrap",
+            sScrollX : "100%",
+            "sScrollY" : "",
+            "aoColumns" : [],
+            "sAjaxSource" : browseUrl
+        };
+
+        if (viewRowSupported) {
+            options.aoColumns.push({
+                "bSortable" : false,
+                "sName" : "id_row_tdar",
+                "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
+                "fnRender" : function(obj) {
+                    return '<a href="/' + namespace + '/view-row?id=' + resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] +
+                            '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+                }
             });
-
-            var offset =0;
-            var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
-            var options = {
-                "sAjaxDataProp": "results",
-                "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
-                "bProcessing": true,
-                "bServerSide": true,
-                "bScrollInfinite": false,
-                "bScrollCollapse": true,
-                tableSelector: '#dataTable',
-                sPaginationType: "bootstrap",
-                sScrollX: "100%",
-                "sScrollY": "",
-                "aoColumns": [],
-                "sAjaxSource": browseUrl
-            };
-
-            if (viewRowSupported) {
-                options.aoColumns.push(
-                  { "bSortable": false,
-                    "sName": "id_row_tdar",
-                    "sTitle": '<i class="icon-eye-open  icon-white"></i>',
-                    "fnRender": function (obj) {
-                        return '<a href="/'+namespace+'/view-row?id='+resourceId + '&dataTableId=' + dataTableId + '&rowId=' + obj.aData[0] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
+            offset++;
+        }
+        ;
+        var size = 0;
+        for ( var col in columns) {
+            if (columns.hasOwnProperty(col)) {
+                size++;
+                options.aoColumns.push({
+                    "bSortable" : false,
+                    "sName" : columns[col].simpleName,
+                    "sTitle" : columns[col].displayName,
+                    "fnRender" : function(obj) {
+                        var val = obj.aData[offset];
+                        var str = TDAR.common.htmlEncode(val);
+                        return str;
                     }
                 });
-                offset++;
-            };
-            var size =0;
-            for (var col in columns ) {
-                if (columns.hasOwnProperty(col)) {
-                    size++;
-                    options.aoColumns.push(
-                    { "bSortable": false,
-                        "sName": columns[col].simpleName,
-                        "sTitle": columns[col].displayName,
-                        "fnRender": function (obj) {
-                            var val = obj.aData[offset];
-                            var str = TDAR.common.htmlEncode(val);
-                            return str;
-                        }
-                    });
-                }
             }
-            if (size > 0) {
-                TDAR.datatable.registerLookupDataTable(options);
-            }
+        }
+        if (size > 0) {
+            TDAR.datatable.registerLookupDataTable(options);
+        }
 
     }
-    
+
     return {
-        extendSorting: _extendSorting,
-        registerLookupDataTable: _registerLookupDataTable,
-        initUserDataTable: _registerUserLookupDatatable,
-        setupDashboardDataTable: _setupDashboardDataTable,
-        removeResourceClicked: _removeResourceClicked,
-        registerResourceCollectionDataTable: _registerResourceCollectionDataTable,
-        renderPersonId: _fnRenderPersonId,
-        checkAllToggle: _checkAllToggle,
-        registerChild: _registerChild,
-        initalizeResourceDatasetDataTable: _initalizeResourceDatasetDataTable,
-        registerAddRemoveSection: _initializeCollectionAddRemove
+        extendSorting : _extendSorting,
+        registerLookupDataTable : _registerLookupDataTable,
+        initUserDataTable : _registerUserLookupDatatable,
+        setupDashboardDataTable : _setupDashboardDataTable,
+        removeResourceClicked : _removeResourceClicked,
+        registerResourceCollectionDataTable : _registerResourceCollectionDataTable,
+        renderPersonId : _fnRenderPersonId,
+        checkAllToggle : _checkAllToggle,
+        registerChild : _registerChild,
+        initalizeResourceDatasetDataTable : _initalizeResourceDatasetDataTable,
+        registerAddRemoveSection : _initializeCollectionAddRemove
     };
 }();
