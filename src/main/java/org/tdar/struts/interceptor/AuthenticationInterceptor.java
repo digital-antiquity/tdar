@@ -16,7 +16,6 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.UserAgreementController;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
@@ -129,7 +128,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
                 // user is authenticated and authorized to perform requested action
-                return interceptPendingNotices(invocation, user);
+                return invocation.invoke();
             }
             logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user,
                     group));
@@ -137,28 +136,6 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         }
         setReturnUrl(invocation);
         return Action.LOGIN;
-    }
-
-    private String interceptPendingNotices(ActionInvocation invocation, TdarUser user) throws Exception {
-
-        Object action = invocation.getAction();
-        // user is authenticated and authorized to perform requested action.
-        // now we check for any outstanding notices require user attention
-        String result = null;
-        logger.debug("namespace:{}", ServletActionContext.getActionMapping().getNamespace());
-
-        if (authenticationService.userHasPendingRequirements(user)
-                // avoid infinite redirect
-                && !(action instanceof UserAgreementController)
-                // dont preempt the cart pages
-                && !("/cart".equals(ServletActionContext.getActionMapping().getNamespace()))
-                ) {
-            logger.info("user: {} has pending agreements", user);
-            result = TdarActionSupport.USER_AGREEMENT;
-        } else {
-            result = invocation.invoke();
-        }
-        return result;
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {
