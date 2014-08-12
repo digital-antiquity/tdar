@@ -101,6 +101,10 @@
                                 <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
                             <tr class="<#if ontologyNode.disabled>disabled</#if>">
                                 <td style="white-space: nowrap;">
+                                    <#if ontologyNode.parent  && !ontologyNode.disabled ><span class="pull-right">
+        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>select all</span>
+        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
+                                    </#if>
                                     <label class="inline-label nodeLabel" for='${node_id}'>
                                         <#list 1..numberOfParents as indentationLevel>
                                             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -114,10 +118,6 @@
                                         <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
                                         <#if !ontologyNode.disabled></b></#if>
                                     </label>
-                                    <#if ontologyNode.parent ><span class="right">
-        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>all</span>
-        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
-                                    </#if>
 
                                 </td>
                                 <#list ontologyNode.columnHasValueArray as hasValue>
