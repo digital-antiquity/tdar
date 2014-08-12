@@ -55,13 +55,20 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
     public void process(Email email) {
         DateTime dt = new DateTime(email.getDateSent());
         logger.debug("processing: {}", email);
-        if (email.getStatus() == Status.SENT && dt.isBefore(DateTime.now().minusDays(7))) {
-            logger.debug("deleting: {}", email);
-            genericDao.delete(email);
+        switch (email.getStatus()) {
+            case SENT:
+                if (dt.isBefore(DateTime.now().minusDays(7))) {
+                    logger.debug("deleting: {}", email);
+                    genericDao.delete(email);
+                }
+                break;
+            case QUEUED:
+                emailService.send(email);
+                break;
+            default:
+                break;
         }
-        emailService.send(email);
     }
-
 
     @Override
     public boolean isEnabled() {
