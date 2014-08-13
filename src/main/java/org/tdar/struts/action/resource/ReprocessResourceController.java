@@ -48,7 +48,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     private InformationResource resource;
     private Long id;
 
-    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
+    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reprocess() throws TdarActionException {
         getLogger().info("reprocessing");
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -67,7 +67,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
         return SUCCESS;
     }
 
-    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
+    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (resource instanceof Dataset) {
@@ -85,7 +85,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
      * Retranslates the given dataset.
      * XXX: does this need a WritableSession?
      */
-    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
+    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String retranslate() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (resource instanceof Dataset) {
@@ -151,13 +151,11 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
 
     @Override
     public Persistable getPersistable() {
-        // TODO Auto-generated method stub
-        return null;
+        return resource;
     }
 
     @Override
     public Class<InformationResource> getPersistableClass() {
-        // TODO Auto-generated method stub
-        return null;
+        return InformationResource.class;
     }
 }

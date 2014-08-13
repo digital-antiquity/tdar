@@ -68,7 +68,6 @@ public class UserAgreementInterceptor implements SessionDataAware, Interceptor {
         // user is authenticated and authorized to perform requested action.
         // now we check for any outstanding notices require user attention
         String result = null;
-        logger.debug("namespace:{}", ServletActionContext.getActionMapping().getNamespace());
 
         if (authenticationService.userHasPendingRequirements(user)
                 // avoid infinite redirect

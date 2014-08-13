@@ -713,18 +713,21 @@ TDAR.datatable = function() {
         for ( var col in columns) {
             if (columns.hasOwnProperty(col)) {
                 size++;
+                console.log(columns[col]);
                 options.aoColumns.push({
                     "bSortable" : false,
                     "sName" : columns[col].simpleName,
                     "sTitle" : columns[col].displayName,
+                    "tdarIdx" : size + offset -1,
                     "fnRender" : function(obj) {
-                        var val = obj.aData[offset];
+                        var val = obj.aData[this.tdarIdx];
                         var str = TDAR.common.htmlEncode(val);
                         return str;
                     }
                 });
             }
         }
+        console.log(options);
         if (size > 0) {
             TDAR.datatable.registerLookupDataTable(options);
         }

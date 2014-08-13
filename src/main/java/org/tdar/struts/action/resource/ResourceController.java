@@ -32,8 +32,6 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public static final String BILLING = "billing";
 
-//    private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
-
     @Autowired
     private transient AccountService accountService;
 
