@@ -319,7 +319,7 @@ public class Resource implements Persistable, JsonModel,
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @BulkImportField
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -346,7 +346,7 @@ public class Resource implements Persistable, JsonModel,
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
@@ -431,7 +431,7 @@ public class Resource implements Persistable, JsonModel,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 2)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;

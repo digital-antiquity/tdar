@@ -156,7 +156,7 @@ public abstract class InformationResource extends Resource {
     @OrderBy("sequenceNumber asc")
     @JSONTransient
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)

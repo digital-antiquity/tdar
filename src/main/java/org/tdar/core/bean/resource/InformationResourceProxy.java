@@ -37,7 +37,6 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "project_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
     private ResourceProxy projectProxy;
 
     @OneToMany(fetch = FetchType.LAZY, targetEntity = InformationResourceFileProxy.class)
