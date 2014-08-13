@@ -242,14 +242,14 @@ public class DataIntegrationService {
         // for each column, rehydrate the column and selected ontology nodes
         for (IntegrationColumn integrationColumn : integrationColumns) {
             integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
-            logger.trace("before: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
+            logger.debug("before: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
             integrationColumn.setFilteredOntologyNodes(genericDao.loadFromSparseEntities(integrationColumn.getFilteredOntologyNodes(), OntologyNode.class));
             // for each of the integration columns, grab the unique set of all children within an ontology
 
             // that is, even if child is not selected, should get all children for query and pull up
             integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(integrationColumn.getFilteredOntologyNodes()));
 
-            logger.trace("after: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
+            logger.debug("after: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
             logger.info("integration column: {}", integrationColumn);
         }
 

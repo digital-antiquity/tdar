@@ -32,7 +32,6 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private Long id;
     private Integer recordsPerPage = 50;
     private Integer startRecord = 0;
-    private List<List<String>> results = Collections.emptyList();
     private String callback;
     private int totalRecords;
     private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
@@ -67,18 +66,10 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }
             setResultsWrapper(selectAllFromDataTable);
-            setResults(getResultsWrapper().getResults());
+            getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
         setJsonResult(getResultsWrapper());
         return SUCCESS;
-    }
-
-    public List<List<String>> getResults() {
-        return results;
-    }
-
-    public void setResults(List<List<String>> results) {
-        this.results = results;
     }
 
     public Integer getStartRecord() {
