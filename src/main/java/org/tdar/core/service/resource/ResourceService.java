@@ -728,7 +728,7 @@ public class ResourceService extends GenericService {
         return featured;
     }
     
-    @Transactional(readOnly=true)
+    @Transactional(readOnly=false)
     public void saveResourceCreatorsFromProxies(Collection<ResourceCreatorProxy> allProxies, Resource resource, boolean shouldSaveResource) {
         logger.info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;
