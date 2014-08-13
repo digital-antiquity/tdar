@@ -232,8 +232,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
-        // query.setCacheable(false);
         if (!trustCache) {
+            query.setCacheable(false);
             query.setCacheMode(CacheMode.REFRESH);
         }
         query.setParameterList("ids", Arrays.asList(ids));

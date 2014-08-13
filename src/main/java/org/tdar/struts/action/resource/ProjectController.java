@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,6 +13,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -65,7 +68,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private transient SearchService searchService;
 
     private String callback;
-    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
+    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -131,7 +134,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
                 setSecondarySortField(getProject().getSecondarySortBy());
             }
             searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
+            Date dateUpdated = getProject().getDateUpdated();
+            if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
+                projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
+            }
             try {
                 searchService.handleSearch(qb, this, this);
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());

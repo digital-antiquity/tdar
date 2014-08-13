@@ -71,17 +71,17 @@ public class TdarConfiguration {
 
     public void printConfig() {
         logger.info("---------------------------------------------");
-        logger.info("| Name:{} ({})",getRepositoryName(), isProductionEnvironment());
+        logger.info("| Name:{} ({})", getRepositoryName(), isProductionEnvironment());
         logger.info("| ");
         logger.info("| HostName: {}  SecureHost: {}", getBaseUrl(), getBaseSecureUrl());
-        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled() );
-        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester() );
+        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled());
+        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester());
         logger.info("| ");
         logger.info("| Storage:");
         logger.info("| FileStoreLocation: {}", getFileStoreLocation());
         logger.info("| PersonalFileStoreLocation: {}", getPersonalFileStoreLocation());
         logger.info("| ");
-        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents() );
+        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents());
         logger.info("| PayPerIngest: {}", isPayPerIngestEnabled());
         logger.info("| CORS Hosts: {} ({})", getAllAllowedDomains(), getContentSecurityPolicyEnabled());
         logger.info("---------------------------------------------");
@@ -102,7 +102,7 @@ public class TdarConfiguration {
     // FIXME: This function needs javadoc -- I assume there is a reason why initialize() cant/shouldn't happen in constructor (or lazy-init in getInstance()).
     public void initialize() {
         logger.debug("initializing filestore and setup");
-        
+
         if (isProductionEnvironment()) {
             printConfig();
         }
@@ -782,6 +782,16 @@ public class TdarConfiguration {
             dflt = true;
         }
         return assistant.getBooleanProperty("email.to.tester", dflt);
+    }
+
+    /**
+     * Hibernate seems to have issues with our Asynchronous indexing and ehCache; probably thread issues + race condition? Regardless, for project
+     * saves/indexes, this seems to be an issue, hence we wait X minutes before fully trusting the cache
+     * 
+     * @return
+     */
+    public int getAsyncWaitToTrustCache() {
+        return 1;
     }
 
 }
