@@ -360,9 +360,11 @@ public class SearchParameters {
                 .getText("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, getOperator(), getRegisteredDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, getOperator(), getUpdatedDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, getOperator(), getCreatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, support.getText("searchParameter.date_created"), getOperator(),
+                getRegisteredDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, support.getText("searchParameter.date_updated"), getOperator(),
+                getUpdatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
