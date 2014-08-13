@@ -176,7 +176,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceCollection> viewableResourceCollections;
 
-
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
         if (isViewPage) {
@@ -212,11 +211,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void loadCustomMetadata() throws TdarActionException {
     }
 
-
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
     }
-    
+
     public String getGoogleScholarTags() throws Exception {
         ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
@@ -226,8 +224,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return sw.toString();
     }
-    
-    
+
     @Override
     public String loadAddMetadata() {
         if (Persistable.Base.isNotNullOrTransient(getResource())) {
@@ -489,7 +486,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return result;
     }
 
-
     protected void saveKeywords() {
         getLogger().debug("siteNameKeywords=" + siteNameKeywords);
         getLogger().debug("materialKeywords=" + materialKeywordIds);
@@ -653,27 +649,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (creditProxies != null) {
             allProxies.addAll(creditProxies);
         }
-        getLogger().info("ResourceCreators before DB lookup: {} ", allProxies);
-        int sequence = 0;
-        List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
-        // convert the list of proxies to a list of resource creators
-        for (ResourceCreatorProxy proxy : allProxies) {
-            if ((proxy != null) && proxy.isValid()) {
-                ResourceCreator resourceCreator = proxy.getResourceCreator();
-                resourceCreator.setSequenceNumber(sequence++);
-                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
-
-                entityService.findOrSaveResourceCreator(resourceCreator);
-                incomingResourceCreators.add(resourceCreator);
-                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
-            } else {
-                getLogger().trace("can't create creator from proxy {} {}", proxy);
-            }
-        }
-
-        // FIXME: Should this throw errors?
-        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, incomingResourceCreators,
-                getResource().getResourceCreators(), ResourceCreator.class);
+        resourceService.saveResourceCreatorsFromProxies(allProxies, getPersistable(), shouldSaveResource());
     }
 
     public void loadBasicMetadata() {
@@ -707,7 +683,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
-            if (au != null && au.getUser() != null ) {
+            if (au != null && au.getUser() != null) {
                 name = au.getUser().getProperName();
             }
             getAuthorizedUsersFullNames().add(name);
@@ -716,7 +692,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();
     }
-    
 
     public void loadBasicViewMetadata() {
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
@@ -877,7 +852,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return uncontrolledCultureKeywords;
     }
-
 
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer
@@ -1198,7 +1172,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void loadCustomViewMetadata() throws TdarActionException {
         // TODO Auto-generated method stub
-        
+
     }
 
     public List<EmailMessageType> getEmailTypes() {

@@ -36,7 +36,6 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
     }
 
     private void logToXml(Object obj) {
-        logger.debug("hi: {}", obj);
         if (obj == null) {
             return;
         }

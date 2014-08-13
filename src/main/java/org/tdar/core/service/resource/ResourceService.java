@@ -51,12 +51,14 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.data.DateGranularity;
+import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -73,7 +75,10 @@ public class ResourceService extends GenericService {
     }
 
     @Autowired
-    private XmlService xmlService;
+    private transient XmlService xmlService;
+
+    @Autowired
+    private transient EntityService entityService;
 
     @Autowired
     private DatasetDao datasetDao;
@@ -84,8 +89,8 @@ public class ResourceService extends GenericService {
     private GeoSearchService geoSearchService;
 
     @Transactional(readOnly = true)
-    public List<Resource> findSkeletonsForSearch(Long... ids) {
-        return datasetDao.findSkeletonsForSearch(ids);
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
+        return datasetDao.findSkeletonsForSearch(trustCache, ids);
     }
 
     @Transactional(readOnly = true)
@@ -721,5 +726,31 @@ public class ResourceService extends GenericService {
             logger.debug("no featured resources found");
         }
         return featured;
+    }
+    
+    @Transactional(readOnly=true)
+    public void saveResourceCreatorsFromProxies(Collection<ResourceCreatorProxy> allProxies, Resource resource, boolean shouldSaveResource) {
+        logger.info("ResourceCreators before DB lookup: {} ", allProxies);
+        int sequence = 0;
+        List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
+        // convert the list of proxies to a list of resource creators
+        for (ResourceCreatorProxy proxy : allProxies) {
+            if ((proxy != null) && proxy.isValid()) {
+                ResourceCreator resourceCreator = proxy.getResourceCreator();
+                resourceCreator.setSequenceNumber(sequence++);
+                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+
+                entityService.findOrSaveResourceCreator(resourceCreator);
+                incomingResourceCreators.add(resourceCreator);
+                logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
+            } else {
+                logger.trace("can't create creator from proxy {} {}", proxy);
+            }
+        }
+
+        // FIXME: Should this throw errors?
+        saveHasResources(resource, shouldSaveResource, ErrorHandling.VALIDATE_SKIP_ERRORS, incomingResourceCreators,
+                resource.getResourceCreators(), ResourceCreator.class);
+
     }
 }
