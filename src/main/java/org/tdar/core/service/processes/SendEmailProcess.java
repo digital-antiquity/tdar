@@ -54,7 +54,6 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
     @Override
     public void process(Email email) {
         DateTime dt = new DateTime(email.getDateSent());
-        logger.debug("processing: {}", email);
         switch (email.getStatus()) {
             case SENT:
                 if (dt.isBefore(DateTime.now().minusDays(7))) {
@@ -63,6 +62,7 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
                 }
                 break;
             case QUEUED:
+                logger.debug("processing: {}", email);
                 emailService.send(email);
                 break;
             default:
