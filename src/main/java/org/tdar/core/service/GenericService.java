@@ -770,4 +770,9 @@ public class GenericService {
         return genericDao.findAllWithL2Cache(persistentClass, null);
     }
 
+    public void evictFromCache(Persistable res) {
+        genericDao.evictFromCache((Persistable)res);
+        
+    }
+
 }

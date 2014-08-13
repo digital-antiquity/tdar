@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -221,7 +222,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(Long... ids) {
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
         Session session = getCurrentSession();
         // distinct prevents duplicates
         // left join res.informationResourceFiles
@@ -231,7 +232,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
-        query.setCacheable(true);
+        // query.setCacheable(false);
+        if (!trustCache) {
+            query.setCacheMode(CacheMode.REFRESH);
+        }
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
@@ -306,7 +310,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {
@@ -326,7 +330,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.setParameter("year_end", dt.plusYears(1).toDate());
         Number max = (Number) query2.uniqueResult();
         handler.setTotalRecords(max.intValue());
-        
+
         return query.list();
     }
 

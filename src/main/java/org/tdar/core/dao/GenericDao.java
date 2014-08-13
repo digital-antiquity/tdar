@@ -652,4 +652,8 @@ public class GenericDao {
         return sessionFactory.getCache().containsEntity(cls, id);
     }
 
+    public void evictFromCache(Persistable id) {
+        sessionFactory.getCache().evictEntity(id.getClass(), id);
+    }
+
 }

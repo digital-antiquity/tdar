@@ -60,7 +60,7 @@ public class SearchIndexService {
 
     @Autowired
     private EmailService emailService;
-    
+
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 

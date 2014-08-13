@@ -34,12 +34,13 @@ public interface SearchResultHandler<I extends Indexable> {
     public enum ProjectionModel {
         HIBERNATE_DEFAULT,
         LUCENE,
-        RESOURCE_PROXY;
+        RESOURCE_PROXY,
+        RESOURCE_PROXY_INVALIDATE_CACHE;
 
         private List<String> projections = new ArrayList<>();
 
         public List<String> getProjections() {
-            if (this == RESOURCE_PROXY) {
+            if (this == RESOURCE_PROXY || this == RESOURCE_PROXY_INVALIDATE_CACHE) {
                 return Arrays.asList("id");
             }
             return projections;
