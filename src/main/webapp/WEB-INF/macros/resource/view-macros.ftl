@@ -606,7 +606,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     </#macro>
 
     <#macro _altText irfile description = irfile.description!"">
-    ${irfile.filename} <#if ( description?has_content && (irfile.filename)?has_content ) >- ${description}</#if>
+    ${irfile.latestUploadedVersion.filename} <#if ( description?has_content && (irfile.latestUploadedVersion.filename)?has_content ) >- ${description}</#if>
         <#if irfile.fileCreatedDate??>${(irfile.fileCreatedDate!"")?date}</#if>
     </#macro>
 

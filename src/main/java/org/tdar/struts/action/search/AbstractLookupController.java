@@ -496,7 +496,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        getLogger().debug("{}", filter);
         jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, filter, callback).getBytes());
     }
 
