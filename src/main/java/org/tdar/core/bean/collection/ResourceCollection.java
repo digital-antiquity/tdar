@@ -631,6 +631,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient boolean readyToStore = true;
 
+    @Transient
+    @XmlTransient
     public boolean isReadyToStore() {
         return readyToStore;
     }

@@ -713,7 +713,6 @@ TDAR.datatable = function() {
         for ( var col in columns) {
             if (columns.hasOwnProperty(col)) {
                 size++;
-                console.log(columns[col]);
                 options.aoColumns.push({
                     "bSortable" : false,
                     "sName" : columns[col].simpleName,
@@ -727,7 +726,6 @@ TDAR.datatable = function() {
                 });
             }
         }
-        console.log(options);
         if (size > 0) {
             TDAR.datatable.registerLookupDataTable(options);
         }

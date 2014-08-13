@@ -450,6 +450,8 @@ public class Resource implements Persistable, JsonModel,
     private transient boolean readyToIndex = true;
     private transient boolean readyToStore = true;
 
+    @Transient
+    @XmlTransient
     public boolean isReadyToStore() {
         return readyToStore;
     }

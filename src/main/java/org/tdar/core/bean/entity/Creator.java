@@ -96,6 +96,8 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     private transient Boolean obfuscatedObjectDifferent;
     private transient boolean readyToStore = true;
 
+    @Transient
+    @XmlTransient
     public boolean isReadyToStore() {
         return readyToStore;
     }
