@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -53,6 +55,7 @@ public class Invoice extends Base implements Updatable {
 
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice
 
@@ -71,6 +74,7 @@ public class Invoice extends Base implements Updatable {
     private String accountType;
 
     @Column(name = "transaction_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDate;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })

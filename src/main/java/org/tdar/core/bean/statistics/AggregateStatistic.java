@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.Persistable;
 
@@ -81,6 +83,7 @@ public class AggregateStatistic extends Persistable.Base {
     private String comment;
 
     @Column(name = "recorded_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date recordedDate;
 
     @Override

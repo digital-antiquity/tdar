@@ -8,6 +8,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
@@ -47,9 +49,11 @@ public class Email extends Persistable.Base {
     private String to;
 
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date = new Date();
 
     @Column(name = "date_sent")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateSent;
 
     @Column(name = "number_of_tries")

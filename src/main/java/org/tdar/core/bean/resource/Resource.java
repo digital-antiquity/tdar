@@ -36,6 +36,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -266,6 +268,7 @@ public class Resource implements Persistable, JsonModel,
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
     @JsonView(JsonLookupFilter.class)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -312,6 +315,7 @@ public class Resource implements Persistable, JsonModel,
     @NotNull
     @Column(name = "date_updated")
     @DateBridge(resolution = Resolution.MILLISECOND)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @IndexedEmbedded

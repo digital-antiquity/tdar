@@ -15,6 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.annotations.Cache;
@@ -99,6 +101,7 @@ public class InformationResourceFileProxy implements Serializable {
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.
     @Column(name = "date_made_public")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateMadePublic = new Date();
 
     @Enumerated(EnumType.STRING)

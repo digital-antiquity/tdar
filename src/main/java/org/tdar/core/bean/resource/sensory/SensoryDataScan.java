@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +77,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private String cameraExposureSettings;
 
     @Column(name = "scan_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date scanDate;
 
     @Column(name = "matrix_applied", nullable = false)

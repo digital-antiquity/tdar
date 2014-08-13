@@ -22,6 +22,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -80,6 +82,7 @@ public class ResourceProxy implements Serializable {
 
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -100,6 +103,7 @@ public class ResourceProxy implements Serializable {
 
     @Column(name = "date_updated")
     @DateBridge(resolution = Resolution.MILLISECOND)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @Enumerated(EnumType.STRING)

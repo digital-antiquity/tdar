@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -200,9 +202,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private TdarUser updater;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(nullable = true, name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @ManyToOne

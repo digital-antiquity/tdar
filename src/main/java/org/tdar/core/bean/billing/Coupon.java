@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
@@ -34,12 +36,15 @@ public class Coupon extends Base {
     private String code;
 
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @Column(name = "date_expires")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateExpires;
 
     @Column(name = "date_redeemed")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateRedeemed;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
