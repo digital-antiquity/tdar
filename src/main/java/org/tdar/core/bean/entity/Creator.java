@@ -59,6 +59,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.JSONTransient;
@@ -88,11 +89,20 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider, JsonModel,
-        Obfuscatable, Validatable, Addressable {
+        Obfuscatable, Validatable, Addressable, XmlLoggable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
+    private transient boolean readyToStore = true;
+
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
 
     @Override
     public Boolean getObfuscatedObjectDifferent() {

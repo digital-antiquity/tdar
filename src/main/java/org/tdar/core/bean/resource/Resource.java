@@ -89,6 +89,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -167,7 +168,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class Resource implements Persistable, JsonModel,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
-        DeHydratable {
+        DeHydratable, XmlLoggable {
 
     private static final long serialVersionUID = -230400285817185637L;
 
@@ -447,6 +448,15 @@ public class Resource implements Persistable, JsonModel,
 
     private transient Float score = -1f;
     private transient boolean readyToIndex = true;
+    private transient boolean readyToStore = true;
+
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
 
     @Override
     @Transient
