@@ -104,7 +104,7 @@ public class ObfuscationResultListener implements PreResultListener {
                 }
             }
         }
-        logger.debug("complete obfuscation");
+        logger.trace("complete obfuscation");
     }
 
     /*
