@@ -97,15 +97,128 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     @SuppressWarnings({ "unchecked" })
     @Override
     public SearchResults getTopRecords(String sessionId, Query query, int numberOfRecords) {
-
+        SearchResults searchRes = new SearchResults();
         logger.debug("TAGGateway: Called getTopRecords...");
+        try {
+            // grab relevant parts of the query
+            What what = query.getWhat();
+            Where where = query.getWhere();
+            When when = query.getWhen();
+            String freetext = query.getFreetext();
 
-        // grab relevant parts of the query
-        What what = query.getWhat();
-        Where where = query.getWhere();
-        When when = query.getWhen();
-        String freetext = query.getFreetext();
+            ResourceQueryBuilder qb = buildSearchQuery(what, where, when, freetext);
+            FullTextQuery q = null;
+            List<Project> resources = Collections.emptyList();
+            int totalRecords = 0;
+            int firstRec = 0;
+            int lastRec = 0;
 
+            // actually perform the search against the index
+            try {
+                q = searchService.search(qb);
+                logger.info(qb.generateQueryString());
+            } catch (ParseException e) {
+                logger.warn("Could not parse supplied query.", e);
+            }
+
+            // determine if we need to make a second projection query to get all
+            // of the record ids
+            boolean totalExceedsRequested = false;
+
+            if (q != null) {
+                totalRecords = q.getResultSize();
+                if (totalRecords > 0) {
+                    firstRec = 1;
+                }
+                q.setMaxResults(numberOfRecords);
+                if (totalRecords > numberOfRecords) {
+                    totalExceedsRequested = true;
+                    lastRec = numberOfRecords;
+                } else {
+                    lastRec = totalRecords;
+                }
+                logger.debug("Number of records requested: " + numberOfRecords);
+                logger.debug("Total number of records: " + totalRecords);
+                resources = q.list();
+            }
+
+            int recordsReturned = totalRecords == 0 ? 0 : (lastRec - firstRec) + 1;
+
+            Results tdarRes = createResults(sessionId, searchRes, totalRecords, firstRec, lastRec, recordsReturned);
+
+            // project ids used to grab the integratable datasets
+            List<Long> projIds = processProjects(resources, totalExceedsRequested, tdarRes);
+            getAllProjectIds(qb, totalExceedsRequested, projIds);
+
+            // build a link to our search page listing the integratable datasets
+            if (projectService.containsIntegratableDatasets(projIds)) {
+                tdarRes.setContainsIntegratableData(true);
+                tdarRes.setIntegratableDatasetUrl(buildIntegratableDatasetUrl(projIds));
+            }
+        } catch (Throwable t) {
+            logger.error("issue in TAG: {}", t);
+        }
+        return searchRes;
+    }
+
+    private void getAllProjectIds(ResourceQueryBuilder qb, boolean totalExceedsRequested, List<Long> projIds) {
+        if (totalExceedsRequested) { // query again to get all of the projectIds
+            try {
+                FullTextQuery idq = searchService.search(qb);
+                idq.setProjection("id");
+                List<Object[]> idresults = idq.list();
+                for (Object[] idresult : idresults) {
+                    projIds.add((Long) idresult[0]);
+                }
+            } catch (ParseException e) {
+                logger.warn("Could not parse supplied query.", e);
+            }
+        }
+    }
+
+    private Results createResults(String sessionId, SearchResults searchRes, int totalRecords, int firstRec, int lastRec, int recordsReturned) {
+        // create results to be returned
+        // FIXME: maybe this should go into the ObjectFactory?
+        Meta resMeta = new Meta();
+        searchRes.setMeta(resMeta);
+        Results tdarRes = new Results();
+        searchRes.setResults(tdarRes);
+
+        resMeta.setProviderName(TdarConfiguration.getInstance().getSiteAcronym());
+        resMeta.setSessionID(sessionId);
+        resMeta.setFirstRecord(firstRec);
+        resMeta.setLastRecord(lastRec);
+        resMeta.setTotalRecords(totalRecords);
+        resMeta.setRecordsReturned(recordsReturned);
+        return tdarRes;
+    }
+
+    private List<Long> processProjects(List<Project> resources, boolean totalExceedsRequested, Results tdarRes) {
+        List<Long> projIds = new ArrayList<Long>();
+
+        for (Project p : resources) {
+            if (!totalExceedsRequested) {
+                projIds.add(p.getId());
+            }
+            ResultType res = new ResultType();
+            res.setIdentifier(p.getId().toString());
+            res.setTitle(p.getTitle());
+            res.setUrl(urlService.absoluteUrl(p));
+            Set<ResourceCreator> preparers = p.getResourceCreators(ResourceCreatorRole.PREPARER);
+            if (preparers.isEmpty()) {
+                res.setPublisher("");
+            } else {
+                String preparer = preparers.iterator().next().getCreator().getProperName();
+                res.setPublisher(preparer);
+            }
+
+            res.setSummary(p.getShortenedDescription());
+            tdarRes.getResult().add(res);
+        }
+        return projIds;
+    }
+
+    private ResourceQueryBuilder buildSearchQuery(What what, Where where, When when, String freetext) {
         // build the query from the supplied parameters
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         SearchParameters params = new SearchParameters();
@@ -143,100 +256,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         qb.append(reservedPart);
         qb.append(params, null);
         // initialize detail values for results
-        FullTextQuery q = null;
-        List<Project> resources = Collections.emptyList();
-        int totalRecords = 0;
-        int firstRec = 0;
-        int lastRec = 0;
-
-        // actually perform the search against the index
-        try {
-            q = searchService.search(qb);
-            logger.info(qb.generateQueryString());
-        } catch (ParseException e) {
-            logger.warn("Could not parse supplied query.", e);
-        }
-
-        // determine if we need to make a second projection query to get all
-        // of the record ids
-        boolean totalExceedsRequested = false;
-
-        if (q != null) {
-            totalRecords = q.getResultSize();
-            if (totalRecords > 0) {
-                firstRec = 1;
-            }
-            q.setMaxResults(numberOfRecords);
-            if (totalRecords > numberOfRecords) {
-                totalExceedsRequested = true;
-                lastRec = numberOfRecords;
-            } else {
-                lastRec = totalRecords;
-            }
-            logger.debug("Number of records requested: " + numberOfRecords);
-            logger.debug("Total number of records: " + totalRecords);
-            resources = q.list();
-        }
-
-        int recordsReturned = totalRecords == 0 ? 0 : (lastRec - firstRec) + 1;
-
-        // create results to be returned
-        // FIXME: maybe this should go into the ObjectFactory?
-        SearchResults searchRes = new SearchResults();
-        Meta resMeta = new Meta();
-        searchRes.setMeta(resMeta);
-        Results tdarRes = new Results();
-        searchRes.setResults(tdarRes);
-
-        resMeta.setProviderName(TdarConfiguration.getInstance().getSiteAcronym());
-        resMeta.setSessionID(sessionId);
-        resMeta.setFirstRecord(firstRec);
-        resMeta.setLastRecord(lastRec);
-        resMeta.setTotalRecords(totalRecords);
-        resMeta.setRecordsReturned(recordsReturned);
-
-        // project ids used to grab the integratable datasets
-        List<Long> projIds = new ArrayList<Long>();
-
-        for (Project p : resources) {
-            if (!totalExceedsRequested) {
-                projIds.add(p.getId());
-            }
-            ResultType res = new ResultType();
-            res.setIdentifier(p.getId().toString());
-            res.setTitle(p.getTitle());
-            res.setUrl(urlService.absoluteUrl(p));
-            Set<ResourceCreator> preparers = p.getResourceCreators(ResourceCreatorRole.PREPARER);
-            if (preparers.isEmpty()) {
-                res.setPublisher("");
-            } else {
-                String preparer = preparers.iterator().next().getCreator().getProperName();
-                res.setPublisher(preparer);
-            }
-
-            res.setSummary(p.getShortenedDescription());
-            tdarRes.getResult().add(res);
-        }
-
-        if (totalExceedsRequested) { // query again to get all of the projectIds
-            try {
-                FullTextQuery idq = searchService.search(qb);
-                idq.setProjection("id");
-                List<Object[]> idresults = idq.list();
-                for (Object[] idresult : idresults) {
-                    projIds.add((Long) idresult[0]);
-                }
-            } catch (ParseException e) {
-                logger.warn("Could not parse supplied query.", e);
-            }
-        }
-
-        // build a link to our search page listing the integratable datasets
-        if (projectService.containsIntegratableDatasets(projIds)) {
-            tdarRes.setContainsIntegratableData(true);
-            tdarRes.setIntegratableDatasetUrl(buildIntegratableDatasetUrl(projIds));
-        }
-        return searchRes;
+        return qb;
     }
 
     @Override

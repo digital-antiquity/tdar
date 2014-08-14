@@ -305,9 +305,9 @@ public class SearchParameters {
 
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public QueryPartGroup toQueryPartGroup(TextProvider support) {
-        if (support != null) {
-            this.support = support;
+    public QueryPartGroup toQueryPartGroup(TextProvider support_) {
+        if (support_ != null) {
+            this.support = support_;
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
