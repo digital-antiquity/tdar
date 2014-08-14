@@ -97,7 +97,7 @@ update person set email = null where id = 8009 and email = '';
 
 --add 'not empty' constraint for person email, username
 alter table person add constraint person_email_notempty check (email <> '');
-alter table person add constraint person_username_notempty check(username <> '');
+alter table tdar_user add constraint person_username_notempty check(username <> '');
 
 -- jdevos 05/19/2014
 -- empty-strings::geographic_keyword: remove references, then remove instances, then add not-empty constraint
