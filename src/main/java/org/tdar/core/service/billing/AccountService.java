@@ -159,16 +159,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Checks whether the @link Person / user has space in their @link Account to create a resource of the specified @link ResourceType. This method also looks
-     * to see if their are unassigned Invoices and assigns them to an account if needed.
+     * Checks whether the @link Person / user has space in their @link Account to create a resource of the specified @link ResourceType.
      * 
      * @param user
      * @param type
-     * @param createAccountIfNeeded
      * @return
      */
     @Transactional(readOnly = false)
-    public boolean hasSpaceInAnAccount(TdarUser user, ResourceType type, boolean createAccountIfNeeded) {
+    public boolean hasSpaceInAnAccount(TdarUser user, ResourceType type) {
         List<Account> accounts = listAvailableAccountsForUser(user);
         for (Account account : accounts) {
             logger.trace("evaluating account {}", account.getName());
@@ -178,21 +176,38 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
 
-        if (createAccountIfNeeded) {
-            List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
-            logger.info("unassigned invoices: {} ", unassignedInvoices);
-            if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-                Account account = createAccountForUserIfNeeded(user, accounts, null);
-                for (Invoice invoice : unassignedInvoices) {
-                    account.getInvoices().add(invoice);
-                }
-                genericDao.saveOrUpdate(account);
-                return true;
-            }
-        }
         return false;
     }
 
+    /**
+     * If there are invoices owned by the specified to the user that are not assigned to one of the user's existing billing accounts, if the user has no
+     * billing accounts,  generate an account and then assign the invoices to the generated billing account.
+     *
+     * @param user
+     * @return true if the method assigned any errant invoices to a user billing account
+     */
+    @Transactional(readOnly = false)
+    public boolean assignOrphanInvoicesIfNecessary(TdarUser user) {
+        List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
+        List<Account> accounts = listAvailableAccountsForUser(user);
+        logger.info("Unassigned invoices found for user {}. The system will assign the following invoices: {} ", user, unassignedInvoices);
+        if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
+            Account account = createAccountForUserIfNeeded(user, accounts, null);
+            for (Invoice invoice : unassignedInvoices) {
+                account.getInvoices().add(invoice);
+            }
+            genericDao.saveOrUpdate(account);
+        }
+        return !unassignedInvoices.isEmpty();
+    }
+
+    /**
+     * Returns an account owned by the specified user.  If the user has no billing accounts, this method generates a billing account returns that billing account.
+     * @param user
+     * @param accounts
+     * @param invoice
+     * @return
+     */
     @Transactional(readOnly = false)
     public Account createAccountForUserIfNeeded(TdarUser user, List<Account> accounts, Invoice invoice) {
         Account account = null;

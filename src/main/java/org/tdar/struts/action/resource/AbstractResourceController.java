@@ -309,13 +309,20 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @HttpsOnly
     @Override
     public String add() throws TdarActionException {
+        accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
+
+        //if user has no invoices/funds to bill against,  redirect to cart page
         if (!isAbleToCreateBillableItem()) {
+            addActionMessage(getText("resourceController.requires_funds"));
             return BILLING;
         }
+
+        //if user could otherwise create a billable item but isn't a contributor (an unlikely event), redirect to the profile page so that they can change their status.
         if (!isContributor()) {
             addActionMessage(getText("resourceController.must_be_contributor"));
             return CONTRIBUTOR;
         }
+
         return super.add();
     }
 
@@ -417,13 +424,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return true;
     }
 
+    /**
+     * Returns true if authuser is able to create billable items, contributor status notwithstanding.
+     * @return
+     */
     @Override
     public boolean isAbleToCreateBillableItem() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || ((isContributor() == true)
-                && accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true))) {
-            return true;
-        }
-        return false;
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType()));
     }
 
     // return a persisted annotation based on incoming pojo

@@ -56,6 +56,7 @@ public class ResourceController extends AuthenticationAware.Base {
             addActionMessage(getText("resourceController.must_be_contributor"));
             return CONTRIBUTOR;
         }
+        accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
         if (!getTdarConfiguration().isPayPerIngestEnabled() || isAllowedToCreateResource()) {
             return SUCCESS;
         }
@@ -94,11 +95,8 @@ public class ResourceController extends AuthenticationAware.Base {
     }
 
     public boolean isAllowedToCreateResource() {
-        // getLogger().info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if ((getTdarConfiguration().isPayPerIngestEnabled() == false) || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
-            return true;
-        }
-        return false;
+        getLogger().trace("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
     }
 
     /**

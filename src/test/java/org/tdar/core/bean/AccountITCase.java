@@ -57,7 +57,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()), person);
         setupInvoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         genericService.saveOrUpdate(setupInvoice);
-        assertTrue(accountService.hasSpaceInAnAccount(person, null, true));
+        accountService.assignOrphanInvoicesIfNecessary(person);
+        assertTrue(accountService.hasSpaceInAnAccount(person, null));
         assertNotEmpty(accountService.listAvailableAccountsForUser(person));
     }
 
