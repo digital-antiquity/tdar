@@ -66,7 +66,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
-
         @Column(nullable = false, unique = true)
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
                 @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),

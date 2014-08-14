@@ -301,11 +301,13 @@ public class SearchParameters {
         this.resourceIds = resourceIds;
     }
 
+    TextProvider support = MessageHelper.getInstance();
+
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public QueryPartGroup toQueryPartGroup(TextProvider support) {
-        if (support == null) {
-            support = MessageHelper.getInstance();
+        if (support != null) {
+            this.support = support;
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
@@ -318,12 +320,12 @@ public class SearchParameters {
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
         if (CollectionUtils.isNotEmpty(this.getSiteNames())) {
-            logger.debug("site names: {}", getSiteNames());
             QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
             for (String q : getSiteNames()) {
                 if (SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+                    siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));
                     subgroup.append(siteCodePart.setBoost(5f));
                 }
             }
@@ -454,6 +456,7 @@ public class SearchParameters {
         }
         HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(fieldName, type, kwdValues);
         hydrateableKeywordQueryPart.setIncludeChildren(!explore);
+        hydrateableKeywordQueryPart.setDisplayName(support.getText("searchParameters." + fieldName));
         return hydrateableKeywordQueryPart;
     }
 

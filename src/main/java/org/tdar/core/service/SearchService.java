@@ -443,7 +443,7 @@ public class SearchService {
                 if (Persistable.Base.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
                 } else {
-                    logger.info("not adding: {} ", idLookupMap.get(cls), fieldValue);
+                    logger.trace("not adding: {} ", idLookupMap.get(cls), fieldValue);
                 }
             }
             part.update();
