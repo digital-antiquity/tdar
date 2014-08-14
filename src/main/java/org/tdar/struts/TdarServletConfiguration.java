@@ -1,7 +1,9 @@
 package org.tdar.struts;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.util.EnumSet;
+import java.util.TimeZone;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration.Dynamic;
@@ -18,6 +20,7 @@ import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
 import org.ebaysf.web.cors.CORSFilter;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
@@ -47,6 +50,13 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
 
     public TdarServletConfiguration() {
         logger.debug("Initializing tDAR Servlet");
+
+        //Note:  tdar timestamps do not currently encode timezone information. However, we set the timezone here because there are other systems (e.g.
+        // DateBridge) that convert datetime values to UTC.  Therefore.  We set the default timezone to UTC to prevent these systems from modifying the
+        // timestamp.
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+
         try {
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
