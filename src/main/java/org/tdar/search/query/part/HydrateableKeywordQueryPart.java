@@ -74,7 +74,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     }
 
     public String getDescriptionLabel(TextProvider provider) {
-        return provider.getText("keywordQueryPart.label");
+        return provider.getText("searchParameters." + getFieldName());
     }
 
     @Override
