@@ -1092,9 +1092,7 @@ TDAR.common = function () {
         $categoryIdSelect.siblings(".waitingSpinner").show();
         $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
-        }, function (data_, textStatus) {
-            var data = jQuery.parseJSON(data_);
-
+        }, function (data, textStatus) {
             var result = "";
             for (var i = 0; i < data.length; i++) {
                 result += "<option value=\"" + data[i]['value'] + "\">" + data[i]['label'] + "</option>\n";
