@@ -55,7 +55,6 @@ import org.w3c.dom.Element;
  * @version $Rev$
  * 
  */
-@SuppressWarnings("deprecation")
 @Component
 @WebService(portName = "TagGateway", serviceName = "TagGatewayService",
         targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
