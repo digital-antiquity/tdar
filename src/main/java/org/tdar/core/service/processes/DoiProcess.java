@@ -2,6 +2,7 @@ package org.tdar.core.service.processes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     public static final String DELETED = "deleted";
     public static final String UPDATED = "updated";
     public static final String CREATED = "created";
+    public static final String ERRORS = "errors";
     public static final String DOI_KEY = "DOI";
+    
 
     @Autowired
     private transient UrlService urlService;
@@ -68,9 +71,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     }
 
     private void initializeBatchResults() {
-        batchResults.put(DELETED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(UPDATED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(CREATED, new ArrayList<Pair<Long, String>>());
+        for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+            batchResults.put(key, new ArrayList<Pair<Long, String>>());
+        }
     }
 
     @Override
@@ -107,9 +110,14 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
-                resource.setExternalId(createdIds.get(DOI_KEY));
-                datasetDao.saveOrUpdate(resource);
-                batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                String externalId = createdIds.get(DOI_KEY);
+                if (StringUtils.isNotBlank(externalId)) {
+                    resource.setExternalId(externalId);
+                    datasetDao.saveOrUpdate(resource);
+                    batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                } else {
+                    batchResults.get(ERRORS).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                }
             } else {
                 idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(UPDATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
@@ -128,12 +136,10 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         if (batchResults != null) {
             long total = 0;
             Map<String, Object> map = new HashMap<>();
-            map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
-            map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
-            map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
-            total += batchResults.get(DoiProcess.CREATED).size();
-            total += batchResults.get(DoiProcess.UPDATED).size();
-            total += batchResults.get(DoiProcess.DELETED).size();
+            for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+                map.put(key, batchResults.get(key));
+                total += batchResults.get(key).size();
+            }
             map.put("total", total);
             map.put("date", new Date());
             if (total > 0) {
