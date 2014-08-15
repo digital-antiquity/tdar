@@ -116,7 +116,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
@@ -494,7 +494,7 @@ public class Resource implements Persistable, JsonModel,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
     @IndexedEmbedded
     @ElementCollection
-    @JSONTransient
+    
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -523,7 +523,7 @@ public class Resource implements Persistable, JsonModel,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
     @IndexedEmbedded
     @ElementCollection
-    @JSONTransient
+    
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -550,7 +550,7 @@ public class Resource implements Persistable, JsonModel,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    @JSONTransient
+    
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
@@ -861,7 +861,7 @@ public class Resource implements Persistable, JsonModel,
 
     @Transient
     @XmlTransient
-    @JSONTransient
+    
     //@DidWeMentionThisPropertyIsTransient
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
@@ -1310,7 +1310,7 @@ public class Resource implements Persistable, JsonModel,
     private transient String keywords = null;
 
     @SuppressWarnings("unchecked")
-    @JSONTransient
+    
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
@@ -1504,7 +1504,7 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
@@ -1519,7 +1519,7 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
             throw new TdarValidationException("resource.title_required", Arrays.asList(getResourceType()));
@@ -1592,7 +1592,7 @@ public class Resource implements Persistable, JsonModel,
 
     @Override
     @XmlTransient
-    @JSONTransient
+    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -1635,7 +1635,7 @@ public class Resource implements Persistable, JsonModel,
      * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
-    @JSONTransient
+    
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
@@ -1655,7 +1655,7 @@ public class Resource implements Persistable, JsonModel,
     // return getStatus();
     // }
 
-    @JSONTransient
+    
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
         for (ResourceCreator creator : getPrimaryCreators()) {
@@ -1671,7 +1671,7 @@ public class Resource implements Persistable, JsonModel,
         return sb.toString();
     }
 
-    @JSONTransient
+    
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, getTitle(), "", "");
@@ -1679,7 +1679,7 @@ public class Resource implements Persistable, JsonModel,
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+    
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         return sb.toString();
@@ -1689,7 +1689,7 @@ public class Resource implements Persistable, JsonModel,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    @JSONTransient
+    
     // This field facilitates unified lucene search for submitter, updater,
     // resourceProvider, and resourceCreators
     // should be in the form {creartorType}{creatorId}{creatorRole}
@@ -1916,13 +1916,13 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Transient
-    @JSONTransient
+    
     public boolean hasConfidentialFiles() {
         return false;
     }
 
     @Transient
-    @JSONTransient
+    
     public boolean hasEmbargoedFiles() {
         return false;
     }

@@ -20,7 +20,7 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
@@ -261,7 +261,7 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @JSONTransient
+    
     @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
@@ -271,7 +271,7 @@ public class Document extends InformationResource {
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+    
     @Override
     // TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.core.exception.TdarValidationException;
 
 /**
@@ -61,7 +61,7 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    @JSONTransient
+    
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
@@ -74,7 +74,7 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    @JSONTransient
+    
     @XmlTransient
     public boolean isValid() {
         return isValidForController();

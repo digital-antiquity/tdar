@@ -62,7 +62,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -413,7 +413,7 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Override
     @XmlTransient
-    @JSONTransient
+    
     public boolean isObfuscated() {
         return obfuscated;
     }

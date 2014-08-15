@@ -22,7 +22,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -79,7 +79,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @Transient
-    @JSONTransient
+    
     @XmlTransient
     public String getFormattedValue() {
         ResourceAnnotationDataType annotationDataType = resourceAnnotationKey.getAnnotationDataType();

@@ -22,7 +22,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -194,7 +194,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     }
 
     @XmlTransient
-    @JSONTransient
+    
     public List<OntologyNode> getSuggestions() {
         return suggestions;
     }

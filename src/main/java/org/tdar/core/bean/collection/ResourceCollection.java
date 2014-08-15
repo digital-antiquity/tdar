@@ -78,7 +78,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -460,7 +460,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
-    @JSONTransient
+    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
@@ -483,7 +483,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
-    @JSONTransient
+    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
@@ -492,7 +492,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
-    @JSONTransient
+    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
@@ -648,7 +648,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Override
     @XmlTransient
     @Transient
-    @JSONTransient
+    
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -713,7 +713,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @Transient
-    @JSONTransient
+    
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
@@ -746,7 +746,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Transient
     @Field(name = QueryFieldNames.COLLECTION_TREE)
-    @JSONTransient
+    
     @ElementCollection
     @IndexedEmbedded
     public Set<Long> getParentIds() {

@@ -29,7 +29,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -217,7 +217,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     @Transient
-    @JSONTransient
+    
     @XmlTransient
     public Map<OntologyNode, List<CodingRule>> getNodeToDataValueMap() {
         HashMap<OntologyNode, List<CodingRule>> map = new HashMap<>();
