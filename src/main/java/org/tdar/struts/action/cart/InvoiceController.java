@@ -169,6 +169,14 @@ public class InvoiceController extends AbstractCartController {
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
             if (persistedInvoice.isModifiable()) {
+                if (getInvoice() != null) {
+                    // overwrite values from invoice (mimic params-prepare-params)
+                    persistedInvoice.setNumberOfFiles(getInvoice().getNumberOfFiles());
+                    persistedInvoice.setNumberOfMb(getInvoice().getNumberOfMb());
+                    persistedInvoice.setOwner(getInvoice().getOwner());
+                    persistedInvoice.setOtherReason(getInvoice().getOtherReason());
+                    persistedInvoice.setPaymentMethod(getInvoice().getPaymentMethod());
+                }
                 setInvoice(persistedInvoice);
             } else {
                 // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
@@ -224,10 +232,14 @@ public class InvoiceController extends AbstractCartController {
 
         Long mb = getInvoice().getNumberOfMb();
         Long files = getInvoice().getNumberOfFiles();
-        if(mb == null) mb = 0L;
-        if(files == null) files = 0L;
+        if (mb == null) {
+            mb = 0L;
+        }
+        if (files == null) {
+            files = 0L;
+        }
 
-        if(isPostRequest() && mb == 0L && files == 0L ) {
+        if (isPostRequest() && mb == 0L && files == 0L) {
             addActionError(getText("cartController.specify_mb_or_files"));
         }
 
