@@ -629,8 +629,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>"
                             data-toggle="button">Institution
                     </button>
-                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type"
-                    value="${selectedType}" cssClass="toggleValue" />
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type" value="${selectedType}" cssClass="toggleValue" />
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].id" cssClass="toggleValue" />
                 </div>
             </div>
             <div class="controls controls-row">

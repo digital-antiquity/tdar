@@ -302,9 +302,7 @@ public class ResourceService extends GenericService {
             current.clear();
         }
 
-        // incoming = getDao().merge(incoming);
-        // assume everything that's incoming is valid or deduped and tied back into
-        // tDAR entities/beans
+        // assume everything that's incoming is valid or deduped and tied back into tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
 
         /*
@@ -313,12 +311,9 @@ public class ResourceService extends GenericService {
          * "retainAll" below keeps the older version
          */
 
-        // Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
-        // current.clear();
-        // current.addAll(retainAll);
         current.retainAll(incoming);
         Map<Long, H> idMap = Persistable.Base.createIdMap(current);
-        if (!CollectionUtils.isEmpty(incoming)) {
+        if (CollectionUtils.isNotEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
             while (incomingIterator.hasNext()) {
