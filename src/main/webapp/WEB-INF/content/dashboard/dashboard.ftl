@@ -29,23 +29,29 @@
                 <hr/>
             </#if>
         <#else>
-            <div id="myCarousel" class="carousel slide" data-interval="5000">
+            <div id="myCarousel" class="carousel slide" data-interval="5000" data-pause="hover">
                 <#assign showBuy = (!accounts?has_content) />
               <!-- Carousel items -->
               <div class="carousel-inner">
                 <div class="active item">
-                    <img class="" src="<@s.url value="/images/dashboard/learn.png"/>" width=120 height=150 alt="Read the Manual"/>
-                        Read the Manual
+                    <a href="${documentationUrl}">
+                        <img class="" src="<@s.url value="/images/dashboard/learn.png"/>" width=120 height=150 alt="Read the Manual"/>
+                            Read the Manual
+                    </a>
                 </div>
                     <#if (showBuy)>
                     <div class="item">
-                        <img class="" src="<@s.url value="/images/dashboard/upload.png"/>" width=120 height=150 alt="Purchase Space"/>
-                            Buy tDAR now
+                        <a href="/cart/add">
+                            <img class="" src="<@s.url value="/images/dashboard/upload.png"/>" width=120 height=150 alt="Purchase Space"/>
+                                Buy tDAR now
+                        </a>
                     </div>
                     </#if>
                 <div class="item">
-                        <img class="" src="<@s.url value="/images/dashboard/explore.png"/>" width=120 height=150 alt="Explore"/>
-                            Explore Content now
+                        <a href="/browse/explore">
+                            <img class="" src="<@s.url value="/images/dashboard/explore.png"/>" width=120 height=150 alt="Explore"/>
+                                Explore Content now
+                        </a>
                 </div>
               </div>
               <div class="clearfix centered">
@@ -54,6 +60,10 @@
                 <#if showBuy><li data-target="#myCarousel" data-slide-to="1"></li></#if>
                 <li data-target="#myCarousel" data-slide-to="2"></li>
               </ol>
+                <!-- Carousel nav 
+  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+                -->
               </div>
 
         </div>
@@ -286,6 +296,7 @@
     $(document).ready(function () {
         TDAR.notifications.init();
         TDAR.common.collectionTreeview();
+        $("#myCarousel").carousel('cycle');
     });
 </script>
 
