@@ -20,6 +20,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 @ParentPackage("secured")
 @Component
@@ -51,6 +52,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" })
             })
+    @HttpForbiddenErrorResponseOnly
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;

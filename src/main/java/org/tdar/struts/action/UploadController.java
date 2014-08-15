@@ -25,6 +25,7 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -37,6 +38,7 @@ import org.tdar.utils.json.JsonLookupFilter;
         @Result(name = "exception", type = TdarActionSupport.HTTPHEADER, params = { "error", "500" }),
         @Result(name = TdarActionSupport.INPUT , type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
+@HttpForbiddenErrorResponseOnly
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired

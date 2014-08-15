@@ -37,6 +37,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PaginationHelper;
 
 /**
@@ -109,6 +110,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Action(value = JSON,
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     @SkipValidation
+    @HttpForbiddenErrorResponseOnly
     public String json() {
         setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;

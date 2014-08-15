@@ -33,6 +33,7 @@ import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -42,6 +43,7 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@HttpForbiddenErrorResponseOnly
 public class APIController extends AuthenticationAware.Base {
 
     @Autowired

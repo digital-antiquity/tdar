@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -57,6 +58,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
     private TdarUser person;
 
     @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @HttpForbiddenErrorResponseOnly
     @PostOnly
     public String bookmarkResourceAjaxAction() {
         success = bookmarkResource();
@@ -93,6 +95,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base impleme
 
     @Action(value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     @PostOnly
+    @HttpForbiddenErrorResponseOnly
     public String removeBookmarkAjaxAction() {
         success = removeBookmark();
         processResultToJson();

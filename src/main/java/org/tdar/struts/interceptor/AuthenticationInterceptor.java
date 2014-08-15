@@ -13,9 +13,11 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
@@ -44,7 +46,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     public static final String SKIP_REDIRECT = "(.*)/(lookup|page-not-found|unauthorized|datatable\\/browse)/(.*)";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final WeakHashMap<Class<?>, RequiresTdarUserGroup> requiredGroupClassCache = new WeakHashMap<>();
     private final WeakHashMap<Method, RequiresTdarUserGroup> requiredGroupMethodCache = new WeakHashMap<>();
 
@@ -76,15 +78,15 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     public void init() {
         // we don't do anything here, yet...
     }
-    
+
     private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Class<?> clazz) {
         return checkAndUpdateCache(clazz, requiredGroupClassCache);
     }
-    
+
     private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Method method) {
         return checkAndUpdateCache(method, requiredGroupMethodCache);
     }
-    
+
     private <K> RequiresTdarUserGroup checkAndUpdateCache(K key, WeakHashMap<K, RequiresTdarUserGroup> cache) {
         synchronized (cache) {
             if (cache.containsKey(key)) {
@@ -111,13 +113,13 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         if (methodName == null) {
             methodName = "execute";
         }
+        Method method = action.getClass().getMethod(methodName);
         if (sessionData.isAuthenticated()) {
             // FIXME: consider caching these in a local Map
             // check for group authorization
             RequiresTdarUserGroup classLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass());
-            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass().getMethod(methodName));
-                    
-                    
+            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(method);
+
             TdarGroup group = TdarGroup.TDAR_USERS;
             if (methodLevelRequiresGroupAnnotation != null) {
                 group = methodLevelRequiresGroupAnnotation.value();
@@ -134,6 +136,11 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
                     group));
             return TdarActionSupport.UNAUTHORIZED;
         }
+
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
+            return "forbidden-status-only";
+        }
+
         setReturnUrl(invocation);
         return Action.LOGIN;
     }
