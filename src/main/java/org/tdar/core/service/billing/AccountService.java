@@ -189,11 +189,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional(readOnly = false)
     public boolean assignOrphanInvoicesIfNecessary(TdarUser user) {
         List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
-        List<Account> accounts = listAvailableAccountsForUser(user);
-        logger.info("Unassigned invoices found for user {}. The system will assign the following invoices: {} ", user, unassignedInvoices);
         if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-            Account account = createAccountForUserIfNeeded(user, accounts, null);
+        logger.info("Unassigned invoices found for user {}. The system will assign the following invoices: {} ", user, unassignedInvoices);
+            Account account = createAccountForUserIfNeeded(user);
             for (Invoice invoice : unassignedInvoices) {
+                logger.trace("account:{}   invoice{}   user:{}",  account, invoice, user);
                 account.getInvoices().add(invoice);
             }
             genericDao.saveOrUpdate(account);
@@ -202,25 +202,20 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Returns an account owned by the specified user.  If the user has no billing accounts, this method generates a billing account returns that billing account.
+     * Returns an account owned by the specified user.  If the user has no billing accounts, this method generates a billing account then returns that account.
      * @param user
-     * @param accounts
-     * @param invoice
      * @return
      */
     @Transactional(readOnly = false)
-    public Account createAccountForUserIfNeeded(TdarUser user, List<Account> accounts, Invoice invoice) {
-        Account account = null;
-        if (CollectionUtils.isNotEmpty(accounts) && (accounts.size() == 1)) {
+    public Account createAccountForUserIfNeeded(TdarUser user) {
+        List<Account> accounts = listAvailableAccountsForUser(user);
+        Account account;
+        if (CollectionUtils.isNotEmpty(accounts)) {
             account = accounts.iterator().next();
-        } else if (CollectionUtils.isEmpty(accounts)) {
+        } else {
             account = new Account();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
-            genericDao.saveOrUpdate(account);
-        }
-        if (invoice != null && account != null) {
-            account.getInvoices().add(invoice);
             genericDao.saveOrUpdate(account);
         }
         return account;

@@ -14,9 +14,8 @@
     <h1>Create &amp; <span>Organize</span> Resources</h1>
 
     <div class="span8">
+        <h2>Create</h2>
         <div class="row">
-            <h2>Create</h2>
-
             <div class="span4">
                 <h3 class="document-mid-red"><@link "document" "Document" /></h3>
                 A written, printed record of information, evidence, or analysis. Examples from archaeology include published articles, books, excavation
@@ -28,6 +27,7 @@
                 drawings or figures, and some maps.
             </div>
         </div>
+
         <div class="row">
             <div class="span4">
                 <h3 class="dataset-mid-red"><@link "dataset" "Dataset" /></h3>
@@ -36,12 +36,12 @@
                 as well as large databases cataloging all artifacts from a site.
             </div>
             <div class="span4">
-                <h3>
-                    Have lots of resources?</br>
-                    <a class="button btn submitButton" href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">Bulk Upload</a>
-                </h3>
+                <h3>Have lots of resources?</h3>
+                <a class="button submitButton" href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">Bulk Upload</a>
+
             </div>
         </div>
+
         <div class="row">
             <div class="span4">
                 <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
@@ -52,7 +52,8 @@
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
             </div>
         </div>
-    <#if videoEnabled>
+
+        <#if videoEnabled>
         <div class="row">
             <div class="span4">
                 <h3 class="video-mid-red"><@link "video" "Video" /></h3>
@@ -63,7 +64,8 @@
                 An audio file
             </div>
         </div>
-    </#if>
+        </#if>
+
         <div class="row">
             <div class="span4">
                 <h3 class="ontology-mid-red"><@link "ontology" "Ontology"/></h3>
@@ -77,7 +79,8 @@
                 coding packet, and are part of the proper documentation of a dataset.
             </div>
         </div>
-    <#if archiveFileEnabled>
+
+        <#if archiveFileEnabled>
         <div class="row">
             <div class="span4">
             </div>
@@ -86,7 +89,7 @@
                 The upload of archived data from a ${siteAcronym} compatible field server that has been used in conjunction with mobile devices on a site. <br/>
             </div>
         </div>
-    </#if>
+        </#if>
     </div>
 
     <div class="span4">
