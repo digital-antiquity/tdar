@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -108,12 +109,12 @@ public class BulkUploadService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<Long, AsyncUpdateReceiver> asyncStatusMap;
+    private  Map<Long, AsyncUpdateReceiver> asyncStatusMap;
     
     
     public BulkUploadService() {
             MapMaker mapMaker = new MapMaker();
-            asyncStatusMap = mapMaker.weakKeys().makeMap();
+            asyncStatusMap = mapMaker.makeMap();
     }
     /**
      * The Save method needs to endpoints, one with the @Async annotation to
