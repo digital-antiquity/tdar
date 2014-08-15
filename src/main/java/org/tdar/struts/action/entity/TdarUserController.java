@@ -38,7 +38,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/user")
-public class UserInfoController extends AbstractPersonController<TdarUser> {
+public class TdarUserController extends AbstractPersonController<TdarUser> {
 
     @Autowired
     private transient ObfuscationService obfuscationService;

@@ -1023,7 +1023,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         logger.info(controller.view());
         assertTrue(controller.getResults().contains(draftDocument));
         assertTrue(controller.getResults().contains(activeDocument));
-        controller.getSessionData().clearAuthenticationToken();
+        
         controller = generateNewController(CollectionController.class);
         initAnonymousUser(controller);
         controller.setId(collection.getId());

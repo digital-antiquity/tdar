@@ -513,6 +513,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
                 user_ = genericService.find(TdarUser.class, user.getId());
+            } else {
+                controller.getSessionData().clearAuthenticationToken();
             }
             controller.getSessionData().setTdarUser(user_);
         }
