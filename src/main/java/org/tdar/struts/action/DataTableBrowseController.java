@@ -1,8 +1,6 @@
 package org.tdar.struts.action;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -68,7 +66,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }
             setResultsWrapper(selectAllFromDataTable);
-            getLogger().debug("results: {} ", getResultsWrapper().getResults());
+//            getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
         setJsonResult(getResultsWrapper());
         return SUCCESS;

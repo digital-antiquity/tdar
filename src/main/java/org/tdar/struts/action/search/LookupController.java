@@ -1,5 +1,6 @@
 package org.tdar.struts.action.search;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
@@ -138,12 +140,23 @@ public class LookupController extends AbstractLookupController<Indexable> {
             })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(term) && !checkMinString(keywordType)) {
+        getLogger().debug("term: {} , minLength: {}", term, getMinLookupLength());
+        setLookupSource(LookupSource.KEYWORD);
+        
+        if (StringUtils.isBlank(keywordType)) {
+            addActionError(getText("lookupController.specify_keyword_type"));
+            jsonifyResult(JsonLookupFilter.class);
+            return ERROR;
+        }
+        
+        if (!checkMinString(term)) {
+            setResults(new ArrayList<Indexable>());
+            jsonifyResult(JsonLookupFilter.class);
+            getLogger().debug("returning ... too short?" + term);
             return SUCCESS;
         }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
