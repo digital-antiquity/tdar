@@ -102,8 +102,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
             excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
-            excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL + "*");
-            excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
+            excelUnit.assertCellEquals(0, 14, BulkImportField.YEAR_LABEL + "*");
+            excelUnit.assertCellCommentEquals(0, 14, BulkImportField.YEAR_DESCRIPTION);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
             excelUnit.assertRowContains(0, BulkImportField.YEAR_LABEL + "*");
