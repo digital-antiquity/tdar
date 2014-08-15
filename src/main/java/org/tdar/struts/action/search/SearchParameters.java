@@ -320,9 +320,9 @@ public class SearchParameters {
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
-        if (CollectionUtils.isNotEmpty(this.getSiteNames())) {
+        if (CollectionUtils.isNotEmpty(siteNames)) {
             QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
-            for (String q : getSiteNames()) {
+            for (String q : siteNames) {
                 if (SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
@@ -330,7 +330,7 @@ public class SearchParameters {
                     subgroup.append(siteCodePart.setBoost(5f));
                 }
             }
-            appendKeywordQueryParts(subgroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
+            appendKeywordQueryParts(subgroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(siteNames));
             queryPartGroup.append(subgroup);
         }
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
@@ -450,6 +450,7 @@ public class SearchParameters {
                 } else {
                     keyword.setLabel(value.toString());
                 }
+                logger.debug("kwd: {}", keyword);
                 kwdValues.add(keyword);
             } catch (Exception e) {
                 throw new TdarRecoverableRuntimeException(e);
