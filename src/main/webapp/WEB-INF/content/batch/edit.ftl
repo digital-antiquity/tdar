@@ -13,6 +13,11 @@
 
     <#macro customH1>
     <h1>Batch Resource Upload</h1>
+    <div class="glide">
+        <p><b>Note</b>
+        For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
+        </p>
+    </div>
     </#macro>
 
     <#macro basicInformation>
