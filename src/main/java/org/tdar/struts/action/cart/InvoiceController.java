@@ -70,12 +70,21 @@ public class InvoiceController extends AbstractCartController {
      * @return
      */
     @Actions(value = {
-            @Action("add"),
+            @Action("add")
+    })
+    @SkipValidation
+    public String execute() {
+        // just in case a user comes through and explicitly wants to start over
+        clearPendingInvoice();
+        return SUCCESS;
+    }
+
+    @Actions(value = {
             @Action(value = "modify", results = { @Result(name = SUCCESS, location = "add.ftl") })
     })
     @SkipValidation
     // @GetOnly
-    public String execute() {
+    public String modify() {
         return SUCCESS;
     }
 

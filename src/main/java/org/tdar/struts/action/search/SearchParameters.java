@@ -482,7 +482,12 @@ public class SearchParameters {
 
     @Override
     public String toString() {
-        return toQueryPartGroup(null).toString();
+        try {
+            return toQueryPartGroup(null).toString();
+        } catch (Exception e) {
+            logger.error("error in toString()", e);
+            return super.toString();
+        }
     }
 
     public List<StringRange> getCreatedDates() {
