@@ -75,6 +75,7 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.index.bridge.PersistentReaderBridge;
@@ -183,6 +184,13 @@ public abstract class InformationResource extends Resource {
     @Lob
     private String licenseText;
 
+    @BulkImportField(label = "DOI")
+    @Field
+    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Column(name="external_doi")
+    private String doi;
+
     @Column(name = "external_reference", nullable = true)
     @XmlTransient
     private boolean externalReference;
@@ -214,14 +222,14 @@ public abstract class InformationResource extends Resource {
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
     @BulkImportField(label = "Publisher Location")
@@ -237,19 +245,14 @@ public abstract class InformationResource extends Resource {
 
     // downward inheritance sections
     @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
     private boolean inheritingInvestigationInformation = false;
     @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
     private boolean inheritingSiteInformation = false;
     @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
     private boolean inheritingMaterialInformation = false;
     @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
     private boolean inheritingOtherInformation = false;
     @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
     private boolean inheritingCulturalInformation = false;
 
     @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
@@ -863,7 +866,7 @@ public abstract class InformationResource extends Resource {
             sb.append(" ").append(getResourceProviderInstitution().getName());
         }
         sb.append(" ").append(getPublisherName());
-
+        sb.append(" ").append(getDoi());
         if (MapUtils.isNotEmpty(relatedDatasetData)) {
             for (String v : relatedDatasetData.values()) {
                 sb.append(v);
@@ -1175,4 +1178,13 @@ public abstract class InformationResource extends Resource {
             boolean inheritingIndividualAndInstitutionalCredit) {
         this.inheritingIndividualAndInstitutionalCredit = inheritingIndividualAndInstitutionalCredit;
     }
+
+    public String getDoi() {
+        return doi;
+    }
+
+    public void setDoi(String doi) {
+        this.doi = doi;
+    }
+
 }

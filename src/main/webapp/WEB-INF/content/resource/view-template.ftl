@@ -522,6 +522,11 @@
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>
         </#if>
+        <#if resource.doi?has_content>
+            <li><strong>DOI</strong><br><a href="http://dx.doi.org/${resource.doi}">${resource.doi}</a></li>
+        <#elseif resource.externalId?has_content>
+            <li><strong>DOI</strong><br>${resource.externalId}</li>
+        </#if>
         <#if local_.sidebarDataBottom?? && local_.sidebarDataBottom?is_macro>
             <@local_.sidebarDataBottom />
         </#if>

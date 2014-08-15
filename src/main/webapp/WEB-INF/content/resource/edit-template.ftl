@@ -184,6 +184,12 @@
                 <@local_.citationInformation />
             </#if>
 
+            <#if !resource.resourceType.project>
+            <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
+            </div>
+            </#if>        
+
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
                 <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
             </div>

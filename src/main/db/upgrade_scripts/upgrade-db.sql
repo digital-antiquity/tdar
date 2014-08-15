@@ -218,3 +218,8 @@ alter table creator_view_statistics drop constraint creator_view_statistics_crea
 
 -- abrin 07/27/2014
 alter table creator add column hidden_if_unreferenced boolean not null default false;
+
+
+-- abrin 08/15/2014
+alter table information_resource add column external_doi varchar(255);
+update information_resource set external_doi=doi from information_resource ir, document where ir.id=information_resource.id and information_resource.id=document.id;
