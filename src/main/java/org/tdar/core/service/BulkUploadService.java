@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,7 +57,8 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
@@ -109,12 +110,15 @@ public class BulkUploadService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private  Map<Long, AsyncUpdateReceiver> asyncStatusMap;
+    private  Cache<Long, AsyncUpdateReceiver> asyncStatusMap;
     
     
     public BulkUploadService() {
-            MapMaker mapMaker = new MapMaker();
-            asyncStatusMap = mapMaker.makeMap();
+            asyncStatusMap = CacheBuilder.newBuilder()
+                    .concurrencyLevel(4)
+                    .maximumSize(100)
+                    .expireAfterWrite(10, TimeUnit.MINUTES)
+                    .build();
     }
     /**
      * The Save method needs to endpoints, one with the @Async annotation to
@@ -147,7 +151,7 @@ public class BulkUploadService {
                 manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
                 if (Persistable.Base.isNotNullOrTransient(ticketId)) {
-                    getAsyncStatusMap().put(ticketId, manifestProxy.getAsyncUpdateReceiver());
+                    asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
                 }
             } finally {
                 if (stream != null) {
@@ -457,7 +461,7 @@ public class BulkUploadService {
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService, reflectionService);
         if (Persistable.Base.isNotNullOrTransient(ticketId)) {
-            getAsyncStatusMap().put(ticketId, proxy.getAsyncUpdateReceiver());
+            asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
@@ -602,10 +606,7 @@ public class BulkUploadService {
      * @return
      */
     public AsyncUpdateReceiver checkAsyncStatus(Long ticketId) {
-        return asyncStatusMap.get(ticketId);
+        return asyncStatusMap.getIfPresent(ticketId);
     }
 
-    public Map<Long, AsyncUpdateReceiver> getAsyncStatusMap() {
-        return asyncStatusMap;
-    }
 }
