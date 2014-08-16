@@ -98,7 +98,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     /**
      * Save basic metadata of the registering concept.
      * 
-     * @param concept
      */
     @Override
     protected String save(Image image) {
@@ -413,5 +412,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     public void setResultJson(InputStream resultJson) {
         this.resultJson = resultJson;
+    }
+
+    /**
+     * For edit page: return true if user has pre-validated a mapping file
+     * @return
+     */
+    public boolean isTemplateValidated() {
+        //TODO: probably better off having validate action simply render the edit form instead of redirecting to /batch/add?obnoxiousQueryString
+        return Persistable.Base.isNotNullOrTransient(getTicketId()) && StringUtils.isNotBlank(templateFilename);
     }
 }

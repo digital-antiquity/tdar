@@ -1,8 +1,11 @@
 <#escape _untrusted as _untrusted?html>
 
     <#macro printTemplate>
-    <div class="glide">
-        <#if !ticketId?has_content || ticketId == -1 >
+    <div class="">
+        <#if templateValidated>
+            <@s.hidden name="templateFilename" />
+            <strong>Using template file</strong>:${templateFilename}
+        <#else>
             <h3>Upload record specific metadata</h3>
 
             <div data-tiplabel="Upload document(s)" data-tooltipcontent="The metadata entered on this form is tied to that
@@ -17,14 +20,8 @@
                     <li>Upload the mapping file in the input immediately below.
                         <@s.file label="Upload Mapping File" cssClass="bulkValidateFileType" labelposition='top' name='uploadedFiles' size='40'/>
                     </li>
-                    <li>Finally, click the "<em>Validate Template</em>" button.</li>
                 </ol>
             </div>
-            <br/>
-
-        <#else>
-            <@s.hidden name="templateFilename" />
-            <strong>Template File</strong>:${templateFilename}
         </#if>
     </div>
     </#macro>

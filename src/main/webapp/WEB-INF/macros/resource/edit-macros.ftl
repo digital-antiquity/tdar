@@ -1212,6 +1212,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+{% var confclass = (document.location.pathname === "/batch/add") ? "" : "confidential-contact-required" ;%}
 {% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
             <td colspan="4">
@@ -1231,11 +1232,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <div class="control-group">
                     <label class="control-label">Restriction</label>
                     <div class="controls">
-                        <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
         <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
         style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
         onchange="TDAR.fileupload.updateFileAction(this)"
-        cssClass="fileProxyConfidential confidential-contact-required"/>
+        cssClass="fileProxyConfidential {%=confclass%}"/>
                     </div>
 
                     <label class="control-label" for="">Date Created</label>

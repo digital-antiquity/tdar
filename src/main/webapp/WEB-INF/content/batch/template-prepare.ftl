@@ -17,18 +17,21 @@
         <@s.token name='struts.csrf.token' />
         <h2>Basic</h2>
         <@batchCommon.printTemplate />
+        <p>Finally, click the "<em>Validate Template</em>" button.</p>
+
         <@s.hidden name="projectId" value="${projectId_}" />
         <@edit.submit fileReminder=false span="span8" label="Validate Template" />
-
     </@s.form>
     </div>
 
-    <div class="span3">
-        <h2>Advanced</h2>
 
-        <p>If you've used the bulk upload tool before, or already have a template that you know works, <a
-                href="<@s.url value="add?projectId=${(projectId_!-1)?c}"/>">skip to the upload form</a>.
-    </div>
+    <#--<div class="span3">-->
+        <#--<h2>Advanced</h2>-->
+
+        <#--<p>If you've used the bulk upload tool before, or already have a template that you know works,-->
+            <#--<@s.a href="add?projectId=${(projectId_!-1)?c}">">skip to the upload form</@s.a>.-->
+        <#--</p>-->
+    <#--</div>-->
 </div>
 
 </div>
