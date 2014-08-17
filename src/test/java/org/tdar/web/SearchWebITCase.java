@@ -112,13 +112,14 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testUncontrolledSiteTypeKeywords() {
         reindex();
-        gotoPage("/project/add");
+        gotoPage("/document/add");
         String title = "testing uncontrolled site type keywords";
         String keyword = "uncontrolledsitetypeone";
-        setInput("project.title", title);
-        setInput("project.description",
+        setInput("document.title", title);
+        setInput("document.description",
                 "testing uncontrolled site type keywords");
         setInput("status", "ACTIVE");
+        setInput("projectId", "1");
         setInput("uncontrolledSiteTypeKeywords[0]", keyword);
         submitForm();
         gotoPage(ADVANCED_SEARCH_BASE_URL);
@@ -227,13 +228,17 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         urls.add(SEARCH_RESULTS_BASE_URL + "?startRecord=0&query=%22Nowood+River+Drainage%22&recordsPerPage=10&resourceTypes=DOCUMENT");
         urls.add(SEARCH_RESULTS_BASE_URL + "?startRecord=0&query=%22Neptune%22&fileAccess=PUBLICALLY_ACCESSIBLE&resourceTypes=DOCUMENT");
         urls.add(SEARCH_RESULTS_BASE_URL + "?startRecord=0&uncontrolledCultureKeywords=Roman&fileAccess=PUBLICALLY_ACCESSIBLE&documentType=BOOK");
-        urls.add(SEARCH_RESULTS_BASE_URL + "?startRecord=0&recordsPerPage=10&siteNameKeywords=5MT4683&resourceTypes=DOCUMENT&documentType=BOOK&fileAccess=PUBLICALLY_ACCESSIBLE");
+        urls.add(SEARCH_RESULTS_BASE_URL
+                + "?startRecord=0&recordsPerPage=10&siteNameKeywords=5MT4683&resourceTypes=DOCUMENT&documentType=BOOK&fileAccess=PUBLICALLY_ACCESSIBLE");
         urls.add(SEARCH_RESULTS_BASE_URL + "?uncontrolledSiteTypeKeywords=dam&startRecord=0&documentType=BOOK_SECTION");
         urls.add(SEARCH_RESULTS_BASE_URL + "?geographicKeywords=US%20(ISO%20Country%20Code)");
-        urls.add(SEARCH_RESULTS_BASE_URL + "?query=ontario&title=&id=&projectIds%5B0%5D=&resourceTypes=DATASET&coverageDates%5B0%5D.id=&coverageDates%5B0%5D.dateType=NONE&coverageDates%5B0%5D.startDate=&coverageDates%5B0%5D.endDate=&coverageDates%5B0%5D.description=&geographicKeywords%5B0%5D=&minx=&maxx=&miny=&maxy=&__multiselect_investigationTypeIds=&siteNameKeywords%5B0%5D=&__multiselect_approvedSiteTypeKeywordIds=&uncontrolledSiteTypeKeywords%5B0%5D=&__multiselect_materialKeywordIds=&__multiselect_approvedCultureKeywordIds=&uncontrolledCultureKeywords%5B0%5D=&temporalKeywords%5B0%5D=&otherKeywords%5B0%5D=&searchSubmitterIds%5B0%5D=&searchSubmitter.lastName=abc&searchSubmitter.firstName=&searchSubmitter.email=&searchSubmitter.institution.name=&searchContributorIds%5B0%5D=&searchContributor.lastName=&searchContributor.firstName=&searchContributor.email=&searchContributor.institution.name=&sortField=RELEVANCE");
-        urls.add(SEARCH_RESULTS_BASE_URL + "?query=canada&title=&id=&projectIds%5B0%5D=&resourceTypes=DATASET&coverageDates%5B0%5D.id=&coverageDates%5B0%5D.dateType=NONE&coverageDates%5B0%5D.startDate=&coverageDates%5B0%5D.endDate=&coverageDates%5B0%5D.description=&geographicKeywords%5B0%5D=&minx=&maxx=&miny=&maxy=&__multiselect_investigationTypeIds=&siteNameKeywords%5B0%5D=&__multiselect_approvedSiteTypeKeywordIds=&uncontrolledSiteTypeKeywords%5B0%5D=&__multiselect_materialKeywordIds=&__multiselect_approvedCultureKeywordIds=&uncontrolledCultureKeywords%5B0%5D=&temporalKeywords%5B0%5D=&otherKeywords%5B0%5D=&searchSubmitterIds%5B0%5D=&searchSubmitter.lastName=abc&searchSubmitter.firstName=&searchSubmitter.email=&searchSubmitter.institution.name=&searchContributorIds%5B0%5D=&searchContributor.lastName=&searchContributor.firstName=adam&searchContributor.email=&searchContributor.institution.name=&sortField=RELEVANCE");
-        urls.add(SEARCH_RESULTS_BASE_URL + "?__multiselect_groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=&groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B2%5D=KEYWORD_CULTURAL&sortField=RELEVANCE&__multiselect_groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=&groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=272&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=&groups%5B0%5D.fieldTypes%5B0%5D=KEYWORD_SITE&groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=4");
-        
+        urls.add(SEARCH_RESULTS_BASE_URL
+                + "?query=ontario&title=&id=&projectIds%5B0%5D=&resourceTypes=DATASET&coverageDates%5B0%5D.id=&coverageDates%5B0%5D.dateType=NONE&coverageDates%5B0%5D.startDate=&coverageDates%5B0%5D.endDate=&coverageDates%5B0%5D.description=&geographicKeywords%5B0%5D=&minx=&maxx=&miny=&maxy=&__multiselect_investigationTypeIds=&siteNameKeywords%5B0%5D=&__multiselect_approvedSiteTypeKeywordIds=&uncontrolledSiteTypeKeywords%5B0%5D=&__multiselect_materialKeywordIds=&__multiselect_approvedCultureKeywordIds=&uncontrolledCultureKeywords%5B0%5D=&temporalKeywords%5B0%5D=&otherKeywords%5B0%5D=&searchSubmitterIds%5B0%5D=&searchSubmitter.lastName=abc&searchSubmitter.firstName=&searchSubmitter.email=&searchSubmitter.institution.name=&searchContributorIds%5B0%5D=&searchContributor.lastName=&searchContributor.firstName=&searchContributor.email=&searchContributor.institution.name=&sortField=RELEVANCE");
+        urls.add(SEARCH_RESULTS_BASE_URL
+                + "?query=canada&title=&id=&projectIds%5B0%5D=&resourceTypes=DATASET&coverageDates%5B0%5D.id=&coverageDates%5B0%5D.dateType=NONE&coverageDates%5B0%5D.startDate=&coverageDates%5B0%5D.endDate=&coverageDates%5B0%5D.description=&geographicKeywords%5B0%5D=&minx=&maxx=&miny=&maxy=&__multiselect_investigationTypeIds=&siteNameKeywords%5B0%5D=&__multiselect_approvedSiteTypeKeywordIds=&uncontrolledSiteTypeKeywords%5B0%5D=&__multiselect_materialKeywordIds=&__multiselect_approvedCultureKeywordIds=&uncontrolledCultureKeywords%5B0%5D=&temporalKeywords%5B0%5D=&otherKeywords%5B0%5D=&searchSubmitterIds%5B0%5D=&searchSubmitter.lastName=abc&searchSubmitter.firstName=&searchSubmitter.email=&searchSubmitter.institution.name=&searchContributorIds%5B0%5D=&searchContributor.lastName=&searchContributor.firstName=adam&searchContributor.email=&searchContributor.institution.name=&sortField=RELEVANCE");
+        urls.add(SEARCH_RESULTS_BASE_URL
+                + "?__multiselect_groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=&groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B2%5D=KEYWORD_CULTURAL&sortField=RELEVANCE&__multiselect_groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=&groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=272&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=&groups%5B0%5D.fieldTypes%5B0%5D=KEYWORD_SITE&groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=4");
+
         List<String> empty = new ArrayList<String>();
         List<String> toobig = new ArrayList<String>();
         for (String url : urls) {

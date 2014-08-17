@@ -39,7 +39,9 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.ProjectController;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
@@ -639,6 +641,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setMinLookupLength(0);
         controller.lookupPerson();
         controller.lookupInstitution();
+        controller.setKeywordType("TemporalKeyword");
         controller.lookupKeyword();
         controller.lookupResource();
         controller.lookupResourceCollection();
