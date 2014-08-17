@@ -206,7 +206,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             }
 
         } catch (Throwable e) {
-            addActionErrorWithException(getText("bulkUploadController.problem_template"), e);
+            addActionErrorWithException(getText("bulkUploadController.problem_template", TdarConfiguration.getInstance().getSiteAcronym()), e);
         }
         if (CollectionUtils.isNotEmpty(getActionErrors())) {
             return VALIDATE_ERROR;
