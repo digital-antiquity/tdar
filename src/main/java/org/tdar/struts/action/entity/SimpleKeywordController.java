@@ -44,10 +44,10 @@ public class SimpleKeywordController extends AuthenticationAware.Base implements
     @Override
     public void prepare() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(id)) {
-            addActionError(getText("simpleKeywordEditAction.id_required"));
+            addActionError(getText("simpleKeywordAction.id_required"));
         }
         if (keywordType == null) {
-            addActionError(getText("simpleKeywordEditAction.type_required"));
+            addActionError(getText("simpleKeywordAction.type_required"));
         }
 
         setKeyword(genericKeywordService.find(keywordType.getKeywordClass(), id));

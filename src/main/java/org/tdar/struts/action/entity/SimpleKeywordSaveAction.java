@@ -51,7 +51,7 @@ public class SimpleKeywordSaveAction extends AuthenticationAware.Base implements
     public void validate() {
         super.validate();
         if (StringUtils.isBlank(label)) {
-            addActionError(getText("simpleKeywordAction.label_missing"));
+            addActionError(getText("simpleKeywordSaveAction.label_missing"));
         }
         Keyword byLabel = genericKeywordService.findByLabel(keywordType.getKeywordClass(), label);
         if (Persistable.Base.isNotNullOrTransient(byLabel) && !Objects.equals(keyword, byLabel)) {
@@ -62,10 +62,10 @@ public class SimpleKeywordSaveAction extends AuthenticationAware.Base implements
     @Override
     public void prepare() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(id)) {
-            addActionError(getText("simpleKeywordEditAction.id_required"));
+            addActionError(getText("simpleKeywordAction.id_required"));
         }
         if (keywordType == null) {
-            addActionError(getText("simpleKeywordEditAction.type_required"));
+            addActionError(getText("simpleKeywordAction.type_required"));
         }
 
         keyword = genericKeywordService.find(keywordType.getKeywordClass(), id);
