@@ -1386,8 +1386,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local personPrefix="" />
         <#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
         <#local strutsPrefix="${prefix}${_index}" />
-        <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
-        <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local rowIdElement="${prefix?replace('.','_')}Row_${_indexNumber}_p" />
+        <#local idIdElement="${prefix?replace('.','_')}Id__id_${_indexNumber}_p" />
         <#local idIdElement=idIdElement?replace(".","_") /> <#-- strip dots to make css selectors easier to write  -->
         <#local requiredClass><#if required>required</#if></#local>
         <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
