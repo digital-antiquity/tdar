@@ -275,8 +275,9 @@ public class GenericKeywordService extends GenericService {
         return genericKeywordDao.findAuthority(kwd);
     }
 
-    @Transactional
+    @Transactional(readOnly=false)
     public void saveKeyword(String label, String description, Keyword keyword) {
+        genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
         keyword.setDefinition(description);
         saveOrUpdate(keyword);

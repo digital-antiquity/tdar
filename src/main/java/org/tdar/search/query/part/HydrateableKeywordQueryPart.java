@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -34,6 +35,13 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         setOperator(Operator.OR);
         setActualClass(originalClass);
         setFieldName(fieldName);
+        setFieldValues(fieldValues_);
+    }
+
+    public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
+        setOperator(Operator.OR);
+        setActualClass((Class<K>)type.getKeywordClass());
+        setFieldName(type.getFieldName());
         setFieldValues(fieldValues_);
     }
 
