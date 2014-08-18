@@ -230,8 +230,11 @@
                 <a rel="noindex" href="<@s.url action=action includeParams="all">
                     <@s.param name="${facetParam}">${facet.value}</@s.param>
                     <@s.param name="startRecord" value="0"/>
-                    <#if facetParam != "documentType">
+                    <#if (documentType!'') == '' && facetParam != 'documentType'>
                         <@s.param name="documentType" value=""/>
+                    </#if>
+                    <#if (fileAccess!'') == '' && facetParam != 'fileAccess'>
+                        <@s.param name="fileAccess" value=""/>
                     </#if>
                     <#if facetParam != "integratableOptions">
                         <@s.param name="integratableOptions" value=""/>
