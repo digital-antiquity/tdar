@@ -2,6 +2,9 @@
 
 <@s.form namespace="/" action="agreement-response" theme="simple">
     <@s.token name='struts.csrf.token' />
+    <p>Some of ${siteAcronym}'s Terms have changed. Please review the changed versions of the terms and accept.  If you have any questions or concerns, please <a href="mailto:${contactEmail}">contact us</a>.
+    
+    </p>
     <#if tosAcceptanceRequired>
     <label class="checkbox">
         <input type="checkbox" name="acceptedAuthNotices" id="cbta" value="TOS_AGREEMENT">
