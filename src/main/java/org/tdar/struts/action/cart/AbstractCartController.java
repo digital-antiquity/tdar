@@ -37,10 +37,6 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     protected String inputResultName = INPUT;
 
-    // // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
-    // private TdarUser owner = new TdarUser();
-    // private Long ownerId;
-
     @Autowired
     protected transient RecaptchaService recaptchaService;
     // FIXME: this is unsafe, depends on order of initialization

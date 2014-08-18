@@ -14,6 +14,7 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -30,6 +31,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     private static final long serialVersionUID = 1525006233392261028L;
 
     public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
+    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(getH());
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -89,6 +91,14 @@ public class DownloadLoginController extends AbstractDownloadController implemen
         if (!isPostRequest() || errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getDownloadUserLogin().getLoginUsername());
         }
+    }
+
+    public DownloadUserLogin getDownloadUserLogin() {
+        return downloadUserLogin;
+    }
+
+    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
+        this.downloadUserLogin = downloadUserLogin;
     }
 
 }

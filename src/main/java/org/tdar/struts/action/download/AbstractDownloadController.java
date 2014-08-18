@@ -1,6 +1,5 @@
 package org.tdar.struts.action.download;
 
-import org.apache.regexp.recompile;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
@@ -20,8 +19,6 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.AntiSpamHelper;
-import org.tdar.struts.data.DownloadUserLogin;
-import org.tdar.struts.data.DownloadUserRegistration;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -83,8 +80,6 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
-    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(h);
-    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(h);
 
     public InformationResource getInformationResource() {
         return informationResource;
@@ -124,22 +119,6 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     public void setH(AntiSpamHelper h) {
         this.h = h;
-    }
-
-    public DownloadUserRegistration getDownloadRegistration() {
-        return downloadRegistration;
-    }
-
-    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
-        this.downloadRegistration = downloadRegistration;
-    }
-
-    public DownloadUserLogin getDownloadUserLogin() {
-        return downloadUserLogin;
-    }
-
-    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
-        this.downloadUserLogin = downloadUserLogin;
     }
 
     @Override

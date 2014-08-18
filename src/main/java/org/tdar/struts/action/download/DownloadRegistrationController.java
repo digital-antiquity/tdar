@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.DownloadUserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -27,6 +27,7 @@ import com.opensymphony.xwork2.Validateable;
 public class DownloadRegistrationController extends AbstractDownloadController implements Validateable, Preparable {
 
     private static final long serialVersionUID = -893535919691607147L;
+    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(getH());
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -70,4 +71,13 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     public void prepare() {
         super.prepare();
     }
+
+    public DownloadUserRegistration getDownloadRegistration() {
+        return downloadRegistration;
+    }
+
+    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
+        this.downloadRegistration = downloadRegistration;
+    }
+
 }
