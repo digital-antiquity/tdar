@@ -1,5 +1,6 @@
 package org.tdar.struts.action.download;
 
+import org.apache.regexp.recompile;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
@@ -81,7 +82,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
 
     @Autowired
     private transient RecaptchaService recaptchaService;
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(h);
     private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(h);
 
@@ -178,5 +179,13 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public void setDownloadTransferObject(DownloadTransferObject downloadTransferObject) {
         getLogger().debug("setting download object: {}", downloadTransferObject);
         this.downloadTransferObject = downloadTransferObject;
+    }
+
+    public RecaptchaService getRecaptchaService() {
+        return recaptchaService;
+    }
+
+    public void setRecaptchaService(RecaptchaService recaptchaService) {
+        this.recaptchaService = recaptchaService;
     }
 }

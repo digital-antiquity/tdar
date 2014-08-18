@@ -2,6 +2,7 @@ package org.tdar.struts.data;
 
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 public class CartUserRegistration extends UserRegistration {
 
@@ -19,12 +20,12 @@ public class CartUserRegistration extends UserRegistration {
     };
     
     @Override
-    public ErrorTransferObject validate(AuthenticationService authService) {
+    public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchaService) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {
             setAcceptTermsOfUse(true);
             setRequestingContributorAccess(true);
         }
-        ErrorTransferObject validate = super.validate(authService);
+        ErrorTransferObject validate = super.validate(authService, recaptchaService);
         if (!isRequestingContributorAccess()) {
             validate.addFieldError(getPrefix() + "requestingContributorAccess", "userAccountController.require_contributor_agreement");
         }

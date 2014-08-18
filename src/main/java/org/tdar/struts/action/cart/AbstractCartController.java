@@ -44,7 +44,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     @Autowired
     protected transient RecaptchaService recaptchaService;
     // FIXME: this is unsafe, depends on order of initialization
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
 
     /**
      * Return a pending invoice if found in session scope

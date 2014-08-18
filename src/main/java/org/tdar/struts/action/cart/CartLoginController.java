@@ -48,7 +48,7 @@ public class CartLoginController extends AbstractCartController implements Valid
     @Autowired
     private AuthenticationService authenticationService;
 
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private UserLogin userLogin = new UserLogin(h);
 
     // FIXME: is this still needed? revisit

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -61,7 +62,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService);
+        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService, getRecaptchaService());
         processErrorObject(errors);
     }
     

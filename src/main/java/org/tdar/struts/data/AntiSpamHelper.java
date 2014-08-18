@@ -31,20 +31,7 @@ public class AntiSpamHelper implements Serializable {
     private ReCaptcha recaptcha;
     private Person person;
     private String reCaptchaText;
-
-    private RecaptchaService recaptchaService;
-    
-    public AntiSpamHelper() {
-    }
-    
-    // FIXME: replace with RecaptchaService.getAntiSpamHelper() or AntiSpamService
-    public AntiSpamHelper(RecaptchaService recaptchaService) {
-        logger.debug("recaptcha service: {}", recaptchaService);
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            setRecaptcha(recaptchaService.generateRecaptcha());
-            setReCaptchaText(getRecaptcha().createRecaptchaHtml(null, null));
-        }
-    }
+        
 
     public Long getTimeCheck() {
         return timeCheck;
@@ -94,9 +81,9 @@ public class AntiSpamHelper implements Serializable {
         this.reCaptchaText = reCaptchaText;
     }
 
-    public boolean checkRecaptcha() {
+    public boolean checkRecaptcha(RecaptchaService recaptchaService) {
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            final boolean reCaptchaResponse = getRecaptchaService().checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
+            final boolean reCaptchaResponse = recaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field());
             if (reCaptchaResponse == false) {
                 throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
             }
@@ -104,19 +91,12 @@ public class AntiSpamHelper implements Serializable {
         return true;
     }
 
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
-    }
 
-    public void setRecaptchaService(RecaptchaService recaptchaService) {
-        this.recaptchaService = recaptchaService;
-    }
-
-    public boolean checkForSpammers(boolean ignoreTimecheck) {
+    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck) {
         long now = System.currentTimeMillis();
         checkUserInfo();
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            checkRecaptcha();
+            checkRecaptcha(recaptchaService);
         }
 
         if (StringUtils.isNotBlank(getComment())) {
@@ -163,6 +143,15 @@ public class AntiSpamHelper implements Serializable {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public void generateRecapcha(RecaptchaService recaptchaService) {
+        logger.debug("recaptcha service: {}", recaptchaService);
+        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            setRecaptcha(recaptchaService.generateRecaptcha());
+            setReCaptchaText(getRecaptcha().createRecaptchaHtml(null, null));
+        }
+        
     }
 
 }

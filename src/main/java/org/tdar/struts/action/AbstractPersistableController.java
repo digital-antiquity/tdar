@@ -67,7 +67,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Autowired
     private transient RecaptchaService recaptchaService;
 
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
