@@ -340,7 +340,9 @@
     </#macro>
 
     <#macro userAgreementSummary>
-    which simply states that you <em>(1)</em> will not use any of the information that you obtain from ${siteAcronym} in a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization that created the information that you download.
+    which simply states that you <em>(1)</em> will not use any of the information that you obtain from ${siteAcronym} in 
+    a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization 
+    that created the information that you download.
     </#macro>
 
 </#escape>

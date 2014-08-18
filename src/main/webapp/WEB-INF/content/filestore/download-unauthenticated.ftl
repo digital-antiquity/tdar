@@ -20,7 +20,7 @@
         <h1>Download: ${title}</h1>
 <div class="hero-unit hero-condensed">
 <h2 class="red">Log in / Registration Required</h2>
-        <p>You must register orlLog in to download files from ${siteAcronym}. If you already are a registered ${siteAcronym} User, please log in. Otherwise, please register below.  There is no charge for registering.</p>
+        <p>You must register or Log in to download files from ${siteAcronym}. If you already are a registered ${siteAcronym} User, please log in. Otherwise, please register below.  There is no charge for registering.</p>
 
         <p>We ask that you provide some information and affirm that you will abide by the <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">${siteAcronym} User Agreement</@s.a>, 
           <@helptext.userAgreementSummary /></p>
