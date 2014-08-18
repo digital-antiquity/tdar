@@ -25,13 +25,18 @@
     </div>
 
 
-    <#--<div class="span3">-->
-        <#--<h2>Advanced</h2>-->
-
-        <#--<p>If you've used the bulk upload tool before, or already have a template that you know works,-->
-            <#--<@s.a href="add?projectId=${(projectId_!-1)?c}">">skip to the upload form</@s.a>.-->
-        <#--</p>-->
-    <#--</div>-->
+    <#--  not a normal behavior -->
+    <#-- 
+    <#if editor>
+        <div class="span3">
+            <h2>Advanced</h2>
+    
+            <p>If you've used the bulk upload tool before, or already have a template that you know works,
+                <@s.a href="add?projectId=${(projectId_!-1)?c}">">skip to the upload form</@s.a>.
+            </p>
+        </div>
+    </#if>
+    -->
 </div>
 
 </div>
