@@ -1012,7 +1012,6 @@ public abstract class InformationResource extends Resource {
 
     // shortcut for non-deleted, visible files
     @Transient
-    
     @XmlTransient
     @IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {

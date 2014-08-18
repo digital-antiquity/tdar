@@ -102,6 +102,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = Arrays.asList(EmailMessageType.values());
 
+    private String submitterProperName = "";
+
     @Autowired
     private XmlService xmlService;
 
@@ -277,6 +279,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
+        setupSubmitterField();
         return super.save();
     }
 
@@ -310,14 +313,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public String add() throws TdarActionException {
         accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
-
-        //if user has no invoices/funds to bill against,  redirect to cart page
+        setupSubmitterField();
+        // if user has no invoices/funds to bill against, redirect to cart page
         if (!isAbleToCreateBillableItem()) {
             addActionMessage(getText("resourceController.requires_funds"));
             return BILLING;
         }
 
-        //if user could otherwise create a billable item but isn't a contributor (an unlikely event), redirect to the profile page so that they can change their status.
+        // if user could otherwise create a billable item but isn't a contributor (an unlikely event), redirect to the profile page so that they can change
+        // their status.
         if (!isContributor()) {
             addActionMessage(getText("resourceController.must_be_contributor"));
             return CONTRIBUTOR;
@@ -333,7 +337,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @HttpsOnly
     @Override
     public String edit() throws TdarActionException {
+        setupSubmitterField();
         return super.edit();
+    }
+
+    private void setupSubmitterField() {
+        if (Persistable.Base.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
+            if (getSubmitter().getFirstName() != null && getSubmitter().getLastName() != null)
+                setSubmitterProperName(getSubmitter().getProperName());
+        } else {
+            setSubmitterProperName(getAuthenticatedUser().getProperName());
+        }
     }
 
     @Override
@@ -426,6 +440,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     /**
      * Returns true if authuser is able to create billable items, contributor status notwithstanding.
+     * 
      * @return
      */
     @Override
@@ -1188,6 +1203,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setEmailTypes(List<EmailMessageType> emailTypes) {
         this.emailTypes = emailTypes;
+    }
+
+    public String getSubmitterProperName() {
+        return submitterProperName;
+    }
+
+    public void setSubmitterProperName(String submitterProperName) {
+        this.submitterProperName = submitterProperName;
     }
 
 }

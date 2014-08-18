@@ -1644,18 +1644,6 @@ public class Resource implements Persistable, JsonModel,
         return null;
     }
 
-    // @Transient
-    // @Field(norms = Norms.NO, store = Store.YES, analyzer=@Analyzer(impl =
-    // TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
-    // public SimpleSearchType getSimpleSearchType() {
-    // return SimpleSearchType.RESOURCE;
-    // }
-    //
-    // public Status getStatusForSearch() {
-    // return getStatus();
-    // }
-
-    
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
         for (ResourceCreator creator : getPrimaryCreators()) {

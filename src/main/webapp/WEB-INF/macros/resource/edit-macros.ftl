@@ -1396,6 +1396,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local properNameField>${prefix}.properName</#local>
         <#if _index != ''>
             <#local properNameField>authorizedUsersFullNames${_index}</#local>
+        <#elseif prefix == 'submitter'>
+            <#local properNameField>submitterProperName</#local>
         </#if>
 
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
