@@ -116,6 +116,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String title = "testing uncontrolled site type keywords";
         String keyword = "uncontrolledsitetypeone";
         setInput("document.title", title);
+        setInput("document.date",2000);
         setInput("document.description",
                 "testing uncontrolled site type keywords");
         setInput("status", "ACTIVE");

@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.hibernate.CacheMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
@@ -229,7 +230,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String save() throws TdarActionException {
         // checkSession();
-        // genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
+        genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
