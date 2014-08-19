@@ -61,7 +61,6 @@
     <tdar:relatedDatasetData />
     <tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage>
     <tdar:resourceProviderInstitution>
-        <tdar:hiddenIfNotCited>false</tdar:hiddenIfNotCited>
     </tdar:resourceProviderInstitution>
     <tdar:dataTables>
         <tdar:dataTable id="-1">

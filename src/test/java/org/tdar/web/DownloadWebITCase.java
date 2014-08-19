@@ -34,7 +34,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("Please check that your username and password were entered correctly");
         checkForFreemarkerExceptions();
 
-        setInput("downloadUserLogin.h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         // try successfully
         setInput("downloadUserLogin.loginUsername", getAdminUsername());
         setInput("downloadUserLogin.loginPassword", getAdminPassword());
@@ -55,7 +55,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(DOWNLOAD_REGISTRATION + ".person.username", getAdminUsername());
         // wrong on purpose
         setInput(DOWNLOAD_REGISTRATION + ".password", getAdminUsername());
-        setInput(DOWNLOAD_REGISTRATION + ".h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitFormWithoutErrorCheck("submitAction");
         checkForFreemarkerExceptions();
         assertTextPresent("find a user with this email");
