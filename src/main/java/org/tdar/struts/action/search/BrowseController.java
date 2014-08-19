@@ -278,8 +278,7 @@ public class BrowseController extends AbstractLookupController {
                 
                 // hide creator pages from public for contributors with no resources contributed
                 if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
-                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator) && 
-                        creator.isHiddenIfNotCited()) {
+                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
                     throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
                 }
             }

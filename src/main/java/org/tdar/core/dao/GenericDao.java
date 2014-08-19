@@ -118,9 +118,9 @@ public class GenericDao {
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         if (persistentClass.isAssignableFrom(Creator.class)) {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
-        } else {
             return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_CREATOR_BY_ID, persistentClass.getName())).list();
+        } else {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
         }
     }
 

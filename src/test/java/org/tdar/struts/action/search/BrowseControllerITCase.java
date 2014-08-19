@@ -43,7 +43,6 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback
     public void testBrowsePersonHiddenWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
-        getBasicUser().setHiddenIfNotCited(true);
         getBasicUser().setOccurrence(0L);
         genericService.saveOrUpdate(getBasicUser());
         testBrowseController(getBasicUser());
@@ -56,7 +55,6 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         person.setFirstName("test");
         person.setLastName("test");
         person.markUpdated(getAdminUser());
-        person.setHiddenIfNotCited(true);
         person.setOccurrence(0L);
         genericService.saveOrUpdate(person);
         genericService.synchronize();

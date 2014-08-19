@@ -223,5 +223,5 @@ public interface TdarNamedQueries {
     String RESOURCE_ACCESS_COUNT = "resource.exactAccessCount";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
-    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and (hidden_if_unreferenced=FALSE or occurrence > 0 )";
+    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and occurrence > 0";
 }
