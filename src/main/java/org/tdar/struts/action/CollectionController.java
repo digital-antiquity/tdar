@@ -141,7 +141,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
         if (!Objects.equals(parentId, persistable.getParentId())) {
-            getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+            resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
         }
 
         resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
