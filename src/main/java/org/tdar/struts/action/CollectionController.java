@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -139,10 +140,16 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
-        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+        if (!Objects.equals(parentId, persistable.getParentId())) {
+            getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+        }
+
         resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
+
+
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
+
         return SUCCESS;
     }
 

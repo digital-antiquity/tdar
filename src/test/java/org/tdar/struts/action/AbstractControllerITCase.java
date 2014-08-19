@@ -165,7 +165,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertEquals(owner, controller.getAuthenticatedUser());
         ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
-        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
+//        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
         controller.setParentId(parentId);
         resourceCollection.setType(type);
         controller.setAsync(false);
