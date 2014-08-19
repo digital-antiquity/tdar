@@ -638,6 +638,10 @@ TDAR.datatable = function() {
     }
 
     function _initializeCollectionAddRemove(id) {
+        //dont allow submit until collection contents fully initialized.
+        $(".submitButton").prop("disabled", true);
+        var $datatable = $("#resource_datatable");
+
         if (parseInt(id) > -1) {
             $.ajax({
                 traditional : true,
@@ -648,20 +652,24 @@ TDAR.datatable = function() {
                 },
                 data : {
                     collectionId : id,
-                    recordsPerPage : 100
+                    //until pagination is working,  just pull down everything.
+                    recordsPerPage : 9999999
                 },
                 success : function(_data) {
                     $.each(_data.resources, function(index, el) {
                         _rowSelected(el, false);
+                        $datatable.data("selectedRows")[el.id] = el;
                     });
-                    $datatable.after("<p>Note this is the first 100 resources in this colection.</p>")
+                    //ensure correct state of 'selected' checkboxes by redrawing the datatable contents
+                    $datatable.DataTable()._fnDraw();
+                    $(".submitButton").prop("disabled", false);
+
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
                     console.error("ajax query failed:" + errorThrown);
                 }
             });
         }
-        var $datatable = $("#resource_datatable");
         var $container = $("#divNoticeContainer");
         $datatable.on("change", ".datatable-checkbox.project", function() {
             if ($container.is(":visible")) {
