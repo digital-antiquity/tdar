@@ -39,7 +39,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = 4043710177198125088L;
-    public static final String INHERITANCE_TOGGLE = SiteNameKeyword.INHERITANCE_TOGGLE;
     private boolean approved;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)

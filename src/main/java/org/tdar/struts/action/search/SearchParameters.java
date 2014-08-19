@@ -17,15 +17,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.OtherKeyword;
-import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
@@ -319,7 +312,7 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         // freeform keywords
-        appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.OTHER_KEYWORD, Arrays.asList(this.getOtherKeywords()));
         if (CollectionUtils.isNotEmpty(siteNames)) {
             QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
             for (String q : siteNames) {
@@ -330,22 +323,19 @@ public class SearchParameters {
                     subgroup.append(siteCodePart.setBoost(5f));
                 }
             }
-            appendKeywordQueryParts(subgroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(siteNames));
+            appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames)); 
             queryPartGroup.append(subgroup);
         }
-        appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
-                Arrays.asList(this.getUncontrolledCultureKeywords()));
-        appendKeywordQueryParts(queryPartGroup, TemporalKeyword.class, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, Arrays.asList(this.getTemporalKeywords()));
-        appendKeywordQueryParts(queryPartGroup, GeographicKeyword.class, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS,
-                Arrays.asList(this.getGeographicKeywords()));
-        appendKeywordQueryParts(queryPartGroup, SiteTypeKeyword.class, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS,
-                Arrays.asList(this.getUncontrolledSiteTypes()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, Arrays.asList(this.getUncontrolledCultureKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.TEMPORAL_KEYWORD , Arrays.asList(this.getTemporalKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.GEOGRAPHIC_KEYWORD, Arrays.asList(this.getGeographicKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, Arrays.asList(this.getUncontrolledSiteTypes()));
 
         // managed keywords (in the form of lists of lists of ids)
-        appendKeywordQueryParts(queryPartGroup, MaterialKeyword.class, QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, this.getMaterialKeywordIdLists());
-        appendKeywordQueryParts(queryPartGroup, SiteTypeKeyword.class, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, this.getApprovedSiteTypeIdLists());
-        appendKeywordQueryParts(queryPartGroup, InvestigationType.class, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, this.getInvestigationTypeIdLists());
-        appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_KEYWORD , this.getMaterialKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getApprovedSiteTypeIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getInvestigationTypeIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, this.getApprovedCultureKeywordIdLists());
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
                 getOperator(), getProjects()));
@@ -423,23 +413,23 @@ public class SearchParameters {
         queryPartGroup.append(new FieldQueryPart<C>(fieldName, fieldDisplayName, operator, incomingList));
     }
 
-    protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, Class<K> type, String fieldName, List<List<String>> idListList) {
+    protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, KeywordType type, List<List<String>> idListList) {
         for (List<String> strings : idListList) {
             if (CollectionUtils.isNotEmpty(strings)) {
-                group.append(createKeywordQueryPart(type, fieldName, strings));
+                group.append(createKeywordQueryPart(type, strings));
             }
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected <I, K extends Keyword> HydrateableKeywordQueryPart createKeywordQueryPart(Class<K> type, String fieldName, List<I> values) {
+    protected <I, K extends Keyword> HydrateableKeywordQueryPart createKeywordQueryPart(KeywordType type, List<I> values) {
         List<K> kwdValues = new ArrayList<K>();
         for (I value : values) {
             if (value == null) {
                 continue;
             }
             try {
-                K keyword = type.newInstance();
+                K keyword = (K) type.getKeywordClass().newInstance();
                 if (value instanceof Keyword) {
                     keyword = (K) value;
                 } else if (StringUtils.isNotBlank(value.toString()) && StringUtils.isNumeric(value.toString())) {
@@ -456,9 +446,9 @@ public class SearchParameters {
                 throw new TdarRecoverableRuntimeException(e);
             }
         }
-        HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(fieldName, type, kwdValues);
+        HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(type, kwdValues);
         hydrateableKeywordQueryPart.setIncludeChildren(!explore);
-        hydrateableKeywordQueryPart.setDisplayName(support.getText("searchParameters." + fieldName));
+        hydrateableKeywordQueryPart.setDisplayName(support.getText(type.getSearchDescriptionKey()));
         return hydrateableKeywordQueryPart;
     }
 

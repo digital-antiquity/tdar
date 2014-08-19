@@ -41,7 +41,6 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
 
     private static final long serialVersionUID = -7196238088495993840L;
 
-    public static final String INHERITANCE_TOGGLE = "inheriting_cultural_information";
     private boolean approved;
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)

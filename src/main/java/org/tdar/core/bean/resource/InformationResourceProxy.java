@@ -20,7 +20,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 
 @Entity
 @Immutable
@@ -45,7 +44,7 @@ public class InformationResourceProxy extends ResourceProxy implements Serializa
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private List<InformationResourceFileProxy> informationResourceFileProxies = new ArrayList<>();
 
-    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = InformationResource.GEOGRAPHIC_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
 
     @Override

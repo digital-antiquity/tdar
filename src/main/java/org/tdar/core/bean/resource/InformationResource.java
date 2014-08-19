@@ -243,22 +243,30 @@ public abstract class InformationResource extends Resource {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator copyrightHolder;
 
+    public static final String INVESTIGATION_TYPE_INHERITANCE_TOGGLE = "inheriting_investigation_information";
+    public static final String SITE_NAME_INHERITANCE_TOGGLE = "inheriting_site_information";
+    public static final String MATERIAL_TYPE_INHERITANCE_TOGGLE = "inheriting_material_information";
+    public static final String OTHER_INHERITANCE_TOGGLE = "inheriting_other_information";
+    public static final String GEOGRAPHIC_INHERITANCE_TOGGLE = "inheriting_spatial_information";
+    public static final String CULTURE_INHERITANCE_TOGGLE = "inheriting_cultural_information";
+    public static final String TEMPORAL_INHERITANCE_TOGGLE = "inheriting_temporal_information";
+    
     // downward inheritance sections
-    @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = INVESTIGATION_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation = false;
-    @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = SITE_NAME_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSiteInformation = false;
-    @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = MATERIAL_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingMaterialInformation = false;
-    @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = OTHER_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingOtherInformation = false;
-    @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = CULTURE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCulturalInformation = false;
 
-    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = GEOGRAPHIC_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
 
-    @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = TEMPORAL_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation = false;
 
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
