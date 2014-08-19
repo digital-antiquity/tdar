@@ -12,12 +12,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.SearchService;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 
 
@@ -42,15 +47,19 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private PaginationHelper paginationHelper;
     
     @Action("edit")
+    @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String edit() {
         return SUCCESS;
     }
 
     @Action(value="view", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String view() {
+        if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+            return NOT_FOUND;
+        }
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
-
+        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         try {
             setSortField(SortOption.TITLE);
             searchService.handleSearch(rqb, this, this);

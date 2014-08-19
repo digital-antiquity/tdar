@@ -20,7 +20,6 @@
     <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 
-
         <#local showProject = false />
         <#global prev =""/>
         <#global first = true/>
@@ -54,7 +53,6 @@
             <#list resourcelist as resource>
                 <#assign key = "" />
                 <#assign defaultKeyLabel="No Project"/>
-
             <#-- if we're viewable -->
                 <#if ((resource.viewable)!false) >
                     <#local rowCount= rowCount+1 />

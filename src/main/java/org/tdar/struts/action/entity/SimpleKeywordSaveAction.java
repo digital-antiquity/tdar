@@ -13,9 +13,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")
@@ -37,7 +39,7 @@ public class SimpleKeywordSaveAction extends AbstractKeywordController {
     })
     @PostOnly
     @HttpsOnly
-    // @WriteableSession
+    @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String save() {
         genericKeywordService.saveKeyword(label, description, getKeyword());
         return SUCCESS;
