@@ -154,6 +154,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public final String getCreatorRoleIdentifier() {
         return getCreatorRoleIdentifier(this.getCreator(), this.getRole());
     }

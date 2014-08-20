@@ -642,6 +642,7 @@ TDAR.datatable = function() {
         $(".submitButton").prop("disabled", true);
         var $datatable = $("#resource_datatable");
         
+        var $container = $("#divNoticeContainer");
         if (parseInt(id) > -1) {
             $.ajax({
                 traditional : true,
@@ -673,7 +674,6 @@ TDAR.datatable = function() {
             $(".submitButton").prop("disabled", false);
         }
 
-        var $container = $("#divNoticeContainer");
         $datatable.on("change", ".datatable-checkbox.project", function() {
             if ($container.is(":visible")) {
                 return;
