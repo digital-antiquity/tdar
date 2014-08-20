@@ -647,12 +647,10 @@ TDAR.autocomplete = (function () {
         options.customDisplayMap = _displayResourceAutocomplete;
         options.customRender = function (ul, item) {
             var description = "";
-            //            console.log(item);
             if (item.description != undefined) {
                 description = item.description;
             }
             var link = "";
-            //double-encode on custom render
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
         };
 

@@ -110,7 +110,7 @@
             <div data-tiplabel="Title"
                  data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
-                title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title'
+                title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>

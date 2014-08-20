@@ -1089,13 +1089,16 @@ TDAR.common = function () {
     var _changeSubcategory = function (categoryIdSelect, subCategoryIdSelect) {
         var $categoryIdSelect = $(categoryIdSelect);
         var $subCategoryIdSelect = $(subCategoryIdSelect);
+        $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
         $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data, textStatus) {
             var result = "";
             for (var i = 0; i < data.length; i++) {
-                result += "<option value=\"" + data[i]['value'] + "\">" + data[i]['label'] + "</option>\n";
+                if (parseInt(data[i]['id']) > -1) {
+                    result += "<option value=\"" + data[i]['id'] + "\">" + data[i]['label'] + "</option>\n";
+                }
             }
 
             $categoryIdSelect.siblings(".waitingSpinner").hide();
