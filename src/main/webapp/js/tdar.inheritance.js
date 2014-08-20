@@ -388,20 +388,22 @@ TDAR.inheritance = (function () {
             //now set the correct toggle state for eachrow
             var $proxyRows = $(divSelector).find(".repeat-row");
             $proxyRows.each(function (i, rowElem) {
+                var $rowElem = $(rowElem);
+                var $creatorPerson = $rowElem.find(".creatorPerson");
+                var $creatorInstitution = $rowElem.find(".creatorInstitution");
+                var $personButton =  $rowElem.find(".personButton");
+                var $institutionButton = $rowElem.find(".institutionButton");
+                $rowElem.find(".resourceCreatorId").val("");
                 if (creators[i].type === TYPE_PERSON) {
-                    $(rowElem).find(".creatorPerson").removeClass("hidden");
-                    $(rowElem).find(".creatorInstitution").addClass("hidden");
-
-                    $(rowElem).find(".personButton").addClass("active");
-                    $(rowElem).find(".institutionButton").removeClass("active");
+                    $creatorPerson.removeClass("hidden");
+                    $creatorInstitution.addClass("hidden");
+                    $personButton.addClass("active");
+                    $institutionButton.removeClass("active");
                 } else {
-
-                    //fixme: cmon jim, really??  there's a better way to activate one over the other
-                    $(rowElem).find(".creatorPerson").addClass("hidden");
-                    $(rowElem).find(".creatorInstitution").removeClass("hidden");
-
-                    $(rowElem).find(".personButton").removeClass("active");
-                    $(rowElem).find(".institutionButton").addClass("active");
+                    $creatorPerson.addClass("hidden");
+                    $creatorInstitution.removeClass("hidden");
+                    $personButton.removeClass("active");
+                    $institutionButton.addClass("active");
 
                 }
             });
