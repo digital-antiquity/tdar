@@ -319,9 +319,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
         logger.info("overdrawn: {} hasUpdates: {}", overdrawn, hasUpdates);
 
-        /*
-         * 
-         */
         if (!hasUpdates || overdrawn) {
             /*
              * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
@@ -341,7 +338,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             // we have to evaluate everything so we can make sure that the transient boolean is set for deleted materials
             getResourceEvaluator().evaluateResources(resourcesToEvaluate);
-            logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
+            logger.trace("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
 
             status = updateResourceStatusesAndReconcileAccountStatus(helper, status);

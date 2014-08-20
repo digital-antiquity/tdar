@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -242,7 +243,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 setAccountId(getResource().getAccount().getId());
             }
             for (Account account : getActiveAccounts()) {
-                getLogger().info(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
+                getLogger().trace(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
             }
         }
         return SUCCESS;
@@ -406,8 +407,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setupAccountForSaving();
 
         if (SUCCESS.equals(actionMessage)) {
-            // accountService.getResourceEvaluator().evaluateResources(getResource());
             if (shouldSaveResource()) {
+                if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                    getResource().setStatus(getResource().getPreviousStatus());
+                }
                 updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
             }
         } else {
