@@ -97,6 +97,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
                 logger.warn("no resource creator was initialized becase no creator was set");
             }
             initialized = true;
+            resourceCreator.setId(getId());
         }
     }
 
