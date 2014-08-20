@@ -706,9 +706,7 @@ TDAR.inheritance = (function () {
                 cbSelector: "#cbInheritingCreditRoles",
                 divSelector: "#creditSection",
                 mappedData: "creditProxies",
-                isSafeCallback: function () {
-                    return true;
-                },
+                isSafeCallback: _inheritingCreditInfoIsSafe,
                 inheritSectionCallback: function () {
                     _inheritCreditInformation('#creditTable', TDAR.inheritance.json.creditProxies);
 
@@ -729,6 +727,26 @@ TDAR.inheritance = (function () {
                 _disableMap();
             }
         });
+    }
+
+    //fixme: due to tdar-4110 we can really only compare two arrays of person ids accurately. for institutions we only compare size of array1 to array2
+    function _inheritingCreditInfoIsSafe() {
+        var $creditRows = $("#creditTable > .repeat-row");
+        var array1 = $.map(TDAR.inheritance.json.creditProxies,function(obj){
+            return obj.id;
+        });
+
+        var array2 = $.map($creditRows.toArray(), function(row){
+            var el = $(row).find("[name$='person.id']").first();
+            var personId = parseInt(el.val());
+            return personId
+        });
+
+        console.log("comparing ar1:", array1);
+        console.log("comparing ar2:", array2);
+        return array2.length === 0 || $.compareArray(array1, array2);
+
+
     }
 
     function _updateInheritanceCheckboxes() {

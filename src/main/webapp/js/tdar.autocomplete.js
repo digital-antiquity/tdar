@@ -800,6 +800,7 @@ TDAR.autocomplete = (function () {
         objectFromAutocompleteParent: _objectFromAutocompleteParent,
         "delegateCreator": _delegateCreator,
         "delegateAnnotationKey": _delegateAnnotationKey,
-        "delegateKeyword": _delegateKeyword
+        "delegateKeyword": _delegateKeyword,
+        "buildRequestData": _buildRequestData
     };
 })();
