@@ -170,8 +170,7 @@ TDAR.inheritance = (function () {
 // e.g. <input name='my_input_field[12]'> becomes <input
 // name='my_input_field[0]'>
     function _resetIndexedAttributes(elem) {
-        var rex = /^(.+[_|\[])([0-9]+)([_|\]])$/; // string ending in _num_ or
-        // [num]
+        var rex = /^(.+[_|\[])([0-9]+)([_|\]].*$)/; // string containing _num_ or [num]
         var replacement = "$10$3"; // replace foo_bar[5] with foo_bar[0]
         $(elem).add("tr, :input", elem).each(function (i, v) {
             var id = $(v).attr("id");
@@ -729,7 +728,6 @@ TDAR.inheritance = (function () {
         });
     }
 
-    //fixme: due to tdar-4110 we can really only compare two arrays of person ids accurately. for institutions we only compare size of array1 to array2
     function _inheritingCreditInfoIsSafe() {
         var $creditRows = $("#creditTable > .repeat-row");
         var array1 = $.map(TDAR.inheritance.json.creditProxies,function(obj){
@@ -739,7 +737,17 @@ TDAR.inheritance = (function () {
         var array2 = $.map($creditRows.toArray(), function(row){
             var el = $(row).find("[name$='person.id']").first();
             var personId = parseInt(el.val());
-            return personId
+            var retid = personId;
+            if(personId === -1 || isNaN(personId)) {
+                var instEl = $(row).find("[name$='institutionId.id']").first();
+                var institutionId = parseInt(instEl.val());
+                if(institutionId !== -1 && !isNaN(institutionId)) {
+                    retid = institutionId;
+                }
+            }
+            if(retid !== -1 && !isNaN(retid)) {
+                return retid;
+            }
         });
 
         console.log("comparing ar1:", array1);
