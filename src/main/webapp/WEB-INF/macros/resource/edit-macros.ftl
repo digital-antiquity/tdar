@@ -630,7 +630,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             data-toggle="button">Institution
                     </button>
                     <@s.hidden name="${prefix}Proxies[${proxy_index}].type" value="${selectedType}" cssClass="toggleValue" />
-                    <#if resource.inheritingIndividualAndInstitutionalCredit && prefix=='credit'>
+                    <#if !resource.resourceType.project && resource.inheritingIndividualAndInstitutionalCredit && prefix=='credit'>
                     <@s.hidden name="${prefix}Proxies[${proxy_index}].id" value="" cssClass="toggleValue resourceCreatorId" />
                     <#else>
                         <@s.hidden name="${prefix}Proxies[${proxy_index}].id" cssClass="toggleValue resourceCreatorId" />
