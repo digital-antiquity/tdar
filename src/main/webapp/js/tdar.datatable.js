@@ -641,7 +641,7 @@ TDAR.datatable = function() {
         //dont allow submit until collection contents fully initialized.
         $(".submitButton").prop("disabled", true);
         var $datatable = $("#resource_datatable");
-
+        
         if (parseInt(id) > -1) {
             $.ajax({
                 traditional : true,
@@ -666,10 +666,13 @@ TDAR.datatable = function() {
 
                 },
                 error : function(jqXHR, textStatus, errorThrown) {
-                    console.error("ajax query failed:" + errorThrown);
+                    console.error("ajax query failed " + textStatus + " :" + errorThrown);
                 }
             });
+        } else {
+            $(".submitButton").prop("disabled", false);
         }
+
         var $container = $("#divNoticeContainer");
         $datatable.on("change", ".datatable-checkbox.project", function() {
             if ($container.is(":visible")) {
