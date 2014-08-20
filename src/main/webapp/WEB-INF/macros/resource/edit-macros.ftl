@@ -1441,7 +1441,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
-        <@s.hidden name='${strutsPrefix}${institutionPrefix}.' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
         <div class="controls-row">
             <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="name"
