@@ -504,7 +504,7 @@ TDAR.autocomplete = (function () {
                 var $parentElem = $(parentid);
                 var id = $parentElem.find("input[type=hidden]").first().val();
                 if (id === "-1") {
-                    cache.register(parentElem[0]);
+                    cache.register($parentElem[0]);
                 }
             });
         });
