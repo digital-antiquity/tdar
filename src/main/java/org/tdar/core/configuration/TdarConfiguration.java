@@ -48,8 +48,8 @@ public class TdarConfiguration {
     private final static String FROM_EMAIL_NAME = "info@";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 100;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 1000;
 
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
