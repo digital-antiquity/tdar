@@ -226,3 +226,4 @@ update information_resource set external_doi=doi from information_resource ir, d
 
 -- abrin 8/19/2014
 alter table creator drop column hidden_if_unreferenced;
+alter table email add column user_generated boolean default true;

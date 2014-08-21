@@ -224,4 +224,5 @@ public interface TdarNamedQueries {
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and occurrence > 0";
+    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
 }

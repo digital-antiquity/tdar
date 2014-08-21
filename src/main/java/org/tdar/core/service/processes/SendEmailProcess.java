@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.external.EmailService;
 
@@ -56,6 +55,7 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
         DateTime dt = new DateTime(email.getDateSent());
         switch (email.getStatus()) {
             case SENT:
+                //NOTE: This should be always > 10 for weekly statistics purposes
                 if (dt.isBefore(DateTime.now().minusDays(10))) {
                     logger.debug("deleting: {}", email);
                     genericDao.delete(email);

@@ -56,6 +56,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         map.put("accounts", accounts);
         Email email = new Email();
         email.setSubject(SUBJECT);
+        email.setUserGenerated(false);
         emailService.queueWithFreemarkerTemplate("overdrawn-admin.ftl", map, email);
     }
 

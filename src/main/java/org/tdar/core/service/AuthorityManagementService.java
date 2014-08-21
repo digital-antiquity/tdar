@@ -385,6 +385,7 @@ public class AuthorityManagementService {
                         logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
         Email email = new Email();
         email.setSubject(subject);
+        email.setUserGenerated(false);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("log", logData);
         map.put("className", className);

@@ -88,6 +88,7 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());
             email.setSubject(String.format("There are %s new users in %s", people.size(), config.getSiteAcronym()));
+            email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
             dataModel.put("users", people);
             dataModel.put("totalUsers", people.size());
@@ -110,6 +111,7 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
             dataModel.put("emails", emails);
             dataModel.put("totalEmails", emails.size());
             Email email = new Email();
+            email.setUserGenerated(false);
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());

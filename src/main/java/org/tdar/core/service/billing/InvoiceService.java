@@ -636,6 +636,7 @@ public class InvoiceService {
             for (Person person : people) {
                 email.addToAddress(person.getEmail());
             }
+            email.setUserGenerated(false);
             emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
         } catch (Exception e) {
             logger.error("could not send email: {} ", e);

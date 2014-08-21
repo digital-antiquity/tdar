@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
@@ -120,6 +121,12 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     public void generateAggregateDailyResourceData(Date date) {
         getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date)).executeUpdate();
 
+    }
+
+    public Number countWeeklyEmails() {
+        Query query = getCurrentSession().createQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS);
+        query.setParameter("date", DateTime.now().minusDays(7).toDate());
+        return (Number)query.uniqueResult();
     }
 
 }

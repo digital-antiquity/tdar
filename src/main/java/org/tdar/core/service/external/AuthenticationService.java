@@ -391,6 +391,7 @@ public class AuthenticationService {
             Email email = new Email();
             email.setSubject(subject);
             email.addToAddress(person.getEmail());
+            email.setUserGenerated(false);
             emailService.queueWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, email);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...

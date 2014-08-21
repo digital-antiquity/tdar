@@ -54,7 +54,8 @@ public class AggregateStatistic extends Persistable.Base {
         NUM_AUDIO_WITH_FILES("# of Audio  with Files"),
 
         NUM_COLLECTIONS("# of Collections"),
-        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
+        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size"), 
+        NUM_EMAILS("# of Emails");
 
         private String label;
 

@@ -18,6 +18,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component
@@ -34,6 +35,9 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
 
     @Autowired
     private transient EntityService entityService;
+
+    @Autowired
+    private transient StatisticService statisticService;
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -76,6 +80,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
         Thread.yield();
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
+        stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
         genericService.saveOrUpdate(stats);
     }
 

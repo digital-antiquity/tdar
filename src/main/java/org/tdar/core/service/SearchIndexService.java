@@ -453,6 +453,7 @@ public class SearchIndexService {
             Email email = new Email();
             email.setSubject(INDEXING_COMPLETED);
             email.setMessage(String.format(INDEXING_STARTED, toReindex, CONFIG.getHostName(), date, new Date()));
+            email.setUserGenerated(false);
             emailService.send(email);
         }
 
