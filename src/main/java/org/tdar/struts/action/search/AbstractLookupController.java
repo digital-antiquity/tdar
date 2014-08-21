@@ -479,6 +479,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Autowired
     XmlService xmlService;
 
+    private Map<String, Object> result = new HashMap<>();
+
+
     public void jsonifyResult(Class<?> filter) {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {
@@ -488,15 +491,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             obfuscationService.obfuscateObject(obj, getAuthenticatedUser());
             actual.add(obj);
         }
-        Map<String, Object> result = new HashMap<>();
         Map<String, Object> status = new HashMap<>();
-        result.put(getLookupSource().getCollectionName(), actual);
-        result.put("status", status);
+        getResult().put(getLookupSource().getCollectionName(), actual);
+        getResult().put("status", status);
         status.put("recordsPerPage", getRecordsPerPage());
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, filter, callback).getBytes());
+        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {
@@ -568,6 +570,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     public void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
+    }
+
+    public Map<String, Object> getResult() {
+        return result;
+    }
+
+    public void setResult(Map<String, Object> result) {
+        this.result = result;
     }
 
 }
