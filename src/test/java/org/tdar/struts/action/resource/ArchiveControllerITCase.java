@@ -19,17 +19,18 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
-
-import com.opensymphony.xwork2.Action;
+import org.tdar.struts.action.TdarActionSupport;
 
 /**
- * 
+ *
  * @author Martin Paulo
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
 
-    private static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
+    //Was "zip", "tar", "bz2", "tgz", but because of user interface confusion we are limiting
+    // the choice that users can make.
+    private static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] {"bz2"});
     private ArchiveController controller;
 
     @Before
@@ -86,8 +87,9 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         llb = controller.getResource().getFirstActiveLatitudeLongitudeBox();
         assertFalse(llb.getMaxObfuscatedLatitude().equals(Double.valueOf(0.0001)));
         assertTrue("Unexpected Action Exceptions were found", controller.getActionErrors().size() == 0);
-        assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, Action.SUCCESS, saveResult);
+        assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, TdarActionSupport.SUCCESS, saveResult);
     }
+
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })

@@ -1,5 +1,9 @@
 DOI Daily Update run on ${date?datetime}
 
+<#if deleted?has_content>
+ERRORS: <@join "," errors />
+</#if>
+
 <#if created?has_content>
 CREATED: <@join "," created />
 </#if>

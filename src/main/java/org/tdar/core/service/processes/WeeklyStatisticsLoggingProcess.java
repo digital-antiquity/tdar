@@ -91,7 +91,6 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return true;
     }
 
