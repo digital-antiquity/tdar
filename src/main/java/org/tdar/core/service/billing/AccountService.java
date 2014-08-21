@@ -1,13 +1,10 @@
 package org.tdar.core.service.billing;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +30,8 @@ import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.utils.AccountEvaluationHelper;
 
 /**
  * FIXME: getting too big, needs refactoring. also rename to BillingService?
@@ -95,18 +90,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * 
      * @return
      */
+    @Transactional(readOnly = true)
     public BillingActivityModel getLatestActivityModel() {
-        List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
-        BillingActivityModel latest = null;
-        for (BillingActivityModel model : findAll) {
-            if (!model.getActive()) {
-                continue;
-            }
-            if ((latest == null) || (latest.getVersion() == null) || (model.getVersion() > latest.getVersion())) {
-                latest = model;
-            }
-        }
-        return latest;
+        return getDao().getLatestActivityModel();
     }
 
     /**
@@ -115,8 +101,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @param resources
      * @return
      */
+    @Transactional(readOnly = true)
     public ResourceEvaluator getResourceEvaluator(Resource... resources) {
-        return new ResourceEvaluator(getLatestActivityModel(), resources);
+        return getDao().getResourceEvaluator(resources);
     }
 
     /**
@@ -126,7 +113,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * @return
      */
     public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
-        return new ResourceEvaluator(getLatestActivityModel(), resources.toArray(new Resource[0]));
+        return getDao().getResourceEvaluator(resources);
     }
 
     /**
@@ -181,7 +168,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     /**
      * If there are invoices owned by the specified to the user that are not assigned to one of the user's existing billing accounts, if the user has no
-     * billing accounts,  generate an account and then assign the invoices to the generated billing account.
+     * billing accounts, generate an account and then assign the invoices to the generated billing account.
      *
      * @param user
      * @return true if the method assigned any errant invoices to a user billing account
@@ -190,10 +177,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public boolean assignOrphanInvoicesIfNecessary(TdarUser user) {
         List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
         if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
-        logger.info("Unassigned invoices found for user {}. The system will assign the following invoices: {} ", user, unassignedInvoices);
+            logger.info("Unassigned invoices found for user {}. The system will assign the following invoices: {} ", user, unassignedInvoices);
             Account account = createAccountForUserIfNeeded(user);
             for (Invoice invoice : unassignedInvoices) {
-                logger.trace("account:{}   invoice{}   user:{}",  account, invoice, user);
+                logger.trace("account:{}   invoice{}   user:{}", account, invoice, user);
                 account.getInvoices().add(invoice);
             }
             genericDao.saveOrUpdate(account);
@@ -202,7 +189,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /**
-     * Returns an account owned by the specified user.  If the user has no billing accounts, this method generates a billing account then returns that account.
+     * Returns an account owned by the specified user. If the user has no billing accounts, this method generates a billing account then returns that account.
+     * 
      * @param user
      * @return
      */
@@ -219,40 +207,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             genericDao.saveOrUpdate(account);
         }
         return account;
-    }
-
-    /**
-     * Marks a @link Resource @link Status to be FLAGGED_ACCOUNT_BALANCE
-     * 
-     * @param resources
-     */
-    @Transactional
-    protected void markResourcesAsFlagged(Collection<Resource> resources) {
-        for (Resource resource : resources) {
-            if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
-                resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-            }
-        }
-
-    }
-
-    /**
-     * Set the @link Resource back to whatever the resource.getPreviousStatus() was set to; set to Status.ACTIVE if NULL.
-     * 
-     * @param resources
-     */
-    @Transactional
-    protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
-        for (Resource resource : resources) {
-            if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
-                continue;
-            }
-            Status status = resource.getPreviousStatus();
-            if (status == null) {
-                status = Status.ACTIVE;
-            }
-            resource.setStatus(status);
-        }
     }
 
     /**
@@ -291,276 +245,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     @Transactional(readOnly = false)
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
-        logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
-        logger.trace("model {}", getLatestActivityModel());
-
-        if (Persistable.Base.isNullOrTransient(account)) {
-            throw new TdarRecoverableRuntimeException("accountService.account_is_null");
-        }
-        /* evaluate resources based on the model, and update their counts of files and space */
-        ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-        genericDao.saveOrUpdate(resourcesToEvaluate);
-
-        /* make sure the account associations are properly set for each resource in the bunch */
-        getDao().updateTransientAccountOnResources(resourcesToEvaluate);
-        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-
-        /* check if any of the resources have been modified (ie. resource.markUpdated() has been called */
-        boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
-
-        /* update the account info in the database */
-        getDao().updateAccountInfo(account, resourceEvaluator);
-        AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-
-        account.initTotals();
-        helper.updateFromAccount(account);
-        logAccountAndHelperState(account, helper);
-
-        boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
-        logger.info("overdrawn: {} hasUpdates: {}", overdrawn, hasUpdates);
-
-        if (!hasUpdates || overdrawn) {
-            /*
-             * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
-             * scratch with this account. We set it back to the normal state, and we re-evaluate ALL of the resources in the account
-             */
-            resourcesToEvaluate = account.getResources();
-
-            // start at 0 and re-add everything
-            // sort by date updated
-            account.reset();
-
-            for (Coupon coupon : account.getCoupons()) {
-                account.setFilesUsed(coupon.getNumberOfFiles() + account.getFilesUsed());
-                account.setSpaceUsedInBytes((coupon.getNumberOfMb() * Persistable.ONE_MB) + account.getSpaceUsedInBytes());
-            }
-
-            helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-            // we have to evaluate everything so we can make sure that the transient boolean is set for deleted materials
-            getResourceEvaluator().evaluateResources(resourcesToEvaluate);
-            logger.trace("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
-            processResourcesChronologically(helper, resourcesToEvaluate);
-
-            status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
-            overdrawn = account.isOverdrawn(getResourceEvaluator());
-            logger.info("flagged: {} overdrawn:{}", helper.getFlagged(), overdrawn);
-            if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
-                account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-                logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
-            } else {
-                if (account.getStatus().equals(Status.FLAGGED_ACCOUNT_BALANCE)) {
-                    account.setStatus(Status.ACTIVE);
-                }
-            }
-
-            genericDao.saveOrUpdate(resourcesToEvaluate);
-            helper.updateAccount();
-            updateAccountInfo(account);
-        } else {
-            account.setStatus(Status.ACTIVE);
-        }
-
-        saveOrUpdate(account);
-        helper = null;
-        logger.trace("files used: {} ", account.getFilesUsed());
-        logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
-        logger.trace("space used: {} ", account.getSpaceUsedInMb());
-        logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
-        return status;
-    }
-
-    /**
-     * Log out the account info and the identified change
-     * 
-     * @param account
-     * @param helper
-     */
-    private void logAccountAndHelperState(Account account, AccountEvaluationHelper helper) {
-        Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
-        logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
-        Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
-        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
-        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
-    }
-
-    /**
-     * Update a Collection of @link Resource entries to use the specified @link Account and keep track using the @link AccountEvaluationHelper
-     * 
-     * @param account
-     * @param resourcesToEvaluate
-     * @param helper
-     * @return
-     */
-    @Transactional
-    private boolean updateAccountAssociations(Account account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
-        // Account localAccount = account;
-        Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
-        boolean hasUpdates = false;
-
-        // try this without the merge
-        getDao().merge(account);
-
-        for (Resource resource : resourcesToEvaluate) {
-            if (resource == null) {
-                continue;
-            }
-
-            if (resource.isUpdated()) {
-                hasUpdates = true;
-            }
-            account.getResources().add(resource);
-
-            if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
-                helper.getNewItems().add(resource);
-                continue;
-            }
-
-            // if we're dealing with multiple accounts ...
-            if (!account.equals(resource.getAccount())) {
-                Account oldAccount = resource.getAccount();
-                additionalAccountsToCleanup.add(oldAccount);
-                oldAccount.getResources().remove(resource);
-                helper.getNewItems().add(resource);
-                continue;
-            }
-            helper.getExistingItems().add(resource);
-        }
-
-        for (Account old : additionalAccountsToCleanup) {
-            updateAccountInfo(old);
-        }
-        return hasUpdates;
-    }
-
-    /**
-     * Once the @link Account has been reconcilled, update all of the @link Status entires for each @link Resource and report back
-     * 
-     * @param helper
-     * @param status
-     * @return
-     */
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
-        markResourcesAsFlagged(helper.getFlagged());
-        unMarkResourcesAsFlagged(helper.getUnflagged());
-        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
-        if (helper.getFlagged().size() > 0) {
-            if (helper.getAvailableSpaceInBytes() < 0) {
-                status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
-            } else {
-                status = AccountAdditionStatus.NOT_ENOUGH_FILES;
-            }
-        }
-        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
-        return status;
-    }
-
-    /**
-     * Process through all @link Resource entries chronologically and identify items that should be marked as Status.FLAGGED_FOR_BILLING
-     * 
-     * @param helper
-     * @param resourcesToEvaluate
-     */
-    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
-        List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
-        GenericService.sortByCreatedDate(resourceList);
-        processResourceGroup(helper, resourceList, Mode.ADD);
-    }
-
-    /**
-     * For each item, determine if the account has space for it, if so, add it, if not, add it to the flagged list.
-     * Wait until the very end to add the weight of the flagged resources to try and get as many resources visible
-     * and functional as possible.
-     * 
-     * @param helper
-     * @param items
-     * @param mode
-     */
-    private void processResourceGroup(AccountEvaluationHelper helper, List<Resource> items, Mode mode) {
-        boolean seenFlagged = false;
-        for (Resource resource : items) {
-            if (hasSpaceFor(resource, helper, mode)) {
-                helper.getUnflagged().add(resource);
-                updateMarkers(resource, helper, mode);
-            } else {
-                if (!seenFlagged) {
-                    logger.info("First Flagged item: {}", resource.getId());
-                    seenFlagged = true;
-                }
-                helper.getFlagged().add(resource);
-            }
-        }
-        for (Resource resource : helper.getFlagged()) {
-            updateMarkers(resource, helper, mode);
-        }
-    }
-
-    enum Mode {
-        UPDATE,
-        ADD;
-    }
-
-    /**
-     * Update the account files and space settings. Based on Mode. Mode for a full re-evaulation of the account will be
-     * ADD whereby the total space used is evaluated. Otherwise, in UPDATE, the differential change between last save and
-     * current is used.
-     * 
-     * @param resource
-     * @param helper
-     * @param mode
-     */
-    private void updateMarkers(Resource resource, AccountEvaluationHelper helper, Mode mode) {
-        if (!resource.isCountedInBillingEvaluation()) {
-            return;
-        }
-        Long files = resource.getEffectiveFilesUsed();
-        Long space = resource.getEffectiveSpaceUsed();
-        if (mode == Mode.ADD) {
-            files = resource.getFilesUsed();
-            space = resource.getSpaceInBytesUsed();
-        }
-        logger.trace(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files,
-                resource.getId()));
-        helper.setSpaceUsedInBytes(helper.getSpaceUsedInBytes() + space);
-        helper.setFilesUsed(helper.getFilesUsed() + files);
-    }
-
-    /**
-     * Check that an @link Account has space for the @link Resource using the metadata in @link AccountEvaluationHelper
-     * 
-     * @param resource
-     * @param helper
-     * @param mode
-     * @return
-     */
-    private boolean hasSpaceFor(Resource resource, AccountEvaluationHelper helper, Mode mode) {
-        Long files = resource.getEffectiveFilesUsed();
-        Long space = resource.getEffectiveSpaceUsed();
-        if (mode == Mode.ADD) {
-            files = resource.getFilesUsed();
-            space = resource.getSpaceInBytesUsed();
-        }
-
-        if ((files == 0) && (space == 0)) {
-            return true;
-        }
-        if (!resource.isCountedInBillingEvaluation()) {
-            logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
-            return true;
-        }
-        logger.trace("mode: {}", mode);
-        logger.debug("HELPER: space used: {} avail:{} files used: {} avail: {} ++ space: {} files: {} id: {} ({})",
-                helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(),
-                helper.getAvailableNumberOfFiles(), space, files, resource.getId(), resource.getStatus());
-        // Trivial changes should fall through and not update because they are no-op in terms of effective changes
-        if (helper.getModel().getCountingSpace() && ((helper.getAvailableSpaceInBytes() - space) < 0)) {
-            logger.debug("OVERAGE ==> space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
-            return false;
-        }
-        if (helper.getModel().getCountingFiles() && ((helper.getAvailableNumberOfFiles() - files) < 0)) {
-            logger.trace("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
-            return false;
-        }
-        return true;
+        return getDao().updateQuota(account, resourcesToEvaluate);
     }
 
     /**

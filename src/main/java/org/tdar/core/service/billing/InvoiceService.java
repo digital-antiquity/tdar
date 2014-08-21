@@ -33,6 +33,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
@@ -583,11 +584,10 @@ public class InvoiceService {
                 invoice = genericDao.markWritable(invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 // Assume that an invoice owner will always want to see the contributor menus.
-                invoice.getOwner().setContributor(true);
                 updateAddresses(response, invoice);
                 invoice.setResponse(billingResponse);
+                completeInvoice(invoice);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                genericDao.saveOrUpdate(invoice);
                 // send notifications. if any error happens we want to log it but not rollback the transaction
                 handlePurchaseNotifications(invoice);
             }
@@ -696,11 +696,19 @@ public class InvoiceService {
     }
 
     @Transactional(readOnly = false)
-    public void completeManualInvoice(Invoice invoice) {
+    public void completeInvoice(Invoice invoice) {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
         genericDao.saveOrUpdate(invoice);
 
-    }
+        try {
+            Account account = accountDao.getAccountForInvoice(invoice);
+            if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                accountDao.updateQuota(account, account.getResources());
+            }
+        } catch (Exception e) {
+            logger.error("exception ocurred in processing FLAGGED ACCOUNT", e);
+        }
 
+    }
 }

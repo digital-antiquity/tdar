@@ -113,7 +113,7 @@ public class CartController extends AbstractCartController {
                 return POLLING;
             case INVOICE:
             case MANUAL:
-                invoiceService.completeManualInvoice(invoice);
+                invoiceService.completeInvoice(invoice);
                 break;
         }
         return SUCCESS;
