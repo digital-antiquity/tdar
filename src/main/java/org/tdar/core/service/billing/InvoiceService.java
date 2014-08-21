@@ -586,7 +586,9 @@ public class InvoiceService {
                 // Assume that an invoice owner will always want to see the contributor menus.
                 updateAddresses(response, invoice);
                 invoice.setResponse(billingResponse);
-                completeInvoice(invoice);
+				if (invoice.getTransactionStatus().isSuccessful()) {
+                    completeInvoice(invoice);
+				}
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 // send notifications. if any error happens we want to log it but not rollback the transaction
                 handlePurchaseNotifications(invoice);
