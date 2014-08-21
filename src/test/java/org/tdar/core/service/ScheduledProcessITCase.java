@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,12 +23,14 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
+import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -51,6 +54,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private SendEmailProcess sendEmailProcess;
+    @Autowired
+    private DailyEmailProcess dailyEmailProcess;
 
     @Autowired
     private CreatorAnalysisProcess pap;
@@ -99,6 +104,21 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testOptimize() {
         searchIndexService.optimizeAll();
+    }
+    
+    @Test
+    @Rollback
+    public void testDailyEmailProcess() {
+        TdarUser user = new TdarUser();
+        user.setEmail("a@badfdsf.com");
+        user.setUsername(user.getEmail());
+        user.setFirstName("first");
+        user.setLastName("last");
+        user.setDateUpdated(new Date());
+        genericService.saveOrUpdate(user);
+        
+        dailyEmailProcess.execute();
+        
     }
     
     @Test

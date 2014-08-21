@@ -56,7 +56,7 @@ public class SendEmailProcess extends ScheduledBatchProcess<Email> {
         DateTime dt = new DateTime(email.getDateSent());
         switch (email.getStatus()) {
             case SENT:
-                if (dt.isBefore(DateTime.now().minusDays(7))) {
+                if (dt.isBefore(DateTime.now().minusDays(10))) {
                     logger.debug("deleting: {}", email);
                     genericDao.delete(email);
                 }

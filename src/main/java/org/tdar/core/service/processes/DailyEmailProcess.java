@@ -77,7 +77,7 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
         List<TdarUser> people = new ArrayList<>();
         Date yesterday = DateTime.now().minusDays(1).toDate();
         for (TdarUser user : entityService.findAllRegisteredUsers(100)) {
-            if (yesterday.before(user.getDateUpdated())) {
+            if (user != null && user.getDateUpdated() != null && yesterday.before(user.getDateUpdated())) {
                 people.add(user);
             }
         }
