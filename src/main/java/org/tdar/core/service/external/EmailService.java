@@ -39,6 +39,8 @@ import org.tdar.utils.MessageHelper;
 @Service
 public class EmailService {
 
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -78,7 +80,7 @@ public class EmailService {
 
     private void enforceFromAndTo(Email email) {
         if (StringUtils.isBlank(email.getTo())) {
-            email.addToAddress(getTdarConfiguration().getSystemAdminEmail());
+            email.addToAddress(CONFIG.getSystemAdminEmail());
         }
         if (StringUtils.isBlank(email.getFrom())) {
             email.setFrom(getFromEmail());
@@ -124,11 +126,7 @@ public class EmailService {
     }
 
     public String getFromEmail() {
-        return getTdarConfiguration().getDefaultFromEmail();
-    }
-
-    public TdarConfiguration getTdarConfiguration() {
-        return TdarConfiguration.getInstance();
+        return CONFIG.getDefaultFromEmail();
     }
 
     /**
@@ -154,12 +152,12 @@ public class EmailService {
     public Email constructEmail(Person from, Person to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
         Email email = new Email();
         genericService.markWritable(email);
-        email.setFrom(getTdarConfiguration().getDefaultFromEmail());
-        if (TdarConfiguration.getInstance().isSendEmailToTester()) {
+        email.setFrom(CONFIG.getDefaultFromEmail());
+        if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String subject = String.format("%s: %s [id: %s] %s", TdarConfiguration.getInstance().getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(), from.getProperName());
+        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(), from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
         } 
@@ -168,7 +166,9 @@ public class EmailService {
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
-        map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
+        map.put("baseUrl", CONFIG.getBaseUrl());
+        map.put("siteAcronym", CONFIG.getSiteAcronym());
+        map.put("serviceProvider", CONFIG.getServiceProvider());
         if (resource != null) {
             map.put("resource", resource);
         }

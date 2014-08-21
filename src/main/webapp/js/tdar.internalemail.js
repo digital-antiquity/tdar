@@ -6,7 +6,7 @@
 
     function _init() {
         $("#emailButton").click(function(e) {
-            $("#email-form").show();
+            $("#email-form").modal('show');
             e.preventDefault();
         });
 
