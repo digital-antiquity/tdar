@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -345,6 +347,40 @@ public interface Persistable extends Serializable {
             }
             return n1 / n2;
         }
+
+
+        /**
+         * Sort @link Updatable by their updated date.
+         * 
+         * @param resourcesToEvaluate
+         */
+        public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
+            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+                @Override
+                public int compare(T o1, T o2) {
+                    return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
+                }
+            });
+
+        }
+        
+        /**
+         * Sort @link Updatable by their created date.
+         * 
+         * @param resourcesToEvaluate
+         */
+        public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
+            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+                @Override
+                public int compare(T o1, T o2) {
+                    return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
+                }
+            });
+
+        }
+
 
     }
 
