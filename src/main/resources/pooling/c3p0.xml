@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       ">
+    <bean id="tdarMetadataDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+        destroy-method="close">
+        <property name="driverClass" value="${javax.persistence.jdbc.driver}" />
+        <property name="jdbcUrl" value="${javax.persistence.jdbc.url}" />
+        <property name="user" value="${javax.persistence.jdbc.user}" />
+        <property name="password" value="${javax.persistence.jdbc.password}" />
+        <property name='minPoolSize' value="${tdarmetadata.minConnections}" />
+        <property name='maxPoolSize' value="${tdarmetadata.maxConnections}" />
+        <property name='maxIdleTime' value="${tdar.database.maxIdleTimeForConnection}" />
+        <property name='maxStatements' value='100' />
+        <property name='idleConnectionTestPeriod' value='300' />
+        <property name='preferredTestQuery' value='select 1' />
+        <property name='testConnectionOnCheckin' value='true' />
+    </bean>
+    <bean id="tdarDataImportDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+        destroy-method="close">
+        <property name="driverClass" value="${javax.persistence.jdbc.driver}" />
+        <property name="jdbcUrl" value="${tdardata.connection.url}" />
+        <property name="user" value="${javax.persistence.jdbc.user}" />
+        <property name="password" value="${javax.persistence.jdbc.password}" />
+        <property name='minPoolSize' value="${tdardata.minConnections}" />
+        <property name='maxPoolSize' value="${tdardata.maxConnections}" />
+        <!-- number of prepared statements to cache -->
+        <property name='maxStatements' value='50' />
+        <property name='idleConnectionTestPeriod' value='300' />
+        <property name='preferredTestQuery' value='select 1' />
+        <property name='testConnectionOnCheckin' value='true' />
+    </bean>
+    <bean id="tdarGeoDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+        destroy-method="close" lazy-init="true">
+        <property name="driverClass" value="${postgis.driver.class}" />
+        <property name="jdbcUrl" value="${tdargisdata.connection.url}" />
+        <property name="user" value="${javax.persistence.jdbc.user}" />
+        <property name="password" value="${javax.persistence.jdbc.password}" />
+        <property name='minPoolSize' value="${tdargis.minConnections}" />
+        <property name='maxPoolSize' value="${tdargis.maxConnections}" />
+        <property name='maxStatements' value='30' />
+        <property name='idleConnectionTestPeriod' value='300' />
+        <property name='preferredTestQuery' value='select 1' />
+        <property name='testConnectionOnCheckin' value='true' />
+    </bean>
+
+</beans>
