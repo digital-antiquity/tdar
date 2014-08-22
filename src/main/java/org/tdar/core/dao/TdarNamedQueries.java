@@ -226,5 +226,5 @@ public interface TdarNamedQueries {
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
     
     String RESOURCE_ACCESS_COUNT_SQL = "select sum(count_table.count) from (select count(id) from resource_access_statistics where resource_id='%1$s' and date_accessed >= '%2$tY-%2$tm-%2$td' union select sum(count) from resource_access_day_agg where resource_id='%1$s') count_table"; 
-    String DOWNLOAD_COUNT_SQL = "select sum(count_table.count) from (select count(id) from information_resource_file_download_statistics where information_resource_file_id='%2$tY-%2$tm-%2$td' and date_accessed >= '%s' union select sum(count) from file_download_day_agg where information_resource_file_id='%1$s') count_table"; 
+    String DOWNLOAD_COUNT_SQL = "select sum(count_table.count) from (select count(id) from information_resource_file_download_statistics where information_resource_file_id='%1$s' and date_accessed >= '%2$tY-%2$tm-%2$td' union select sum(count) from file_download_day_agg where information_resource_file_id='%1$s') count_table"; 
 }

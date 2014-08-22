@@ -91,7 +91,7 @@ public class PdfService {
 
                 // create the cover page
                 String description = version.getInformationResourceFile().getDescription();
-                if (description.length() > 640) {
+                if (StringUtils.isNotBlank(description) && description.length() > 640) {
                     BreakIterator instance = BreakIterator.getWordInstance();
                     instance.setText(description);
                     int after = instance.following(MAX_DESCRIPTION_LENGTH);
