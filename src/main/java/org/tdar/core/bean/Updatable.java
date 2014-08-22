@@ -23,4 +23,5 @@ public interface Updatable {
     Date getDateUpdated();
     
     Date getDateCreated();
+    
 }

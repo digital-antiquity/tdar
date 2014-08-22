@@ -18,8 +18,8 @@ import org.hibernate.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -32,7 +32,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.GenericService;
 import org.tdar.utils.AccountEvaluationHelper;
 
 /**
@@ -337,8 +336,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      * 
      * @param resources
      */
-    @Transactional
-    protected void markResourcesAsFlagged(Collection<Resource> resources) {
+    private void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
             if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
                 resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
@@ -352,8 +350,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      * 
      * @param resources
      */
-    @Transactional
-    protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
+    private void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
             if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
                 continue;
@@ -396,7 +393,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      */
     private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
-        GenericService.sortByCreatedDate(resourceList);
+        Persistable.Base.sortByCreatedDate(resourceList);
         processResourceGroup(helper, resourceList, Mode.ADD);
     }
 

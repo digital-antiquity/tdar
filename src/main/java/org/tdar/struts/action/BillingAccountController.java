@@ -234,7 +234,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         getResources().addAll(getAccount().getResources());
-        GenericService.sortByUpdatedDate(getResources());
+        Persistable.Base.sortByUpdatedDate(getResources());
         return SUCCESS;
     }
 

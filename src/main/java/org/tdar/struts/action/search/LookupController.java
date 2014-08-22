@@ -55,7 +55,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Scope("prototype")
 public class LookupController extends AbstractLookupController<Indexable> {
 
-    private static final String SELECTED_RESULTS = "selectedResults";
+    public static final String SELECTED_RESULTS = "selectedResults";
 
     private static final long serialVersionUID = 176288602101059922L;
 
@@ -139,7 +139,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
                 Set<Long> resourceIds = new HashSet<Long>();
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
-                    if (resource.isViewable() && resource.getResourceCollections().contains(collectionContainer)) {
+                    if (resource != null && resource.isViewable() && resource.getResourceCollections().contains(collectionContainer)) {
                         resourceIds.add(resource.getId());
                     }
                 }
