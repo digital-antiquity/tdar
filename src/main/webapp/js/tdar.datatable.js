@@ -405,11 +405,6 @@ TDAR.datatable = function() {
             $resourcesTable.hide();
         }
 
-        // bind row delete button
-        $resourcesTable.on('click', 'button', function() {
-            var button = this, resourceid = $(button).data("rid");
-            _removeResourceClicked(resourceid, button, dataTable);
-        });
     }
 
     /**
@@ -425,17 +420,11 @@ TDAR.datatable = function() {
         //remove tr, hidden field, id from  the 'remove' lists, if present
         _arrayRemove($dataTable.data("toRemove"), obj.id);
         $("#trmod_" + obj.id).remove();
-        $("#hrid" + obj.id).remove();
 
         //if the resource was part of the collection to begin with, do nothing
         if(obj.isSelectedResult)  {
         } else {
-            _arrayAdd($dataTable.data("toAdd"), obj.id);
-            // add the hidden input tag to the dom
-            var $hidden = $('<input type="hidden" name="toAdd" value="' + obj.id + '" id="hrid' + obj.id + '">');
-            // next, add a new row to the 'selected items' table.
-            _addRow($tableAdd, "trmod_" + obj.id, obj)
-            $("#divAddRemove").append($hidden);
+            _addRow($dataTable, $tableAdd, "trmod_" + obj.id, obj,"toAdd");
 
         }
 
@@ -455,64 +444,32 @@ TDAR.datatable = function() {
         //remove tr, hidden field, id from  the 'add' lists, if present
         _arrayRemove($dataTable.data("toAdd"), obj.id);
         $("#trmod_" + obj.id).remove();
-        $("#hrid" + obj.id).remove();
 
         //if resource wasn't part of selection to begin with, do nothing
         if(obj.isSelectedResult)  {
-            _arrayAdd($dataTable.data("toRemove"), obj.id);
             // add the hidden input tag to the dom
-            var $hidden = $('<input type="hidden" name="toRemove" value="' + obj.id + '" id="hrid' + obj.id + '">');
             // next, add a new row to the 'selected items' table.
-            _addRow($tableRemove, "trmod_" + obj.id, obj);
-            $("#divAddRemove").append($hidden);
+            _addRow($dataTable, $tableRemove, "trmod_" + obj.id, obj, "toRemove");
         } else {
         }
     }
 
-    function _addRow($table, idattr, obj) {
-        var $td = $("</tr><td>" + obj.title + "</td>");
-        var $tr = $("<tr></tr>");
+    function _addRow($dataTable, $table, idattr, obj, action) {
+
+        /**
+         * Modification to use encapsulation and less dom manipulation --
+         * Row contains hidden input, so removing the row, removes the element entirely
+         */
+        _arrayAdd($dataTable.data(action), obj.id);
+
+        var $tr = $("<tr><td>" + obj.id 
+                + '<input type="hidden" name="'+action+'" value="' + obj.id + '" id="hrid' + obj.id + '">'
+                + "</td><td>"+obj.title+"</td></tr>");
         $tr.attr("id", idattr);
-        $tr.append($td);
         $table.append($tr);
     }
 
 
-    /**
-     * This is similar to _rowUnselected, but instead of the data- table, this callback executes when a user removed a selected entry via the delete button of
-     * the "currently selected rows" table.
-     * 
-     * @param id
-     *            id of the row object removed
-     * @param elem
-     *            the delete button element
-     * @param dataTable
-     *            the resource datatable
-     * 
-     * @private
-     */
-    function _removeResourceClicked(id, elem, dataTable) {
-        var $dataTable = $(dataTable);
-        // delete the element from the selectedrows structure and remove the hidden input tag
-        delete $dataTable.data('selectedRows')[id];
-        $('#hrid' + id).remove();
-
-        // now delete the row from the table
-        var $elem = $(elem);
-        var $tr = $elem.closest('tr');
-        var $div = $elem.closest('div');
-        $tr.remove();
-
-        // if the table is empty, hide the section
-        if ($('tr', $div).length == 1) { // one header row
-            // $div.hide();
-            $table.hide();
-        }
-        $dataTable.after("<input type='hidden' name='toRemove' value='" + id + "'/>");
-        // if the datatable is on a page that shows the corresponding checkbox, clear the checkbox it
-        $('#cbEntityId_' + id, $dataTable).prop('checked', false);
-
-    }
 
     /**
      * pagination callback: this callback returns the vertical scroll position to the top of the page when the user navigates to a new page.
@@ -774,7 +731,6 @@ TDAR.datatable = function() {
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,
         setupDashboardDataTable : _setupDashboardDataTable,
-        removeResourceClicked : _removeResourceClicked,
         registerResourceCollectionDataTable : _registerResourceCollectionDataTable,
         renderPersonId : _fnRenderPersonId,
         checkAllToggle : _checkAllToggle,

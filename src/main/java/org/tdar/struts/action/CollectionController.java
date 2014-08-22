@@ -72,7 +72,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private static final long serialVersionUID = 5710621983240752457L;
 //    private List<Resource> resources = new ArrayList<>();
-    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
@@ -354,6 +354,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         fullUserProjects.removeAll(getAllSubmittedProjects());
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
 
+        //always place current resource collection as the first option
+        if(Persistable.Base.isNotTransient(getResourceCollection())) {
+            getAllResourceCollections().remove(getResourceCollection());
+            getAllResourceCollections().add(0, getResourceCollection());
+        }
     }
 
     public void setFullUserProjects(List<Resource> projects) {

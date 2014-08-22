@@ -1694,3 +1694,7 @@ div.tdar-rates {
 .tdar-button {
     line-height: normal;
 }
+
+.well.form-condensed {
+    padding:10px;
+}
