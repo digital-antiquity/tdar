@@ -220,9 +220,11 @@ public interface TdarNamedQueries {
     String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
     String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, date_accessed, count) select resource_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from resource_access_statistics where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
-    String RESOURCE_ACCESS_COUNT = "resource.exactAccessCount";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and occurrence > 0";
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
+    
+    String RESOURCE_ACCESS_COUNT_SQL = "select sum(count_table.count) from (select count(id) from resource_access_statistics where resource_id='%1$s' and date_accessed >= '%2$tY-%2$tm-%2$td' union select sum(count) from resource_access_day_agg where resource_id='%1$s') count_table"; 
+    String DOWNLOAD_COUNT_SQL = "select sum(count_table.count) from (select count(id) from information_resource_file_download_statistics where information_resource_file_id='%2$tY-%2$tm-%2$td' and date_accessed >= '%s' union select sum(count) from file_download_day_agg where information_resource_file_id='%1$s') count_table"; 
 }

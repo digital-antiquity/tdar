@@ -3,6 +3,7 @@ package org.tdar.core.dao.resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +77,8 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public Number getDownloadCount(InformationResourceFile irFile) {
-        Criteria createCriteria = getCriteria(FileDownloadStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", irFile));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {

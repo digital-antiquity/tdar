@@ -205,9 +205,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public Number getAccessCount(Resource resource) {
-        Criteria createCriteria = getCriteria(ResourceAccessStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", resource));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.RESOURCE_ACCESS_COUNT_SQL, resource.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
