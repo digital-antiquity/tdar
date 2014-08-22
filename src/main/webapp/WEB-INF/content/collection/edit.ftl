@@ -42,7 +42,7 @@
 
 
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
-        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal form-condensed" enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <h2>Basic Information</h2>
@@ -147,37 +147,41 @@
                 </div>
             </div>
 
-            <div id="divSelectedResources">
-<#--                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list> -->
-            </div>
         </div>
 
-        <div class="glide">
-            <h2>Selected Resources</h2>
-    <table class="table table-condensed table-hover" id="tblCollectionResources">
-        <colgroup>
-            <col style="width:4em">
-            <col>
-            <col style="width:3em">
-        </colgroup>
-        <thead>
-        <tr>
-            <th style="width: 4em">ID
-            <th colspan="2">Name
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+        <div id="divAddRemove">
+            <h2>Modifications</h2>
+
+            <div id="divToAdd">
+                <h3>The following resources will be added to the collection</h3>
+                <table id="tblToAdd" class="table table-condensed"></table>
+            </div>
+
+            <div id="divToRemove">
+                <h3>The folllwing resources will be removed from the collection</h3>
+                <table id="tblToRemove" class="table table-condensed"></table>
+            </div>
         </div>
 
 
             <@edit.submit fileReminder=false />
         </@s.form>
 
-        <@edit.resourceDataTableJavascript false true />
         <#noescape>
         <script type='text/javascript'>
+            //selectResourcesFromCollectionid
+
+            $(function () {
+                TDAR.datatable.setupDashboardDataTable({
+                    isAdministrator: ${(editor!false)?string},
+                    isSelectable: true,
+                    showDescription: false,
+                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
+                });
+            });
+
+
+
             $(function () {
                 'use strict';
                 var form = $("#metadataForm")[0];
