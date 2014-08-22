@@ -20,6 +20,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -281,6 +282,16 @@ public class GenericKeywordService extends GenericService {
         keyword.setLabel(label);
         keyword.setDefinition(description);
         saveOrUpdate(keyword);
+    }
+
+    @Transactional(readOnly=true)
+    public Number countActiveKeyword(KeywordType type, boolean controlled) {
+        return genericKeywordDao.countActiveWithStatus(type, controlled);
+    }
+
+    @Transactional(readOnly=true)
+    public Number countActiveKeyword(KeywordType type) {
+        return genericKeywordDao.countActiveWithStatus(type, null);
     }
 
 }

@@ -2,6 +2,7 @@ package org.tdar.core.dao;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,9 +10,11 @@ import javax.persistence.Table;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +32,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.Pair;
 
 @Component("genericKeywordDao")
@@ -154,4 +158,12 @@ public class GenericKeywordDao extends GenericDao {
         }
     }
 
+    public Number countActiveWithStatus(KeywordType type, Boolean controlled) {
+        Criteria criteria = getCurrentSession().createCriteria(type.getKeywordClass()).add(Restrictions.in("status", Arrays.asList(Status.ACTIVE)));
+        if (controlled != null) {
+            criteria.add(Restrictions.eq("approved", controlled));
+        }
+        criteria.setProjection(Projections.rowCount());
+        return (Number) criteria.uniqueResult();
+    }
 }
