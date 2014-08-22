@@ -124,7 +124,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     }
 
     public Number countWeeklyEmails() {
-        Query query = getCurrentSession().createQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS);
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS);
         query.setParameter("date", DateTime.now().minusDays(7).toDate());
         return (Number)query.uniqueResult();
     }
