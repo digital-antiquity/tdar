@@ -1026,12 +1026,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
             <div class="span4">
                 <label class="" for="collection-selector">Collection</label>
-
+                <#local selectedId=-1/>
+                <#-- limit to just this collection
+                <#if namespace=='/collection' && (id!-1) != -1>
+                    <#local selectedId=id/>
+                </#if>
+                -->
                 <div class="">
                     <select name="_tdar.collection" id="collection-selector" class="input-block-level">
-                        <option value="" selected='selected'>All Collections</option>
+                        <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
                         <@s.iterator value='allResourceCollections' var='rc'>
-                            <option value="${rc.id?c}" title="${rc.name!""?html}"><@common.truncate rc.name!"(No Name)" 70 /></option>
+                            <option value="${rc.id?c}" title="${rc.name!""?html}"
+                            <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
+                            ><@common.truncate rc.name!"(No Name)" 70 /></option>
                         </@s.iterator>
                     </select>
                 </div>
@@ -1067,6 +1074,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
 
     </div>
+    <#nested />
     <div class="row">
         <div class="span9">
 

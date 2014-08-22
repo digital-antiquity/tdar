@@ -136,7 +136,15 @@
                     of results.">
             <h2>Add/Remove Resources</h2>
 
-            <@edit.resourceDataTable false true />
+            <@edit.resourceDataTable false true>
+            <#--
+        <div class="btn-group">
+            <button class="button btn" name="showAll" id="showAll" type="button">Show All Resources</button>
+            <button class="button btn" name="limitToCollection" id="limitToCollection" type="button">Show Only resources in this collection</button>
+        </div>
+        <br><br>
+        -->
+            </@edit.resourceDataTable>
 
 
 
