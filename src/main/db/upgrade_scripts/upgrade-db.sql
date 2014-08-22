@@ -159,10 +159,6 @@ create table resource_access_day_agg (
 create index agg_res_date on resource_access_day_agg (resource_id, date_accessed);
 create index agg_res_year on resource_access_day_agg (resource_id, year);
 
-insert into resource_access_day_agg (resource_id, count, date_accessed)  select resource_id, count(id), date_trunc('day', date_accessed) from resource_access_statistics group by resource_id, date_trunc('day', date_accessed);
-update resource_access_day_agg set year = date_part('year', date_accessed);
-alter table resource_access_day_agg add constraint view_per_day UNIQUE(date_accessed, resource_id);
-
 create table file_download_day_agg (
     id bigserial,
     information_resource_file_id bigint,
@@ -173,11 +169,6 @@ create table file_download_day_agg (
 create index agg_dwnld_date on file_download_day_agg (information_resource_file_id, date_accessed);
 create index agg_dwnld_year on file_download_day_agg (information_resource_file_id, year);
 alter table file_download_day_agg add constraint file_per_day UNIQUE(date_accessed, information_resource_file_id);
-
-
-insert into file_download_day_agg (information_resource_file_id, count, date_accessed)  select information_resource_file_id, count(id), date_trunc('day', date_accessed) from information_resource_file_download_statistics group by information_resource_file_id, date_trunc('day', date_accessed);
-update file_download_day_agg set year = date_part('year', date_accessed);
-
 
 -- alllee user_notifications for TDAR-3908
 create table user_notification (
@@ -226,4 +217,15 @@ update information_resource set external_doi=doi from information_resource ir, d
 
 -- abrin 8/19/2014
 alter table creator drop column hidden_if_unreferenced;
-alter table email add column user_generated boolean default true;
+alter table email_queue add column user_generated boolean default true;
+
+
+
+
+insert into resource_access_day_agg (resource_id, count, date_accessed)  select resource_id, count(id), date_trunc('day', date_accessed) from resource_access_statistics group by resource_id, date_trunc('day', date_accessed);
+update resource_access_day_agg set year = date_part('year', date_accessed);
+alter table resource_access_day_agg add constraint view_per_day UNIQUE(date_accessed, resource_id);
+
+
+insert into file_download_day_agg (information_resource_file_id, count, date_accessed)  select information_resource_file_id, count(id), date_trunc('day', date_accessed) from information_resource_file_download_statistics group by information_resource_file_id, date_trunc('day', date_accessed);
+update file_download_day_agg set year = date_part('year', date_accessed);
