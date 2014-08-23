@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -52,7 +51,6 @@ public class AuthorizationService implements Accessible {
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
      * track these permissions for short periods of time. Logging out and logging in should reset this
      */
-    private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -99,23 +97,6 @@ public class AuthorizationService implements Accessible {
 
     public boolean isEditor(TdarUser person) {
         return isMember(person, TdarGroup.TDAR_EDITOR);
-    }
-
-    /*
-     * exposes the groups the user is a member of from the external Provider; exposes groups as a String, as the external provider may include other permissions
-     * beyond just tDAR groups
-     */
-    public Collection<String> getGroupMembership(TdarUser person) {
-        return authenticationService.getGroupMembership(person);
-    }
-
-    /*
-     * Returns a list of the people in the @link groupMembershipCache which is useful in tracking what's going on with tDAR at a given moment. This would be
-     * helpful for
-     * a shutdown hook, as well as, for knowing when it's safe to deploy.
-     */
-    public synchronized List<Person> getCurrentlyActiveUsers() {
-        return new ArrayList<>(groupMembershipCache.keySet());
     }
 
     /*

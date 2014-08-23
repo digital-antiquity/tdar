@@ -93,6 +93,15 @@ public class AuthenticationService {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
 
+    /*
+     * Returns a list of the people in the @link groupMembershipCache which is useful in tracking what's going on with tDAR at a given moment. This would be
+     * helpful for
+     * a shutdown hook, as well as, for knowing when it's safe to deploy.
+     */
+    public synchronized List<TdarUser> getCurrentlyActiveUsers() {
+        return new ArrayList<>(groupMembershipCache.keySet());
+    }
+    
     public List<TdarGroup> findGroupMemberships(TdarUser user) {
         String[] groups = getProvider().findGroupMemberships(user);
         logger.trace("Found {} memberships for {}", Arrays.asList(groups), user.getUsername());
