@@ -218,6 +218,7 @@ public class DataIntegrationService {
         // and over and over
         CodingSheet codingSheet = column.getDefaultCodingSheet();
         Set<OntologyNode> filteredOntologyNodes = new HashSet<>(integrationColumn.getFilteredOntologyNodes());
+        filteredOntologyNodes.removeAll(Collections.singletonList(null));
         Map<OntologyNode, OntologyNode> closestParentMap = integrationColumn.getNearestParentMap();
         Map<String, OntologyNode> termToNodeMap = codingSheet.getTermToOntologyNodeMap();
         OntologyNode matchingNode = termToNodeMap.get(value);
@@ -242,14 +243,18 @@ public class DataIntegrationService {
         // for each column, rehydrate the column and selected ontology nodes
         for (IntegrationColumn integrationColumn : integrationColumns) {
             integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
-            logger.debug("before: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
-            integrationColumn.setFilteredOntologyNodes(genericDao.loadFromSparseEntities(integrationColumn.getFilteredOntologyNodes(), OntologyNode.class));
+            List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
+            if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
+                filteredOntologyNodes.removeAll(Collections.singletonList(null));
+            }
+            logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
+            integrationColumn.setFilteredOntologyNodes(genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class));
             // for each of the integration columns, grab the unique set of all children within an ontology
 
             // that is, even if child is not selected, should get all children for query and pull up
-            integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(integrationColumn.getFilteredOntologyNodes()));
+            integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(filteredOntologyNodes));
 
-            logger.debug("after: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
+            logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
             logger.info("integration column: {}", integrationColumn);
         }
 

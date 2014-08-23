@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -29,7 +28,6 @@ public class ReservedSearchParameters extends SearchParameters {
     }
 
     public List<Status> getStatuses() {
-        statuses.removeAll(Collections.singletonList(null));
         return statuses;
     }
 

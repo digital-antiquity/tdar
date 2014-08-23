@@ -115,7 +115,6 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")
     public List<OntologyNode> getFilteredOntologyNodes() {
-        filteredOntologyNodes.removeAll(Collections.singletonList(null));
         return filteredOntologyNodes;
     }
 
@@ -140,8 +139,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             // the intervals (shorter is better). maintain the parent as the shortest.
             for (OntologyNode node : getOntologyNodesForSelect()) {
                 int distance = Integer.MAX_VALUE;
-                for (OntologyNode filteredOntologyNode : getFilteredOntologyNodes()) {
-                    if (node.isChildOf(filteredOntologyNode)) {
+                for (OntologyNode filteredOntologyNode : filteredOntologyNodes) {
+                    if (filteredOntologyNode != null && node.isChildOf(filteredOntologyNode)) {
                         int localDistance = filteredOntologyNode.getIntervalEnd() - filteredOntologyNode.getIntervalStart();
                         if (distance > localDistance) {
                             parentMap.put(node, filteredOntologyNode);
@@ -208,7 +207,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             return null;
         }
 
-        if (getFilteredOntologyNodes().contains(child)) {
+        if (filteredOntologyNodes.contains(child)) {
             return child;
         }
 

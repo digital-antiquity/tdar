@@ -3,6 +3,7 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -156,6 +157,7 @@ public class AuthorizationService implements Accessible {
         reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
         List<Status> statuses = reservedSearchParameters.getStatuses();
+        statuses.removeAll(Collections.singletonList(null));
 
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
