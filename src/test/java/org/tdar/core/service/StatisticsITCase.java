@@ -44,7 +44,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     private ResourceService resourceService;
     
     @Test
-    @Rollback(false)
+    @Rollback(true)
     public void testBasicStats() {
         Document document = new Document();
         document.setTitle("test");
