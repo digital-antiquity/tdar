@@ -56,7 +56,8 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         if (ArrayUtils.isEmpty(statuses)) {
             statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
-        List<Account> accountGroups = new ArrayList<>();
+        // this does not return unique results
+        Set<Account> accountGroups = new HashSet<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameterList("statuses", statuses);
@@ -64,7 +65,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         for (AccountGroup group : findAccountGroupsForUser(user)) {
             accountGroups.addAll(group.getAccounts());
         }
-        return accountGroups;
+        return new ArrayList<>(accountGroups);
     }
 
     @SuppressWarnings("unchecked")
