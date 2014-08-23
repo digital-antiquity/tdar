@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
@@ -118,7 +119,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @Test
-    public void testUploadGeotiff() {
+    public void testUploadGeotiff() throws InterruptedException {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -152,16 +153,27 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logout();
         gotoPage(url);
         find(".media-body a").first().click();
-        waitFor("#loginUsername");
+
         String username = TestConfiguration.getInstance().getAdminUsername();
         String password = TestConfiguration.getInstance().getAdminPassword();
         assertThat(username, not(isEmptyOrNullString()));
         assertThat(password, not(isEmptyOrNullString()));
-        find("#loginUsername").val(username);
+        waitFor("#loginUsername").val(username);
         find("#loginPassword").val(password);
-        find("#btnLogin").click();
-        assertTrue(getCurrentUrl().contains("confirm"));
+//        WebElementSelection buttons = find("#loginForm [name=submit]");
+//        buttons.first().click();
+//        Thread.sleep(5000);
+//        logger.debug("currentUrl: {}", getCurrentUrl());
+//
+//        assertTrue(getCurrentUrl().contains("confirm") );
+//        dismissModal();
+
+        //click on the download button, wait for the download page to appear
+        waitFor("#loginForm [name=submit]").first().click();
+        waitFor(ExpectedConditions.titleContains("Download: "));
+        dismissModal();
 
     }
+
 
 }

@@ -2,23 +2,19 @@ package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.NDC;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.activity.Activity;
-import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -67,29 +63,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             methodName = "execute";
         }
 
-        Activity activity = null;
-        if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
-            activity = new Activity(ServletActionContext.getRequest());
-            if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
-                activity.setUser(sessionData.getPerson());
-            }
-            ActivityManager.getInstance().addActivityToQueue(activity);
-        }
-        logger.debug("<< activity begin: {} ", activity);
-
         HttpServletResponse response = ServletActionContext.getResponse();
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
-            response.setHeader("Cache-Control", "no-store,no-Cache");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
-        }
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        // response.setHeader("Content-Security-Policy", "'default-src' 'self' '*://"+TdarConfiguration.getInstance().getStaticContentHost() + "' '" +
-        // TdarConfiguration.getInstance().getContentSecurityPolicyAdditions()
-        // +"' '*://ajax.googleapis.com' '*://www.google.com' '*://ajax.aspnetcdn.com netdna.bootstrapcdn.com' 'unsafe-inline' '*://use.typekit.net'");
-        // http://www.html5rocks.com/en/tutorials/security/content-security-policy/
-
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
@@ -99,11 +73,11 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         }
         try {
             // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
-            NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
                 if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getPerson()));
+                    TdarUser user = genericService.find(TdarUser.class,sessionData.getTdarUserId());
+                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));
                 }
             }
             String invoke = invocation.invoke();
@@ -119,17 +93,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             genericService.clearCurrentSession();
             setSessionClosed(true);
             return exception.getResultName();
-        } finally {
-            try {
-                if (activity != null) {
-                    activity.end();
-                    logger.debug(">> activity end: {} ", activity);
-                }
-            } finally {
-                // overkill perhaps, but we need to be absolutely certain that we pop the NDC.
-                NDC.pop();
-            }
-
         }
     }
 

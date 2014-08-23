@@ -27,7 +27,7 @@
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>
@@ -43,7 +43,8 @@
 
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-            <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+        <@common.jsErrorLog />
         <h2>Basic Information</h2>
 
         <div class="" id="basicInformationSection" data-tiplabel="Basic Information"
@@ -135,7 +136,15 @@
                     of results.">
             <h2>Add/Remove Resources</h2>
 
-            <@edit.resourceDataTable false true />
+            <@edit.resourceDataTable false true>
+            <#--
+        <div class="btn-group">
+            <button class="button btn" name="showAll" id="showAll" type="button">Show All Resources</button>
+            <button class="button btn" name="limitToCollection" id="limitToCollection" type="button">Show Only resources in this collection</button>
+        </div>
+        <br><br>
+        -->
+            </@edit.resourceDataTable>
 
 
 
@@ -146,41 +155,50 @@
                 </div>
             </div>
 
-            <div id="divSelectedResources">
-                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list>
-            </div>
         </div>
 
-        <div class="glide">
-            <h2>Selected Resources</h2>
-            <@view.resourceCollectionTable tbid="tblCollectionResources"/>
+        <div id="divAddRemove">
+            <h2>Modifications</h2>
+
+            <div id="divToAdd">
+                <h3>The following resources will be added to the collection</h3>
+                <table id="tblToAdd" class="table table-condensed"></table>
+            </div>
+
+            <div id="divToRemove">
+                <h3>The folllwing resources will be removed from the collection</h3>
+                <table id="tblToRemove" class="table table-condensed"></table>
+            </div>
         </div>
 
 
             <@edit.submit fileReminder=false />
         </@s.form>
 
-        <@edit.resourceDataTableJavascript false true />
         <#noescape>
         <script type='text/javascript'>
+            //selectResourcesFromCollectionid
+
+            $(function () {
+                TDAR.datatable.setupDashboardDataTable({
+                    isAdministrator: ${(editor!false)?string},
+                    isSelectable: true,
+                    showDescription: false,
+                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
+                });
+            });
+
+
+
             $(function () {
                 'use strict';
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
-
-                //remind users that adding a project does not also add the project's contents
-                $("#resource_datatable").on("change", ".datatable-checkbox.project", function () {
-                    if ($("#divNoticeContainer").is(":visible")) {
-                        return;
-                    }
-                    if ($(this).is(":checked")) {
-                        $("#divNoticeContainer").show();
-                    }
-                });
-
-            });
+                TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
+                        //remind users that adding a project does not also add the project's contents
+        });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

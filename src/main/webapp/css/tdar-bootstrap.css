@@ -1047,6 +1047,33 @@ h3.collection-mid-black:before {
     top: 45%;
 }
 
+.admin-well {
+    position: relative;
+    margin: 15px 0;
+    padding: 39px 19px 14px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.admin-well:after {
+    content: "Administrators Only";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #9da0a4;
+    -webkit-border-radius: 4px 0 4px 0;
+    -moz-border-radius: 4px 0 4px 0;
+    border-radius: 4px 0 4px 0;
+}
+
 .resizable.resize-vertical {
     resize: vertical;
 }
@@ -1443,3 +1470,231 @@ are governed by several media queries and thus easy to screw up the formatting o
     color: #000;
 }
 
+.filter-ontology input + label {
+    position: relative;
+}
+
+.filter-ontology input[disabled] + label {
+    font-weight: normal !important;
+}
+
+.filter-ontology .inline-label {
+    clear: none;
+    display: inline-block;
+}
+
+.filter-ontology .wf-loading {
+    visibility: visible !important;
+}
+
+
+
+.select-columns .showhide {
+    display: inline;
+    font-size: 80%;
+    right: 0px;
+}
+
+.select-columns .collapse {
+    overflow: visible !important;
+}
+
+.select-columns .fixed {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    border: 1px solid #AAA;
+    background-color: #DEDEDE;
+    padding: 4px;
+    margin: 0px;
+    opacity: .95;
+}
+
+.select-columns .buttontable .integrationTableNumber {
+    display: none;
+    visibility: hidden;
+}
+
+.select-columns .integrationColumn div[table] .ontology {
+    display: none !important;
+}
+
+.select-columns .status {
+    color: #660033;
+    font-weight: bold;
+}
+
+.select-columns #drplist {
+    border: 1px solid #ccc;
+}
+
+
+.select-columns .addAnother {
+    margin-left: 1em !important;
+    font-weight: bold;
+}
+
+.select-columns .addAnother img {
+    bottom: 2px !important;
+    position: relative !important;
+}
+
+
+
+div.orgChart div.node.level1.special {
+    background-color: white;
+}
+
+
+.ontology-mapping .ui-autocomplete {
+    max-height: 144pt;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 1em;
+}
+
+.ontology-mapping .ui-menu-item {
+    font-family: courier !Important;
+    white-space: pre !important;
+}
+
+.ontology-mapping .ui-widget {
+    font-family: courier;
+}
+
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ontology-mapping .ui-autocomplete {
+    height: 144pt;
+    overflow-x: hidden;
+}
+
+.ontology-mapping .ui-menu .ui-menu-item {
+    border: 0px;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+.ontology-mapping .ui-menu-item a {
+    border: 1px solid transparent;
+    min-height: 1em;
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+
+.collectionResultsBox {
+    border:1px solid #999 !important;
+    padding:10px !important;
+    margin-top:1em;
+    margin-bottom:1em;
+}
+
+/* styles for purchasing pages  */
+.authpane, .cartpane {
+    background-color: #f3f0ee;
+    padding: 0.5em;
+    border-radius: 0.5em
+}
+
+.authfields {
+    min-height: 350px;
+}
+.authpane .form-actions, .cartpane .form-actions {
+    background-color: #f3f0ee;
+
+}
+
+/* we want the form fields in an authpane to be more vertically compact */
+
+.form-condensed .control-group{
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.form-condensed label, .form-condensed  {
+    margin-bottom:0;
+}
+
+.cartpane .form-actions, .authpane .form-actions {
+    border: none;
+}
+
+
+.hero-unit.hero-condensed {
+    padding:30px 40px 20px 40px;
+    margin-top:10px;
+    margin-bottom:10px
+}
+.hero-unit.hero-condensed h1 {
+    /* fixme: this style mut be !important because of the article.h1 !important override. ideally both overrides should be removed. */
+    margin:0 !important; padding:0!important;
+}
+.hero-unit.hero-condesed h2 {
+}
+.form-condensed input, .form-condensed select {
+    padding: 3px;
+}
+
+.form-condensed select {
+}
+
+#divInvoiceSubtotal {
+    padding: 0 0.5em 0 0.5em;
+    line-height: normal;
+}
+
+#divInvoiceSubtotal h3 {
+    margin: 0 0 1em 0;
+    padding:0;
+}
+
+#divInvoiceSubtotal .amt {
+    font-size: 45pt;
+    font-weight: bold;
+    color: #707070;
+    display: inline-block;
+    margin: 0 0 0.5em 0;
+}
+
+#divInvoiceSubtotal .item-desc {
+    display:inline-block;
+    width: 100%;
+    font-size: 10pt;
+}
+
+.table-invoice tr .invoice-total {
+    font-size: 23pt;
+}
+/* bootstrap overrides .text-right for tables (because reasons) */
+.table-invoice .text-right {
+    text-align:right;
+}
+.table-invoice thead {
+    background-color: #eee;
+    border-top: 1px solid #999;
+}
+.table-invoice thead th {
+    padding-bottom: 2px;
+}
+
+.table-invoice tbody tr:first-child td{
+    border-top: 1px solid #999;
+}
+
+.table-invoice th, .table-invoice td {
+    padding:4px;
+}
+
+div.tdar-rates {
+    border-right: 1px dashed #bbb;padding-right: 40px;
+}
+
+.tdar-button {
+    line-height: normal;
+}
+
+.well.form-condensed {
+    padding:10px;
+}

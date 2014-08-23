@@ -8,16 +8,12 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,27 +23,19 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.statistics.AggregateStatistic;
-import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
-import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.DailyEmailProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
-import org.tdar.core.service.processes.SitemapGeneratorProcess;
-import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.processes.SendEmailProcess;
+import org.tdar.core.service.processes.WeeklyFilestoreLoggingProcess;
 
 /**
  * $Id$
@@ -62,16 +50,15 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
     @Autowired
-    private SitemapGeneratorProcess sitemap;
-
-    @Autowired
     RebuildHomepageCache homepage;
 
     @Autowired
-    WeeklyStatisticsLoggingProcess processingTask;
+    private SendEmailProcess sendEmailProcess;
+    @Autowired
+    private DailyEmailProcess dailyEmailProcess;
 
     @Autowired
-    CreatorAnalysisProcess pap;
+    private CreatorAnalysisProcess pap;
 
     private class MockScheduledProcess extends ScheduledBatchProcess<Dataset> {
 
@@ -110,10 +97,37 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     WeeklyFilestoreLoggingProcess fsp;
 
+    @Autowired
+    ScheduledProcessService scheduledProcessService;
+
     @Test
+    @Rollback
+    public void testOptimize() {
+        searchIndexService.optimizeAll();
+    }
+    
+    @Test
+    @Rollback
+    public void testDailyEmailProcess() {
+        TdarUser user = new TdarUser();
+        user.setEmail("a@badfdsf.com");
+        user.setUsername(user.getEmail());
+        user.setFirstName("first");
+        user.setLastName("last");
+        user.setDateUpdated(new Date());
+        genericService.saveOrUpdate(user);
+        
+        dailyEmailProcess.execute();
+        
+    }
+    
+    @Test
+    @Rollback
     public void testVerifyProcess() {
         fsp.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.runScheduledProcessesInQueue();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -127,7 +141,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -145,11 +160,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertTrue(mock.getBatchIdQueue().isEmpty());
         mock.cleanup();
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
-    }
-
-    @Test
-    public void testSitemapGen() {
-        sitemap.execute();
     }
 
     @Test
@@ -200,49 +210,4 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         ocur.execute();
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
-    @Rollback(true)
-    public void testStats() throws InstantiationException, IllegalAccessException {
-        Number docs = resourceService.countActiveResources(ResourceType.DOCUMENT);
-        Number datasets = resourceService.countActiveResources(ResourceType.DATASET);
-        Number images = resourceService.countActiveResources(ResourceType.IMAGE);
-        Number sheets = resourceService.countActiveResources(ResourceType.CODING_SHEET);
-        Number ontologies = resourceService.countActiveResources(ResourceType.ONTOLOGY);
-        Number sensory = resourceService.countActiveResources(ResourceType.SENSORY_DATA);
-        Number gis = resourceService.countActiveResources(ResourceType.GEOSPATIAL);
-        Number people = entityService.findAllRegisteredUsers().size();
-        createAndSaveNewInformationResource(Document.class);
-        createAndSaveNewInformationResource(Dataset.class);
-        createAndSaveNewInformationResource(Image.class);
-        createAndSaveNewInformationResource(CodingSheet.class);
-        createAndSaveNewInformationResource(Ontology.class);
-        createAndSaveNewInformationResource(Geospatial.class);
-        createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
-        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUseDefaultUser();
-        processingTask.execute();
-        flush();
-        List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);
-        Map<AggregateStatistic.StatisticType, AggregateStatistic> map = new HashMap<AggregateStatistic.StatisticType, AggregateStatistic>();
-        for (AggregateStatistic stat : allStats) {
-            logger.info(stat.getRecordedDate() + " " + stat.getValue() + " " + stat.getStatisticType());
-            map.put(stat.getStatisticType(), stat);
-        }
-        Date current = new Date();
-
-        Date date = map.get(StatisticType.NUM_CODING_SHEET).getRecordedDate();
-        Calendar cal = new GregorianCalendar(current.getYear(), current.getMonth(), current.getDay());
-        Calendar statDate = new GregorianCalendar(date.getYear(), date.getMonth(), date.getDay());
-        assertEquals(cal, statDate);
-        // assertEquals(11L, map.get(StatisticType.NUM_PROJECT).getValue().longValue());
-        assertEquals(datasets.longValue() + 1, map.get(StatisticType.NUM_DATASET).getValue().longValue());
-        assertEquals(gis.longValue() + 1, map.get(StatisticType.NUM_GIS).getValue().longValue());
-        assertEquals(docs.longValue() + 2, map.get(StatisticType.NUM_DOCUMENT).getValue().longValue());
-        assertEquals(images.longValue() + 1, map.get(StatisticType.NUM_IMAGE).getValue().longValue());
-        assertEquals(sheets.longValue() + 1, map.get(StatisticType.NUM_CODING_SHEET).getValue().longValue());
-        assertEquals(sensory.longValue() + 1, map.get(StatisticType.NUM_SENSORY_DATA).getValue().longValue());
-        assertEquals(ontologies.longValue() + 1, map.get(StatisticType.NUM_ONTOLOGY).getValue().longValue());
-        assertEquals(people.longValue() + 1, map.get(StatisticType.NUM_USERS).getValue().longValue());
-        assertFalse(map.get(StatisticType.REPOSITORY_SIZE).getValue().longValue() == 0);
-    }
 }

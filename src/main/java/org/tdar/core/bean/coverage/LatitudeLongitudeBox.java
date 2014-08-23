@@ -1,9 +1,9 @@
 package org.tdar.core.bean.coverage;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -13,7 +13,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.Field;
@@ -28,12 +30,15 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -50,13 +55,11 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
         @Index(name = "resource_latlong", columnList = "resource_id, id") })
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
-// (name="latitudeLongitudeBox")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.LatitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 2605563277326422859L;
-
-    @Transient
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final double MAX_LATITUDE = 90d;
     public static final double MIN_LATITUDE = -90d;
@@ -67,6 +70,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public static final int LONGITUDE = 2;
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
+
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /** used to record whether this instance has been obfuscated by the obfuscation service or not */
     private transient boolean obfuscated;
@@ -138,7 +144,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    @JSONTransient
+    
     public boolean isObfuscatedObjectDifferent() {
         if (obfuscatedObjectDifferent == null) {
             logger.debug("should call obfuscate before testing obfuscation");
@@ -178,42 +184,42 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if ((num1 == null) && (num2 == null)) {
             return null;
         }
+
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
+
+        Double numOne = (num1 != null) ? num1 : num2;
 
         if (num1 == null) {
             throw new TdarRecoverableRuntimeException("latLong.one_null");
         }
         // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = (num2 != null) ? num2 : num1 + (salt / 2);
-        if (Math.abs(num1.doubleValue() - numTwo.doubleValue()) < salt) {
+        Double numTwo = (num2 != null) ? num2 : numOne + salt / 2;
+        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) < salt) {
             add += salt / 2;
         } else {
-            return num1;
+            return numOne;
         }
 
-        if (num1 < numTwo) { // -5 < -3
+        if (numOne < numTwo) { // -5 < -3
             add *= -1;
             salt *= -1;
         }
         // -5 - .05 - .02
-        double ret = num1.doubleValue() + add + (salt * r.nextDouble());
+        double ret = numOne.doubleValue() + add + salt * r.nextDouble();
         if (type == LONGITUDE) {
-            if (ret > MAX_LONGITUDE) {
+            if (ret > MAX_LONGITUDE)
                 ret -= 360;
-            }
-            if (ret < MIN_LONGITUDE) {
+            if (ret < MIN_LONGITUDE)
                 ret += 360;
-            }
         }
 
         // NOTE: Ideally, this should do something different, but in reality, how
         // many archaeological sites are really going to be in this area???
         if (type == LATITUDE) {
-            if (Math.abs(ret) > MAX_LATITUDE) {
+            if (Math.abs(ret) > MAX_LATITUDE)
                 ret = MAX_LATITUDE;
-            }
         }
 
         return new Double(ret);
@@ -241,6 +247,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
             setMinObfuscatedLatitude();
@@ -255,6 +262,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
             setMaxObfuscatedLatitude();
@@ -269,6 +277,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
             setMinObfuscatedLongitude();
@@ -283,6 +292,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
+    @JsonView(JsonLookupFilter.class)
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
             setMaxObfuscatedLongitude();
@@ -405,13 +415,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Transient
     public boolean isValidLatitude(Double latitude) {
         // FIXME: verify that this works at extreme case (+/- 90)
-        return (latitude != null) && (latitude >= MIN_LATITUDE) && (latitude <= MAX_LATITUDE);
+        return latitude != null && latitude >= MIN_LATITUDE && latitude <= MAX_LATITUDE;
     }
 
     @Transient
     public boolean isValidLongitude(Double longitude) {
         // FIXME: verify that this works for extreme cases (+/- 180)
-        return (longitude != null) && (longitude >= MIN_LONGITUDE) && (longitude <= MAX_LONGITUDE);
+        return longitude != null && longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE;
     }
 
     @Override
@@ -420,9 +430,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
                 && isValidLatitude(minimumLatitude)
                 && isValidLongitude(minimumLongitude)
                 && isValidLongitude(maximumLongitude)
-                && (maximumLatitude >= minimumLatitude)
+                && maximumLatitude >= minimumLatitude
                 && isValidLongitudeSpan(minimumLongitude, maximumLongitude)
-                && (Math.abs(maximumLatitude - minimumLatitude) < 180)) {
+                && Math.abs(maximumLatitude - minimumLatitude) < 180) {
             return true;
         }
         return false;
@@ -430,7 +440,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
     private boolean isValidLongitudeSpan(double min, double max) {
-        if ((max < 0) && (min > 0)) {
+        if (max < 0 && min > 0) {
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
         }
@@ -480,7 +490,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
          * and breaks it in two over the IDL instead of choosing the smaller box.
          * return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
          */
-        if ((minLongitude > 0f) && (maxLongitude < 0f)) {
+        if (minLongitude > 0f && maxLongitude < 0f) {
             return true;
         }
 
@@ -488,7 +498,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public static boolean crossesPrimeMeridian(double minLongitude, double maxLongitude) {
-        if ((minLongitude < 0f) && (maxLongitude > 0f)) {
+        if (minLongitude < 0f && maxLongitude > 0f) {
             return true;
         }
 
@@ -502,7 +512,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     @XmlTransient
-    @JSONTransient
+    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -515,23 +525,22 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private transient Boolean obfuscatedObjectDifferent;
 
     @XmlTransient
-    @JSONTransient
-    @Override
+    
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
 
-    @Override
     public void setObfuscatedObjectDifferent(Boolean obfuscatedObjectDifferent) {
         this.obfuscatedObjectDifferent = obfuscatedObjectDifferent;
     }
 
     @Override
     // @XmlTransient
-    @JSONTransient
-    public List<Obfuscatable> obfuscate() {
+    
+    public Set<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
+        logger.trace("obfuscating latLong");
         Double val = getMaxObfuscatedLatitude();
         if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
             setMaximumLatitude(val);
@@ -582,6 +591,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public Integer getScale() {
         Integer toReturn = -1;
         if (!isInitialized()) {
@@ -591,24 +601,24 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (getAbsoluteLongLength() > scale) {
             scale = getAbsoluteLongLength();
         }
-        if (scale < 1.0) {
+        if (scale < 1.0) { // 1
             toReturn += 2;
         }
-        if (scale >= 1.0) {
+        if (scale >= 1.0) { // 2
             toReturn++;
         }
 
-        if (scale > 4.0) {
+        if (scale > 4.0) { // 3
             toReturn++;
         }
-        if (scale > 9.0) {
+        if (scale > 9.0) { // 4
             toReturn++;
         }
-        if (scale > 14.0) {
+        if (scale > 14.0) { // 5
             toReturn++;
         }
 
-        if (scale > 19.0) {
+        if (scale > 19.0) { // 6
             toReturn++;
         }
 
@@ -617,10 +627,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isInitialized() {
-        if ((maximumLatitude == null) || (minimumLatitude == null) || (maximumLongitude == null) || (minimumLongitude == null)) {
-            return false;
-        }
-        return true;
+        return maximumLatitude != null && minimumLatitude != null && maximumLongitude != null && minimumLongitude != null;
     }
 
     public boolean isInitializedAndValid() {

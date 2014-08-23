@@ -1,8 +1,11 @@
 package org.tdar.struts.action.resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,6 +13,8 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
@@ -18,8 +23,13 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -27,6 +37,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PaginationHelper;
 
 /**
@@ -45,8 +56,19 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     private static final long serialVersionUID = -5625084702553576277L;
 
+    @Autowired
+    private transient ProjectService projectService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+
+    @Autowired
+    private transient SearchIndexService searchIndexService;
+
+    @Autowired
+    private transient SearchService searchService;
+
     private String callback;
-    private String json;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
@@ -59,6 +81,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
+    private InputStream jsonInputStream;
+
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
      */
@@ -67,7 +91,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         getLogger().trace("saving a project");
         saveBasicResourceMetadata();
         getLogger().trace("saved metadata -- about to call saveOrUPdate");
-        getProjectService().saveOrUpdate(resource);
+        projectService.saveOrUpdate(resource);
         getLogger().trace("finished calling saveorupdate");
         return SUCCESS;
     }
@@ -75,57 +99,57 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Override
     public void indexPersistable() {
         if (isAsync()) {
-            getSearchIndexService().indexProjectAsync(getPersistable());
+            searchIndexService.indexProjectAsync(getPersistable());
         } else {
-            getSearchIndexService().indexProject(getPersistable());
+            searchIndexService.indexProject(getPersistable());
         }
     }
 
     // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
     // serialize
     @Action(value = JSON,
-            results = { @Result(
-                    name = SUCCESS,
-                    location = "json.ftl",
-                    params = { "contentType", "application/json" },
-                    type = "freemarker"
-                    ) }
-            )
-            @SkipValidation
-            public String json() {
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+    @SkipValidation
+    @HttpForbiddenErrorResponseOnly
+    public String json() {
+        setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
         return SUCCESS;
     }
 
     @Override
     public Collection<? extends Persistable> getDeleteIssues() {
-        return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
+        return projectService.findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
     @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        loadCustomMetadata();
+    }
+    
+    @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
+            ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser(), this);
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             if (getProject().getSecondarySortBy() != null) {
                 setSecondarySortField(getProject().getSecondarySortBy());
             }
-            getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
+            searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+            Date dateUpdated = getProject().getDateUpdated();
+            if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
+                projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
+            }
             try {
-                getSearchService().handleSearch(qb, this);
+                searchService.handleSearch(qb, this, this);
+                bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
+
             } catch (SearchPaginationException e) {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
                 addActionErrorWithException(getText("projectController.something_happened"), e);
             }
         }
-    }
-
-    @SkipValidation
-    public String getProjectAsJson() {
-        json = getProjectService().getProjectAsJson(getProject(), getAuthenticatedUser());
-        return json;
     }
 
     public Project getProject() {
@@ -312,6 +336,14 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
+    }
+
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(InputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
     }
 
 }

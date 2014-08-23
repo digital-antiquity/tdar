@@ -8,15 +8,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * This Class represents a Primary or Foreign Key relationship between two data tables
@@ -33,7 +33,8 @@ public class DataTableRelationship extends Persistable.Base {
     @Column(name = "relationship_type", length = FieldLength.FIELD_LENGTH_255)
     private DataTableColumnRelationshipType type;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "relationship")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(nullable = false, updatable = false, name = "relationship_id")
     private Set<DataTableColumnRelationship> columnRelationships = new HashSet<DataTableColumnRelationship>();
 
     public void setType(DataTableColumnRelationshipType type) {
@@ -50,30 +51,30 @@ public class DataTableRelationship extends Persistable.Base {
         return columnRelationships;
     }
 
+
     public void setColumnRelationships(Set<DataTableColumnRelationship> columnRelationships) {
         this.columnRelationships = columnRelationships;
     }
 
-    @XmlElement(name = "foreignTableRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlTransient
     public DataTable getForeignTable() {
-        try {
+//        try {
             DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
             return relationship.getForeignColumn().getDataTable();
-        } catch (Exception e) {
-        }
-        return null;
+//        } catch (Exception e) {
+//        }
+//        return null;
     }
 
-    @XmlElement(name = "localTableRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @XmlTransient
     public DataTable getLocalTable() {
-        try {
+//        try {
             DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
             return relationship.getLocalColumn().getDataTable();
-        } catch (Exception e) {
-        }
-        return null;
+//        } catch (Exception e) {
+//            
+//        }
+//        return null;
     }
 
     @Override

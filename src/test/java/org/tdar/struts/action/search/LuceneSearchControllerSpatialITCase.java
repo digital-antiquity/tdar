@@ -21,7 +21,6 @@ import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 @Transactional
 public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCase {
@@ -39,12 +38,6 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
     GenericKeywordService genericKeywordService;
 
     private LatitudeLongitudeBox searchBox;
-
-    @Autowired
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     private void doSearch(String query) {
         controller.setQuery(query);

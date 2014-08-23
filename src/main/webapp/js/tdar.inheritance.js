@@ -35,12 +35,12 @@ TDAR.inheritance = (function () {
             id: rawJson.id,
             resourceType: rawJson.resourceType,
             investigationInformation: {
-                investigationTypeIds: $.map(rawJson.investigationTypes, function (v) {
+                investigationTypeIds: $.map(rawJson.activeInvestigationTypes, function (v) {
                     return v.id;
                 }) || []
             },
             siteInformation: {
-                siteNameKeywords: $.map(rawJson.siteNameKeywords, function (v) {
+                siteNameKeywords: $.map(rawJson.activeSiteNameKeywords, function (v) {
                     return v.label;
                 }),
                 approvedSiteTypeKeywordIds: $.map(rawJson.approvedSiteTypeKeywords, function (v) {
@@ -51,7 +51,7 @@ TDAR.inheritance = (function () {
                 })
             },
             materialInformation: {
-                materialKeywordIds: $.map(rawJson.materialKeywords, function (v) {
+                materialKeywordIds: $.map(rawJson.activeMaterialKeywords, function (v) {
                     return v.id;
                 }) || []
             },
@@ -64,7 +64,7 @@ TDAR.inheritance = (function () {
                 })
             },
             spatialInformation: {
-                geographicKeywords: $.map(rawJson.geographicKeywords, function (v) {
+                geographicKeywords: $.map(rawJson.activeGeographicKeywords, function (v) {
                     return v.label;
                 }),
                 'p_maxy': null, // FIXME: I don't think these p_**** fields are
@@ -74,36 +74,36 @@ TDAR.inheritance = (function () {
                 'p_miny': null
             },
             temporalInformation: {
-                temporalKeywords: $.map(rawJson.temporalKeywords, function (v) {
+                temporalKeywords: $.map(rawJson.activeTemporalKeywords, function (v) {
                     return v.label;
                 }),
-                coverageDates: rawJson.coverageDates
+                coverageDates: rawJson.activeCoverageDates
             },
-            resourceAnnotations: rawJson.resourceAnnotations,
+            resourceAnnotations: rawJson.activeResourceAnnotations,
             noteInformation: {
-                resourceNotes: rawJson.resourceNotes
+                resourceNotes: rawJson.activeResourceNotes
             },
             collectionInformation: {
-                sourceCollections: rawJson.sourceCollections,
-                relatedComparativeCollections: rawJson.relatedComparativeCollections
+                sourceCollections: rawJson.activeSourceCollections,
+                relatedComparativeCollections: rawJson.activeRelatedComparativeCollections
 
             },
             otherInformation: {
-                otherKeywords: $.map(rawJson.otherKeywords, function (v) {
+                otherKeywords: $.map(rawJson.activeOtherKeywords, function (v) {
                     return v.label;
                 })
             },
-            creditProxies: $.map(rawJson.individualAndInstitutionalCredit, _convertCreator)
+            creditProxies: $.map(rawJson.activeIndividualAndInstitutionalCredit, _convertCreator)
         };
 
         // FIXME: update the parent latlong box (i.e. the red box not the brown
         // box)..p_miny, pmaxy, etc. etc.
         // console.warn(rawJson.firstLatitudeLongitudeBox)
-        if (rawJson.firstLatitudeLongitudeBox) {
-            obj.spatialInformation['minx'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLongitude;
-            obj.spatialInformation['maxx'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLongitude;
-            obj.spatialInformation['miny'] = rawJson.firstLatitudeLongitudeBox.minObfuscatedLatitude;
-            obj.spatialInformation['maxy'] = rawJson.firstLatitudeLongitudeBox.maxObfuscatedLatitude;
+        if (rawJson.firstActiveLatitudeLongitudeBox) {
+            obj.spatialInformation['minx'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude;
+            obj.spatialInformation['maxx'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude;
+            obj.spatialInformation['miny'] = rawJson.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude;
+            obj.spatialInformation['maxy'] = rawJson.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude;
         }
 
         //now build out individual/institutional credit
@@ -170,8 +170,7 @@ TDAR.inheritance = (function () {
 // e.g. <input name='my_input_field[12]'> becomes <input
 // name='my_input_field[0]'>
     function _resetIndexedAttributes(elem) {
-        var rex = /^(.+[_|\[])([0-9]+)([_|\]])$/; // string ending in _num_ or
-        // [num]
+        var rex = /^(.+[_|\[])([0-9]+)([_|\]].*$)/; // string containing _num_ or [num]
         var replacement = "$10$3"; // replace foo_bar[5] with foo_bar[0]
         $(elem).add("tr, :input", elem).each(function (i, v) {
             var id = $(v).attr("id");
@@ -389,20 +388,22 @@ TDAR.inheritance = (function () {
             //now set the correct toggle state for eachrow
             var $proxyRows = $(divSelector).find(".repeat-row");
             $proxyRows.each(function (i, rowElem) {
+                var $rowElem = $(rowElem);
+                var $creatorPerson = $rowElem.find(".creatorPerson");
+                var $creatorInstitution = $rowElem.find(".creatorInstitution");
+                var $personButton =  $rowElem.find(".personButton");
+                var $institutionButton = $rowElem.find(".institutionButton");
+                $rowElem.find(".resourceCreatorId").val("");
                 if (creators[i].type === TYPE_PERSON) {
-                    $(rowElem).find(".creatorPerson").removeClass("hidden");
-                    $(rowElem).find(".creatorInstitution").addClass("hidden");
-
-                    $(rowElem).find(".personButton").addClass("active");
-                    $(rowElem).find(".institutionButton").removeClass("active");
+                    $creatorPerson.removeClass("hidden");
+                    $creatorInstitution.addClass("hidden");
+                    $personButton.addClass("active");
+                    $institutionButton.removeClass("active");
                 } else {
-
-                    //fixme: cmon jim, really??  there's a better way to activate one over the other
-                    $(rowElem).find(".creatorPerson").addClass("hidden");
-                    $(rowElem).find(".creatorInstitution").removeClass("hidden");
-
-                    $(rowElem).find(".personButton").removeClass("active");
-                    $(rowElem).find(".institutionButton").addClass("active");
+                    $creatorPerson.addClass("hidden");
+                    $creatorInstitution.removeClass("hidden");
+                    $personButton.removeClass("active");
+                    $institutionButton.addClass("active");
 
                 }
             });
@@ -432,7 +433,7 @@ TDAR.inheritance = (function () {
             var sel = this;
             if ($(sel).val() !== '' && $(sel).val() > 0) {
                 $.ajax({
-                    url: getBaseURI() + "project/json",
+                    url: TDAR.uri() + "project/json",
                     dataType: "jsonp",
                     data: {
                         id: $(sel).val()
@@ -469,32 +470,32 @@ TDAR.inheritance = (function () {
 
 //return skeleton project
     function _getBlankProject() {
-        var skeleton = {
+    var skeleton = {
             "approvedCultureKeywords": [],
             "approvedSiteTypeKeywords": [],
-            "cultureKeywords": [],
+            "activeCultureKeywords": [],
             "dateCreated": {},
             "description": null,
             "firstLatitudeLongitudeBox": null,
-            "geographicKeywords": [],
+            "activeGeographicKeywords": [],
             "id": null,
-            "investigationTypes": [],
-            "materialKeywords": [],
-            "otherKeywords": [],
+            "activeInvestigationTypes": [],
+            "activeMaterialKeywords": [],
+            "activeOtherKeywords": [],
             "resourceType": null,
-            "siteNameKeywords": [],
-            "siteTypeKeywords": [],
+            "activeSiteNameKeywords": [],
+            "activeSiteTypeKeywords": [],
             "submitter": null,
-            "temporalKeywords": [],
-            "coverageDates": [],
+            "activeTemporalKeywords": [],
+            "activeCoverageDates": [],
             "title": null,
-            "resourceNotes": [],
-            "sourceCollections": [],
-            "relatedComparativeCollections": [],
-            "resourceAnnotations": [],
+            "activeResourceNotes": [],
+            "activeSourceCollections": [],
+            "activeRelatedComparativeCollections": [],
+            "activeResourceAnnotations": [],
             "uncontrolledCultureKeywords": [],
             "uncontrolledSiteTypeKeywords": [],
-            "individualAndInstitutionalCredit": []
+            "activeIndividualAndInstitutionalCredit": []
         };
         return skeleton;
     }
@@ -706,9 +707,7 @@ TDAR.inheritance = (function () {
                 cbSelector: "#cbInheritingCreditRoles",
                 divSelector: "#creditSection",
                 mappedData: "creditProxies",
-                isSafeCallback: function () {
-                    return true;
-                },
+                isSafeCallback: _inheritingCreditInfoIsSafe,
                 inheritSectionCallback: function () {
                     _inheritCreditInformation('#creditTable', TDAR.inheritance.json.creditProxies);
 
@@ -729,6 +728,35 @@ TDAR.inheritance = (function () {
                 _disableMap();
             }
         });
+    }
+
+    function _inheritingCreditInfoIsSafe() {
+        var $creditRows = $("#creditTable > .repeat-row");
+        var array1 = $.map(TDAR.inheritance.json.creditProxies,function(obj){
+            return obj.id;
+        });
+
+        var array2 = $.map($creditRows.toArray(), function(row){
+            var el = $(row).find("[name$='person.id']").first();
+            var personId = parseInt(el.val());
+            var retid = personId;
+            if(personId === -1 || isNaN(personId)) {
+                var instEl = $(row).find("[name$='institutionId.id']").first();
+                var institutionId = parseInt(instEl.val());
+                if(institutionId !== -1 && !isNaN(institutionId)) {
+                    retid = institutionId;
+                }
+            }
+            if(retid !== -1 && !isNaN(retid)) {
+                return retid;
+            }
+        });
+
+        console.log("comparing ar1:", array1);
+        console.log("comparing ar2:", array2);
+        return array2.length === 0 || $.compareArray(array1, array2);
+
+
     }
 
     function _updateInheritanceCheckboxes() {

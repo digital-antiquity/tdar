@@ -12,13 +12,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
@@ -35,8 +37,14 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PaginationHelper;
@@ -44,16 +52,27 @@ import org.tdar.utils.Pair;
 
 public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
-    public static final String RETRANSLATE = "retranslate";
     public static final String COLUMNS = "columns";
-    public static final String REIMPORT = "reimport";
     private static final long serialVersionUID = 6368347724977529964L;
     public static final String SAVE_VIEW = "SAVE_VIEW";
     public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
 
     private static final String INPUT_COLUMNS = "INPUT_COLUMNS";
 
-    // public static final String SAVE_MAP_NEXT = "SAVE_MAP_NEXT";
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient DatasetService datasetService;
+
+    @Autowired
+    private transient DataTableService dataTableService;
+
+    @Autowired
+    private transient OntologyService ontologyService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     private Integer startRecord = 0;
     private Integer recordsPerPage = 10;
@@ -138,31 +157,6 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private PaginationHelper paginationHelper;
     private InputStream xmlStream;
 
-    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String reimport() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        // note this ignores the quota changes -- it's on us
-        getDatasetService().reprocess(getDataResource());
-        return SUCCESS;
-    }
-
-    /**
-     * Retranslates the given dataset.
-     * XXX: does this need a WritableSession?
-     */
-    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID) })
-    @WriteableSession
-    public String retranslate() throws TdarActionException {
-        // note this ignores the quota changes -- it's on us
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        for (DataTable table : getDataResource().getDataTables()) {
-            getDatasetService().retranslate(table.getDataTableColumns());
-        }
-        getDatasetService().createTranslatedFile(getDataResource());
-        return SUCCESS;
-    }
-
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
@@ -212,11 +206,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     @SkipValidation
     @WriteableSession
-    @Action(value = "save-column-metadata", results = {
-            @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
-            @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
-            @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
-    })
+    @PostOnly
+    @Action(value = "save-column-metadata",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SAVE_VIEW, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
+            })
     /**
      * Saves column metadata for each column in a given DataTable (set on the controller and retrievable via getDataTable()).
      * 
@@ -231,14 +228,13 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         initializePaginationHelper();
 
         try {
-            updateResults = getDatasetService().updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            updateResults = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
         this.columnsToRemap = updateResults.getSecond();
-        getXmlService().logRecordXmlToFilestore(getDataResource());
         postSaveColumnMetadataCleanup();
         return getPostSaveAction().getResultName(!updateResults.getFirst(), (Dataset) getPersistable());
     }
@@ -251,6 +247,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     private List<DataTableColumn> columnsToRemap;
+    private String dataTableColumnJson;
 
     /**
      * Used to render a row within a {@link Dataset}.
@@ -271,10 +268,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (Persistable.Base.isNullOrTransient(dataTableId) || Persistable.Base.isNullOrTransient(rowId)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(dataTableId);
+        DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
-            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
-                dataTableRowAsMap = getDatasetService().selectRowFromDataTable(dataTable, rowId, true);
+            if (authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+                dataTableRowAsMap = datasetService.selectRowFromDataTable(dataTable, rowId, true);
                 if (MapUtils.isEmpty(dataTableRowAsMap)) {
                     return ERROR;
                 }
@@ -282,6 +279,25 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             }
         }
         return ERROR;
+    }
+
+    @Override
+    protected void loadCustomViewMetadata() throws TdarActionException {
+        super.loadCustomMetadata();
+        List<Map<String, Object>> result = new ArrayList<>();
+        if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
+            for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
+                Map<String, Object> col = new HashMap<>();
+                col.put("simpleName", dtc.getJsSimpleName());
+                col.put("displayName", dtc.getDisplayName());
+                result.add(col);
+            }
+        }
+        try {
+            setDataTableColumnJson(xmlService.convertToJson(result));
+        } catch (Exception e) {
+            getLogger().error("cannot convert to JSON: {}", e);
+        }
     }
 
     /**
@@ -306,7 +322,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
                                     "contentType", "text/xml",
                                     "inputName", "xmlStream",
                             }),
-                    @Result(name = TdarActionSupport.ERROR, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = TdarActionSupport.ERROR, type = HTTPHEADER, params = { "error", "404" }),
             })
     @SkipValidation
     public String getTableAsXml() {
@@ -317,10 +333,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         if (Persistable.Base.isNullOrTransient(dataTableId)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(dataTableId);
+        DataTable dataTable = dataTableService.find(dataTableId);
         if (dataTable != null) {
-            if (getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
-                String dataTableAsXml = getDatasetService().selectTableAsXml(dataTable);
+            if (authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+                String dataTableAsXml = datasetService.selectTableAsXml(dataTable);
                 xmlStream = new ByteArrayInputStream(dataTableAsXml.getBytes(StandardCharsets.UTF_8));
                 return SUCCESS;
             }
@@ -331,16 +347,16 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
-                getDatasetService().remapColumnsAsync(columnsToRemap, getDataResource().getProject());
+                datasetService.remapColumnsAsync(columnsToRemap, getDataResource().getProject());
             } else {
-                getDatasetService().remapColumns(columnsToRemap, getDataResource().getProject());
+                datasetService.remapColumns(columnsToRemap, getDataResource().getProject());
             }
         }
     };
 
     public List<DataTableColumn> getOntologyMappedColumns() {
         if (ontologyMappedColumns == null) {
-            ontologyMappedColumns = getDataTableService().findOntologyMappedColumns(getDataResource());
+            ontologyMappedColumns = dataTableService.findOntologyMappedColumns(getDataResource());
         }
         return ontologyMappedColumns;
     }
@@ -357,7 +373,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
         getLogger().trace(dataTable + " dtID:" + dataTableId);
         if (dataTable == null) {
             if (dataTableId != null) {
-                this.dataTable = getDataTableService().find(dataTableId);
+                this.dataTable = dataTableService.find(dataTableId);
             } else {
                 Set<DataTable> dataTables = getDataResource().getDataTables();
                 if (!CollectionUtils.isEmpty(dataTables)) {
@@ -374,14 +390,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             return;
         }
         this.dataTableId = dataTableId;
-        // this.dataTable = getDataTableService().find(dataTableId);
+        // this.dataTable = dataTableService.find(dataTableId);
     }
 
     public Map<String, Long> getDistinctColumnValuesWithCounts() {
         if (getDataTableColumn() == null) {
             return Collections.emptyMap();
         }
-        return getDataTableService().findAllDistinctValuesWithCounts(dataTableColumn);
+        return dataTableService.findAllDistinctValuesWithCounts(dataTableColumn);
     }
 
     public DataTableColumn getDataTableColumn() {
@@ -399,7 +415,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
             getLogger().warn("Trying to set data table column id to null or -1: " + columnId);
             return;
         }
-        this.dataTableColumn = getDataTableService().findDataTableColumn(columnId);
+        this.dataTableColumn = dataTableService.findDataTableColumn(columnId);
         if ((dataTableColumn != null) && (getResource() == null)) {
             setId(dataTableColumn.getDataTable().getDataset().getId());
         }
@@ -418,7 +434,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     }
 
     public boolean isOntologyLinked() {
-        return getDatasetService().canLinkDataToOntology(getDataResource());
+        return datasetService.canLinkDataToOntology(getDataResource());
     }
 
     private Dataset getDataResource() {
@@ -448,7 +464,7 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public List<String> getOntologyMappedColumnStatus() {
         ontologyMappedColumnStatus = new ArrayList<String>();
         for (DataTableColumn column : getOntologyMappedColumns()) {
-            String status = getOntologyService().isOntologyMapped(column) ? "" : "unmapped";
+            String status = ontologyService.isOntologyMapped(column) ? "" : "unmapped";
             ontologyMappedColumnStatus.add(status);
         }
         getLogger().trace("{}", ontologyMappedColumnStatus);
@@ -551,6 +567,14 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     public void setRecordsPerPage(Integer recordsPerPage) {
         this.recordsPerPage = recordsPerPage;
+    }
+
+    public String getDataTableColumnJson() {
+        return dataTableColumnJson;
+    }
+
+    public void setDataTableColumnJson(String dataTableColumnJson) {
+        this.dataTableColumnJson = dataTableColumnJson;
     }
 
 }

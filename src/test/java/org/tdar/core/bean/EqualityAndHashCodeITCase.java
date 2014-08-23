@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -40,22 +41,6 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         }
         logger.info("people: {}", personSet);
         assertEquals(2, personSet.size());
-    }
-
-    @Test
-    @Ignore
-    // This was setup to test what goes on when you call merge, with a detached and non-detached version of an entity that an error happens
-    public void testHib() throws Exception {
-        Document doc = new Document();
-        doc.setTitle("t");
-        doc.setDescription("d");
-        doc.setDocumentType(DocumentType.OTHER);
-        doc.markUpdated(getAdminUser());
-        genericService.save(doc);
-        genericService.detachFromSession(doc);
-        Person admin = genericService.find(Person.class, getAdminUserId());
-        doc.setUploader(admin);
-        doc = genericService.merge(doc);
     }
 
     @Test
@@ -130,9 +115,10 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             Person persistedPerson = personList.get(i);
 
             // person equality based on db identity. so the two person records should not be equal
-            Person person = new Person();
+            TdarUser person = new TdarUser();
             person.setEmail(persistedPerson.getEmail());
-            person.setRegistered(persistedPerson.isRegistered());
+//            person.setRegistered(persistedPerson.isRegistered());
+            person.setContributor(true);
             person.setLastName(persistedPerson.getLastName());
             person.setFirstName(persistedPerson.getFirstName());
             person.setPhone(persistedPerson.getPhone());

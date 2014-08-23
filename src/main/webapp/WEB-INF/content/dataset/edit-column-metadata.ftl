@@ -38,16 +38,11 @@
                         </select>
                     </form>
                     </span>
-                    <#--                    <ul class="dropdown-menu">
-                                            <#list dataTableColumns?sort_by("sequenceNumber") as column>
-                                            <li><a href="#" data-targetdiv="columnDiv_${column_index}">${column.displayName}</a></li>
-                                            </#list>
-                                        </ul> -->
                     </li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>
@@ -58,6 +53,7 @@
 
     <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
         <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' value='${resource.id?c}'/>
         <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
         <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
@@ -135,16 +131,9 @@
                                     list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                                 </label>
                                 <script type='text/javascript'>
-                                    $("#recordsPerPage${prefix}").change(function () {
-                                        var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
-                                        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                                        var prefix = "";
-                                        if (url.indexOf("?") != 0) {
-                                            prefix = "?";
-                                        }
-                                        url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage${prefix}').val();
-                                        window.location = url;
-                                    });
+                                $(function () {
+                                    TDAR.datasetMetadata.initPagination("${prefix}");
+                                });
                                 </script>
                             </td>
                         </tr>
@@ -243,7 +232,7 @@
                                     </select>
                                 </#if>
                             </span>
-                            <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+                            <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
                         </div>
                     </div>
     <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">

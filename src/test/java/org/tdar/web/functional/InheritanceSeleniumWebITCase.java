@@ -172,7 +172,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     // create a project, fill out a couple inheritable sections, then inherit
     public void testBasicInheritance() throws InterruptedException {
         // ignore misc javascript errors (gmaps, et. al), our asserts will break if relevant javascript had problems
-        ignoreJavascriptErrors = true;
+        setIgnoreJavascriptErrors(true);
         gotoPage("/project/add");
 
         Project project = new Project();
@@ -189,7 +189,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
         // inherit everything
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(getDriver(), 5);
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
 
@@ -219,7 +219,8 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     @After
     public void turnIgnoresOff() {
-        ignoreJavascriptErrors = false;
+        //jtd: I don't think this is necessary - you get a new test class instance for each test
+        setIgnoreJavascriptErrors(false);
     }
 
     @Override

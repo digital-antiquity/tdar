@@ -3,20 +3,22 @@ package org.tdar.core.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.SearchFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
 
@@ -41,16 +45,21 @@ import org.tdar.utils.activity.Activity;
 @Transactional(readOnly = true)
 public class SearchIndexService {
 
-    private static final Logger log = Logger.getLogger(SearchIndexService.class);
+    private final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
+    public static final String INDEXING_COMPLETED = "indexing completed";
+    public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
 
     @Autowired
     private HibernateSearchDao hibernateSearchDao;
 
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private DatasetDao datasetDao;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
@@ -75,14 +84,22 @@ public class SearchIndexService {
      * 
      * @return
      */
-    private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
-        List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        for (LookupSource source : LookupSource.values()) {
-            // FIXME::
-            if (source == LookupSource.RESOURCE) {
-                toReindex.add(Resource.class);
-            } else {
-                toReindex.addAll(Arrays.asList(source.getClasses()));
+    public List<Class<? extends Indexable>> getDefaultClassesToIndex() {
+        return getClassesToReindex(Arrays.asList(LookupSource.values()));
+    }
+
+    public List<Class<? extends Indexable>> getClassesToReindex(List<LookupSource> values) {
+        List<Class<? extends Indexable>> toReindex = new ArrayList<>();
+        for (LookupSource source : values) {
+            switch (source) {
+                case RESOURCE:
+                    toReindex.add(Resource.class);
+                    break;
+                case PERSON:
+                    toReindex.add(Person.class);
+                    break;
+                default:
+                    toReindex.addAll(Arrays.asList(source.getClasses()));
             }
         }
         return toReindex;
@@ -109,22 +126,22 @@ public class SearchIndexService {
         ActivityManager.getInstance().addActivityToQueue(activity);
 
         try {
-            genericService.synchronize();
-            updateReceiver.setPercentComplete(0);
-
+            genericDao.synchronize();
             FullTextSession fullTextSession = getFullTextSession();
             FlushMode previousFlushMode = fullTextSession.getFlushMode();
             fullTextSession.setFlushMode(FlushMode.MANUAL);
             fullTextSession.setCacheMode(CacheMode.IGNORE);
             SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
+            updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / classesToIndex.size()) * 100f;
             for (Class<?> toIndex : classesToIndex) {
                 fullTextSession.purgeAll(toIndex);
                 sf.optimize(toIndex);
-                Number total = genericService.count(toIndex);
-                ScrollableResults scrollableResults = genericService.findAllScrollable(toIndex);
-                updateReceiver.setStatus(total + " " + toIndex.getSimpleName() + "(s) to be indexed");
+                Number total = genericDao.count(toIndex);
+                ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
+                String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
+                updateAllStatuses(updateReceiver, activity, message, 0f);
                 int divisor = getDivisor(total);
                 float currentProgress = 0f;
                 int numProcessed = 0;
@@ -136,44 +153,49 @@ public class SearchIndexService {
                     index(fullTextSession, item);
                     numProcessed++;
                     float totalProgress = ((currentProgress * maxPer) + percent);
-                    String message = "";
                     if ((numProcessed % divisor) == 0) {
                         message = "indexed " + numProcessed + MIDDLE + totalProgress + "%";
-                        updateReceiver.setStatus(message);
-                        updateReceiver.setPercentComplete(totalProgress / 100f);
+                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
                     }
                     if ((numProcessed % FLUSH_EVERY) == 0) {
                         message = "indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)";
-                        updateReceiver.setStatus(message);
-                        log.trace("flushing search index");
+                        updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                        logger.trace("flushing search index");
                         fullTextSession.flushToIndexes();
                         fullTextSession.clear();
-                        log.trace("flushed search index");
-                    }
-                    if (StringUtils.isNotBlank(message)) {
-                        activity.setMessage(message);
+                        logger.trace("flushed search index");
                     }
                 }
                 scrollableResults.close();
                 fullTextSession.flushToIndexes();
                 fullTextSession.clear();
                 percent += maxPer;
-                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
-                updateReceiver.setStatus(message);
-                activity.setMessage(message);
+                message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                updateAllStatuses(updateReceiver, activity, message, percent);
             }
 
             fullTextSession.flushToIndexes();
             fullTextSession.clear();
-            updateReceiver.setStatus("index all complete");
-            updateReceiver.setPercentComplete(100f);
+            updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
             fullTextSession.setFlushMode(previousFlushMode);
             activity.end();
         } catch (Throwable ex) {
-            log.warn(ex);
-            updateReceiver.addError(ex);
+            logger.warn("exception: {}", ex);
+            if (updateReceiver != null) {
+                updateReceiver.addError(ex);
+            }
         }
         activity.end();
+    }
+
+    private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
+        if (updateReceiver != null) {
+            updateReceiver.setPercentComplete(complete);
+            updateReceiver.setStatus(status);
+        }
+        activity.setMessage(status);
+        activity.setPercentDone(complete);
+        logger.debug("status: {} [{}%]", status, complete);
     }
 
     /**
@@ -202,7 +224,7 @@ public class SearchIndexService {
      * @param collectionToReindex
      */
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
-        log.info("indexing collection async");
+        logger.info("indexing collection async");
         List<ResourceCollection> collections = resourceCollectionService.getAllChildCollections(collectionToReindex);
         collections.add(collectionToReindex);
         Set<Resource> resources = new HashSet<Resource>();
@@ -271,19 +293,19 @@ public class SearchIndexService {
     public <C extends Indexable> boolean indexCollection(Collection<C> indexable) {
         boolean exceptions = false;
         if (indexable != null) {
-            log.debug("manual indexing ... " + indexable.size());
+            logger.debug("manual indexing ... {}", indexable.size());
             FullTextSession fullTextSession = getFullTextSession();
 
             for (C toIndex : indexable) {
-                log.debug("indexing: " + toIndex);
+                logger.debug("indexing: {}", toIndex);
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
-                    index(fullTextSession, genericService.merge(toIndex));
+                    index(fullTextSession, genericDao.merge(toIndex));
                 } catch (Exception e) {
-                    log.error(String.format("exception in indexing, %s [%s]", toIndex, e.getMessage()), e);
-                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
+                    logger.error("exception in indexing, {} [{}]", toIndex, e);
+                    logger.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
                             ExceptionUtils.getRootCause(e));
                     exceptions = true;
                 }
@@ -346,7 +368,7 @@ public class SearchIndexService {
                     .cacheMode(CacheMode.IGNORE).threadsToLoadObjects(INDEXER_THREADS_TO_LOAD_OBJECTS)
                     .threadsForSubsequentFetching(INDEXER_THREADS_FOR_SUBSEQUENT_FETCHING).startAndWait();
         } catch (InterruptedException e) {
-            log.error("index failed", e);
+            logger.error("index failed", e);
         }
     }
 
@@ -388,13 +410,8 @@ public class SearchIndexService {
         SearchFactory sf = fullTextSession.getSearchFactory();
         for (Class<?> toIndex : getDefaultClassesToIndex()) {
             sf.optimize(toIndex);
-            log.info("optimizing " + toIndex.getSimpleName());
+            logger.info("optimizing {}", toIndex.getSimpleName());
         }
-    }
-
-    @Autowired
-    public void setGenericService(GenericService genericService) {
-        this.genericService = genericService;
     }
 
     /**
@@ -406,9 +423,9 @@ public class SearchIndexService {
         project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT)));
         project.setReadyToIndex(true);
         index(project);
-        log.debug("reindexing project contents");
+        logger.debug("reindexing project contents");
         boolean exceptions = indexCollection(project.getCachedInformationResources());
-        log.debug("completed reindexing project contents");
+        logger.debug("completed reindexing project contents");
         return exceptions;
     }
 
@@ -423,6 +440,22 @@ public class SearchIndexService {
 
     @Transactional(readOnly = true)
     public boolean indexProject(Long id) {
-        return indexProject(genericService.find(Project.class, id));
+        return indexProject(genericDao.find(Project.class, id));
+    }
+
+    @Async
+    public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
+        TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+        Date date = new Date();
+        logger.info("reindexing indexall");
+        indexAll(reciever, toReindex, person);
+        if (CONFIG.isProductionEnvironment()) {
+            Email email = new Email();
+            email.setSubject(INDEXING_COMPLETED);
+            email.setMessage(String.format(INDEXING_STARTED, toReindex, CONFIG.getHostName(), date, new Date()));
+            email.setUserGenerated(false);
+            emailService.send(email);
+        }
+
     }
 }

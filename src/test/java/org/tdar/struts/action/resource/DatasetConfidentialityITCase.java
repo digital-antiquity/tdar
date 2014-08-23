@@ -22,7 +22,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
@@ -92,9 +91,4 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         });
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

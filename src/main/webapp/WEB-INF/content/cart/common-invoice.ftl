@@ -2,17 +2,19 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
     <#macro printInvoice>
-    <h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></#if></h3>
-    <table class="tableFormat">
-        <tr>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Cost</th>
-            <th>Files</th>
-            <th>Space</th>
-            <th>Resources</th>
-            <th>Subtotal</th>
-        </tr>
+    <!-- FOR testing total:$${invoice.calculatedCost!0} -->
+    <table class="table  table-invoice">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+                <th>Files</th>
+                <th>Space</th>
+                <th>Resources</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
         <#list invoice.items as item>
             <tr>
                 <td>${item.activity.name}</td>
@@ -38,19 +40,41 @@
                 <td></td>
             </tr>
         </#if>
-        <tr>
-            <th colspan=6><em>Total:</em></th>
-            <th><#if invoice.proxy && !billingManager>N/A<#else>$${invoice.calculatedCost!0}
-                <!-- FOR testing total:$${invoice.calculatedCost!0} -->
-            </#if>
-            </th>
-        </tr>
+        <tfoot>
+            <tr>
+                <th>Total:</th>
+                <th colspan=6 class="invoice-total text-right">$${invoice.calculatedCost!0}</th>
+            </tr>
+        </tfoot>
     </table>
     </#macro>
 
-    <#macro paymentMethod includePhone=true>
+<#macro invoiceOwner invoice>
+    ${(invoice.owner.properName)!''}
+</#macro>
+
+
+    <#macro printSubtotal invoice>
+    <div id="divInvoiceSubtotal" class="invoice-subtotal">
+        <#--<h3>Subtotal</h3>-->
+        <#--<span class="amt">$${invoice.calculatedCost}</span>-->
+        <span class="item-desc">${invoice.numberOfFiles} files / ${invoice.numberOfMb}mb</span>
+        <span class="item-desc status">Status: ${invoice.transactionStatus.label}</span>
+        <span class="item-desc">Payment by <@s.text name="${invoice.paymentMethod.localeKey}"/></span>
+        <#if invoice.owner??>
+        <span class="item-desc">Owner: <@invoiceOwner invoice/></span>
+        </#if>
+        <#if (billingManager!false)>
+            <@s.a href="/cart/continue?invoiceId=${invoice.id?c}"  >Customer Link</@s.a>
+            <#--<#noescape><@s.a href="/cart/add?invoice.numberOfFiles=${invoice.numberOfFiles?c}&invoice.numberOfMb=${invoice.numberOfFiles?c}}&code=${((invoice.coupon.code)!'')}">Customer Link</@s.a></#noescape> -->
+        </#if>
+    </div>
+
+    </#macro>
+
+    <#macro paymentMethod includePhone=false>
         <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"
-        listValue="label"    cssClass="transactionType fadeIfZeroed" emptyOption='false' />
+        listValue="label"    cssClass="transactionType" emptyOption='false' />
 
         <#if includePhone>
         <div class="typeToggle credit_card invoice manual">
@@ -63,34 +87,6 @@
     <div class="typeToggle manual">
         <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
     </div>
-
-        <@edit.submit fileReminder=false label="Next: Process Payment"/>
-
-    <script>
-        $(document).ready(function () {
-            'use strict';
-            TDAR.common.initEditPage($('#MetadataForm')[0]);
-            $(".transactionType[type=radio]").click(function () {
-                TDAR.common.switchType(this, '#MetadataForm');
-            });
-            if (!$(".transactionType[type=radio]:checked").length) {
-                $(".transactionType[type=radio]").first().click();
-            }
-            TDAR.common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
-
-            $("#MetadataForm").submit(function () {
-                if ($("#MetadataForm_invoice_billingPhone").val()) {
-                    $("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig, ""));
-                }
-            });
-
-            if (${((invoice.calculatedCost!0) <= 0)?string}) {
-                $(".fadeIfZeroed").fadeTo('fast', .5);
-            }
-
-        });
-
-    </script>
 
     </#macro>
 
@@ -118,4 +114,14 @@
         </#if>
     </#macro>
 
-</#escape>
+    <#--Show invoice information that is pertinent only to admins, billing-managers -->
+    <#macro invoiceAdminSection invoice>
+        <#if (!billingManager && !admin)><#return></#if>
+    <div class="admin-well">
+        <dl>
+            <dt>Invoice Type</dt>
+            <dd>${invoice.proxy?string("Proxy Invoice", "Normal Invoice")}</dd>
+        </dl>
+    </div>
+    </#macro>
+    </#escape>

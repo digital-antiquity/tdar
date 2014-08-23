@@ -10,7 +10,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -54,7 +54,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             indexed = true;
         }
         // establish namespace bindings for the XPath tests
-        HashMap<String, String> namespaceBindings = new HashMap();
+        HashMap<String, String> namespaceBindings = new HashMap<>();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
         namespaceBindings.put("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
         namespaceBindings.put("dc", "http://purl.org/dc/elements/1.1/");
@@ -235,7 +235,7 @@ public class OAIWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             // get a person in tDAR format
             getRecord("tdar", firstPersonIdentifier);
             logger.info(getPageCode());
-            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:person/@id");
+            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:user/@id");
 
             // get an institution in tDAR format
             getRecord("tdar", firstInstitutionIdentifier);

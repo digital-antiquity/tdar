@@ -9,7 +9,7 @@ import javax.naming.directory.Attributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.utils.MessageHelper;
 
@@ -43,7 +43,7 @@ import org.tdar.utils.MessageHelper;
  * @see <a href='http://static.springsource.org/spring-ldap/site/reference/html/index.html'>Spring LDAP documentation</a>
  * 
  */
-@Service
+//@Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -141,7 +141,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
         String username = person.getUsername();
 
         PersonLdapDao ldapDAO = new PersonLdapDao();
@@ -176,7 +176,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * tdar.core.bean.entity.Person)
      */
     @Override
-    public boolean deleteUser(Person person) {
+    public boolean deleteUser(TdarUser person) {
         PersonLdapDao ldapDAO = new PersonLdapDao();
         ldapDAO.delete(person);
 
@@ -192,7 +192,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * (org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void resetUserPassword(Person person) {
+    public void resetUserPassword(TdarUser person) {
         // TODO: How does one implement password reset for LDAP? One possibility
         // is for tdar to handle password resets. Another is to redirect to some
         // predefined password reset url,
@@ -209,13 +209,13 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * (org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public void updateUserPassword(Person person, String password) {
+    public void updateUserPassword(TdarUser person, String password) {
         PersonLdapDao ldapDAO = new PersonLdapDao();
         ldapDAO.update(person, password);
     }
 
     @Override
-    public String[] findGroupMemberships(Person person) {
+    public String[] findGroupMemberships(TdarUser person) {
         PersonLdapDao ldapDAO = new PersonLdapDao();
         return ldapDAO.getGroupMembership(person.getUsername());
     }
@@ -291,7 +291,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                     filter.toString(), password);
         }
 
-        public void create(Person person, String password, TdarGroup... groups) {
+        public void create(TdarUser person, String password, TdarGroup... groups) {
             Name userdn = buildPersonRDN(person);
             DirContextAdapter context = new DirContextAdapter(userdn);
             mapToContext(person, context);
@@ -308,7 +308,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             }
         }
 
-        private void addUserToGroup(Person person, String groupName) {
+        private void addUserToGroup(TdarUser person, String groupName) {
             try {
                 Name groupDn = buildGroupRDN(groupName);
                 DirContextOperations groupContext = ldapTemplate.lookupContext(groupDn);
@@ -320,7 +320,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             }
         }
 
-        public void update(Person person, String password) {
+        public void update(TdarUser person, String password) {
             Name dn = buildPersonRDN(person);
             DirContextOperations context = ldapTemplate.lookupContext(dn);
             mapToContext(person, context);
@@ -328,7 +328,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             ldapTemplate.modifyAttributes(context);
         }
 
-        public void delete(Person person) {
+        public void delete(TdarUser person) {
             ldapTemplate.unbind(buildPersonRDN(person));
         }
 
@@ -378,7 +378,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             return new PersonContextMapper();
         }
 
-        protected Name buildPersonRDN(Person person) {
+        protected Name buildPersonRDN(TdarUser person) {
             return buildPersonRDN(person.getUsername());
         }
 
@@ -389,7 +389,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         }
 
         @SuppressWarnings("unused")
-        private Name buildPersonDN(Person person) throws InvalidNameException {
+        private Name buildPersonDN(TdarUser person) throws InvalidNameException {
             return buildPersonDN(person.getUsername());
         }
 
@@ -412,7 +412,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             return dn;
         }
 
-        protected void mapToContext(Person person, DirContextOperations context) {
+        protected void mapToContext(TdarUser person, DirContextOperations context) {
             context.setAttributeValue(ATTR_OBJECT_CLASS, CLASS_PERSON);
             context.setAttributeValue(ATTR_COMMON_NAME, person.getName());
             context.setAttributeValue(ATTR_FIRST_NAME, person.getFirstName());

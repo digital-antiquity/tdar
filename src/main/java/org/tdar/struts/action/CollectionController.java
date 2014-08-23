@@ -15,19 +15,26 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -50,9 +57,22 @@ public class CollectionController extends AbstractPersistableController<Resource
      */
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
+    @Autowired
+    private transient ProjectService projectService;
+    @Autowired
+    private transient SearchIndexService searchIndexService;
+    @Autowired
+    private transient SearchService searchService;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceService resourceService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
     private static final long serialVersionUID = 5710621983240752457L;
-    private List<Resource> resources = new ArrayList<>();
-    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
+//    private List<Resource> resources = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
@@ -72,12 +92,16 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
+    private List<Long> toRemove = new ArrayList<>();
+    private List<Long> toAdd  = new ArrayList<>();
+    private List<Project> allSubmittedProjects;
+
     @Override
     public boolean isEditable() {
         if (isNullOrNew()) {
             return false;
         }
-        return getAuthenticationAndAuthorizationService().canEditCollection(getAuthenticatedUser(), getPersistable());
+        return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
     /**
@@ -86,16 +110,18 @@ public class CollectionController extends AbstractPersistableController<Resource
      * @return
      */
     public List<ResourceCollection> getCandidateParentResourceCollections() {
-        List<ResourceCollection> publicResourceCollections = getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
+        List<ResourceCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
                 getPersistable());
         return publicResourceCollections;
     }
 
     @Override
     public boolean isViewable() {
-        return isEditable() || getAuthenticationAndAuthorizationService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return isEditable() || authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
+    
+    
     @Override
     protected String save(ResourceCollection persistable) {
         if (persistable.getType() == null) {
@@ -103,28 +129,27 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-        ResourceCollection parent = getResourceCollectionService().find(parentId);
+        ResourceCollection parent = resourceCollectionService.find(parentId);
         if (Persistable.Base.isNotNullOrTransient(persistable) && Persistable.Base.isNotNullOrTransient(parent)
                 && (parent.getParentIds().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
             return INPUT;
         }
 
+        List<Resource> resourcesToRemove = resourceService.findAll(Resource.class, toRemove);
+        List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
+        getLogger().debug("toAdd: {}", resourcesToAdd);
+        getLogger().debug("toRemove: {}", resourcesToRemove);
         if (!Objects.equals(parentId, persistable.getParentId())) {
-            getResourceCollectionService().updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+            resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
         }
 
-        getGenericService().saveOrUpdate(persistable);
-        getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
+        resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
+
+
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
-        getLogger().trace("resources (original):{}", resources);
-        getLogger().trace("resources (retained):{}", getRetainedResources());
-        resources.addAll(getRetainedResources());
-        List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
-                getAuthenticatedUser(), resources);
-        getLogger().trace("{}", rehydratedIncomingResources);
-        getLogger().debug("RESOURCES {}", persistable.getResources());
-        getXmlService().logRecordXmlToFilestore(getPersistable());
+
         return SUCCESS;
     }
 
@@ -136,15 +161,15 @@ public class CollectionController extends AbstractPersistableController<Resource
          * (b) visibility changes
          */
         if (isAsync()) {
-            getSearchIndexService().indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
         } else {
-            getSearchIndexService().indexAllResourcesInCollectionSubTree(getPersistable());
+            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
 
     @Override
     public List<? extends Persistable> getDeleteIssues() {
-        List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findDirectChildCollections(getId(), null, CollectionType.SHARED);
+        List<ResourceCollection> findAllChildCollections = resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED);
         getLogger().info("we still have children: {}", findAllChildCollections);
         return findAllChildCollections;
     }
@@ -158,8 +183,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         getGenericService().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
-        getXmlService().logRecordXmlToFilestore(getPersistable());
-
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
     }
 
@@ -200,7 +223,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
             getGenericService().saveOrUpdate(rcvs);
         } else {
-            setViewCount(getResourceCollectionService().getCollectionViewCount(getPersistable()));
+            setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
         return SUCCESS;
     }
@@ -208,10 +231,16 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
-        getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
-        getAllResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
+        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
+        for (AuthorizedUser au : getAuthorizedUsers()) {
+            String name = null;
+            if (au != null && au.getUser() != null ) {
+                name = au.getUser().getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
 
-        resources.addAll(getPersistable().getResources());
+        prepareDataTableSection();
         setParentId(getPersistable().getParentId());
         if (Persistable.Base.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
@@ -222,20 +251,12 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public String loadAddMetadata() {
         if (Persistable.Base.isNotNullOrTransient(parentId)) {
-            ResourceCollection parent = getResourceCollectionService().find(parentId);
+            ResourceCollection parent = resourceCollectionService.find(parentId);
             if (parent != null) {
                 parentCollectionName = parent.getName();
             }
         }
-        return SUCCESS;
-    }
-
-    @SkipValidation
-    @Action(value = "listChildren", results = { @Result(name = SUCCESS, location = "list-children.ftl", params = { "contentType", "application/json" },
-            type = "freemarker") })
-    public String listChildren() {
-        setCollections(getResourceCollectionService().findDirectChildCollections(getId(), Boolean.TRUE, CollectionType.SHARED));
-        // FIXME: make this "json"
+        prepareDataTableSection();
         return SUCCESS;
     }
 
@@ -247,29 +268,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     })
     public String edit() throws TdarActionException {
         String result = super.edit();
-        getLogger().trace(" resources (original:{}", resources);
-        getLogger().trace("resources (retained):{}", getRetainedResources());
-        resources.removeAll(getRetainedResources());
         return result;
     }
 
-    /**
-     * resources that that the current user is prohibited from removing when editing a collection
-     * 
-     * @return
-     */
-    private List<Resource> getRetainedResources() {
-        List<Resource> retainedResources = new ArrayList<Resource>();
-        for (Resource resource : getPersistable().getResources()) {
-            getLogger().trace("retain?: {}", resource);
-            getLogger().trace("{} <--> {}", getAuthenticatedUser(), resource.getSubmitter());
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD);
-            if (!canEdit) {
-                retainedResources.add(resource);
-            }
-        }
-        return retainedResources;
-    }
 
     @Override
     public void loadExtraViewMetadata() {
@@ -280,18 +281,18 @@ public class CollectionController extends AbstractPersistableController<Resource
         Set<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
-            getResourceCollectionService().buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
+            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
 
             if (isEditor()) {
-                List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().buildCollectionTreeForController(getPersistable(),
+                List<Long> collectionIds = Persistable.Base.extractIds(resourceCollectionService.buildCollectionTreeForController(getPersistable(),
                         getAuthenticatedUser(), CollectionType.SHARED));
                 collectionIds.add(getId());
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null,
+                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,
                         Arrays.asList(Status.ACTIVE, Status.DRAFT)));
             }
         } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(getResourceCollectionService().findDirectChildCollections(getId(), true,
+            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), true,
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
@@ -304,9 +305,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
         // the visibilty fence should take care of visible vs. shared above
-        ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 getResourceCollection(), getAuthenticatedUser(), this);
-        getSearchService().addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 
         setSortField(getPersistable().getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
@@ -317,26 +318,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
 
         try {
-            getSearchService().handleSearch(qb, this);
+            searchService.handleSearch(qb, this, this);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
         getLogger().debug("lucene: end");
-    }
-
-    /**
-     * @return the resources
-     */
-    public List<Resource> getResources() {
-        return resources;
-    }
-
-    /**
-     * @param resources
-     *            the resources to set
-     */
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
     }
 
     public List<Long> getSelectedResourceIds() {
@@ -357,30 +343,45 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
-    // @DoNotObfuscate
+    private void prepareDataTableSection() {
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        fullUserProjects.removeAll(getAllSubmittedProjects());
+        getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+
+        //always place current resource collection as the first option
+        if(Persistable.Base.isNotTransient(getResourceCollection())) {
+            getAllResourceCollections().remove(getResourceCollection());
+            getAllResourceCollections().add(0, getResourceCollection());
+        }
+    }
+
+    public void setFullUserProjects(List<Resource> projects) {
+        this.fullUserProjects = projects;
+    }
+
     @Override
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-            fullUserProjects.removeAll(getAllSubmittedProjects());
+            boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         }
         return fullUserProjects;
     }
 
     @Override
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     @Override
     public List<ResourceType> getResourceTypes() {
-        return getResourceService().getAllResourceTypes();
+        return resourceService.getAllResourceTypes();
     }
 
     @Override
@@ -552,7 +553,7 @@ public class CollectionController extends AbstractPersistableController<Resource
      * @return
      */
     public boolean isBigCollection() {
-        return (getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {
@@ -570,6 +571,22 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
         this.allResourceCollections = allResourceCollections;
+    }
+
+    public List<Long> getToAdd() {
+        return toAdd;
+    }
+
+    public void setToAdd(List<Long> toAdd) {
+        this.toAdd = toAdd;
+    }
+
+    public List<Long> getToRemove() {
+        return toRemove;
+    }
+
+    public void setToRemove(List<Long> toRemove) {
+        this.toRemove = toRemove;
     }
 
 }

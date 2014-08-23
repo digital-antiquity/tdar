@@ -11,6 +11,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.Persistable;
 
@@ -29,6 +31,7 @@ public class UpgradeTask extends Persistable.Base {
     private String name;
 
     @Column(name = "recorded_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date recordedDate;
 
     private Boolean run = Boolean.valueOf(false);

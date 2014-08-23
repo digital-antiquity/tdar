@@ -2,11 +2,12 @@ package org.tdar.utils;
 
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -14,16 +15,15 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import com.opensymphony.xwork2.TextProvider;
 import com.opensymphony.xwork2.util.ValueStack;
 
-/*
+/**
  * A Singleton helper class for managing Localization and Messages
  */
 public class MessageHelper implements Serializable, TextProvider {
 
     private static final long serialVersionUID = 3633016404256878510L;
-    private static MessageHelper instance;
+    private final static MessageHelper INSTANCE = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+    private final static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
     private ResourceBundle bundle;
-
-    private static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
 
     protected MessageHelper() {
         // Exists only to defeat instantiation.
@@ -33,11 +33,12 @@ public class MessageHelper implements Serializable, TextProvider {
         this.bundle = bundle;
     }
 
+    public Enumeration<String> getKeys() {
+        return bundle.getKeys();
+    }
+
     public static MessageHelper getInstance() {
-        if (instance == null) {
-            instance = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
-        }
-        return instance;
+        return INSTANCE;
     }
 
     /*

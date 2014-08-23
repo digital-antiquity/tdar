@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -62,7 +62,7 @@ public class GenericDao {
     private transient SessionFactory sessionFactory;
 
     public <T> T find(Class<T> cls, Long id) {
-        // FIXME: push guard checks into Service layer.
+        // FIXME: push guard checks into Service layer?
         if (id == null) {
             return null;
         }
@@ -73,11 +73,26 @@ public class GenericDao {
         return obj;
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        getCurrentSession().setCacheMode(mode);
+    }
+
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         getCurrentSession().enableFetchProfile(profileName);
         List<T> ret = findAll(class1, ids);
         getCurrentSession().disableFetchProfile(profileName);
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
+        if (CollectionUtils.isNotEmpty(ids)) {
+            query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
+            query.setParameterList("ids", ids);
+        }
+        query.setCacheable(true);
+        return query.list();
     }
 
     @SuppressWarnings("unchecked")
@@ -103,9 +118,9 @@ public class GenericDao {
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         if (persistentClass.isAssignableFrom(Creator.class)) {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
-        } else {
             return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_CREATOR_BY_ID, persistentClass.getName())).list();
+        } else {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
         }
     }
 
@@ -114,6 +129,14 @@ public class GenericDao {
         String hqlfmt = "select id from %s where id between %s and %s order by id asc";
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
+    }
+
+    public Query createQuery(String queryString) {
+        return getCurrentSession().createQuery(queryString);
+    }
+
+    public Query getNamedQuery(String queryName) {
+        return getCurrentSession().getNamedQuery(queryName);
     }
 
     public Number count(Class<?> persistentClass) {
@@ -200,7 +223,12 @@ public class GenericDao {
     }
 
     public <T> List<T> findAllSorted(Class<T> cls) {
-        return findAllSorted(cls, getDefaultOrderingProperty() + " asc");
+        return findAllSorted(cls, true);
+    }
+
+    public <T> List<T> findAllSorted(Class<T> cls, boolean ascending) {
+        String ordering = ascending ? " asc" : " desc";
+        return findAllSorted(cls, getDefaultOrderingProperty() + ordering);
     }
 
     @SuppressWarnings("unchecked")
@@ -368,7 +396,7 @@ public class GenericDao {
     public <T> void save(T entity) {
         Session session = getCurrentSession();
         if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
-            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
         session.save(entity);
     }
@@ -376,7 +404,7 @@ public class GenericDao {
     public <T> void saveOrUpdate(T entity) {
         Session session = getCurrentSession();
         if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
-            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
         session.saveOrUpdate(entity);
     }
@@ -384,7 +412,7 @@ public class GenericDao {
     public <T> void update(T entity) {
         Session session = getCurrentSession();
         if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
-            throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated obejct %s ", entity));
+            throw new TdarRecoverableRuntimeException(String.format("trying to update an obfuscated object %s ", entity));
         }
         session.update(entity);
     }
@@ -529,9 +557,12 @@ public class GenericDao {
     public <T> void markReadOnly(T obj) {
         if (getCurrentSession().contains(obj)) {
             // mark as read only
-            getCurrentSession().setCacheMode(CacheMode.GET);
             // dump it off the cache so that future searches don't find the updated version
-            getCurrentSession().setReadOnly(obj, true);
+            boolean readOnly = getCurrentSession().isReadOnly(obj);
+            logger.trace("object read only?: {}", readOnly);
+            if (!readOnly) {
+                getCurrentSession().setReadOnly(obj, true);
+            }
         }
     }
 
@@ -552,11 +583,16 @@ public class GenericDao {
         return obj;
     }
 
+    /**
+     * Evict a read-only entity from the current session return an equivalent, writeable enity.
+     * @param obj read-only entity.
+     * @param <T>
+     * @return writeable entity instance.
+     */
     public <T> T markWritable(T obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
             if ((obj instanceof Persistable) && Persistable.Base.isNotTransient((Persistable) obj)) {
-                getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);
                 return merge(obj);
@@ -565,12 +601,59 @@ public class GenericDao {
         return obj;
     }
 
+    /**
+     *  Set a read-only entity to be writeable.  This method applies any pending (i.e. non-flushed) changes to the object. Note that this operation does
+     *  not cascade.  Any pending, non-flushed modifications to entity children will be lost, <i>even if they are marked CASCADE_UPDATE</i>
+     *  Similar to {@link #markWritable(Object)}, however, this method does not evict the supplied entity.
+     * @param entity read-only, persistent entity
+     * @param <T>
+     *
+     *  @see <a href="https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#readonly-api-entity">Making a persistent entity read-only</a>
+     *  Which covers how to make a read-only entity writeable again
+     */
+    public <T> void markUpdatable(T entity) {
+        Session session = getCurrentSession();
+        if(logger.isTraceEnabled()) {
+            if(!session.isReadOnly(entity)) {
+                logger.warn("Unnecessary call to markUpdatable - object was not read-only:{}", entity);
+            }
+        }
+        //mark entity writable
+        session.setReadOnly(entity, false);
+
+        // evict the read-only entity so it is detached
+        session.evict( entity );
+
+        // make the detached entity (with the non-flushed changes) persistent
+        session.update( entity );
+
+        // now entity is no longer read-only and its changes can be flushed
+    }
+
+    public <T> void markUpdatable(Collection<T> entities) {
+        for(T t : entities) {
+            markUpdatable(t);
+        }
+    }
+
     public Statistics getSessionStatistics() {
         return getCurrentSession().getSessionFactory().getStatistics();
     }
 
     public boolean isSessionOpen() {
         return getCurrentSession().isOpen();
+    }
+
+    public boolean isSessionWritable() {
+        return !getCurrentSession().isDefaultReadOnly();
+    }
+
+    public boolean cacheContains(Class<?> cls, Long id) {
+        return sessionFactory.getCache().containsEntity(cls, id);
+    }
+
+    public void evictFromCache(Persistable id) {
+        sessionFactory.getCache().evictEntity(id.getClass(), id);
     }
 
 }

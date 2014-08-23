@@ -31,7 +31,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 public class GeoSearchITCase extends AbstractAdminControllerITCase {
 
@@ -86,11 +85,6 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
             logger.info("{}", kwd);
             assertFalse(kwd.getLabel().contains("County"));
         }
-    }
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
     }
 
     @Test

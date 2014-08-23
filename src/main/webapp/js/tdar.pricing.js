@@ -1,6 +1,8 @@
 (function (TDAR, $) {
     'use strict';
 
+    var POLLING_INTERVAL = 1500; //poll every 1.5s
+
     //parse string to integer.  replace blank and NaN with 0.
     var _parse = function (num) {
         var _num = num.replace(",", "");
@@ -75,7 +77,9 @@
                 dataType: 'jsonp',
                 crossDomain: true,
                 type: 'POST',
+                xhrFields: { withCredentials: true },
                 success: function (data) {
+                    //var data = _parseApidata(rawdata);
                     var checked = "checked";
                     $est.html("");
                     var defaultsubtotal = 100000000000000000;
@@ -103,12 +107,14 @@
                         //(i +1), data[i].model, data[i].subtotal );
                         var total_files = 0;
                         var total_mb = 0;
-                        if (item.parts && item.parts.length > 0) {
-                            for (var j = 0; j < item.parts.length; j++) {
-                                var part = item.parts[j];
-                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb * part.quantity, part.subtotal);
-                                total_files += part.numFiles * part.quantity;
-                                total_mb += part.numMb * part.quantity;
+                        if (item.items && item.items.length > 0) {
+                            for (var j = 0; j < item.items.length; j++) {
+                                var part = item.items[j];
+                                part.name = part.activity.numberOfFiles ===0 ?  "Extra Space" : "Files";
+                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>",
+                                        part.name, part.activity.numberOfFiles * part.quantity, part.activity.numberOfMb * part.quantity, part.subtotal);
+                                total_files += part.activity.numberOfFiles * part.quantity;
+                                total_mb += part.activity.numberOfMb * part.quantity;
                                 $est.append(line);
                             }
                         }
@@ -122,10 +128,106 @@
             });
         });
         $(form).change();
+
+        _setupPaymentMethodPivot();
+
+        var validator = $(form).validate({
+            rules: {
+                "invoice.otherReason": {
+                    required: "#MetadataForm_invoice_paymentMethodMANUAL:checked"
+                },
+                "invoice.invoiceNumber": {
+                    required: "#MetadataForm_invoice_paymentMethodINVOICE:checked"
+                },
+                "invoice.paymentMethod": "required"
+            },
+            messages: {
+                "invoice.invoiceNumber": "Specify the customer invoice/work-order number.",
+                "invoice.otherReason": "For manual invoices, describe why you are creating this invoice."
+            },
+            errorClass: "text-error",
+            errorPlacement: function($error, $element) {
+//                if($element.is("type[radio]")) {
+                    $error.appendTo($element.closest(".controls"));
+//                }
+            }
+        });
+        console.log("validtor:", validator);
     };
 
+    /**
+     * setup the pivot pane toggle for the paymentMethod field
+     * @private
+     */
+    var _setupPaymentMethodPivot = function() {
+        $(".transactionType[type=radio]").click(function () {
+            TDAR.common.switchType(this, '#MetadataForm');
+        });
+        //switch to the right pane on init
+        TDAR.common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
+    }
+
+    var _initPolling = function () {
+        _updateProgress();
+    };
+    
+    var _updateProgress = function() {
+        var invoiceid = $("#polling-status").data("invoiceid");
+        if(typeof invoiceid === "undefined") {
+            throw "invoiceid not specified";
+        }
+        var url= "/cart/" + invoiceid + "/polling-check";
+
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            type: 'POST',
+            xhrFields: { withCredentials: true },
+            success: function (data) {
+                if (data.transactionStatus == 'PENDING_TRANSACTION') {
+                    $("#polling-status").html("checking status ...");
+                    setTimeout(_updateProgress, POLLING_INTERVAL);
+                } else {
+                    $("#polling-status").html("done: " + data.transactionStatus);
+                    if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
+                        window.document.location = "/dashboard";
+                    }
+                }
+                if (data.errors != undefined && data.errors != "") {
+                    $("#asyncErrors").html("<div class='action-errors ui-corner-all'>" + data.errors + "</div>");
+                }
+            },
+            error: function (xhr, txtStatus, errorThrown) {
+                console.error("error: %s, %s", txtStatus, errorThrown);
+            }
+        });
+
+        console.log("registered ajax callback");
+    };
+    
+    var _initBillingChoice = function() {
+        $(document).ready(function () {
+            var $slct = $("#select-existing-account");
+            $slct.change(function() {
+            var $addnew = $(".add-new");
+                if ($slct.val() == -1) {
+                    $addnew.removeClass("hidden");
+                } else {
+                    $addnew.addClass("hidden");
+                }
+            });
+            if ($slct.val() == -1) {
+                $(".add-new").removeClass("hidden");
+            }
+        });
+    }
+    
     TDAR.pricing = {
-        "initPricing": _initPricing
+        "initPricing": _initPricing,
+        "updateProgress": _updateProgress,
+        "initPolling": _initPolling,
+        "initBillingChoice": _initBillingChoice
     };
 
+    
 })(TDAR, jQuery);

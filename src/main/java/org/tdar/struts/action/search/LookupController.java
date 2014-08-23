@@ -1,8 +1,11 @@
 package org.tdar.struts.action.search;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
@@ -10,16 +13,18 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -34,6 +39,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$
@@ -48,6 +54,8 @@ import org.tdar.struts.data.FacetGroup;
 @Component
 @Scope("prototype")
 public class LookupController extends AbstractLookupController<Indexable> {
+
+    public static final String SELECTED_RESULTS = "selectedResults";
 
     private static final long serialVersionUID = 176288602101059922L;
 
@@ -67,29 +75,36 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private Long sortCategoryId;
     private boolean includeCompleteRecord = false;
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    private Long selectResourcesFromCollectionid;
 
     @Action(value = "person",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupPerson() {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupInstitution() {
         setMode("institutionLookup");
         return findInstitution(institution);
     }
 
     @Action(value = "resource",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
-        this.setLookupSource(LookupSource.RESOURCE);
+        setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
@@ -112,29 +127,57 @@ public class LookupController extends AbstractLookupController<Indexable> {
         q.append(processReservedTerms(this));
         try {
             handleSearch(q);
-//            if (getProjectionModel() != ProjectionModel.HIBERNATE_DEFAULT) {
-//                setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
-//            }
-            getLogger().trace("jsonResults:" + getResults());
+            getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }
 
+        if (Persistable.Base.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
+            ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
+            if (collectionContainer != null) {
+                Set<Long> resourceIds = new HashSet<Long>();
+                for (Indexable result_ : getResults()) {
+                    Resource resource = (Resource) result_;
+                    if (resource != null && resource.isViewable() && resource.getResourceCollections().contains(collectionContainer)) {
+                        resourceIds.add(resource.getId());
+                    }
+                }
+                getResult().put(SELECTED_RESULTS, resourceIds);
+            }
+        }
+
+        if (isIncludeCompleteRecord()) {
+            jsonifyResult(null);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
         return SUCCESS;
     }
 
     @Action(value = "keyword",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(this.term) && !checkMinString(keywordType)) {
+        getLogger().debug("term: {} , minLength: {}", term, getMinLookupLength());
+        setLookupSource(LookupSource.KEYWORD);
+
+        if (StringUtils.isBlank(keywordType)) {
+            addActionError(getText("lookupController.specify_keyword_type"));
+            jsonifyResult(JsonLookupFilter.class);
+            return ERROR;
+        }
+
+        if (!checkMinString(term)) {
+            setResults(new ArrayList<Indexable>());
+            jsonifyResult(JsonLookupFilter.class);
+            getLogger().debug("returning ... too short?" + term);
             return SUCCESS;
         }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        this.setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
@@ -153,18 +196,21 @@ public class LookupController extends AbstractLookupController<Indexable> {
             return ERROR;
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
     @Action(value = "annotationkey",
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupAnnotationKey() {
         QueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
         setMinLookupLength(2);
         setMode("annotationLookup");
 
-        this.setLookupSource(LookupSource.KEYWORD);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.KEYWORD);
+        getLogger().trace("looking up:'{}'", term);
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
@@ -177,25 +223,25 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
     @Action(value = "collection",
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
-
-        this.setLookupSource(LookupSource.COLLECTION);
-        getLogger().trace("looking up:'" + term + "'");
+        setLookupSource(LookupSource.COLLECTION);
+        getLogger().trace("looking up: '{}'", term);
         setMode("collectionLookup");
-
         // only return results if query length has enough characters
         if (checkMinString(term)) {
             q.append(new AutocompleteTitleQueryPart(getTerm()));
             boolean admin = false;
-            if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+            if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 admin = true;
             }
             CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(getAuthenticatedUser(), admin, getPermission());
@@ -208,6 +254,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             }
         }
 
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
@@ -321,7 +368,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
      *            the title to set
      */
     public void setTitle(String title) {
-
         this.title = StringUtils.trim(title);
     }
 
@@ -345,5 +391,13 @@ public class LookupController extends AbstractLookupController<Indexable> {
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
+    }
+
+    public Long getSelectResourcesFromCollectionid() {
+        return selectResourcesFromCollectionid;
+    }
+
+    public void setSelectResourcesFromCollectionid(Long selectResourcesFromCollectionid) {
+        this.selectResourcesFromCollectionid = selectResourcesFromCollectionid;
     }
 }

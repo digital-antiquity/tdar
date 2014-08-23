@@ -11,8 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,6 +36,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -47,14 +51,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
@@ -89,6 +91,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -97,10 +100,10 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -113,7 +116,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
@@ -124,6 +127,10 @@ import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -136,6 +143,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")
 @Table(name = "resource", indexes = {
         @Index(name = "resource_active", columnList = "id, submitter_id, status"),
         @Index(name = "resource_title_index", columnList = "title"),
@@ -148,7 +157,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "res_uploaderid", columnList = "uploader_id"),
         @Index(name = "res_updaterid", columnList = "updater_id"),
         @Index(name = "resource_type_index", columnList = "resource_type"),
-        @Index(name = "idx_created", columnList= "date_registered")
+        @Index(name = "idx_created", columnList = "date_registered")
 })
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
@@ -158,25 +167,20 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         Image.class, SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
-@FetchProfiles(value = {
-        @FetchProfile(name = "resource-with-people", fetchOverrides = {
-                @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
-                @FetchOverride(association = "latitudeLongitudeBoxes", mode = FetchMode.JOIN, entity = Resource.class),
-                @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) }),
-        @FetchProfile(name = "simple", fetchOverrides = {})
-})
-public class Resource extends JsonModel.Base implements Persistable,
+public class Resource implements Persistable, JsonModel,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
-        DeHydratable {
+        DeHydratable, XmlLoggable {
 
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
-    private transient boolean obfuscated;
+    private transient boolean obfuscated = false;
+    @Transient
+    private transient boolean bookmarked = false;
 
     @Transient
-    private transient Boolean obfuscatedObjectDifferent;
+    private transient Boolean obfuscatedObjectDifferent = false;
 
     @Transient
     private transient boolean viewable;
@@ -184,10 +188,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
-    @Transient
-    private static final String[] JSON_PROPERTIES = { "id", "title",
-            "resourceType", "dateCreated", "description", "status",
-            "resourceTypeLabel", "urlNamespace" };
     // properties in resourceType
     // properties in submitter (Person)
     // "firstName", "lastName", "institution", "email","label","submitter",
@@ -238,7 +238,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Resource(Long id, String title, ResourceType resourceType, Status status, Long submitterId) {
         this(id, title, resourceType);
         this.status = status;
-        Person submitter = new Person();
+        TdarUser submitter = new TdarUser();
         submitter.setId(submitterId);
         this.submitter = submitter;
     }
@@ -247,71 +247,75 @@ public class Resource extends JsonModel.Base implements Persistable,
     @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resource_sequence")
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
+    @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
     @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
-    // FIXME: I don't think this index helps us. Can we get rid of it?
-    // @Index(name = "resource_title_index")
+    @JsonView(JsonLookupFilter.class)
     @Length(max = 512)
     private String title;
 
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
-    // @NotNull
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
+    @JsonView(JsonLookupFilter.class)
     private String description;
 
-    // @Boost(.5f)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
+    @JsonView(JsonLookupFilter.class)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String url;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @JsonView(JsonLookupFilter.class)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @JsonView(JsonLookupFilter.class)
     private Status status = Status.ACTIVE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "previous_status", length = FieldLength.FIELD_LENGTH_50)
     private Status previousStatus = Status.ACTIVE;
 
-    // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
-    private Person submitter;
+    private TdarUser submitter;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "uploader_id")
     @NotNull
-    private Person uploader;
+    private TdarUser uploader;
 
     // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
-    private Person updatedBy;
+    private TdarUser updatedBy;
 
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_updated")
     @DateBridge(resolution = Resolution.MILLISECOND)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @IndexedEmbedded
@@ -319,95 +323,110 @@ public class Resource extends JsonModel.Base implements Persistable,
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @BulkImportField
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
-    private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @OrderColumn(name = "id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceNote> resourceNotes = new LinkedHashSet<ResourceNote>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceAnnotation> resourceAnnotations = new LinkedHashSet<ResourceAnnotation>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SourceCollection> sourceCollections = new LinkedHashSet<SourceCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<RelatedComparativeCollection> relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.latitudeLongitudeBoxes")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "geographic_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.geographicKeywords")
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
                     name = "geographic_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.managedGeographicKeywords")
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_temporal_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "temporal_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> temporalKeywords = new LinkedHashSet<TemporalKeyword>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CoverageDate> coverageDates = new LinkedHashSet<CoverageDate>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "culture_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.cultureKeywords")
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_other_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "other_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<OtherKeyword> otherKeywords = new LinkedHashSet<OtherKeyword>();
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_name_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "site_name_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteNameKeyword> siteNameKeywords = new LinkedHashSet<SiteNameKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_material_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "material_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> materialKeywords = new LinkedHashSet<MaterialKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_investigation_type", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "investigation_type_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> investigationTypes = new LinkedHashSet<InvestigationType>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_type_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "site_type_keyword_id") })
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
-    @JoinColumn(name = "resource_id")
+    @JoinColumn(name = "resource_id",foreignKey =@javax.persistence.ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
+    //see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5, 
     @ForeignKey(name = "none")
     @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
     // FIXME: do we really want cascade all here? even delete?
@@ -416,6 +435,7 @@ public class Resource extends JsonModel.Base implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 2)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;
@@ -432,6 +452,17 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     private transient Float score = -1f;
     private transient boolean readyToIndex = true;
+    private transient boolean readyToStore = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
 
     @Override
     @Transient
@@ -463,17 +494,16 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
     @IndexedEmbedded
     @ElementCollection
-    @JSONTransient
+    
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(
-                    GeneralPermissions.MODIFY_METADATA, true));
+            writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_METADATA, true));
         }
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -493,17 +523,17 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
     @IndexedEmbedded
     @ElementCollection
-    @JSONTransient
+    
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getRightsBasedResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
                     GeneralPermissions.VIEW_ALL, true));
         }
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -520,7 +550,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    @JSONTransient
+    
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
@@ -535,21 +565,23 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return getCultureKeywords();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveResourceCreators() {
         return getResourceCreators();
     }
 
-    @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getUncontrolledCultureKeywords() {
         return getUncontrolledSuggestedKeyword(getCultureKeywords());
     }
 
-    @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getApprovedCultureKeywords() {
         return getApprovedSuggestedKeyword(getCultureKeywords());
     }
@@ -568,16 +600,17 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
         return getSiteTypeKeywords();
     }
 
-    @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getUncontrolledSiteTypeKeywords() {
         return getUncontrolledSuggestedKeyword(getSiteTypeKeywords());
     }
 
-    @Transient
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         return getApprovedSuggestedKeyword(getSiteTypeKeywords());
     }
@@ -620,6 +653,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded(targetElement = OtherKeyword.class)
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
         return getOtherKeywords();
     }
@@ -638,6 +672,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
         return getSiteNameKeywords();
     }
@@ -656,6 +691,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
         return getMaterialKeywords();
     }
@@ -674,6 +710,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<InvestigationType> getActiveInvestigationTypes() {
         return getInvestigationTypes();
     }
@@ -702,6 +739,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Override
     @Fields({
             @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
@@ -737,17 +775,18 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlAttribute(name = "submitterRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @NotNull
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 
     @Override
-    @Field
-    // @Boost(1.2f)
+    @Fields({
+        @Field,
+        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))})
     public String getDescription() {
         return description;
     }
@@ -784,6 +823,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      */
     public void setLatitudeLongitudeBox(
             LatitudeLongitudeBox latitudeLongitudeBox) {
+        logger.debug("calling lat setter");
         if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
             getLatitudeLongitudeBoxes().clear();
             return;
@@ -806,10 +846,12 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
     }
 
+    @JsonView(JsonProjectLookupFilter.class)
     public LatitudeLongitudeBox getFirstActiveLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(getActiveLatitudeLongitudeBoxes())) {
             return null;
@@ -819,7 +861,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     @XmlTransient
-    @JSONTransient
+    
     //@DidWeMentionThisPropertyIsTransient
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
@@ -860,6 +902,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     // @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
     }
@@ -896,6 +939,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
         return getTemporalKeywords();
     }
@@ -928,8 +972,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         return resourceType.getSortName();
     }
 
-    @Transient
+    // @Transient
     @Deprecated()
+    @JsonView(JsonLookupFilter.class)
     // removing for localization
     public String getResourceTypeLabel() {
         return MessageHelper.getMessage(resourceType.getLocaleKey());
@@ -956,15 +1001,6 @@ public class Resource extends JsonModel.Base implements Persistable,
             resourceNotes = new LinkedHashSet<ResourceNote>();
         }
         return resourceNotes;
-    }
-
-    @XmlTransient
-    public Set<BookmarkedResource> getBookmarks() {
-        return bookmarks;
-    }
-
-    public void setBookmarks(Set<BookmarkedResource> bookmarks) {
-        this.bookmarks = bookmarks;
     }
 
     public void setSourceCollections(Set<SourceCollection> sourceCollections) {
@@ -1046,7 +1082,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @return
      */
     @Override
-    @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getUrlNamespace() {
         return getResourceType().getUrlNamespace();
     }
@@ -1056,18 +1092,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         return getUrlNamespace() + "/" + getId();
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
-    }
-
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "updaterRef")
-    public Person getUpdatedBy() {
+    public TdarUser getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Person updatedBy) {
+    public void setUpdatedBy(TdarUser updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -1203,7 +1234,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         setUpdatedBy(p);
         setUpdated(true);
         setDateUpdated(new Date());
@@ -1234,26 +1265,31 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<CoverageDate> getActiveCoverageDates() {
         return getCoverageDates();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return getResourceAnnotations();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<SourceCollection> getActiveSourceCollections() {
         return getSourceCollections();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
         return getRelatedComparativeCollections();
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceNote> getActiveResourceNotes() {
         return getResourceNotes();
     }
@@ -1274,7 +1310,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     private transient String keywords = null;
 
     @SuppressWarnings("unchecked")
-    @JSONTransient
+    
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
@@ -1468,7 +1504,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
@@ -1483,7 +1519,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
             throw new TdarValidationException("resource.title_required", Arrays.asList(getResourceType()));
@@ -1556,16 +1592,16 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     @XmlTransient
-    @JSONTransient
+    
     public boolean isObfuscated() {
         return obfuscated;
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         setObfuscatedObjectDifferent(false);
         setObfuscated(true);
-        List<Obfuscatable> toObfuscate = new ArrayList<>();
+        Set<Obfuscatable> toObfuscate = new HashSet<>();
         toObfuscate.addAll(getLatitudeLongitudeBoxes());
         toObfuscate.add(getSubmitter());
         toObfuscate.add(getUpdatedBy());
@@ -1599,7 +1635,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
-    @JSONTransient
+    
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
@@ -1608,18 +1644,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         return null;
     }
 
-    // @Transient
-    // @Field(norms = Norms.NO, store = Store.YES, analyzer=@Analyzer(impl =
-    // TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
-    // public SimpleSearchType getSimpleSearchType() {
-    // return SimpleSearchType.RESOURCE;
-    // }
-    //
-    // public Status getStatusForSearch() {
-    // return getStatus();
-    // }
-
-    @JSONTransient
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
         for (ResourceCreator creator : getPrimaryCreators()) {
@@ -1635,7 +1659,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return sb.toString();
     }
 
-    @JSONTransient
+    
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, getTitle(), "", "");
@@ -1643,7 +1667,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+    
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         return sb.toString();
@@ -1653,7 +1677,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    @JSONTransient
+    
     // This field facilitates unified lucene search for submitter, updater,
     // resourceProvider, and resourceCreators
     // should be in the form {creartorType}{creatorId}{creatorRole}
@@ -1728,11 +1752,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlAttribute(name = "uploaderRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @NotNull
-    public Person getUploader() {
+    public TdarUser getUploader() {
         return uploader;
     }
 
-    public void setUploader(Person uploader) {
+    public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
     }
 
@@ -1880,13 +1904,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Transient
-    @JSONTransient
+    
     public boolean hasConfidentialFiles() {
         return false;
     }
 
     @Transient
-    @JSONTransient
+    
     public boolean hasEmbargoedFiles() {
         return false;
     }
@@ -1917,7 +1941,17 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @IndexedEmbedded
+    @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return getIndividualAndInstitutionalCredit();
+    }
+
+    @XmlTransient
+    public boolean isBookmarked() {
+        return bookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        this.bookmarked = bookmarked;
     }
 }

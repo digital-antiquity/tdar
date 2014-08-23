@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -16,7 +17,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -25,7 +25,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -105,7 +104,6 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
     @Action(value = "merge-duplicates",
             results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
-    @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
             addActionError(getText("authorityManagementController.error_no_authority_record"));

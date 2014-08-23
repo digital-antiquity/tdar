@@ -1,14 +1,16 @@
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -17,7 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
@@ -25,7 +27,14 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 
@@ -34,7 +43,11 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@HttpForbiddenErrorResponseOnly
 public class APIController extends AuthenticationAware.Base {
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
@@ -47,7 +60,15 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     @Autowired
-    private ImportService importService;
+    private transient XmlService xmlService;
+    @Autowired
+    private transient ObfuscationService obfuscationService;
+    @Autowired
+    private transient ResourceService resourceService;
+    @Autowired
+    private transient ImportService importService;
+    @Autowired
+    private transient AccountService accountService;
 
     private Resource importedRecord;
     private String message;
@@ -55,6 +76,7 @@ public class APIController extends AuthenticationAware.Base {
     private FileAccessRestriction fileAccessRestriction;
     private Long id;
     private InputStream inputStream;
+    private Map<String, Object> xmlResultObject = new HashMap<>();
 
     private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
@@ -64,36 +86,39 @@ public class APIController extends AuthenticationAware.Base {
     }
 
     @Action(value = "view", results = {
-            @Result(name = SUCCESS, type = "stream", params = {
-                    "contentType", "text/xml", "inputName",
-                    "inputStream" })
-    })
+            @Result(name = SUCCESS, type = "xmldocument") })
     public String view() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
-            Resource resource = getResourceService().find(getId());
-            if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
-                getObfuscationService().obfuscate(resource, getAuthenticatedUser());
+            Resource resource = resourceService.find(getId());
+            if (!isAdministrator() && !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
+                obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            String xml = getXmlService().convertToXML(resource);
-            setInputStream(new ByteArrayInputStream(xml.getBytes()));
+            xmlResultObject.put("resource", resource);
             return SUCCESS;
         }
         return INPUT;
     }
 
-    @Action(value = "upload", results = {
-            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }),
-            @Result(name = ERROR, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }) })
+    @Action(value = "upload",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+            })
+    @PostOnly
     public String upload() {
+
         if (fileAccessRestriction == null) {
             // If there is an error setting this field in the OGNL layer this method is still called...
             // This check means that if there was such an error, then we are not going to default to a weaker access restriction.
             getLogger().info("file access restrictions not set");
-            return errorResponse(StatusCode.BAD_REQUEST);
+            errorResponse(StatusCode.BAD_REQUEST);
+            return ERROR;
         } else if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
-            return errorResponse(StatusCode.BAD_REQUEST);
+            errorResponse(StatusCode.BAD_REQUEST);
+            return ERROR;
         }
         List<FileProxy> proxies = new ArrayList<>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
@@ -105,12 +130,13 @@ public class APIController extends AuthenticationAware.Base {
         }
 
         try {
-            Resource incoming = (Resource) getXmlService().parseXml(new StringReader(getRecord()));
+            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            Person authenticatedUser = getAuthenticatedUser();
+            xmlResultObject.put("recordId", incoming.getId());
+            TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
-            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId);
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, proxies, projectId, true);
             updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
@@ -122,15 +148,16 @@ public class APIController extends AuthenticationAware.Base {
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
-                message = "created:" + loadedRecord.getId();
+                xmlResultObject.put("message", "created:" + loadedRecord.getId());
                 code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
-            getServletResponse().setStatus(statuscode);
-            getResourceService().logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            xmlResultObject.put("message", SUCCESS);
+            getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
             message = "";
@@ -140,7 +167,11 @@ public class APIController extends AuthenticationAware.Base {
                 for (JaxbValidationEvent event : events) {
                     message = message + event.toString() + "\r\n";
                 }
-                return errorResponse(StatusCode.BAD_REQUEST);
+
+                errorResponse(StatusCode.BAD_REQUEST);
+                xmlResultObject.put("message", message);
+                xmlResultObject.put("errors", events);
+                return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
             Throwable exp = e;
@@ -150,15 +181,20 @@ public class APIController extends AuthenticationAware.Base {
                 message = message + ((exp == null) ? "" : "\r\n");
             } while (exp != null);
             if (e instanceof APIException) {
-                return errorResponse(((APIException) e).getCode());
+                xmlResultObject.put("message", message);
+                xmlResultObject.put("errors", e.getMessage());
+                errorResponse(((APIException) e).getCode());
+                return ERROR;
             }
         }
-        return errorResponse(StatusCode.UNKNOWN_ERROR);
+        errorResponse(StatusCode.UNKNOWN_ERROR);
+        return ERROR;
+
     }
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        getServletResponse().setStatus(statusCode.getHttpStatusCode());
+        xmlResultObject.put("status", status);
         return ERROR;
     }
 
@@ -301,4 +337,11 @@ public class APIController extends AuthenticationAware.Base {
     public void setUploadFileContentType(String type) {
         getLogger().debug("Contenty type of uploaded item is: " + type);
     }
+
+    public void updateQuota(Account account, Resource resource) {
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            accountService.updateQuota(account, resource);
+        }
+    }
+
 }

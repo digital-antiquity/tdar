@@ -9,17 +9,21 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,8 +31,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -40,7 +46,7 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -58,10 +64,12 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "information_resource_file", 
-indexes = {
-        @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
-})
+@Table(name = "information_resource_file",
+        indexes = {
+                @Index(name = "information_resource_file_ir", columnList = "information_resource_id")
+        })
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
+@Cacheable
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
     private static final long serialVersionUID = -6957336216505367012L;
@@ -105,6 +113,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     return false;
                 default:
                     return true;
+            }
+        }
+
+        public boolean updatesMetadata() {
+            switch (this) {
+                case ADD:
+                case MODIFY_METADATA:
+                    return true;
+                default:
+                    return false;
             }
         }
     }
@@ -157,9 +175,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         PROCESSING_WARNING;
     }
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResource informationResource;
 
     private transient Long transientDownloadCount;
@@ -169,6 +188,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private String description;
 
     @Column(name = "file_created_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fileCreatedDate;
 
     @Column(name = "part_of_composite", columnDefinition = "boolean default false")
@@ -190,9 +210,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
-    // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
     @SortNatural
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile.informationResourceFileVersions")
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     @Enumerated(EnumType.STRING)
@@ -208,6 +228,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.
     @Column(name = "date_made_public")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
@@ -275,15 +296,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getIndexableVersion() {
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
-
-    // @Transient
-    // public File getFile(VersionType type, int version) {
-    // for (InformationResourceFileVersion irfv : getVersions(version)) {
-    // if (irfv.getFileVersionType() == type)
-    // return irfv.getFile();
-    // }
-    // return null;
-    // }
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);
@@ -538,7 +550,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
-    @JSONTransient
+    
     @XmlTransient
     public WorkflowContext getWorkflowContext() {
         return workflowContext;

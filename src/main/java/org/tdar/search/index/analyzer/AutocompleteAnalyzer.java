@@ -15,7 +15,7 @@ public final class AutocompleteAnalyzer extends Analyzer {
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
         EdgeNGramTokenizer et = new EdgeNGramTokenizer(reader, Side.FRONT.getLabel(), 1, 40);
-        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_35, et);
+        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_36, et);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
         return filter;
     }

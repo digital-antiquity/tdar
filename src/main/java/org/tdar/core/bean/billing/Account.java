@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,12 +18,16 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +35,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -50,19 +54,14 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Table(name = "pos_account")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.billing.Account")
 public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    public Account() {
-    }
-
-    public Account(String name) {
-        this.name = name;
-    }
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
@@ -76,42 +75,45 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
     @Column(name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
-    private Person owner;
+    private TdarUser owner;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "modifier_id")
     @NotNull
-    private Person modifiedBy;
+    private TdarUser modifiedBy;
 
     @NotNull
     @Column(name = "date_expires")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date expires = new Date();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Invoice> invoices = new HashSet<Invoice>();
+    private Set<Invoice> invoices = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Coupon> coupons = new HashSet<Coupon>();
+    private Set<Coupon> coupons = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "user_id") })
-    private Set<Person> authorizedMembers = new HashSet<Person>();
+    private Set<TdarUser> authorizedMembers = new HashSet<>();
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
-    private Set<Resource> resources = new HashSet<Resource>();
+    private Set<Resource> resources = new HashSet<>();
 
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
@@ -123,6 +125,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private Long spaceUsedInBytes = 0L;
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
+    
+    public Account() {
+    }
+
+    public Account(String name) {
+        this.name = name;
+    }
 
     /**
      * @return the invoices
@@ -213,9 +222,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @Transient
     public Set<Resource> getFlaggedResources() {
-        Set<Resource> flagged = new HashSet<Resource>();
+        Set<Resource> flagged = new HashSet<>();
         for (Resource resource : getResources()) {
-            if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+            if (resource.getStatus().isFlaggedForBilling()) {
                 flagged.add(resource);
             }
         }
@@ -322,7 +331,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if (getOwner() == null) {
             setDateCreated(new Date());
             setOwner(p);
@@ -331,19 +340,19 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setModifiedBy(p);
     }
 
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
-    public Person getModifiedBy() {
+    public TdarUser getModifiedBy() {
         return modifiedBy;
     }
 
-    public void setModifiedBy(Person modifiedBy) {
+    public void setModifiedBy(TdarUser modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
 
@@ -374,11 +383,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.status = status;
     }
 
-    public Set<Person> getAuthorizedMembers() {
+    public Set<TdarUser> getAuthorizedMembers() {
         return authorizedMembers;
     }
 
-    public void setAuthorizedMembers(Set<Person> authorizedMembers) {
+    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
 
@@ -491,5 +500,10 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setSpaceUsedInBytes(0L);
         setFilesUsed(0L);
         initTotals();
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getName(), getId());
     }
 }

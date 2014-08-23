@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,10 +29,10 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -45,10 +44,6 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
-
-import thredds.catalog.CrawlableCatalog;
-
-import com.hp.hpl.jena.sparql.function.library.eval;
 
 /**
  * The BulkManifestProxy helps keep track of state throughout the @link BulkUploadService's run process. It tracks filenames, fields, the resources created and
@@ -74,7 +69,7 @@ public class BulkManifestProxy implements Serializable {
     private LinkedHashSet<CellMetadata> allValidFields = new LinkedHashSet<>();
     private Collection<FileProxy> fileProxies;
     private Sheet sheet;
-    private Person submitter;
+    private TdarUser submitter;
     private AsyncUpdateReceiver asyncUpdateReceiver = new DefaultReceiver();
     private transient ExcelService excelService;
     private Map<String, Resource> resourcesCreated = new HashMap<>();
@@ -124,11 +119,7 @@ public class BulkManifestProxy implements Serializable {
     /**
      * Read the entire excel file in row-by-row. Process the row by looking at
      * the fields and reflecting the values into their appropriate beans.
-     * 
-     * FIXME: This method needs refactoring and is overly complex
-     * 
      */
-    @SuppressWarnings("unchecked")
     public <R extends Resource> void readExcelFile() throws InvalidFormatException, IOException {
 
         AsyncUpdateReceiver asyncUpdateReceiver = getAsyncUpdateReceiver();
@@ -153,6 +144,7 @@ public class BulkManifestProxy implements Serializable {
             int startColumnIndex = getFirstCellNum();
             int endColumnIndex = getLastCellNum();
 
+            // find filename and matching resource
             String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
 
             // look in the hashmap for the filename, skip the examples
@@ -177,10 +169,12 @@ public class BulkManifestProxy implements Serializable {
             asyncUpdateReceiver.setStatus(MessageHelper.getMessage("bulkUploadService.processing_file",
                     Arrays.asList(filename)));
 
+            // get all of the required fields for the file-type
             Set<CellMetadata> requiredFields = bulkUploadTemplateService.getRequiredFields(getAllValidFields());
             requiredFields.remove(cellLookupMap.get(BulkUploadTemplate.FILENAME));
             // iterate through the spreadsheet
             try {
+                // reflect the values onto the bean for the resource
                 processRowContents(requiredFields, evaluator, row, resourceToProcess, filename, startColumnIndex, endColumnIndex);
             } catch (Throwable t) {
                 logger.debug("excel mapping error: {}", t.getMessage(), t);
@@ -189,6 +183,7 @@ public class BulkManifestProxy implements Serializable {
             }
         }
 
+        // report on missing files that are not in the excel template, or missing files that are not being uploaded 
         for (String filename : getResourcesCreated().keySet()) {
             if (isCaseSensitive()) {
                 allFilenames.remove(filename);
@@ -205,13 +200,14 @@ public class BulkManifestProxy implements Serializable {
         }
     }
     
+    /**
+     * Convert an excel Row into a resource
+     */
     private void processRowContents( Set<CellMetadata> requiredFields, FormulaEvaluator evaluator, Row row, Resource resourceToProcess, String filename, int startColumnIndex, int endColumnIndex) {
-        // there has to be a smarter way to do this generically... iterate
-        // through valid field names for class
-//        boolean seenCreatorFields = false;
         ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
-
+        // for each columnm get the value, validate it and set it. For more complex beans like the ResourceCreatorProxy, set the values on the bean and validate
+        // when the bean is done
         for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
             String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
             String name = getColumnNames().get(columnIndex);
@@ -223,6 +219,7 @@ public class BulkManifestProxy implements Serializable {
             }
 
             Class<?> mappedClass = cellMetadata.getMappedClass();
+            // figure out what sort of class/field we're dealing with
             boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
             boolean resourceSubtypeAssignableFrom = false;
             if ((mappedClass != null) && (resourceToProcess != null)) {
@@ -230,6 +227,8 @@ public class BulkManifestProxy implements Serializable {
             }
             boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
             boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
+
+            // if we can't figure out what it is, die...
             if ((cellMetadata == null) || !((mappedClass != null) && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                 if (mappedClass != null) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.fieldname_is_not_valid_for_type",
@@ -255,15 +254,32 @@ public class BulkManifestProxy implements Serializable {
         }
         
         logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
+        
+        // die at the end of the process if we still have required fields that haven't been set
         if (requiredFields.size() > 0) {
-            List<String> required = (List<String>) CollectionUtils.collect(requiredFields, new BeanToPropertyValueTransformer("displayName"));
+            List<String> required = new ArrayList<>();
+            for (CellMetadata meta : requiredFields) {
+                required.add(meta.getDisplayName());
+            }
             throw new TdarRecoverableRuntimeException("bulkUploadService.required_fields_missing",
                     Arrays.asList(filename, StringUtils.join(required, ", ")));
         }
     }
     
 
-
+    /**
+     * Take a field and add it to the ResourceCreatorProxy. If that field is already set, or part of a different creator type, then complete and start a new
+     * resource creator
+     * 
+     * @param resourceCreatorAssignableFrom
+     * @param creatorAssignableFrom
+     * @param resourceToProcess
+     * @param creatorProxy
+     * @param mappedClass
+     * @param cellMetadata
+     * @param value
+     * @return
+     */
     private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess, ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
 
         logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
@@ -511,11 +527,11 @@ public class BulkManifestProxy implements Serializable {
         this.fileProxies = fileProxies;
     }
 
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(Person submitter) {
+    public void setSubmitter(TdarUser submitter) {
         this.submitter = submitter;
     }
 

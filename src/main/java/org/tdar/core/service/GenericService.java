@@ -14,8 +14,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
@@ -35,7 +36,6 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -88,6 +88,10 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        genericDao.setCacheModeForCurrentSession(mode);
+    }
+    
     /**
      * Find all ids given a specified class
      * 
@@ -507,10 +511,10 @@ public class GenericService {
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
                 errors.add(violations);
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", errors));
+                throw new TdarValidationException("genericService.object_not_valid_with_violations", errors);
             }
             if ((obj instanceof Validatable) && !((Validatable) obj).isValid()) {
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", errors));
+                throw new TdarValidationException("genericService.object_not_valid", errors);
             }
         }
     }
@@ -534,6 +538,7 @@ public class GenericService {
      */
     @Transactional
     public void delete(Object obj) {
+        genericDao.markWritableOnExistingSession(obj);
         genericDao.delete(obj);
     }
 
@@ -607,6 +612,10 @@ public class GenericService {
      */
     public <O> O markWritable(O obj) {
         return genericDao.markWritable(obj);
+    }
+
+    public <O> void markUpdatable(O obj) {
+        genericDao.markUpdatable(obj);
     }
 
     /**
@@ -698,38 +707,6 @@ public class GenericService {
     }
 
     /**
-     * Sort @link Updatable by their updated date.
-     * 
-     * @param resourcesToEvaluate
-     */
-    public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
-        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
-            }
-        });
-
-    }
-
-    /**
-     * Sort @link Updatable by their created date.
-     * 
-     * @param resourcesToEvaluate
-     */
-    public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
-        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
-            }
-        });
-
-    }
-
-    /**
      * Find Ids of @link Persistable objects that have a @link Status of ACTIVE.
      * 
      * @param class1
@@ -751,6 +728,19 @@ public class GenericService {
     @Transactional
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         return genericDao.findAllWithProfile(class1, ids, profileName);
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return genericDao.sessionContains(entity);
+    }
+
+    public <T> List<T> findAllWithL2Cache(Class<T> persistentClass) {
+        return genericDao.findAllWithL2Cache(persistentClass, null);
+    }
+
+    public void evictFromCache(Persistable res) {
+        genericDao.evictFromCache((Persistable)res);
+        
     }
 
 }

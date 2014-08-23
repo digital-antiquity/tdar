@@ -12,12 +12,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -59,12 +59,18 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.UrlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
@@ -93,14 +99,31 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
+    private static final long serialVersionUID = -2615014247540428072L;
     private static final String SEARCH_RSS = "/search/rss";
     private boolean hideFacetsAndSort = false;
     private GeoRssMode geoMode = GeoRssMode.POINT;
 
     @Autowired
-    private RssService rssService;
+    private transient RssService rssService;
+
     @Autowired
-    private ExcelService excelService;
+    private transient SearchService searchService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+
+    @Autowired
+    private transient ExcelService excelService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private transient UrlService urlService;
 
     private InputStream inputStream;
 
@@ -109,14 +132,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
 
-    private static final long serialVersionUID = 1L;
-
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
     // basic searches go in "query"
     private String query = "";
 
     private List<SearchParameters> groups = new ArrayList<SearchParameters>();
-
+    private List<ResourceCollection> collectionResults = new ArrayList<>();
+    private int collectionTotalRecords = 0;
     private Operator topLevelOperator = Operator.AND;
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
@@ -151,9 +173,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     // contentLength for excel download requests
     private Long contentLength;
+    private boolean collectionSearchBoxVisible = false;
 
     @Action(value = "results", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
@@ -168,6 +191,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
             boolean resetSearch = processLegacySearchParameters();
 
+            searchCollectionsToo();
             if (StringUtils.isNotBlank(query) && !resetSearch) {
                 getLogger().trace("running basic search");
                 return basicSearch();
@@ -181,8 +205,39 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
     }
 
+    private void searchCollectionsToo() {
+        QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        buildResourceCollectionQuery(queryBuilder);
+
+        try {
+            getLogger().trace("queryBuilder: {}", queryBuilder);
+            SearchResult result = new SearchResult();
+            result.setSortField(getSortField());
+            result.setSecondarySortField(getSecondarySortField());
+            result.setAuthenticatedUser(getAuthenticatedUser());
+            result.setStartRecord(0);
+            result.setRecordsPerPage(10);
+
+            result.setMode("COLLECTION MINI");
+            result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+            searchService.handleSearch(queryBuilder, result, this);
+            setMode("SEARCH");
+            setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
+            for (ResourceCollection col : getCollectionResults()) {
+                authorizationService.applyTransientViewableFlag(col, getAuthenticatedUser());
+            }
+            setCollectionTotalRecords(result.getTotalRecords());
+        } catch (TdarRecoverableRuntimeException tdre) {
+            getLogger().warn("search parse exception: {}", tdre.getMessage());
+            addActionError(tdre.getMessage());
+        } catch (ParseException e) {
+            getLogger().warn("search parse exception: {}", e.getMessage());
+            addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
+        }
+    }
+
     @Action(value = "collections", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchCollections() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
@@ -195,7 +250,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     @Action(value = "institutions", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
@@ -209,7 +264,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     @Action(value = "people", results = {
-            @Result(name = "success", location = "results.ftl"),
+            @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchPeople() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
@@ -231,31 +286,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private String collectionSearch() {
         setLookupSource(LookupSource.COLLECTION);
+        setMode("COLLECTION SEARCH:");
         determineCollectionSearchTitle();
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-        queryBuilder.setOperator(Operator.AND);
-        if (StringUtils.isNotBlank(query)) {
-            queryBuilder.append(new GeneralSearchQueryPart(query));
-        }
-        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
-
-        QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
-        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-        if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
-            // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-            if (!getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
-            } else {
-                qpg.clear();
-            }
-        }
-
-        queryBuilder.append(qpg);
+        buildResourceCollectionQuery(queryBuilder);
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            getSearchService().handleSearch(queryBuilder, this);
-
+            searchService.handleSearch(queryBuilder, this, this);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -271,7 +309,46 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
     }
 
-    @Action(value = "rss", results = { @Result(name = "success", type = "stream", params = {
+    private void buildResourceCollectionQuery(QueryBuilder queryBuilder) {
+        queryBuilder.setOperator(Operator.AND);
+
+        List<String> allFields = getAllGeneralQueryFields();
+
+        if (CollectionUtils.isNotEmpty(allFields)) {
+            queryBuilder.append(new GeneralSearchQueryPart(allFields));
+        }
+        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+
+        QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
+        qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));
+        if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
+            // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
+            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
+            } else {
+                qpg.clear();
+            }
+        }
+
+        queryBuilder.append(qpg);
+    }
+
+    private List<String> getAllGeneralQueryFields() {
+        List<String> allFields = new ArrayList<>();
+        for (SearchParameters param : groups) {
+            for (String val : param.getAllFields()) {
+                if (StringUtils.isNotBlank(val)) {
+                    allFields.add(val);
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(query)) {
+            allFields.add(query);
+        }
+        return allFields;
+    }
+
+    @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
@@ -291,7 +368,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             // geoMode = GeoRssMode.NONE;
             // }
             if (!isReindexing()) {
-                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true, this));
             } else {
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
@@ -396,7 +473,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         for (SearchParameters group : groups) {
             group.setExplore(explore);
             try {
-                getSearchService().updateResourceCreators(group, 20);
+                searchService.updateResourceCreators(group, 20);
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -405,14 +482,16 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
         queryBuilder.append(topLevelQueryPart);
 
+        if (topLevelQueryPart.isEmpty() || CollectionUtils.isNotEmpty(getAllGeneralQueryFields())) {
+            setCollectionSearchBoxVisible(true);
+        }
         reservedQueryPart = processReservedTerms(this);
         queryBuilder.append(reservedQueryPart);
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);
-            getSearchService().handleSearch(queryBuilder, this);
+            searchService.handleSearch(queryBuilder, this, this);
             updateDisplayOrientationBasedOnSearchResults();
-            
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
@@ -422,6 +501,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             getLogger().warn("search parse exception: {}", e.getMessage());
             addActionError(getText("advancedSearchController.error_parsing_failed"));
         }
+        bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
         if (getActionErrors().isEmpty()) {
             return SUCCESS;
@@ -455,7 +535,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             map = getG().get(0).getLatitudeLongitudeBoxes().get(0);
         } catch (Exception e) {
-            //ignore
+            // ignore
         }
         if (getMap() != null && getMap().isInitializedAndValid() || map != null && map.isInitializedAndValid()) {
             getLogger().debug("switching to map orientation");
@@ -534,7 +614,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
             getLogger().debug("inflating parameters for group {}", sp);
-            getSearchService().inflateSearchParameters(sp);
+            searchService.inflateSearchParameters(sp);
         }
 
         return SUCCESS;
@@ -582,15 +662,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
-        return getGenericKeywordService().findAllWithCache(InvestigationType.class);
+        return genericKeywordService.findAllWithCache(InvestigationType.class);
     }
 
     public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
     }
 
     public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
     }
 
     List<MaterialKeyword> allMaterialKeywords;
@@ -601,7 +681,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = getGenericKeywordService().findAllWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -618,7 +698,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String getRssUrl() {
         StringBuilder urlBuilder = new StringBuilder();
         if (getServletRequest() != null) {
-            urlBuilder.append(getUrlService().getBaseUrl())
+            urlBuilder.append(urlService.getBaseUrl())
                     .append(getServletRequest().getContextPath())
                     .append(SEARCH_RSS).append("?")
                     .append(getServletRequest().getQueryString());
@@ -889,7 +969,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return exploreKeyword;
     }
 
-    @Action(value = "download", results = { @Result(name = "success", type = "stream", params = {
+    @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
             "attachment;filename=\"report.xls", "contentLength",
@@ -930,7 +1010,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(),
                                 getSearchPhrase())));
                 rowNum++;
-                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), getUrlService().getBaseUrl()
+                List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), urlService.getBaseUrl()
                         + getServletRequest().getRequestURI()
                                 .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
                 excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
@@ -983,7 +1063,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         ArrayList<Object> data = new ArrayList<Object>(
                                 Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
                                         projectName, r.getShortenedDescription(), numFiles,
-                                        getUrlService().absoluteUrl(r), location));
+                                        urlService.absoluteUrl(r), location));
 
                         if (isEditor()) {
                             data.add(r.getStatus());
@@ -1079,6 +1159,30 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
      */
     public boolean isContextualSearch() {
         return (collectionId != null) || (projectId != null);
+    }
+
+    public List<ResourceCollection> getCollectionResults() {
+        return collectionResults;
+    }
+
+    public void setCollectionResults(List<ResourceCollection> collectionResults) {
+        this.collectionResults = collectionResults;
+    }
+
+    public int getCollectionTotalRecords() {
+        return collectionTotalRecords;
+    }
+
+    public void setCollectionTotalRecords(int collectionTotalRecords) {
+        this.collectionTotalRecords = collectionTotalRecords;
+    }
+
+    public boolean isCollectionSearchBoxVisible() {
+        return collectionSearchBoxVisible;
+    }
+
+    public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
+        this.collectionSearchBoxVisible = collectionSearchBoxVisible;
     }
 
 }

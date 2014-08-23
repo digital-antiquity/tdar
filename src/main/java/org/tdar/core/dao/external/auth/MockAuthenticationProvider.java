@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.service.EntityService;
@@ -28,7 +27,6 @@ import org.tdar.core.service.EntityService;
  * *As you might expect,  authentication-tests will probably fail
  * ** This class has failsafes to prevent use in production.  Don't rely on them.
  */
-@Service
 public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -44,7 +42,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public boolean isConfigured() {
-        return Boolean.parseBoolean(System.getProperty("enableMockAuth", "false"));
+        return true;
     }
 
     @Override
@@ -82,7 +80,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
         if (users.containsKey(person.getEmail())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {
@@ -92,7 +90,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public boolean deleteUser(Person person) {
+    public boolean deleteUser(TdarUser person) {
         try {
             users.remove(person.getEmail());
             return true;
@@ -103,18 +101,18 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public void resetUserPassword(Person person) {
+    public void resetUserPassword(TdarUser person) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void updateUserPassword(Person person, String password) {
+    public void updateUserPassword(TdarUser person, String password) {
         users.put(person.getEmail(), password);
     }
 
     @Override
-    public String[] findGroupMemberships(Person person) {
+    public String[] findGroupMemberships(TdarUser person) {
         TdarGroup group = TdarGroup.fromString(users.get(person.getUsername()));
         logger.debug("group membership request: name:{}   groupname:{},    group:{}", new Object[] { person.getUsername(), users.get(person.getUsername()),
                 group });
@@ -126,6 +124,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
                 toReturn.add(TdarGroup.TDAR_EDITOR.getGroupName());
             case TDAR_USERS:
                 toReturn.add(TdarGroup.TDAR_USERS.getGroupName());
+                break;
+            default:
                 break;
         }
         String[] result = toReturn.toArray(new String[0]);
@@ -146,8 +146,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             logger.info("Mock Authentication is not allowed in production. System will not load mock user db");
             return;
         }
-        List<Person> registeredUsers = entityService.findAllRegisteredUsers();
-        for (Person user : registeredUsers) {
+        List<TdarUser> registeredUsers = entityService.findAllRegisteredUsers();
+        for (TdarUser user : registeredUsers) {
             users.put(user.getUsername(), user.getUsername());
         }
     }

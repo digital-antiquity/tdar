@@ -91,4 +91,8 @@ public enum PdfFontHelper {
     private void setItalic(PDType1Font italic) {
         this.italic = italic;
     }
+
+    public int estimateWidth(String text) {
+        return Math.round((this.fontSize /2 )* text.length());
+    }
 }

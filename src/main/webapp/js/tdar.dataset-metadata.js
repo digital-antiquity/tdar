@@ -181,6 +181,20 @@
         TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
+    function _pagination(idPrefix) {
+        var $id = $("#recordsPerPage" + idPrefix); 
+        $id.change(function () {
+            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
+            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+            var prefix = "";
+            if (url.indexOf("?") != 0) {
+                prefix = "?";
+            }
+            url = prefix + url + "&recordsPerPage=" + $id.val();
+            window.location = url;
+        });
+    }
+    
     /**
      * Updates the SummaryTable based on column validation
      */
@@ -200,7 +214,8 @@
         "init": _init,
         "gotoColumn": _gotoColumn,
         "updateSummaryTable": _updateSummaryTable,
-        "registerCheckboxInfo": _registerCheckboxInfo
+        "registerCheckboxInfo": _registerCheckboxInfo,
+        "initPagination": _pagination
     };
 
 })(TDAR, jQuery);

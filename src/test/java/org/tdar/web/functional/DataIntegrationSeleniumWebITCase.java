@@ -63,7 +63,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
             WebElementSelection option = null;
             for (WebElement option_ : find(By.id("table_select")).find(By.tagName("option"))) {
                 if (option_.getText().contains(MAIN_TABLE)) {
-                    option = new WebElementSelection(option_, driver);
+                    option = new WebElementSelection(option_, getDriver());
                     break;
                 }
 
@@ -159,7 +159,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     private WebElementSelection findMatchingElementWithChildBy(WebElementSelection parentElement, String matchingText, By selector) {
         logger.info("looking for {} in {} ({})", matchingText, selector.toString(), parentElement.size());
         for (WebElement element_ : parentElement) {
-            WebElementSelection element = new WebElementSelection(element_, driver);
+            WebElementSelection element = new WebElementSelection(element_, getDriver());
             WebElementSelection name = element.find(selector);
             logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
             if (name.getText().equals(matchingText)) {
@@ -177,7 +177,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
 
     private void dragAndDrop(WebElement draggable, WebElement target) {
         // http://stackoverflow.com/questions/14210051/how-to-automate-drag-drop-functionality-using-selenium-web-driver
-        Actions builder = new Actions(driver);
+        Actions builder = new Actions(getDriver());
         logger.debug("dragging {} to {} ", draggable.getText(), target.getText());
         Action dragAndDrop = builder.clickAndHold(draggable).moveToElement(target).release(target).build();
         dragAndDrop.perform();
@@ -211,7 +211,7 @@ public class DataIntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebIT
     private WebElementSelection findMatchingElementBy(WebElementSelection parentElement, String matchingText, By selector) {
         logger.info("looking for {} in {} ({})", matchingText, selector.toString(), parentElement.size());
         for (WebElement element_ : parentElement) {
-            WebElementSelection element = new WebElementSelection(element_, driver);
+            WebElementSelection element = new WebElementSelection(element_, getDriver());
             WebElementSelection name = element.find(selector);
             logger.info("  {} {} ({})", name.getText(), name.val(), name.toList().size());
             if (name.getText().equals(matchingText)) {

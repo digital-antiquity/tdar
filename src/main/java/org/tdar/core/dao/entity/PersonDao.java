@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -26,8 +27,9 @@ import org.tdar.core.dao.TdarNamedQueries;
 /**
  * $Id$
  * 
- * Provides DAO access for Person entities, including a variety of methods for
- * looking up a Person in tDAR.
+ * Provides DAO access for Person entities.
+ * 
+ * FIXME: replace with TdarUserDao?
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -42,7 +44,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Person> findAllRegisteredUsers(Integer num) {
+    public List<TdarUser> findAllRegisteredUsers(Integer num) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
         if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
@@ -60,14 +62,18 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (Person) getCriteria().add(Restrictions.eq("email", email.toLowerCase())).uniqueResult();
     }
 
-    public Person findByUsername(final String username) {
-        return (Person) getCriteria().add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
+    public TdarUser findByUsername(final String username) {
+        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
+    }
+
+    public TdarUser findUserByEmail(final String email) {
+        return (TdarUser) getCriteria(TdarUser.class).add(Restrictions.eq("email", email.toLowerCase())).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
     public Set<Person> findByLastName(String lastName) {
         Criteria criteria = getCriteria().add(Restrictions.eq("lastName", lastName));
-        return new HashSet<Person>(criteria.list());
+        return new HashSet<>(criteria.list());
     }
 
     // find people with the same firstName, lastName, or institution (if specified)
@@ -75,7 +81,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Set<Person> findByPerson(Person person) {
         // if the email address is set then all other fields are moot
         if (StringUtils.isNotBlank(person.getEmail())) {
-            Set<Person> hs = new HashSet<Person>();
+            Set<Person> hs = new HashSet<>();
             hs.add(findByEmail(person.getEmail()));
             return hs;
         }
@@ -127,7 +133,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Criteria criteria = getCriteria();
         criteria.add(Restrictions.eq("lastName", lastName));
         criteria.add(Restrictions.eq("firstName", firstName));
-        return new HashSet<Person>(criteria.list());
+        return new HashSet<>(criteria.list());
     }
 
     @Override
@@ -136,9 +142,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Person> findRecentLogins() {
-        Criteria criteria = getCriteria();
-        criteria.add(Restrictions.eq("registered", true));
+    public List<TdarUser> findRecentLogins() {
+        Criteria criteria = getCriteria(TdarUser.class);
         criteria.add(Restrictions.isNotNull("lastLogin"));
         criteria.addOrder(Property.forName("lastLogin").desc());
         criteria.setMaxResults(25);
@@ -153,14 +158,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     @SuppressWarnings("unchecked")
     public Set<Long> findAllContributorIds() {
-        Set<Long> ids = new HashSet<Long>();
+        Set<Long> ids = new HashSet<>();
         for (Number obj_ : (List<Number>) getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
             ids.add(obj_.longValue());
         }
         return ids;
     }
 
-    public void registerLogin(Person authenticatedUser) {
+    public void registerLogin(TdarUser authenticatedUser) {
         authenticatedUser.setLastLogin(new Date());
         authenticatedUser.incrementLoginCount();
         logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
@@ -191,6 +196,15 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         query.setParameter("id", creator.getId());
         Number result = (Number) query.uniqueResult();
         return result.longValue();
+    }
+
+    public TdarUser findConvertPersonToUser(Person person, String username) {
+        Long id = person.getId();
+        getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
+        detachFromSession(person);
+        TdarUser toReturn = find(TdarUser.class, id);
+        logger.debug("toReturn: {}", toReturn);
+        return toReturn;
     }
 
 }

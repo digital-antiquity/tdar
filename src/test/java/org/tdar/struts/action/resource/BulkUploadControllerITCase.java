@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -36,9 +35,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
@@ -228,8 +227,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             }
         };
 
-        CollectionUtils.collect(resource.getRelatedComparativeCollections(), t, rccs);
-        CollectionUtils.collect(resource.getSourceCollections(), t, scs);
+        for (RelatedComparativeCollection rcc : resource.getRelatedComparativeCollections()) {
+            rccs.add(rcc.getText());
+        }
+        for (SourceCollection rcc : resource.getSourceCollections()) {
+            scs.add(rcc.getText());
+        }
 
         assertTrue(scs.contains("sc one"));
         assertTrue(scs.contains("sc two"));
@@ -373,7 +376,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse, List<File> uploadFiles) throws Exception {
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
         init(bulkUploadController, user);
         bulkUploadController.prepare();
@@ -656,11 +659,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             logger.info("INTERNAL COLLECTIONS: {} ", col);
         }
         return col.size();
-    }
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
     }
 
 }

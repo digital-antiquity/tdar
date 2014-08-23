@@ -19,20 +19,20 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "success", type = "stream",
+        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
                         "inputName", "inputStream"
                 }
         ),
-        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
-        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
 public class SitemapController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 3087341894996134904L;
 
-    private String filename;
+    private String filename = "sitemap_index.xml";
     private InputStream inputStream;
 
     @Override
@@ -43,10 +43,10 @@ public class SitemapController extends AuthenticationAware.Base {
         if (file.exists() && file.isFile()) {
             try {
                 setInputStream(new FileInputStream(file));
+                return SUCCESS;
             } catch (FileNotFoundException e) {
                 getLogger().error("file not found {}", e);
             }
-            return SUCCESS;
         }
         return NOT_FOUND;
     }

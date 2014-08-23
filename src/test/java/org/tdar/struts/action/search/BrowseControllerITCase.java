@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
@@ -43,7 +43,6 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback
     public void testBrowsePersonHiddenWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
-        getBasicUser().setHiddenIfNotCited(true);
         getBasicUser().setOccurrence(0L);
         genericService.saveOrUpdate(getBasicUser());
         testBrowseController(getBasicUser());
@@ -52,12 +51,10 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback
     public void testBrowsePersonHiddenWithout() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
-        Person person = new Person();
+        TdarUser person = new TdarUser();
         person.setFirstName("test");
         person.setLastName("test");
-        person.setRegistered(true);
         person.markUpdated(getAdminUser());
-        person.setHiddenIfNotCited(true);
         person.setOccurrence(0L);
         genericService.saveOrUpdate(person);
         genericService.synchronize();
@@ -114,7 +111,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return getBasicUser();
     }
 

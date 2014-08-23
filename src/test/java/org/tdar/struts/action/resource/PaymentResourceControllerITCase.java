@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,14 +19,13 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
@@ -39,11 +38,6 @@ import com.opensymphony.xwork2.Action;
 public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
 
     private DocumentController controller;
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     public void initControllerFields() {
         controller.prepare();
@@ -95,7 +89,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testResourceControllerWithoutValidAccount() throws Exception {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         ResourceController rc = generateNewController(ResourceController.class);
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         init(rc, user);
 
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
@@ -115,6 +109,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Test
     @Rollback()
     public void testInitialSaveWithoutValidAccount() throws Exception {
+        setIgnoreActionErrors(true);
         controller = generateNewInitializedController(DocumentController.class);
         Pair<String, Exception> tdae = setupResource(setupDocument());
         assertEquals(Action.INPUT, tdae.getFirst());
@@ -124,7 +119,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // now reload the document and see if the institution was saved.
         // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse("resource id should be -1 after unpaid resource addition", newId == Long.valueOf(-1L));
-        setIgnoreActionErrors(true);
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
@@ -138,10 +132,11 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(d);
 
         logger.info("account: {}", d.getAccount());
+        setIgnoreActionErrors(true);
         Pair<String, Exception> tdae = setupResource(d);
-        assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
-        logger.info("errors {}", getController().getActionErrors());
-        assertTrue(getController().getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
+        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
+        logger.info("errors {}", controller.getActionErrors());
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
         Long newId = controller.getResource().getId();
 
         Assert.assertNotNull(entityService.findByEmail("new@email.com"));
@@ -151,7 +146,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertNull("controller should not be successful", null);
         // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
-        setIgnoreActionErrors(true);
     }
 
     @Test

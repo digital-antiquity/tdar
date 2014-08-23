@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -25,20 +25,12 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
 /**
- * $Id$
+ * Uses OWL-API to parse OWL ontologies into a Map<OWLClass, OntologyNode>.
  * 
- * Uses OWL-API to parse OWL ontologies (supposedly this should be done via
- * Reasoners but haven't gotten that far into OWL yet).
- * 
- * Generates a Map of OWLClass-s to OntologyNode-s.
- * 
- * Use one parser instance per ontology - this class needs to maintain state as
- * it recursively generates ontology node labels.
+ * This class is not thread-safe, use one parser instance per ontology. It maintains state as it recursively generates ontology node labels.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Rev$
  */
-
 public class OwlApiHierarchyParser implements OntologyParser {
 
     private final OWLOntology owlOntology;
@@ -135,9 +127,6 @@ public class OwlApiHierarchyParser implements OntologyParser {
         IRI iri = owlClass.getIRI();
         node.setImportOrder(extractImportOrder(owlClass));
         node.setDescription(extractDescription(owlClass));
-        if (node.getDescription() != null) {
-            logger.debug(node.getDescription());
-        }
         node.setIri(iri.getFragment());
         String uri_string = iri.toURI().toString();
         // FIXME: the OWL API does not appear to support IRIs that start with numbers...
@@ -145,7 +134,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         // this is a workaround
 
         // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with () in them
-        logger.trace("node: {}", node.getIri());
+        logger.trace("node: {}", node);
         if (StringUtils.isBlank(node.getIri()) && (StringUtils.indexOf(uri_string, "#") > 0)) {
             node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#") + 1));
             logger.info(uri_string);
@@ -160,7 +149,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             for (OWLClass syn : equiv.getClassesInSignature()) {
                 String label = extractNodeLabel(syn);
                 synonymLabels.add(label);
-                logger.trace(syn.getIRI().getFragment() + " - " + iri.getFragment() + " [" + label + "]");
+                logger.trace("{} - {} [{}]", syn.getIRI().getFragment(), iri.getFragment(), label);
             }
         }
         node.setSynonyms(synonymLabels);

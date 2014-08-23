@@ -1,11 +1,14 @@
 package org.tdar.core.dao.external.payment.nelnet;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Consts;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,20 +84,28 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#prepareRequest(org.tdar.core.bean.billing.Invoice)
+
+    /**
+     * return a url to the payment processor the client will use to complete payment for the invoice associated with this template
+     * @return a valid url, or null if the template was in a state such that it produced a malformed url.
      */
     @Override
-    public String prepareRequest(Invoice invoice) throws URIException {
-        genericDao.saveOrUpdate(invoice);
-        genericDao.markReadOnly(invoice);
-        NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretRequestWord());
-        template.populateHashMapFromInvoice(invoice);
-        template.constructHashKey();
-        String urlSuffix = template.constructUrlSuffix();
-        return getTransactionPostUrl() + "?" + urlSuffix;
+    public URL buildPostUrl(Invoice invoice) {
+        URL url = null;
+        try {
+            NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretRequestWord());
+            template.populateHashMapFromInvoice(invoice);
+            template.constructHashKey();
+            // NOTE: in knap and prior this was 'ASCII'; if we ever put true unicode characters into the request we may need to check for 
+            // encoding issues with passing this data into the URL
+            // FIXME: this is cleaner, but doesn't produce an XHTML friendly url with &amp; encoded urls, so it fails tests
+             String query = "?" + URLEncodedUtils.format(template.getNameValuePairs(),Consts.UTF_8 );
+
+            url = new URL(getTransactionPostUrl() +  query);
+        } catch (MalformedURLException e) {
+            logger.error("malformed payment url", e);
+        }
+        return url;
     }
 
     /*

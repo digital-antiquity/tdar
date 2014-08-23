@@ -30,7 +30,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.OntologyController;
 
@@ -48,6 +47,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testDegenerateOntologyDuplicates() throws Exception {
+        setIgnoreActionErrors(true);
         OntologyController controller = generateNewInitializedController(OntologyController.class);
         controller.prepare();
         controller.getOntology().setTitle("test");
@@ -66,7 +66,6 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         }
         assertTrue(e instanceof TdarRecoverableRuntimeException);
         assertTrue(e.getMessage().contains("unique"));
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -109,16 +108,6 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         assertEquals("Not Recorded", nodes.get(nodes.size() - 1).getDisplayName());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Test
     public void testTimeFormat() {

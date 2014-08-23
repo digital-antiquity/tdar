@@ -1,6 +1,6 @@
 package org.tdar.core.bean.cache;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.GenericService;
 

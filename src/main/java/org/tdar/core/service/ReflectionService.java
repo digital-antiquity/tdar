@@ -1,9 +1,3 @@
-/**
- * $Id$
- * 
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.service;
 
 import java.lang.annotation.Annotation;
@@ -19,23 +13,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.convention.ReflectionTools;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -47,6 +42,7 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.utils.Pair;
@@ -58,7 +54,6 @@ import com.opensymphony.xwork2.ActionProxy;
  * Service to help with Reflection
  * 
  * @author Adam Brin
- * 
  */
 @Service
 public class ReflectionService {
@@ -71,6 +66,9 @@ public class ReflectionService {
     private transient Logger logger = LoggerFactory.getLogger(getClass());
     private static transient Logger staticLogger = LoggerFactory.getLogger(ReflectionService.class);
     private Map<String, Class<Persistable>> persistableLookup;
+
+    @Autowired
+    private GenericDao genericDao;
 
     /**
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
@@ -107,31 +105,6 @@ public class ReflectionService {
         }
         logger.debug("Fields in {} that refer to {}:{}", new Object[] { classToInspect.getSimpleName(), ancestorToFind.getSimpleName(), matchingFields });
         return matchingFields;
-    }
-
-    /**
-     * Find Fields with any of the annotations specified within the source tree
-     * 
-     * @param targetClass
-     * @param list
-     * @param recursive
-     * @return
-     */
-    public Set<Field> findFieldsWithAnnotation(Class<?> targetClass, List<Class<? extends Annotation>> list, boolean recursive) {
-        Set<Field> set = new HashSet<>();
-        for (Field field : targetClass.getDeclaredFields()) {
-            for (Class<? extends Annotation> ann : list) {
-                if (field.isAnnotationPresent(ann)) {
-                    set.add(field);
-                }
-            }
-        }
-        if (recursive) {
-            for (Class<?> parent : ReflectionTools.getClassHierarchy(targetClass)) {
-                set.addAll(findFieldsWithAnnotation(parent, list, false));
-            }
-        }
-        return set;
     }
 
     /**
@@ -238,7 +211,7 @@ public class ReflectionService {
         try {
             setter.invoke(obj, fieldValue);
         } catch (Exception e) {
-            logger.debug("cannot call field setter:", e);
+            logger.debug("cannot call field setter {} on : {} {}  {}", field, obj, fieldValue, e);
         }
 
     }
@@ -587,9 +560,9 @@ public class ReflectionService {
                 }
 
                 Class<?> type = field.getType();
-                if (ObjectUtils.equals(field, runAsField)) {
+                if (Objects.equals(field, runAsField)) {
                     type = runAs;
-                    logger.trace(" ** overriding type with " + type.getSimpleName());
+                    logger.trace(" ** overriding type with {}", type.getSimpleName());
                 }
 
                 if (Collection.class.isAssignableFrom(type))
@@ -606,12 +579,12 @@ public class ReflectionService {
                 // handle more primative fields private String ...
                 else {
                     logger.trace("adding {} ({})", field, stack);
-                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
+                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && Objects.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
                         continue;
                     }
 
                     if ((TdarConfiguration.getInstance().getLicenseEnabled() == false)
-                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText"))) {
+                            && (Objects.equals(field.getName(), "licenseType") || Objects.equals(field.getName(), "licenseText"))) {
                         continue;
                     }
                     set.add(new CellMetadata(field, annotation, class2, stack, prefix));
@@ -635,7 +608,7 @@ public class ReflectionService {
     public void validateAndSetProperty(Object beanToProcess, String name, String value) {
         List<String> errorValueList = Arrays.asList(name, value);
         try {
-            logger.trace("processing: " + beanToProcess + " - " + name + " --> " + value);
+            logger.trace("processing: {} - {} --> {}", beanToProcess, name, value);
             Class propertyType = PropertyUtils.getPropertyType(beanToProcess, name);
 
             // handle types should we be testing column length?
@@ -747,6 +720,89 @@ public class ReflectionService {
             }
         }
         return result;
+    }
+
+    public static List<Field> findAnnotatedFieldsOfClass(Class<?> cls, Class<? extends Annotation> annotationClass) {
+        List<Field> result = new ArrayList<>();
+        // iterate up the package hierarchy
+        Class<?> actualClass = null;
+        while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
+            // find first implemented tDAR class (actual class);
+            if (actualClass == null) {
+                actualClass = cls;
+            }
+            for (Field field : cls.getDeclaredFields()) {
+                Object annotation = field.getAnnotation(annotationClass);
+                if (annotation != null) {
+                    result.add(field);
+                }
+            }
+            cls = cls.getSuperclass();
+        }
+        return result;
+    }
+
+    public void walkObject(Persistable p) {
+        logger.debug("{} {}", p.getClass().getCanonicalName(), p);
+        Set<String> seen = new HashSet<>();
+        walkObject(p, 0, seen);
+    }
+
+    private String makeKey(Persistable p) {
+        return String.format("%s-%s", p.getClass().getSimpleName(), p.getId());
+    }
+
+    private void walkObject(Persistable p, int indent, Set<String> seen) {
+        List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields = findAllPersistableFields(p.getClass());
+        String key = makeKey(p);
+        if (seen.contains(key)) {
+            logger.debug("{}[{}] {}", StringUtils.repeat("| ", indent + 1), "seen", p);
+            return;
+        }
+        seen.add(key);
+        for (Pair<Field, Class<? extends Persistable>> pair : findAllPersistableFields) {
+            Object content = callFieldGetter(p, pair.getFirst());
+            if (content == null) {
+                logger.trace("{}{}", StringUtils.repeat("| ", indent + 1), pair.getFirst());
+                continue;
+            }
+            logger.trace("{}, {}", content, pair.getFirst());
+            if (Collection.class.isAssignableFrom(content.getClass())) {
+                @SuppressWarnings("unchecked")
+                Collection<Persistable> originalList = (Collection<Persistable>) content;
+                Collection<Persistable> contents = new ArrayList<Persistable>(originalList);
+                // using a separate collection to avoid concurrent modification of bi-directional double-lists
+                if (CollectionUtils.isNotEmpty(contents)) {
+                    logger.debug("{}{}", StringUtils.repeat("| ", indent + 1), pair.getFirst().getName());
+                }
+                Iterator<Persistable> iterator = contents.iterator();
+                while (iterator.hasNext()) {
+                    Persistable p_ = iterator.next();
+                    boolean sessionContains = genericDao.sessionContains(p_);
+                    logger.debug("{}[{}] {}", StringUtils.repeat("| ", indent + 2), sessionContains, p_);
+                    if (sessionContains) {
+                        walkObject(p_, indent + 2, seen);
+                    }
+                }
+            } else {
+                boolean sessionContains = genericDao.sessionContains(content);
+                logger.debug("{}[{}] {} {}", StringUtils.repeat("| ", indent + 1), sessionContains, pair.getFirst().getName(), content);
+                if (sessionContains) {
+                    walkObject((Persistable) content, indent + 1, seen);
+                }
+            }
+        }
+    }
+
+    public Method findMatchingSetter(Method method) {
+        String name = "set" + method.getName().substring(3);
+        return ReflectionUtils.findMethod(method.getDeclaringClass(), name, method.getReturnType());
+    }
+
+    public Field getFieldForGetterOrSetter(Method method) {
+        String name = cleanupMethodName(method);
+        Field field = ReflectionUtils.findField(method.getDeclaringClass(), name);
+        return field;
     }
 
 }

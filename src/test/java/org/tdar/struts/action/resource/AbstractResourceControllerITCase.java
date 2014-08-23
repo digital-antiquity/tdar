@@ -13,14 +13,13 @@ import static org.junit.Assert.assertTrue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.BillingAccountController;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 import com.opensymphony.xwork2.Action;
@@ -40,18 +39,6 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
 
     @Autowired
     AccountService accountService;
-
-    @Deprecated()
-    // don't call this, just call edit
-    public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
-        controller.setId(id);
-        controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
-        if (controller instanceof AbstractInformationResourceController) {
-            ((AbstractInformationResourceController<?>) controller).loadInformationResourceProperties();
-        }
-    }
 
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();

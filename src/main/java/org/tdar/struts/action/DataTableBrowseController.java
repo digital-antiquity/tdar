@@ -1,19 +1,24 @@
 package org.tdar.struts.action;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 @ParentPackage("secured")
 @Component
@@ -26,39 +31,45 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private Long id;
     private Integer recordsPerPage = 50;
     private Integer startRecord = 0;
-    private List<List<String>> results = Collections.emptyList();
     private String callback;
     private int totalRecords;
-    private ResultMetadataWrapper resultsWrapper;
+    private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
+    private Object jsonResult = new HashMap<String, Object>();
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient DatasetService datasetService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     @Action(value = "browse",
-            results = { @Result(name = "success", location = "browse.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
+                    @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" })
+            })
+    @HttpForbiddenErrorResponseOnly
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
         }
-        DataTable dataTable = getDataTableService().find(getId());
+        DataTable dataTable = getGenericService().find(DataTable.class, getId());
         Dataset dataset = dataTable.getDataset();
-        if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
+        if (dataset.isPublicallyAccessible() || authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
-                selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
+                selectAllFromDataTable = datasetService.selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
                         isViewRowSupported());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }
             setResultsWrapper(selectAllFromDataTable);
-            setResults(getResultsWrapper().getResults());
+//            getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
+        setJsonResult(getResultsWrapper());
         return SUCCESS;
-    }
-
-    public List<List<String>> getResults() {
-        return results;
-    }
-
-    public void setResults(List<List<String>> results) {
-        this.results = results;
     }
 
     public Integer getStartRecord() {
@@ -107,6 +118,14 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
 
     public void setTotalRecords(int totalRecords) {
         this.totalRecords = totalRecords;
+    }
+
+    public Object getJsonResult() {
+        return jsonResult;
+    }
+
+    public void setJsonResult(Object jsonResult) {
+        this.jsonResult = jsonResult;
     }
 
 }

@@ -32,7 +32,7 @@
     <#list usageStatsForResources as stats>
         <tr>
             <td>${stats.count}</td>
-            <td>${stats.aggregateDate?string("yyyy-MM-dd")}</td>
+            <td>${stats.aggregateDate?date}</td>
         </tr>
     </#list>
 </table>
@@ -52,7 +52,7 @@
                 <#list (downloadStats.get(key)) as stats>
                     <tr>
                         <td>${stats.count}</td>
-                        <td>${stats.aggregateDate?string("yyyy-MM-dd")}</td>
+                        <td>${stats.aggregateDate?date}</td>
                     </tr>
                 </#list>
             </table>
@@ -74,7 +74,7 @@
     <#list resourceLogEntries as entry>
         <tr>
             <td>${entry.timestamp}</td>
-            <td>${entry.person.properName}</td>
+            <td>${(entry.person.properName)!''}</td>
             <td>${entry.logMessage}</td>
         </tr>
     </#list>

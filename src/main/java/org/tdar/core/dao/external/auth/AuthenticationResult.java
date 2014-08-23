@@ -1,6 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 public class AuthenticationResult {
     public enum AuthenticationResultType {
@@ -26,11 +26,11 @@ public class AuthenticationResult {
         }
     }
 
-    private Person person;
+    private TdarUser person;
     private Throwable throwable;
     private AuthenticationResultType type;
 
-    public AuthenticationResult(AuthenticationResultType type, Person person) {
+    public AuthenticationResult(AuthenticationResultType type, TdarUser person) {
         this.setType(type);
         this.person = person;
     }
@@ -57,11 +57,11 @@ public class AuthenticationResult {
         return getType().getMessage() + " Exception: " + throwable.getLocalizedMessage();
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

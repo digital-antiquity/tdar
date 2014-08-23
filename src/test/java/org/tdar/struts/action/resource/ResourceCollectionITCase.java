@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -89,7 +89,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.findAllWithProfile(ResourceCollection.class, Arrays.asList(collectionId), "simple").get(0);
+        collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
@@ -100,7 +100,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCollectionController() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -153,7 +153,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCollectionPermissionsController() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -186,7 +186,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String email = "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
-        final Person testPerson = createAndSaveNewPerson(email, "1234");
+        final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -238,7 +238,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             e.printStackTrace();
         }
         logger.info("results: {} ", controller.getResults());
-        logger.info("results: {} ", controller.getResources());
+//        logger.info("results: {} ", controller.getResources());
         assertTrue(controller.getResults().contains(normal));
         assertTrue(controller.getResults().contains(draft));
         genericService.delete(controller.getResourceCollection().getAuthorizedUsers());
@@ -255,7 +255,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         String email = "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
-        final Person testPerson = createAndSaveNewPerson(email, "1234");
+        final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -287,7 +287,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCollectionPermissionsWithDepthController() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -311,13 +311,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
     }
 
-    @Override
-    protected TdarActionSupport getController()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Test
     @Rollback
     public void testRemoveResources() throws Exception
@@ -330,8 +323,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        Person owner = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
-        owner.setRegistered(true);
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
+        owner.setContributor(true);
 
         genericService.saveOrUpdate(owner);
         resourceCollection.setOwner(owner);
@@ -354,13 +347,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection = null;
         init(controller, owner);
         controller.prepare();
+        for (Document doc : docList) {
+            controller.getToRemove().add(doc.getId());
+        }
         controller.setServletRequest(getServletPostRequest());
         assertNotNull(controller.getPersistable());
         assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
 
         // clear the list of incoming resources, then save
-        controller.getResources().clear(); // strictly speaking this line is not
-                                           // necessary.
+//        controller.getResources().clear(); // strictly speaking this line is not
+//                                           // necessary.
         controller.save();
 
         evictCache();
@@ -386,8 +382,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        Person owner = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
-        owner.setRegistered(true);
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
+        owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         resourceCollectionParent.markUpdated(owner);
@@ -471,8 +467,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        Person owner = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
-        owner.setRegistered(true);
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
+        owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
@@ -580,11 +576,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     }
 
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
-        Person person = new Person();
-        person.setFirstName(UUID.randomUUID().toString());
-        person.setLastName(UUID.randomUUID().toString());
-        person.setEmail(UUID.randomUUID().toString() + "@mailinator.com");
-        person.setRegistered(true);
+        String string = UUID.randomUUID().toString();
+        TdarUser person = new TdarUser(string, string, string + "@tdar.net");
+        person.setContributor(true);
         genericService.saveOrUpdate(person);
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);
         return authuser;
@@ -594,7 +588,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testBrowseControllerVisibleCollections() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1", "", CollectionType.INTERNAL, false, new ArrayList<AuthorizedUser>(users),
                 new ArrayList<Resource>(), null);
@@ -694,7 +688,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testNestedCollectionEdit() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
@@ -709,7 +703,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCollectionParentCollectionsFoundProperly() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
         String name = "test collection";
         String description = "test description";
 
@@ -833,7 +827,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
         resourceCollection.setSortBy(SortOption.ID);
-        controller.getResources().add(document);
+        controller.getToAdd().add(document.getId());
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         assertFalse(result.equals(Action.SUCCESS));
@@ -843,7 +837,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection = null;
         controller.prepare();
         controller.edit();
-        assertEquals(0, controller.getResources().size());
         assertEquals(0, controller.getResourceCollection().getResources().size());
 
     }
@@ -873,7 +866,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         cc.prepare();
         cc.getResourceCollection().setName("test");
         cc.getResourceCollection().setDescription("test");
-        cc.getResources().add(document);
+        cc.getToAdd().add(document.getId());
         assertWeFailedToSave(cc);
     }
 
@@ -913,6 +906,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     private void assertWeFailedToSave(AbstractPersistableController<?> cc) {
         cc.setServletRequest(getServletPostRequest());
         String result = Action.SUCCESS;
+        setIgnoreActionErrors(true);
         try {
             result = cc.save();
         } catch (Exception e) {
@@ -920,7 +914,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             result = null;
         }
         assertFalse(Action.SUCCESS.equals(result));
-        setIgnoreActionErrors(true);
     }
 
     @Test
@@ -1030,7 +1023,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         logger.info(controller.view());
         assertTrue(controller.getResults().contains(draftDocument));
         assertTrue(controller.getResults().contains(activeDocument));
-
+        
         controller = generateNewController(CollectionController.class);
         initAnonymousUser(controller);
         controller.setId(collection.getId());
@@ -1044,7 +1037,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testSharedResourceCollectionQuery() throws Exception
     {
-        Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
 
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true,
@@ -1069,7 +1062,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         fake.setName(collection2.getName());
 
         DocumentController docController = generateNewInitializedController(DocumentController.class);
-        init(docController, doc.getSubmitter());
+        init(docController,(TdarUser) doc.getSubmitter());
         docController.setId(doc.getId());
         docController.prepare();
         docController.edit();
@@ -1090,7 +1083,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
+
         addAuthorizedUser(controller.getDataset(), getUser(), GeneralPermissions.MODIFY_RECORD);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
@@ -1108,7 +1104,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
         assertEquals(1, controller.getAuthorizedUsers().size());
         ArrayList<AuthorizedUser> authorizedUsers = new ArrayList<AuthorizedUser>();
         authorizedUsers.add(new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
@@ -1139,7 +1137,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.save(dataset);
         dataset = null;
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, datasetId);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
         controller.setServletRequest(getServletPostRequest());
         controller.save();
@@ -1159,7 +1159,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Long pid = project.getId();
 
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getResources().add(project);
+        controller.getToAdd().add(project.getId());
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -1184,15 +1184,18 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         projectController.setId(pid);
         projectController.prepare();
         projectController.setDelete(TdarActionSupport.DELETE);
+        projectController.setAsync(false);
         projectController.delete();
+        genericService.synchronize();
         searchIndexService.flushToIndexes();
-
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.setId(rcid);
         controller.prepare();
-        controller.edit();
-        assertEquals("deleted resource should not appear on edit page", 0, controller.getResources().size());
+        controller.view();
+        List<Long> results = Persistable.Base.extractIds(controller.getResults());
+        logger.debug("pid: {}  | {}", pid, results);
+        Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
 
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
@@ -1247,10 +1250,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
-        logger.info("resources:{}", controller.getResources());
+//        logger.info("resources:{}", controller.getResources());
         logger.info("?:{}", controller.getResults());
         logger.info("?:{}", controller.getResourceCollection().getResources());
-        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
+        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }
 
     @Test
@@ -1266,7 +1269,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         // Long pid = project.getId();
         Project proxy = new Project(project.getId(), project.getTitle());
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getResources().add(proxy);
+        controller.getToAdd().add(proxy.getId());
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -1285,7 +1288,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertEquals("collection should have one resource inside", 1, controller.getResults().size());
         controller = null;
         // make sure it draft resource can't be seen by registered user (but not an authuser)
-        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
@@ -1301,7 +1304,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);
         List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(authUser));
         controller.setAuthorizedUsers(authList);
-        controller.getResources().add(proxy);
+        controller.getToAdd().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         controller.save();
@@ -1328,7 +1331,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     public void testResourceCollectionRightsRevoking() throws TdarActionException {
-        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
@@ -1357,6 +1360,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1364,12 +1368,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
     public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
-        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
@@ -1413,6 +1416,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1420,12 +1424,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     @Test
     public void testResourceCollectionRightsRevokingHierOwnerFails() throws TdarActionException {
-        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
@@ -1462,6 +1465,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setId(rcid2);
         controller.prepare();
         boolean seen = false;
+        ignoreActionErrors(true);
         try {
             controller.edit();
         } catch (Exception e) {
@@ -1469,7 +1473,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             logger.warn("error", e);
         }
         assertTrue(seen);
-        ignoreActionErrors(true);
     }
 
     private Map<Long, Resource> getIdmap(Set<Resource> resources) {

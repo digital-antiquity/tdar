@@ -5,28 +5,8 @@
 <head>
     <title>Filter Ontology Values</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <style type='text/css'>
-        /
-        /
-        input + label {
-            position: relative;
-        }
-
-        input[disabled] + label {
-            font-weight: normal !important;
-        }
-
-        .inline-label {
-            clear: none;
-            display: inline-block;
-        }
-
-        .wf-loading {
-            visibility: visible !important;
-        }
-    </style>
 </head>
-<body>
+<body class="filter-ontology">
 <h1>Filter Ontology Values</h1>
 
 <div class="row">
@@ -66,6 +46,7 @@
 
     <@s.form method='post' action='display-filtered-results' id="filterForm">
 
+        <@s.token name='struts.csrf.token' />
         <#assign totalCheckboxCount=0>
         <#list integrationColumns as integrationColumn>
             <#if integrationColumn.displayColumn >
@@ -108,21 +89,22 @@
                             <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}"/>
                             </#list>
 
+                            <#-- FIXME: lift assignment of 'disabled' to java -->
                             <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
                                 <#assign numberOfParents=ontologyNode.numberOfParents>
                                 <#assign checkForUser=true />
-                                <#assign disabled=true />
-                                <#if ontologyNode.parent><#assign disabled=false /></#if>
                                 <#list ontologyNode.columnHasValueArray as hasValue>
                                     <#if !hasValue>
                                         <#assign checkForUser=false />
-                                    <#else>
-                                        <#assign disabled=false />
                                     </#if>
                                 </#list>
                                 <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
-                            <tr class="<#if disabled>disabled</#if>">
+                            <tr class="<#if ontologyNode.disabled>disabled</#if>">
                                 <td style="white-space: nowrap;">
+                                    <#if ontologyNode.parent  && !ontologyNode.disabled ><span class="pull-right">
+        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>select all</span>
+        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
+                                    </#if>
                                     <label class="inline-label nodeLabel" for='${node_id}'>
                                         <#list 1..numberOfParents as indentationLevel>
                                             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -130,16 +112,12 @@
                                         <input type='checkbox' id='${node_id}'
                                                name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes.id'
                                                value='${ontologyNode.id?c}'
-                                               <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
+                                               <#if checkForUser>canautocheck="true"</#if>     <#if ontologyNode.disabled>disabled="disabled"</#if> />
                                         <#assign totalCheckboxCount=totalCheckboxCount+1>
-                                        <#if !disabled><b></#if>
+                                        <#if !ontologyNode.disabled><b></#if>
                                         <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
-                                        <#if !disabled></b></#if>
+                                        <#if !ontologyNode.disabled></b></#if>
                                     </label>
-                                    <#if ontologyNode.parent ><span class="right">
-        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>all</span>
-        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
-                                    </#if>
 
                                 </td>
                                 <#list ontologyNode.columnHasValueArray as hasValue>

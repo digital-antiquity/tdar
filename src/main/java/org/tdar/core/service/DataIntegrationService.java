@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
@@ -54,8 +55,6 @@ import org.tdar.utils.Pair;
 import au.com.bytecode.opencsv.CSVWriter;
 
 import com.opensymphony.xwork2.TextProvider;
-
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
  * $Id$
@@ -177,7 +176,8 @@ public class DataIntegrationService {
     }
 
     /**
-     * sets transient boolean on CodingRule to mark that it's mapped
+     * sets transient booleans on CodingRule to mark that it's mapped
+     * 
      * 
      * @param column
      */
@@ -185,24 +185,20 @@ public class DataIntegrationService {
         if (column == null) {
             return;
         }
+        logger.debug("col {}", column);
         CodingSheet codingSheet = column.getDefaultCodingSheet();
-        logger.info("col {}", column);
-        logger.info("sheet {}", codingSheet);
-        if (codingSheet != null) {
-            logger.info("any rules {}", CollectionUtils.isEmpty(codingSheet.getCodingRules()));
-        }
         if ((codingSheet == null) || CollectionUtils.isEmpty(codingSheet.getCodingRules())) {
+            logger.debug("aborting, no coding rules or coding sheet {}", codingSheet);
             return;
         }
-        logger.info("select distinct values");
+        logger.info("selecting distinct values from column");
         List<String> values = tdarDataImportDatabase.selectDistinctValues(column);
         logger.info("values: {} ", values);
-        logger.info("iterating over coding rules");
+        logger.info("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
-            logger.info("term: {} ", rule.getTerm());
             if (values.contains(rule.getTerm())) {
+                logger.debug("mapping rule {} to column {}", rule, column);
                 rule.setMappedToData(column);
-                logger.trace("\t{}", rule);
             }
         }
     }
@@ -221,7 +217,8 @@ public class DataIntegrationService {
         // FIXME: this lookup should be moved out of this method, otherwise we are creating / recreating these data structures over and over
         // and over and over
         CodingSheet codingSheet = column.getDefaultCodingSheet();
-        Set<OntologyNode> filteredOntologyNodes = new HashSet<OntologyNode>(integrationColumn.getFilteredOntologyNodes());
+        Set<OntologyNode> filteredOntologyNodes = new HashSet<>(integrationColumn.getFilteredOntologyNodes());
+        filteredOntologyNodes.removeAll(Collections.singletonList(null));
         Map<OntologyNode, OntologyNode> closestParentMap = integrationColumn.getNearestParentMap();
         Map<String, OntologyNode> termToNodeMap = codingSheet.getTermToOntologyNodeMap();
         OntologyNode matchingNode = termToNodeMap.get(value);
@@ -246,23 +243,29 @@ public class DataIntegrationService {
         // for each column, rehydrate the column and selected ontology nodes
         for (IntegrationColumn integrationColumn : integrationColumns) {
             integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
-            logger.trace("before: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
-            integrationColumn.setFilteredOntologyNodes(genericDao.loadFromSparseEntities(integrationColumn.getFilteredOntologyNodes(), OntologyNode.class));
+            List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
+            if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
+                filteredOntologyNodes.removeAll(Collections.singletonList(null));
+            }
+
+            logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
+            filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
+            integrationColumn.setFilteredOntologyNodes(filteredOntologyNodes);
             // for each of the integration columns, grab the unique set of all children within an ontology
 
             // that is, even if child is not selected, should get all children for query and pull up
-            integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(integrationColumn.getFilteredOntologyNodes()));
+            integrationColumn.setOntologyNodesForSelect(ontologyNodeDao.getAllChildren(filteredOntologyNodes));
 
-            logger.trace("after: {} - {}", integrationColumn, integrationColumn.getFilteredOntologyNodes());
+            logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
             logger.info("integration column: {}", integrationColumn);
         }
 
         // generate projections from each column, first aggregate across common display columns and integration columns
-        List<IntegrationDataResult> results = new ArrayList<IntegrationDataResult>();
+        List<IntegrationDataResult> results = new ArrayList<>();
         // keeps track of all the columns that we need to select out from this data table
         // now iterate through all tables and generate the column lists.
         // use the OntologyNodes on the integration columns. each DataTable should have one integration column in it...
-        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = new LinkedHashMap<List<OntologyNode>, Map<DataTable, Integer>>();
+        Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = new LinkedHashMap<>();
 
         for (DataTable table : tables) {
             // generate results per table
@@ -283,25 +286,25 @@ public class DataIntegrationService {
      */
     public PersonalFilestoreTicket toExcel(TextProvider provider, List<IntegrationColumn> integrationColumns,
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData,
-            Person person) {
+            TdarUser person) {
         List<IntegrationDataResult> integrationDataResults = generatedIntegrationData.getFirst();
         if (CollectionUtils.isEmpty(integrationDataResults)) {
             return null;
         }
 
-        DataIntegrationWorkbook integrationProxy = new DataIntegrationWorkbook(provider, excelService, person, generatedIntegrationData);
-        integrationProxy.setIntegrationColumns(integrationColumns);
-        integrationProxy.setIntegrationDataResults(integrationDataResults);
-        integrationProxy.generate();
-        PersonalFilestoreTicket ticket = integrationProxy.getTicket();
+        DataIntegrationWorkbook integrationWorkbook = new DataIntegrationWorkbook(provider, excelService, person, generatedIntegrationData);
+        integrationWorkbook.setIntegrationColumns(integrationColumns);
+        integrationWorkbook.setIntegrationDataResults(integrationDataResults);
+        integrationWorkbook.generate();
+        PersonalFilestoreTicket ticket = integrationWorkbook.getTicket();
         genericDao.save(ticket);
 
         try {
-            File resultFile = integrationProxy.writeToTempFile();
+            File resultFile = integrationWorkbook.writeToTempFile();
             PersonalFilestore filestore = filestoreService.getPersonalFilestore(person);
-            filestore.store(ticket, resultFile, integrationProxy.getFileName());
-        } catch (Exception iox) {
-            logger.error("an error occurred when producing the integration excel file: {}", iox);
+            filestore.store(ticket, resultFile, integrationWorkbook.getFileName());
+        } catch (Exception exception) {
+            logger.error("an error occurred when producing the integration excel file", exception);
             throw new TdarRecoverableRuntimeException("dataIntegrationService.could_not_save_file");
         }
 
@@ -343,7 +346,7 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter) {
         return createGeneratedCodingSheet(provider, column, submitter, column.getDefaultOntology());
     }
 
@@ -357,8 +360,7 @@ public class DataIntegrationService {
      * @return
      */
     @Transactional
-    @SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "null check earlier in the method")
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, Person submitter, Ontology ontology) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
@@ -370,16 +372,14 @@ public class DataIntegrationService {
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
         codingSheet.setDefaultOntology(ontology);
         codingSheet.setCategoryVariable(ontology.getCategoryVariable());
-
         codingSheet.setDescription(provider.getText(
                 "dataIntegrationService.generated_coding_sheet_description",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(), column.getDataTable()
-                        .getDataset()
-                        .getId(), codingSheet.getDateCreated())));
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(), column, column.getDataTable().getDataset().getTitle(),
+                        column.getDataTable().getDataset().getId(), codingSheet.getDateCreated())));
         genericDao.save(codingSheet);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
-        Set<CodingRule> rules = new HashSet<CodingRule>();
+        Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
             CodingRule rule = new CodingRule(codingSheet, dataValue);
@@ -450,11 +450,14 @@ public class DataIntegrationService {
                 dataTableColumns = table.getDataTableColumns();
             }
             for (DataTableColumn column : dataTableColumns) {
-                if (column.getDefaultOntology() != null) {
-                    if (!dataTableAutoMap.containsKey(column.getDefaultOntology())) {
-                        dataTableAutoMap.put(column.getDefaultOntology(), new ArrayList<DataTableColumn>());
+                Ontology ontology = column.getDefaultOntology();
+                if (ontology != null) {
+                    List<DataTableColumn> columns = dataTableAutoMap.get(ontology);
+                    if (columns == null) {
+                        columns = new ArrayList<>();
+                        dataTableAutoMap.put(ontology, columns);
                     }
-                    dataTableAutoMap.get(column.getDefaultOntology()).add(column);
+                    columns.add(column);
                 }
             }
         }
@@ -493,7 +496,7 @@ public class DataIntegrationService {
     public Map<Ontology, List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
         HashMap<Ontology, List<DataTable>> allOntologies = new HashMap<>();
         if (CollectionUtils.isEmpty(bookmarkedDataTables)) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         for (DataTable table : bookmarkedDataTables) {
             for (DataTableColumn column : table.getDataTableColumns()) {
@@ -510,9 +513,9 @@ public class DataIntegrationService {
         }
         if (showOnlyShared) {
             HashMap<Ontology, List<DataTable>> toReturn = new HashMap<>();
-            for (Entry<Ontology, List<DataTable>> entrySet : allOntologies.entrySet()) {
-                if (entrySet.getValue().size() == bookmarkedDataTables.size()) {
-                    toReturn.put(entrySet.getKey(), entrySet.getValue());
+            for (Entry<Ontology, List<DataTable>> entry : allOntologies.entrySet()) {
+                if (entry.getValue().size() == bookmarkedDataTables.size()) {
+                    toReturn.put(entry.getKey(), entry.getValue());
                 }
             }
             return toReturn;

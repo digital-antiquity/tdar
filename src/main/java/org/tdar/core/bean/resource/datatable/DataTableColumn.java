@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,8 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -332,14 +332,14 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValidForController() {
         // not implemented
         return true;
     }
 
     @Override
-    @JSONTransient
+    
     public boolean isValid() {
         List<Object> keys = new ArrayList<>();
         keys.add(getName());
@@ -385,20 +385,20 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
         logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
         return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
+                Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && Objects.equals(isMappingColumn(), column.isMappingColumn()));
     }
 
     @Transient
-    @JSONTransient
+    
     @XmlTransient
     public String getJsSimpleName() {
         return getName().replaceAll("[\\s\\,\"\']", "_");
     }
 
     public List<String> getMappedDataValues(OntologyNode node) {
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
-            if (ObjectUtils.equals(node, rule.getOntologyNode())) {
+            if (Objects.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }
         }

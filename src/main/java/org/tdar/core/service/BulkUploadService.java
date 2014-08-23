@@ -12,10 +12,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -35,6 +36,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
@@ -43,19 +45,20 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.bulk.BulkFileProxy;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
@@ -97,9 +100,6 @@ public class BulkUploadService {
     private FileAnalyzer analyzer;
 
     @Autowired
-    private XmlService xmlService;
-
-    @Autowired
     private ExcelService excelService;
 
     @Autowired
@@ -110,12 +110,15 @@ public class BulkUploadService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<Long, AsyncUpdateReceiver> asyncStatusMap;
+    private  Cache<Long, AsyncUpdateReceiver> asyncStatusMap;
     
     
     public BulkUploadService() {
-            MapMaker mapMaker = new MapMaker();
-            asyncStatusMap = mapMaker.weakKeys().makeMap();
+            asyncStatusMap = CacheBuilder.newBuilder()
+                    .concurrencyLevel(4)
+                    .maximumSize(100)
+                    .expireAfterWrite(10, TimeUnit.MINUTES)
+                    .build();
     }
     /**
      * The Save method needs to endpoints, one with the @Async annotation to
@@ -131,7 +134,7 @@ public class BulkUploadService {
     /**
      * Load the Excel manifest if it exists
      */
-    private BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, Person submitter, Collection<FileProxy> fileProxies,
+    private BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, TdarUser submitter, Collection<FileProxy> fileProxies,
             Long ticketId) {
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
@@ -148,7 +151,7 @@ public class BulkUploadService {
                 manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
                 if (Persistable.Base.isNotNullOrTransient(ticketId)) {
-                    getAsyncStatusMap().put(ticketId, manifestProxy.getAsyncUpdateReceiver());
+                    asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
                 }
             } finally {
                 if (stream != null) {
@@ -175,8 +178,8 @@ public class BulkUploadService {
     public void save(final InformationResource resourceTemplate_, final Long submitterId, final Long ticketId, final File excelManifest_, final Collection<FileProxy> fileProxies,
             final Long accountId) {
         genericDao.clearCurrentSession();
-        Person submitter = genericDao.find(Person.class, submitterId);
-        // enforce that we're entirely on the session
+        TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
+
         InformationResource resourceTemplate = resourceTemplate_;
         logger.debug("BEGIN ASYNC: " + resourceTemplate + fileProxies);
         // in an async method the image's persistent associations will have
@@ -201,8 +204,11 @@ public class BulkUploadService {
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
         BulkManifestProxy manifestProxy = loadExcelManifest(excelManifest, resourceTemplate, submitter, fileProxies, ticketId);
+
         // we're done with the template; get rid of it and its references off the session
         resourceTemplate = null;
+
+        // the manifest proxy might be null if no excel file was provided.
         if (manifestProxy == null) {
             manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
         }
@@ -210,6 +216,8 @@ public class BulkUploadService {
         // If there are errors, then stop...
         AsyncUpdateReceiver updateReciever = manifestProxy.getAsyncUpdateReceiver();
         List<String> asyncErrors = updateReciever.getAsyncErrors();
+
+        // fail if there are already errors in the validation of the excel template
         if (CollectionUtils.isNotEmpty(asyncErrors)) {
             logger.debug("not moving further because of async validation errors: {}", asyncErrors);
             completeBulkUpload(accountId, updateReciever, excelManifest, ticketId);
@@ -220,8 +228,8 @@ public class BulkUploadService {
         processFileProxiesIntoResources(manifestProxy);
 
         Collection<Resource> remainingResources =  manifestProxy.getResourcesCreated().values();
-        logger.info("bulk: applying manifest file data to resources");
-        updateAccountQuotas(accountId, manifestProxy.getResourcesCreated().values(), updateReciever);
+        logger.info("bulk: applying account: {}", accountId);
+        updateAccountQuotas(accountId, remainingResources, updateReciever);
 
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
         completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
@@ -231,10 +239,16 @@ public class BulkUploadService {
     }
     
     
-    private Long prepareTemplateAndBringSharedObjectsOnSession(Person authorizedUser, InformationResource resourceTemplate) {;
-        // account will be set by controller, but future calls to "merge" will not pass through and thus cause issues
-        // because account is a transient object on Resource. Same with shared collections, submitter, and projects. 
-        // calling merge now so we can only call it once. 
+    /**
+     * The account will be set by controller, but future calls to "merge" will not pass through and thus cause issues
+     *  because account is a transient object on Resource. Same with shared collections, submitter, and projects. 
+     *  calling merge now so we can only call it once. 
+     * @param authorizedUser
+     * @param resourceTemplate
+     * @return
+     */
+    private Long prepareTemplateAndBringSharedObjectsOnSession(TdarUser authorizedUser, InformationResource resourceTemplate) {;
+        // set the account to null as it is transient and not hibernate managed and thus, will not respond to merges.   
         resourceTemplate.setAccount(null);
 
         resourceTemplate.setDescription("");
@@ -298,20 +312,25 @@ public class BulkUploadService {
                     continue;
                 }
 
-                ActionMessageErrorListener listener = new ActionMessageErrorListener();
+                // get the resource we're working with
                 InformationResource informationResource = (InformationResource) manifestProxy.getResourcesCreated().get(fileName);
+
+                // remove it from the working map (so that we don't have to manage the reference (needed for thread issues)
                 manifestProxy.getResourcesCreated().put(fileName, null);
+                // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
                 informationResource = importService.reconcilePersistableChildBeans(manifestProxy.getSubmitter(), informationResource);
+                // merge everything onto session and persist  (needed for thread issues)
                 informationResource = genericDao.merge(informationResource);
-
                 genericDao.saveOrUpdate(informationResource);
-                informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, listener,
-                        Arrays.asList(fileProxy));
+                
+                // process files
+                ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, manifestProxy.getSubmitter(), null, Arrays.asList(fileProxy));
+                
+                // make sure we're up-to-date  (needed for thread issues)
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
-
                 manifestProxy.getResourcesCreated().put(fileName, informationResource);
                 manifestProxy.getAsyncUpdateReceiver().getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-                if (listener.hasActionErrors()) {
+                if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
                     manifestProxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
                 }
             } catch (Exception e) {
@@ -365,8 +384,6 @@ public class BulkUploadService {
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
     
                 try {
-                    xmlService.logRecordXmlToFilestore(resource);
-                    logger.debug("resource: {} {}", resource, resource.getResourceCollections());
                     cols.addAll(resource.getResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
                     resource.setReadyToIndex(true);
@@ -436,7 +453,7 @@ public class BulkUploadService {
      * @return
      */
     @Transactional(readOnly = true)
-    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource resourceTemplate, Person submitter, Collection<FileProxy> fileProxies, Long ticketId) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource resourceTemplate, TdarUser submitter, Collection<FileProxy> fileProxies, Long ticketId) {
 
         Iterator<Row> rowIterator = sheet.rowIterator();
 
@@ -444,7 +461,7 @@ public class BulkUploadService {
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
         BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService, reflectionService);
         if (Persistable.Base.isNotNullOrTransient(ticketId)) {
-            getAsyncStatusMap().put(ticketId, proxy.getAsyncUpdateReceiver());
+            asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
@@ -559,7 +576,6 @@ public class BulkUploadService {
      */
     private void createResourceAndAddToProxyList(final InformationResource image, final BulkManifestProxy proxy, String fileName,
             ResourceType suggestTypeForFile) {
-        ActionMessageErrorListener listener = new ActionMessageErrorListener();
         Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
         if (InformationResource.class.isAssignableFrom(resourceClass)) {
             logger.info("saving " + fileName + "..." + suggestTypeForFile);
@@ -570,9 +586,6 @@ public class BulkUploadService {
             informationResource.setDescription(" ");
 
             proxy.getResourcesCreated().put(fileName, informationResource);
-            if (listener.hasActionErrors()) {
-                proxy.getAsyncUpdateReceiver().addError(new Exception(String.format("Errors: %s", listener)));
-            }
         }
     }
 
@@ -593,10 +606,7 @@ public class BulkUploadService {
      * @return
      */
     public AsyncUpdateReceiver checkAsyncStatus(Long ticketId) {
-        return asyncStatusMap.get(ticketId);
+        return asyncStatusMap.getIfPresent(ticketId);
     }
 
-    public Map<Long, AsyncUpdateReceiver> getAsyncStatusMap() {
-        return asyncStatusMap;
-    }
 }

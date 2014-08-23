@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DisplayOrientation;
@@ -73,7 +74,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
-        addAuthuser("authorizedUsers[2].user.tempDisplayName", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
+        addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
                 "person-" + config.getUserId(),
                 permissions);
         submitForm();
@@ -87,7 +88,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
         gotoEdit(url);
+        WebElementSelection select = find(By.id("collection-selector"));
+        String id = url.substring(url.lastIndexOf("/") + 1);
+        select.val(id);
+        clearPageCache();
         Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));
+        clearPageCache();
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
         removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
@@ -184,10 +190,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.visible", visible.toString().toLowerCase());
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
                 + config.getEditorUserId(),
                 GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
                 + config.getAdminUserId(),
                 GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection(_139);
@@ -249,12 +255,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private void removeResourceFromCollection(String title) {
         boolean found = false;
-        WebElementSelection rows = find("#tblCollectionResources tr");
+        WebElementSelection rows = find("#resource_datatable tr");
         logger.debug("rows: {}", rows);
         for (WebElement tr : rows) {
             logger.debug(tr.getText());
             if (tr.getText().contains(title)) {
-                tr.findElement(By.tagName("button")).click();
+                WebElement findElement = tr.findElement(By.className("datatable-checkbox"));
+                Assert.assertTrue("checkbox should already be checked", findElement.isSelected());
+                findElement.click();
                 found = true;
                 break;
             }

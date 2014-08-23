@@ -25,7 +25,7 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
     @SuppressWarnings("deprecation")
     @Override
     @Actions({
-            @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = "freemarker",
+            @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = FREEMARKER,
                     location = "../../errors/access-denied.ftl") })
     })
     public String execute() {

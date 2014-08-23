@@ -87,7 +87,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public void assertEditPageForInputResult() {
         String url = internalPage.getUrl().toString();
-        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.action.*"));
+        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.*"));
     }
 
     public void fillOutRequiredfields(ResourceType resourceType) {

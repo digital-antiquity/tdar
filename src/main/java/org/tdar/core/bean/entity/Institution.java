@@ -2,7 +2,6 @@ package org.tdar.core.bean.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +20,9 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -58,9 +59,6 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     private static final long serialVersionUID = 892315581573902067L;
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "name", "url" };
-
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
     @Transient
@@ -69,6 +67,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
@@ -82,6 +81,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution parentInstitution;
 
     public Institution() {
@@ -142,17 +142,12 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return CreatorType.INSTITUTION;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
-    }
-
     public static String[] getIgnorePropertiesForUniqueness() {
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         return null;
     }
 

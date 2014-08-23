@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -194,14 +194,27 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      */
     protected String getEmailToNotify(Archive archive) {
         String result = null;
-        if (archive.getUpdatedBy() != null) {
-            result = archive.getUpdatedBy().getEmail();
+        
+        // First try the person who submitted the archive
+        if (archive.getSubmitter() != null) {
+            result = archive.getSubmitter().getEmail();
         }
+        
+        // Then the person who updated it
+        if (StringUtils.isEmpty(result)) {
+            if (archive.getUpdatedBy() != null) {
+                result = archive.getUpdatedBy().getEmail();
+            }
+        }
+        
+        // Then the person who uploaded it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUploader() != null) {
                 result = archive.getUploader().getEmail();
             }
         }
+        
+        // Finally the administrator.
         if (StringUtils.isEmpty(result)) {
             // this should never be null, hopefully...
             result = TdarConfiguration.getInstance().getSystemAdminEmail();

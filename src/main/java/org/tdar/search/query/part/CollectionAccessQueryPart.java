@@ -1,6 +1,6 @@
 package org.tdar.search.query.part;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
 
     @Override
     public String getDescriptionHtml(TextProvider provider) {
-        return StringEscapeUtils.escapeHtml(getDescription(provider));
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override

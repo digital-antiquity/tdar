@@ -386,7 +386,7 @@ TDAR.autocomplete = (function () {
                 $elem.data('responseHolder', responseHolder);
 
                 var ajaxRequest = {
-                    url: getBaseURI() + options.url,
+                    url: TDAR.uri() + options.url,
                     dataType: "jsonp",
                     data: requestData,
                     success: function (data) {
@@ -504,7 +504,7 @@ TDAR.autocomplete = (function () {
                 var $parentElem = $(parentid);
                 var id = $parentElem.find("input[type=hidden]").first().val();
                 if (id === "-1") {
-                    cache.register(parentElem[0]);
+                    cache.register($parentElem[0]);
                 }
             });
         });
@@ -647,16 +647,10 @@ TDAR.autocomplete = (function () {
         options.customDisplayMap = _displayResourceAutocomplete;
         options.customRender = function (ul, item) {
             var description = "";
-            //            console.log(item);
             if (item.description != undefined) {
                 description = item.description;
             }
             var link = "";
-            if (item.urlNamespace) {
-                // link = "<b onClick=\"openWindow('"+ getBaseURI() +
-                // item.urlNamespace + "/view/" + item.id +"\')\">view</b>";
-            }
-            //double-encode on custom render
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
         };
 
@@ -804,6 +798,7 @@ TDAR.autocomplete = (function () {
         objectFromAutocompleteParent: _objectFromAutocompleteParent,
         "delegateCreator": _delegateCreator,
         "delegateAnnotationKey": _delegateAnnotationKey,
-        "delegateKeyword": _delegateKeyword
+        "delegateKeyword": _delegateKeyword,
+        "buildRequestData": _buildRequestData
     };
 })();

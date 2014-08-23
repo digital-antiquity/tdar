@@ -3,8 +3,8 @@ package org.tdar.search.query.part;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.search.query.QueryFieldNames;
@@ -27,11 +27,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
-                fns.add(pers.getFirstName());
+                fns.add(pers.getFirstName().trim());
                 hasName = true;
             }
             if (StringUtils.isNotBlank(pers.getLastName())) {
-                lns.add(pers.getLastName());
+                lns.add(pers.getLastName().trim());
                 hasName = true;
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {

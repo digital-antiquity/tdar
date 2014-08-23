@@ -2,17 +2,19 @@ package org.tdar.core.service.resource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -25,6 +27,8 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.XmlService;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
  * $Id$
@@ -47,6 +51,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Autowired
     private ObfuscationService obfuscationService;
 
+    @Autowired
+    private XmlService xmlService;
+
     /**
      * Find @link Project resources by their submitter (@link Person).
      * 
@@ -54,7 +61,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Project> findBySubmitter(Person submitter) {
+    public List<Project> findBySubmitter(TdarUser submitter) {
         if (submitter == null) {
             getLogger().warn("Trying to find projects for a null Person submitter, ignoring.");
             return Collections.emptyList();
@@ -171,20 +178,21 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().containsIntegratableDatasets(projectIds);
     }
 
-    public String getProjectAsJson(Project project, Person user) {
+    public String getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
-        String json = "{}";
+        Object result = new HashMap<String, Object>();
+
         try {
-            if ((project == null) || project.isTransient()) {
+            if (Persistable.Base.isNotNullOrTransient(project)) {
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
-                return json;
+                // obfuscationService.obfuscate(project, user);
+                result = project;
+            } else {
+                result = Project.NULL;
             }
-//            obfuscationService.obfuscate(project, user);
-            json = project.toJSON().toString();
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }
-        getLogger().trace("returning json:" + json);
-        return json;
+        return xmlService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
 }

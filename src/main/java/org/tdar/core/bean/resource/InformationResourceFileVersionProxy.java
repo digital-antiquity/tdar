@@ -4,16 +4,21 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +32,9 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Immutable
-@Subselect(value = "select * from information_resource_file_version")
+@Table(name = "information_resource_file_version")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
 public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -68,6 +75,7 @@ public class InformationResourceFileVersionProxy implements Serializable {
     private String checksumType;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(name = "file_type")

@@ -11,7 +11,6 @@ import static org.tdar.web.functional.WebMatchers.visible;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 
 /**
@@ -23,24 +22,16 @@ public class ContextualSeachSeleniumITCase extends AbstractSeleniumWebITCase {
     public static final String COLLECTION_ID = "1575";
     public static final String COLLECTION_QUERY = "sample video";
     public static final String PROJECT_QUERY = "Archaeology";
-    private Dimension originalSize;
-    private Dimension testSize = new Dimension(1024, 768);
 
     @Before
     public void setupContextSearch() {
-        Dimension size2 = driver.manage().window().getSize();
-        if (size2 != testSize) {
-            originalSize = size2;
-        }
-        driver.manage().window().setSize(testSize);
+        force1024x768();
         reindexOnce();
     }
 
     @After
-    public void resetSize() {
-        if (originalSize != null) {
-            driver.manage().window().setSize(originalSize);
-        }
+    public void cleanup() {
+        resetSize();
     }
 
     @Test

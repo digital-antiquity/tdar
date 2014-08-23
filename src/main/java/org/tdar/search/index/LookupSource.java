@@ -1,12 +1,13 @@
 package org.tdar.search.index;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -30,7 +31,7 @@ import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
 public enum LookupSource implements HasLabel, Localizable {
-    PERSON("people", Person.class),
+    PERSON("people", Person.class, TdarUser.class),
     INSTITUTION("institutions", Institution.class),
     KEYWORD("items", CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class, OtherKeyword.class, TemporalKeyword.class,
             SiteNameKeyword.class, SiteTypeKeyword.class),
@@ -39,7 +40,7 @@ public enum LookupSource implements HasLabel, Localizable {
     COLLECTION("collections", ResourceCollection.class);
 
     private String collectionName;
-    private Class<? extends Indexable> classes[];
+    private Class<? extends Indexable>[] classes;
 
     private LookupSource(String name, Class<? extends Indexable>... classes) {
         this.collectionName = name;
@@ -48,7 +49,7 @@ public enum LookupSource implements HasLabel, Localizable {
 
     @Override
     public String getLabel() {
-        return this.collectionName;
+        return collectionName;
     }
 
     @Override
@@ -57,7 +58,7 @@ public enum LookupSource implements HasLabel, Localizable {
     }
 
     public String getCollectionName() {
-        return this.collectionName;
+        return collectionName;
     }
 
     public String getProper() {

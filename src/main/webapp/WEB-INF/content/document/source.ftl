@@ -20,6 +20,7 @@
     Adding a source citation to the information resource entitled: <span class='highlight'>${linkedInformationResource.title}</span>
 </p>
     <@s.form id='selectResourceTypeForm' method='post' action='add'>
+        <@s.token name='struts.csrf.token' />
         <@s.hidden name='linkedResourceId' value='${linkedInformationResource.id}'/>
         <@s.hidden name='linkType' value='source'/>
         <@s.select labelposition='left' label='Document type' id='documentTypeId' name='documentType' emptyOption='true' listValue="label" list='%{documentTypes}' />

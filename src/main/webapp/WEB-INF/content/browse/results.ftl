@@ -8,14 +8,6 @@
 <head>
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
-    <style>
-        /
-        /
-        ul.resource-list {
-            list-style: none;
-            margin-left: 0px !important
-        }
-    </style>
 
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
@@ -116,7 +108,7 @@
             <#if showBasicInfo >
                 <table class='tableFormat table'>
                     <#assign registered = false />
-                    <#if creator.registered?has_content>
+                    <#if (creator.registered)?has_content>
                         <#assign registered = creator.registered>
                     </#if>
                     <#if showAdminInfo>
@@ -135,7 +127,7 @@
                         </td>
                         <td>
                             <#if showAdminInfo>
-                            <#if creator.lastLogin?has_content>
+                            <#if (creator.lastLogin)?has_content>
                                 <@_datefield "Last Login"  creator.lastLogin />
                             <#else>
                                 <@_textfield "Last Login"  "No record" />
@@ -188,19 +180,21 @@
                         </td>
                     </tr>
                 </table>
-                <h3>Future Contact Information</h3>
-                <#if creator.proxyInstitution?has_content>
-                    <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
-                <#else>
-                    None Specified
+                <#if (editor || id == authenticatedUser.id) >
+                    <h3>Future Contact Information</h3>
+                    <p>The institution or person that should be contacted in the future about draft, or confidential materials you have uploaded if you are un-reachable <i>(edit profile to add or modify)</i><p>
+                    <#if creator.proxyInstitution?has_content>
+                        <a href="<@s.url value="/browse/creators/${creator.proxyInstitution.id?c}"/>">${creator.proxyInstitution}</a>
+                    <#else>
+                        None Specified
+                    </#if>
+                    <p>${creator.proxyNote!""}</p>
                 </#if>
-                <p>${creator.proxyNote!""}</p>
-
 
                 <@common.resourceUsageInfo />
                 <#if (editor || id == authenticatedUser.id) >
 
-                    <#if creator.registered >
+                    <#if creator.registered?? >
                         <div class="row">
                             <div class="span6">
                                 <@common.billingAccountList accounts />

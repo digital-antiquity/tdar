@@ -4,9 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.opensymphony.xwork2.Preparable;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -16,7 +23,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -26,12 +32,19 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.Pair;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$
@@ -45,10 +58,24 @@ import org.tdar.utils.Pair;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
-public class WorkspaceController extends AuthenticationAware.Base {
+public class WorkspaceController extends AuthenticationAware.Base implements Preparable{
 
     private static final long serialVersionUID = -3538370664425794045L;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
+    @Autowired
+    private transient DataIntegrationService dataIntegrationService;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient PersonalFilestoreService filestoreService;
+    
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;
     private List<IntegrationColumn> integrationColumns;
@@ -58,8 +85,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     private Long ticketId;
 
-    @Autowired
-    private transient PersonalFilestoreService filestoreService;
     private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
     private long integrationDataResultsContentLength;
@@ -75,7 +100,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-        Map<Ontology, List<DataTable>> suggestions = getDataIntegrationService().getIntegrationSuggestions(getBookmarkedDataTables(), false);
+        Map<Ontology, List<DataTable>> suggestions = dataIntegrationService.getIntegrationSuggestions(getBookmarkedDataTables(), false);
         setSharedOntologies(suggestions.keySet());
         // in the future we could use the Map to prompt the user with suggestions
         return SUCCESS;
@@ -87,13 +112,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     @Result(name = SUCCESS, location = "select-columns.ftl"),
                     @Result(name = INPUT, location = "select-tables.ftl")
             })
+    @PostOnly
     public String selectColumns() {
         // FIXME: do we want to log this step? Perhaps, but there's no resource being modified, and resource parameter isn't nullable.
         if (CollectionUtils.isEmpty(tableIds)) {
             addActionError(getText("workspaceController.selectTables"));
             return INPUT;
         }
-        setSharedOntologies(getDataIntegrationService().getIntegrationSuggestions(getSelectedDataTables(), true).keySet());
+        setSharedOntologies(dataIntegrationService.getIntegrationSuggestions(getSelectedDataTables(), true).keySet());
         return SUCCESS;
     }
 
@@ -112,15 +138,12 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     @Result(name = SUCCESS, location = "filter.ftl"),
                     @Result(name = INPUT, location = "select-columns.ftl")
             })
+    @PostOnly
     public String filterDataValues() {
         try {
             // each column could have its own distinct ontology in the future. at the moment we assume that
             // each pair of columns has a shared common ontology
             getLogger().debug("integration columns: {}", getIntegrationColumns());
-
-            getLogger().debug("prepare integrationColumns(before):{}", integrationColumns);
-            cleanupIntegrationColumns();
-            getLogger().debug("prepare integrationColumns (after):{}", integrationColumns);
 
             for (IntegrationColumn integrationColumn : getIntegrationColumns()) {
                 if (integrationColumn.isDisplayColumn()) {
@@ -143,12 +166,12 @@ public class WorkspaceController extends AuthenticationAware.Base {
                         integrationColumn.setSharedOntology(defaultOntology);
                     }
 
-                    getDataIntegrationService().updateMappedCodingRules(column);
+                    dataIntegrationService.updateMappedCodingRules(column);
                 }
             }
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace("intermediate: {}",
-                        getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
+                        dataIntegrationService.serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
             }
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
@@ -162,13 +185,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     @Result(name = SUCCESS, location = "display-filtered-results.ftl"),
                     @Result(name = INPUT, location = "filter.ftl")
             })
+    @PostOnly
     public String displayFilteredResults() {
         getLogger().trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         String integrationContextXml = "";
         try {
-            integrationContextXml = getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(),
+            integrationContextXml = dataIntegrationService.serializeIntegrationContext(getIntegrationColumns(),
                     getGenericService().merge(getAuthenticatedUser()));
-            logResourceModification(null, "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
+                resourceService.logResourceModification(null, getAuthenticatedUser(), "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
         } catch (Exception e) {
             getLogger().error("could not serialize to XML", e);
         }
@@ -186,11 +210,11 @@ public class WorkspaceController extends AuthenticationAware.Base {
             // }
             //
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData =
-                    getDataIntegrationService().generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
+                    dataIntegrationService.generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
 
             integrationDataResults = generatedIntegrationData.getFirst();
             setPivotData(generatedIntegrationData.getSecond());
-            PersonalFilestoreTicket ticket = getDataIntegrationService().toExcel(this, getIntegrationColumns(), generatedIntegrationData,
+            PersonalFilestoreTicket ticket = dataIntegrationService.toExcel(this, getIntegrationColumns(), generatedIntegrationData,
                     getAuthenticatedUser());
             File file = File.createTempFile("integration", ".xml");
             FileUtils.writeStringToFile(file, integrationContextXml);
@@ -234,12 +258,12 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
                     Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
         for (Resource res : bookmarkedResources) {
-            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
+            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
         }
         return bookmarkedResources;
     }
@@ -273,7 +297,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<DataTable> getSelectedDataTables() {
         if (selectedDataTables == null) {
-            selectedDataTables = getDataTableService().findAll(tableIds);
+            selectedDataTables = getGenericService().findAll(DataTable.class, tableIds);
         }
         return selectedDataTables;
     }
@@ -295,7 +319,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     }
 
     public List<List<DataTableColumn>> getDataTableColumnIntegrationSuggestions() {
-        return getDataIntegrationService().getIntegrationColumnSuggestions(getSelectedDataTables());
+        return dataIntegrationService.getIntegrationColumnSuggestions(getSelectedDataTables());
     }
 
     /**
@@ -325,10 +349,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
     }
 
     /**
-     * Remove null items from the integrationColumns list as well as the integrationColumn.columns lists
-     *
-     * As struts populates the object graph for integration columns, it may have introduced null list items (both in the integrationColumns list, and
-     * potentially in the individual integrationColumns[].columns list).
+     * Remove null items from the integrationColumns list as well as the integrationColumn.columns lists. As struts populates the object graph for integration
+     * columns, it may have introduced null list items.
      */
     private void cleanupIntegrationColumns() {
         Iterator<IntegrationColumn> iterator = getIntegrationColumns().iterator();
@@ -364,9 +386,9 @@ public class WorkspaceController extends AuthenticationAware.Base {
     }
 
     //ensure that the integration columns are cleaned up prior to executing an action
-//    public void prepare() {
-//        getLogger().debug("prepare integrationColumns(before):{}", integrationColumns);
-//        cleanupIntegrationColumns();
-//        getLogger().debug("prepare integrationColumns (after):{}", integrationColumns);
-//    }
+    public void prepare() {
+        getLogger().trace("prepare integrationColumns(before):{}", integrationColumns);
+        cleanupIntegrationColumns();
+        getLogger().trace("prepare integrationColumns (after):{}", integrationColumns);
+    }
 }

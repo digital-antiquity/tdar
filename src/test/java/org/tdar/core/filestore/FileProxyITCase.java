@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
@@ -131,7 +130,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
         String deletedFilename = controller.getFileProxies().get(0).getFilename();
         // replace the confidential file
@@ -191,7 +191,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
 
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
@@ -234,16 +235,4 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         return document;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

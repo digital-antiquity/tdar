@@ -1,5 +1,8 @@
 package org.tdar.struts.interceptor;
 
+import java.lang.reflect.Method;
+import java.util.WeakHashMap;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
@@ -7,12 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.UserAgreementController;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
@@ -42,16 +47,21 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final WeakHashMap<Class<?>, RequiresTdarUserGroup> requiredGroupClassCache = new WeakHashMap<>();
+    private final WeakHashMap<Method, RequiresTdarUserGroup> requiredGroupMethodCache = new WeakHashMap<>();
+
     @Autowired
-    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    private transient AuthenticationService authenticationService;
     // A Spring AOP session scoped proxy is injected here that retrieves the appropriate SessionData bound to the HTTP Session.
     private SessionData sessionData;
 
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+    public AuthorizationService getAuthenticationAndAuthorizationService() {
         return authenticationAndAuthorizationService;
     }
 
-    public void setAuthenticationAndAuthorizationService(AuthenticationAndAuthorizationService authenticationService) {
+    public void setAuthenticationAndAuthorizationService(AuthorizationService authenticationService) {
         this.authenticationAndAuthorizationService = authenticationService;
     }
 
@@ -69,6 +79,31 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         // we don't do anything here, yet...
     }
 
+    private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Class<?> clazz) {
+        return checkAndUpdateCache(clazz, requiredGroupClassCache);
+    }
+
+    private RequiresTdarUserGroup getRequiresTdarUserGroupAnnotation(Method method) {
+        return checkAndUpdateCache(method, requiredGroupMethodCache);
+    }
+
+    private <K> RequiresTdarUserGroup checkAndUpdateCache(K key, WeakHashMap<K, RequiresTdarUserGroup> cache) {
+        synchronized (cache) {
+            if (cache.containsKey(key)) {
+                return cache.get(key);
+            }
+            RequiresTdarUserGroup requiredGroup = null;
+            if (key instanceof Method) {
+                requiredGroup = AnnotationUtils.findAnnotation((Method) key, RequiresTdarUserGroup.class);
+            }
+            else if (key instanceof Class<?>) {
+                requiredGroup = AnnotationUtils.findAnnotation((Class<?>) key, RequiresTdarUserGroup.class);
+            }
+            cache.put(key, requiredGroup);
+            return requiredGroup;
+        }
+    }
+
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         SessionData sessionData = getSessionData();
@@ -78,11 +113,13 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         if (methodName == null) {
             methodName = "execute";
         }
+        Method method = action.getClass().getMethod(methodName);
         if (sessionData.isAuthenticated()) {
+            // FIXME: consider caching these in a local Map
             // check for group authorization
-            RequiresTdarUserGroup classLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass(), RequiresTdarUserGroup.class);
-            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName),
-                    RequiresTdarUserGroup.class);
+            RequiresTdarUserGroup classLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(action.getClass());
+            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = getRequiresTdarUserGroupAnnotation(method);
+
             TdarGroup group = TdarGroup.TDAR_USERS;
             if (methodLevelRequiresGroupAnnotation != null) {
                 group = methodLevelRequiresGroupAnnotation.value();
@@ -90,34 +127,22 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             else if (classLevelRequiresGroupAnnotation != null) {
                 group = classLevelRequiresGroupAnnotation.value();
             }
-            Person user = sessionData.getPerson();
+            TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
             if (getAuthenticationAndAuthorizationService().isMember(user, group)) {
                 // user is authenticated and authorized to perform requested action
-                return interceptPendingNotices(invocation, user);
+                return invocation.invoke();
             }
             logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, user,
                     group));
             return TdarActionSupport.UNAUTHORIZED;
         }
+
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
+            return "forbidden-status-only";
+        }
+
         setReturnUrl(invocation);
         return Action.LOGIN;
-    }
-
-    private String interceptPendingNotices(ActionInvocation invocation, Person user) throws Exception {
-
-        Object action = invocation.getAction();
-        // user is authenticated and authorized to perform requested action.
-        // now we check for any outstanding notices require user attention
-        String result = null;
-        if (authenticationAndAuthorizationService.userHasPendingRequirements(user)
-                // avoid infinite redirect
-                && !(action instanceof UserAgreementController)) {
-            logger.info("user: {} has pending agreements", user);
-            result = TdarActionSupport.USER_AGREEMENT;
-        } else {
-            result = invocation.invoke();
-        }
-        return result;
     }
 
     protected void setReturnUrl(ActionInvocation invocation) {

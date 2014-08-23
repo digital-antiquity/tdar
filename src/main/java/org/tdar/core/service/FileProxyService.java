@@ -8,7 +8,7 @@ import java.util.ListIterator;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +89,7 @@ public class FileProxyService {
             if (proxy == null) {
                 logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
                 proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
+                proxy.setCreatedByServer(true);
                 finalProxyList.add(proxy);
             }
             proxy.setFile(file);

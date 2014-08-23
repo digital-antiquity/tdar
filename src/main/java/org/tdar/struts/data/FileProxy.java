@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
@@ -45,6 +45,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private Integer sequenceNumber = 0;
     private String description;
     private Date fileCreatedDate;
+    // used to help distinguish between user managed proxies and those that may have been created to work around an error
+    private boolean createdByServer = false;
     private InformationResourceFile informationResourceFile;
     private InformationResourceFileVersion informationResourceFileVersion;
 
@@ -279,6 +281,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
             return true;
         }
         return false;
+    }
+
+    public boolean isCreatedByServer() {
+        return createdByServer;
+    }
+
+    public void setCreatedByServer(boolean createdByServer) {
+        this.createdByServer = createdByServer;
     }
 
 }

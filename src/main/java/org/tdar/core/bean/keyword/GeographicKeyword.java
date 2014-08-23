@@ -3,6 +3,7 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.FieldLength;
 
@@ -31,14 +35,16 @@ import org.tdar.core.bean.FieldLength;
 @Entity
 @Table(name = "geographic_keyword")
 @Indexed(index = "Keyword")
+@Check(constraints="label <> ''")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.GeographicKeyword")
+@Cacheable
 public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;
 
-    public static final String INHERITANCE_TOGGLE = "inheriting_spatial_information";
-
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();
 
     public enum Level {

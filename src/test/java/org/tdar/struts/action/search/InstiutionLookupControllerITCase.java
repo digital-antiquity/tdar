@@ -32,7 +32,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionAlone() {
-        Person person = new Person("a test", "person", "");
+        Person person = new Person("a test", "person", null);
         Institution inst = new Institution("TQF");
         genericService.saveOrUpdate(person);
         person.setInstitution(inst);

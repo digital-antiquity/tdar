@@ -21,7 +21,7 @@ public class NonTokenizingAutocompleteAnalyzer extends Analyzer {
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
         KeywordTokenizer et = new KeywordTokenizer(reader);
-        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_35, et);
+        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_36, et);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
         return filter;
     }

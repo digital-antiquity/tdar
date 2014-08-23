@@ -5,6 +5,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * A compressed archive. From FAIMS, the hope is that it will be unpacked and its constituent parts imported as separate documents.
@@ -55,9 +56,22 @@ public class Archive extends InformationResource {
         result.setProject(this.getProject());
         result.setImportDone(this.importdone);
         result.setDoImportContent(this.doImportContent);
+        result.setSubmitter(getCopyOf(this.getSubmitter()));
+        result.setUpdatedBy(getCopyOf(this.getUpdatedBy()));
+        result.setUploader(getCopyOf(this.getUploader()));
         return result;
     }
-
+    
+    @SuppressWarnings("static-method")
+    private TdarUser getCopyOf(final TdarUser source) {
+        if (source == null) {
+            return null;
+        }
+        TdarUser target = new TdarUser(source.getFirstName(), source.getLastName(), source.getEmail());
+        target.setId(source.getId());
+        return target;
+    }
+    
     @Override
     public void updateFromTransientResource(InformationResource transientResource) {
         if (transientResource == null) {

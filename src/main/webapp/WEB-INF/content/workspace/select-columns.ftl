@@ -1,67 +1,9 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-<head>
-    <style type="text/css">
 
-        .drg {
-        / / z-index : 50000 !important;
-        }
-
-        .showhide {
-            display: inline;
-            font-size: 80%;
-            right: 0px;
-        }
-
-        .collapse {
-            overflow: visible !important;
-        }
-
-        .fixed {
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-            border: 1px solid #AAA;
-            background-color: #DEDEDE;
-            padding: 4px;
-            margin: 0px;
-            opacity: .95;
-        }
-
-        .buttontable .integrationTableNumber {
-            display: none;
-            visibility: hidden;
-        }
-
-        .integrationColumn div[table] .ontology {
-            display: none !important;
-        }
-
-        .status {
-            color: #660033;
-            font-weight: bold;
-        }
-
-        #drplist {
-            border: 1px solid #ccc;
-        }
-
-
-        .addAnother {
-            margin-left: 1em !important;
-            font-weight: bold;
-        }
-
-        .addAnother img {
-            bottom: 2px !important;
-            position: relative !important;
-        }
-    </style>
-
-</head>
-
-<body>
+<body class="select-columns">
     <@s.form name='selectDTColForm' method='post' action='filter' id="selectDTColForm">
+        <@s.token name='struts.csrf.token' />
 
     <h3>Data Integration</h3>
 
@@ -92,9 +34,9 @@
             <h4>Each Column Below will be a Column In Excel</h4>
             <div class="btn-group pull-right">
                 <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add Column</span>
-                <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
+                <span class="btn <#if (sharedOntologies?size > 0)>disabled</#if>" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
                 <div class="btn-group">
-                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                      <a class="btn dropdown-toggle <#if (sharedOntologies?size > 0)>disabled</#if>" data-toggle="dropdown" href="#">
                         Add Integration Column
                         <span class="caret"></span>
                       </a>

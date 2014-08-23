@@ -5,11 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -17,6 +19,7 @@ import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -31,12 +34,15 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     private Map<String, String> docValMap = new HashMap<String, String>();
 
     public EditInheritingSectionsWebITCase() {
-        for (String inherit : InformationResource.JSON_PROPERTIES) {
-            if (inherit.equals("inheritingCollectionInformation")) {
-                // not on project page
-                continue;
+        for (Field f : InformationResource.class.getDeclaredFields()) {
+            if (f.getName().contains("inheriting")) {
+                String inherit = f.getName();
+                if (inherit.equals("inheritingCollectionInformation")) {
+                    // not on project page
+                    continue;
+                }
+                docValMap.put("resource." + inherit, "true");
             }
-            docValMap.put("resource." + inherit, "true");
         }
     }
 
@@ -78,6 +84,8 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     @Test
     @Rollback(true)
     public void testProjectJson() {
+        Set<CultureKeyword> cultureKeywords = projectService.find(PARENT_PROJECT_ID).getCultureKeywords();
+        logger.debug("cultureKeywords: {}", cultureKeywords);
         gotoPageWithoutErrorCheck("/project/" + PARENT_PROJECT_ID + "/json");
         String json = getPageCode();
         logger.debug("page json:" + json);
@@ -88,7 +96,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
         }
         long actualId = jsonObj.getLong("id");
         assertEquals(PARENT_PROJECT_ID, actualId);
-        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "cultureKeywords");
+        testKeywords(PARENT_PROJECT_CULTURE_KEYWORDS, jsonObj, "activeCultureKeywords");
 
     }
 

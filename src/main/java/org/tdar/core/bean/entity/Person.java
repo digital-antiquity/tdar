@@ -1,30 +1,25 @@
 package org.tdar.core.bean.entity;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Type;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Check;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -40,10 +35,11 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -56,40 +52,25 @@ import org.tdar.search.query.QueryFieldNames;
  */
 @Entity
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
-// FIXME: not able to create index 'person_lc' (lower(first_name), lower(last_name), id) with annotations.
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
+@Check(constraints = "email <> ''")
 public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
-
-    @Transient
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
-            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms", "occurrence",
-            "proxyInstitution", "proxyNote" };
-
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "merge_creator_id")
-    private Set<Person> synonyms = new HashSet<Person>();
 
     private static final long serialVersionUID = -3863573773250268081L;
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered",
-            "tempDisplayName" };
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated",
+            "emailPublic", "phonePublic", "status", "synonyms", "occurrence" };
 
     @Transient
-    private transient String tempDisplayName;
-
-    public Person() {
-    }
-
-    public Person(String firstName, String lastName, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-    }
-
     private transient String wildcardName;
 
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "merge_creator_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private Set<Person> synonyms = new HashSet<>();
+
+    @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
@@ -102,21 +83,19 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String firstName;
 
+    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
     @Column(name = "orcid_id")
     private String orcidId;
-    // http://support.orcid.org/knowledgebase/articles/116780-structure-of-the-orcid-identifier
 
     @Column(unique = true, nullable = true)
     @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String email;
-
-    @Column(unique = true, nullable = true)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
-    private String username;
 
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
@@ -124,50 +103,10 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
+    @JsonView(JsonLookupFilter.class)
     private Institution institution;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
-    /* who to contact when owner is no longer 'reachable' */
-    private Institution proxyInstitution;
-
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "proxy_note")
-    private String proxyNote;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_login")
-    private Date lastLogin;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "affilliation", length = FieldLength.FIELD_LENGTH_255)
-    @Field(norms = Norms.NO, store = Store.YES)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
-    private UserAffiliation affilliation;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "penultimate_login")
-    private Date penultimateLogin;
-
-    @Column(name = "total_login")
-    private Long totalLogins = 0l;
-
-    // can this user contribute resources?
-    @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
-    private Boolean contributor = Boolean.FALSE;
-
-    @Column(name = "contributor_reason", length = FieldLength.FIELD_LENGTH_512)
-    @Length(max = FieldLength.FIELD_LENGTH_512)
-    private String contributorReason;
-
-    // did this user register with the system or were they entered by someone
-    // else?
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    private boolean registered = false;
-
-    // rpanet.org number (if applicable - using String since I'm not sure if
-    // it's in numeric format)
+    // rpanet.org "number"
     @Column(name = "rpa_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String rpaNumber;
@@ -178,16 +117,14 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
     private Boolean phonePublic = Boolean.FALSE;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-    private Set<BookmarkedResource> bookmarkedResources;
+    public Person() {
+    }
 
-    // version of the latest TOS that the user has accepted
-    @Column(name = "tos_version", nullable = false, columnDefinition = "int default 0")
-    private Integer tosVersion = 0;
-
-    // version of the latest Creator Agreement that the user has accepted
-    @Column(name = "contributor_agreement_version", nullable = false, columnDefinition = "int default 0")
-    private Integer contributorAgreementVersion = 0;
+    public Person(String firstName, String lastName, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+    }
 
     /**
      * Returns the person's name in [last name, first name] format.
@@ -196,12 +133,13 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      */
     @Override
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return lastName + ", " + firstName;
     }
 
     @Override
-    @Transient
+    @JsonView(JsonLookupFilter.class)
     public String getProperName() {
         return firstName + " " + lastName;
     }
@@ -302,10 +240,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public String toString() {
-        if ((institution != null) && !StringUtils.isBlank(institution.toString())) {
-            return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
-        }
-        return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
+        Institution i = getInstitution();
+        String institutionName = (i != null && StringUtils.isNotBlank(i.toString())) ? i.toString() : "No institution specified.";
+        return String.format("%s [%s | %s | %s]", getName(), getId(), email, institutionName);
     }
 
     /**
@@ -327,37 +264,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return comparison;
     }
 
-    public Boolean getContributor() {
-        return contributor;
-    }
-
-    public void setContributor(Boolean contributor) {
-        this.contributor = contributor;
-    }
-
-    public boolean isRegistered() {
-        return registered;
-    }
-
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-    }
-
     public String getRpaNumber() {
         return rpaNumber;
     }
 
     public void setRpaNumber(String rpaNumber) {
         this.rpaNumber = rpaNumber;
-    }
-
-    @XmlTransient
-    public String getContributorReason() {
-        return contributorReason;
-    }
-
-    public void setContributorReason(String contributorReason) {
-        this.contributorReason = contributorReason;
     }
 
     public String getPhone() {
@@ -372,22 +284,8 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return phonePublic;
     }
 
-    public void setPhonePublic(Boolean toggle) {
-        this.phonePublic = toggle;
-    }
-
-    @XmlTransient
-    public Set<BookmarkedResource> getBookmarkedResources() {
-        return bookmarkedResources;
-    }
-
-    public void setBookmarkedResources(Set<BookmarkedResource> bookmarkedResources) {
-        this.bookmarkedResources = bookmarkedResources;
-    }
-
-    @Override
-    public String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
+    public void setPhonePublic(Boolean phonePublic) {
+        this.phonePublic = phonePublic;
     }
 
     @Override
@@ -407,39 +305,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @Override
     public boolean isDedupable() {
-        return !isRegistered();
-    }
-
-    public Long getTotalLogins() {
-        if (totalLogins == null) {
-            return 0L;
-        }
-        return totalLogins;
-    }
-
-    public void setTotalLogins(Long totalLogins) {
-        this.totalLogins = totalLogins;
-    }
-
-    public Date getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(Date lastLogin) {
-        this.penultimateLogin = this.lastLogin;
-        this.lastLogin = lastLogin;
-    }
-
-    public void incrementLoginCount() {
-        totalLogins = getTotalLogins() + 1;
-    }
-
-    public Date getPenultimateLogin() {
-        return penultimateLogin;
-    }
-
-    public void setPenultimateLogin(Date penultimateLogin) {
-        this.penultimateLogin = penultimateLogin;
+        return true;
     }
 
     public static String[] getIgnorePropertiesForUniqueness() {
@@ -447,10 +313,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         setObfuscated(true);
         setObfuscatedObjectDifferent(false);
         // check if email and phone are actually confidential
+        Set<Obfuscatable> set = new HashSet<>();
         if (!getEmailPublic()) {
             setEmail(null);
             setObfuscatedObjectDifferent(true);
@@ -459,13 +326,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
             setObfuscatedObjectDifferent(true);
             setPhone(null);
         }
-        setRegistered(false);
-        setContributor(false);
         setRpaNumber(null);
-        setLastLogin(null);
-        setPenultimateLogin(null);
-        setTotalLogins(null);
-        return Arrays.asList((Obfuscatable) getInstitution());
+        set.add(getInstitution());
+        return set;
     }
 
     @Override
@@ -476,24 +339,17 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     @Transient
     @Override
     public boolean hasNoPersistableValues() {
-        if (StringUtils.isBlank(email) && ((institution == null) || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
-                StringUtils.isBlank(firstName) && Persistable.Base.isNullOrTransient(getId())) {
-            return true;
-        }
-        return false;
+        Institution i = getInstitution();
+        return StringUtils.isBlank(email)
+                && ((i == null) || StringUtils.isBlank(i.getName()))
+                && StringUtils.isBlank(lastName)
+                && StringUtils.isBlank(firstName)
+                && Persistable.Base.isNullOrTransient(getId());
     }
 
     @Override
     public boolean isValid() {
         return isValidForController() && (getId() != null);
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     @Override
@@ -505,7 +361,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.synonyms = synonyms;
     }
 
-    @Transient
     @XmlTransient
     public String getWildcardName() {
         return wildcardName;
@@ -522,84 +377,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return super.getDateUpdated();
     }
 
-    public Institution getProxyInstitution() {
-        return proxyInstitution;
-    }
-
-    public void setProxyInstitution(Institution proxyInstitution) {
-        this.proxyInstitution = proxyInstitution;
-    }
-
-    public String getProxyNote() {
-        return proxyNote;
-    }
-
-    public void setProxyNote(String proxyNote) {
-        this.proxyNote = proxyNote;
-    }
-
-    /**
-     * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * 
-     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
-     * */
-    @Deprecated
-    public String getTempDisplayName() {
-        if(StringUtils.isNotBlank(tempDisplayName)) {
-            return tempDisplayName;
-        }
-        if (StringUtils.isBlank(firstName)) {
-            return "";
-        }
-        if (StringUtils.isBlank(lastName)) {
-            return "";
-        }
-        if (StringUtils.isBlank(tempDisplayName) && StringUtils.isNotBlank(getProperName())) {
-            setTempDisplayName(getProperName());
-        }
-        return tempDisplayName;
-    }
-
-    /**
-     * convenience for struts in case of error on INPUT, better than "NULL NULL"
-     * 
-     * @deprecated Do not use this method in new code. Its behavior will change to fix legacy issues until it is removed from the API
-     * */
-    @Deprecated
-    public void setTempDisplayName(String tempName) {
-        this.tempDisplayName = tempName;
-    }
-
-    public Integer getContributorAgreementVersion() {
-        return contributorAgreementVersion;
-    }
-
-    public void setContributorAgreementVersion(Integer contributorAgreementVersion) {
-        this.contributorAgreementVersion = contributorAgreementVersion;
-    }
-
-    public Integer getTosVersion() {
-        return tosVersion;
-    }
-
-    public void setTosVersion(Integer tosVersion) {
-        this.tosVersion = tosVersion;
-    }
-
     public String getOrcidId() {
         return orcidId;
     }
 
     public void setOrcidId(String orcidId) {
         this.orcidId = orcidId;
-    }
-
-    public UserAffiliation getAffilliation() {
-        return affilliation;
-    }
-
-    public void setAffilliation(UserAffiliation affilliation) {
-        this.affilliation = affilliation;
     }
 
 }

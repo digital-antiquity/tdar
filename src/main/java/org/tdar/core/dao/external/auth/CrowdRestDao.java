@@ -1,5 +1,6 @@
 package org.tdar.core.dao.external.auth;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -7,15 +8,12 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;
@@ -54,7 +52,7 @@ import com.atlassian.crowd.service.client.CrowdClient;
  * @version $Revision$
  * @see <a href='http://confluence.atlassian.com/display/CROWD/Creating+a+Crowd+Client+for+your+Custom+Application'>Crowd documentation</a>
  */
-@Service
+//@Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,12 +62,17 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     private Properties crowdProperties;
     private String passwordResetURL;
 
-    @Autowired
-    public CrowdRestDao(@Qualifier("crowdProperties") Properties crowdProperties) {
+    public CrowdRestDao() throws IOException {
+        Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
+        properties.load(getClass().getClassLoader().getResourceAsStream("crowd.properties"));
+        init(properties);
+    }
+    
+    private void init(Properties properties) {
+        this.crowdProperties = properties;
         logger.info("initializing crowd rest dao: {}", crowdProperties);
-        this.crowdProperties = crowdProperties;
         try {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
@@ -80,6 +83,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         } catch (Exception e) {
             logger.error("exception: {}", e);
         }
+    }
+
+    public CrowdRestDao(Properties properties) {
+        init(properties);
     }
 
     @Override
@@ -173,7 +180,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#addUser(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public AuthenticationResult addUser(Person person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
         String login = person.getUsername();
         User user = null;
         try {
@@ -211,7 +218,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
         if (user == null) {
             userNew = true;
-            logger.debug("Adding user : " + person);
+            logger.debug("Adding user : {} {} {} {} {} {} ",  person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), person.getId());
             user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
                     true);
         }
@@ -259,7 +266,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#deleteUser(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public boolean deleteUser(Person person) {
+    public boolean deleteUser(TdarUser person) {
         String login = person.getUsername();
         User principal = null;
         try {
@@ -290,7 +297,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#resetUserPassword(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void resetUserPassword(Person person) {
+    public void resetUserPassword(TdarUser person) {
         // TODO all manner of validation required here
         try {
             securityServerClient.requestPasswordReset(person.getUsername());
@@ -305,7 +312,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#updateUserPassword(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public void updateUserPassword(Person person, String password) {
+    public void updateUserPassword(TdarUser person, String password) {
         try {
             securityServerClient.updateUserCredential(person.getUsername().toLowerCase(), password);
         } catch (Exception e) {
@@ -315,7 +322,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     }
 
     @Override
-    public String[] findGroupMemberships(Person person) {
+    public String[] findGroupMemberships(TdarUser person) {
         String toFind = person.getUsername();
         if (StringUtils.isBlank(toFind)) {
             toFind = person.getEmail();

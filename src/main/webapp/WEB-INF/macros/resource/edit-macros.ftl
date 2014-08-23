@@ -1,4 +1,4 @@
-k<#--
+<#--
 $Id$ 
 Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
@@ -133,8 +133,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             <#if switchableMapObfuscation>
                 <@helptext.showExactLocationTip />
-                <div class="" id="showExactLocation" data-tiplabel="Is it OK to show the exact location?" data-tooltipcontent="#showExactLocationHelpDiv">
-                    <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Is it OK to show the exact location?' labelposition='right'  />
+                    <div class="" id="showExactLocation" data-tiplabel="Reveal location to public users?" data-tooltipcontent="#showExactLocationHelpDiv" >
+                        <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Reveal location to public users?' labelposition='right'  />
                 </div>
             </#if>
         </div>
@@ -178,9 +178,21 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
         <#list _coverageDates as coverageDate>
             <#if coverageDate??>
-                <@dateRow coverageDate coverageDate_index/>
+                <@_dateRow coverageDate coverageDate_index/>
             </#if>
         </#list>
+    </div>
+    </#macro>
+    <#macro _dateRow proxy=proxy proxy_index=0>
+    <div class="controls controls-row" id="DateRow_${proxy_index}_">
+    <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
+        <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
+    listValue='label'  headerValue="Date Type" headerKey="NONE"
+    list=allCoverageTypes />
+        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small trim" name="coverageDates[${proxy_index}].startDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small trim" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge trim" name="coverageDates[${proxy_index}].description"  maxlength=255 />
+       <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
     </div>
     </#macro>
 
@@ -417,7 +429,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="form-actions" id="editFormActions">
                 <#nested>
                 <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
-                <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
             </div>
         </div>
     </div>
@@ -565,19 +577,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </#if>
     </#macro>
 
-    <#macro dateRow proxy=proxy proxy_index=0>
-    <div class="controls controls-row" id="DateRow_${proxy_index}_">
-    <#--<@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" /> -->
-        <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
-    listValue='label'  headerValue="Date Type" headerKey="NONE"
-    list=allCoverageTypes />
-        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
-        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
-        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
-       <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
-    </div>
-    </#macro>
-
+    <#-- emit a section for entering a list of resource creators associated with a particular reslurce.  This macro renders this section as a 'repeat-row'
+     table of 'creaty proxy' controls (see @creatorProxyRow for more info)
+      @param sectionTitle:string name for this section (displayed in header text)
+      @param proxies:list<ResourceCreatorProxy> list of creator proxies
+      @pram  prefix:string prefix to append to form field 'name' attribute.  This gets passed to @creatorProxyRow
+    -->
     <#macro resourceCreators sectionTitle proxies prefix>
         <#local _proxies = proxies >
         <#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
@@ -594,6 +599,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div> <!-- section -->
     </#macro>
 
+    <#-- Emit a form "control"  representing a resource creator. Each control is form fields that allow the user to enter information about a single person
+     or a single institution (the user can toggle between one or the other). -->
     <#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE"
     required=false includeRole=true leadTitle="" showDeleteButton=true>
         <#assign relevantPersonRoles=personAuthorshipRoles />
@@ -622,8 +629,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>"
                             data-toggle="button">Institution
                     </button>
-                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type"
-                    value="${selectedType}" cssClass="toggleValue" />
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type" value="${selectedType}" cssClass="toggleValue" />
+                    <#if !resource.resourceType.project && resource.inheritingIndividualAndInstitutionalCredit && prefix=='credit'>
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].id" value="" cssClass="toggleValue resourceCreatorId" />
+                    <#else>
+                        <@s.hidden name="${prefix}Proxies[${proxy_index}].id" cssClass="toggleValue resourceCreatorId" />
+                    </#if>
                 </div>
             </div>
             <div class="controls controls-row">
@@ -665,12 +676,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass} trim" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
             autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
             name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
             title="${surnameTitle}"
             />
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass} trim" placeholder="First Name"  readonly=isDisabled autocomplete="off"
             name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
@@ -692,10 +703,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </#if>
         </div>
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} trim" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span3 ${lookupType} trim" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
         autocompleteIdElement="#${idIdElement}"
         autocompleteName="institution"
         autocompleteParentElement="#${rowIdElement}"
@@ -751,7 +762,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </#if>
     </#macro>
 
-<#-- 
+<#--
 FIXME: this appears to only be used for Datasets.  Most of it has been extracted out
 to singleFileUpload, continue lifting useful logic here into singleFileUpload (e.g.,
 jquery validation hooks?)
@@ -908,7 +919,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <td class="preview">
         <#--
                         <#if (proxy.informationResourceFile.latestThumbnail)?has_content>
-            	<img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
+                <img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
             </#if>
             
             -->
@@ -1002,23 +1013,32 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         </optgroup>
                     </#if>
 
-                    <optgroup label="Projects you have been given access to">
-                        <#list fullUserProjects?sort_by("titleSort") as editableProject>
-                            <option value="${editableProject.id?c}"
+                    <#if fullUserProjects??>
+                        <optgroup label="Projects you have been given access to">
+                            <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                                <option value="${editableProject.id?c}"
                                     title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
-                        </#list>
-                    </optgroup>
+                            </#list>
+                        </optgroup>
+                    </#if>
                 </select>
             </div>
 
             <div class="span4">
                 <label class="" for="collection-selector">Collection</label>
-
+                <#local selectedId=-1/>
+                <#-- limit to just this collection
+                <#if namespace=='/collection' && (id!-1) != -1>
+                    <#local selectedId=id/>
+                </#if>
+                -->
                 <div class="">
                     <select name="_tdar.collection" id="collection-selector" class="input-block-level">
-                        <option value="" selected='selected'>All Collections</option>
+                        <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
                         <@s.iterator value='allResourceCollections' var='rc'>
-                            <option value="${rc.id?c}" title="${rc.name!""?html}"><@common.truncate rc.name!"(No Name)" 70 /></option>
+                            <option value="${rc.id?c}" title="${rc.name!""?html}"
+                            <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
+                            ><@common.truncate rc.name!"(No Name)" 70 /></option>
                         </@s.iterator>
                     </select>
                 </div>
@@ -1054,6 +1074,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
 
     </div>
+    <#nested />
     <div class="row">
         <div class="span9">
 
@@ -1067,7 +1088,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <thead>
                 <tr>
                     <#if selectable>
-                        <th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
+                        <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
                     <th>Title</th>
                     <th>Type</th>
                 </tr>
@@ -1084,17 +1105,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
     </div>
     <br/>
-    <script>
-        function checkAllToggle() {
-            var unchecked = $('#resource_datatable td input[type=checkbox]:unchecked');
-            var checked = $('#resource_datatable td input[type=checkbox]:checked');
-            if (unchecked.length > 0) {
-                $(unchecked).click();
-            } else {
-                $(checked).click();
-            }
-        }
-    </script>
     </#macro>
 
 <#-- emit $.ready javascript snippet that registers is responsible for wiring up a table element as a datatable widget -->
@@ -1147,8 +1157,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <tr id="license_details_${licenseCursor}" class="${visible}">
                     <td>
                         <#if (licenseCursor.imageURI != "")>
-                            <a href="${licenseCursor.URI}" target="_blank"><img alt="license image"
-                                                                                src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
+                            <a href="${licenseCursor.URI}" target="_blank">
+                                <img alt="${licenseCursor.licenseName}" title="${licenseCursor.licenseName}"
+                                  src="<#if secure>${licenseCursor.secureImageURI}<#else>${licenseCursor.imageURI}</#if>"/></a>
                         </#if>
                     </td>
                     <td>
@@ -1213,6 +1224,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+{% var confclass = (document.location.pathname === "/batch/add") ? "" : "confidential-contact-required" ;%}
 {% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
             <td colspan="4">
@@ -1232,11 +1244,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <div class="control-group">
                     <label class="control-label">Restriction</label>
                     <div class="controls">
-                        <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
         <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
         style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
         onchange="TDAR.fileupload.updateFileAction(this)"
-        cssClass="fileProxyConfidential confidential-contact-required"/>
+        cssClass="fileProxyConfidential {%=confclass%}"/>
                     </div>
 
                     <label class="control-label" for="">Date Created</label>
@@ -1322,13 +1333,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>
         </div>
     </div>
     </#macro>
 
+    <#-- emit a repeatrow table of @registeredUserRow controls -->
     <#macro listMemberUsers >
         <#local _authorizedUsers=account.authorizedMembers />
         <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
@@ -1386,16 +1398,26 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local personPrefix="" />
         <#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
         <#local strutsPrefix="${prefix}${_index}" />
-        <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
-        <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local rowIdElement="${prefix?replace('.','_')}Row_${_indexNumber}_p" />
+        <#local idIdElement="${prefix?replace('.','_')}Id__id_${_indexNumber}_p" />
+        <#local idIdElement=idIdElement?replace(".","_") /> <#-- strip dots to make css selectors easier to write  -->
         <#local requiredClass><#if required>required</#if></#local>
         <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
+        <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
+
+        <#local properNameField>${prefix}.properName</#local>
+        <#if _index != ''>
+            <#local properNameField>authorizedUsersFullNames${_index}</#local>
+        <#elseif prefix == 'submitter'>
+            <#local properNameField>submitterProperName</#local>
+        </#if>
+
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <#local _val = requestValue("${strutsPrefix}${personPrefix}.name")>
+            
             <@s.textfield theme="simple" cssClass="span3 ${lookupType} ${requiredClass} ${textfieldCssClass!}" placeholder="Name"  readonly=isDisabled autocomplete="off"
-            name="${strutsPrefix}${personPrefix}.tempDisplayName" maxlength="255" autocompleteName="tempDisplayName"
+            name="${properNameField}" maxlength="255" autocompleteName="properName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
 
@@ -1431,9 +1453,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
-        <@s.hidden name='${strutsPrefix}${institutionPrefix}.' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass}" placeholder="Institution Name" autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="name"
             autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${institutionPrefix}.name" maxlength="255"

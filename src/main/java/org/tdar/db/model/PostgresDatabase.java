@@ -26,12 +26,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,6 +46,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -72,6 +75,7 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
+@Component
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
@@ -91,6 +95,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
+    private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
@@ -167,7 +172,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     "write", "xml", "xmlagg", "xmlattributes", "xmlbinary", "xmlcast", "xmlcomment", "xmlconcat", "xmldeclaration", "xmldocument",
                     "xmlelement", "xmlexists", "xmlforest", "xmliterate", "xmlnamespaces", "xmlparse", "xmlpi", "xmlquery", "xmlroot", "xmlschema",
                     "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone")
-           );
+            );
     public static final String DEFAULT_TYPE = "text";
     public static final String SCHEMA_NAME = "public";
     public static final int BATCH_SIZE = 5000;
@@ -215,7 +220,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             if (isAcceptableException(exception.getSQLException())) {
                 return;
             }
-            throw new TdarRecoverableRuntimeException(exception);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table", exception, Arrays.asList(tableName));
         }
     }
 
@@ -243,13 +248,13 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             int[] numUpdates = statement.executeBatch();
             for (int i = 0; i < numUpdates.length; i++) {
                 if (numUpdates[i] == -2) {
-                    logger.error("Execution " + i + ": unknown number of rows updated");
+                    logger.error("Execution {} : unknown number of rows updated", i);
                     success = "some";
                 } else {
-                    logger.trace("Execution " + i + " successful: " + numUpdates[i] + " rows updated");
+                    logger.trace("Execution {} successful: {} rows updated", i, numUpdates[i]);
                 }
             }
-            logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
+            logger.debug("{} inserts/updates committed, {} successful", numUpdates.length, success);
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());
@@ -385,6 +390,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return "42P01";
     }
 
+    @Qualifier("tdarDataImportDataSource")
+    @Autowired(required = false)
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -678,8 +685,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
      * @param codingSheet
      */
     @Override
-    public void translateInPlace(final DataTableColumn column,
-            final CodingSheet codingSheet) {
+    public void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet) {
         DataTable dataTable = column.getDataTable();
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
 
@@ -709,7 +715,18 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             jdbcTemplate.execute(createColumnSql);
 
         }
-        final String updateColumnSql = String.format(UPDATE_COLUMN_SET_VALUE, tableName, columnName, originalColumnName);
+        
+        String sql = UPDATE_COLUMN_SET_VALUE;
+        switch (columnDataType) {
+            case TEXT:
+            case VARCHAR:
+                sql = UPDATE_COLUMN_SET_VALUE_TRIM;
+                break;
+            default:
+                break;
+        }
+
+        final String updateColumnSql = String.format(sql, tableName, columnName, originalColumnName);
         logger.debug("translating column from " + tableName + " (" + columnName + ")");
         PreparedStatementCreator translateColumnPreparedStatementCreator = new PreparedStatementCreator() {
             @Override

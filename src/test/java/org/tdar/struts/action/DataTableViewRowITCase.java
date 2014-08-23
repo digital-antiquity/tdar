@@ -9,7 +9,7 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -100,7 +100,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }
         genericService.save(dataset);
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         init(controller, user);
         controller.setRowId(1L);
         controller.prepare();

@@ -10,14 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.resource.ResourceService;
 
 @Component
@@ -33,7 +36,13 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
     private transient GenericService genericService;
 
     @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
     private transient EntityService entityService;
+
+    @Autowired
+    private transient StatisticService statisticService;
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -73,6 +82,24 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
+        
+        stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true),""));
+        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, false),""));
+        Thread.yield();
+
+        stats.add(generateStatistics(StatisticType.NUM_GEOGRAPHIC, genericKeywordService.countActiveKeyword(KeywordType.GEOGRAPHIC_KEYWORD),""));
+        stats.add(generateStatistics(StatisticType.NUM_INVESTIGATION, genericKeywordService.countActiveKeyword(KeywordType.INVESTIGATION_TYPE),""));
+        stats.add(generateStatistics(StatisticType.NUM_MATERIAL, genericKeywordService.countActiveKeyword(KeywordType.MATERIAL_KEYWORD),""));
+        stats.add(generateStatistics(StatisticType.NUM_OTHER, genericKeywordService.countActiveKeyword(KeywordType.OTHER_KEYWORD),""));
+        stats.add(generateStatistics(StatisticType.NUM_TEMPORAL, genericKeywordService.countActiveKeyword(KeywordType.TEMPORAL_KEYWORD),""));
+        Thread.yield();
+
+        stats.add(generateStatistics(StatisticType.NUM_SITE_NAME, genericKeywordService.countActiveKeyword(KeywordType.SITE_NAME_KEYWORD),""));
+        stats.add(generateStatistics(StatisticType.NUM_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, true),""));
+        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, false),""));
+
+        Thread.yield();
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
         Thread.yield();
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
@@ -91,7 +118,6 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return true;
     }
 

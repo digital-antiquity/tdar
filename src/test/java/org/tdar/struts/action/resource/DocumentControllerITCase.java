@@ -13,7 +13,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
@@ -25,6 +24,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -50,24 +50,18 @@ import com.opensymphony.xwork2.Action;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
-    @Autowired
-    DocumentController controller;
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
-
-    public void initControllerFields() {
+    public DocumentController initControllerFields() {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
+        return controller;
     }
 
     @Test
     public void testShowStatuses() {
         DocumentController dc = generateNewController(DocumentController.class);
         init(dc, getUser());
-        List<Status> statuses = controller.getStatuses();
+        List<Status> statuses = dc.getStatuses();
         assertFalse(statuses.isEmpty());
     }
 
@@ -178,7 +172,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testSubmitterChangeRights() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -198,6 +192,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.setSubmitter(newUser);
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
+        setIgnoreActionErrors(true);
 
         // try to edit as basic user -- should fail
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
@@ -209,7 +204,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
         }
         assertNotEmpty(dc.getActionErrors());
-        setIgnoreActionErrors(true);
 
         // try to edit as new user, should work
         doc = null;
@@ -284,13 +278,33 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
+    public void testOpenURLGeneration() {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(4231L);
+        controller.prepare();
+        String openUrl = controller.getOpenUrl();
+        logger.debug(openUrl);
+        assertEquals("ctx_ver=Z39.88-2004&amp;rfr_id=info:sid/http://localhost:8180&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:unknown&amp;rft.genre=unknown&amp;rft.title=2008+New+Philadelphia+Archaeology+Report%2C+Chapter+3%2C+Block+3%2C+Lot+4", openUrl);
+    }
+
+    @Test
+    public void testScholarSource() throws Exception {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(4231L);
+        controller.prepare();
+        String scholar = controller.getGoogleScholarTags();
+        logger.debug(scholar);
+        assertEquals("<meta name=\"citation_title\" content=\"2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4\"/>\n<meta name=\"citation_date\" content=\"2008\"/>\n<meta name=\"citation_online_date\" content=\"2010/08/14\"/>\n", scholar);
+
+    }
+
+    @Test
     @Rollback()
     public void testInstitutionResourceCreatorNew() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // create a document with a single resource creator not currently in the
         // database, then save.
         String EXPECTED_INSTITUTION_NAME = "NewBlankInstitution";
-
         Long originalId = controller.getResource().getId();
         // FIXME: in reality, struts calls the getter, not the setter, but from
         // there I'm not sure how it's populating the elements.
@@ -308,7 +322,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
 
         d = controller.getResource();
         Assert.assertEquals(d.getInternalResourceCollection(), null);
@@ -324,14 +340,18 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(ResourceCreatorRole.REPOSITORY, actualCreator.getRole());
         setHttpServletRequest(getServletPostRequest());
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         controller.setDelete("delete");
         String deletionReason = "this is a test";
         controller.setDeletionReason(deletionReason);
         controller.delete();
 
-        controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
@@ -347,7 +367,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback()
     public void testPersonResourceCreatorNew() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -366,7 +386,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
 
         d = controller.getResource();
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
@@ -381,11 +403,15 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
         setHttpServletRequest(getServletPostRequest());
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         controller.setDelete("delete");
         controller.delete();
-        controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
@@ -405,14 +431,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         return rcp;
     }
 
-    public void setController(DocumentController controller) {
-        this.controller = controller;
-    }
-
     @Test
     @Rollback()
     public void testEditResourceCreators() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -431,7 +453,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
 
         d = controller.getResource();
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
@@ -448,11 +472,15 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // FIXME: issues with hydrating resources with Institutions
 
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         // assert my authorproxies have what i think they should have (rendering
         // edit page)
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
         controller.setAuthorshipProxies(new ArrayList<ResourceCreatorProxy>());
         // deleting all authorship resource creators
         controller.setServletRequest(getServletPostRequest());
@@ -460,7 +488,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         // loading the view page
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, newId);
+        controller.setId(newId);
+        controller.prepare();
+        controller.view();
         logger.info("{}", controller.getAuthorshipProxies());
         Assert.assertEquals("expecting size zero", 0, controller.getAuthorshipProxies().size());
         logger.debug("{}", controller.getAuthorshipProxies().size());
@@ -471,7 +501,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
     public void testForDuplicatePersonWithNoEmail() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // get person record count.
         int expectedPersonCount = genericService.findAll(Person.class).size();
 
@@ -500,7 +530,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testResourceCreatorSortOrder() throws Exception {
         int numberOfResourceCreators = 20;
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         for (int i = 0; i < numberOfResourceCreators; i++) {
             controller.getCreditProxies().add(getNewResourceCreator("Cressey" + i, "Pamela", null, null, ResourceCreatorRole.CONTACT));
         }
@@ -512,7 +542,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.save();
         Long documentId = controller.getResource().getId();
         controller = generateNewInitializedController(DocumentController.class);
-        loadResourceFromId(controller, documentId);
+        controller.setId(documentId);
+        controller.prepare();
+        controller.edit();
         for (int i = 0; i < controller.getCreditProxies().size(); i++) {
             ResourceCreatorProxy proxy = controller.getCreditProxies().get(i);
             assertTrue("proxy person " + proxy.getPerson() + "'s last name should end with " + i, proxy.getPerson().getLastName().endsWith("" + i));
@@ -524,7 +556,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
     public void testForDuplicatePersonWithDifferentInstitution() throws Exception {
-        initControllerFields();
+        DocumentController controller = initControllerFields();
         // get person record count.
         Person person = new Person();
         person.setFirstName("Pamela");
@@ -555,7 +587,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private Long createDocument(String collectionname, String title) throws TdarActionException {
-        controller = generateNewInitializedController(DocumentController.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
         getLogger().trace("controller:" + controller);
@@ -577,9 +609,12 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback()
     public void testResourceAdhocCollection() throws Exception {
-        initControllerFields();
         String collectionname = "my collection";
         Long newId = createDocument(collectionname, "test 1");
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setId(newId);
+        controller.prepare();
+        controller.edit();
         ResourceCollection collection = controller.getResource().getSharedResourceCollections().iterator().next();
         Long collectionId = collection.getId();
         logger.info("{}", collection);
@@ -594,7 +629,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testUserPermIssuesUsers() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -625,7 +660,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testUserPermIssUpload() throws TdarActionException {
         // setup document
-        Person newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();

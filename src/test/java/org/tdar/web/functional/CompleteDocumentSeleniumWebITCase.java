@@ -90,8 +90,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // docValMap.put("authorizedUsers[1].user.id", "5349");
         // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        // docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        // docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");
@@ -178,10 +176,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
                 VIEW_ALL);
         submitForm();
     }
@@ -300,18 +298,18 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
 
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
                 VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
         docUnorderdValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
         docUnorderdValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
-        docUnorderdValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+        docUnorderdValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
 
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);

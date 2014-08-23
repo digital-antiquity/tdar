@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
@@ -56,13 +59,17 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -77,14 +84,27 @@ import org.tdar.search.query.QueryFieldNames;
 @Entity
 @Table(name = "creator")
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlSeeAlso({ Person.class, Institution.class })
+@XmlSeeAlso({ Person.class, Institution.class, TdarUser.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class Creator extends JsonModel.Base implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable {
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.Creator")
+public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider, JsonModel,
+        Obfuscatable, Validatable, Addressable, XmlLoggable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
+    private transient boolean readyToStore = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
 
     @Override
     public Boolean getObfuscatedObjectDifferent() {
@@ -134,6 +154,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
+    @JsonView(JsonLookupFilter.class)
     @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
     /*
@@ -153,11 +174,13 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     private Date dateUpdated;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "date_created")
     private Date dateCreated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
+    @JsonView(JsonLookupFilter.class)
     @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
@@ -173,15 +196,16 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
+    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
     @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
-    private boolean hiddenIfNotCited = Boolean.FALSE;
 
     private transient Float score = -1f;
     private transient Explanation explanation;
@@ -194,13 +218,16 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Fields({ @Field(name = "name", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = "name_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
+    @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
     @Fields({ @Field(name = QueryFieldNames.PROPER_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
+    @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
 
     @Fields({ @Field(name = "institution", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = "institution_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    @JsonView(JsonLookupFilter.class)
     public String getInstitutionName() {
         if (getCreatorType() == CreatorType.PERSON) {
             Person person = ((Person) this);
@@ -325,7 +352,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         // setUpdatedBy(p);
         setDateUpdated(new Date());
     }
@@ -385,7 +412,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Override
     @XmlTransient
-    @JSONTransient
+    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -396,6 +423,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getUrlNamespace() {
         return URLConstants.ENTITY_NAMESPACE;
     }
@@ -447,15 +475,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     public void setOccurrence(Long occurrence) {
         this.occurrence = occurrence;
-    }
-
-    @XmlTransient
-    public boolean isHiddenIfNotCited() {
-        return hiddenIfNotCited;
-    }
-
-    public void setHiddenIfNotCited(boolean hiddenIfNotCited) {
-        this.hiddenIfNotCited = hiddenIfNotCited;
     }
 
 }

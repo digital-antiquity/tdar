@@ -6,12 +6,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
@@ -82,18 +83,14 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         private int length;
 
         private NelnetTransactionItem(int order, String name, ItemType type, int length) {
-            this.setKey(name);
-            this.setOrder(order);
-            this.setType(type);
+            this.key = name;
+            this.order = order;
+            this.type = type;
             this.length = length;
         }
 
         public int getLength() {
             return length;
-        }
-
-        public void setLength(int length) {
-            this.length = length;
         }
 
         public ItemType getType() {
@@ -108,25 +105,18 @@ public class NelNetTransactionRequestTemplate implements Serializable {
             return USER_CHOICE_3.getKey();
         }
 
-        public void setType(ItemType type) {
-            this.type = type;
-        }
-
         public int getOrder() {
             return order;
-        }
-
-        public void setOrder(int order) {
-            this.order = order;
         }
 
         public String getKey() {
             return key;
         }
 
-        public void setKey(String key) {
-            this.key = key;
+        public NameValuePair pairWith(String value) {
+            return new BasicNameValuePair(key, value);
         }
+
     }
 
     public String constructHashKey() {
@@ -134,7 +124,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         Collections.sort(list, new Comparator<NelnetTransactionItem>() {
             @Override
             public int compare(NelnetTransactionItem o1, NelnetTransactionItem o2) {
-                return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
             }
         });
 
@@ -267,17 +257,21 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         this.values = values;
     }
 
-    public String constructUrlSuffix() throws URIException {
-        StringBuilder suffix = new StringBuilder();
-        for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
-            String key = item.key;
-            String value = values.get(key);
-            if (values.containsKey(key) && StringUtils.isNotBlank(value) && StringUtils.isNotBlank(key)) {
-                suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&amp;");
+    /**
+     * return list of name/value pair entries, omitting entries with blank values
+     * @return
+     */
+    public List<NameValuePair> getNameValuePairs() {
+        List<NameValuePair> pairs = new ArrayList<>();
+        for(NelnetTransactionItem item : NelnetTransactionItem.values()) {
+            if(StringUtils.isNotBlank(values.get(item.getKey())) && item != NelnetTransactionItem.SECRET) {
+                NameValuePair pair = item.pairWith(values.get(item.getKey()));
+                pairs.add(pair);
             }
         }
-        return suffix.toString();
+        return pairs;
     }
+
 
     public String getOrderType() {
         return orderType;

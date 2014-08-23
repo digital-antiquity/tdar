@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -149,7 +149,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
         query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
-        query.setCacheMode(CacheMode.IGNORE);
         return query.list();
     }
 
@@ -206,9 +205,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public Number getAccessCount(Resource resource) {
-        Criteria createCriteria = getCriteria(ResourceAccessStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", resource));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.RESOURCE_ACCESS_COUNT_SQL, resource.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -223,7 +221,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public List<Resource> findSkeletonsForSearch(Long... ids) {
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
         Session session = getCurrentSession();
         // distinct prevents duplicates
         // left join res.informationResourceFiles
@@ -233,6 +231,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (ids.length > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
+        if (!trustCache) {
+            query.setCacheable(false);
+            query.setCacheMode(CacheMode.REFRESH);
+        }
         query.setParameterList("ids", Arrays.asList(ids));
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
@@ -241,7 +243,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         time = System.currentTimeMillis();
         List<Resource> toReturn = new ArrayList<>();
         Map<Long, Resource> resultMap = new HashMap<>();
-        logger.debug("convert proxy to resource");
+        logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {
                 resultMap.put(prox.getId(), prox.generateResource());
@@ -249,7 +251,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 logger.error("{}", e);
             }
         }
-        logger.debug("resorting results");
+        logger.trace("resorting results");
         for (Long id : ids) {
             toReturn.add(resultMap.get(id));
         }
@@ -307,7 +309,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return StringEscapeUtils.escapeXml(RssService.stripInvalidXMLCharacters(text));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {
@@ -327,7 +329,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.setParameter("year_end", dt.plusYears(1).toDate());
         Number max = (Number) query2.uniqueResult();
         handler.setTotalRecords(max.intValue());
-        
+
         return query.list();
     }
 

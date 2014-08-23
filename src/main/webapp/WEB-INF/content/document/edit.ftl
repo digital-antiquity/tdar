@@ -77,10 +77,6 @@
         <@s.textfield id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass="input-xxlarge"  maxlength=255 />
     </div>
 
-    <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
-        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
-    </div>
-
     <div id="t-isbn" placeholder="XXXX-XXXX" data-tiplabel="ISBN" data-tooltipcontent="International Standard Book Number."
          class="book_section book other doctypeToggle">
         <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn "  maxlength=25 />

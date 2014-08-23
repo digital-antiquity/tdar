@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.MockMailSender;
 import org.tdar.utils.MessageHelper;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
@@ -29,14 +30,10 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Autowired
     private GenericService genericService;
 
+
     @Before
     public void setup() {
         controller = generateNewInitializedController(AuthorityManagementController.class);
-    }
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
     }
 
     @Test
@@ -103,7 +100,9 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
         evictCache();
-        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        sendEmailProcess.setEmailService(emailService);
+        sendEmailProcess.execute();
+        SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
         assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
@@ -114,11 +113,9 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Rollback
     public void testProtectedPersonRecordsCannotBeDeduped() {
         setIgnoreActionErrors(true);
-        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
-        Person protectedRecord1 = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
-        Person protectedRecord2 = createAndSaveNewPerson("protectedRrecord2@mailinator.com", "protectedRecord2");
-        protectedRecord1.setRegistered(true);
-        protectedRecord2.setRegistered(true);
+        Person person1 = createAndSaveNewPerson("person1@tdar.net", "person1");
+        Person protectedRecord1 = createAndSaveNewPerson("protectedRecord1@tdar.net", "protectedRecord1");
+        Person protectedRecord2 = createAndSaveNewPerson("protectedRrecord2@tdar.net", "protectedRecord2");
         genericService.saveOrUpdate(protectedRecord1);
         genericService.saveOrUpdate(protectedRecord2);
         controller.setEntityType(DedupeableType.PERSON);
@@ -133,9 +130,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Rollback
     public void testProtectedPersonRecordsCannotBeDeduped2() {
         setIgnoreActionErrors(true);
-        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
-        Person protectedRecord = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
-        protectedRecord.setRegistered(true);
+        Person person1 = createAndSaveNewPerson("person1@tdar.net", "person1");
+        Person protectedRecord = createAndSaveNewPerson("protectedRecord1@tdar.net", "protectedRecord1");
         genericService.saveOrUpdate(protectedRecord);
         controller.setEntityType(DedupeableType.PERSON);
         controller.getSelectedDupeIds().addAll(Arrays.asList(person1.getId(), protectedRecord.getId()));
@@ -188,7 +184,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         genericService.saveOrUpdate(rc);
 
         // reference via person.institution
-        Person person = new Person("john", "doe", "johndoe123@mailinator.com");
+        Person person = new Person("john", "doe", "johndoe123@tdar.net");
         person.setInstitution(dupe);
         genericService.saveOrUpdate(person);
     }

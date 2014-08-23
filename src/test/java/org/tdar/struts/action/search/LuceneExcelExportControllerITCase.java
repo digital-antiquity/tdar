@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
@@ -44,7 +44,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Autowired
     ExcelService excelService;
 
-    private Person currentUser = null;
+    private TdarUser currentUser = null;
 
     @Test
     @Rollback(true)
@@ -52,7 +52,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         // currentUser = getBasicUser();
-        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
+        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(TdarUser.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
@@ -74,6 +74,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Rollback(true)
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
+        setIgnoreActionErrors(true);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -90,11 +91,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         }
         assertNotNull(except);
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), except.getStatusCode());
-        setIgnoreActionErrors(true);
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return currentUser;
     }
 

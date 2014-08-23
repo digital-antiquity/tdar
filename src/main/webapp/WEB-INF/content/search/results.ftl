@@ -86,11 +86,11 @@
                 </ul>
             </#if>
             <form>
-
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
         <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
         <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+
             </form>
         </div>
         <div class="visible-phone">
@@ -129,20 +129,8 @@
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
                         list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                     </label>
-                    <script type='text/javascript'>
-                        $("#recordsPerPage").change(function () {
-                            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
-                            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                            var prefix = "";
-                            if (url.indexOf("?") != 0) {
-                                prefix = "?";
-                            }
-                            url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-                            window.location = url;
-                        });
-                    </script>
                     <#if !hideFacetsAndSort>
-                        <@search.sortFields true/>
+                        <@search.sortFields />
                     </#if>
                 </div>
             </div>
@@ -150,6 +138,42 @@
     </div>
 
     <div class="tdarresults">
+
+    <#if ( lookupSource='RESOURCE' && collectionSearchBoxVisible && collectionTotalRecords > 0)>
+    <div class="collectionResultsBox">
+        <h4>Related Collections</h4>
+        <div class="row">
+        <div class="span4">
+        <ul>
+        <#assign current = 0>
+            <#list collectionResults as col>
+                <#if (col_index >= collectionResults?size / 2)><#assign current = col_index/><#break></#if> 
+                <#if col?has_content>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                </#if>
+            </#list>
+        </ul>
+        </div>
+        <div class="span4">
+        <ul>
+            <#list collectionResults as col>
+                <#if (col_index >= current)> 
+                <#if col?has_content>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                </#if>
+                </#if>
+            </#list>
+        </ul>
+        </div>
+
+        </div>
+        <#if ( collectionTotalRecords > 10)>
+            <p><span class="pull-right"><a href="<@s.url value="/search/collections?query=${query}"/>">&raquo; See all ${collectionTotalRecords?c} collections</a></span></p>
+       <br/> </#if>
+    </div>
+    </#if>
+
+
         <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
         <#--fixme: replace explicit map sizes with css names -->
             <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
@@ -183,6 +207,7 @@
     //pretty controls for sort options, sidebar options (pulled from main.js)
     $(function () {
         TDAR.common.initializeView();
+        TDAR.advancedSearch.initializeResultsPage();
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />
@@ -191,12 +216,12 @@
             <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
         </#if>
         <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
-//            ${map_.minimumLatitude}
             TDAR.maps.mapPromise.done(function () {
                 TDAR.maps.updateResourceRect($(".google-map")[0], ${map_.minimumLatitude?c}, ${map_.minimumLongitude?c}, ${map_.maximumLatitude?c}, ${map_.maximumLongitude?c});
             });
         </#if>
     });
+    
 </script>
 
 </body>

@@ -15,8 +15,10 @@
         <@search.headerLinks includeRss=false />
     </#if>
 
-    <@_googleScholarSection />
-
+    <#noescape>
+    ${googleScholarTags}
+    </#noescape>
+    
     <@view.canonical resource />
 
     <#if local_.head?? && local_.head?is_macro>
@@ -61,7 +63,7 @@
     </#if>
 
     <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}/admin"/>">ADMIN</a></div>
+    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/resource/admin?id=${resource.id?c}"/>">ADMIN</a></div>
     </#if>
 
 <p class="meta">
@@ -83,6 +85,59 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
+    <#if authenticatedUser?has_content>
+     <div id="email-form"  class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
+     
+         <form id="followup">
+          <div class="modal-header">
+                <h3>Send Email</h3>
+           </div>
+           <div class="modal-body">
+                <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
+                 <br/>
+                <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
+                <#assign contactId = resource.submitter.id />
+                <#if contactProxies?has_content>
+                <#list contactProxies as prox>
+                <#assign contactId = prox.person.id />
+                <#break/>
+                </#list>
+                </#if>
+                <@s.hidden name="toId" value="${contactId?c}" />
+                <@s.hidden name="resourceId" value="${resource.id?c}" />
+                <@s.hidden name="fromId" value="${(authenticatedUser.id)!-1?c}" /> 
+                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5"/>
+                <p><b>Note:</b>Note: Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
+                <@common.antiSpam />
+            </div>
+            <div class="modal-footer">
+                 <button name="send" data-dismiss="modal" aria-hidden="true"  id="followup-send" class="button btn btn-primary">send</button>
+                 <button name="cancel" data-dismiss="modal" aria-hidden="true"  id="followup-cancel" class="button btn btn-cancel">cancel</button>
+            </div>
+     </form>
+    </div>
+    
+    
+        <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
+          <div class="modal-header">
+            <h3 class="success">Success</h3>
+            <h3 class="error">Error</h3>
+           </div>
+           <div class="modal-body">
+                <span class="success">
+                    <p>Your message has been sent</p>
+                </span>
+                <span class="error">
+                    <p>An error occurred:
+                    <ul id="emailErrorContainer">
+                    </ul></p>
+                </span>
+            </div>
+            <div class="modal-footer">
+                <a href="#" data-dismiss="modal" aria-hidden="true" id="email-close-button" class="btn">Close</a>
+            </div>
+        </div>
+    </#if>
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
@@ -161,7 +216,7 @@
                         <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
                         <#if column.defaultOntology?has_content || (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
-                        <#if column.columnEncodingType?has_content && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
+                        <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
                         <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
                         <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
                         ${column.displayName}
@@ -232,43 +287,19 @@
     </#macro>
 
 
-<h2>Cite this Record</h2>
-<div class="citeMe">
-	<#assign citation>
-${resource.title}. <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}.</#if>
-${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c})  <#if resource.externalId?has_content>; ${resource.externalId}</#if>
-    </#assign>
-    <p class="sml">
-		<#noescape>${citation}</#noescape>
-        <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
-            <br/>
-            <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
-        </#if>
-    </p>
-   <div class="links">
-<ul class="inline">
-<#assign url>http://${hostName}<#if hostPort != 80>:${hostPort}</#if>/${currentUrl?url}</#assign>
-<li><a href="https://twitter.com/share" onClick="TDAR.common.registerShare('twitter','${currentUrl}','${id?c}')" >Tweet this</a></li>
-<li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${id?c}')">Share on Facebook</a></li>
-
-<li><a 
-    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${citation?trim?url}%0D%0A%0D%0A${url}"</#noescape>
-     onClick="TDAR.common.registerShare('email','${currentUrl}','${id?c}')">Email a link to a Friend</a></li>
-
-</ul></div>
-</div>
+<@view.resourceCitation resource />
 <hr/>
 
-    <#if resource.resourceType == 'CODING_SHEET' ||  resource.resourceType == 'ONTOLOGY'>
+    <#if resource.resourceType.supporting >
         <@view.categoryVariables />
     </#if>
-    <#if resource.resourceType != 'PROJECT'>
+    <#if !resource.resourceType.project >
         <#if licensesEnabled?? &&  licensesEnabled>
             <@view.license />
         </#if>
     </#if>
 
-    <@view.coin resource/>
+    <span class="Z3988" title="<#noescape>${openUrl}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
@@ -402,8 +433,6 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <hr/>
     </#if>
 
-<#-- <@_relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
-<#-- <@_relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
     <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
@@ -462,6 +491,19 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
     </#if>
+         
+        <ul class="inline">
+            <#assign txt>Request Access, Submit Correction</#assign>
+            <li class="media"><i class="icon-envelope pull-left"></i>
+            <div class="media-body">
+            <#if (authenticatedUser.id)?has_content>
+                    <a href="#" id="emailButton" class="">${txt}</a>
+            <#else>
+                    <a href="/login?url=${currentUrl}?showEmail">${txt} (requires login)</a>
+            </#if>
+            </div>
+            </li>
+        </ul>
     <h3>Basic Information</h3>
 
     <p>
@@ -489,6 +531,11 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
                 <#if resource.degree?has_content>${resource.degree.label}</#if>
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>
+        </#if>
+        <#if resource.doi?has_content>
+            <li><strong>DOI</strong><br><a href="http://dx.doi.org/${resource.doi}">${resource.doi}</a></li>
+        <#elseif resource.externalId?has_content>
+            <li><strong>DOI</strong><br>${resource.externalId}</li>
         </#if>
         <#if local_.sidebarDataBottom?? && local_.sidebarDataBottom?is_macro>
             <@local_.sidebarDataBottom />
@@ -523,61 +570,18 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     $(function () {
         'use strict';
         TDAR.common.initializeView();
-        <#if resource.resourceType.dataTableSupported>
-            <#if (dataset.dataTables?has_content)>
-                jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
-                $.extend($.fn.dataTableExt.oStdClasses, {
-                    "sWrapper": "dataTables_wrapper form-inline"
-                });
-
-//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
-                var options = {
-                    "sAjaxDataProp": "results.results",
-                    "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
-                    "bProcessing": true,
-                    "bServerSide": true,
-                    "bScrollInfinite": false,
-                    "bScrollCollapse": true,
-                    tableSelector: '#dataTable',
-                    sPaginationType: "bootstrap",
-                    sScrollX: "100%",
-                    //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
-                    "sScrollY": "",
-                    "aoColumns": [
-                        <#assign offset=0>
-                        <#if viewRowSupported>
-                            { "bSortable": false,
-                                "sName": "id_row_tdar",
-                                "sTitle": '<i class="icon-eye-open  icon-white"></i>',
-                                "fnRender": function (obj) {
-                                    return '<a href="/${resource.urlNamespace}/view-row?id=${resource.id?c}&dataTableId=${dataTable.id?c}&rowId=' + obj.aData[${offset}] + '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
-                                }
-                            },
-                            <#assign offset=1>
-                        </#if>
-                        <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
-                            <#if column.visible?? && column.visible>
-                                { "bSortable": false,
-                                    "sName": "${column.jsSimpleName?js_string}",
-                                    "sTitle": "${column.displayName?js_string}",
-                                    "fnRender": function (obj) {
-                                        var val = obj.aData[${column_index?c} + ${offset}];
-                                        var str = TDAR.common.htmlEncode(val);
-                                        return str;
-                                    }
-                                }<#if column_has_next >,</#if>
-                            </#if>
-                        </#list>
-                    ],
-                    "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
-                };
-                TDAR.datatable.registerLookupDataTable(options);
-            </#if>
+        <#if dataTableColumnJson?has_content && (dataTable.id)?has_content>
+        <#noescape>
+        var columns = ${dataTableColumnJson};
+        </#noescape>
+        TDAR.datatable.initalizeResourceDatasetDataTable(columns, ${viewRowSupported?string},${resource.id?c}, "${resource.urlNamespace}", ${dataTable.id?c});
         </#if>
+
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>
 
+        TDAR.internalEmailForm.init();    
     });
 </script>
 
@@ -604,49 +608,5 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
         </#if>
     </#macro>
 
-    <#macro _googleScholarSection>
-        <#if resource.title?? && resource.resourceCreators?? && resource.date??>
-        <meta name="citation_title" content="${resource.title?html}">
-            <#list resource.primaryCreators?sort_by("sequenceNumber") as resourceCreator>
-            <meta name="citation_author" content="${resourceCreator.creator.properName?html}">
-            </#list>
-        <meta name="citation_date" content="${resource.date?c!''}">
-            <#if resource.dateCreated??>
-            <meta name="citation_online_date" content="${resource.dateCreated?date?string('yyyy/MM/dd')}"></#if>
-            <#list resource.informationResourceFiles as irfile>
-                <#if (irfile.viewable) && irfile.latestPDF?has_content>
-                <meta name="citation_pdf_url" content="<@s.url value='/filestore/${irfile.latestPDF.id?c}/get'/>">
-                </#if>
-            </#list>
-            <#assign publisherFieldName = "DC.publisher" />
-            <#if resource.resourceType.document>
-                <#if document.documentType == 'CONFERENCE_PRESENTATION'>
-                    <#assign publisherFieldName="citation_conference_title" />
-                <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
-                <meta name="citation_journal_title" content="${document.journalName?html}">
-                </#if>
-                <#if document.volume?has_content>
-                <meta name="citation_volume" content="${document.volume}"></#if>
-                <#if document.journalNumber?has_content>
-                <meta name="citation_issue" content="${document.journalNumber}"></#if>
-                <#if document.issn?has_content>
-                <meta name="citation_issn" content="${document.issn}"></#if>
-                <#if document.isbn?has_content>
-                <meta name="citation_isbn" content="${document.isbn}"></#if>
-                <#if document.startPage?has_content>
-                <meta name="citation_firstpage" content="${document.startPage}"></#if>
-                <#if document.endPage?has_content>
-                <meta name="citation_lastpage" content="${document.endPage}"></#if>
-                <#if document.documentType == 'THESIS'>
-                    <#assign publisherFieldName="citation_dissertation_institution" />
-                </#if>
-            </#if>
-            <#if resource.publisher?has_content>
-            <meta name="${publisherFieldName}" content="${resource.publisher.name?html}">
-            </#if>
 
-        <#else>
-        <!--required google scholar fields not available - skipping meta tags -->
-        </#if>
-    </#macro>
 </#escape>

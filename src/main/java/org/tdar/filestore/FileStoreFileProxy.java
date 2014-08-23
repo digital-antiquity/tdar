@@ -1,6 +1,10 @@
 package org.tdar.filestore;
 
 import java.io.File;
+import java.util.Date;
+
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.filestore.FileStoreFile.Type;
 
 public interface FileStoreFileProxy {
 
@@ -21,5 +25,37 @@ public interface FileStoreFileProxy {
     void setTransientFile(File transientFile);
 
     Long getPersistableId();
+    
+    Type getType();
+
+    VersionType getVersionType();
+
+    Long getInformationResourceFileId();
+
+    Long getFileLength();
+
+    void setMimeType(String mimeType);
+
+    String getMimeType();
+
+    String getPath();
+
+    void setPath(String path);
+
+    void setFileLength(Long length);
+
+    void setUncompressedSizeOnDisk(Long length);
+
+    Long getUncompressedSizeOnDisk();
+
+    Date getDateCreated();
+
+    void setDateCreated(Date date);
+
+    String getExtension();
+
+    void setExtension(String extension);
+
+    Integer getVersion();
 
 }

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,9 +48,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.download.DownloadController;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.ExcelUnit;
 
@@ -88,6 +87,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
      * @throws TdarActionException
      */
     public void testInvalidCodingSheet() throws TdarActionException {
+        setIgnoreActionErrors(true);
         CodingSheetController codingSheetController = generateNewInitializedController(CodingSheetController.class);
         codingSheetController.prepare();
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
@@ -101,7 +101,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(codingId);
         assertTrue(codingSheet.getCodingRules().isEmpty());
         assertFalse(codingSheetController.getActionErrors().size() == 0);
-        setIgnoreActionErrors(true);
 
     }
 
@@ -137,11 +136,10 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testDegenerateCodingSheetWithTabs() throws IOException {
-        getControllers().clear();
+        setIgnoreActionErrors(true);
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
-        setIgnoreActionErrors(true);
-        assertTrue(CollectionUtils.isNotEmpty(getControllers().get(0).getActionErrors()));
+        assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 
     @Test
@@ -227,8 +225,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         assertNotNull(controller.getFileTextInput());
         assertEquals(codingText, controller.getFileTextInput());
@@ -242,8 +239,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller = generateNewInitializedController(CodingSheetController.class);
         controller.setId(codingId);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
+        controller.edit();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(codingText + "abd ");
         controller.setServletRequest(getServletPostRequest());
@@ -467,9 +463,10 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             assertTrue("there should be more than 2 sheets", 2 < excelUnit.getWorkbook().getNumberOfSheets());
 
             DownloadController dc = generateNewInitializedController(DownloadController.class);
-            dc.setInformationResourceFileId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.setInformationResourceFileVersionId(translatedFile.getLatestTranslatedVersion().getId());
+            dc.prepare();
             dc.execute();
-            assertEquals("bigsheet_translated.xls", dc.getFileName());
+            assertEquals("bigsheet_translated.xls", dc.getDownloadTransferObject().getFileName());
 
         } catch (OutOfMemoryError oem) {
             logger.debug("Well, guess I ran out of memory...", oem);
@@ -594,16 +591,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         return codingSheet;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {
@@ -630,9 +617,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         // 2. update mappings and set ontology on one column
         List<DataTableColumn> columns = new ArrayList<>();
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
+            logger.debug("dtc: {}", dtc);
+            logger.debug("coding sheet? {}", dtc.getDefaultCodingSheet());
             DataTableColumn clone = (DataTableColumn) BeanUtils.cloneBean(dtc);
             columns.add(clone);
-            if (clone.getName().equals("col_a")) {
+            if (clone.getName().equals("column__2")) {
                 clone.setDefaultOntology(ontology);
             }
         }
@@ -641,11 +630,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         controller.getDataTableColumns();
         DataTableColumn myColumn = null;
         for (DataTableColumn dtc : controller.getDataTableColumns()) {
-            if (dtc.getName().equals("col_a")) {
+            if (dtc.getName().equals("column__2")) {
                 myColumn = dtc;
             }
         }
-
+        assertNotNull(myColumn);
         // 3. update coding sheet mappings to point to ontology
         CodingSheetController csc = generateNewInitializedController(CodingSheetController.class);
         csc.setId(myColumn.getDefaultCodingSheet().getId());

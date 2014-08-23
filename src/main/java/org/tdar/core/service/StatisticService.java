@@ -125,4 +125,19 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         return getDao().getFileStats(types);
     }
 
+    @Transactional
+    public void generateAggregateDailyResourceData(Date date) {
+        getDao().generateAggregateDailyResourceData(date);
+    }
+
+    @Transactional
+    public void generateAggregateDailyDownloadData(Date date) {
+        getDao().generateAggregateDailyDownloadData(date);
+    }
+
+    @Transactional
+    public Number countWeeklyEmails() {
+        return getDao().countWeeklyEmails();
+    }
+
 }

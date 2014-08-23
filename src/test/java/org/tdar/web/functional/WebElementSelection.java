@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -446,6 +446,7 @@ public class WebElementSelection implements Iterable<WebElement> {
         }
         return this;
     }
+
 
     /**
      * return first element of selection as Select object.

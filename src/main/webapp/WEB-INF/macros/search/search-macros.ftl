@@ -26,10 +26,10 @@
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
         <div id='large-google-map'></div>
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput" />
     </div>
 
     <h2>Sorting Options and Submit</h2>
@@ -66,25 +66,11 @@
     </div>
     </#macro>
 
-    <#macro sortFields javascriptOn=false label="Sort By">
+    <#macro sortFields label="Sort By">
     <label>${label}
         <@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
         emptyOption='false' listValue='label' list='%{sortOptions}'/>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
-        <#if javascriptOn>
-            <script type='text/javascript'>
-                $("#sortField").change(function () {
-                    var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
-                    //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
-                    var prefix = "";
-                    if (url.indexOf("?") != 0) {
-                        prefix = "?";
-                    }
-                    url = prefix + url + "&sortField=" + $('#sortField').val();
-                    window.location = url;
-                });
-            </script>
-        </#if>
     </label>
     </#macro>
 

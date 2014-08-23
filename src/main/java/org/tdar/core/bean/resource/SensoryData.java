@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -51,9 +53,11 @@ public class SensoryData extends Dataset {
     private String surveyLocation; // FIXME: remove this field
 
     @Column(name = "survey_date_begin")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date surveyDateBegin;
 
     @Column(name = "survey_date_end")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date surveyDateEnd;
 
     @Column(name = "survey_conditions")

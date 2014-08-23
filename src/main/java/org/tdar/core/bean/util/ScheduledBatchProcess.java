@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
@@ -26,9 +26,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
 
     private static final long serialVersionUID = -8936499060533204646L;
 
-    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     protected final List<Pair<P, Throwable>> errors = new ArrayList<Pair<P, Throwable>>();
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     // this seems really weird to have @Autowired fields in beans...
@@ -61,8 +59,10 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         }
         if (sb.length() > 0) {
             try {
-                emailService.send(sb.toString(),
-                        String.format("%s: %s messages", tdarConfiguration.getSiteAcronym(), getDisplayName()));
+                Email email = new Email();
+                email.setSubject(String.format("%s: %s messages", getTdarConfiguration().getSiteAcronym(), getDisplayName()));
+                email.setMessage(sb.toString());
+                emailService.send(email);
             } catch (Exception e) {
                 logger.error("could not send email:{}\n\n{}", sb.toString(), e);
             }
@@ -125,7 +125,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public int getBatchSize() {
-        return tdarConfiguration.getScheduledProcessBatchSize();
+        return getTdarConfiguration().getScheduledProcessBatchSize();
     }
 
     /**
@@ -140,12 +140,13 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         // we use subList to iterate and clear
         // batches and so LinkedList may offer better traversal/removal
         // performance at the cost of increased memory usage.
-        if ((tdarConfiguration.getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID) &&
-                (tdarConfiguration.getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID)) {
+        if ((getTdarConfiguration().getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID)
+                && (getTdarConfiguration().getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID)) {
             return genericDao.findAllIds(getPersistentClass());
-        } else {
+        }
+        else {
             return genericDao.findAllIds(getPersistentClass(),
-                    tdarConfiguration.getScheduledProcessStartId(), tdarConfiguration.getScheduledProcessEndId());
+                    getTdarConfiguration().getScheduledProcessStartId(), getTdarConfiguration().getScheduledProcessEndId());
         }
     }
 

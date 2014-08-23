@@ -61,6 +61,8 @@
             dynamicAttributes={"data-submitterid":"${submitterId?c}"}
             >
         <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+
 
 
     <#-- custom section ahead of the basic information -->
@@ -108,7 +110,7 @@
             <div data-tiplabel="Title"
                  data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
-                title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title'
+                title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>
@@ -118,7 +120,7 @@
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini trim" required=true
                 maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
                 </div>
             </#if>
@@ -182,6 +184,12 @@
                 <@local_.citationInformation />
             </#if>
 
+            <#if !resource.resourceType.project>
+            <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
+            </div>
+            </#if>        
+
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
                 <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
             </div>
@@ -221,6 +229,12 @@
                 <@edit.upload "${rtLabel} file" />
             </#if>
         </#if>
+
+
+    <#if local_.afterUpload?? && local_.afterUpload?is_macro>
+        <@local_.afterUpload />
+    </#if>
+    
 
     <#-- allow for additional content after the file upload -->
         <#if local_.localSection?? && local_.localSection?is_macro>
@@ -355,85 +369,38 @@
 <script type='text/javascript'>
         <#noescape>
 
-        var formSelector = "#metadataForm";
-        var includeInheritance = ${inheritanceEnabled?string("true", "false")};
-        var acceptFileTypes = /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i;
+        
         /*
 
          * FIXME: move to common.js once we figure out how to control and set javascript based on freemarker values that have "Rights" implications.
          */
         $(function () {
             'use strict';
-            var form = $(formSelector)[0];
 
-            //information needed re: existing file uploads - needed by TDAR.upload library
-            TDAR.filesJson = ${filesJson!"false"};
-
+        TDAR.filesJson = ${filesJson!"false"};
+        TDAR.inheritance.project = ${projectAsJson!"{}"};
+        var props = {
+            formSelector: "#metadataForm",
+            includeInheritance : ${inheritanceEnabled?string},
+            acceptFileTypes : /\.(<@edit.join sequence=validFileExtensions delimiter="|"/>)$/i,
             <#if multipleUpload??>
-                //init fileupload
-                var id = $('input[name=id]').val();
-                <#if ableToUploadFiles && multipleUpload>
-                    TDAR.fileupload.registerUpload({
-                        informationResourceId: id,
-                        acceptFileTypes: acceptFileTypes,
-                        formSelector: formSelector,
-                        inputSelector: '#fileAsyncUpload',
-                        fileuploadSelector: '#divFileUpload'
-                    });
-
-                    var fileValidator = new FileuploadValidator("metadataForm");
-                    fileValidator.addRule("nodupes");
-                    TDAR.fileupload.validator = fileValidator;
-                </#if>
-            </#if>
-
-            //wire up jquery-ui datepicker to our date fields
-            $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
-
-            TDAR.common.initEditPage(form);
-
-            //register maps, if any
-            if ($('#divSpatialInformation').length) {
-                $(function () {
-                    //fixme: implicitly init when necessary
-                    TDAR.maps.initMapApi();
-                    var mapdiv = $('#editmapv3')[0];
-                    var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-                    TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
-                });
-            }
-
-            <#if inheritanceEnabled>
-                TDAR.inheritance.project = ${projectAsJson};
-                TDAR.inheritance.applyInheritance(formSelector);
-            </#if>
-
-
-            <#if validFileExtensions??>
-                var validate = $('.validateFileType');
-                if ($(validate).length > 0) {
-                    $(validate).rules("add", {
-                        extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-                        messages: {
-                            extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-                        }
-                    });
-                }
-            </#if>
-
-            <#if resource.resourceType.dataTableSupported>
-                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-            </#if>
-
-            <#if local_.localJavascript?? && local_.localJavascript?is_macro>
-                <@local_.localJavascript />
-            </#if>
-
-            $("#fileUploadField").change(function () {
-                if ($("#fileUploadField").val().length > 0) {
-                    $("#reminder").hide();
-                }
-            }).change();
+            multipleUpload : ${multipleUpload?string},
+        </#if>
+        <#if validFileExtensions??>
+            validExtensions : "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            validExtensionsWarning : "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)",
+        </#if>
+        <#if ableToUploadFiles??>
+            ableToUpload : ${ableToUploadFiles?string},
+        </#if>
+             dataTableEnabled : ${resource.resourceType.dataTableSupported?string}
+         };
+        var form = $(props.formSelector)[0];
+        TDAR.common.initEditPage(form, props);
+            
+        <#if local_.localJavascript?? && local_.localJavascript?is_macro>
+            <@local_.localJavascript />
+        </#if>
 
         });
         </#noescape>

@@ -36,11 +36,6 @@
         <#if resource.issn?has_content>
         <li><strong>ISSN</strong><br><span itemprop="issn">${resource.issn}</span></li>
         </#if>
-        <#if resource.doi?has_content>
-        <li><strong>DOI</strong><br><a href="http://dx.doi.org/${resource.doi}">${resource.doi}</a></li>
-        <#elseif resource.externalId?has_content>
-        <li><strong>DOI</strong><br>${resource.externalId}</li>
-        </#if>
 
         <#if resource.documentType?has_content>
             <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>

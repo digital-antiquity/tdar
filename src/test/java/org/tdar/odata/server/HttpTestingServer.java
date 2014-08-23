@@ -11,8 +11,7 @@ import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.entity.AuthenticationToken;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.web.SessionData;
 
 import com.sun.net.httpserver.Authenticator;
@@ -32,7 +31,7 @@ public class HttpTestingServer implements ITestingServer {
 
     private ODataServer server;
 
-    private Person person;
+    private TdarUser person;
 
     public SessionData getSessionData() {
         return sessionData;
@@ -53,11 +52,9 @@ public class HttpTestingServer implements ITestingServer {
             @Override
             public boolean checkCredentials(String username, String password) {
                 boolean isAuthenticated = false;
-                getSessionData().setAuthenticationToken(null);
                 if (Constant.TEST_USER_NAME.equals(username) && Constant.TEST_PASSWORD.equals(password))
                 {
-                    AuthenticationToken authenticationToken = AuthenticationToken.create(person);
-                    getSessionData().setAuthenticationToken(authenticationToken);
+                    getSessionData().setTdarUser(person);
                     isAuthenticated = true;
                     getLogger().info("Session data set for OData request: authentication succeeded.");
                 }
@@ -96,7 +93,7 @@ public class HttpTestingServer implements ITestingServer {
     }
 
     @Override
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 }

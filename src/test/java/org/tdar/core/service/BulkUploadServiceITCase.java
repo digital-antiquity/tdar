@@ -102,19 +102,22 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
             excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
-            excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL + "*");
-            excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
+            excelUnit.assertCellEquals(0, 14, BulkImportField.YEAR_LABEL + "*");
+            excelUnit.assertCellCommentEquals(0, 14, BulkImportField.YEAR_DESCRIPTION);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
             excelUnit.assertRowContains(0, BulkImportField.YEAR_LABEL + "*");
         }
 
+        // for the time being we are assuming that copyright holders won't be fed in via the spreadsheet, 
+        // as the back end logic as written will apply the same copyright holder entered on the final screen in the process
+        // to all of the files imported.
         if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
             excelUnit.assertRowDoesNotContain(0, BulkImportField.COPYRIGHT_HOLDER);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.COPYRIGHT_HOLDER);
         }
-
+        
         sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 

@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class SQLExtract {
 
@@ -183,7 +183,7 @@ public class SQLExtract {
      */
     private void writeOut(String substring) {
         try {
-            writer.write(substring + "\r\n");
+            writer.write(substring + "\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

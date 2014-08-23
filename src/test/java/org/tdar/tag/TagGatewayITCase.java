@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -146,10 +145,6 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         return false;
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Test
     @Rollback(true)

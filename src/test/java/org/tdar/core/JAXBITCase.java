@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +24,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
@@ -34,9 +36,14 @@ import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
 
 public class JAXBITCase extends AbstractSearchControllerITCase {
+
+    private static final String BEDOUIN = "bedouin";
+
+    private static final String NABATAEAN = "Nabataean";
 
     @Autowired
     XmlService xmlService;
@@ -64,12 +71,17 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         StringWriter sw = new StringWriter();
-        xmlService.convertToJson(document, sw);
+        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
+        document.setInheritingCulturalInformation(true);
+        xmlService.convertToJson(document, sw, null);
         logger.info(sw.toString());
+        assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
-
-        String json = xmlService.convertToJson(project);
-        logger.info(json);
+        project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
+        sw = new StringWriter();
+        xmlService.convertToJson(project, sw, JsonProjectLookupFilter.class);
+        logger.info(sw.toString());
+        assertTrue(sw.toString().contains(BEDOUIN));
     }
 
     @Test
@@ -96,7 +108,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
                 try {
                     Project newProject = (Project) xmlService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
-                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser());
+                    newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);

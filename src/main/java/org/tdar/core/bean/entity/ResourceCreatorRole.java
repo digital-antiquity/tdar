@@ -215,7 +215,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         return type;
     }
 
-    public void setType(ResourceCreatorRoleType type) {
+    private void setType(ResourceCreatorRoleType type) {
         this.type = type;
     }
 

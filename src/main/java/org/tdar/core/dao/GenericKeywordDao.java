@@ -2,17 +2,19 @@ package org.tdar.core.dao;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Table;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +26,13 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.search.index.LookupSource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.Pair;
 
 @Component("genericKeywordDao")
@@ -126,23 +129,19 @@ public class GenericKeywordDao extends GenericDao {
 
     @Transactional(readOnly = false)
     public void updateOccuranceValues() {
-        for (Class<?> cls : LookupSource.KEYWORD.getClasses()) {
-            try {
-                String inheritanceField = (String) FieldUtils.readStaticField(cls, INHERITANCE_TOGGLE_FIELDNAME);
-                String tableName = (String) AnnotationUtils.getValue(AnnotationUtils.getAnnotation(cls, Table.class), NAME);
-                Session session = getCurrentSession();
-                logger.info("{} {} ", inheritanceField, tableName);
-                session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
-                String format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName);
-                logger.trace(format);
-                session.createSQLQuery(format).executeUpdate();
-                format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField);
-                logger.trace(format);
-                session.createSQLQuery(format).executeUpdate();
-                logger.info("completed update on {}", tableName);
-            } catch (IllegalAccessException e) {
-                logger.error("could not update keywords", e);
-            }
+        for (KeywordType type : KeywordType.values()) {
+            String inheritanceField = type.getInheritanceToggleField();
+            String tableName = (String) AnnotationUtils.getValue(AnnotationUtils.getAnnotation(type.getKeywordClass(), Table.class), NAME);
+            Session session = getCurrentSession();
+            logger.info("{} {} ", inheritanceField, tableName);
+            session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
+            String format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName);
+            logger.trace(format);
+            session.createSQLQuery(format).executeUpdate();
+            format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField);
+            logger.trace(format);
+            session.createSQLQuery(format).executeUpdate();
+            logger.info("completed update on {}", tableName);
         }
     }
 
@@ -159,4 +158,12 @@ public class GenericKeywordDao extends GenericDao {
         }
     }
 
+    public Number countActiveWithStatus(KeywordType type, Boolean controlled) {
+        Criteria criteria = getCurrentSession().createCriteria(type.getKeywordClass()).add(Restrictions.in("status", Arrays.asList(Status.ACTIVE)));
+        if (controlled != null) {
+            criteria.add(Restrictions.eq("approved", controlled));
+        }
+        criteria.setProjection(Projections.rowCount());
+        return (Number) criteria.uniqueResult();
+    }
 }

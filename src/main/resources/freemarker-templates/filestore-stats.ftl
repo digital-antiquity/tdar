@@ -4,7 +4,7 @@ ${dateRun?date}
 
 <#if missing?has_content><@printSection "MISSING FILES">
 <#list missing as version>
- - ${version.filename} not found [${version.informationResourceId?c}]
+ - ${version.filename} with file id ${version.informationResourceFileId?c} not found [${version.informationResourceId?c}]
 </#list>
 </@printSection></#if>
 <#if tainted?has_content><@printSection "TAINTED FILES">

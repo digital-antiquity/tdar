@@ -2,6 +2,7 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -15,10 +16,21 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.ReflectionService;
+import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 import com.opensymphony.xwork2.Action;
 
 public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
+
+
+    @Autowired
+    ObfuscationService obfuscationService;
+
+    @Autowired
+    ReflectionService reflectionService;
 
     @Autowired
     private LookupController controller;
@@ -84,7 +96,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testRegisteredPersonLookupWithOneResult() {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
         controller.setFirstName("Keit");
         controller.setRegistered("true");
         String result = controller.lookupPerson();
@@ -164,9 +176,50 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     private void createUser(String string, String string2, String string3) {
-        Person person = new Person(string, string2, string3);
+        TdarUser person =new TdarUser(string, string2, string3);
         person.setUsername(string3);
-        person.setRegistered(true);
+        person.setContributor(true);
         genericService.saveOrUpdate(person);
     }
+    
+
+    @Test
+    @Rollback
+    public void testSanitizedPersonRecords() throws Exception {
+
+        // important! normally the SessionSecurityInterceptor would mark the session as readonly, but we need to do it manually in a test
+        genericService.markReadOnly();
+
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        // "log out"
+        controller = generateNewController(LookupController.class);
+        initAnonymousUser(controller);
+        controller.setRecordsPerPage(Integer.MAX_VALUE);
+        controller.setMinLookupLength(0);
+        controller.lookupPerson();
+        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService, null, null);
+        listener.prepareResult(controller);
+        assertTrue(controller.getResults().size() > 0);
+        for (Indexable result : controller.getResults()) {
+            assertNull(((Person) result).getEmail());
+        }
+
+        // normally these two requests would belong to separate hibernate sessions. We flush the session here so that the we don't get back the
+        // same cached objects that the controller sanitized in the previous lookup.
+        genericService.clearCurrentSession();
+        genericService.markReadOnly();
+
+        // okay now "log in" and make sure that email lookup is still working
+        controller = generateNewInitializedController(LookupController.class, getAdminUser());
+        controller.setRecordsPerPage(Integer.MAX_VALUE);
+        controller.setMinLookupLength(0);
+        String email = "james.t.devos@asu.edu";
+        controller.setEmail(email);
+        controller.lookupPerson();
+        assertEquals(1, controller.getResults().size());
+        Person jim = (Person) controller.getResults().get(0);
+        assertEquals(email, jim.getEmail());
+    }
+
+    
 }

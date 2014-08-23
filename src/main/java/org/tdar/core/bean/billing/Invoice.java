@@ -15,23 +15,26 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.utils.MessageHelper;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -48,71 +51,11 @@ public class Invoice extends Base implements Updatable {
     private static final long serialVersionUID = -3613460318580954253L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
-            "calculatedCost", "total" };
 
-    public enum TransactionStatus implements HasLabel, Localizable {
-        PREPARED("Prepared"),
-        PENDING_TRANSACTION("Pending Transaction"),
-        TRANSACTION_SUCCESSFUL("Transaction Successful"),
-        TRANSACTION_FAILED("Transaction Failed"),
-        TRANSACTION_CANCELLED("Transaction Cancelled");
-
-        private String label;
-
-        private TransactionStatus(String label) {
-            this.label = label;
-        }
-
-        public boolean isComplete() {
-            switch (this) {
-                case PENDING_TRANSACTION:
-                case PREPARED:
-                    return false;
-                default:
-                    break;
-            }
-            return true;
-        }
-
-        public boolean isInvalid() {
-            switch (this) {
-                case TRANSACTION_CANCELLED:
-                case TRANSACTION_FAILED:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public String getLabel() {
-            return this.label;
-        }
-
-        @Override
-        public String getLocaleKey() {
-            return MessageHelper.formatLocalizableKey(this);
-        }
-
-    }
-
-    public Invoice() {
-    }
-
-    public Invoice(Person owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
-        markUpdated(owner);
-        setPaymentMethod(method);
-        setNumberOfFiles(numberOfFiles);
-        setNumberOfMb(numberOfMb);
-        if (CollectionUtils.isNotEmpty(items)) {
-            getItems().addAll(items);
-        }
-    }
 
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice
 
@@ -121,6 +64,7 @@ public class Invoice extends Base implements Updatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private PaymentMethod paymentMethod;
 
     private Long billingPhone;
@@ -130,12 +74,12 @@ public class Invoice extends Base implements Updatable {
     private String accountType;
 
     @Column(name = "transaction_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDate;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @JoinColumn(nullable = false, name = "owner_id")
-    @NotNull
-    private Person owner;
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @JoinColumn(nullable = true, name = "owner_id")
+    private TdarUser owner;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = true, name = "coupon_id")
@@ -144,12 +88,11 @@ public class Invoice extends Base implements Updatable {
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     private BillingTransactionLog response;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @JoinColumn(nullable = false, name = "executor_id")
-    @NotNull
-    private Person transactedBy;
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
+    @JoinColumn(nullable = true, name = "executor_id")
+    private TdarUser transactedBy;
 
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = true, name = "address_id", updatable = true)
     private Address address;
 
@@ -163,6 +106,7 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "number_of_mb")
     private Long numberOfMb = 0L;
 
+    @JsonView(JsonLookupFilter.class)
     private Float total;
 
     @Length(max = 25)
@@ -172,8 +116,22 @@ public class Invoice extends Base implements Updatable {
     private String otherReason;
 
     @Enumerated(EnumType.STRING)
+    @JsonView(JsonLookupFilter.class)
     @Column(name = "transactionstatus", length = FieldLength.FIELD_LENGTH_25)
     private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
+
+    public Invoice() {
+    }
+
+    public Invoice(TdarUser owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
+        markUpdated(owner);
+        setPaymentMethod(method);
+        setNumberOfFiles(numberOfFiles);
+        setNumberOfMb(numberOfMb);
+        if (CollectionUtils.isNotEmpty(items)) {
+            getItems().addAll(items);
+        }
+    }
 
     /**
      * @return the dateCreated
@@ -213,11 +171,11 @@ public class Invoice extends Base implements Updatable {
         this.address = address;
     }
 
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person person) {
+    public void setOwner(TdarUser person) {
         this.owner = person;
     }
 
@@ -230,6 +188,9 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Float getTotal() {
+        if (total == null) {
+            return getCalculatedCost();
+        }
         return total;
     }
 
@@ -329,15 +290,19 @@ public class Invoice extends Base implements Updatable {
         initialized = false;
     }
 
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalResources = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalSpaceInMb = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Long totalFiles = 0L;
+    @JsonView(JsonLookupFilter.class)
     private transient Float calculatedCost = 0F;
     private transient boolean initialized = false;
     private transient Float couponValue = 0f;
 
     @Override
-    public void markUpdated(Person p) {
+    public void markUpdated(TdarUser p) {
         if (getOwner() == null) {
             setOwner(p);
         }
@@ -382,23 +347,16 @@ public class Invoice extends Base implements Updatable {
         this.transactionStatus = transactionStatus;
     }
 
-    public Person getTransactedBy() {
+    public TdarUser getTransactedBy() {
         return transactedBy;
     }
 
-    public void setTransactedBy(Person transactedBy) {
+    public void setTransactedBy(TdarUser transactedBy) {
         this.transactedBy = transactedBy;
     }
 
     public boolean isModifiable() {
-        switch (transactionStatus) {
-            case TRANSACTION_FAILED:
-            case TRANSACTION_CANCELLED:
-            case TRANSACTION_SUCCESSFUL:
-                return false;
-            default:
-                return true;
-        }
+        return transactionStatus.isModifiable();
     }
 
     public Float getCalculatedCost() {
@@ -424,11 +382,6 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactionDate(Date transactionDate) {
         this.transactionDate = transactionDate;
-    }
-
-    @Override
-    public String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
     }
 
     public Long getNumberOfFiles() {
@@ -461,7 +414,10 @@ public class Invoice extends Base implements Updatable {
 
     @Transient
     public boolean isProxy() {
-        return ObjectUtils.notEqual(owner, transactedBy);
+        if (Persistable.Base.isNullOrTransient(owner) || Persistable.Base.isNullOrTransient(transactedBy)) {
+            return false;
+        }
+        return ObjectUtils.notEqual(owner.getId(), transactedBy.getId());
     }
 
     @Override
@@ -485,16 +441,30 @@ public class Invoice extends Base implements Updatable {
         this.couponValue = couponValue;
     }
 
+    /**
+     * NOTE: Returns transient data, not the actual data stored in this object. If invoked before
+     * getCalculatedCost() or initTotals() is called, all these values will be zero/empty (except the ID).
+     * 
+     * Consider emitting persistable values in addition to transient values.
+     */
     @Override
     public String toString() {
-        return String.format("%s files, %s mb, %s resources [$%s] %s", totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon);
+        return String.format("%s files, %s mb, %s resources [calculated cost: $%s] %s (id: %d)",
+                totalFiles, totalSpaceInMb, totalResources, calculatedCost, coupon, getId());
     }
 
     public boolean hasValidValue() {
+        logger.trace("files: {} space: {}", getNumberOfFiles(), getNumberOfMb());
         if (isLessThan(getNumberOfFiles(), 1) && isLessThan(getNumberOfMb(), 1) && (getCoupon() == null)) {
             return false;
         }
         return true;
+    }
+
+    public void setDefaultPaymentMethod() {
+        if (paymentMethod == null) {
+            setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        }
     }
 
     private boolean isLessThan(Long val, long comp) {

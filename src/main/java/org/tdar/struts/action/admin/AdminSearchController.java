@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -52,8 +51,8 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         return SUCCESS;
     }
 
-    @Action(value = "lookup", results = { @Result(name = "success", location = "../../lookup/lookup.ftl", type = "freemarker", params = { "contentType",
-            "application/json" }) })
+    @Action(value = "lookup", 
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String lookup() {
         QueryBuilder q = null;
         switch (queryBuilder) {
@@ -85,7 +84,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
             addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
             return ERROR;
         }
-
+        jsonifyResult(null);
         return SUCCESS;
     }
 

@@ -17,23 +17,18 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
 public class BillingAccountControllerITCase extends AbstractResourceControllerITCase {
-
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Autowired
     AccountService accountService;
@@ -56,7 +51,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesOkNewAccount() throws TdarActionException {
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
@@ -131,7 +126,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         Account invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
@@ -188,33 +183,34 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testCreateCouponInvalid() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        logger.debug("messages: {}", controller.getActionMessages());
-        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
-        setIgnoreActionErrors(true);
+        logger.debug("messages: {}", controller.getActionErrors());
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
     }
 
     @Test
     @Rollback
     public void testCreateCouponEmpty() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing")));
-        setIgnoreActionErrors(true);
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.cannot_generate_a_coupon_for_nothing")));
     }
 
     @Test
     @Rollback
     public void testCreateCouponInvalidBoth() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getUser());
         BillingAccountController controller = setupContrllerForCoupon(account, invoice);
@@ -222,8 +218,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setNumberOfMb(1L);
         String save = controller.createCouponCode();
         Long id = controller.getAccount().getId();
-        assertTrue(controller.getActionMessages().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
-        setIgnoreActionErrors(true);
+        assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
     @Test

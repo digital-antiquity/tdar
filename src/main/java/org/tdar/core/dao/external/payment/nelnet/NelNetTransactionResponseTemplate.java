@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -97,33 +98,21 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         private int order;
 
         private NelnetTransactionItemResponse(String label, String key, int order) {
-            this.setKey(key);
-            this.setLabel(label);
-            this.setOrder(order);
+            this.key = key;
+            this.label = label;
+            this.order= order;
         }
 
         public String getKey() {
             return key;
         }
 
-        public void setKey(String key) {
-            this.key = key;
-        }
-
         public int getOrder() {
             return order;
         }
 
-        public void setOrder(int order) {
-            this.order = order;
-        }
-
         public String getLabel() {
             return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
         }
     }
 
@@ -147,7 +136,8 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
                 new Comparator<NelnetTransactionItemResponse>() {
                     @Override
                     public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
-                        return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                        //NOTE: watch change in objectUtils compare and numberUtils
+                        return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
                     }
                 });
 

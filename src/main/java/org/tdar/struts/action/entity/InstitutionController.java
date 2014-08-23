@@ -3,16 +3,18 @@ package org.tdar.struts.action.entity;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.statistics.CreatorViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.AuthorizationService;
 
 @Component
 @Scope("prototype")
@@ -21,6 +23,11 @@ import org.tdar.struts.action.AbstractPersistableController;
 public class InstitutionController extends AbstractCreatorController<Institution> {
 
     private static final long serialVersionUID = 2051510910128780834L;
+
+    @Autowired
+    private transient EntityService entityService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     private String name;
 
@@ -37,15 +44,13 @@ public class InstitutionController extends AbstractCreatorController<Institution
         } else {
             getGenericService().update(persistable);
         }
-        getXmlService().logRecordXmlToFilestore(getPersistable());
-
         return SUCCESS;
     }
 
     @Override
     public void validate() {
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
-            Institution findInstitutionByName = getEntityService().findInstitutionByName(name);
+            Institution findInstitutionByName = entityService.findInstitutionByName(name);
             if (findInstitutionByName != null) {
                 addActionError(getText("institutionController.cannot_rename", Arrays.asList(name)));
             }
@@ -54,7 +59,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
 
     @Override
     protected void delete(Institution persistable) {
-        getXmlService().logRecordXmlToFilestore(getPersistable());
     }
 
     @Override
@@ -100,7 +104,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
         if (!isAuthenticated()) {
             return false;
         }
-        return getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
+        return authorizationService.can(InternalTdarRights.EDIT_INSTITUTIONAL_ENTITES, getAuthenticatedUser());
     }
 
     public String getName() {

@@ -8,7 +8,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.struts.action.TdarActionSupport;
 
 public class ResourceControllerITCase extends AbstractResourceControllerITCase {
 
@@ -42,6 +41,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                 } else {
                     resource.markUpdated(getUser());
                     resource.setTitle("test");
+                    resource.setDescription("test");
                     genericService.save(resource);
                     ResourceController controller = generateNewInitializedController(ResourceController.class);
                     controller.setResourceType(type);
@@ -55,9 +55,5 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
 }

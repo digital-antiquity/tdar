@@ -41,7 +41,6 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.ObjectType;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
@@ -56,10 +55,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {
@@ -174,7 +169,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
         CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, column.getDefaultCodingSheet().getId());
+        controller.setId(column.getDefaultCodingSheet().getId());
+        controller.prepare();
         controller.loadOntologyMappedColumns();
         Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
         // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
@@ -210,7 +206,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         logger.info("{}", dataTable);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setDataTableId(dataTable.getId());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
         controller.setDataTableColumns(Arrays.asList(mappings));
         controller.saveColumnMetadata();
 

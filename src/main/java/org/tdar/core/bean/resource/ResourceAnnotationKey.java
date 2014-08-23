@@ -3,6 +3,7 @@ package org.tdar.core.bean.resource;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,6 +14,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.search.Explanation;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
@@ -25,6 +28,9 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -38,12 +44,12 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 @Entity
 @Table(name = "resource_annotation_key")
 @Indexed(index = "AnnotationKey")
+@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.resource.ResourceAnnotationKey")
+@Cacheable
 public class ResourceAnnotationKey extends Persistable.Base implements Indexable, HasLabel {
 
     private static final long serialVersionUID = 6596067112791213904L;
 
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "key", "label" };
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_annotation_type", length = FieldLength.FIELD_LENGTH_255)
@@ -59,6 +65,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     @Column(length = FieldLength.FIELD_LENGTH_128, unique = true, nullable = false)
     @Fields({ @Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     @Length(max = FieldLength.FIELD_LENGTH_128)
+    @JsonView(JsonLookupFilter.class)
     private String key;
 
     @Column(length = FieldLength.FIELD_LENGTH_128, name = "format_string")
@@ -125,10 +132,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
         return "[key:'" + key + "' id:" + getId() + "]";
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
-    }
 
     @Override
     public List<?> getEqualityFields() {
@@ -162,6 +165,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Transient
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getLabel() {
         return this.key;
     }

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
-public class ResultMetadataWrapper extends JsonModel.Base {
+
+public class ResultMetadataWrapper implements JsonModel {
 
     private static final long serialVersionUID = 1524243095172930161L;
 
@@ -47,11 +48,6 @@ public class ResultMetadataWrapper extends JsonModel.Base {
         this.totalRecords = totalRecords;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "sColumns", "name", "displayName", "columnEncodingType", "startRecord", "recordsPerPage", "fields", "totalRecords", "results" };
-    }
-
     public List<List<String>> getResults() {
         return results;
     }
@@ -64,6 +60,11 @@ public class ResultMetadataWrapper extends JsonModel.Base {
         return fields;
     }
 
+    public String getsColumns() {
+        return getSColumns();
+    }
+    
+    
     public String getSColumns() {
         if (StringUtils.isEmpty(sColumns)) {
             List<String> tmp = new ArrayList<String>();
@@ -80,7 +81,4 @@ public class ResultMetadataWrapper extends JsonModel.Base {
         this.fields = fields;
     }
 
-    public String getsColumns() {
-        return getSColumns();
-    }
 }

@@ -18,15 +18,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.JSONTransient;
+
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -83,20 +83,24 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
-    private transient OntologyNode parentNode;
-
-    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
-
     private String index;
 
     private String iri;
 
-    private transient boolean synonym = false;
     // @Column(unique=true)
     private String uri;
 
     @Column(name = "import_order")
     private Long importOrder;
+
+    // is this ontology node a synonym of another ontology node?
+    private transient boolean synonym;
+    // true if this ontology node or its children doesn't have any mapped data
+    private transient boolean mappedDataValues;
+    private transient boolean parent;
+    private transient boolean[] columnHasValueArray;
+    private transient OntologyNode parentNode;
+    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
     public OntologyNode() {
     }
@@ -183,10 +187,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return ObjectUtils.compare(index, other.getIndex());
     }
 
-    private transient boolean parent = false;
-
-    private transient boolean[] columnHasValueArray;
-
     @Transient
     public String getIndentedLabel() {
         StringBuilder builder = new StringBuilder(index).append(' ').append(iri);
@@ -213,9 +213,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.importOrder = importOrder;
     }
 
-    /**
-     * @return the importOrder
-     */
     public Long getImportOrder() {
         return importOrder;
     }
@@ -262,7 +259,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         for (String displayName_ : getEquivalenceSet()) {
             for (String existingDisplayName : existing.getEquivalenceSet()) {
                 if (existingDisplayName.equalsIgnoreCase(displayName_)) {
-                    logger.trace("\tcomparing " + displayName_ + "<>" + existingDisplayName + " --> equivalent");
+                    logger.trace("\tcomparing {} <> {}", displayName, existingDisplayName);
                     return true;
                 }
             }
@@ -271,7 +268,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    @JSONTransient
+    
     public OntologyNode getParentNode() {
         return parentNode;
     }
@@ -281,7 +278,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    @JSONTransient
+    
     public Set<OntologyNode> getSynonymNodes() {
         return synonymNodes;
     }
@@ -312,7 +309,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    @JSONTransient
+    
     public boolean isSynonym() {
         return synonym;
     }
@@ -331,4 +328,19 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
             return getDisplayName();
         }
     }
+
+    @Transient
+    public boolean isDisabled() {
+        return !mappedDataValues;
+    }
+
+    @Transient
+    public boolean hasMappedDataValues() {
+        return mappedDataValues;
+    }
+
+    public void setMappedDataValues(boolean mappedDataValues) {
+        this.mappedDataValues = mappedDataValues;
+    }
+
 }

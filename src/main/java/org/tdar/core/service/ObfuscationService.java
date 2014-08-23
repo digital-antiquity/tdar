@@ -1,10 +1,10 @@
 package org.tdar.core.service;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 
 /**
  * A service to help with the obfuscation of @link Persistable Beans supporting @link Obfuscatable
@@ -31,7 +32,7 @@ public class ObfuscationService {
     private GenericDao genericDao;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthorizationService authService;
 
     /**
      * Obfuscates a collection of objects based on the specified user.
@@ -42,7 +43,7 @@ public class ObfuscationService {
      * @param user
      */
     @Transactional(readOnly = true)
-    public void obfuscate(Collection<? extends Obfuscatable> targets, Person user) {
+    public void obfuscate(Collection<? extends Obfuscatable> targets, TdarUser user) {
         for (Obfuscatable target : targets) {
             obfuscate(target, user);
         }
@@ -54,7 +55,7 @@ public class ObfuscationService {
      * 
      * @return
      */
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+    public AuthorizationService getAuthenticationAndAuthorizationService() {
         return authService;
     }
 
@@ -71,7 +72,7 @@ public class ObfuscationService {
      * @param user
      */
     @Transactional(readOnly = true)
-    public void obfuscate(Obfuscatable target, Person user) {
+    public void obfuscate(Obfuscatable target, TdarUser user) {
 
         if ((target == null) || target.isObfuscated()) {
             logger.trace("target is already obfuscated or null: {} ({}}", target, user);
@@ -88,13 +89,13 @@ public class ObfuscationService {
         }
 
         // don't obfuscate someone for themself
-        if ((target instanceof Person) && ObjectUtils.equals(user, target)) {
+        if ((target instanceof Person) && Objects.equals(user, target)) {
             logger.trace("not obfuscating person: {}", user);
             return;
         }
 
         genericDao.markReadOnly(target);
-        List<Obfuscatable> obfuscateList = handleObfuscation(target);
+        Set<Obfuscatable> obfuscateList = handleObfuscation(target);
         if (CollectionUtils.isNotEmpty(obfuscateList)) {
             for (Obfuscatable subTarget : obfuscateList) {
                 obfuscate(subTarget, user);
@@ -110,10 +111,38 @@ public class ObfuscationService {
      * @return
      */
     @SuppressWarnings("deprecation")
-    private List<Obfuscatable> handleObfuscation(Obfuscatable target) {
+    private Set<Obfuscatable> handleObfuscation(Obfuscatable target) {
         logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
         target.setObfuscated(true);
         return target.obfuscate();
+    }
+
+    public void obfuscateObject(Object obj, TdarUser user) {
+        // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
+        // returns type of List<I> but we can't figure out what
+        if (obj == null) {
+            return;
+        }
+        
+        if (Iterable.class.isAssignableFrom(obj.getClass())) {
+            for (Object obj_ : (Iterable<?>) obj) {
+                if (obj_ instanceof Obfuscatable) {
+                    obfuscate((Obfuscatable) obj_, user);
+                } else {
+                    logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
+                }
+            }
+        } else {
+            if (obj instanceof Obfuscatable) {
+                obfuscate((Obfuscatable) obj, user);
+            } else {
+                logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
+            }
+        }
+    }
+    
+    public boolean isWritableSession() {
+        return genericDao.isSessionWritable();
     }
 
 }

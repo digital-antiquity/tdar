@@ -14,7 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -25,7 +25,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -33,8 +33,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.excel.CellFormat.Style;
+import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
@@ -51,21 +51,21 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class DataIntegrationWorkbook implements Serializable {
 
-    private static final int MAX_FILENAME_LENGTH = 250;
     private static final long serialVersionUID = -2452046179173301666L;
+    
     private transient ExcelService excelService;
     private Workbook workbook;
     private List<IntegrationColumn> integrationColumns;
     private List<IntegrationDataResult> integrationDataResults;
     private StringBuilder description;
     private Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationResults;
-    private Person person;
+    private TdarUser person;
     private List<String> names;
     private PersonalFilestoreTicket ticket;
     private TextProvider provider;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, Person person,
+    public DataIntegrationWorkbook(TextProvider provider, ExcelService excelService, TdarUser person,
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData) {
         this.setExcelService(excelService);
         this.person = person;
@@ -182,7 +182,7 @@ public class DataIntegrationWorkbook implements Serializable {
      * @param summaryStyle
      * @param tableList
      */
-    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, Person person, Workbook workbook,
+    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, TdarUser person, Workbook workbook,
             CellStyle summaryStyle,
             List<DataTable> tableList) {
         Sheet summarySheet = workbook.createSheet(MessageHelper.getMessage("dataIntegrationWorkbook.description_worksheet"));
@@ -339,11 +339,11 @@ public class DataIntegrationWorkbook implements Serializable {
         this.generatedIntegrationResults = generatedIntegrationResults;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person person) {
+    public void setPerson(TdarUser person) {
         this.person = person;
     }
 

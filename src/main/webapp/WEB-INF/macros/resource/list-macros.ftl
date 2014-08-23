@@ -20,7 +20,6 @@
     <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 
-
         <#local showProject = false />
         <#global prev =""/>
         <#global first = true/>
@@ -54,7 +53,6 @@
             <#list resourcelist as resource>
                 <#assign key = "" />
                 <#assign defaultKeyLabel="No Project"/>
-
             <#-- if we're viewable -->
                 <#if ((resource.viewable)!false) >
                     <#local rowCount= rowCount+1 />
@@ -65,8 +63,11 @@
                 <#-- printing item tag start / -->
                     <${itemTag_} class="listItem ${itemClass!''}"
                     <#if orientation == 'MAP' && resource.latLongVisible >
-                        data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
-                        data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}"
+                        <#local box = resource.firstActiveLatitudeLongitudeBox />
+                        data-lat="${box.centerLatitude?c}"
+                        data-long="${box.centerLongitude?c}"
+                        data-lat-length="${box.absoluteLatLength?c}"
+                        data-long-length="${box.absoluteLongLength?c}"
                         data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
                     </#if>
                     id="resource-${resource.id?c}">
@@ -305,7 +306,7 @@ bookmark indicator, etc..
             <#if _resource.resourceType?has_content>
                 <#assign status = "disabled-bookmark" />
 
-                <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                <#if _resource.bookmarked>
                     <#assign status = "un-bookmark" />
                 <#else>
                     <#assign status = "bookmark" />
@@ -321,7 +322,7 @@ bookmark indicator, etc..
             	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
                 bookmark</span><#t>
                     </#if>
-                <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+                <#elseif _resource.bookmarked>
                     <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
                        bookmark-state="bookmarked">
                         <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>

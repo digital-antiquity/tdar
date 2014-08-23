@@ -1,32 +1,38 @@
 <#escape _untrusted as _untrusted?html >
-    <#import "/${themeDir}/settings.ftl" as settings>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "admin-common.ftl" as admin>
-
-
+<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <title>Admin Pages</title>
-
-
     <#setting url_escaping_charset="UTF-8">
     <#macro header>
-    <div class="glide">
+    <div>
         <h3> Menu</h3>
-        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-            <li class="tab-pane"><a href="<@s.url value="/admin/"/>">Admin Home</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
-            <li class="tab-pane"><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
-
+        <ul class="nav nav-tabs">
+            <li><a href="<@s.url value="/admin/"/>">Admin Home</a></li>
+            <li class='dropdown'>
+            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
+            <ul class='dropdown-menu'>
+                <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
+                <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li>
+                <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
+                <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
+            </ul>
+            </li>
+            <li><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
+            <li><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
             <#if billingManager || editor>
-                <li class="tab-pane"><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
-                <li class="tab-pane"><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
+                <li class="dropdown">
+                    <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Billing <b class='caret'></b></a>
+                    <ul class='dropdown-menu'>
+                        <li><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
+                        <li><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
+                    </ul>
+                </li>
             </#if>
             <#if administrator >
-                <li class="tab-pane"><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
-                <li class="tab-pane"><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
+                <li><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
+                <li><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
+                <li><a href="<@s.url value="/admin/notifications/"/>">Notifications</a></li>
+                <li><a href="<@s.url value="/admin/email"/>">Email</a></li>
             </#if>
         </ul>
     </div>
@@ -94,10 +100,9 @@
 
         <#noescape>
             <script>
-                $(function () {
 
                     <#list 0..numSets as i>
-                        var d${i} = [];
+                        var d${cssid}${i} = [];
                     </#list>
                     <#assign ticks = "" />
                     <#assign total = (totalRows / 10 )?ceiling />
@@ -106,32 +111,21 @@
                         <#assign vals = statsObj.get(key) />
                         <#assign valsKeys = vals?keys />
                         <#list valsKeys as key_>
-                            d${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
-                            d${key__index}.label = "${key_.label}";
+                            d${cssid}${key__index}.push(["${key?string("yyyy-MM-dd")}", ${vals.get(key_)?default("0")?c}]);
+                            d${cssid}${key__index}.label = "${key_.label}";
                         </#list>
                     </#list>
 
-                    var labels = [<#list 0..numSets as i><#if i != 0>,</#if>d${i}.label</#list> ];
-                    var plot${cssid} = $.jqplot('graph${cssid}', [<#list 0..numSets as i><#if i != 0>,</#if>d${i}</#list> ], {
-                        axes: {
-                            xaxis: {
-                                renderer: $.jqplot.DateAxisRenderer
-                            },
-                            yaxis: {min: 0}
-                        },
-                        highlighter: {
-                            show: true,
-                            sizeAdjust: 7.5
-                        },
-                        legend: {
-                            show: true,
-                            placement: 'outsideGrid',
-                            labels: labels,
-                            location: 'ne',
-                            rowSpacing: '0px'
-                        },
-                        seriesDefaults: {lineWidth: 1, showLabel: true, showMarker: false}
-                    });
+                    var labels${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}.label</#list> ];
+                    var data${cssid} = [<#list 0..numSets as i><#if i != 0>,</#if>d${cssid}${i}</#list> ];
+                    var props${cssid} = {
+                        seriesColors : [<#list settings.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>],
+                        xaxis: "date",
+                        title: "${header?js_string}"
+                    };
+                $(function () {
+                    TDAR.charts.lineChart(props${cssid}, labels${cssid}, data${cssid},"${cssid}");
+                    
                 });
             </script>
         </#noescape>

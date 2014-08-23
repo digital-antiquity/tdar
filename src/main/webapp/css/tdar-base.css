@@ -29,7 +29,7 @@ body {
 }
 
 #alt.not-production {
-    background-color: #efe;
+    /*background-color: #efe;*/
 }
 
 /** FIXME: This labryinth of rules for HR tags is starting to damage my calm.  replace  cascading form w/ hr.classname equivalent so it's easier to
@@ -69,11 +69,18 @@ a:hover {
 }
 
 /*override native button style for our fancy tdar-buttons */
-button.tdar-button, submit.tdar-button[type=button] {
+button.tdar-button, input.tdar-button[type=button] {
     border: none;
 }
 
-a.button, .tdar-button {
+/*
+    FIXME: make "tdar" flavored buttons consistent.  Migrate "a.button" references to "a.tdar-button", then remove a.button css.
+
+In the meantime....
+    If it's a: link,                        use: .button class
+    If it's a: button, input[type=submit]   use: .tdar-button class
+*/
+a.button, .tdar-button, input.tdar-button[type=submit] {
     font-family: helvetica, arial, sans-serif;
     /*	width: 130px; */
     height: 35px;
@@ -83,7 +90,6 @@ a.button, .tdar-button {
     border-radius: 2px;
     font-weight: 700;
     font-size: 12px;
-    line-height: 37px;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -93,9 +99,24 @@ a.button, .tdar-button {
     padding-left: 8px;
     padding-right: 8px;
     cursor: pointer;
+    border: none;
+    padding-top:0;
+    padding-bottom:0;
 }
 
-a.button:hover, .tdar-button:hover {
+/* Muted background color - when you want to de-emphasize a button in favor of another */
+a.button.muted, .tdar-button.muted, input.tdar-button.muted[type=submit] {
+    background-color: #686868;
+    color: #ffffff;
+}
+
+/* Button text is vertically-centered by default. For anchors that look like buttons, we fake vertical center by setting line-height same as button height */
+a.button{
+    line-height: 35px;
+    margin: 0 4px 0 0;
+}
+
+a.button:hover, .tdar-button:hover, input.tdar-button[type=submit]:hover {
     background: #c74534;
     text-decoration: none;
 }
@@ -1464,4 +1485,9 @@ tr.DELETED {
 
 .tableFormat th {
     background-color: black !important;
+}
+
+.hidden {
+    display:none;
+    visibility:hidden;
 }

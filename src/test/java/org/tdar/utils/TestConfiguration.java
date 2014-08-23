@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
+import org.openqa.selenium.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
@@ -167,8 +169,27 @@ public class TestConfiguration {
         return String.format("https://%s:%s/", getHostName(), getHttpsPort());
     }
 
+    public String getChromeApplicationPath() {
+        String deflt = "Google Chrome";
+        if (isUnix()) {
+            deflt = "/usr/bin/google-chrome-stable";
+        }
+        if (isMac()) {
+            deflt = "/Applications/Google Chrome.app";
+        }
+        return assistant.getStringProperty("tdar.chrome.path", deflt);
+
+    }
+
     public String getChromeDriverPath() {
-        return assistant.getStringProperty("tdar.chromedriver.path", "/Applications/chromedriver");
+        String deflt = "chromedriver";
+        if (isUnix()) {
+            deflt = "/usr/local/bin/chromedriver";
+        }
+        if (isMac()) {
+            deflt = "/Applications/chromedriver";
+        }
+        return assistant.getStringProperty("tdar.chromedriver.path", deflt);
     }
 
     public String getIEDriverPath() {
@@ -183,4 +204,64 @@ public class TestConfiguration {
         return 1;
     }
 
+    public static boolean isWindows() {
+        return (OS.CURRENT == OS.WINDOWS);
+    }
+
+    public static boolean isMac() {
+        return (OS.CURRENT == OS.OSX);
+    }
+
+    public static boolean isUnix() {
+        return (OS.CURRENT == OS.UNIX || OS.CURRENT == OS.LINUX);
+    }
+
+    /**
+     * Convenience wrapper for SystemUtils, which is a convenience wrapper for system.os.name.
+     *
+     * OS.CURRENT is an alias to enum value for the detected OS.
+     *
+     * metaKey indicates the key used by the current browser to execute menu hotkey command (e.g. CTRL+N opens window on Windows,
+     * CMD+N opens window on OSX)
+     */
+    public enum OS {
+        WINDOWS,
+        LINUX,
+        OSX(Keys.COMMAND),
+        UNIX(Keys.META),
+        TRS_80;
+
+        private Keys metaKey;
+
+        public static OS CURRENT;
+        static {
+            if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX)
+                CURRENT = OSX;
+            else if (SystemUtils.IS_OS_WINDOWS)
+                CURRENT = WINDOWS;
+            else if (SystemUtils.IS_OS_LINUX)
+                CURRENT = LINUX;
+            else if (SystemUtils.IS_OS_UNIX)
+                CURRENT = UNIX;
+            else
+                CURRENT = TRS_80;
+        }
+
+        OS() {
+            setMetaKey(Keys.CONTROL);
+        }
+
+        OS(Keys metaKey) {
+            this.setMetaKey(metaKey);
+        }
+
+        public Keys getMetaKey() {
+            return metaKey;
+        }
+
+        public void setMetaKey(Keys metaKey) {
+            this.metaKey = metaKey;
+        }
+
+    }
 }

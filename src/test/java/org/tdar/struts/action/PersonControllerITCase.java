@@ -17,16 +17,12 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.AbstractCreatorController;
 import org.tdar.struts.action.entity.PersonController;
+import org.tdar.struts.action.entity.TdarUserController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     PersonController controller;
 
@@ -40,19 +36,20 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testSavingPerson() throws Exception {
         // simulate the edit
-        controller.setId(1L);
-        controller.prepare();
-        controller.edit();
-        Assert.assertEquals(controller.getPersistable().getFirstName().toLowerCase(), "allen");
+        TdarUserController uc = generateNewInitializedController(TdarUserController.class, getAdminUser());
+        uc.setId(1L);
+        uc.prepare();
+        uc.edit();
+        Assert.assertEquals(uc.getPersistable().getFirstName().toLowerCase(), "allen");
 
         // simulate the save()
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setId(1L);
-        controller.prepare();
-        Person p = controller.getPerson();
+        uc = generateNewInitializedController(TdarUserController.class);
+        uc.setId(1L);
+        uc.prepare();
+        Person p = uc.getPerson();
         p.setFirstName("bill");
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
+        uc.setServletRequest(getServletPostRequest());
+        uc.save();
 
         // ensure stuff was changed.
         p = null;
@@ -60,7 +57,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         Assert.assertEquals("bill", p.getFirstName().toLowerCase());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testEditingPersonByNonAdmin() throws Exception {
@@ -114,6 +110,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void addNullAddressToPerson() throws TdarActionException {
+        setIgnoreActionErrors(true);
         Person p = createAndSaveNewPerson();
         Long presonId = p.getId();
         p = null;
@@ -132,7 +129,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
         assertEquals(Action.INPUT, controller.saveAddress());
         assertEquals(MessageHelper.getMessage("address.street_required"), controller.getActionErrors().iterator().next());
-        setIgnoreActionErrors(true);
 
     }
 
@@ -211,6 +207,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void editEmailAlreadyInUse() throws TdarActionException {
+        setIgnoreActionErrors(true);
         String email1 = "email1@tdar.org";
         Person existingUser = createAndSaveNewPerson(email1, "user1");
         controller = generateNewInitializedController(PersonController.class, getUser());
@@ -251,12 +248,14 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testBlankEmailForActiveUser() throws TdarActionException {
-        controller.setId(getUserId());
-        controller.prepare();
-        controller.setEmail("");
-        controller.setServletRequest(getServletPostRequest());
-        controller.validate();
-        assertThat(controller.getFieldErrors(), hasKey("email"));
+        setIgnoreActionErrors(true);
+        TdarUserController uc = generateNewInitializedController(TdarUserController.class, getAdminUser());
+        uc.setId(getUserId());
+        uc.prepare();
+        uc.setEmail("");
+        uc.setServletRequest(getServletPostRequest());
+        uc.validate();
+        assertThat(uc.getFieldErrors(), hasKey("email"));
     }
 
     private Long addAddressToNewPerson() throws TdarActionException {

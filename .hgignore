@@ -42,3 +42,6 @@ syntax: regexp
 ^src/main/resources/jetty-ssl\.keystore$
 syntax: regexp
 ^src/test/resources/jetty-ssl\.keystore$
+
+syntax: regexp
+^src/main/resources/hibernate-ehcache\.xml$

@@ -8,8 +8,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -23,17 +24,15 @@ import org.tdar.utils.MessageHelper;
 public class RedirectMessageITCase extends AbstractControllerITCase {
 
     @Autowired
-    private UserAccountController controller;
-
-    @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private AuthenticationService authService;
 
     @Test
     @Rollback
     public void testMessageStore() {
-        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         String execute = setupValidUserInController(controller);
-        Person p = controller.getPerson();
+        TdarUser p = controller.getRegistration().getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
         assertNotNull("person should have set insitution", p.getInstitution());
@@ -46,8 +45,4 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 }

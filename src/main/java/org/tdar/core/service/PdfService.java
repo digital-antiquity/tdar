@@ -4,19 +4,29 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.net.URISyntaxException;
+import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.PDFMergerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.FileSystemResourceDao;
@@ -45,6 +54,7 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class PdfService {
 
+    private static final int MAX_DESCRIPTION_LENGTH = 512;
     private static final String DOT_PDF = ".pdf";
     private static final String COVER_PAGE = "cover_page";
     private static final int LEFT_MARGIN = 73;
@@ -63,33 +73,42 @@ public class PdfService {
      * 
      * @param submitter
      * @param version
+     * @param document
      * @return
      * @throws COSVisitorException
      * @throws IOException
      * @throws URISyntaxException
      */
-    public File mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version) throws COSVisitorException, IOException,
-            URISyntaxException {
+    public InputStream mergeCoverPage(TextProvider provider, Person submitter, InformationResourceFileVersion version, Document document)
+            throws PdfCoverPageGenerationException {
         try {
-            InformationResource informationResource = version.getInformationResourceFile().getInformationResource();
-            if (version.getExtension().equalsIgnoreCase("PDF") && (informationResource instanceof Document)) {
+            logger.debug("IR: {}, {} {}", document, version, version.getExtension());
+            if (version.getExtension().equalsIgnoreCase("PDF")) {
                 // get the tDAR document and get the path to the template
-                Document document = (Document) version.getInformationResourceFile().getInformationResource();
                 String path = String.format("%s/%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
                 File template = fileDao.loadTemplate(path);
 
                 // create the cover page
-                template = createCoverPage(provider, submitter, template, document, version.getInformationResourceFile().getDescription());
+                String description = version.getInformationResourceFile().getDescription();
+                if (StringUtils.isNotBlank(description) && description.length() > 640) {
+                    BreakIterator instance = BreakIterator.getWordInstance();
+                    instance.setText(description);
+                    int after = instance.following(MAX_DESCRIPTION_LENGTH);
+                    description = description.substring(0, after) + "...";
+                }
+                template = createCoverPage(provider, submitter, template, document, description);
 
                 // merge the two PDFs
-
+                logger.debug("calling merge on: {}", version);
                 return mergePDFs(template, TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             } else {
+                logger.debug("IR: invalid type");
                 throw new PdfCoverPageGenerationException("pdfService.file_type_invalid");
             }
         } catch (Throwable e) {
+            logger.debug("IR: merge issue", e);
             throw new PdfCoverPageGenerationException("pdfService.could_not_add_cover_page", e);
         }
     }
@@ -101,16 +120,40 @@ public class PdfService {
      * @return
      * @throws IOException
      * @throws COSVisitorException
+     * @throws InterruptedException
      */
-    private File mergePDFs(File... files) throws IOException, COSVisitorException {
-        PDFMergerUtility merger = new PDFMergerUtility();
-        File outputFile = File.createTempFile(files[0].getName(), DOT_PDF, TdarConfiguration.getInstance().getTempDirectory());
-        merger.setDestinationStream(new FileOutputStream(outputFile));
+    private PipedInputStream mergePDFs(File... files) throws IOException, COSVisitorException, InterruptedException {
+        final PDFMergerUtility merger = new PDFMergerUtility();
+        /*
+         * FIXME:
+         * only change i might suggest is to switch the initialization order to emphasize that the PipedOutputStream is where the data is coming from. At first
+         * I thought you were reading the data into the PipedInputStream to send to the PipedOutputStream because of the way they were initialized
+         */
+        PipedInputStream inputStream = new PipedInputStream(2048);
+        final PipedOutputStream pipedOutputStream = new PipedOutputStream(inputStream);
+        merger.setDestinationStream(pipedOutputStream);
         for (File file : files) {
             merger.addSource(file);
         }
-        merger.mergeDocuments();
-        return outputFile;
+
+        // Separate thread needed here to call merge
+        // FIXME: handle exceptions better
+        Thread thread = new Thread(
+                new Runnable() {
+                    public void run() {
+                        try {
+                            merger.mergeDocuments();
+                        } catch (Exception e) {
+                            logger.error("exception when processing PDF cover page: {}", e.getMessage(), e);
+                        } finally {
+                            IOUtils.closeQuietly(pipedOutputStream);
+                        }
+                    }
+                }
+                );
+        thread.start();
+        logger.trace("done with PDF Merge");
+        return inputStream;
     }
 
     /**
@@ -166,14 +209,7 @@ public class PdfService {
         cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.stable_url"), urlService.absoluteUrl(document),
                 PdfFontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
-                cursorPositionFromBottom);
-
-        if (StringUtils.isNotBlank(description)) {
-            cursorPositionFromBottom = writeOnPage(content, "", PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
-            cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, PdfFontHelper.HELVETICA_TEN_POINT,
-                    LEFT_MARGIN,
-                    cursorPositionFromBottom);
-        }
+                cursorPositionFromBottom, true, page);
 
         String doi = document.getDoi();
         if (StringUtils.isBlank(doi)) {
@@ -185,6 +221,13 @@ public class PdfService {
                     LEFT_MARGIN, cursorPositionFromBottom);
 
         }
+        if (StringUtils.isNotBlank(description)) {
+            cursorPositionFromBottom = writeOnPage(content, "", PdfFontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
+            cursorPositionFromBottom = writeLabelPairOnPage(content, "Note: ", description, PdfFontHelper.HELVETICA_TEN_POINT,
+                    LEFT_MARGIN,
+                    cursorPositionFromBottom);
+        }
+        
         cursorPositionFromBottom = 200;
         List<Object> byOn = new ArrayList<>();
         byOn.add(submitter.getProperName());
@@ -200,6 +243,11 @@ public class PdfService {
         return tempFile;
     }
 
+    public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom)
+            throws IOException {
+        return writeLabelPairOnPage(content, label, utf8Text, fontHelper, xFromLeft, yFromBottom, false, null);
+    }
+
     /**
      * adds a field and label in the format to the pdf. you pass the content, the fontHelper obejct, and where to put the page, it'll pass back the new
      * line position for text below that will take into account the single-spacing line height of the text. It will also take care of wrapping of long values
@@ -208,20 +256,45 @@ public class PdfService {
      * Format:
      * <B>Field</B>: Label
      */
-    public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom)
+    public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom,
+            boolean link, PDPage page)
             throws IOException {
         if (StringUtils.isBlank(label)) {
             label = "";
         }
         String text = transliterate(utf8Text);
+
         content.beginText();
         content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
         content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
         content.drawString(label);
         content.setFont(fontHelper.getFont(), fontHelper.getFontSize());
 
-        text = StringUtils.repeat(" ", label.length()) + text; // take into account the label when wrapping
-        return writeTextOnPage(content, text, fontHelper, xFromLeft, yFromBottom);
+        String line = StringUtils.repeat(" ", label.length()) + text; // take into account the label when wrapping
+        int writeTextOnPage = writeTextOnPage(content, line, fontHelper, xFromLeft, yFromBottom);
+        if (link) {
+            writeLink(fontHelper, xFromLeft + fontHelper.estimateWidth(label), yFromBottom, page, text, writeTextOnPage);
+        }
+        return writeTextOnPage;
+    }
+
+    private void writeLink(PdfFontHelper fontHelper, int xFromLeft, int yFromBottom, PDPage page, String linkText, int writeTextOnPage)
+            throws IOException {
+        PDBorderStyleDictionary borderULine = new PDBorderStyleDictionary();
+        borderULine.setStyle(PDBorderStyleDictionary.STYLE_UNDERLINE);
+        PDAnnotationLink txtLink = new PDAnnotationLink();
+        // add an action
+        PDActionURI action = new PDActionURI();
+        action.setURI(linkText);
+        txtLink.setAction(action);
+        // txtLink.setBorderStyle(borderULine);
+        PDRectangle position = new PDRectangle();
+        position.setLowerLeftX(xFromLeft);
+        position.setUpperRightY(yFromBottom + fontHelper.getLineHeight());
+        txtLink.setRectangle(position);
+        position.setUpperRightX(fontHelper.estimateWidth(linkText) * 2);
+        position.setLowerLeftY(yFromBottom);
+        page.getAnnotations().add(txtLink);
     }
 
     /**

@@ -3,7 +3,7 @@ package org.tdar.search.query.part;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -42,6 +42,12 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
     @Override
     protected QueryPartGroup getQueryPart(String value) {
+        boolean siteCodeSearch = false;
+        if (SiteCodeTokenizingAnalyzer.pattern.matcher(value).matches()) {
+            siteCodeSearch = true;
+            setUseProximity(false);
+        }
+
         QueryPartGroup queryPart = super.getQueryPart(value);
         String cleanedQueryString = getCleanedQueryString(value);
         if (StringUtils.isBlank(cleanedQueryString)) {
@@ -52,7 +58,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
 
-        if (cleanedQueryString.contains(" ")) {
+        if (cleanedQueryString.contains(" ") && isUseProximity()) {
             creatorPart.setProximity(2);
         }
 
@@ -65,7 +71,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         // we use the original value because we'd be esacping things we don't want to otherwise
-        if (SiteCodeTokenizingAnalyzer.pattern.matcher(value).matches()) {
+        if (siteCodeSearch) {
             FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
             queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
