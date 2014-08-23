@@ -107,7 +107,7 @@
                 <@s.hidden name="resourceId" value="${resource.id?c}" />
                 <@s.hidden name="fromId" value="${(authenticatedUser.id)!-1?c}" /> 
                 <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5"/>
-                <p><b>Note:</b>Note: Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
+                <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
                 <@common.antiSpam />
             </div>
             <div class="modal-footer">
