@@ -627,10 +627,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isInitialized() {
-        if (maximumLatitude == null || minimumLatitude == null || maximumLongitude == null || minimumLongitude == null) {
-            return false;
-        }
-        return true;
+        return maximumLatitude != null && minimumLatitude != null && maximumLongitude != null && minimumLongitude != null;
     }
 
     public boolean isInitializedAndValid() {
