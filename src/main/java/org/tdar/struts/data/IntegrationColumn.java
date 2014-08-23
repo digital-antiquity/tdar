@@ -103,8 +103,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlElement(name = "mappingRule")
     public List<CodingRule> getCodingRules() {
         List<CodingRule> rules = new ArrayList<CodingRule>();
-        for (DataTableColumn column : getColumns()) {
-            if (column.getDefaultCodingSheet() == null) {
+        columns.removeAll(Collections.singletonList(null));
+        for (DataTableColumn column : columns) {
+            if (column != null && column.getDefaultCodingSheet() == null) {
                 continue;
             }
             rules.addAll(column.getDefaultCodingSheet().getCodingRules());

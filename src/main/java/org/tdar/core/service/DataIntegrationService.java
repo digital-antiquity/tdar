@@ -247,8 +247,10 @@ public class DataIntegrationService {
             if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
                 filteredOntologyNodes.removeAll(Collections.singletonList(null));
             }
+
             logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
-            integrationColumn.setFilteredOntologyNodes(genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class));
+            filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
+            integrationColumn.setFilteredOntologyNodes(filteredOntologyNodes);
             // for each of the integration columns, grab the unique set of all children within an ontology
 
             // that is, even if child is not selected, should get all children for query and pull up
