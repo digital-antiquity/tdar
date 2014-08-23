@@ -223,6 +223,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/xml/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
+        schemaMap.put("http://www.loc.gov/standards/xlink/xlink.xsd", new File(base, "xlink.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
@@ -797,7 +798,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
-                logger.error("*=> schema error: {0} ", err.toString());
+                logger.error("*=> schema error: {} ", err.toString());
             }
             assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
         }

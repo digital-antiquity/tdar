@@ -113,13 +113,15 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     }
 
     public void generateAggregateDailyDownloadData(Date date) {
-        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
+        String sql = String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date);
         getCurrentSession().createSQLQuery(sql).executeUpdate();
 
     }
 
     public void generateAggregateDailyResourceData(Date date) {
-        getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date)).executeUpdate();
+        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
+        getLogger().trace(sql);
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
 
     }
 

@@ -54,12 +54,12 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(document);
         genericService.saveOrUpdate(new ResourceAccessStatistic(new Date(), document));
         Date date = DateTime.now().minusDays(1).toDate();
-        logger.debug("date: {}", date);
         genericService.saveOrUpdate(new ResourceAccessStatistic(date, document));
         genericService.synchronize();
         Number count = datasetService.getDao().getAccessCount(document);
-        assertEquals(2l, count.longValue());
+        assertEquals(1l, count.longValue());
         dailyTask.execute();
+        genericService.synchronize();
         count = datasetService.getDao().getAccessCount(document);
         assertEquals(2l, count.longValue());
         List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(), DateTime.now().toDate(), 1L);
