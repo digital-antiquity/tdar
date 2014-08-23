@@ -223,11 +223,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         String base = "src/test/resources/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
-        schemaMap.put("http://www.loc.gov/standards/xlink/xlink.xsd", new File(base, "xlink.xsd"));
-        schemaMap.put("http://www.w3.org/XML/2008/06/xlink.xsd", new File(base, "xlink.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
+        schemaMap.put("http://www.loc.gov/standards/xlink/xlink.xsd", new File(base, "xlink.xsd"));
+        schemaMap.put("http://www.w3.org/XML/2008/06/xlink.xsd", new File(base, "xlink.xsd"));
         schemaMap.put("http://www.w3.org/2001/03/xml.xsd", new File(base, "xml.xsd"));
         schemaMap.put("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(base, "simpledc20021212.xsd"));
 
@@ -795,7 +795,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 schemaMap.put(url, schema);
             }
         }
-
+        
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
@@ -808,6 +808,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     private Validator setupValidator(boolean extra) {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Validator v = new Validator(factory);
+        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
+//        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
+//        v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
 
         if (extra) {
             // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
