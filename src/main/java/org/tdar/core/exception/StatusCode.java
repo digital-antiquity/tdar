@@ -68,6 +68,7 @@ public enum StatusCode {
             case HttpStatus.SC_FORBIDDEN:
             case HttpStatus.SC_GONE:
             case HttpStatus.SC_OK:
+            case HttpStatus.SC_NOT_FOUND:
                 return false;
             default:
                 return true;
