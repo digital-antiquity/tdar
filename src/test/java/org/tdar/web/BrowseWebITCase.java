@@ -84,7 +84,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     @Test
     public void testBrowseCreators() {
         reindexOnce();
-        gotoPage("/browse/creators/1");
+        gotoPage("/browse/creators/8161");
     }
 
     @Test

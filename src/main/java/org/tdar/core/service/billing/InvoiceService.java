@@ -706,7 +706,7 @@ public class InvoiceService {
 
         try {
             Account account = accountDao.getAccountForInvoice(invoice);
-            if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+            if (account != null && account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 accountDao.updateQuota(account, account.getResources());
             }
         } catch (Exception e) {
