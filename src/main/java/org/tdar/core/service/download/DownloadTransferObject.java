@@ -46,7 +46,7 @@ public class DownloadTransferObject implements Serializable {
     private String mimeType;
     private Long contentLength;
     private InformationResource informationResource;
-    private List<InformationResourceFileVersion> versionsToDownload;
+    private List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
     private String fileName;
     private InputStream stream;
     private DownloadResult result;

@@ -221,9 +221,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
         ((MockMailSender) emailService.getMailSender()).getMessages().clear();
-        String base = "src/test/resources/xml/schemaCache";
+        String base = "src/test/resources/schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.loc.gov/standards/xlink/xlink.xsd", new File(base, "xlink.xsd"));
+        schemaMap.put("http://www.w3.org/XML/2008/06/xlink.xsd", new File(base, "xlink.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));

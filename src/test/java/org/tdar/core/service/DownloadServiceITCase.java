@@ -124,6 +124,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void testDownloadArchiveService() throws Exception {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
+        dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
         for (File file : FileUtils.listFiles(ROOT_SRC, null, false)) {
             dto.getDownloads().add(new DownloadFile(file, file.getName()));
@@ -158,6 +159,7 @@ public class DownloadServiceITCase extends AbstractDataIntegrationTestCase {
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.downloadZipArchive());
         DownloadTransferObject downloadTransferObject = controller.getDownloadTransferObject();
+        downloadTransferObject.setAuthenticatedUser(getBillingUser());
         logger.info(downloadTransferObject.getFileName());
         File file = File.createTempFile("test", ".zip");
         
