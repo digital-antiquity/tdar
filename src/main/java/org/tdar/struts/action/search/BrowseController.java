@@ -228,6 +228,11 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
+            
+            if (Persistable.Base.isNullOrTransient(creator)) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+            }
+            
             QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
