@@ -71,7 +71,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
 
         while (taskExecutor.getActiveCount() != 0) {
             int count = taskExecutor.getActiveCount();
-            logger.debug("Active Threads : {}", count);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
