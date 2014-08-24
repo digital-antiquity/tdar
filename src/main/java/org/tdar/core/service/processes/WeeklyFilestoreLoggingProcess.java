@@ -132,7 +132,9 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("missing", missing);
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
-        if (count == 0) {
+        int totalIssues = other.size() + tainted.size() + missing.size();
+        
+        if (totalIssues == 0) {
             subject.append(" [NONE]");
         }
         else {
@@ -141,6 +143,8 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("siteAcronym", TdarConfiguration.getInstance().getSiteAcronym());
         map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
         map.put("dateRun", new Date());
+        map.put("count", count);
+        map.put("totalIssues", totalIssues);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String filename = "verify-" + df.format(new Date()) + ".txt";
         try {

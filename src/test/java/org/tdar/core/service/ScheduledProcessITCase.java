@@ -25,6 +25,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
@@ -123,13 +124,15 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback
-    public void testVerifyProcess() {
+    public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
+        Document document = generateDocumentWithFileAndUseDefaultUser();
         fsp.execute();
         scheduledProcessService.queueTask(SendEmailProcess.class);
         scheduledProcessService.runScheduledProcessesInQueue();
         SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
+        assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
