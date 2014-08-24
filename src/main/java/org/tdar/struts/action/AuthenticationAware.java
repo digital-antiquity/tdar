@@ -86,8 +86,12 @@ public interface AuthenticationAware extends SessionDataAware {
         protected <P extends Persistable> void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
                 throws TdarActionException {
             // first check the session
-            Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
-            getLogger().info("user {} is TRYING to {} a {}", msg);
+            String name = action.getPersistableClass().getSimpleName();
+            Object[] msg = { action.getAuthenticatedUser(), userAction, name };
+            if (!(action.getAuthenticatedUser() == null && "view".equalsIgnoreCase(name))) {
+                // don't log anonymous users
+                getLogger().info("user {} is TRYING to {} a {}", msg);
+            }
 
             if (userAction.isAuthenticationRequired()) {
                 try {
@@ -168,7 +172,7 @@ public interface AuthenticationAware extends SessionDataAware {
         protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
             throw new TdarActionException(statusCode, errorMessage);
         }
-        
+
         public boolean isAdministrator() {
             return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
         }
@@ -251,7 +255,7 @@ public interface AuthenticationAware extends SessionDataAware {
         public boolean isBillingManager() {
             return authorizationService.isBillingManager(getAuthenticatedUser());
         }
-        
+
         public AuthorizationService getAuthorizationService() {
             return authorizationService;
         }

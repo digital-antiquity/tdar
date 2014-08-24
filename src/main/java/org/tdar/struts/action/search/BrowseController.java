@@ -234,6 +234,13 @@ public class BrowseController extends AbstractLookupController {
                 throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
             }
             
+            // hide creator pages from public for contributors with no resources contributed
+            if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                    getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+            }
+
+            
             QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
@@ -282,11 +289,6 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception", e);
                 }
                 
-                // hide creator pages from public for contributors with no resources contributed
-                if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
-                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
-                    throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
-                }
             }
             FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
             try {
@@ -303,7 +305,7 @@ public class BrowseController extends AbstractLookupController {
                     setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
                 }
             } catch (FileNotFoundException fnf) {
-                getLogger().debug("{} does not exist in filestore", personInfo.getFilename());
+                getLogger().trace("{} does not exist in filestore", personInfo.getFilename());
             } catch (Exception e) {
                 getLogger().debug("error", e);
             }

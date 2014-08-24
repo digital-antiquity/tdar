@@ -229,7 +229,7 @@ public class AuthorizationService implements Accessible {
     @Transactional(readOnly = false)
     public boolean canEditCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
         if (authenticatedUser == null) {
-            logger.debug("person is null");
+            logger.trace("person is null");
             return false;
         }
 
