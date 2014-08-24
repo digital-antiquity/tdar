@@ -299,7 +299,7 @@
         </#if>
     </#if>
 
-    <span class="Z3988" title="<#noescape>${openUrl}</#noescape>"></span>
+    <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
