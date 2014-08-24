@@ -113,7 +113,7 @@ public class DownloadTransferObject implements Serializable {
     }
 
     public InputStream getInputStream() throws Exception {
-        logger.debug("calling getInputStream");
+        logger.trace("calling getInputStream");
         if (CollectionUtils.size(downloads) > 1) {
             return new DownloadLockInputStream(getZipInputStream(), this);
         }

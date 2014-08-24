@@ -49,7 +49,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.billing.AccountService;
-import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFile.Type;
@@ -133,8 +133,9 @@ public class BrowseController extends AbstractLookupController {
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
+
     @Autowired
-    private transient AuthorizationService authorizationService;
+    private transient AuthenticationService authenticationService;
 
     @Autowired
     private transient EntityService entityService;
@@ -228,13 +229,25 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
+            
+            if (Persistable.Base.isNullOrTransient(creator)) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+            }
+            
+            // hide creator pages from public for contributors with no resources contributed
+            if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                    getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+            }
+
+            
             QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
             if (isEditor()) {
                 if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
                     TdarUser person = (TdarUser) creator;
                     try {
-                        getGroups().addAll(authorizationService.getGroupMembership(person));
+                        getGroups().addAll(authenticationService.getGroupMembership(person));
                     } catch (Throwable e) {
                         getLogger().error("problem communicating with crowd getting user info for {} {}", creator, e);
                     }
@@ -276,11 +289,6 @@ public class BrowseController extends AbstractLookupController {
                     getLogger().warn("search parse exception", e);
                 }
                 
-                // hide creator pages from public for contributors with no resources contributed
-                if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
-                        getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
-                    throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
-                }
             }
             FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
             try {
@@ -297,7 +305,7 @@ public class BrowseController extends AbstractLookupController {
                     setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
                 }
             } catch (FileNotFoundException fnf) {
-                getLogger().debug("{} does not exist in filestore", personInfo.getFilename());
+                getLogger().trace("{} does not exist in filestore", personInfo.getFilename());
             } catch (Exception e) {
                 getLogger().debug("error", e);
             }

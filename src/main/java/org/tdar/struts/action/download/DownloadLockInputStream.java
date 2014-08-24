@@ -28,7 +28,7 @@ public class DownloadLockInputStream extends BufferedInputStream implements Seri
     @Override
     public void close() throws IOException {
         super.close();
-        logger.debug("releasing download lock");
+        logger.trace("releasing download lock");
         dto.releaseLock();
     }
     

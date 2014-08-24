@@ -183,7 +183,6 @@ create table user_notification (
 
 alter table tdar_user add column dismissed_notifications_date timestamp;
 alter table tdar_user rename column affilliation to affiliation;
-insert into user_notification(date_created, message_key, message_type,display_type) VALUES (current_timestamp, 'lithic.announce','SYSTEM_BROADCAST','FREEMARKER');
 insert into user_notification(date_created, message_key, message_type, user_id) 
     SELECT current_timestamp, 'pre.tdar.invoice', 'INFO', tdar_user.id
     FROM pos_account, tdar_user 
@@ -201,6 +200,7 @@ CREATE UNIQUE INDEX temporal_keyword_label_unique on temporal_keyword(lower(labe
 
 -- abrin 07/16/2014 notification type
 alter table user_notification add column display_type varchar(32) not null default 'NORMAL';
+insert into user_notification(date_created, message_key, message_type,display_type) VALUES (current_timestamp, 'lithic','SYSTEM_BROADCAST','FREEMARKER');
 -- abrin 05/11/2014
 create index information_resource_file_ir2 on information_resource_file(information_resource_id);
 
