@@ -14,7 +14,6 @@ public class OpenUrlFormatter {
     private static final String AMP = "&amp;";
     private final static transient Logger logger = LoggerFactory.getLogger(OpenUrlFormatter.class);
 
-    
     public static String toOpenURL(Resource resource) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -31,14 +30,18 @@ public class OpenUrlFormatter {
                 Document doc = ((Document) resource);
                 switch (doc.getDocumentType()) {
                     case BOOK_SECTION:
-                        title = doc.getBookTitle();
+                        if (StringUtils.isNotBlank(doc.getBookTitle())) {
+                            title = doc.getBookTitle();
+                        }
                         sb.append(AMP);
                         sb.append("rft.btitle=").append(URLEncoder.encode(doc.getBookTitle()));
                         break;
                     case CONFERENCE_PRESENTATION:
                         break;
                     case JOURNAL_ARTICLE:
-                        title = doc.getJournalName();
+                        if (StringUtils.isNotBlank(doc.getJournalName())) {
+                            title = doc.getJournalName();
+                        }
                         sb.append("rft.atitle=").append(URLEncoder.encode(doc.getTitle()));
                         sb.append(AMP);
                         break;
