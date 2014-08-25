@@ -234,12 +234,6 @@ public class BrowseController extends AbstractLookupController {
                 throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
             }
             
-            // hide creator pages from public for contributors with no resources contributed
-            if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
-                    getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
-                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
-            }
-
             
             QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
@@ -290,6 +284,13 @@ public class BrowseController extends AbstractLookupController {
                 }
                 
             }
+            // hide creator pages from public for contributors with no resources contributed
+            if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+                    getTotalRecords() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
+                throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+            }
+
+
             FileStoreFile personInfo = new FileStoreFile(Type.CREATOR, VersionType.METADATA, getId(), getId() + XML);
             try {
                 File foafFile = getTdarConfiguration().getFilestore().retrieveFile(ObjectType.CREATOR, personInfo);
