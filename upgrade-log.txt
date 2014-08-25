@@ -13,3 +13,4 @@ Lithic:
  - re-index database
  - check for duplicate terms in keywords (case, leading/trailing spaces)
  - run upgrade-db
+ - remove references to spring-ldap or spring-crowd in spring-local-settings.xml (not needed anymore)

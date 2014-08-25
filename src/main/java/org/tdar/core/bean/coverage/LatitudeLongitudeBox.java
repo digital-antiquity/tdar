@@ -1,5 +1,6 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -235,6 +236,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         Double result = obfuscatedValue;
         if (isOkayToShowExactLocation) {
             result = actualValue;
+        }
+        if (!Objects.equals(actualValue, obfuscatedValue)) {
+            setObfuscatedObjectDifferent(true);
         }
         return result;
     }

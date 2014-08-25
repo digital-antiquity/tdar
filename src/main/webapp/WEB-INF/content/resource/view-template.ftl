@@ -386,7 +386,7 @@
             <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
             <!-- ${resource.managedGeographicKeywords } -->
             <#if userAbleToViewUnobfuscatedMap>
-                <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
+                <#if resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent> [obfuscated]</#if>
             </#if>
         </p>
     </div>
