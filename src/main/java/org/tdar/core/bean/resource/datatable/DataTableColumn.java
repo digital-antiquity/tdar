@@ -36,7 +36,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;

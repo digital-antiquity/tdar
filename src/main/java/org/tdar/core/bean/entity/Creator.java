@@ -62,7 +62,6 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
-
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;

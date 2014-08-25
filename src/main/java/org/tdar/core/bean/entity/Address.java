@@ -15,7 +15,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-
 import org.tdar.core.exception.TdarValidationException;
 
 /**
