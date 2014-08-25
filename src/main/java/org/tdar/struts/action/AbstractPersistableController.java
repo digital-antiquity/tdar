@@ -555,7 +555,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         if (!ADD.equals(getActionName())) {
-            getLogger().info("id:{}, persistable:{}", getId(), p);
+            getLogger().trace("id:{}, persistable:{}", getId(), p);
         }
     }
 

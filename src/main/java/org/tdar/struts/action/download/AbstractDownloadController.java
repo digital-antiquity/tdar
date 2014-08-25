@@ -126,7 +126,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         Long irId = getInformationResourceId();
         Long irfvId = getInformationResourceFileVersionId();
 
-        getLogger().debug("IRID: {}, IRFVID: {}", irId, irfvId);
+        getLogger().trace("IRID: {}, IRFVID: {}", irId, irfvId);
         if (Persistable.Base.isNullOrTransient(irfvId) &&
                 Persistable.Base.isNullOrTransient(irId)) {
             addActionError(getText("downloadController.specify_what_to_download"));
@@ -156,7 +156,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     }
 
     public void setDownloadTransferObject(DownloadTransferObject downloadTransferObject) {
-        getLogger().debug("setting download object: {}", downloadTransferObject);
+        getLogger().trace("setting download object: {}", downloadTransferObject);
         this.downloadTransferObject = downloadTransferObject;
     }
 

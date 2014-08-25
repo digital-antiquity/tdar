@@ -355,7 +355,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String viewRss() throws TdarActionException {
         try {
             setDefaultSort(SortOption.ID_REVERSE);
-            getLogger().info("sort field {} ", getSortField());
+            getLogger().trace("sort field {} ", getSortField());
             if (getSortField() == null) {
                 setSecondarySortField(SortOption.TITLE);
             }

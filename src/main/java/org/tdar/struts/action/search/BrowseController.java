@@ -234,6 +234,10 @@ public class BrowseController extends AbstractLookupController {
                 throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
             }
             
+//            if (Persistable.Base.isTransient(getAuthenticatedUser()) && 
+//                    creator.getOccurrence() < 1 && !Objects.equals(getAuthenticatedUser(), creator)) {
+//                 throw new TdarActionException(StatusCode.NOT_FOUND, "Creator page does not exist");                        
+//             }
             
             QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
 
