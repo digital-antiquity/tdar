@@ -101,7 +101,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
-    private List<EmailMessageType> emailTypes = Arrays.asList(EmailMessageType.values());
+    private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
 
     private String submitterProperName = "";
 

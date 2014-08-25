@@ -47,6 +47,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 
@@ -80,25 +81,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     private transient InformationResourceFileService informationResourceFileService;
-    
+
     @Autowired
     private transient CategoryVariableService categoryVariableService;
 
     @Autowired
     private transient InformationResourceService informationResourceService;
-    
+
     @Autowired
     private transient EntityService entityService;
-    
+
     @Autowired
     private transient DatasetService datasetService;
 
     @Autowired
     private transient ProjectService projectService;
-    
+
     @Autowired
     private transient ObfuscationService obfuscationService;
-    
+
     private List<CategoryVariable> allDomainCategories;
 
     private Project project = Project.NULL;
@@ -134,7 +135,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
-    
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -221,7 +221,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // abstractInformationResourceController.didnt_override=%s didn't override properly
 
         try {
-            ErrorTransferObject errors = informationResourceService.importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, proxies);
+            ErrorTransferObject errors = informationResourceService.importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(),
+                    ticketId, proxies);
             processErrorObject(errors);
         } catch (Exception e) {
             addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
@@ -419,7 +420,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
         super.loadCustomViewMetadata();
-        
+
         try {
             datasetService.assignMappedDataForInformationResource(getResource());
         } catch (Exception e) {
@@ -435,10 +436,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         resolveProject();
         Project obsProj = getGenericService().find(Project.class, getProjectId());
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
-        json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(),null);
+        json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         return retval;
     }
-    
+
     @Override
     public String loadEditMetadata() throws TdarActionException {
         setProjectId(getResource().getProjectId());
@@ -492,7 +493,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (Persistable.Base.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(),null);
+        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), null);
     }
 
     public void setProject(Project project) {
@@ -794,6 +795,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getLogger().error("got an exception while evaluating whether we should show one, should we?", e);
         }
         return toReturn;
+    }
+
+    @Override
+    public List<EmailMessageType> getEmailTypes() {
+        List<EmailMessageType> types = new ArrayList<>(super.getEmailTypes());
+        if (getPersistable().hasConfidentialFiles()) {
+            types.add(EmailMessageType.REQUEST_ACCESS);
+        }
+        return types;
     }
 
 }
