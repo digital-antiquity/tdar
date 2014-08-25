@@ -237,7 +237,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         if (isOkayToShowExactLocation) {
             result = actualValue;
         }
-        if (!Objects.equals(actualValue.doubleValue(), obfuscatedValue.doubleValue())) {
+        if (!Objects.equals(actualValue, obfuscatedValue)) {
             setObfuscatedObjectDifferent(true);
         }
         return result;
