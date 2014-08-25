@@ -449,6 +449,12 @@ public class SearchIndexService {
         Date date = new Date();
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);
+        sendEmail(toReindex, CONFIG, date);
+
+    }
+
+    @Transactional(readOnly=false)
+    public void sendEmail(final List<Class<? extends Indexable>> toReindex, TdarConfiguration CONFIG, Date date) {
         if (CONFIG.isProductionEnvironment()) {
             Email email = new Email();
             email.setSubject(INDEXING_COMPLETED);
@@ -456,6 +462,5 @@ public class SearchIndexService {
             email.setUserGenerated(false);
             emailService.send(email);
         }
-
     }
 }

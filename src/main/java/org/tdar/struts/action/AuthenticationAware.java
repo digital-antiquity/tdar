@@ -88,7 +88,7 @@ public interface AuthenticationAware extends SessionDataAware {
             // first check the session
             String name = action.getPersistableClass().getSimpleName();
             Object[] msg = { action.getAuthenticatedUser(), userAction, name };
-            if (!(action.getAuthenticatedUser() == null && "view".equalsIgnoreCase(name))) {
+            if (!(action.getAuthenticatedUser() == null && "view".equalsIgnoreCase(userAction.name()))) {
                 // don't log anonymous users
                 getLogger().info("user {} is TRYING to {} a {}", msg);
             }
