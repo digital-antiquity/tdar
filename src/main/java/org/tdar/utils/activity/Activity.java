@@ -20,6 +20,7 @@ public class Activity implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private static final String MOZILLA = "Mozilla/5.0 (compatible;";
     private Date startDate;
+    private Date freemarkerHandoffDate;
     private Date endDate;
     private Long totalTime = -1L;
     private String name;
@@ -39,6 +40,8 @@ public class Activity implements Serializable {
 
     private Float percentDone;
 
+    private Object shortName;
+
     public Activity() {
         start();
     }
@@ -51,8 +54,9 @@ public class Activity implements Serializable {
     public Activity(HttpServletRequest httpServletRequest, TdarUser user) {
         this();
         HttpServletRequest request = ServletActionContext.getRequest();
-        this.name = String.format("%s:%s?%s [%s]", request.getMethod(), request.getServletPath(),
-                request.getQueryString() == null ? "" : request.getQueryString(), request.getHeader("User-Agent"));
+        this.setShortName(String.format("%s:%s?%s", request.getMethod(), request.getServletPath(),
+                request.getQueryString() == null ? "" : request.getQueryString()));
+        this.name = String.format("%s [%s]", getShortName(), request.getHeader("User-Agent"));
 
         this.setBrowser(request.getHeader("User-Agent"));
         this.setHost(request.getRemoteHost());
@@ -135,9 +139,25 @@ public class Activity implements Serializable {
         this.message = message;
     }
 
+    public String getEndString() {
+        return String.format(">> activity end: %s (%s ms%s)", getShortName(), getTotalTime(), getFreemarkerFormattedTime());
+    }
+
+    public String getStartString() {
+        return String.format("<< activity begin: %s ", getName());
+    }
+
     @Override
     public String toString() {
         return String.format("%s %s - (%s ms)", getName(), getStartDate(), getTotalTime());
+    }
+
+    private String getFreemarkerFormattedTime() {
+        if (freemarkerHandoffDate != null && endDate != null) {
+            return String.format(" | action: %s ms; freemarker:%s ms", getFreemarkerHandoffDate().getTime() - getStartDate().getTime(), getEndDate().getTime()
+                    - getFreemarkerHandoffDate().getTime());
+        }
+        return "";
     }
 
     public Long getTotalTime() {
@@ -206,5 +226,21 @@ public class Activity implements Serializable {
 
     public void setPercentDone(Float percentDone) {
         this.percentDone = percentDone;
+    }
+
+    public Date getFreemarkerHandoffDate() {
+        return freemarkerHandoffDate;
+    }
+
+    public void setFreemarkerHandoffDate(Date freemarkerHandoffDate) {
+        this.freemarkerHandoffDate = freemarkerHandoffDate;
+    }
+
+    public Object getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(Object shortName) {
+        this.shortName = shortName;
     }
 }

@@ -167,7 +167,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
-        getLogger().debug("to Freemarker");
         return resultName;
     }
 
