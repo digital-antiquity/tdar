@@ -27,7 +27,7 @@
         <td>${email.status}</td>
         <td>${email.subject!'no subject'}</td>
     </tr>
-    <tr>
+    <tr class="<#if email.status=='SENT' || !email.userGenerated>hidden hide</#if>">
         <td colspan=6>
         <pre>${email.message}</pre>
         <hr/>

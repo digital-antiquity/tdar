@@ -12,17 +12,17 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -30,6 +30,20 @@ import org.tdar.search.index.LookupSource;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
 
+    @Test
+    @Rollback
+    public void testCreatorEquality() {
+        Person person = new Person();
+        person.setId(10l);
+        assertNotEquals(person,null);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        assertNotEquals(person, llb);
+        assertEquals(person, (Creator)person);
+        Institution institution = new Institution();
+        institution.setId(10l);
+        assertNotEquals(person, institution);
+    }
+    
     @Test
     public void testSkeletonPersonRetentionInSet() {
         HashSet<Person> personSet = new HashSet<Person>();
