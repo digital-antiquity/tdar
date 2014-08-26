@@ -1,10 +1,12 @@
 package org.tdar.web.functional;
 
 import static org.junit.Assert.assertTrue;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +24,8 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText("Request Access, Submit Correction")).first().click();
-        waitFor(By.id("messgaeBody"));
-        find(By.id("messageBody")).sendKeys("This is a test email");
-        Thread.sleep(2000);
+        waitFor(By.id("messageBody")).sendKeys("This is a test email");
         find(By.name("send")).click();
-        Thread.sleep(2000);
         waitFor("#email-close-button");
         reportJavascriptErrors();
         assertTrue(getText().contains("Your message has been sent"));
@@ -42,9 +41,8 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText("Request Access, Submit Correction")).first().click();
-        Thread.sleep(2000);
-        find(By.name("send")).click();
-        Thread.sleep(2000);
+        waitFor(By.name("send")).click();
+        waitFor( visibilityOf( find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
         find(By.id("email-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
