@@ -294,6 +294,16 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
             }
         }
     }
+    
+    @Override
+    public boolean isRefund() {
+        String value = getValuesFor(NelnetTransactionItemResponse.TRANSACTION_TYPE);
+        NelnetTransactionType type = NelnetTransactionType.fromOrdinal(Integer.parseInt(value));
+        if (type == NelnetTransactionType.CREDIT_CARD_REFUND) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Map<String, String[]> getValues() {

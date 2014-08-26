@@ -23,4 +23,6 @@ public interface TransactionResponse {
 
     String getValuesFor(String key);
 
+    boolean isRefund();
+
 }

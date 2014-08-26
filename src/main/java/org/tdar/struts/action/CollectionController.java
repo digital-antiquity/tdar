@@ -277,7 +277,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return;
         }
-        getLogger().debug("child collections: begin");
+        getLogger().trace("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
@@ -296,9 +296,9 @@ public class CollectionController extends AbstractPersistableController<Resource
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
-        getLogger().debug("child collections: sort");
+        getLogger().trace("child collections: sort");
         Collections.sort(collections);
-        getLogger().debug("child collections: end");
+        getLogger().trace("child collections: end");
 
         // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
@@ -322,7 +322,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
-        getLogger().debug("lucene: end");
+        getLogger().trace("lucene: end");
     }
 
     public List<Long> getSelectedResourceIds() {

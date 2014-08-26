@@ -576,12 +576,12 @@ public class InvoiceService {
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
 
             BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
-            billingResponse = genericDao.markWritable(billingResponse);
+            billingResponse = genericDao.markWritableOnExistingSession(billingResponse);
             genericDao.saveOrUpdate(billingResponse);
-            if (invoice != null) {
+            if (invoice != null && !response.isRefund()) {
                 // if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient
                 // item in p.addresses)
-                invoice = genericDao.markWritable(invoice);
+                invoice = genericDao.markWritableOnExistingSession(invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 // Assume that an invoice owner will always want to see the contributor menus.
                 updateAddresses(response, invoice);

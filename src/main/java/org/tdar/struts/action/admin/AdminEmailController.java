@@ -2,6 +2,8 @@ package org.tdar.struts.action.admin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +42,18 @@ public class AdminEmailController extends AuthenticationAware.Base implements Pr
     @Action("email")
     public String execute() {
         setEmails(getGenericService().findAll(Email.class));
+        Collections.sort(emails, new Comparator<Email>() {
+
+            @Override
+            public int compare(Email o1, Email o2) {
+                if (o1.getId() > o2.getId()) {
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
+            }
+        });
         return SUCCESS;
     }
 
