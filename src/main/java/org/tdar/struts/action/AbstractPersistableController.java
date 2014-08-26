@@ -645,7 +645,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *            the startTime to set
      */
     public void setStartTime(Long startTime) {
-        getLogger().info("set start time: " + startTime);
+        getLogger().trace("set start time: " + startTime);
         this.startTime = startTime;
     }
 
