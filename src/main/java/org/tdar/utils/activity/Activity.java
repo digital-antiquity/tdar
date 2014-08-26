@@ -154,7 +154,7 @@ public class Activity implements Serializable {
 
     private String getFreemarkerFormattedTime() {
         if (freemarkerHandoffDate != null && endDate != null) {
-            return String.format(" | action: %s ms; freemarker:%s ms", getFreemarkerHandoffDate().getTime() - getStartDate().getTime(), getEndDate().getTime()
+            return String.format(" | action: %s ms; result:%s ms", getFreemarkerHandoffDate().getTime() - getStartDate().getTime(), getEndDate().getTime()
                     - getFreemarkerHandoffDate().getTime());
         }
         return "";
