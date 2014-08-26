@@ -60,7 +60,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
                 activity.setUser(genericService.find(TdarUser.class, sessionData.getTdarUserId()));
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
-            logger.debug("<< activity begin: {} ", activity);
+            logger.debug(activity.getStartString());
         }
 
         // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
@@ -73,8 +73,11 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
             throw t;
         } finally {
             if (activity != null) {
+                if (action instanceof TdarActionSupport) {
+                    activity.setFreemarkerHandoffDate(((TdarActionSupport) action).getFreemarkerProcessingTime());
+                }
                 activity.end();
-                logger.debug(">> activity end: {} ", activity);
+                logger.debug(activity.getEndString());
             }
             NDC.pop();
         }

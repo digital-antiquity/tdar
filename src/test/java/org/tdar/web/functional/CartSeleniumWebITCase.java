@@ -18,9 +18,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
+import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.UserRegistration;
 import org.tdar.utils.Pair;
 
@@ -108,7 +110,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // choose the large package
         find("#divlarge button").click();
 
-        // review
+        // review  (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
+        waitForPageload();
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());

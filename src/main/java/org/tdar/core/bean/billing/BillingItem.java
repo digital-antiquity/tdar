@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-
 import org.tdar.core.exception.TdarValidationException;
 
 /**

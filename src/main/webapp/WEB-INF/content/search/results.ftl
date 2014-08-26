@@ -159,7 +159,7 @@
             <#list collectionResults as col>
                 <#if (col_index >= current)> 
                 <#if col?has_content>
-                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name!"unnamed"}</a></li>
                 </#if>
                 </#if>
             </#list>

@@ -20,7 +20,6 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
-
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**

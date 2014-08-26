@@ -21,7 +21,6 @@ import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Sortable;
-
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 

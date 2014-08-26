@@ -29,7 +29,6 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;

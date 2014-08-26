@@ -62,7 +62,6 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
-
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -87,7 +86,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso({ Person.class, Institution.class, TdarUser.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.Creator")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider, JsonModel,
         Obfuscatable, Validatable, Addressable, XmlLoggable {
 
@@ -202,11 +201,10 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
     @Column(nullable = false, name = "hidden_if_unreferenced", columnDefinition = "boolean default FALSE")
-
     private transient Float score = -1f;
     private transient Explanation explanation;
     private transient boolean readyToIndex = true;
@@ -265,6 +263,9 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Override
     public boolean equals(Object candidate) {
+        if (candidate == null || !(candidate instanceof Creator)) {
+            return false;
+        }
         try {
             return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {
@@ -412,7 +413,6 @@ public abstract class Creator implements Persistable, HasName, HasStatus, Indexa
 
     @Override
     @XmlTransient
-    
     public boolean isObfuscated() {
         return obfuscated;
     }

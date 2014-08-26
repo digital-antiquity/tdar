@@ -46,7 +46,6 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;

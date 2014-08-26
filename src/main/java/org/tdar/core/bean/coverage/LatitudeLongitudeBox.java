@@ -1,5 +1,6 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -30,7 +31,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
@@ -236,6 +236,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         Double result = obfuscatedValue;
         if (isOkayToShowExactLocation) {
             result = actualValue;
+        }
+        if (!Objects.equals(actualValue, obfuscatedValue)) {
+            setObfuscatedObjectDifferent(true);
         }
         return result;
     }
@@ -525,7 +528,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private transient Boolean obfuscatedObjectDifferent;
 
     @XmlTransient
-    
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }

@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**

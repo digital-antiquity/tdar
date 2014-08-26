@@ -1,5 +1,8 @@
 package org.tdar.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 
@@ -10,7 +13,7 @@ public enum EmailMessageType implements Localizable, HasLabel {
     SUGGEST_CORRECTION("email-form/correction.ftl");
 
     private String templateName;
-    
+
     public boolean requiresResource() {
         return true;
     }
@@ -35,6 +38,16 @@ public enum EmailMessageType implements Localizable, HasLabel {
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
+    }
+
+    public static List<EmailMessageType> valuesWithoutConfidentialFiles() {
+        ArrayList<EmailMessageType> types = new ArrayList<EmailMessageType>();
+        for (EmailMessageType type : values()) {
+            if (type != REQUEST_ACCESS) {
+                types.add(type);
+            }
+        }
+        return types;
     }
 
 }

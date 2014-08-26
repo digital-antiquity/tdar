@@ -22,7 +22,6 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**

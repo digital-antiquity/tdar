@@ -13,7 +13,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.hibernate.CacheMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
@@ -168,7 +167,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
-        getLogger().debug("to Freemarker");
         return resultName;
     }
 
@@ -647,7 +645,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *            the startTime to set
      */
     public void setStartTime(Long startTime) {
-        getLogger().info("set start time: " + startTime);
+        getLogger().trace("set start time: " + startTime);
         this.startTime = startTime;
     }
 
