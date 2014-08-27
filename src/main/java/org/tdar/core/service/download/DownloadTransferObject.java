@@ -119,7 +119,7 @@ public class DownloadTransferObject implements Serializable {
         if (CollectionUtils.size(downloads) > 1) {
             return new DownloadLockInputStream(getZipInputStream(), this);
         }
-        logger.debug("{}", downloads.get(0));
+        logger.trace("{}", downloads.get(0));
         return new DownloadLockInputStream(downloads.get(0).getInputStream(), this);
     }
 

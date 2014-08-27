@@ -23,7 +23,7 @@ API_SAVE=`zgrep -c "API CREATED" ${FILE}`
 ADVANCEDSEARCH=`zgrep -c "searchType=advanced" ${FILE}`
 ADVANCEDSEARCH=`expr ${ADVANCEDSEARCH} / 2`
 
-DOWNLOADS=`zgrep "downloading" ${FILE} | grep -v "deriv" | wc -l`
+DOWNLOADS=`zgrep -i "downloading" ${FILE} | egrep -v "\_(sm|md|lg)\.jpg" | wc -l`
 
 CREATOR=`zgrep -c "browseCreators:" ${FILE}`
 COLLECTION=`zgrep -c "browseCollections:" ${FILE}`
