@@ -1313,6 +1313,9 @@
                 </includes>
             </resource>
         </resources>
+        <filters>
+            <filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
+        </filters>
         <testResources>
             <testResource>
                 <directory>src/main/webapp</directory>
