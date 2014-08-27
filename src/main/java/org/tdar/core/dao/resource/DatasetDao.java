@@ -253,7 +253,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         if (logger.isDebugEnabled()) {
             time = System.currentTimeMillis() - time;
-            logger.info("Query: {} ; generation: {} {}->{}", queryTime, time, results.size(), toReturn.size());
+            logger.debug("Query: {} ; generation: {} ", queryTime, time);
         }
         return toReturn;
     }

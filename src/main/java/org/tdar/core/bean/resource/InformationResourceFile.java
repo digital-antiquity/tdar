@@ -327,7 +327,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getLatestTranslatedVersion() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(getLatestVersion()) && version.isTranslated()) {
-                logger.info("version: {}", version);
+                logger.trace("version: {}", version);
                 return version;
             }
         }
