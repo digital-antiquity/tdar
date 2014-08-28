@@ -526,7 +526,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     @DoNotObfuscate(reason = "always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
-        getLogger().info("get potential parents");
+        getLogger().trace("get potential parents");
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();

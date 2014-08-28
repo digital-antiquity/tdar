@@ -161,7 +161,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        getLogger().debug("term: {} , minLength: {}", term, getMinLookupLength());
+        getLogger().trace("term: {} , minLength: {}", term, getMinLookupLength());
         setLookupSource(LookupSource.KEYWORD);
 
         if (StringUtils.isBlank(keywordType)) {

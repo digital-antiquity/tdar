@@ -271,7 +271,7 @@ public class Invoice extends Base implements Updatable {
                     totalResources += numberOfResources * quantity;
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug("{}", this);
+                logger.trace("{}", this);
             }
             calculatedCost -= couponValue;
             if (calculatedCost < 0) {
