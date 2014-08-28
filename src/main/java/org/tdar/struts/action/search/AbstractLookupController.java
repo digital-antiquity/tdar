@@ -47,6 +47,7 @@ import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -472,7 +473,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
-        jsonifyResult(JsonLookupFilter.class);
+        if (isEditor()) {
+            jsonifyResult(JsonAdminLookupFilter.class);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
         return SUCCESS;
     }
 

@@ -37,6 +37,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -383,6 +384,11 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setOrcidId(String orcidId) {
         this.orcidId = orcidId;
+    }
+
+    @JsonView(JsonAdminLookupFilter.class)
+    public boolean isRegistered() {
+        return false;
     }
 
 }

@@ -90,7 +90,7 @@ TDAR.datatable = function() {
                         $dataTable.data("selectedResults", _data.selectedResults);
 
                         //similarly, add  isSelectedResult property to each result
-                        if(options.selectableRows) {
+                        if(options.selectableRows && _data.resources) {
                             if(!_data.selectedResults) {
                                 _data.selectedResults = [];
                             }
