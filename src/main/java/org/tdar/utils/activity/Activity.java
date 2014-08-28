@@ -160,12 +160,17 @@ public class Activity implements Serializable {
     }
 
     public long getResultTime() {
-        return getEndDate().getTime()
-                - getFreemarkerHandoffDate().getTime();
+        if (getFreemarkerHandoffDate() != null && getEndDate() != null) {
+            return getEndDate().getTime() - getFreemarkerHandoffDate().getTime();
+        }
+        return -1l;
     }
 
     public long getActionTime() {
-        return getFreemarkerHandoffDate().getTime() - getStartDate().getTime();
+        if (getFreemarkerHandoffDate() != null && getStartDate() != null) {
+            return getFreemarkerHandoffDate().getTime() - getStartDate().getTime();
+        }
+        return -1l;
     }
 
     public Long getTotalTime() {

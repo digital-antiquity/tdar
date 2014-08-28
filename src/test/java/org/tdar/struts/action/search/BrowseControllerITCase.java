@@ -36,13 +36,13 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowsePersonWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+    public void testBrowsePersonWithResults() throws Exception {
         testBrowseController(getAdminUser());
     }
 
     @Test
     @Rollback
-    public void testBrowsePersonHiddenWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+    public void testBrowsePersonHiddenWithResults() throws Exception {
         getBasicUser().setOccurrence(0L);
         genericService.saveOrUpdate(getBasicUser());
         testBrowseController(getBasicUser());
@@ -63,8 +63,9 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         boolean expectedException = false;
         controller.setId(person.getId());
         try {
+            controller.prepare();
             assertEquals(Action.SUCCESS, controller.browseCreators());
-        } catch (TdarActionException ex) {
+        } catch (Exception ex) {
             expectedException = true;
         }
         assertTrue("Exception expected but not found", expectedException);
@@ -72,7 +73,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+    public void testBrowseInstitutionWithResults() throws Exception {
         Institution institution = new Institution("testBrowseControllerInstitution");
         genericService.save(institution);
         testBrowseController(institution);
@@ -88,6 +89,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(institution.getId());
+        controller.prepare();
         controller.browseCreators();
         List<Resource> results = controller.getResults();
         assertTrue(results.contains(doc));
@@ -115,7 +117,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         return getBasicUser();
     }
 
-    private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
+    private void testBrowseController(Creator creator) throws Exception {
         Document doc = genericService.find(Document.class, setupDatedDocument());
         ResourceCreator rc = new ResourceCreator(creator, ResourceCreatorRole.CONTRIBUTOR);
         assertTrue(rc.isValidForResource(doc));
@@ -124,6 +126,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(creator.getId());
+        controller.prepare();
         assertEquals(Action.SUCCESS, controller.browseCreators());
         assertEquals(creator, controller.getCreator());
         log.info(controller.getResults());
