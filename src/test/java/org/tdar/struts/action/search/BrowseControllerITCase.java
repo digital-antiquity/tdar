@@ -25,12 +25,12 @@ import com.opensymphony.xwork2.Action;
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Autowired
-    private BrowseController controller;
+    private BrowseCreatorController controller;
     private Logger log = Logger.getLogger(getClass());
 
     @Before
     public void initController() {
-        controller = generateNewInitializedController(BrowseController.class);
+        controller = generateNewInitializedController(BrowseCreatorController.class);
         controller.setRecordsPerPage(99);
     }
 
@@ -58,7 +58,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         person.setOccurrence(0L);
         genericService.saveOrUpdate(person);
         genericService.synchronize();
-        controller = generateNewController(BrowseController.class);
+        controller = generateNewController(BrowseCreatorController.class);
         init(controller, null);
         boolean expectedException = false;
         controller.setId(person.getId());
