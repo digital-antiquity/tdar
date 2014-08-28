@@ -49,4 +49,9 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.OTHER_KEYWORD.getUrlNamespace();
+    }
+
 }

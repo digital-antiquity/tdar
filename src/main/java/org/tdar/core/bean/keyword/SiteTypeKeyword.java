@@ -85,4 +85,9 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.SITE_TYPE_KEYWORD.getUrlNamespace();
+    }
+
 }

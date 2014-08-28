@@ -81,5 +81,27 @@ public enum KeywordType implements Localizable {
         }
         return null;
     }
+
+    public String getUrlNamespace() {
+        switch (this) {
+            case CULTURE_KEYWORD:
+                return "browse/culture";
+            case INVESTIGATION_TYPE:
+                return "browse/investigationType";
+            case GEOGRAPHIC_KEYWORD:
+                return "browse/geographic";
+            case MATERIAL_KEYWORD:
+                return "browse/material";
+            case OTHER_KEYWORD:
+                return "browse/other";
+            case SITE_NAME_KEYWORD:
+                return "browse/siteName";
+            case SITE_TYPE_KEYWORD:
+                return "browse/siteType";
+            case TEMPORAL_KEYWORD:
+                return "browse/temporal";
+        }
+        return null;
+    }
     
 }

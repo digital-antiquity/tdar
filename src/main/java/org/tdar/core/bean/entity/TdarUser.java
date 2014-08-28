@@ -32,6 +32,9 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.json.JsonAdminLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Indexed
@@ -179,6 +182,8 @@ public class TdarUser extends Person {
 
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @JsonView(JsonAdminLookupFilter.class)
+    @Override
     public boolean isRegistered() {
         return true;
     }

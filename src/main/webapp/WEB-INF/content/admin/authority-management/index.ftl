@@ -5,7 +5,7 @@
     <title>Authority Management - Merge Duplicates</title>
     <script type='text/javascript'>
         $(function () {
-            TDAR.auth.initAuthTable();
+            TDAR.authority.initAuthTable();
             $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", function () {
                         $("#dupe_datatable").dataTable().fnDraw();
                     }, 500);

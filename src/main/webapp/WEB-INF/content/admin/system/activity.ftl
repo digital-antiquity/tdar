@@ -42,6 +42,8 @@
         <th>date</th>
         <th>user</th>
         <th>total time (ms)</th>
+        <th>action (ms)</th>
+        <th>result (ms)</th>
         <th>request</th>
     </tr>
     </thead>
@@ -59,6 +61,8 @@
             <td>${activity.startDate?datetime}</td>
             <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
             <td>${(activity.totalTime?c)!default("-")}</td>
+            <td>${(activity.actionTime!0?c)!default("-")}</td>
+            <td>${(activity.resultTime!0?c)!default("-")}</td>
             <#noescape>
                 <td width=550>${(activity.name!"")?html?replace("&", "<br>&")}</td>
             </#noescape>

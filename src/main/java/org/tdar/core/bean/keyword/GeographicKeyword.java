@@ -111,4 +111,8 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.GEOGRAPHIC_KEYWORD.getUrlNamespace();
+    }
 }

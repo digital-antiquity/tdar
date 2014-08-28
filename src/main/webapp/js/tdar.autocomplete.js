@@ -747,7 +747,16 @@ TDAR.autocomplete = (function () {
      */
     var _delegateAnnotationKey = function (id, prefix, delim) {
         $(id).delegate("." + prefix + "AutoComplete", "focusin", function () {
-            _applyKeywordAutocomplete("." + prefix + "AutoComplete", delim, {}, false);
+            _applyGenericAutocomplete($("." + prefix + "AutoComplete"), {
+                url: "lookup/" + delim,
+                dataPath: "items",
+                sortField: 'LABEL',
+                minLength: 2,
+                customDisplayMap: function(item)  {
+                    item.label = item.key;
+                    return item;
+                }
+            });
         });
     };
 

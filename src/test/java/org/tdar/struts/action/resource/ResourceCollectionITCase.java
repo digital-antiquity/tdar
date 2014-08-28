@@ -51,7 +51,7 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.search.BrowseController;
+import org.tdar.struts.action.search.BrowseCollectionController;
 
 import com.opensymphony.xwork2.Action;
 
@@ -603,7 +603,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 new ArrayList<Resource>(), parentCollection.getId());
         genericService.saveOrUpdate(parentCollection);
 
-        BrowseController controller_ = generateNewInitializedController(BrowseController.class);
+        BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
         Long fileId = testFile.getId();
         searchIndexService.flushToIndexes();
         searchIndexService.indexAll(getAdminUser(), Resource.class);
@@ -677,7 +677,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         evictCache();
         searchIndexService.index(collection1, collection2);
         searchIndexService.flushToIndexes();
-        BrowseController browseController = generateNewInitializedController(BrowseController.class);
+        BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
         browseController.browseCollections();
         assertTrue("should see child collection of hidden parent", browseController.getResults().contains(collection2));

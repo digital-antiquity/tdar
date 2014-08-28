@@ -25,6 +25,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Dedupable;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
@@ -44,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Rev$
  */
 @SuppressWarnings("rawtypes")
-public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
+public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Addressable {
 
     @Transient
     public static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "approved", "selectable", "level", "occurrence" }; // fixme: should ID be here too?
@@ -218,6 +219,5 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         public void setOccurrence(Long occurrence) {
             this.occurrence = occurrence;
         }
-
     }
 }

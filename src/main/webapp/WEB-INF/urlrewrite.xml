@@ -73,6 +73,46 @@
     </rule>
 
     <rule>
+        <from>^/browse/culture/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/siteName/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/siteType/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=SITE_TYPE_KEYWORD&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/investigation/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=INVESTIGATION_TYPE&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/materialType/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=MATERIAL_TYPE&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/geographic/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=GEOGRAPHIC_KEYWORD&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/temporal/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=TEMPORAL_KEYWORDS&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/other/(\d+)\??(.*)</from>
+        <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;$2</to>
+    </rule>
+
+    <rule>
         <from>^/(coding-sheet)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=CODING_SHEET&amp;startRecord=0
         </to>

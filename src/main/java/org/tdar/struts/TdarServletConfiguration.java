@@ -115,7 +115,7 @@ public class TdarServletConfiguration implements Serializable, WebApplicationIni
     private void configureUrlRewriteRule(ServletContext container) {
         Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);
         urlRewriteFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-        urlRewriteFilter.setInitParameter("confReloadCheckInterval", "-1");
+        urlRewriteFilter.setInitParameter("confReloadCheckInterval", configuration.getURLRewriteRefresh());
         urlRewriteFilter.setInitParameter("logLevel", "INFO");
     }
 
