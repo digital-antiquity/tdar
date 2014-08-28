@@ -140,11 +140,11 @@ public class TdarConfiguration {
         // Note: tdar timestamps do not currently encode timezone information. However, we set the timezone here because there are other systems (e.g.
         // DateBridge) that convert datetime values to UTC. Therefore. We set the default timezone to UTC to prevent these systems from modifying the
         // timestamp.
-        
+
         // use JodaTime to load TimeZone
         DateTimeZone timeZone = DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
         DateTimeZone.setDefault(timeZone);
-        //use JodaTime TiemZone to initialize Java TimeZone
+        // use JodaTime TiemZone to initialize Java TimeZone
         TimeZone.setDefault(timeZone.toTimeZone());
 
     }
@@ -810,6 +810,10 @@ public class TdarConfiguration {
      */
     public int getAsyncWaitToTrustCache() {
         return 1;
+    }
+
+    public String getURLRewriteRefresh() {
+        return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
     }
 
 }

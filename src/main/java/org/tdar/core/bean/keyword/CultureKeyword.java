@@ -101,4 +101,8 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.CULTURE_KEYWORD.getUrlNamespace();
+    }
 }

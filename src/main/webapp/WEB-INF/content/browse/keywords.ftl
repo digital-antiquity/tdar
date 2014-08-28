@@ -12,18 +12,25 @@
     <#if keyword.synonyms?has_content>
     <p><#list keyword.synonyms![] as synonym> ${synonym.label} </#list></p>
     </#if>
-    <p>${keyword.definition}</p>
+        <@nav.keywordToolbar "view" />
+    
+    <p>${keyword.definition!''}</p>
 </div>
 
     <#if ( results?? && results?size > 0) >
-    <div id="divResultsSortControl">
-        <div class="row">
-            <div class="span4">
-                <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"  />
+        <div id="divResultsSortControl">
+            <div class="row">
+                <div class="span4">
+                    <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"  />
+                </div>
             </div>
         </div>
-    </div>
-    <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+        <div class="tdarresults">
+            <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+        </div>
     
-</#if>
+    </#if>
+
+        <@search.basicPagination "Results"/>
+
 </#escape>

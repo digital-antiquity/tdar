@@ -37,8 +37,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     @Autowired
     private transient SearchService searchService;
     
-    private List<Resource> results;
-
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -98,8 +96,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
-
-        setResults(results);
         return SUCCESS;
     }
 

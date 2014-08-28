@@ -100,7 +100,7 @@
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
-    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
+    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
         <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>

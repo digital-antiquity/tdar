@@ -49,4 +49,8 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
         return getLabel();
     }
 
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.INVESTIGATION_TYPE.getUrlNamespace();
+    }
 }

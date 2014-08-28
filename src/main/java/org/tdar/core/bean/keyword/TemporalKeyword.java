@@ -49,5 +49,10 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
     public String getSynonymFormattedName() {
         return getLabel();
     }
+    
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.TEMPORAL_KEYWORD.getUrlNamespace();
+    }
 
 }
