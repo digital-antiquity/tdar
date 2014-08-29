@@ -67,7 +67,7 @@ public class ResourceEvaluator implements Serializable {
      * ResourceEvaluator, and the ResourceType.
      */
     public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
-        logger.info("f: {} s: {} r: {}", new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
+        logger.trace("f: {} s: {} r: {}", new Object[] { account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources() });
         if (evaluatesNumberOfResources()) {
             if (!getUncountedResourceTypes().contains(resourceType) && (account.getAvailableResources() <= 0)) {
                 return false;

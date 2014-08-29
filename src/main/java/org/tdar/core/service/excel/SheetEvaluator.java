@@ -185,7 +185,11 @@ public class SheetEvaluator {
         if (cell == null) {
             return null;
         }
-        List<Integer> errors = Arrays.asList(cell.getRowIndex() + 1, cell.getColumnIndex() + 1);
+        // setting up error array
+        List<Object> errors = new ArrayList<>();
+        errors.add(cell.getSheet().getSheetName());
+        errors.add(cell.getRowIndex() + 1);
+        errors.add(cell.getColumnIndex() + 1);
         try {
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
                 throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
