@@ -193,7 +193,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     }
 
     @XmlTransient
-    
     public List<OntologyNode> getSuggestions() {
         return suggestions;
     }
@@ -205,7 +204,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     public void setMappedToData(DataTableColumn col) {
         mappedToData.add(col.getId());
     }
-    
+
     @XmlTransient
     public String getFormattedTerm() {
         return String.format("%s (%s)", getTerm(), getCode());

@@ -36,7 +36,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 @ParentPackage("secured")
 @Results({
         @Result(name = "exception", type = TdarActionSupport.HTTPHEADER, params = { "error", "500" }),
-        @Result(name = TdarActionSupport.INPUT , type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 @HttpForbiddenErrorResponseOnly
 public class UploadController extends AuthenticationAware.Base {
@@ -73,7 +73,7 @@ public class UploadController extends AuthenticationAware.Base {
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
-                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream" , "statusCode","400"})
+                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "400" })
             })
     @PostOnly
     public String upload() {

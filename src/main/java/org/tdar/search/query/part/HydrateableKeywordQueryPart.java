@@ -33,7 +33,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
 
     public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
         setOperator(Operator.OR);
-        setActualClass((Class<K>)type.getKeywordClass());
+        setActualClass((Class<K>) type.getKeywordClass());
         setFieldName(type.getFieldName());
         setFieldValues(fieldValues_);
     }

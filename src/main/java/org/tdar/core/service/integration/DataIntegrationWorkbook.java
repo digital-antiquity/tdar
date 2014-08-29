@@ -52,7 +52,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class DataIntegrationWorkbook implements Serializable {
 
     private static final long serialVersionUID = -2452046179173301666L;
-    
+
     private transient ExcelService excelService;
     private Workbook workbook;
     private List<IntegrationColumn> integrationColumns;

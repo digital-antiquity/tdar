@@ -15,7 +15,7 @@ public enum KeywordType implements Localizable {
     SITE_NAME_KEYWORD(SiteNameKeyword.class),
     SITE_TYPE_KEYWORD(SiteTypeKeyword.class),
     TEMPORAL_KEYWORD(TemporalKeyword.class);
-    
+
     private Class<? extends Keyword> keywordClass;
 
     private KeywordType(Class<? extends Keyword> cls) {
@@ -103,5 +103,5 @@ public enum KeywordType implements Localizable {
         }
         return null;
     }
-    
+
 }

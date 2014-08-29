@@ -19,7 +19,7 @@ public class WeeklyPopularResourceCache extends Persistable.Base implements Comp
     private static final long serialVersionUID = 4401314235170180736L;
 
     @OneToOne
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Resource resource;
 
     public WeeklyPopularResourceCache() {

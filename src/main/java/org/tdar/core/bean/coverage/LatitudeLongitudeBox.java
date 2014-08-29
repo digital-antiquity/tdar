@@ -144,7 +144,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    
+
     public boolean isObfuscatedObjectDifferent() {
         if (obfuscatedObjectDifferent == null) {
             logger.debug("should call obfuscate before testing obfuscation");
@@ -515,7 +515,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     @XmlTransient
-    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -538,7 +537,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     // @XmlTransient
-    
     public Set<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;

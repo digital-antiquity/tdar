@@ -60,7 +60,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     // result name constants
     private boolean hideExceptionArea = false;
     private Date freemarkerProcessingTime = null;
-    
+
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
     // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
     private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";

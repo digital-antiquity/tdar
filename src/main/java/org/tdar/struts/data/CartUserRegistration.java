@@ -18,7 +18,7 @@ public class CartUserRegistration extends UserRegistration {
     public String getPrefix() {
         return "registrationInfo.";
     };
-    
+
     @Override
     public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchaService) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {

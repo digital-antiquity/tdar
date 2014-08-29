@@ -43,7 +43,7 @@ import org.tdar.utils.MessageHelper;
  * @see <a href='http://static.springsource.org/spring-ldap/site/reference/html/index.html'>Spring LDAP documentation</a>
  * 
  */
-//@Service
+// @Service
 public class SpringLdapDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 

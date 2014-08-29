@@ -90,7 +90,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @Actions(
     {
             @Action(value = "process",
-//                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                             @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),

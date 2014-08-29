@@ -51,7 +51,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     @Autowired
     private transient XmlService xmlService;
-    
+
     @Autowired
     private transient AuthenticationService authenticationService;
 
@@ -69,8 +69,8 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     private ByteArrayInputStream jsonInputStream;
 
-    @Action(value = "active-users", results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    @Action(value = "active-users", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String listActiveUsers() {
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null).getBytes()));

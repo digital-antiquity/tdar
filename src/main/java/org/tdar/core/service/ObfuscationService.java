@@ -123,7 +123,7 @@ public class ObfuscationService {
         if (obj == null) {
             return;
         }
-        
+
         if (Iterable.class.isAssignableFrom(obj.getClass())) {
             for (Object obj_ : (Iterable<?>) obj) {
                 if (obj_ instanceof Obfuscatable) {
@@ -140,7 +140,7 @@ public class ObfuscationService {
             }
         }
     }
-    
+
     public boolean isWritableSession() {
         return genericDao.isSessionWritable();
     }

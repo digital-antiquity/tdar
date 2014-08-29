@@ -102,8 +102,6 @@ public class BrowseCollectionController extends AbstractLookupController {
     @Autowired
     private transient ResourceService resourceService;
 
-
-
     public Creator getAuthorityForDup() {
         return entityService.findAuthorityFromDuplicate(creator);
     }
@@ -144,7 +142,6 @@ public class BrowseCollectionController extends AbstractLookupController {
     public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
-
 
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
@@ -191,7 +188,6 @@ public class BrowseCollectionController extends AbstractLookupController {
         this.inputStream = inputStream;
     }
 
-
     public boolean isShowAdminInfo() {
         return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
     }
@@ -199,7 +195,6 @@ public class BrowseCollectionController extends AbstractLookupController {
     public boolean isShowBasicInfo() {
         return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
     }
-
 
     public Long getViewCount() {
         return viewCount;

@@ -81,11 +81,12 @@ public class BulkManifestProxy implements Serializable {
     private EntityService entityService;
     private BulkUploadTemplateService bulkUploadTemplateService;
 
-    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2, ExcelService excelService, BulkUploadTemplateService bulkUploadTemplateService, EntityService entityService, ReflectionService reflectionService) {
+    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2, ExcelService excelService,
+            BulkUploadTemplateService bulkUploadTemplateService, EntityService entityService, ReflectionService reflectionService) {
         this.sheet = sheet2;
         this.allValidFields = allValidFields2;
         this.cellLookupMap = cellLookupMap2;
-        this.excelService  = excelService;
+        this.excelService = excelService;
         this.bulkUploadTemplateService = bulkUploadTemplateService;
         this.entityService = entityService;
         this.reflectionService = reflectionService;
@@ -112,9 +113,6 @@ public class BulkManifestProxy implements Serializable {
         }
         return filenames.contains(filename);
     }
-
-    
-
 
     /**
      * Read the entire excel file in row-by-row. Process the row by looking at
@@ -183,7 +181,7 @@ public class BulkManifestProxy implements Serializable {
             }
         }
 
-        // report on missing files that are not in the excel template, or missing files that are not being uploaded 
+        // report on missing files that are not in the excel template, or missing files that are not being uploaded
         for (String filename : getResourcesCreated().keySet()) {
             if (isCaseSensitive()) {
                 allFilenames.remove(filename);
@@ -199,11 +197,12 @@ public class BulkManifestProxy implements Serializable {
                     Arrays.asList(StringUtils.join(allFilenames.toArray(), ", "))));
         }
     }
-    
+
     /**
      * Convert an excel Row into a resource
      */
-    private void processRowContents( Set<CellMetadata> requiredFields, FormulaEvaluator evaluator, Row row, Resource resourceToProcess, String filename, int startColumnIndex, int endColumnIndex) {
+    private void processRowContents(Set<CellMetadata> requiredFields, FormulaEvaluator evaluator, Row row, Resource resourceToProcess, String filename,
+            int startColumnIndex, int endColumnIndex) {
         ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
         // for each columnm get the value, validate it and set it. For more complex beans like the ResourceCreatorProxy, set the values on the bean and validate
@@ -244,7 +243,8 @@ public class BulkManifestProxy implements Serializable {
                 }
             } else {
                 if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
-                    creatorProxy = buildResourceCreator(resourceCreatorAssignableFrom, creatorAssignableFrom,resourceToProcess, creatorProxy, mappedClass, cellMetadata, value);
+                    creatorProxy = buildResourceCreator(resourceCreatorAssignableFrom, creatorAssignableFrom, resourceToProcess, creatorProxy, mappedClass,
+                            cellMetadata, value);
                 }
             }
         }
@@ -252,9 +252,9 @@ public class BulkManifestProxy implements Serializable {
         if (creatorProxy.isValid()) {
             reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
         }
-        
+
         logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
-        
+
         // die at the end of the process if we still have required fields that haven't been set
         if (requiredFields.size() > 0) {
             List<String> required = new ArrayList<>();
@@ -265,7 +265,6 @@ public class BulkManifestProxy implements Serializable {
                     Arrays.asList(filename, StringUtils.join(required, ", ")));
         }
     }
-    
 
     /**
      * Take a field and add it to the ResourceCreatorProxy. If that field is already set, or part of a different creator type, then complete and start a new
@@ -280,15 +279,16 @@ public class BulkManifestProxy implements Serializable {
      * @param value
      * @return
      */
-    private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess, ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
+    private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess,
+            ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
 
         logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
-        
+
         if (creatorProxy.getSeenImportFieldNames().contains(cellMetadata.getPropertyName())) {
             creatorProxy = reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
         }
         creatorProxy.getSeenImportFieldNames().add(cellMetadata.getPropertyName());
-        
+
         if (resourceCreatorAssignableFrom) {
             reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
         }
@@ -309,7 +309,7 @@ public class BulkManifestProxy implements Serializable {
             } else if (!creatorProxy.getPerson().hasNoPersistableValues()) {
                 creatorProxy = reconcileResourceCreator(resourceToProcess, creatorProxy, entityService);
             }
-            
+
             reflectionService.validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
         }
         return creatorProxy;
@@ -320,7 +320,7 @@ public class BulkManifestProxy implements Serializable {
      * resource?
      */
     private boolean shouldSkipFilename(String filename, Resource resourceToProcess) {
-        if (filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)  || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
+        if (filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF) || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
             logger.debug("skipping template sample filenames (example...)");
             return true;
         }
@@ -330,7 +330,8 @@ public class BulkManifestProxy implements Serializable {
     /**
      * Confirm that a @link ResourceCreator is valid, and then set it properly
      * on the @link Resource
-     * @return 
+     * 
+     * @return
      * 
      */
     private ResourceCreatorProxy reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy, EntityService entityService) {
@@ -350,8 +351,6 @@ public class BulkManifestProxy implements Serializable {
         }
         return new ResourceCreatorProxy();
     }
-
-    
 
     /**
      * Special Case lookup: (a) look for exact match (b) look for case where
@@ -384,7 +383,6 @@ public class BulkManifestProxy implements Serializable {
         return toReturn;
     }
 
-    
     /**
      * Evaluates all of the filenames in the ExcelSheet by iterating over the
      * Row, determines whether we're dealing with a case-sensitive or inensitive
@@ -432,7 +430,6 @@ public class BulkManifestProxy implements Serializable {
 
     }
 
-    
     public void setFilenames(List<String> filenames) {
         this.filenames = filenames;
     }
@@ -545,6 +542,7 @@ public class BulkManifestProxy implements Serializable {
 
     /**
      * For validation, we create file proxies from all of the filenames.
+     * 
      * @param sheet
      */
     public void createFakeFileProxies(Sheet sheet) {

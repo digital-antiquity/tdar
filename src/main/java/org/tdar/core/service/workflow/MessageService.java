@@ -124,7 +124,7 @@ public class MessageService {
                 resources.add(irf.getInformationResource());
             }
         }
-//        genericDao.detachFromSession(resources);
+        // genericDao.detachFromSession(resources);
         resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();

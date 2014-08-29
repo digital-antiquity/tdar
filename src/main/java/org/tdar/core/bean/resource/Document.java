@@ -260,7 +260,6 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    
     @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
@@ -270,7 +269,7 @@ public class Document extends InformationResource {
     }
 
     // FIXME: ADD IS?N
-    
+
     @Override
     // TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {

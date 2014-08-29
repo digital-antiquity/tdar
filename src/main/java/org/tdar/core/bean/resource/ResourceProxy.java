@@ -65,7 +65,7 @@ import org.tdar.core.bean.entity.TdarUser;
  */
 @Entity
 @Immutable
-@Table(name="resource")
+@Table(name = "resource")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource")

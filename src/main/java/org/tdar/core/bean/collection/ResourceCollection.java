@@ -114,7 +114,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement(name = "ResourceCollection")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.collection.ResourceCollection")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable {
 
@@ -164,7 +164,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.resources")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
@@ -188,7 +188,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
@@ -262,8 +262,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Fields({
-        @Field,
-        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+            @Field,
+            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
+                    impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
     @Override
     @JsonView(JsonLookupFilter.class)
@@ -453,13 +454,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
-    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
@@ -482,7 +481,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
-    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
@@ -491,7 +489,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
-    
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
@@ -589,8 +586,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Fields({
-        @Field,
-        @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+            @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
     // @Boost(1.5f)
     @Override
@@ -647,7 +645,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Override
     @XmlTransient
     @Transient
-    
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -712,7 +709,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @Transient
-    
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
@@ -745,7 +741,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Transient
     @Field(name = QueryFieldNames.COLLECTION_TREE)
-    
     @ElementCollection
     @IndexedEmbedded
     public Set<Long> getParentIds() {

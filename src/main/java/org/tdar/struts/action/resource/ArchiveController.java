@@ -32,7 +32,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Autowired
     private InformationResourceService informationResourceService;
-    
+
     @Override
     protected String save(Archive persistable) throws TdarActionException {
         List<FileProxy> fileProxies = getFileProxies();
@@ -42,7 +42,7 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
         // this is a little hacky, but we need to re-process the file to get the work flow to make a copy of the tarball if
         // the user has checked the 'do import content' flag. In the time frame available I can't think of another way to do this.
         boolean isOnlyMetadataChanged = false;
-        for( FileProxy fp: fileProxies) {
+        for (FileProxy fp : fileProxies) {
             if (fp.getAction() == FileAction.MODIFY_METADATA) {
                 isOnlyMetadataChanged = true;
                 break;
@@ -71,10 +71,9 @@ public class ArchiveController extends AbstractInformationResourceController<Arc
 
     @Override
     public Set<String> getValidFileExtensions() {
-        // The following used to be the returned value. I'm leaving it as dead code so 
-        // any refactoring that might happen (? unlikely, but..) will still affect it. 
+        // The following used to be the returned value. I'm leaving it as dead code so
+        // any refactoring that might happen (? unlikely, but..) will still affect it.
         @SuppressWarnings("unused")
-        
         Set<String> usedToBe = getAnalyzer().getExtensionsForType(ResourceType.ARCHIVE);
         // But due to user confusion on the interface, we have a choice of limiting the file archive
         // type to bz2 or of changing the user interface. So we limit it here for the time being.

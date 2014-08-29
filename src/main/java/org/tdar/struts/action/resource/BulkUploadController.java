@@ -80,7 +80,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Autowired
     private transient BulkUploadTemplateService bulkUploadTemplateService;
-    
+
     @Autowired
     private transient XmlService xmlService;
 
@@ -165,12 +165,13 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
-    @Action(value = "validate-template", 
+    @Action(value = "validate-template",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-            @Result(name = INPUT, type = "redirect", location = "template-prepare"),
-            @Result(name = VALIDATE_ERROR, type = "redirect", location = "template-prepare"),
-            @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
+                    @Result(name = INPUT, type = "redirect", location = "template-prepare"),
+                    @Result(name = VALIDATE_ERROR, type = "redirect", location = "template-prepare"),
+                    @Result(name = SUCCESS, type = "redirect",
+                            location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation
     @PostOnly
     public String templateValidate() {
@@ -216,7 +217,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     }
 
     @SkipValidation
-    @Action(value = "checkstatus", 
+    @Action(value = "checkstatus",
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     @PostOnly
     public String checkStatus() {
@@ -241,7 +242,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             phase = "starting up...";
             percentDone = 0.0f;
         }
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("percentDone", percentDone);
         result.put("phase", phase);
         result.put("errors", asyncErrors);
@@ -416,10 +417,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     /**
      * For edit page: return true if user has pre-validated a mapping file
+     * 
      * @return
      */
     public boolean isTemplateValidated() {
-        //TODO: probably better off having validate action simply render the edit form instead of redirecting to /batch/add?obnoxiousQueryString
+        // TODO: probably better off having validate action simply render the edit form instead of redirecting to /batch/add?obnoxiousQueryString
         return Persistable.Base.isNotNullOrTransient(getTicketId()) && StringUtils.isNotBlank(templateFilename);
     }
 }

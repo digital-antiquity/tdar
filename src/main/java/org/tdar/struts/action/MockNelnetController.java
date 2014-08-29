@@ -100,8 +100,6 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
         try {
             @SuppressWarnings({ "resource" })
-
-            
             SSLContextBuilder sslBuilder = new SSLContextBuilder();
             sslBuilder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
             SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(

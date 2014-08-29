@@ -194,26 +194,26 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
      */
     protected String getEmailToNotify(Archive archive) {
         String result = null;
-        
+
         // First try the person who submitted the archive
         if (archive.getSubmitter() != null) {
             result = archive.getSubmitter().getEmail();
         }
-        
+
         // Then the person who updated it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUpdatedBy() != null) {
                 result = archive.getUpdatedBy().getEmail();
             }
         }
-        
+
         // Then the person who uploaded it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUploader() != null) {
                 result = archive.getUploader().getEmail();
             }
         }
-        
+
         // Finally the administrator.
         if (StringUtils.isEmpty(result)) {
             // this should never be null, hopefully...

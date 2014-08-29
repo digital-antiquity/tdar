@@ -126,14 +126,12 @@ public class Address extends Base implements Persistable, Validatable {
     }
 
     @Override
-    
     @XmlTransient
     public boolean isValidForController() {
         return isValid();
     }
 
     @Override
-    
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {

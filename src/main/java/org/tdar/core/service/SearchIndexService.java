@@ -453,7 +453,7 @@ public class SearchIndexService {
 
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void sendEmail(final List<Class<? extends Indexable>> toReindex, TdarConfiguration CONFIG, Date date) {
         if (CONFIG.isProductionEnvironment()) {
             Email email = new Email();

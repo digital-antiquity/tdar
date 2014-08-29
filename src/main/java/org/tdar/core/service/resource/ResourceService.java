@@ -694,12 +694,12 @@ public class ResourceService extends GenericService {
         }
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> findByTdarYear(SearchResultHandler<Resource> resultHandler, int year) {
         return datasetDao.findByTdarYear(resultHandler, year);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> getWeeklyPopularResources(int count) {
         List<Resource> featured = new ArrayList<>();
         try {
@@ -722,8 +722,8 @@ public class ResourceService extends GenericService {
         }
         return featured;
     }
-    
-    @Transactional(readOnly=false)
+
+    @Transactional(readOnly = false)
     public void saveResourceCreatorsFromProxies(Collection<ResourceCreatorProxy> allProxies, Resource resource, boolean shouldSaveResource) {
         logger.info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;

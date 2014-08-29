@@ -67,7 +67,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
@@ -81,7 +81,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     }
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution parentInstitution;
 
     public Institution() {

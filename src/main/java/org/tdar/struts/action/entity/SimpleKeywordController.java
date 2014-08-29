@@ -25,7 +25,6 @@ import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -36,7 +35,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
 
     @Autowired
     private transient SearchService searchService;
-    
+
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = 100;
     private int totalRecords;
@@ -45,14 +44,14 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private SortOption sortField;
     private String mode = "KeywordBrowse";
     private PaginationHelper paginationHelper;
-    
+
     @Action("edit")
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String edit() {
         return SUCCESS;
     }
 
-    @Action(value="view", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Action(value = "view", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String view() {
         if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
@@ -180,5 +179,4 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return null;
     }
 
-    
 }

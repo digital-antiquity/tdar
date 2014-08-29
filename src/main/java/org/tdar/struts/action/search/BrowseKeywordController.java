@@ -25,7 +25,6 @@ import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 
 import com.opensymphony.xwork2.Preparable;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -36,7 +35,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient SearchService searchService;
-    
+
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -55,11 +54,11 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public KeywordType getKeywordType() {
         return keywordType;
     }
@@ -67,7 +66,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public void setKeywordType(KeywordType keywordType) {
         this.keywordType = keywordType;
     }
-    
 
     @Override
     public void prepare() throws Exception {
@@ -81,7 +79,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
     }
 
-    @Action(value="keywords", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Action(value = "keywords", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String view() {
         if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;

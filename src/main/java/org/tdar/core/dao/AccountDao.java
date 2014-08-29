@@ -197,7 +197,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         query.setParameter("id", invoice.getId());
         return (Account) query.uniqueResult();
     }
-    
+
     /**
      * Get a pre-configured @link ResourceEvaluator with the specified array of @link Resource entries.
      * 
@@ -207,7 +207,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public ResourceEvaluator getResourceEvaluator(Resource... resources) {
         return new ResourceEvaluator(getLatestActivityModel(), resources);
     }
-    
+
     /**
      * Get a pre-configured @link ResourceEvaluator with the specified collection of @link Resource entries.
      * 
@@ -329,8 +329,6 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         return status;
     }
 
-
-
     /**
      * Marks a @link Resource @link Status to be FLAGGED_ACCOUNT_BALANCE
      * 
@@ -362,7 +360,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             resource.setStatus(status);
         }
     }
-    
+
     /**
      * Once the @link Account has been reconcilled, update all of the @link Status entires for each @link Resource and report back
      * 
@@ -455,7 +453,6 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         helper.setFilesUsed(helper.getFilesUsed() + files);
     }
 
-
     /**
      * Check that an @link Account has space for the @link Resource using the metadata in @link AccountEvaluationHelper
      * 
@@ -542,6 +539,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
         return hasUpdates;
     }
+
     /**
      * Log out the account info and the identified change
      * 

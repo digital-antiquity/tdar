@@ -25,7 +25,7 @@ public interface FileStoreFileProxy {
     void setTransientFile(File transientFile);
 
     Long getPersistableId();
-    
+
     Type getType();
 
     VersionType getVersionType();

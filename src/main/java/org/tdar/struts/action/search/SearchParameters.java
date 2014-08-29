@@ -323,16 +323,16 @@ public class SearchParameters {
                     subgroup.append(siteCodePart.setBoost(5f));
                 }
             }
-            appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames)); 
+            appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames));
             queryPartGroup.append(subgroup);
         }
         appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, Arrays.asList(this.getUncontrolledCultureKeywords()));
-        appendKeywordQueryParts(queryPartGroup, KeywordType.TEMPORAL_KEYWORD , Arrays.asList(this.getTemporalKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.TEMPORAL_KEYWORD, Arrays.asList(this.getTemporalKeywords()));
         appendKeywordQueryParts(queryPartGroup, KeywordType.GEOGRAPHIC_KEYWORD, Arrays.asList(this.getGeographicKeywords()));
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, Arrays.asList(this.getUncontrolledSiteTypes()));
 
         // managed keywords (in the form of lists of lists of ids)
-        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_KEYWORD , this.getMaterialKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_KEYWORD, this.getMaterialKeywordIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getApprovedSiteTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, this.getApprovedCultureKeywordIdLists());

@@ -33,7 +33,7 @@ public class DataTableRelationship extends Persistable.Base {
     @Column(name = "relationship_type", length = FieldLength.FIELD_LENGTH_255)
     private DataTableColumnRelationshipType type;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "relationship_id")
     private Set<DataTableColumnRelationship> columnRelationships = new HashSet<DataTableColumnRelationship>();
 
@@ -51,30 +51,29 @@ public class DataTableRelationship extends Persistable.Base {
         return columnRelationships;
     }
 
-
     public void setColumnRelationships(Set<DataTableColumnRelationship> columnRelationships) {
         this.columnRelationships = columnRelationships;
     }
 
     @XmlTransient
     public DataTable getForeignTable() {
-//        try {
-            DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
-            return relationship.getForeignColumn().getDataTable();
-//        } catch (Exception e) {
-//        }
-//        return null;
+        // try {
+        DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
+        return relationship.getForeignColumn().getDataTable();
+        // } catch (Exception e) {
+        // }
+        // return null;
     }
 
     @XmlTransient
     public DataTable getLocalTable() {
-//        try {
-            DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
-            return relationship.getLocalColumn().getDataTable();
-//        } catch (Exception e) {
-//            
-//        }
-//        return null;
+        // try {
+        DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
+        return relationship.getLocalColumn().getDataTable();
+        // } catch (Exception e) {
+        //
+        // }
+        // return null;
     }
 
     @Override

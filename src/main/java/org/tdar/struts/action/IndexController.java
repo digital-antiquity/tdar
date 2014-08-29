@@ -58,7 +58,6 @@ public class IndexController extends AuthenticationAware.Base {
 
     private String sitemapFile = "sitemap_index.xml";
 
-    
     @Autowired
     private ResourceService resourceService;
 
@@ -205,7 +204,6 @@ public class IndexController extends AuthenticationAware.Base {
     public void setWorldMapData(HashMap<String, HomepageGeographicKeywordCache> worldMapData) {
         this.worldMapData = worldMapData;
     }
-
 
     public String getSitemapFile() {
         return sitemapFile;

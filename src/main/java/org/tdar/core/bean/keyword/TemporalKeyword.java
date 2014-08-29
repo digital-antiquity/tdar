@@ -25,8 +25,8 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "temporal_keyword")
 @Indexed(index = "Keyword")
-@Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.TemporalKeyword")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.TemporalKeyword")
 @Cacheable
 public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
@@ -34,7 +34,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();
 
     @Override
@@ -49,7 +49,7 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
     public String getSynonymFormattedName() {
         return getLabel();
     }
-    
+
     @Override
     public String getUrlNamespace() {
         return KeywordType.TEMPORAL_KEYWORD.getUrlNamespace();

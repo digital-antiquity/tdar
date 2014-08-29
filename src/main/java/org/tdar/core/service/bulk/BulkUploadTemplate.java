@@ -78,7 +78,8 @@ public class BulkUploadTemplate implements Serializable {
         CellStyle resourceCreatorRoleStyle = CellFormat.build(Style.NORMAL).createStyle(workbook);
         resourceCreatorRoleStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
         resourceCreatorRoleStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        CellStyle headerStyle2 = CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
+        CellStyle headerStyle2 = CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10)
+                .createStyle(workbook);
         CellStyle requiredStyle = CellFormat.build(Style.BOLD).setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
 

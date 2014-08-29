@@ -129,11 +129,11 @@ public class RssService implements Serializable {
         return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
-    @CacheEvict(allEntries=true, value="rssFeed")
+    @CacheEvict(allEntries = true, value = "rssFeed")
     public void evictRssCache() {
-        
+
     }
-    
+
     /**
      * Parse a RSS feed
      * 
@@ -340,7 +340,7 @@ public class RssService implements Serializable {
             return;
         }
         if ((user != null) && authenticationAndAuthorizationService.canDownload(version, user)) {
-            logger.trace("allowed: {}" ,  version);
+            logger.trace("allowed: {}", version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());

@@ -98,10 +98,11 @@ public class XmlService {
     private ObfuscationService obfuscationService;
 
     XMLFilestoreLogger xmlFilestoreLogger;
-    
+
     public XmlService() throws ClassNotFoundException {
         xmlFilestoreLogger = new XMLFilestoreLogger();
     }
+
     /**
      * Convert the existing object to an XML representation using JAXB
      * 
@@ -137,7 +138,6 @@ public class XmlService {
         return tempFile;
     }
 
-
     /**
      * Convert an Object to XML via JAXB, but use the writer instead of a String (For writing directly to a file or Stream)
      * 
@@ -162,7 +162,7 @@ public class XmlService {
     @Transactional
     public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        
+
         mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
 
         ObjectWriter objectWriter = mapper.writer();
@@ -214,6 +214,7 @@ public class XmlService {
         return result;
 
     }
+
     private Object wrapObjectIfNeeded(Object object, String callback) {
         Object wrapper = object;
         if (StringUtils.isNotBlank(callback)) {
@@ -221,7 +222,7 @@ public class XmlService {
         }
         return wrapper;
     }
-    
+
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
@@ -395,6 +396,7 @@ public class XmlService {
         TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
+
     public <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(cls);
         Marshaller marshaller = jc.createMarshaller();
@@ -402,6 +404,6 @@ public class XmlService {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
         logger.trace("converting: {}", object);
         marshaller.marshal(object, writer);
-        
+
     }
 }

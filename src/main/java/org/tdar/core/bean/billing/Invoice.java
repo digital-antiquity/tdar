@@ -51,8 +51,6 @@ public class Invoice extends Base implements Updatable {
     private static final long serialVersionUID = -3613460318580954253L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
-
     @NotNull
     @Column(name = "date_created")
     @Temporal(TemporalType.TIMESTAMP)

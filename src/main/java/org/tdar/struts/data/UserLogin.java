@@ -14,11 +14,10 @@ public class UserLogin extends UserAuthData {
     private static final long serialVersionUID = -4359468001090001733L;
     private String loginUsername;
     private String loginPassword;
-    
+
     public String getPrefix() {
         return "userLogin.";
     };
-
 
     public UserLogin(AntiSpamHelper h) {
         setH(h);

@@ -146,7 +146,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
         newBag.write(writer, pathToBagFile);
-   
+
         FileUtils.deleteQuietly(tempFileDirectory);
         for (BagFile storedBagFile : newBag.getPayload()) {
             String filepath = storedBagFile.getFilepath();

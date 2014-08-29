@@ -78,7 +78,7 @@ public class CartLoginController extends AbstractCartController implements Valid
         switch (status) {
             case ERROR:
             case NEW:
-                if(!TdarConfiguration.getInstance().isProductionEnvironment()) {
+                if (!TdarConfiguration.getInstance().isProductionEnvironment()) {
                     addActionMessage(getText("loginController.user_not_in_local_db"));
                 }
                 return INPUT;

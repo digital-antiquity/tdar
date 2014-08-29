@@ -154,7 +154,6 @@ public abstract class InformationResource extends Resource {
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
-    
     @IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
@@ -187,7 +186,7 @@ public abstract class InformationResource extends Resource {
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    @Column(name="external_doi")
+    @Column(name = "external_doi")
     private String doi;
 
     @Column(name = "external_reference", nullable = true)
@@ -249,7 +248,7 @@ public abstract class InformationResource extends Resource {
     public static final String GEOGRAPHIC_INHERITANCE_TOGGLE = "inheriting_spatial_information";
     public static final String CULTURE_INHERITANCE_TOGGLE = "inheriting_cultural_information";
     public static final String TEMPORAL_INHERITANCE_TOGGLE = "inheriting_temporal_information";
-    
+
     // downward inheritance sections
     @Column(name = INVESTIGATION_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation = false;
@@ -476,7 +475,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
 
@@ -492,12 +490,10 @@ public abstract class InformationResource extends Resource {
 
     @XmlElementWrapper(name = "informationResourceFiles")
     @XmlElement(name = "informationResourceFile")
-    
     public Set<InformationResourceFile> getInformationResourceFiles() {
         return informationResourceFiles;
     }
 
-    
     @XmlTransient
     public InformationResourceFile getFirstInformationResourceFile() {
         if (getInformationResourceFiles().isEmpty()) {
@@ -506,7 +502,6 @@ public abstract class InformationResource extends Resource {
         return informationResourceFiles.iterator().next();
     }
 
-    
     @XmlTransient
     public Set<InformationResourceFile> getActiveInformationResourceFiles() {
         HashSet<InformationResourceFile> files = new HashSet<>();
@@ -527,7 +522,6 @@ public abstract class InformationResource extends Resource {
         logger.debug("adding information resource file: {} ({})", informationResourceFile, informationResourceFiles.size());
     }
 
-    
     @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
         // FIXME: this method will become increasingly expensive as the number of files increases
@@ -553,7 +547,6 @@ public abstract class InformationResource extends Resource {
         return latest;
     }
 
-    
     @XmlTransient
     public InformationResourceFileVersion getLatestUploadedVersion() {
         Collection<InformationResourceFileVersion> latestUploadedVersions = getLatestUploadedVersions();
@@ -564,7 +557,6 @@ public abstract class InformationResource extends Resource {
         return getLatestUploadedVersions().iterator().next();
     }
 
-    
     @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestUploadedVersions() {
         return getLatestVersions(VersionType.UPLOADED);
@@ -576,7 +568,6 @@ public abstract class InformationResource extends Resource {
     @Transient
     // @Boost(0.5f)
     @XmlTransient
-    
     public List<InformationResourceFileVersion> getContent() {
         logger.trace("getContent");
         List<InformationResourceFile> files = getPublicFiles();
@@ -619,7 +610,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    
     public boolean isPublicallyAccessible() {
         return getResourceAccessType() == ResourceAccessType.PUBLICALLY_ACCESSIBLE;
     }
@@ -821,14 +811,12 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    
     @Override
     public boolean hasConfidentialFiles() {
         return !getConfidentialFiles().isEmpty();
     }
 
     @Transient
-    
     @Override
     public boolean hasEmbargoedFiles() {
         for (InformationResourceFile file : getConfidentialFiles()) {
@@ -858,14 +846,12 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    
     public List<InformationResourceFile> getConfidentialFiles() {
         return getFilesWithRestrictions(true);
     }
 
     @Override
     @XmlTransient
-    
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
         sb.append(getCopyLocation()).append(" ").append(date);
@@ -898,13 +884,11 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    
     public List<InformationResourceFile> getPublicFiles() {
         return getFilesWithRestrictions(false);
     }
 
     @Override
-    
     public boolean isValidForController() {
         if (date == null) {
             throw new TdarValidationException("informationResource.created_date_required", Arrays.asList(getResourceType()));
@@ -940,7 +924,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    
     public boolean isInheritingSomeMetadata() {
         return (inheritingCulturalInformation || inheritingInvestigationInformation || inheritingMaterialInformation || inheritingOtherInformation ||
                 inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation
@@ -948,7 +931,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    
     @Override
     public Set<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
@@ -975,7 +957,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    
     @XmlTransient
     public List<String> getCreatorRoleIdentifiers() {
         List<String> list = super.getCreatorRoleIdentifiers();
@@ -1036,7 +1017,6 @@ public abstract class InformationResource extends Resource {
 
     // shortcut for non-deleted, visible files
     @Transient
-    
     @XmlTransient
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
@@ -1056,7 +1036,6 @@ public abstract class InformationResource extends Resource {
 
     // get the latest version of the first non-deleted thumbnail (or null)
     @Transient
-    
     @XmlTransient
     public InformationResourceFileVersion getPrimaryThumbnail() {
         if (hasPrimaryThumbnail != null) {
@@ -1072,7 +1051,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    
     public List<InformationResourceFile> getNonDeletedFiles() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irf : getInformationResourceFiles()) {
@@ -1124,7 +1102,6 @@ public abstract class InformationResource extends Resource {
     };
 
     @XmlTransient
-    
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
@@ -1136,7 +1113,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @XmlTransient
-    
     public List<InformationResourceFile> getFilesWithFatalProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {

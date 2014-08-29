@@ -35,13 +35,13 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "save-address", 
+    @Action(value = "save-address",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-    results = {
-            @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
-            @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}"),
-            @Result(name = INPUT, location = "../address-info.ftl")
-    })
+            results = {
+                    @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
+                    @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}"),
+                    @Result(name = INPUT, location = "../address-info.ftl")
+            })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address address2 = getAddress();
@@ -67,11 +67,11 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "delete-address", 
+    @Action(value = "delete-address",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-            @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
-    })
+                    @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
+            })
     public String deleteAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address toDelete = getAddress();

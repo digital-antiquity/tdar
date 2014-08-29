@@ -55,7 +55,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
             logger.error("trying to logToXML: {} but session is closed", event.getEntity());
             return;
         }
-        
+
         Object obj = event.getEntity();
         // only skip on updates
         if (obj instanceof XmlLoggable && !((XmlLoggable) obj).isReadyToStore()) {

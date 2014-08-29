@@ -226,7 +226,7 @@ public class PdfService {
                     LEFT_MARGIN,
                     cursorPositionFromBottom);
         }
-        
+
         cursorPositionFromBottom = 200;
         List<Object> byOn = new ArrayList<>();
         byOn.add(submitter.getProperName());

@@ -43,7 +43,6 @@ import org.tdar.utils.activity.IgnoreActivity;
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
-
     private static final long serialVersionUID = -8927970945627420725L;
 
     private int percentDone = -1;
@@ -118,7 +117,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         Map<String, Object> map = new HashMap<>();
         map.put("phase", phase);
         map.put("percentDone", percentDone);
-//        getLogger().debug("phase: {} [{}%]", phase, percentDone);
+        // getLogger().debug("phase: {} [{}%]", phase, percentDone);
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }

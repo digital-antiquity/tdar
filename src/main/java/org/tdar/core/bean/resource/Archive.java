@@ -61,7 +61,7 @@ public class Archive extends InformationResource {
         result.setUploader(getCopyOf(this.getUploader()));
         return result;
     }
-    
+
     @SuppressWarnings("static-method")
     private TdarUser getCopyOf(final TdarUser source) {
         if (source == null) {
@@ -71,7 +71,7 @@ public class Archive extends InformationResource {
         target.setId(source.getId());
         return target;
     }
-    
+
     @Override
     public void updateFromTransientResource(InformationResource transientResource) {
         if (transientResource == null) {

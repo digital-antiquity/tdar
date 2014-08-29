@@ -92,7 +92,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
             getH().generateRecapcha(recaptchaService);
-            
+
         }
         return SUCCESS;
     }
@@ -150,7 +150,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
             return INPUT;
         }
         try {
-            AuthenticationResult result = authenticationService.addAndAuthenticateUser(registration, getServletRequest(), getServletResponse(), getSessionData());
+            AuthenticationResult result = authenticationService.addAndAuthenticateUser(registration, getServletRequest(), getServletResponse(),
+                    getSessionData());
             if (result.getType().isValid()) {
                 registration.setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
@@ -229,6 +230,5 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService);
         processErrorObject(errors);
     }
-
 
 }

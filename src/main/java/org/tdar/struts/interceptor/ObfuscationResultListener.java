@@ -147,6 +147,7 @@ public class ObfuscationResultListener implements PreResultListener {
 
         /*
          * Proxy all methods
+         * 
          * @see net.sf.cglib.proxy.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
          */
         @Override

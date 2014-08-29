@@ -76,7 +76,6 @@ public class Project extends Resource implements Sortable {
         setResourceType(ResourceType.PROJECT);
     }
 
-    
     @Transient
     private transient Set<InformationResource> cachedInformationResources = new HashSet<InformationResource>();
 
@@ -95,7 +94,6 @@ public class Project extends Resource implements Sortable {
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
-
 
     @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)

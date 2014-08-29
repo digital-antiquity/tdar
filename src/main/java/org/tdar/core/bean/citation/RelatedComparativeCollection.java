@@ -20,7 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "related_comparative_collection", indexes = {
         @Index(name = "related_comparative_collection_resource_id_idx", columnList = "resource_id")
 })
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.citation.RelatedComparativeCollection")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.citation.RelatedComparativeCollection")
 @Cacheable
 public class RelatedComparativeCollection extends Citation {
 

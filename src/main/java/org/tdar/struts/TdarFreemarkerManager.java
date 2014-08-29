@@ -30,5 +30,5 @@ public class TdarFreemarkerManager extends FreemarkerManager {
         logger.debug("action: {} {} {} {}", action, wrapper, stack);
         super.populateContext(model, stack, action, request, response);
     }
-    
+
 }

@@ -486,7 +486,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     private Map<String, Object> result = new HashMap<>();
 
-
     public void jsonifyResult(Class<?> filter) {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {

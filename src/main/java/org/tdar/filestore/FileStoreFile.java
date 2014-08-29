@@ -23,7 +23,7 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     private Date dateCreated;
     private String extension;
     private Integer version;
-    
+
     @Override
     public Long getInformationResourceFileId() {
         return informationResourceFileId;
@@ -107,7 +107,7 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         COLLECTION;
     }
 
-    public FileStoreFile(Type type,  VersionType versionType, Long id, String filename) {
+    public FileStoreFile(Type type, VersionType versionType, Long id, String filename) {
         this.persistableId = id;
         this.filename = filename;
         this.type = type;
@@ -240,5 +240,4 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         this.version = version;
     }
 
-    
 }

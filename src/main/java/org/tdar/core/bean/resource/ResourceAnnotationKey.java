@@ -44,12 +44,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_annotation_key")
 @Indexed(index = "AnnotationKey")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.resource.ResourceAnnotationKey")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotationKey")
 @Cacheable
 public class ResourceAnnotationKey extends Persistable.Base implements Indexable, HasLabel {
 
     private static final long serialVersionUID = 6596067112791213904L;
-
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_annotation_type", length = FieldLength.FIELD_LENGTH_255)
@@ -131,7 +130,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     public String toString() {
         return "[key:'" + key + "' id:" + getId() + "]";
     }
-
 
     @Override
     public List<?> getEqualityFields() {

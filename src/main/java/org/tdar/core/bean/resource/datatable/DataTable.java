@@ -189,7 +189,7 @@ public class DataTable extends Persistable.Base {
      */
     @XmlTransient
     @Transient
-    public  Set<DataTableRelationship> getRelationships() {
+    public Set<DataTableRelationship> getRelationships() {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (DataTableRelationship r : dataset.getRelationships()) {
             // return the relationship if this table is either the relationship's foreign or local table

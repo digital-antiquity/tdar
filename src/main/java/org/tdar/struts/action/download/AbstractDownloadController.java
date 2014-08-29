@@ -26,16 +26,16 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-    @Result(name = TdarActionSupport.SUCCESS, type = "stream",
-            params = {
-                    "contentType", "${downloadTransferObject.mimeType}",
-                    "inputName", "downloadTransferObject.inputStream",
-                    "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${downloadTransferObject.fileName}\"",
-                    "contentLength", "${downloadTransferObject.contentLength}"
-            }
-    ),
-    @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
-    @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
+        @Result(name = TdarActionSupport.SUCCESS, type = "stream",
+                params = {
+                        "contentType", "${downloadTransferObject.mimeType}",
+                        "inputName", "downloadTransferObject.inputStream",
+                        "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${downloadTransferObject.fileName}\"",
+                        "contentLength", "${downloadTransferObject.contentLength}"
+                }
+        ),
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
+        @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
 public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
@@ -61,7 +61,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public static final String LOGIN_REGISTER_PROMPT = "../filestore/download-unauthenticated.ftl";
     public static final String DOWNLOAD_SUFFIX = "informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}";
     public static final String SUCCESS_REDIRECT_DOWNLOAD = "/filestore/confirm?" + DOWNLOAD_SUFFIX;
-    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get?" +DOWNLOAD_SUFFIX;
+    public static final String DOWNLOAD_SINGLE_LANDING = "/filestore/get?" + DOWNLOAD_SUFFIX;
     public static final String FORBIDDEN = "forbidden";
     public static final String SHOW_DOWNLOAD_LANDING = "show-download-landing";
     public static final String DOWNLOAD_ALL_LANDING = "/filestore/show-download-landing?" + DOWNLOAD_SUFFIX;
@@ -70,8 +70,6 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     private Long informationResourceId;
     private boolean coverPageIncluded = true;
 
-
-    
     // the resource being downloaded (or the resource that the file is being downloade from)
     private InformationResource informationResource;
     // the specific version to be downloaded, if just one
@@ -133,12 +131,12 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         }
         if (Persistable.Base.isNotNullOrTransient(irId)) {
             setInformationResource(getGenericService().find(InformationResource.class, irId));
-            //bad, but force onto session until better way found
+            // bad, but force onto session until better way found
             authorizationService.applyTransientViewableFlag(informationResource, getAuthenticatedUser());
         }
         if (Persistable.Base.isNotNullOrTransient(irfvId)) {
             setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, irfvId));
-            //bad, but force onto session until better way found
+            // bad, but force onto session until better way found
             authorizationService.applyTransientViewableFlag(informationResourceFileVersion, getAuthenticatedUser());
         }
     }
