@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -73,13 +74,10 @@ public class DownloadService {
     }
 
     @Transactional(readOnly = true)
-    public DownloadTransferObject contructDownloadTransferObject(DownloadTransferObject dto) {
+    public DownloadTransferObject constructDownloadTransferObject(DownloadTransferObject dto) {
         Set<String> files = new HashSet<>();
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
 
-            if (irFileVersion.getInformationResourceFile().isDeleted()) {
-                continue;
-            }
             String fileToDownload = addFileToDownload(irFileVersion, dto);
             if (files.contains(fileToDownload)) {
                 throw new TdarRecoverableRuntimeException("downloadService.duplicate_file_in_zip");
@@ -209,20 +207,24 @@ public class DownloadService {
             }
         }
 
-        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, versionsToDownload, authenticatedUser, textProvider, this);
+        DownloadTransferObject dto = new DownloadTransferObject(resourceToDownload, authenticatedUser, textProvider, this);
         dto.setIncludeCoverPage(includeCoverPage);
 
-        if (CollectionUtils.isEmpty(versionsToDownload)) {
-            dto.setResult(DownloadResult.ERROR);
-            return dto;
-        }
-
-        for (InformationResourceFileVersion version : versionsToDownload) {
+        Iterator<InformationResourceFileVersion> iter = versionsToDownload.iterator();
+        while (iter.hasNext()) {
+            InformationResourceFileVersion version = iter.next();
             if (!authorizationService.canDownload(version, authenticatedUser)) {
                 logger.warn("thumbail request: resource is confidential/embargoed: {}", versionToDownload.getId());
                 dto.setResult(DownloadResult.FORBIDDEN);
                 return dto;
             }
+
+            if (version.getInformationResourceFile().isDeleted() && !authorizationService.isEditor(authenticatedUser)) {
+                logger.debug("requesting deleted file");
+                iter.remove();
+                continue;
+            }
+
             File resourceFile = null;
             try {
                 resourceFile = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version);
@@ -237,10 +239,17 @@ public class DownloadService {
                 dto.setResult(DownloadResult.NOT_FOUND);
                 return dto;
             }
+
+            if (CollectionUtils.isEmpty(versionsToDownload)) {
+                dto.setResult(DownloadResult.ERROR);
+                return dto;
+            }
         }
+
         logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
+        dto.setVersionsToDownload(versionsToDownload);
         try {
-            contructDownloadTransferObject(dto);
+            constructDownloadTransferObject(dto);
             registerDownload(dto.getStatistics());
         } catch (TdarRecoverableRuntimeException tre) {
             logger.error("ERROR IN Download: {}", tre);
