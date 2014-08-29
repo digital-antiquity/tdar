@@ -86,7 +86,7 @@ public class InformationResourceFileProxy implements Serializable {
 
     @Column(name = "deleted", columnDefinition = "boolean default false")
     private Boolean deleted = Boolean.FALSE;
-    
+
     @OneToMany()
     @SortNatural
     @JoinColumn(name = "information_resource_file_id")

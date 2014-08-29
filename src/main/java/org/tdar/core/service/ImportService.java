@@ -178,7 +178,8 @@ public class ImportService {
                 }
             }
 
-            ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow((InformationResource) incomingResource, authorizedUser, null, 
+            ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow((InformationResource) incomingResource,
+                    authorizedUser, null,
                     new ArrayList<FileProxy>(proxies));
 
             if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {

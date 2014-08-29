@@ -31,7 +31,6 @@ public class AntiSpamHelper implements Serializable {
     private ReCaptcha recaptcha;
     private Person person;
     private String reCaptchaText;
-        
 
     public Long getTimeCheck() {
         return timeCheck;
@@ -90,7 +89,6 @@ public class AntiSpamHelper implements Serializable {
         }
         return true;
     }
-
 
     public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck) {
         long now = System.currentTimeMillis();
@@ -151,7 +149,7 @@ public class AntiSpamHelper implements Serializable {
             setRecaptcha(recaptchaService.generateRecaptcha());
             setReCaptchaText(getRecaptcha().createRecaptchaHtml(null, null));
         }
-        
+
     }
 
 }

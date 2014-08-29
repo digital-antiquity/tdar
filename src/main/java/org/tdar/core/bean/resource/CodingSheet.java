@@ -216,7 +216,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
     }
 
     @Transient
-    
     @XmlTransient
     public Map<OntologyNode, List<CodingRule>> getNodeToDataValueMap() {
         HashMap<OntologyNode, List<CodingRule>> map = new HashMap<>();

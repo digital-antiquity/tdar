@@ -458,7 +458,7 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WEEKLY_EMAIL_STATS,
                 query = "select count(*) from Email where status='SENT' and dateSent >= :date and userGenerated=TRUE"),
-                
+
 })
 package org.tdar.core.dao;
 

@@ -82,7 +82,7 @@ public enum DataTableColumnEncodingType implements HasLabel, Localizable {
     public boolean isSupportsMeasurement() {
         return supportsMeasurement;
     }
-    
+
     public boolean isCount() {
         return this == COUNT;
     }

@@ -46,7 +46,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     private transient AccountService accountService;
     @Autowired
     private transient AuthenticationService authenticationService;
-    
+
     private static final long serialVersionUID = -2666270784609372369L;
     private String proxyInstitutionName;
     private boolean passwordResetRequested;
@@ -101,7 +101,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
             stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "contributorReason",
                     key = "userAccountController.contributorReason_invalid", maxLength = "512") }
             )
-    public String save(TdarUser person) {
+            public String save(TdarUser person) {
         validateAndProcessPasswordChange(); // TODO: this should just be in validate()
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
@@ -135,7 +135,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         return SUCCESS;
     }
 
-
     // check whether password change was requested and whether it was valid
     private void validateAndProcessPasswordChange() {
         // no change requested
@@ -147,7 +146,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            authenticationService.getAuthenticationProvider().updateUserPassword((TdarUser)getPerson(), password);
+            authenticationService.getAuthenticationProvider().updateUserPassword((TdarUser) getPerson(), password);
             addActionMessage(getText("personController.password_successfully_changed"));
         }
     }
@@ -168,7 +167,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
             addActionError(getText("userAccountController.error_passwords_dont_match"));
         } else {
             // passwords match, change the password
-            authenticationService.updateUsername((TdarUser)getPerson(), newUsername, password);
+            authenticationService.updateUsername((TdarUser) getPerson(), newUsername, password);
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
             addActionMessage(getText("userAccountController.username_successfully_changed"));
             return true;

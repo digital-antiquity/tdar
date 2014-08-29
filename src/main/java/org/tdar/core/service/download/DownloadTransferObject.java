@@ -57,10 +57,8 @@ public class DownloadTransferObject implements Serializable {
 
     private DownloadService downloadService;
 
-    public DownloadTransferObject(InformationResource resourceToDownload, List<InformationResourceFileVersion> versionsToDownload, TdarUser user,
-            TextProvider textProvider, DownloadService downloadService) {
+    public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService) {
         this.informationResource = resourceToDownload;
-        this.versionsToDownload = versionsToDownload;
         this.downloadService = downloadService;
         this.setTextProvider(textProvider);
         this.setAuthenticatedUser(user);
@@ -243,7 +241,7 @@ public class DownloadTransferObject implements Serializable {
     public void registerDownloadLock() {
         downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
     }
-    
+
     public void setAttachment(boolean isAttachment) {
         this.setDispositionPrefix(ATTACHMENT);
     }

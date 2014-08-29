@@ -99,5 +99,4 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
         return getDao().findScrollableVersionsForVerification();
     }
 
-
 }

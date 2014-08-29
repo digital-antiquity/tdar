@@ -84,9 +84,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }
 
-
     /**
      * return a url to the payment processor the client will use to complete payment for the invoice associated with this template
+     * 
      * @return a valid url, or null if the template was in a state such that it produced a malformed url.
      */
     @Override
@@ -96,12 +96,12 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
             NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretRequestWord());
             template.populateHashMapFromInvoice(invoice);
             template.constructHashKey();
-            // NOTE: in knap and prior this was 'ASCII'; if we ever put true unicode characters into the request we may need to check for 
+            // NOTE: in knap and prior this was 'ASCII'; if we ever put true unicode characters into the request we may need to check for
             // encoding issues with passing this data into the URL
             // FIXME: this is cleaner, but doesn't produce an XHTML friendly url with &amp; encoded urls, so it fails tests
-             String query = "?" + URLEncodedUtils.format(template.getNameValuePairs(),Consts.UTF_8 );
+            String query = "?" + URLEncodedUtils.format(template.getNameValuePairs(), Consts.UTF_8);
 
-            url = new URL(getTransactionPostUrl() +  query);
+            url = new URL(getTransactionPostUrl() + query);
         } catch (MalformedURLException e) {
             logger.error("malformed payment url", e);
         }

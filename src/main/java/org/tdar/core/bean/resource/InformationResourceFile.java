@@ -549,7 +549,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
-    
     @XmlTransient
     public WorkflowContext getWorkflowContext() {
         return workflowContext;

@@ -356,14 +356,14 @@ public class Resource implements Persistable, JsonModel,
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.geographicKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include = "all", region = "org.tdar.core.bean.resource.Resource.geographicKeywords")
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
                     name = "geographic_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include="all", region="org.tdar.core.bean.resource.Resource.managedGeographicKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include = "all", region = "org.tdar.core.bean.resource.Resource.managedGeographicKeywords")
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
@@ -382,7 +382,7 @@ public class Resource implements Persistable, JsonModel,
     @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
             name = "culture_keyword_id") })
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.resource.Resource.cultureKeywords")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.cultureKeywords")
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
@@ -421,8 +421,8 @@ public class Resource implements Persistable, JsonModel,
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
-    @JoinColumn(name = "resource_id",foreignKey =@javax.persistence.ForeignKey(value=ConstraintMode.NO_CONSTRAINT))
-    //see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5, 
+    @JoinColumn(name = "resource_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    // see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5,
     @ForeignKey(name = "none")
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
@@ -493,7 +493,6 @@ public class Resource implements Persistable, JsonModel,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
     @IndexedEmbedded
     @ElementCollection
-    
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -522,7 +521,6 @@ public class Resource implements Persistable, JsonModel,
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
     @IndexedEmbedded
     @ElementCollection
-    
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
@@ -549,7 +547,6 @@ public class Resource implements Persistable, JsonModel,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
@@ -738,7 +735,8 @@ public class Resource implements Persistable, JsonModel,
     @Override
     @Fields({
             @Field,
-            @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class)),
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
@@ -784,8 +782,9 @@ public class Resource implements Persistable, JsonModel,
 
     @Override
     @Fields({
-        @Field,
-        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))})
+            @Field,
+            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
+                    impl = TdarCaseSensitiveStandardAnalyzer.class)) })
     public String getDescription() {
         return description;
     }
@@ -860,8 +859,7 @@ public class Resource implements Persistable, JsonModel,
 
     @Transient
     @XmlTransient
-    
-    //@DidWeMentionThisPropertyIsTransient
+    // @DidWeMentionThisPropertyIsTransient
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
         logger.trace("hasConfidentialFiles:{}\t latLongBox:{}", hasConfidentialFiles(), latLongBox);
@@ -1309,7 +1307,6 @@ public class Resource implements Persistable, JsonModel,
     private transient String keywords = null;
 
     @SuppressWarnings("unchecked")
-    
     @Fields({
             @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.SITE_CODE, analyzer = @Analyzer(impl = SiteCodeTokenizingAnalyzer.class)),
@@ -1503,7 +1500,6 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Override
-    
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
@@ -1518,7 +1514,6 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Override
-    
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
             throw new TdarValidationException("resource.title_required", Arrays.asList(getResourceType()));
@@ -1591,7 +1586,6 @@ public class Resource implements Persistable, JsonModel,
 
     @Override
     @XmlTransient
-    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -1634,7 +1628,6 @@ public class Resource implements Persistable, JsonModel,
      * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
-    
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
@@ -1658,7 +1651,6 @@ public class Resource implements Persistable, JsonModel,
         return sb.toString();
     }
 
-    
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, getTitle(), "", "");
@@ -1666,7 +1658,7 @@ public class Resource implements Persistable, JsonModel,
     }
 
     // FIXME: ADD IS?N
-    
+
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         return sb.toString();
@@ -1676,7 +1668,6 @@ public class Resource implements Persistable, JsonModel,
     @IndexedEmbedded
     @ElementCollection
     @XmlTransient
-    
     // This field facilitates unified lucene search for submitter, updater,
     // resourceProvider, and resourceCreators
     // should be in the form {creartorType}{creatorId}{creatorRole}
@@ -1903,13 +1894,11 @@ public class Resource implements Persistable, JsonModel,
     }
 
     @Transient
-    
     public boolean hasConfidentialFiles() {
         return false;
     }
 
     @Transient
-    
     public boolean hasEmbargoedFiles() {
         return false;
     }

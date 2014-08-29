@@ -39,7 +39,7 @@ public class CellFormat {
     private short borderLeft;
     private short borderRight;
     private boolean wrapping;
-    
+
     public CellFormat(Style style) {
         this.style = style;
     }
@@ -120,6 +120,7 @@ public class CellFormat {
         CellFormat format = new CellFormat(style);
         return format;
     }
+
     /*
      * Create a style that's basic
      */

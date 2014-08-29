@@ -331,14 +331,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Override
-    
     public boolean isValidForController() {
         // not implemented
         return true;
     }
 
     @Override
-    
     public boolean isValid() {
         List<Object> keys = new ArrayList<>();
         keys.add(getName());
@@ -388,7 +386,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
-    
     @XmlTransient
     public String getJsSimpleName() {
         return getName().replaceAll("[\\s\\,\"\']", "_");

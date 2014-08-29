@@ -45,10 +45,10 @@ public class ContinueInvoiceAction extends AuthenticationAware.Base {
         getLogger().debug("setting invoice id {} on the session", invoiceId);
         getSessionData().setInvoiceId(invoiceId);
         // stupid personal preferenence, cannot read turnarys well
-        if (isAuthenticated() ) {
+        if (isAuthenticated()) {
             return SUCCESS;
         } else {
-             return SUCCESS_UNAUTH;
+            return SUCCESS_UNAUTH;
         }
     }
 

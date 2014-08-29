@@ -31,7 +31,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
     private List<AuthNotice> acceptedAuthNotices = new ArrayList<>();
     private String userResponse = "";
     private TdarUser user;
-    
+
     @Autowired
     private transient AuthenticationService authenticationService;
 

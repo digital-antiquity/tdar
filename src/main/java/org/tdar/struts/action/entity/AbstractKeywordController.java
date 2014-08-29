@@ -12,7 +12,7 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class AbstractKeywordController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -7469398370759336245L;
-    
+
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -31,11 +31,11 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public KeywordType getKeywordType() {
         return keywordType;
     }
@@ -43,7 +43,6 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
     public void setKeywordType(KeywordType keywordType) {
         this.keywordType = keywordType;
     }
-    
 
     @Override
     public void prepare() throws Exception {
@@ -56,6 +55,5 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
     }
-
 
 }

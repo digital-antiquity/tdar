@@ -112,8 +112,8 @@ public class Dataset extends InformationResource {
      * @return
      */
     @Transient
-    public DataTable getDataTableByName(String name) {        
-        if ((nameToTableMap == null) || ! Objects.equals(dataTableHashCode, getDataTables().hashCode())) {
+    public DataTable getDataTableByName(String name) {
+        if ((nameToTableMap == null) || !Objects.equals(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
@@ -148,7 +148,7 @@ public class Dataset extends InformationResource {
 
     @Transient
     public DataTable getDataTableByGenericName(String name) {
-        if ((genericNameToTableMap == null) || ! Objects.equals(dataTableHashCode, getDataTables().hashCode())) {
+        if ((genericNameToTableMap == null) || !Objects.equals(dataTableHashCode, getDataTables().hashCode())) {
             initializeNameToTableMap();
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync

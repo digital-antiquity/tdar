@@ -137,7 +137,7 @@ public class CommandLineAPITool {
     public static void main(String[] args) throws IOException {
         CommandLineAPITool importer = new CommandLineAPITool();
         importer.seenFile = File.createTempFile(IMPORT_SEEN_FILE, IMPORT_SEEN_FILE_EXTENSION);
-        logger.warn("Seen file is: "+ importer.seenFile.getCanonicalPath());
+        logger.warn("Seen file is: " + importer.seenFile.getCanonicalPath());
         Options options = buildCommandLineOptions();
         try {
             parseArguments(args, importer, options);
@@ -388,8 +388,8 @@ public class CommandLineAPITool {
             } else {
                 for (int i = 0; i < cookies.size(); i++) {
                     if (cookies.get(i).getName().equals("crowd.token_key")) {
-						sawCrowdAuth = true;
-					}
+                        sawCrowdAuth = true;
+                    }
                     logger.trace("- " + cookies.get(i).toString());
                 }
             }
@@ -534,7 +534,7 @@ public class CommandLineAPITool {
         } catch (Exception e) {
             // we want to suppress all exceptions that might stop the next file from being imported
             logger.error("couldn't import: " + path, e);
-    	}
+        }
         return callSuccessful;
     }
 

@@ -285,9 +285,9 @@ public final class WorkflowContext implements Serializable {
         transientResource = null;
         versions = null;
         originalFiles = null;
-        
+
         // TODO Auto-generated method stub
-        
+
     }
 
 }

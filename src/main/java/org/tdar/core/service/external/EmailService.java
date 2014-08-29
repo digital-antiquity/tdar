@@ -157,10 +157,11 @@ public class EmailService {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(), from.getProperName());
+        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
+                from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
-        } 
+        }
         email.setSubject(subject);
         email.setStatus(Status.IN_REVIEW);
         Map<String, Object> map = new HashMap<>();
@@ -180,7 +181,7 @@ public class EmailService {
 
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void changeEmailStatus(Status action, List<Email> emails) {
         for (Email email : emails) {
             genericDao.markUpdatable(email);
@@ -188,7 +189,7 @@ public class EmailService {
             email.setStatus(action);
             genericDao.saveOrUpdate(email);
         }
-        
+
     }
 
     public List<Email> findEmailsWithStatus(Status status) {

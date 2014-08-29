@@ -24,8 +24,8 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "investigation_type")
 @Indexed(index = "Keyword")
-@Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.InvestigationType")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.InvestigationType")
 @Cacheable
 public class InvestigationType extends Keyword.Base<InvestigationType> implements ControlledKeyword {
 
@@ -33,7 +33,7 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();
 
     @Override

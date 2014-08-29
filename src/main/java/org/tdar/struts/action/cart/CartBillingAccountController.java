@@ -61,7 +61,7 @@ public class CartBillingAccountController extends AbstractCartController {
         }
 
         selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts());
-        
+
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
     }
@@ -76,7 +76,7 @@ public class CartBillingAccountController extends AbstractCartController {
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));
         }
-        
+
     }
 
     /**
@@ -84,7 +84,7 @@ public class CartBillingAccountController extends AbstractCartController {
      * 
      * @return
      */
-    @Action(value = "process-billing-account-choice", results = { 
+    @Action(value = "process-billing-account-choice", results = {
             @Result(name = INPUT, location = "review.ftl"),
             @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
     @PostOnly

@@ -110,8 +110,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
                 try {
                     FileStoreFileProxy result = setupVersionFromResult();
                     current.add(result);
-                } 
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error("error in loading from resultsset: {}", e);
                 }
             }
@@ -133,7 +132,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int totalIssues = other.size() + tainted.size() + missing.size();
-        
+
         if (totalIssues == 0) {
             subject.append(" [NONE]");
         }
@@ -187,7 +186,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     public boolean isSingleRunProcess() {
         return false;
     }
-    
+
     @Override
     public void cleanup() {
         missing.clear();

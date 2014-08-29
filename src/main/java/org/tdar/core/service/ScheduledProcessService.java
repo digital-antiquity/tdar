@@ -105,15 +105,16 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     /**
      * Send emails at midnight
-     */             
+     */
     @Scheduled(cron = "0 1 0 * * *")
     public void cronDailyEmail() {
         logger.info("updating Daily Emails");
         queue(scheduledProcessMap.get(DailyEmailProcess.class));
     }
+
     /**
      * Send emails at midnight
-     */             
+     */
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");

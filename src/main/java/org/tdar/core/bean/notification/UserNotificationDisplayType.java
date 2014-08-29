@@ -1,6 +1,5 @@
 package org.tdar.core.bean.notification;
 
-
 /**
  * Enum for user notification message types:
  * 
@@ -10,11 +9,11 @@ package org.tdar.core.bean.notification;
  * INFO messages can be dismissed.
  * 
  */
-public enum UserNotificationDisplayType  {
-    
+public enum UserNotificationDisplayType {
+
     NORMAL,
     FREEMARKER;
-    
+
     public boolean isNormal() {
         return this == NORMAL;
     }

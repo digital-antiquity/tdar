@@ -71,7 +71,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient AuthorizationService authorizationService;
 
     private static final long serialVersionUID = 5710621983240752457L;
-//    private List<Resource> resources = new ArrayList<>();
+    // private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
@@ -93,7 +93,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     private List<Long> toRemove = new ArrayList<>();
-    private List<Long> toAdd  = new ArrayList<>();
+    private List<Long> toAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
 
     @Override
@@ -120,8 +120,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return isEditable() || authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
-    
-    
     @Override
     protected String save(ResourceCollection persistable) {
         if (persistable.getType() == null) {
@@ -145,7 +143,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
 
         resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
-
 
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
@@ -234,7 +231,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
-            if (au != null && au.getUser() != null ) {
+            if (au != null && au.getUser() != null) {
                 name = au.getUser().getProperName();
             }
             getAuthorizedUsersFullNames().add(name);
@@ -270,7 +267,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         String result = super.edit();
         return result;
     }
-
 
     @Override
     public void loadExtraViewMetadata() {
@@ -354,8 +350,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         fullUserProjects.removeAll(getAllSubmittedProjects());
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
 
-        //always place current resource collection as the first option
-        if(Persistable.Base.isNotTransient(getResourceCollection())) {
+        // always place current resource collection as the first option
+        if (Persistable.Base.isNotTransient(getResourceCollection())) {
             getAllResourceCollections().remove(getResourceCollection());
             getAllResourceCollections().add(0, getResourceCollection());
         }

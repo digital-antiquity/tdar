@@ -40,7 +40,6 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     private static final String ERRORS = "errors";
     public static final String DOI_KEY = "DOI";
 
-
     @Autowired
     private transient UrlService urlService;
     @Autowired

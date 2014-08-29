@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.ResourceCreator")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
@@ -177,7 +177,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -197,7 +196,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }

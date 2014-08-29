@@ -37,8 +37,8 @@ public class CacheControlInterceptor implements Interceptor {
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
         }
-            String invoke = invocation.invoke();
-            return invoke;
+        String invoke = invocation.invoke();
+        return invoke;
     }
 
     @Override

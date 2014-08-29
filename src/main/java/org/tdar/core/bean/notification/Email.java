@@ -34,10 +34,9 @@ public class Email extends Persistable.Base {
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.QUEUED;
 
-    
-    @Column(name = "user_generated", nullable = false, columnDefinition="boolean default TRUE")
+    @Column(name = "user_generated", nullable = false, columnDefinition = "boolean default TRUE")
     private boolean userGenerated = true;
-    
+
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Column(name = "message")
@@ -156,8 +155,8 @@ public class Email extends Persistable.Base {
 
     @Override
     public String toString() {
-        String fmt  = "[id:%-5d from:%-20s to:%-20s sub:%-20s tries:%-3d status:%-6s]";
-        String msg = String.format(fmt, getId(),  from, to, StringUtils.left(subject, 20), numberOfTries, status);
+        String fmt = "[id:%-5d from:%-20s to:%-20s sub:%-20s tries:%-3d status:%-6s]";
+        String msg = String.format(fmt, getId(), from, to, StringUtils.left(subject, 20), numberOfTries, status);
         return msg;
     }
 

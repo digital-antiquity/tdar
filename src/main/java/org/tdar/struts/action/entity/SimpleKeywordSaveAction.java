@@ -33,9 +33,9 @@ public class SimpleKeywordSaveAction extends AbstractKeywordController {
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
-    @Action(value="save",interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results={
-            @Result(name=INPUT, location="edit.ftl"),
-            @Result(name=SUCCESS, type=REDIRECT, location="view?id=${id}&keywordType=${keywordType}")
+    @Action(value = "save", interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results = {
+            @Result(name = INPUT, location = "edit.ftl"),
+            @Result(name = SUCCESS, type = REDIRECT, location = "view?id=${id}&keywordType=${keywordType}")
     })
     @PostOnly
     @HttpsOnly
@@ -56,7 +56,6 @@ public class SimpleKeywordSaveAction extends AbstractKeywordController {
             addActionError(getText("simpleKeywordAction.label_duplicate"));
         }
     }
-
 
     public String getLabel() {
         return label;

@@ -51,7 +51,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         return SUCCESS;
     }
 
-    @Action(value = "lookup", 
+    @Action(value = "lookup",
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String lookup() {
         QueryBuilder q = null;

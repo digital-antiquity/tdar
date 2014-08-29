@@ -87,7 +87,7 @@ public class GenericService {
     public void setCacheModeForCurrentSession(CacheMode mode) {
         genericDao.setCacheModeForCurrentSession(mode);
     }
-    
+
     /**
      * Find all ids given a specified class
      * 
@@ -735,8 +735,8 @@ public class GenericService {
     }
 
     public void evictFromCache(Persistable res) {
-        genericDao.evictFromCache((Persistable)res);
-        
+        genericDao.evictFromCache((Persistable) res);
+
     }
 
 }

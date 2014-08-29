@@ -114,7 +114,6 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
         return MessageHelper.getMessage(getLocaleKey() + "_PLURAL");
     }
 
-
     public String getPublisherLocationName() {
         if (publisherLocationName == null) {
             return MessageHelper.getMessage("DocumentType.publisher_location");

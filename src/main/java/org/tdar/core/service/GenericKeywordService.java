@@ -138,8 +138,8 @@ public class GenericKeywordService extends GenericService {
         }
         // trim and strip quotes
         label = label.trim();
-        if (label.startsWith("\"") && label.endsWith("\"") ) {
-          label = label.substring(1,label.length() - 1);
+        if (label.startsWith("\"") && label.endsWith("\"")) {
+            label = label.substring(1, label.length() - 1);
         }
         K keyword = genericKeywordDao.findByLabel(cls, label);
         if (keyword == null) {
@@ -276,7 +276,7 @@ public class GenericKeywordService extends GenericService {
         return genericKeywordDao.findAuthority(kwd);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void saveKeyword(String label, String description, Keyword keyword) {
         genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
@@ -284,12 +284,12 @@ public class GenericKeywordService extends GenericService {
         saveOrUpdate(keyword);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Number countActiveKeyword(KeywordType type, boolean controlled) {
         return genericKeywordDao.countActiveWithStatus(type, controlled);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Number countActiveKeyword(KeywordType type) {
         return genericKeywordDao.countActiveWithStatus(type, null);
     }

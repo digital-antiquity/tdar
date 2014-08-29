@@ -125,7 +125,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     protected void loadCustomViewMetadata() throws TdarActionException {
         loadCustomMetadata();
     }
-    
+
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {

@@ -11,7 +11,7 @@ import com.opensymphony.xwork2.ActionInvocation;
  *
  * //FIXME: make this more consistent with FreemarkerHttpHeaderResult, which allows status code *and* arbitrary http headers
  */
-public class StreamHttpStatusResult  extends StreamResult{
+public class StreamHttpStatusResult extends StreamResult {
 
     private static final long serialVersionUID = 0xDEAD_BEEF;
 
@@ -19,12 +19,12 @@ public class StreamHttpStatusResult  extends StreamResult{
 
     @Override
     protected void doExecute(String finalLocation, ActionInvocation invocation) throws Exception {
-        if(status != null) {
+        if (status != null) {
             HttpServletResponse oResponse = (HttpServletResponse) invocation.getInvocationContext().get(HTTP_RESPONSE);
             oResponse.setStatus(status);
         }
 
-        //call to parent comes last because it writes to the response outputstream (and thus will have sent the status code)
+        // call to parent comes last because it writes to the response outputstream (and thus will have sent the status code)
         super.doExecute(finalLocation, invocation);
     }
 

@@ -60,7 +60,6 @@ public class BulkUploadTemplateService {
         return toReturn;
     }
 
-
     /**
      * For the set of @link ResourceType entries, get all of the valid @link
      * BulkImportField fields that should be used.
@@ -141,7 +140,6 @@ public class BulkUploadTemplateService {
         logger.trace("{}", map);
         return map;
     }
-    
 
     /**
      * Create the Excel BulkUploadTemplate

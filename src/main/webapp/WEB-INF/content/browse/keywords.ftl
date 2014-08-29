@@ -33,4 +33,10 @@
 
         <@search.basicPagination "Results"/>
 
+<script type='text/javascript'>
+    $(document).ready(function () {
+        TDAR.common.initializeView();
+    });
+</script>
+
 </#escape>

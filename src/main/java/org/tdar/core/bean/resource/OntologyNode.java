@@ -267,7 +267,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    
     public OntologyNode getParentNode() {
         return parentNode;
     }
@@ -277,7 +276,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    
     public Set<OntologyNode> getSynonymNodes() {
         return synonymNodes;
     }
@@ -308,7 +306,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    
     public boolean isSynonym() {
         return synonym;
     }

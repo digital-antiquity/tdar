@@ -18,7 +18,6 @@ public class PersonController extends AbstractPersonController<Person> {
     @Autowired
     private transient ObfuscationService obfuscationService;
 
-    
     public Person getPerson() {
         Person p = getPersistable();
         if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
@@ -32,7 +31,7 @@ public class PersonController extends AbstractPersonController<Person> {
     public void setPerson(Person person) {
         setPersistable(person);
     }
-    
+
     @Override
     public Class<Person> getPersistableClass() {
         return Person.class;

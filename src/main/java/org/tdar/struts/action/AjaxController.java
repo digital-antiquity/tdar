@@ -37,12 +37,12 @@ public class AjaxController extends TdarActionSupport {
 
     private Long categoryVariableId;
     private InputStream resultJson;
-    
+
     @Autowired
     private transient XmlService xmlService;
-    
-    @Action(value="column-metadata-subcategories", results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params={"stream","resultJson"})})
+
+    @Action(value = "column-metadata-subcategories", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
     public String columnMetadataSubcategories() {
         if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
             getLogger().debug("Invalid category variable: " + categoryVariableId);

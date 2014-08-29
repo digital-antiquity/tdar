@@ -60,7 +60,6 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
@@ -73,7 +72,6 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    
     @XmlTransient
     public boolean isValid() {
         return isValidForController();

@@ -24,9 +24,8 @@ import org.tdar.struts.data.PricingOption;
 
 import com.opensymphony.xwork2.Preparable;
 
-
 /**
- * Implementation of the cart-related REST API. These endpoints are primarily used by tDAR's client-side pages,  with the exception of the "
+ * Implementation of the cart-related REST API. These endpoints are primarily used by tDAR's client-side pages, with the exception of the "
  */
 @Component
 @Scope("prototype")
@@ -37,7 +36,7 @@ import com.opensymphony.xwork2.Preparable;
 })
 @ParentPackage("default")
 @Namespace("/cart")
-public class CartApiController extends AbstractCartController implements Preparable{
+public class CartApiController extends AbstractCartController implements Preparable {
 
     private static final long serialVersionUID = -1870193105271895297L;
     private Long lookupMBCount = 0L;
@@ -54,6 +53,7 @@ public class CartApiController extends AbstractCartController implements Prepara
 
     /**
      * calculate estimated price when user specifies custom files/mb
+     * 
      * @return
      */
     @Action("api")
@@ -66,8 +66,6 @@ public class CartApiController extends AbstractCartController implements Prepara
         setResultJson(getPricingOptions());
         return SUCCESS;
     }
-
-
 
     void addPricingOption(PricingOption incoming) {
         if (incoming == null) {
@@ -125,9 +123,8 @@ public class CartApiController extends AbstractCartController implements Prepara
     }
 
     public void setResultJson(Object resultObject) {
-        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, null, getCallback()).getBytes()   ));
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(resultObject, null, getCallback()).getBytes()));
     }
-
 
     public String getCallback() {
         return callback;

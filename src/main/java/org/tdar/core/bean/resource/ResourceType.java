@@ -213,11 +213,10 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
-//    @Override
-//    public String getLuceneFieldName() {
-//        return QueryFieldNames.RESOURCE_TYPE;
-//    }
-
+    // @Override
+    // public String getLuceneFieldName() {
+    // return QueryFieldNames.RESOURCE_TYPE;
+    // }
 
     public boolean hasDemensions() {
         switch (this) {
@@ -276,7 +275,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);
     }
-
 
     @Override
     public String getPluralLocaleKey() {

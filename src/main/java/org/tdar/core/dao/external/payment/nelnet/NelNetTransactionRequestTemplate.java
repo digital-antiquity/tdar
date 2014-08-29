@@ -259,19 +259,19 @@ public class NelNetTransactionRequestTemplate implements Serializable {
 
     /**
      * return list of name/value pair entries, omitting entries with blank values
+     * 
      * @return
      */
     public List<NameValuePair> getNameValuePairs() {
         List<NameValuePair> pairs = new ArrayList<>();
-        for(NelnetTransactionItem item : NelnetTransactionItem.values()) {
-            if(StringUtils.isNotBlank(values.get(item.getKey())) && item != NelnetTransactionItem.SECRET) {
+        for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
+            if (StringUtils.isNotBlank(values.get(item.getKey())) && item != NelnetTransactionItem.SECRET) {
                 NameValuePair pair = item.pairWith(values.get(item.getKey()));
                 pairs.add(pair);
             }
         }
         return pairs;
     }
-
 
     public String getOrderType() {
         return orderType;

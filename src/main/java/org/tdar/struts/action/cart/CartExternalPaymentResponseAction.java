@@ -91,7 +91,6 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
         return SUCCESS;
     }
 
-
     public InputStream getInputStream() {
         return toStream(NELNET_RESPONSE_SUCCESS);
     }

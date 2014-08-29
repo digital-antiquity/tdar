@@ -35,16 +35,17 @@ import com.opensymphony.xwork2.TextProvider;
 public class UserNotification extends Persistable.Base implements Comparable<UserNotification> {
 
     private static final long serialVersionUID = -644485386619012665L;
-    
+
     public UserNotification() {
     }
-    
+
     public UserNotification(String key, UserNotificationType type, UserNotificationDisplayType displayType, TdarUser user) {
         this.messageKey = key;
         this.messageType = type;
         this.messageDisplayType = displayType;
         this.tdarUser = user;
     }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
@@ -133,11 +134,11 @@ public class UserNotification extends Persistable.Base implements Comparable<Use
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
     public void setMessage(TextProvider textProvider) {
         String text = textProvider.getText(getMessageKey());
         if (StringUtils.isBlank(text)) {
-            text = getMessageKey(); 
+            text = getMessageKey();
         }
         setMessage(text);
     }

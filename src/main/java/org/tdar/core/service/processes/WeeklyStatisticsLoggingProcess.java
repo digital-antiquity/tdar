@@ -83,21 +83,22 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
-        
-        stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true),""));
-        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, false),""));
+
+        stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true), ""));
+        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, false), ""));
         Thread.yield();
 
-        stats.add(generateStatistics(StatisticType.NUM_GEOGRAPHIC, genericKeywordService.countActiveKeyword(KeywordType.GEOGRAPHIC_KEYWORD),""));
-        stats.add(generateStatistics(StatisticType.NUM_INVESTIGATION, genericKeywordService.countActiveKeyword(KeywordType.INVESTIGATION_TYPE),""));
-        stats.add(generateStatistics(StatisticType.NUM_MATERIAL, genericKeywordService.countActiveKeyword(KeywordType.MATERIAL_KEYWORD),""));
-        stats.add(generateStatistics(StatisticType.NUM_OTHER, genericKeywordService.countActiveKeyword(KeywordType.OTHER_KEYWORD),""));
-        stats.add(generateStatistics(StatisticType.NUM_TEMPORAL, genericKeywordService.countActiveKeyword(KeywordType.TEMPORAL_KEYWORD),""));
+        stats.add(generateStatistics(StatisticType.NUM_GEOGRAPHIC, genericKeywordService.countActiveKeyword(KeywordType.GEOGRAPHIC_KEYWORD), ""));
+        stats.add(generateStatistics(StatisticType.NUM_INVESTIGATION, genericKeywordService.countActiveKeyword(KeywordType.INVESTIGATION_TYPE), ""));
+        stats.add(generateStatistics(StatisticType.NUM_MATERIAL, genericKeywordService.countActiveKeyword(KeywordType.MATERIAL_KEYWORD), ""));
+        stats.add(generateStatistics(StatisticType.NUM_OTHER, genericKeywordService.countActiveKeyword(KeywordType.OTHER_KEYWORD), ""));
+        stats.add(generateStatistics(StatisticType.NUM_TEMPORAL, genericKeywordService.countActiveKeyword(KeywordType.TEMPORAL_KEYWORD), ""));
         Thread.yield();
 
-        stats.add(generateStatistics(StatisticType.NUM_SITE_NAME, genericKeywordService.countActiveKeyword(KeywordType.SITE_NAME_KEYWORD),""));
-        stats.add(generateStatistics(StatisticType.NUM_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, true),""));
-        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, false),""));
+        stats.add(generateStatistics(StatisticType.NUM_SITE_NAME, genericKeywordService.countActiveKeyword(KeywordType.SITE_NAME_KEYWORD), ""));
+        stats.add(generateStatistics(StatisticType.NUM_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, true), ""));
+        stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_SITE_TYPE, genericKeywordService.countActiveKeyword(KeywordType.SITE_TYPE_KEYWORD, false),
+                ""));
 
         Thread.yield();
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();

@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
-
 public class ResultMetadataWrapper implements JsonModel {
 
     private static final long serialVersionUID = 1524243095172930161L;
@@ -63,8 +62,7 @@ public class ResultMetadataWrapper implements JsonModel {
     public String getsColumns() {
         return getSColumns();
     }
-    
-    
+
     public String getSColumns() {
         if (StringUtils.isEmpty(sColumns)) {
             List<String> tmp = new ArrayList<String>();

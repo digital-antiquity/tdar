@@ -348,7 +348,6 @@ public interface Persistable extends Serializable {
             return n1 / n2;
         }
 
-
         /**
          * Sort @link Updatable by their updated date.
          * 
@@ -364,7 +363,7 @@ public interface Persistable extends Serializable {
             });
 
         }
-        
+
         /**
          * Sort @link Updatable by their created date.
          * 
@@ -380,7 +379,6 @@ public interface Persistable extends Serializable {
             });
 
         }
-
 
     }
 

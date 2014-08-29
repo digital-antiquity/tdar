@@ -47,7 +47,7 @@ public class ScholarController extends AbstractLookupController {
     public String execute() {
         setRecordsPerPage(250);
         setResults(resourceService.findByTdarYear(this, getYear()));
-        for (Indexable p : (List<Indexable>)getResults()) {
+        for (Indexable p : (List<Indexable>) getResults()) {
             authorizationService.applyTransientViewableFlag(p, getAuthenticatedUser());
         }
         return SUCCESS;

@@ -66,7 +66,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }
             setResultsWrapper(selectAllFromDataTable);
-//            getLogger().debug("results: {} ", getResultsWrapper().getResults());
+            // getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
         setJsonResult(getResultsWrapper());
         return SUCCESS;

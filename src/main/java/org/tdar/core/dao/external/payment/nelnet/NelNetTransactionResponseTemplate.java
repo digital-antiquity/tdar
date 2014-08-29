@@ -100,7 +100,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         private NelnetTransactionItemResponse(String label, String key, int order) {
             this.key = key;
             this.label = label;
-            this.order= order;
+            this.order = order;
         }
 
         public String getKey() {
@@ -136,7 +136,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
                 new Comparator<NelnetTransactionItemResponse>() {
                     @Override
                     public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
-                        //NOTE: watch change in objectUtils compare and numberUtils
+                        // NOTE: watch change in objectUtils compare and numberUtils
                         return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
                     }
                 });
@@ -294,7 +294,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
             }
         }
     }
-    
+
     @Override
     public boolean isRefund() {
         String value = getValuesFor(NelnetTransactionItemResponse.TRANSACTION_TYPE);
