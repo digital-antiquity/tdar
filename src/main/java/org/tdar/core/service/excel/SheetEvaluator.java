@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
+import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -207,7 +208,11 @@ public class SheetEvaluator {
                 default:
                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", errors);
             }
+        } catch (NotImplementedException nie) {
+            throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_cannot_process_function", "sheetEvaluator.parse_excel_error_url",
+                    errors);
         } catch (RuntimeException re) {
+            logger.debug("exception:",re);
             throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_unknown_type", "sheetEvaluator.parse_excel_error_url",
                     errors);
         }
