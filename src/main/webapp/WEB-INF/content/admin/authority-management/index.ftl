@@ -51,7 +51,7 @@
 </div>
 
 <div class="glide" id="divSearchControl">
-    <form method="get" action="#" id="frm">
+    <form method="post" action="#" id="frm">
         <@s.token name='struts.csrf.token' />
         <div id="divKeywordSearchControl" class="searchControl">
             <h3>Keyword Search</h3>
