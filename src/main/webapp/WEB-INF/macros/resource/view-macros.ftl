@@ -385,6 +385,7 @@ ${resource.formattedSourceInformation!''} (${siteAcronym} ID: ${resource.id?c}) 
     <#macro keywordSearch _keywords fieldName="query" quoted=true>
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
+                <!-- <@s.url value="/${_keyword.urlNamespace}/${_keyword.id?c}" /> -->
                 <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if>
             </#if>
         </#list>

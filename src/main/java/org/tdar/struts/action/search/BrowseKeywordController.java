@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -43,6 +44,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private KeywordType keywordType;
     private Keyword keyword;
 
+    private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
     public Keyword getKeyword() {
         return keyword;
     }
@@ -81,13 +83,16 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Action(value = "keywords", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String view() {
-        if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
+        if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
+        if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
+//            setOrientation(DisplayOrientation.MAP);
+        }
         try {
             setSortField(SortOption.TITLE);
             searchService.handleSearch(rqb, this, this);
@@ -100,6 +105,14 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     @Override
     public List getFacetFields() {
         return null;
+    }
+
+    public DisplayOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
     }
 
 }
