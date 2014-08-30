@@ -107,7 +107,7 @@ public class TdarConfiguration {
     public void initialize() {
         logger.debug("initializing filestore and setup");
 
-        initializeTimeZoneInfo();
+//        initializeTimeZoneInfo();
 
         if (isProductionEnvironment()) {
             printConfig();
@@ -142,11 +142,15 @@ public class TdarConfiguration {
         // timestamp.
 
         // use JodaTime to load TimeZone
-        DateTimeZone timeZone = DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
+        DateTimeZone timeZone = getTimeZone();
         DateTimeZone.setDefault(timeZone);
         // use JodaTime TiemZone to initialize Java TimeZone
         TimeZone.setDefault(timeZone.toTimeZone());
 
+    }
+
+    private DateTimeZone getTimeZone() {
+        return DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
     }
 
     public String getConfigurationFile() {
