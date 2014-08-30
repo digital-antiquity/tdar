@@ -52,6 +52,28 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
+    public void testPoiInfiniteLoop() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "infinite-loop.xlsx"), 519);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
+        converter.execute();
+    }
+
+    @Test
+    @Rollback
+    public void testStdeva() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "stdev.xlsx"), 520);
+        ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
+        String msg = null;
+        try {
+            converter.execute();
+        } catch (Exception e) {
+            msg = e.getMessage();
+        }
+        assertEquals("you are using an excel function \"STDEVA\" that cannot be read at sheet \"Sheet1\" at cell: \"A7\", please replace it with the \"value\" of the calculation",msg);
+    }
+
+    @Test
+    @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
         importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "Pundo_degenerate.xls"),
                 "Appendix 8 (2) - row #49 has more columns (6) than this sheet has column names (5)");
@@ -87,7 +109,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(dataTable.getColumnByDisplayName("Dates::Margin of error"));
         assertNotNull(dataTable.getColumnByDisplayName("Thesis?"));
         assertNotNull(dataTable.getColumnByDisplayName("Dates::Cal 95% Min"));
-        
+
     }
 
     @Test
