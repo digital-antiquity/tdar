@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -189,8 +190,8 @@ public class SheetEvaluator {
         // setting up error array
         List<Object> errors = new ArrayList<>();
         errors.add(cell.getSheet().getSheetName());
-        errors.add(cell.getRowIndex() + 1);
-        errors.add(cell.getColumnIndex() + 1);
+        errors.add(CellReference.convertNumToColString(cell.getColumnIndex()) + (cell.getRowIndex() + 1));
+        
         try {
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
                 throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
@@ -209,7 +210,9 @@ public class SheetEvaluator {
                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", errors);
             }
         } catch (NotImplementedException nie) {
-            throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_cannot_process_function", "sheetEvaluator.parse_excel_error_url",
+            String function = nie.getCause().getMessage();
+            errors.add(function);
+            throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_cannot_process_function", "sheetEvaluator.bad_function_url",
                     errors);
         } catch (RuntimeException re) {
             logger.debug("exception:", re);

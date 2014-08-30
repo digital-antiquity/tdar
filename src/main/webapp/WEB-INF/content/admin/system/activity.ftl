@@ -150,12 +150,6 @@
         </#list>
     </tbody>
 </table>
-<script>
-    $(function () {
-        TDAR.datatable.extendSorting();
-        $("#tblRecentActivity, #tblQueryStats").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false});
-    });
-</script>
 </body>
 
 

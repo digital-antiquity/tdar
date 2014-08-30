@@ -16,6 +16,7 @@ import static org.tdar.utils.SimpleHttpUtils.post;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +28,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
@@ -446,9 +448,13 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
             // fake tainted connection
             controller.setParameters(mock.getParams());
         }
+        int totalLogs = genericService.findAll(BillingTransactionLog.class).size();
         controller.prepare();
         controller.validate();
         String response2 = controller.processExternalPayment();
+        List<BillingTransactionLog> logs = genericService.findAll(BillingTransactionLog.class);
+        assertNotEmpty(logs);
+        assertEquals(totalLogs + 1, logs.size());
         return response2;
     }
 

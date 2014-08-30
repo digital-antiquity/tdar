@@ -72,7 +72,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public String startIndex() {
         if (!isReindexing()) {
             List<Class<? extends Indexable>> toReindex = new ArrayList<>();
-            getLogger().info("{}", getIndexesToRebuild());
             toReindex = searchIndexService.getClassesToReindex(getIndexesToRebuild());
 
             getLogger().info("to reindex: {}", toReindex);

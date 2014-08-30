@@ -240,10 +240,11 @@ public class DownloadService {
                 return dto;
             }
 
-            if (CollectionUtils.isEmpty(versionsToDownload)) {
-                dto.setResult(DownloadResult.ERROR);
-                return dto;
-            }
+        }
+
+        if (CollectionUtils.isEmpty(versionsToDownload)) {
+            dto.setResult(DownloadResult.ERROR);
+            return dto;
         }
 
         logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
