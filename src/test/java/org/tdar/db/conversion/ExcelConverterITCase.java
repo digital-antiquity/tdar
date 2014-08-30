@@ -69,7 +69,9 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         } catch (Exception e) {
             msg = e.getMessage();
         }
-        assertEquals("you are using an excel function \"STDEVA\" that cannot be read at sheet \"Sheet1\" at cell: \"A7\", please replace it with the \"value\" of the calculation",msg);
+        assertEquals(
+                "you are using an excel function \"STDEVA\" that cannot be read at sheet \"Sheet1\" at cell: \"A7\", please replace it with the \"value\" of the calculation",
+                msg);
     }
 
     @Test
