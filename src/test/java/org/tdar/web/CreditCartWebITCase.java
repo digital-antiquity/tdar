@@ -1,5 +1,9 @@
 package org.tdar.web;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
@@ -14,6 +18,8 @@ import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.utils.Pair;
+import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -271,4 +277,15 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         testAccountPollingResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }
 
+    /**
+     * give the nelnet event notification endpoint totally bogus data.  We should get back non-200 status code and "failure" as the response body.
+     */
+    @Test
+    public void testCompletelyBogusEndpointRequest() {
+        String url = String.format("https://%s:%s/cart/process-external-payment-response", TestConfiguration.getInstance().getHostName(), TestConfiguration
+                .getInstance().getHttpsPort());
+        Pair<Integer, String> responsePair = SimpleHttpUtils.parseResponse(SimpleHttpUtils.post(url, asList(SimpleHttpUtils.nameValuePair("foo", "bar"), SimpleHttpUtils.nameValuePair("ping", "pong"))));
+        assertThat(responsePair.getFirst(), is(not(200)));
+        assertThat(responsePair.getSecond(), is("failure"));
+    }
 }
