@@ -113,6 +113,7 @@ public class SearchIndexService {
      * @param person
      */
     @SuppressWarnings("deprecation")
+    @Transactional(readOnly=true)
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
@@ -444,17 +445,18 @@ public class SearchIndexService {
     }
 
     @Async
+    @Transactional(readOnly=false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
-        TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-        Date date = new Date();
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);
-        sendEmail(toReindex, CONFIG, date);
+        sendEmail(toReindex);
 
     }
 
     @Transactional(readOnly = false)
-    public void sendEmail(final List<Class<? extends Indexable>> toReindex, TdarConfiguration CONFIG, Date date) {
+    public void sendEmail(final List<Class<? extends Indexable>> toReindex) {
+        Date date = new Date();
+        TdarConfiguration CONFIG = TdarConfiguration.getInstance();
         if (CONFIG.isProductionEnvironment()) {
             Email email = new Email();
             email.setSubject(INDEXING_COMPLETED);
