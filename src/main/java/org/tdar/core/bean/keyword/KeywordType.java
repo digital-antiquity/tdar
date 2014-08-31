@@ -9,7 +9,7 @@ public enum KeywordType implements Localizable {
 
     CULTURE_KEYWORD(CultureKeyword.class),
     INVESTIGATION_TYPE(InvestigationType.class),
-    MATERIAL_KEYWORD(MaterialKeyword.class),
+    MATERIAL_TYPE(MaterialKeyword.class),
     GEOGRAPHIC_KEYWORD(GeographicKeyword.class),
     OTHER_KEYWORD(OtherKeyword.class),
     SITE_NAME_KEYWORD(SiteNameKeyword.class),
@@ -47,7 +47,7 @@ public enum KeywordType implements Localizable {
                 return QueryFieldNames.ACTIVE_INVESTIGATION_TYPES;
             case GEOGRAPHIC_KEYWORD:
                 return QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS;
-            case MATERIAL_KEYWORD:
+            case MATERIAL_TYPE:
                 return QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS;
             case OTHER_KEYWORD:
                 return QueryFieldNames.ACTIVE_OTHER_KEYWORDS;
@@ -69,7 +69,7 @@ public enum KeywordType implements Localizable {
                 return InformationResource.INVESTIGATION_TYPE_INHERITANCE_TOGGLE;
             case GEOGRAPHIC_KEYWORD:
                 return InformationResource.GEOGRAPHIC_INHERITANCE_TOGGLE;
-            case MATERIAL_KEYWORD:
+            case MATERIAL_TYPE:
                 return InformationResource.MATERIAL_TYPE_INHERITANCE_TOGGLE;
             case OTHER_KEYWORD:
                 return InformationResource.OTHER_INHERITANCE_TOGGLE;
@@ -90,7 +90,7 @@ public enum KeywordType implements Localizable {
                 return "browse/investigationType";
             case GEOGRAPHIC_KEYWORD:
                 return "browse/geographic";
-            case MATERIAL_KEYWORD:
+            case MATERIAL_TYPE:
                 return "browse/material";
             case OTHER_KEYWORD:
                 return "browse/other";

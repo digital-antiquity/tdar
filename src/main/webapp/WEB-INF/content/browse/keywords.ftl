@@ -4,11 +4,17 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     
-    
+<head>
     
 <title>${keyword.label}</title>
+    <@view.canonical keyword />
+<#--    <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
+    <@search.rssUrlTag url=rssUrl /> -->
+    <@search.headerLinks includeRss=false />
+
+</head>
 <div class="glide">
-    <h1>${keyword.label}</h1>
+    <h1>${keyword.label} <span class="xsmall red">(<@s.text name="${keywordType.localeKey}"/>)</span></h1>
     <#if keyword.synonyms?has_content>
     <p><#list keyword.synonyms![] as synonym> ${synonym.label} </#list></p>
     </#if>

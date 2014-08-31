@@ -85,22 +85,25 @@
 
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
-    <#list investigationTypes?sort as investigationType>
-         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence />
+    <#list investigationTypes?sort as keyword>
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence /> -->
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul class="inline">
     <#list siteTypeKeywords?sort as keyword>
-         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
 <h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
-         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
@@ -108,10 +111,18 @@
 <h2>Browse by Material Type</h2>
 <ul class="inline">
     <#list materialTypes?sort as keyword>
-         <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence />
+        <@_searchFor keyword />
+<#--          <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
+    <#macro _searchFor keyword>
+        <li class="bullet">
+            <a href="<@s.url value="/${keyword.urlNamespace}/${keyword.id?c}" />">${keyword.label}
+            <#if keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
+            </a>
+        </li>
+    </#macro>
 
     <#macro searchFor queryParam term displayTerm wrappingTag="span" occurrence=0>
         <#local term_ = term />

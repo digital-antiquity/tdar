@@ -88,12 +88,12 @@
     </rule>
 
     <rule>
-        <from>^/browse/investigation/(\d+)\??(.*)</from>
+        <from>^/browse/investigationType/(\d+)\??(.*)</from>
         <to>/browse/keywords?keywordType=INVESTIGATION_TYPE&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/materialType/(\d+)\??(.*)</from>
+        <from>^/browse/material/(\d+)\??(.*)</from>
         <to>/browse/keywords?keywordType=MATERIAL_TYPE&amp;id=$1&amp;$2</to>
     </rule>
 

@@ -332,7 +332,7 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, Arrays.asList(this.getUncontrolledSiteTypes()));
 
         // managed keywords (in the form of lists of lists of ids)
-        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_KEYWORD, this.getMaterialKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_TYPE, this.getMaterialKeywordIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getApprovedSiteTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, this.getApprovedCultureKeywordIdLists());
