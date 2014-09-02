@@ -56,9 +56,9 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
         // this does not return unique results
-        Set<Account> accountGroups = new HashSet<>();
+        List<Account> accountGroups = new ArrayList<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
-        query.setParameter("personId", user.getId());
+        query.setParameter("personid", user.getId());
         query.setParameterList("statuses", statuses);
         accountGroups.addAll(query.list());
         for (AccountGroup group : findAccountGroupsForUser(user)) {
@@ -70,7 +70,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     @SuppressWarnings("unchecked")
     public List<AccountGroup> findAccountGroupsForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
-        query.setParameter("personId", user.getId());
+        query.setParameter("personid", user.getId());
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
         return query.list();
 
@@ -502,7 +502,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      */
     private boolean updateAccountAssociations(Account account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
         // Account localAccount = account;
-        Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
+        Set<Account> additionalAccountsToCleanup = new HashSet<>();
         boolean hasUpdates = false;
 
         // try this without the merge
