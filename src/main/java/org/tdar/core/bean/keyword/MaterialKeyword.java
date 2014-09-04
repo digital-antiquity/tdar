@@ -51,7 +51,7 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     @Override
     public String getUrlNamespace() {
-        return KeywordType.MATERIAL_KEYWORD.getUrlNamespace();
+        return KeywordType.MATERIAL_TYPE.getUrlNamespace();
     }
 
 }

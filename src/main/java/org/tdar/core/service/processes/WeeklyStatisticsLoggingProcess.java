@@ -90,7 +90,7 @@ public class WeeklyStatisticsLoggingProcess extends ScheduledProcess.Base<Homepa
 
         stats.add(generateStatistics(StatisticType.NUM_GEOGRAPHIC, genericKeywordService.countActiveKeyword(KeywordType.GEOGRAPHIC_KEYWORD), ""));
         stats.add(generateStatistics(StatisticType.NUM_INVESTIGATION, genericKeywordService.countActiveKeyword(KeywordType.INVESTIGATION_TYPE), ""));
-        stats.add(generateStatistics(StatisticType.NUM_MATERIAL, genericKeywordService.countActiveKeyword(KeywordType.MATERIAL_KEYWORD), ""));
+        stats.add(generateStatistics(StatisticType.NUM_MATERIAL, genericKeywordService.countActiveKeyword(KeywordType.MATERIAL_TYPE), ""));
         stats.add(generateStatistics(StatisticType.NUM_OTHER, genericKeywordService.countActiveKeyword(KeywordType.OTHER_KEYWORD), ""));
         stats.add(generateStatistics(StatisticType.NUM_TEMPORAL, genericKeywordService.countActiveKeyword(KeywordType.TEMPORAL_KEYWORD), ""));
         Thread.yield();

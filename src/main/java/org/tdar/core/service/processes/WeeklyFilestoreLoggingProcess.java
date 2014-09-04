@@ -137,7 +137,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
             subject.append(" [NONE]");
         }
         else {
-            subject.append(" [" + count + "]");
+            subject.append(" [" + totalIssues + "]");
         }
         map.put("siteAcronym", TdarConfiguration.getInstance().getSiteAcronym());
         map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
