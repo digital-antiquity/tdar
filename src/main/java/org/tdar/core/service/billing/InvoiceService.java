@@ -702,12 +702,14 @@ public class InvoiceService {
     public void completeInvoice(Invoice invoice) {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
+        Account account = accountDao.getAccountForInvoice(invoice);
         genericDao.saveOrUpdate(invoice);
-
         try {
-            Account account = accountDao.getAccountForInvoice(invoice);
-            if (account != null && account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
-                accountDao.updateQuota(account, account.getResources());
+            if (account != null) {
+                Number numFlagged = accountDao.findCountOfFlaggedResourcesInAccount(account);
+                if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE || numFlagged != null && numFlagged.longValue() > 0) {
+                    accountDao.updateQuota(account, account.getResources());
+                }
             }
         } catch (Exception e) {
             logger.error("exception ocurred in processing FLAGGED ACCOUNT", e);
