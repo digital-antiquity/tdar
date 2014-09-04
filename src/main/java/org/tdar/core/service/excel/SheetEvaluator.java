@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
+import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -185,7 +187,11 @@ public class SheetEvaluator {
         if (cell == null) {
             return null;
         }
-        List<Integer> errors = Arrays.asList(cell.getRowIndex() + 1, cell.getColumnIndex() + 1);
+        // setting up error array
+        List<Object> errors = new ArrayList<>();
+        errors.add(cell.getSheet().getSheetName());
+        errors.add(CellReference.convertNumToColString(cell.getColumnIndex()) + (cell.getRowIndex() + 1));
+        
         try {
             if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
                 throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
@@ -203,7 +209,13 @@ public class SheetEvaluator {
                 default:
                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", errors);
             }
+        } catch (NotImplementedException nie) {
+            String function = nie.getCause().getMessage();
+            errors.add(function);
+            throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_cannot_process_function", "sheetEvaluator.bad_function_url",
+                    errors);
         } catch (RuntimeException re) {
+            logger.debug("exception:", re);
             throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error_unknown_type", "sheetEvaluator.parse_excel_error_url",
                     errors);
         }
@@ -251,6 +263,7 @@ public class SheetEvaluator {
 
     /**
      * Returns true if this SheetEvaluator detected and extracted a header from the given Sheet.
+     * 
      * @return
      */
     public boolean hasHeaders() {
@@ -259,6 +272,7 @@ public class SheetEvaluator {
 
     /**
      * Returns true if this sheet contains tabular data.
+     * 
      * @return
      */
     public boolean hasTabularData() {
@@ -270,7 +284,9 @@ public class SheetEvaluator {
      * Returns true if this sheet has "issues", e.g., if any of the following conditions are true:
      * 1. ending data index is less than the max number of reported cells
      * 2. no headers found
-     * 3. number of header values is less than the max number of data values scanned (NOTE: this condition may never hold now that DataRow.extractHeaders() fills in blank header columns).
+     * 3. number of header values is less than the max number of data values scanned (NOTE: this condition may never hold now that DataRow.extractHeaders()
+     * fills in blank header columns).
+     * 
      * @return
      */
     public boolean isDegenerate() {
@@ -293,7 +309,7 @@ public class SheetEvaluator {
      *
      */
     private class DataRow {
-        // threshold ratio of alphabetic data values to total data values needed for a row to be considered headerish 
+        // threshold ratio of alphabetic data values to total data values needed for a row to be considered headerish
         private static final double ALPHABETIC_DATA_DENSITY_THRESHOLD = 0.6d;
         // maximum percentage of blanks data values that a potential header row can have, currently set to 30%
         private static final double HEADER_MAX_BLANKS_THRESHOLD = 0.3d;
@@ -368,7 +384,7 @@ public class SheetEvaluator {
         public int getColumnEndIndex() {
             return columnEndIndex;
         }
-        
+
         public int getTotalNumberOfCells() {
             return columnEndIndex - columnStartIndex;
         }
@@ -387,7 +403,7 @@ public class SheetEvaluator {
         private double percentageOfAlphabeticDataValues() {
             return numberOfAlphabeticValues / (double) numberOfDataValues;
         }
-        
+
         private double percentageOfBlankValues() {
             return getNumberOfBlankValues() / (double) getTotalNumberOfCells();
         }

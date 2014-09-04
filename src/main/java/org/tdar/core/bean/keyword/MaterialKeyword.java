@@ -24,18 +24,16 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Table(name = "material_keyword")
 @Indexed(index = "Keyword")
-@Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.MaterialKeyword")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.MaterialKeyword")
 @Cacheable
 public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements ControlledKeyword {
 
     private static final long serialVersionUID = -8439705822874264175L;
 
-    public static final String INHERITANCE_TOGGLE = "inheriting_material_information";
-
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> synonyms = new HashSet<MaterialKeyword>();
 
     @Override
@@ -49,6 +47,11 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     public String getSynonymFormattedName() {
         return getLabel();
+    }
+
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.MATERIAL_KEYWORD.getUrlNamespace();
     }
 
 }

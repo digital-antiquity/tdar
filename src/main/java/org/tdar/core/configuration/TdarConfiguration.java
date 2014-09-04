@@ -7,11 +7,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.resources.image.ImageUtilities;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -46,8 +48,8 @@ public class TdarConfiguration {
     private final static String FROM_EMAIL_NAME = "info@";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 100;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 1000;
 
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
@@ -71,17 +73,17 @@ public class TdarConfiguration {
 
     public void printConfig() {
         logger.info("---------------------------------------------");
-        logger.info("| Name:{} ({})",getRepositoryName(), isProductionEnvironment());
+        logger.info("| Name:{} ({})", getRepositoryName(), isProductionEnvironment());
         logger.info("| ");
         logger.info("| HostName: {}  SecureHost: {}", getBaseUrl(), getBaseSecureUrl());
-        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled() );
-        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester() );
+        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled());
+        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester());
         logger.info("| ");
         logger.info("| Storage:");
         logger.info("| FileStoreLocation: {}", getFileStoreLocation());
         logger.info("| PersonalFileStoreLocation: {}", getPersonalFileStoreLocation());
         logger.info("| ");
-        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents() );
+        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents());
         logger.info("| PayPerIngest: {}", isPayPerIngestEnabled());
         logger.info("| CORS Hosts: {} ({})", getAllAllowedDomains(), getContentSecurityPolicyEnabled());
         logger.info("---------------------------------------------");
@@ -99,14 +101,17 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
     }
 
-    // FIXME: This function needs javadoc -- I assume there is a reason why initialize() cant/shouldn't happen in constructor (or lazy-init in getInstance()).
+    /**
+     * Called separately so we can better handle configuration exceptions
+     */
     public void initialize() {
         logger.debug("initializing filestore and setup");
-        
+
+//        initializeTimeZoneInfo();
+
         if (isProductionEnvironment()) {
             printConfig();
         }
-        // initPersonalFilestorePath();
         initializeStopWords();
         intializeCouponCodes();
 
@@ -129,6 +134,23 @@ public class TdarConfiguration {
         }
 
         initPersonalFilestorePath();
+    }
+
+    private void initializeTimeZoneInfo() {
+        // Note: tdar timestamps do not currently encode timezone information. However, we set the timezone here because there are other systems (e.g.
+        // DateBridge) that convert datetime values to UTC. Therefore. We set the default timezone to UTC to prevent these systems from modifying the
+        // timestamp.
+
+        // use JodaTime to load TimeZone
+        DateTimeZone timeZone = getTimeZone();
+        DateTimeZone.setDefault(timeZone);
+        // use JodaTime TiemZone to initialize Java TimeZone
+        TimeZone.setDefault(timeZone.toTimeZone());
+
+    }
+
+    private DateTimeZone getTimeZone() {
+        return DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
     }
 
     public String getConfigurationFile() {
@@ -782,6 +804,20 @@ public class TdarConfiguration {
             dflt = true;
         }
         return assistant.getBooleanProperty("email.to.tester", dflt);
+    }
+
+    /**
+     * Hibernate seems to have issues with our Asynchronous indexing and ehCache; probably thread issues + race condition? Regardless, for project
+     * saves/indexes, this seems to be an issue, hence we wait X minutes before fully trusting the cache
+     * 
+     * @return
+     */
+    public int getAsyncWaitToTrustCache() {
+        return 1;
+    }
+
+    public String getURLRewriteRefresh() {
+        return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
     }
 
 }

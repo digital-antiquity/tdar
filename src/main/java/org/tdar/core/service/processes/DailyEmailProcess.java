@@ -77,7 +77,7 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
         List<TdarUser> people = new ArrayList<>();
         Date yesterday = DateTime.now().minusDays(1).toDate();
         for (TdarUser user : entityService.findAllRegisteredUsers(100)) {
-            if (yesterday.before(user.getDateUpdated())) {
+            if (user != null && user.getDateUpdated() != null && yesterday.before(user.getDateUpdated())) {
                 people.add(user);
             }
         }
@@ -87,7 +87,8 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());
-            email.setSubject(String.format("There are %s user emails to review ", people.size()));
+            email.setSubject(String.format("There are %s new users in %s", people.size(), config.getSiteAcronym()));
+            email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
             dataModel.put("users", people);
             dataModel.put("totalUsers", people.size());
@@ -110,6 +111,7 @@ public class DailyEmailProcess extends ScheduledProcess.Base<HomepageGeographicK
             dataModel.put("emails", emails);
             dataModel.put("totalEmails", emails.size());
             Email email = new Email();
+            email.setUserGenerated(false);
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());

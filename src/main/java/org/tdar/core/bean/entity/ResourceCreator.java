@@ -32,7 +32,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -54,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.ResourceCreator")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
@@ -154,6 +153,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public final String getCreatorRoleIdentifier() {
         return getCreatorRoleIdentifier(this.getCreator(), this.getRole());
     }
@@ -177,7 +177,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -197,7 +196,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }

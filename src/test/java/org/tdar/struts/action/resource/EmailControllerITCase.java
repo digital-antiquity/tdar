@@ -1,6 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         for (EmailMessageType type : EmailMessageType.values()) {
             EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
-            AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+            AntiSpamHelper h = new AntiSpamHelper();
             h.setTimeCheck(h.getTimeCheck() - 5000);
             ec.setResourceId(document.getId());
             ec.setFromId(getBasicUserId());
@@ -48,7 +50,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
         setIgnoreActionErrors(true);
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
-        AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+        AntiSpamHelper h = new AntiSpamHelper();
         h.setTimeCheck(h.getTimeCheck() - 5000);
         ec.setResourceId(document.getId());
         ec.setFromId(getBasicUserId());
@@ -65,7 +67,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
         setIgnoreActionErrors(true);
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
-        AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+        AntiSpamHelper h = new AntiSpamHelper();
         h.setTimeCheck(h.getTimeCheck() - 5000);
         ec.setResourceId(document.getId());
         ec.setFromId(getAdminUserId());
@@ -82,7 +84,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
         setIgnoreActionErrors(true);
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
-        AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+        AntiSpamHelper h = new AntiSpamHelper();
         h.setTimeCheck(h.getTimeCheck() - 5000);
         ec.setResourceId(document.getId());
         ec.setFromId(getBasicUserId());
@@ -98,7 +100,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
     public void testNoResource() throws Exception {
         setIgnoreActionErrors(true);
         EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
-        AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+        AntiSpamHelper h = new AntiSpamHelper();
         h.setTimeCheck(h.getTimeCheck() - 5000);
         ec.setFromId(getBasicUserId());
         ec.setType(EmailMessageType.CONTACT);

@@ -9,6 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.filestore.personal.PersonalFileType;
@@ -34,6 +36,7 @@ public class PersonalFilestoreTicket extends Persistable.Base {
 
     @Column(nullable = false, name = "date_generated")
     @JsonView(JsonLookupFilter.class)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateGenerated = new Date();
 
     @Enumerated(EnumType.STRING)

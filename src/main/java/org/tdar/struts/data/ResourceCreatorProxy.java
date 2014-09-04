@@ -53,6 +53,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     private CreatorType type = CreatorType.PERSON;
+    private Long id;
 
     public ResourceCreatorProxy(Creator creator, ResourceCreatorRole role) {
         if (creator instanceof Person) {
@@ -72,6 +73,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             this.institution = (Institution) rc.getCreator();
         }
         this.role = rc.getRole();
+        this.setId(rc.getId());
     }
 
     // properly set the state of the resourceCreator field by determining if the proxy represents a person or an institution
@@ -95,6 +97,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
                 logger.warn("no resource creator was initialized becase no creator was set");
             }
             initialized = true;
+            resourceCreator.setId(getId());
         }
     }
 
@@ -213,6 +216,14 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     public void setSeenImportFieldNames(Set<String> seenImportFieldNames) {
         this.seenImportFieldNames = seenImportFieldNames;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

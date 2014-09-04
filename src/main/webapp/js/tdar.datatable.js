@@ -42,6 +42,8 @@ TDAR.datatable = function() {
 
         $.extend(options, parms);
         var $dataTable = $(options.tableSelector);
+        $dataTable.data("toAdd", []);
+        $dataTable.data("toRemove", []);
 
         // here is where we will store the selected rows (if caller wants to track that stuff)
         $dataTable.data('selectedRows', {});
@@ -65,8 +67,13 @@ TDAR.datatable = function() {
                     xhrFields : {
                         withCredentials : true
                     },
-                    data : _convertRequest(aoData, options.aoColumns, options.requestCallback),
+                    data : _convertRequest(aoData, options.aoColumns, options.requestCallback, $dataTable ),
                     success : function(_data) {
+                        var addIds = $dataTable.data("toAdd");
+                        var removeIds = $dataTable.data("toRemove");
+                        //assuming the above lists are mutually exclusive, the concatenation is a list of all checkboxes that should be toggled
+                        var toggleIds = addIds.concat(removeIds);
+
                         // intercept data returned by server, translate to client format
                         var recordInfo = {
                             iTotalDisplayRecords : _data.totalRecords,
@@ -79,6 +86,23 @@ TDAR.datatable = function() {
                             };
                         }
                         $.extend(_data, recordInfo);
+                        //update the list of resource id's that belong to the current resource collection
+                        $dataTable.data("selectedResults", _data.selectedResults);
+
+                        //similarly, add  isSelectedResult property to each result
+                        if(options.selectableRows && _data.resources) {
+                            if(!_data.selectedResults) {
+                                _data.selectedResults = [];
+                            }
+                            $.each(_data.resources, function(idx, obj) {
+                                obj.isSelectedResult = _data.selectedResults.indexOf(obj.id) > -1;
+                                obj.isToggled = toggleIds.indexOf(obj.id) > -1;
+
+                                //determining the current selected status is tricky.  We need to reconcile the value from the server setting (isSelectedResult)
+                                //against any client-side changes made so far.
+                                obj.isCurrentlySelected = (obj.isSelectedResult !== obj.isToggled);
+                            });
+                        }
                         fnCallback(_data);
                     },
                     error : function(jqXHR, textStatus, errorThrown) {
@@ -92,19 +116,17 @@ TDAR.datatable = function() {
         if (options.selectableRows) {
             options.aoColumns[0].fnRender = fnRenderIdColumn;
             options.aoColumns[0].bUseRendered = false;
-            dataTableOptions["fnRowCallback"] = function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
                 var id = $cb.val();
-                if ($dataTable.data('selectedRows')[id]) {
-                    $cb.prop('checked', true);
-                }
+                $cb.prop('checked', obj.isCurrentlySelected );
                 return nRow;
             };
 
             // register datatable checkbox changes. maintain a hashtable of all of the currently selected items.
             // call the rowSelectionCallback whenever something changes
-            $dataTable.delegate('input[type=checkbox]', 'change', function() {
+            $dataTable.on('change', 'input[type=checkbox]' , function() {
                 var $elem = $(this); // here 'this' is checkbox
                 var id = $elem.val();
                 var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]);
@@ -136,11 +158,12 @@ TDAR.datatable = function() {
      *            array of objects with "name" and "value" properties.
      * @param aoColumns
      * @param requestCallback
+     * @param $dataTable jquery selection containing the datatable
      * @returns {{startRecord: (j.defaults.iDisplayStart|*|int), recordsPerPage: (j.defaults.iDisplayLength|*|int), sortField:
      *          (string|g_settingsMap.person.tdarSortOption|g_settingsMap.institution.tdarSortOption|g_settingsMap.keyword.tdarSortOption|tdarSortOption)}}
      * @private
      */
-    function _convertRequest(aoData, aoColumns, requestCallback) {
+    function _convertRequest(aoData, aoColumns, requestCallback, $dataTable) {
         var oData = {};
         // first convert the request from array of key/val pairs to map<string,string>.
         $.each(aoData, function() {
@@ -182,8 +205,9 @@ TDAR.datatable = function() {
             resourceType = resourceType.toLowerCase();
         }
         // console.log("resource type:%s", resourceType);
-        return '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" />' +
-                '<label class="datatable-cell-unstyled" for="' + attrId + '">' + id + '</label>';
+        return ('<label class="datatable-cell-unstyled">' +
+                '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" >' + id
+                + '</label>');
     }
 
     /**
@@ -277,7 +301,8 @@ TDAR.datatable = function() {
                 "bSortable" : false
             });
         }
-        var $dataTable = _registerLookupDataTable({
+        var $dataTable = $('#resource_datatable');
+        _registerLookupDataTable({
             tableSelector : '#resource_datatable',
             sAjaxSource : '/lookup/resource',
             "bLengthChange" : true,
@@ -295,15 +320,16 @@ TDAR.datatable = function() {
                     'term' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
-                    useSubmitterContext : !_options.isAdministrator
+                    useSubmitterContext : !_options.isAdministrator,
+                    selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 }
             },
             selectableRows : _options.isSelectable,
             rowSelectionCallback : function(id, obj, isAdded) {
                 if (isAdded) {
-                    _rowSelected(obj, true);
+                    _rowSelected(obj, $dataTable);
                 } else {
-                    _rowUnselected(obj);
+                    _rowUnselected(obj, $dataTable);
                 }
             }
         });
@@ -379,11 +405,6 @@ TDAR.datatable = function() {
             $resourcesTable.hide();
         }
 
-        // bind row delete button
-        $resourcesTable.on('click', 'button', function() {
-            var button = this, resourceid = $(button).data("rid");
-            _removeResourceClicked(resourceid, button, dataTable);
-        });
     }
 
     /**
@@ -392,38 +413,21 @@ TDAR.datatable = function() {
      * @param obj
      * @private
      */
-    function _rowSelected(obj, add) {
+    function _rowSelected(obj, $dataTable) {
+        var $tableAdd = $("#tblToAdd");
+        var $tableRemove = $("#tblToRemove");
 
-        // first, add the hidden input tag to the dom
-        var tag = '<input type="hidden" name="toAdd" value="' + obj.id + '" id="hrid' + obj.id + '"/>';
-        // console.log("adding selected resource:" + tag);
-        if (add) {
-            $('#divSelectedResources').append(tag);
+        //remove tr, hidden field, id from  the 'remove' lists, if present
+        _arrayRemove($dataTable.data("toRemove"), obj.id);
+        $("#trmod_" + obj.id).remove();
+
+        //if the resource was part of the collection to begin with, do nothing
+        if(obj.isSelectedResult)  {
+        } else {
+            _addRow($dataTable, $tableAdd, "trmod_" + obj.id, obj,"toAdd");
+
         }
 
-        // next, add a new row to the 'selected items' table.
-        // FIXME: Really, Jim? All this to render a button?
-        var $table = $('#tblCollectionResources');
-        var $tbody = $('tbody', $table);
-        var resourceTag = '';
-        resourceTag += '<tr id="dtr_:id">                                                                   ';
-        resourceTag += '    <td>:id</td>                                                                             ';
-        resourceTag += '    <td>                                                                                      ';
-        resourceTag += '        <a href="/:urlNamespace/:id" target="_b" >                                    ';
-        resourceTag += '            :title        ';
-        resourceTag += '        </a>                                                                                  ';
-        resourceTag += '    </td>                                                                                     ';
-        resourceTag += '    <td><button class="btn btn-mini" data-rid=":id" type="button" tabindex="-1"><i class="icon-trash"></i></button></td>';
-        resourceTag += '</tr>                                                                                         ';
-
-        resourceTag = resourceTag.replace(/:id/g, obj.id);
-        resourceTag = resourceTag.replace(/:urlNamespace/g, obj.urlNamespace);
-        resourceTag = resourceTag.replace(/:title/g, obj.title);
-        resourceTag = resourceTag.replace(/:description/g, obj.description);
-        resourceTag = resourceTag.replace(/:status/g, obj.status);
-
-        $tbody.append(resourceTag);
-        $table.show();
     }
 
     /**
@@ -432,55 +436,40 @@ TDAR.datatable = function() {
      * @param obj
      * @private
      */
-    function _rowUnselected(obj) {
-        // console.log('removing selected reosurce:' + obj.id);
-        $('#hrid' + obj.id).remove();
+    function _rowUnselected(obj, $dataTable) {
+        var $tableAdd = $("#tblToAdd");
+        var $tableRemove = $("#tblToRemove");
 
-        var $row = $('#dtr_' + obj.id);
-        var $table = $row.closest('table');
-        // var $div = $row.closest('div');
-        $row.remove();
-        if ($table.find('tr').length == 1) {
-            $table.hide();
-        } // FIXME: DRY
 
-    }
+        //remove tr, hidden field, id from  the 'add' lists, if present
+        _arrayRemove($dataTable.data("toAdd"), obj.id);
+        $("#trmod_" + obj.id).remove();
 
-    /**
-     * This is similar to _rowUnselected, but instead of the data- table, this callback executes when a user removed a selected entry via the delete button of
-     * the "currently selected rows" table.
-     * 
-     * @param id
-     *            id of the row object removed
-     * @param elem
-     *            the delete button element
-     * @param dataTable
-     *            the resource datatable
-     * 
-     * @private
-     */
-    function _removeResourceClicked(id, elem, dataTable) {
-        var $dataTable = $(dataTable);
-        // delete the element from the selectedrows structure and remove the hidden input tag
-        delete $dataTable.data('selectedRows')[id];
-        $('#hrid' + id).remove();
-
-        // now delete the row from the table
-        var $elem = $(elem);
-        var $tr = $elem.closest('tr');
-        var $div = $elem.closest('div');
-        $tr.remove();
-
-        // if the table is empty, hide the section
-        if ($('tr', $div).length == 1) { // one header row
-            // $div.hide();
-            $table.hide();
+        //if resource wasn't part of selection to begin with, do nothing
+        if(obj.isSelectedResult)  {
+            // add the hidden input tag to the dom
+            // next, add a new row to the 'selected items' table.
+            _addRow($dataTable, $tableRemove, "trmod_" + obj.id, obj, "toRemove");
+        } else {
         }
-        $dataTable.after("<input type='hidden' name='toRemove' value='" + id + "'/>");
-        // if the datatable is on a page that shows the corresponding checkbox, clear the checkbox it
-        $('#cbEntityId_' + id, $dataTable).prop('checked', false);
-
     }
+
+    function _addRow($dataTable, $table, idattr, obj, action) {
+
+        /**
+         * Modification to use encapsulation and less dom manipulation --
+         * Row contains hidden input, so removing the row, removes the element entirely
+         */
+        _arrayAdd($dataTable.data(action), obj.id);
+
+        var $tr = $("<tr><td>" + obj.id 
+                + '<input type="hidden" name="'+action+'" value="' + obj.id + '" id="hrid' + obj.id + '">'
+                + "</td><td>"+obj.title+"</td></tr>");
+        $tr.attr("id", idattr);
+        $table.append($tr);
+    }
+
+
 
     /**
      * pagination callback: this callback returns the vertical scroll position to the top of the page when the user navigates to a new page.
@@ -608,7 +597,7 @@ TDAR.datatable = function() {
         // swallow cors exception. this can happen if window is a child but not an adhoc target
         try {
             if (window.opener) {
-                windowOpener = window.opener.TDAR.common.adhocTarget;
+                _windowOpener = window.opener.TDAR.common.adhocTarget;
             }
         } catch (ex) {
             console.log("window parent not available - skipping adhoctarget check");
@@ -638,31 +627,11 @@ TDAR.datatable = function() {
     }
 
     function _initializeCollectionAddRemove(id) {
-        if (parseInt(id) > -1) {
-            $.ajax({
-                traditional : true,
-                dataType : 'jsonp',
-                url : "/lookup/resource",
-                xhrFields : {
-                    withCredentials : true
-                },
-                data : {
-                    collectionId : id,
-                    recordsPerPage : 100
-                },
-                success : function(_data) {
-                    $.each(_data.resources, function(index, el) {
-                        _rowSelected(el, false);
-                    });
-                    $datatable.after("<p>Note this is the first 100 resources in this colection.</p>")
-                },
-                error : function(jqXHR, textStatus, errorThrown) {
-                    console.error("ajax query failed:" + errorThrown);
-                }
-            });
-        }
+        //dont allow submit until collection contents fully initialized.
+//        $(".submitButton").prop("disabled", true);
         var $datatable = $("#resource_datatable");
         var $container = $("#divNoticeContainer");
+
         $datatable.on("change", ".datatable-checkbox.project", function() {
             if ($container.is(":visible")) {
                 return;
@@ -717,8 +686,9 @@ TDAR.datatable = function() {
                     "bSortable" : false,
                     "sName" : columns[col].simpleName,
                     "sTitle" : columns[col].displayName,
+                    "tdarIdx" : size + offset -1,
                     "fnRender" : function(obj) {
-                        var val = obj.aData[offset];
+                        var val = obj.aData[this.tdarIdx];
                         var str = TDAR.common.htmlEncode(val);
                         return str;
                     }
@@ -731,12 +701,36 @@ TDAR.datatable = function() {
 
     }
 
+    /**
+     * add item to array if not found in array. returns undef
+     * @param arr
+     * @param item
+     * @private
+     */
+    function _arrayAdd(arr, item) {
+        if(arr.indexOf(item) === -1) {
+            arr.push(item);
+        }
+    }
+
+    /**
+     * remove item from array if found. return undef
+     * @param arr
+     * @param item
+     * @private
+     */
+    function _arrayRemove(arr, item) {
+        var idx = arr.indexOf(item);
+        if(idx !== -1) {
+            arr.splice(idx, 1);
+        }
+    }
+
     return {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,
         setupDashboardDataTable : _setupDashboardDataTable,
-        removeResourceClicked : _removeResourceClicked,
         registerResourceCollectionDataTable : _registerResourceCollectionDataTable,
         renderPersonId : _fnRenderPersonId,
         checkAllToggle : _checkAllToggle,

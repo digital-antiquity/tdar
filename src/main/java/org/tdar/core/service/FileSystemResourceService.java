@@ -45,7 +45,7 @@ public class FileSystemResourceService {
         return fileSystemResourceDao.openCreatorInfoLog(filename);
     }
 
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom)  {
+    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
         return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
     }
 

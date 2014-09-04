@@ -42,7 +42,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 })
 @Entity
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.entity.AuthorizedUser")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.AuthorizedUser")
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
@@ -169,7 +169,7 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     /**
-     * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation.  When enabled is false,
+     * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation. When enabled is false,
      * the system should not allow operations which would alter the fields in this object, and also should not allow operations that would add or remove the
      * object to/from an authorized user list.
      *

@@ -15,7 +15,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 
 /**
@@ -127,14 +126,12 @@ public class Address extends Base implements Persistable, Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
         return isValid();
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {

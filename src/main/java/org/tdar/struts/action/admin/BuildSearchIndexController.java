@@ -29,6 +29,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
@@ -41,7 +42,6 @@ import org.tdar.utils.activity.IgnoreActivity;
 @Namespace("/admin/searchindex")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
-
 
     private static final long serialVersionUID = -8927970945627420725L;
 
@@ -72,7 +72,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public String startIndex() {
         if (!isReindexing()) {
             List<Class<? extends Indexable>> toReindex = new ArrayList<>();
-            getLogger().info("{}", getIndexesToRebuild());
             toReindex = searchIndexService.getClassesToReindex(getIndexesToRebuild());
 
             getLogger().info("to reindex: {}", toReindex);
@@ -107,6 +106,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @IgnoreActivity
     @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = JSONRESULT) })
     @PostOnly
+    @HttpForbiddenErrorResponseOnly
     public String checkStatusAsync() {
         Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         if (activity != null) {
@@ -116,7 +116,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         Map<String, Object> map = new HashMap<>();
         map.put("phase", phase);
         map.put("percentDone", percentDone);
-//        getLogger().debug("phase: {} [{}%]", phase, percentDone);
+        // getLogger().debug("phase: {} [{}%]", phase, percentDone);
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }

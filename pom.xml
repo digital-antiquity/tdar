@@ -2,7 +2,7 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <version>12-LITHIC</version>
+    <version>13-MUNSELL</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -14,6 +14,7 @@
         <spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
         <postgresql.jdbc.version>9.3-1101-jdbc41</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
+        <liquibase.version>3.2.2</liquibase.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
@@ -613,9 +614,24 @@
             <version>17.0</version>
             <!--  LICENSE: Apache 2.0 -->
         </dependency>
-        <!-- Apache POI / HSSF - included via tika <dependency> <groupId>org.apache.poi</groupId> 
-            <artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency> -->
-        <!-- hibernate and JPA persistence -->
+    <!-- Apache POI / HSSF - included via tika -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-scratchpad</artifactId>
+            <version>3.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.10.1</version>
+        </dependency>
+    
+    <!-- hibernate and JPA persistence -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -883,6 +899,18 @@
                 <exclusion>
                     <groupId>org.apache.pdfbox</groupId>
                     <artifactId>pdfbox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi-ooxml</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi-scratchpad</artifactId>
+                    <groupId>org.apache.poi</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -1270,9 +1298,16 @@
     <build>
         <finalName>${warfile.name}</finalName>
         <resources>
-            <!-- We only want a small set of files to be filtered. -->
+            <!-- We only want a small set of files to be filtered. 
+                 NOTE: These files are NOT read into maven properties for interpolation, they are just the set of files
+                 where any interpolated variables will be rewritten according to the currently loaded set of maven
+                 properties. To define interpolated variables, the file or variable has to be added to <filters></filters>
+                      
+                      
+                XXX: only files that need to be rewritten should be included here
+                 -->
             <resource>
-                <!-- So we switch filerting off for all but the set -->
+                <!-- switch filtering off for all but the desired set -->
                 <filtering>false</filtering>
                 <directory>${basedir}/src/main/resources</directory>
                 <excludes>
@@ -1283,11 +1318,12 @@
                     <exclude>log4j.properties</exclude>
                     <exclude>struts-local-settings.xml</exclude>
                     <exclude>common.json</exclude>
+                    <exclude>liquibase/liquibase.properties</exclude>
                 </excludes>
             </resource>
             <resource>
                 <!-- And on for the set of files -->
-                <!-- Having to do it as mutally excluse seems brain dead, 
+                <!-- Having to do it as mutually exclusive 
                     but that's how Maven works -->
                 <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
                 <filtering>true</filtering>
@@ -1300,6 +1336,7 @@
                     <include>log4j.properties</include>
                     <include>struts-local-settings.xml</include>
                     <include>common.json</include>
+                    <include>liquibase/liquibase.properties</include>
                 </includes>
             </resource>
         </resources>
@@ -1333,6 +1370,24 @@
                     <port>8080</port>
                     <contextRoot>/</contextRoot>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase.version}</version>
+                <configuration>
+                    <propertyFile>liquibase/liquibase.properties</propertyFile>
+                </configuration>
+                <executions>
+                    <!--
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                    -->
+                </executions>
             </plugin>
             <plugin>
                 <!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
@@ -1668,6 +1723,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- FIXME: disabling this for the interim in favor of using <filters></filters> in the default profile
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
@@ -1680,12 +1736,13 @@
                         </goals>
                         <configuration>
                             <files>
-                                <file>src/test/resources/hibernate.properties</file>
+                                <file>src/main/resources/hibernate.properties</file>
                             </files>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -1953,6 +2010,24 @@
                 </filters>
                 <plugins>
                     <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/test/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
@@ -1988,6 +2063,13 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <build>
+                <!-- the properties defined in these files will be available for interpolation in all filtered
+                     resources -->
+                <filters>
+                    <filter>src/main/resources/hibernate.properties</filter>
+                </filters>
+            </build>
             <properties>
                 <!-- These are the default passwords for running locally 
                     when developing -->

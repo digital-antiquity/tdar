@@ -3,11 +3,11 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -51,7 +51,6 @@ public class AuthorizationService implements Accessible {
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
      * track these permissions for short periods of time. Logging out and logging in should reset this
      */
-    private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -101,23 +100,6 @@ public class AuthorizationService implements Accessible {
     }
 
     /*
-     * exposes the groups the user is a member of from the external Provider; exposes groups as a String, as the external provider may include other permissions
-     * beyond just tDAR groups
-     */
-    public Collection<String> getGroupMembership(TdarUser person) {
-        return authenticationService.getGroupMembership(person);
-    }
-
-    /*
-     * Returns a list of the people in the @link groupMembershipCache which is useful in tracking what's going on with tDAR at a given moment. This would be
-     * helpful for
-     * a shutdown hook, as well as, for knowing when it's safe to deploy.
-     */
-    public synchronized List<Person> getCurrentlyActiveUsers() {
-        return new ArrayList<>(groupMembershipCache.keySet());
-    }
-
-    /*
      * @return all of the resource statuses that a user is allowed to view in a search. Different users have different search permissions in different contexts.
      * A user
      * should be able to see their own DRAFTs, but never DELETED statuss unless they're an admin, for example
@@ -156,6 +138,7 @@ public class AuthorizationService implements Accessible {
         reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
         List<Status> statuses = reservedSearchParameters.getStatuses();
+        statuses.removeAll(Collections.singletonList(null));
 
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
@@ -246,7 +229,7 @@ public class AuthorizationService implements Accessible {
     @Transactional(readOnly = false)
     public boolean canEditCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
         if (authenticatedUser == null) {
-            logger.debug("person is null");
+            logger.trace("person is null");
             return false;
         }
 

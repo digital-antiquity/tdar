@@ -2,10 +2,6 @@
     'use strict';
 
     var _initLogin = function () {
-        //hack for autofill
-        setTimeout(function () {
-            $("#loginUsername").focus();
-        }, 1000);
         $('#loginForm').validate({
             messages: {
                 loginUsername: {
@@ -25,10 +21,6 @@
 
         });
         $('#loginUsername').focus();
-        $('#loginUsername').bind("focusout", function () {
-            var fld = $('#loginUsername');
-            fld.val($.trim(fld.val()))
-        });
     };
 
     var _initRegister = function (timeout) {

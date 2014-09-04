@@ -26,10 +26,10 @@
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
         <div id='large-google-map'></div>
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng" />
-        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput" />
+        <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput" />
     </div>
 
     <h2>Sorting Options and Submit</h2>
@@ -100,7 +100,7 @@
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
-    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
+    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
         <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>
@@ -216,8 +216,11 @@
                 <a rel="noindex" href="<@s.url action=action includeParams="all">
                     <@s.param name="${facetParam}">${facet.value}</@s.param>
                     <@s.param name="startRecord" value="0"/>
-                    <#if facetParam != "documentType">
+                    <#if (documentType!'') == '' && facetParam != 'documentType'>
                         <@s.param name="documentType" value=""/>
+                    </#if>
+                    <#if (fileAccess!'') == '' && facetParam != 'fileAccess'>
+                        <@s.param name="fileAccess" value=""/>
                     </#if>
                     <#if facetParam != "integratableOptions">
                         <@s.param name="integratableOptions" value=""/>

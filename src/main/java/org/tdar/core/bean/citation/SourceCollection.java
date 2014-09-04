@@ -18,7 +18,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "source_collection", indexes = {
         @Index(name = "source_collection_resource_id_idx", columnList = "resource_id")
 })
-@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.citation.SourceCollection")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.citation.SourceCollection")
 @Cacheable
 public class SourceCollection extends Citation {
     private static final long serialVersionUID = 129719231908607137L;

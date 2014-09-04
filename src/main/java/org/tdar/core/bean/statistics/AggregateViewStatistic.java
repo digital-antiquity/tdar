@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -26,13 +28,17 @@ public class AggregateViewStatistic extends Base implements Serializable {
     private static final long serialVersionUID = 1698960536676588440L;
 
     @Column(name = "date_accessed")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date aggregateDate;
+
     private Long count;
+
     @ManyToOne(optional = true)
     @JoinColumn(nullable = false, name = "resource_id")
     private Resource resource;
-//    @Transient
-//    private Long resourceId;
+
+    // @Transient
+    // private Long resourceId;
 
     @XmlElement(name = "date")
     public Date getAggregateDate() {
@@ -61,14 +67,14 @@ public class AggregateViewStatistic extends Base implements Serializable {
         this.resource = resource;
     }
 
-//    @XmlElement(name = "id")
-//    public Long getResourceId() {
-//        return resourceId;
-//    }
+    // @XmlElement(name = "id")
+    // public Long getResourceId() {
+    // return resourceId;
+    // }
 
-//    public void setResourceId(Long resourceId) {
-//        this.resourceId = resourceId;
-//    }
+    // public void setResourceId(Long resourceId) {
+    // this.resourceId = resourceId;
+    // }
 
     @Override
     public String toString() {

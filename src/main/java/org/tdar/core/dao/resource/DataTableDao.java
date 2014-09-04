@@ -28,7 +28,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
             return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
-        getLogger().debug("Searching for linked resources to {}", resource.getId());
+        getLogger().trace("Searching for linked resources to {}", resource.getId());
         query.setLong("relatedId", resource.getId());
         return query.list();
     }

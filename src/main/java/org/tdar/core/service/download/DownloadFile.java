@@ -21,6 +21,7 @@ public class DownloadFile implements Serializable {
 
     private File file;
     private String originalFilename;
+
     public DownloadFile(File file, String string) {
         this.file = file;
         this.originalFilename = string;
@@ -45,6 +46,6 @@ public class DownloadFile implements Serializable {
 
     public Long getFileLength() {
         return this.file.length();
-        
+
     }
 }

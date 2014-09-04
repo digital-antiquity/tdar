@@ -118,9 +118,9 @@ public class GenericDao {
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         if (persistentClass.isAssignableFrom(Creator.class)) {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
-        } else {
             return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_CREATOR_BY_ID, persistentClass.getName())).list();
+        } else {
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
         }
     }
 
@@ -585,7 +585,9 @@ public class GenericDao {
 
     /**
      * Evict a read-only entity from the current session return an equivalent, writeable enity.
-     * @param obj read-only entity.
+     * 
+     * @param obj
+     *            read-only entity.
      * @param <T>
      * @return writeable entity instance.
      */
@@ -602,36 +604,38 @@ public class GenericDao {
     }
 
     /**
-     *  Set a read-only entity to be writeable.  This method applies any pending (i.e. non-flushed) changes to the object. Note that this operation does
-     *  not cascade.  Any pending, non-flushed modifications to entity children will be lost, <i>even if they are marked CASCADE_UPDATE</i>
-     *  Similar to {@link #markWritable(Object)}, however, this method does not evict the supplied entity.
-     * @param entity read-only, persistent entity
+     * Set a read-only entity to be writeable. This method applies any pending (i.e. non-flushed) changes to the object. Note that this operation does
+     * not cascade. Any pending, non-flushed modifications to entity children will be lost, <i>even if they are marked CASCADE_UPDATE</i>
+     * Similar to {@link #markWritable(Object)}, however, this method does not evict the supplied entity.
+     * 
+     * @param entity
+     *            read-only, persistent entity
      * @param <T>
      *
-     *  @see <a href="https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#readonly-api-entity">Making a persistent entity read-only</a>
-     *  Which covers how to make a read-only entity writeable again
+     * @see <a href="https://docs.jboss.org/hibernate/orm/4.3/manual/en-US/html_single/#readonly-api-entity">Making a persistent entity read-only</a>
+     *      Which covers how to make a read-only entity writeable again
      */
     public <T> void markUpdatable(T entity) {
         Session session = getCurrentSession();
-        if(logger.isTraceEnabled()) {
-            if(!session.isReadOnly(entity)) {
+        if (logger.isTraceEnabled()) {
+            if (!session.isReadOnly(entity)) {
                 logger.warn("Unnecessary call to markUpdatable - object was not read-only:{}", entity);
             }
         }
-        //mark entity writable
+        // mark entity writable
         session.setReadOnly(entity, false);
 
         // evict the read-only entity so it is detached
-        session.evict( entity );
+        session.evict(entity);
 
         // make the detached entity (with the non-flushed changes) persistent
-        session.update( entity );
+        session.update(entity);
 
         // now entity is no longer read-only and its changes can be flushed
     }
 
     public <T> void markUpdatable(Collection<T> entities) {
-        for(T t : entities) {
+        for (T t : entities) {
             markUpdatable(t);
         }
     }
@@ -650,6 +654,10 @@ public class GenericDao {
 
     public boolean cacheContains(Class<?> cls, Long id) {
         return sessionFactory.getCache().containsEntity(cls, id);
+    }
+
+    public void evictFromCache(Persistable id) {
+        sessionFactory.getCache().evictEntity(id.getClass(), id);
     }
 
 }

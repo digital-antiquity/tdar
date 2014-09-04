@@ -25,7 +25,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 @Entity
 @Table(name = "pos_billing_activity")
 public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
-    
+
     private static final long serialVersionUID = 6891881586235180640L;
 
     private static final long BYTES_IN_MB = 1_048_576L;
@@ -55,7 +55,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @NotNull
     private BillingActivityModel model;
-    
+
     // if the rates are based on total # of files; you might have a different rate based on 50 or 500 files
     @Column(updatable = false, name = "min_allowed_files")
     private Long minAllowedNumberOfFiles = 0L;

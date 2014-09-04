@@ -18,6 +18,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.CrudAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 
@@ -30,6 +31,7 @@ import edu.asu.lib.mods.ModsDocument;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
+@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
 public class JAXBMetadataViewController extends AuthenticationAware.Base implements Preparable, CrudAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;

@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
@@ -49,10 +51,9 @@ public class Invoice extends Base implements Updatable {
     private static final long serialVersionUID = -3613460318580954253L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
-
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice
 
@@ -71,6 +72,7 @@ public class Invoice extends Base implements Updatable {
     private String accountType;
 
     @Column(name = "transaction_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDate;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
@@ -267,7 +269,7 @@ public class Invoice extends Base implements Updatable {
                     totalResources += numberOfResources * quantity;
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug("{}", this);
+                logger.trace("{}", this);
             }
             calculatedCost -= couponValue;
             if (calculatedCost < 0) {

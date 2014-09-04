@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -19,6 +20,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.billing.InvoiceService;
@@ -70,12 +72,21 @@ public class InvoiceController extends AbstractCartController {
      * @return
      */
     @Actions(value = {
-            @Action("add"),
+            @Action("add")
+    })
+    @SkipValidation
+    public String execute() {
+        // just in case a user comes through and explicitly wants to start over
+        clearPendingInvoice();
+        return SUCCESS;
+    }
+
+    @Actions(value = {
             @Action(value = "modify", results = { @Result(name = SUCCESS, location = "add.ftl") })
     })
     @SkipValidation
     // @GetOnly
-    public String execute() {
+    public String modify() {
         return SUCCESS;
     }
 
@@ -114,6 +125,11 @@ public class InvoiceController extends AbstractCartController {
         if (getInvoice() == null) {
             return "redirect-start";
         }
+
+        if (!isAuthenticated() && StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+            getH().generateRecapcha(recaptchaService);
+        }
+
         return SUCCESS;
     }
 
@@ -160,6 +176,14 @@ public class InvoiceController extends AbstractCartController {
         Invoice persistedInvoice = loadPendingInvoice();
         if (persistedInvoice != null) {
             if (persistedInvoice.isModifiable()) {
+                if (getInvoice() != null) {
+                    // overwrite values from invoice (mimic params-prepare-params)
+                    persistedInvoice.setNumberOfFiles(getInvoice().getNumberOfFiles());
+                    persistedInvoice.setNumberOfMb(getInvoice().getNumberOfMb());
+                    persistedInvoice.setOwner(getInvoice().getOwner());
+                    persistedInvoice.setOtherReason(getInvoice().getOtherReason());
+                    persistedInvoice.setPaymentMethod(getInvoice().getPaymentMethod());
+                }
                 setInvoice(persistedInvoice);
             } else {
                 // if invoice is not modifiable, we assume user is creating multiple invoices in the same session (which is rare but legit)
@@ -215,10 +239,14 @@ public class InvoiceController extends AbstractCartController {
 
         Long mb = getInvoice().getNumberOfMb();
         Long files = getInvoice().getNumberOfFiles();
-        if(mb == null) mb = 0L;
-        if(files == null) files = 0L;
+        if (mb == null) {
+            mb = 0L;
+        }
+        if (files == null) {
+            files = 0L;
+        }
 
-        if(isPostRequest() && mb == 0L && files == 0L ) {
+        if (isPostRequest() && mb == 0L && files == 0L) {
             addActionError(getText("cartController.specify_mb_or_files"));
         }
 

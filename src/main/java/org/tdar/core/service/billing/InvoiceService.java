@@ -33,6 +33,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
@@ -575,19 +576,20 @@ public class InvoiceService {
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
 
             BillingTransactionLog billingResponse = new BillingTransactionLog(xmlService.convertToJson(response), response.getTransactionId());
-            billingResponse = genericDao.markWritable(billingResponse);
+            billingResponse = genericDao.markWritableOnExistingSession(billingResponse);
             genericDao.saveOrUpdate(billingResponse);
-            if (invoice != null) {
+            if (invoice != null && !response.isRefund()) {
                 // if invoice has an address this will throw an exception if it is the same as one of the person adresses. (cascaded merge introduces transient
                 // item in p.addresses)
-                invoice = genericDao.markWritable(invoice);
+                invoice = genericDao.markWritableOnExistingSession(invoice);
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 // Assume that an invoice owner will always want to see the contributor menus.
-                invoice.getOwner().setContributor(true);
                 updateAddresses(response, invoice);
                 invoice.setResponse(billingResponse);
+                if (invoice.getTransactionStatus().isSuccessful()) {
+                    completeInvoice(invoice);
+                }
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                genericDao.saveOrUpdate(invoice);
                 // send notifications. if any error happens we want to log it but not rollback the transaction
                 handlePurchaseNotifications(invoice);
             }
@@ -634,6 +636,7 @@ public class InvoiceService {
             for (Person person : people) {
                 email.addToAddress(person.getEmail());
             }
+            email.setUserGenerated(false);
             emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
         } catch (Exception e) {
             logger.error("could not send email: {} ", e);
@@ -696,11 +699,19 @@ public class InvoiceService {
     }
 
     @Transactional(readOnly = false)
-    public void completeManualInvoice(Invoice invoice) {
+    public void completeInvoice(Invoice invoice) {
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
         genericDao.saveOrUpdate(invoice);
 
-    }
+        try {
+            Account account = accountDao.getAccountForInvoice(invoice);
+            if (account != null && account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                accountDao.updateQuota(account, account.getResources());
+            }
+        } catch (Exception e) {
+            logger.error("exception ocurred in processing FLAGGED ACCOUNT", e);
+        }
 
+    }
 }

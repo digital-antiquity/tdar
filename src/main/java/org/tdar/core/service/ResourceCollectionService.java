@@ -52,7 +52,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
 
-
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
      * 

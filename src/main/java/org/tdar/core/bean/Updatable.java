@@ -21,6 +21,7 @@ public interface Updatable {
     void markUpdated(TdarUser p);
 
     Date getDateUpdated();
-    
+
     Date getDateCreated();
+
 }

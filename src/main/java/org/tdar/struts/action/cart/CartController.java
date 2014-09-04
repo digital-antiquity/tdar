@@ -1,6 +1,5 @@
 package org.tdar.struts.action.cart;
 
-
 import java.net.URL;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -113,7 +112,7 @@ public class CartController extends AbstractCartController {
                 return POLLING;
             case INVOICE:
             case MANUAL:
-                invoiceService.completeManualInvoice(invoice);
+                invoiceService.completeInvoice(invoice);
                 break;
         }
         return SUCCESS;

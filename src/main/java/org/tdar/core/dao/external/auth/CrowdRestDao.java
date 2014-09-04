@@ -52,7 +52,7 @@ import com.atlassian.crowd.service.client.CrowdClient;
  * @version $Revision$
  * @see <a href='http://confluence.atlassian.com/display/CROWD/Creating+a+Crowd+Client+for+your+Custom+Application'>Crowd documentation</a>
  */
-//@Service
+// @Service
 public class CrowdRestDao extends BaseAuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -69,7 +69,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         properties.load(getClass().getClassLoader().getResourceAsStream("crowd.properties"));
         init(properties);
     }
-    
+
     private void init(Properties properties) {
         this.crowdProperties = properties;
         logger.info("initializing crowd rest dao: {}", crowdProperties);
@@ -218,7 +218,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
         if (user == null) {
             userNew = true;
-            logger.debug("Adding user : {} {} {} {} {} {} ",  person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), person.getId());
+            logger.debug("Adding user : {} {} {} {} {} {} ", person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(),
+                    person.getEmail(), person.getId());
             user = new UserEntity(person.getUsername(), person.getFirstName(), person.getLastName(), person.getProperName(), person.getEmail(), passwordEntity,
                     true);
         }

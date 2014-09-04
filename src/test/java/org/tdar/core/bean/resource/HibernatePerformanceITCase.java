@@ -244,7 +244,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     }
 
     private void newWay(Long... id) {
-        List<Resource> docs = resourceService.findSkeletonsForSearch(id);
+        List<Resource> docs = resourceService.findSkeletonsForSearch(false, id);
         for (Resource rec : docs) {
             logForTiming(rec);
         }

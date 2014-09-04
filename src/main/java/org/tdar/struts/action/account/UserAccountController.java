@@ -57,7 +57,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     private String passwordResetURL;
 
     @Autowired
-    private transient RecaptchaService reCaptchaService;
+    private transient RecaptchaService recaptchaService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -65,7 +65,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Autowired
     private EntityService entityService;
     private String reminderEmail;
-    private AntiSpamHelper h = new AntiSpamHelper(reCaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private UserRegistration registration = new UserRegistration(h);
 
     public boolean isUsernameRegistered(String username) {
@@ -91,7 +91,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         }
 
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            setH(new AntiSpamHelper(reCaptchaService));
+            getH().generateRecapcha(recaptchaService);
+
         }
         return SUCCESS;
     }
@@ -149,7 +150,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
             return INPUT;
         }
         try {
-            AuthenticationResult result = authenticationService.addAndAuthenticateUser(registration, getServletRequest(), getServletResponse(), getSessionData());
+            AuthenticationResult result = authenticationService.addAndAuthenticateUser(registration, getServletRequest(), getServletResponse(),
+                    getSessionData());
             if (result.getType().isValid()) {
                 registration.setPerson(result.getPerson());
                 addActionMessage(getText("userAccountController.successful_registration_message"));
@@ -225,9 +227,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = registration.validate(authenticationService);
+        ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService);
         processErrorObject(errors);
     }
-
 
 }

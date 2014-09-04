@@ -46,12 +46,12 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @Override
     public void validate() {
-        if (! validateInvoice()) {
+        if (!validateInvoice()) {
             return;
         }
         getLogger().debug("validating registration request");
         // a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
-        ErrorTransferObject errors = registrationInfo.validate(authenticationService);
+        ErrorTransferObject errors = registrationInfo.validate(authenticationService, recaptchaService);
         processErrorObject(errors);
     }
 

@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.DegreeType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionException;
 
@@ -40,24 +37,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     private List<DocumentType> documentTypes = Arrays.asList(DocumentType.values());
 
-    private InformationResource linkedInformationResource;
-
-    // either "source" or "related". kind of hacky. should be a better way to do this.
-    private String linkType;
     private List<DegreeType> degrees = Arrays.asList(DegreeType.values());
-
-    @Actions({
-            @Action("related"),
-            @Action("source")
-    })
-    @Override
-    public String execute() {
-        if (isNullOrNew()) {
-            getLogger().warn("trying to link related/source document with null or new resource.");
-            return REDIRECT_HOME;
-        }
-        return SUCCESS;
-    }
 
     @Override
     public boolean isMultipleFileUploadEnabled() {
@@ -77,27 +57,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     }
 
-    // private void handleLinkedInformationResource() {
-    // if (linkedInformationResource == null)
-    // return;
-    // if (StringUtils.isBlank(linkType))
-    // return;
-    // getLogger().debug("linking information resource: " + linkedInformationResource.getTitle() + " as " + linkType + " with " + getPersistable().getTitle());
-    // if (linkType.equals("related")) {
-    // linkedInformationResource.getRelatedCitations().add(getPersistable());
-    // } else if (linkType.equals("source")) {
-    // linkedInformationResource.getSourceCitations().add(getPersistable());
-    // }
-    // getInformationResourceService().saveOrUpdate(linkedInformationResource);
-    // }
-
-    public void setLinkedResourceId(Long informationResourceId) {
-        if (informationResourceId == null) {
-            return;
-        }
-        linkedInformationResource = getGenericService().find(InformationResource.class, informationResourceId);
-    }
-
     public DocumentType getDocumentType() {
         return documentType;
     }
@@ -106,24 +65,12 @@ public class DocumentController extends AbstractInformationResourceController<Do
         this.documentType = documentType;
     }
 
-    public InformationResource getLinkedInformationResource() {
-        return linkedInformationResource;
-    }
-
     public List<DocumentType> getDocumentTypes() {
         return documentTypes;
     }
 
     public List<DegreeType> getDegrees() {
         return degrees;
-    }
-
-    public String getLinkType() {
-        return linkType;
-    }
-
-    public void setLinkType(String linkType) {
-        this.linkType = linkType;
     }
 
     @Override

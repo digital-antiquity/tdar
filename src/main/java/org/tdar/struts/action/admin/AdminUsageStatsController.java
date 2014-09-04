@@ -60,7 +60,7 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
         }
         setUsageStats(resourceService.getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
         for (AggregateViewStatistic stat : getUsageStats()) {
-        getLogger().debug("usage: {}", stat);
+            getLogger().debug("usage: {}", stat);
         }
         setDownloadStats(resourceService.getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         for (AggregateDownloadStatistic download : getDownloadStats()) {

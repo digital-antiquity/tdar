@@ -66,7 +66,7 @@ public class LocalizationTestCase {
         }
 
         for (Entry<String, List<String>> key : matchingMap.entrySet()) {
-            if (key.getKey().equals("advancedSearchController.")) {
+            if (key.getKey().equals("advancedSearchController.") || key.getKey().equals("searchParameters.")) {
                 continue;
             }
             if (!MessageHelper.checkKey(key.getKey())) {

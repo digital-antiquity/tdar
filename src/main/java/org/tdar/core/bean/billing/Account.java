@@ -18,6 +18,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
@@ -53,7 +55,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Table(name = "pos_account")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.billing.Account")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.Account")
 public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
     private static final long serialVersionUID = -1728904030701477101L;
@@ -73,10 +75,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
     @Column(name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
@@ -91,6 +95,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     @NotNull
     @Column(name = "date_expires")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date expires = new Date();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -120,7 +125,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private Long spaceUsedInBytes = 0L;
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
-    
+
     public Account() {
     }
 
@@ -496,7 +501,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         setFilesUsed(0L);
         initTotals();
     }
-    
+
     @Override
     public String toString() {
         return String.format("%s (%s)", getName(), getId());

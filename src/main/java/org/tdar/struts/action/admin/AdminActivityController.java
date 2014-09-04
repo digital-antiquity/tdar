@@ -22,14 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.XmlService;
-import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
@@ -51,7 +51,10 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     @Autowired
     private transient XmlService xmlService;
-    
+
+    @Autowired
+    private transient AuthenticationService authenticationService;
+
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;
 
@@ -62,14 +65,12 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     private HashMap<String, Object> moreInfo = new HashMap<>();
     private HashMap<String, Integer> counters;
-    private List<Person> activePeople;
+    private List<TdarUser> activePeople;
 
     private ByteArrayInputStream jsonInputStream;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
-    @Action(value = "active-users", results = { 
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream"})
+    @Action(value = "active-users", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String listActiveUsers() {
         setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null).getBytes()));
@@ -112,7 +113,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
             getCounters().put(activity.getSimpleBrowserName(), num);
         }
 
-        setActivePeople(authorizationService.getCurrentlyActiveUsers());
+        setActivePeople(authenticationService.getCurrentlyActiveUsers());
 
         initSystemStats();
         return SUCCESS;
@@ -184,11 +185,11 @@ public class AdminActivityController extends AuthenticationAware.Base {
         this.counters = counters;
     }
 
-    public List<Person> getActivePeople() {
+    public List<TdarUser> getActivePeople() {
         return activePeople;
     }
 
-    public void setActivePeople(List<Person> activePeople) {
+    public void setActivePeople(List<TdarUser> activePeople) {
         this.activePeople = activePeople;
     }
 

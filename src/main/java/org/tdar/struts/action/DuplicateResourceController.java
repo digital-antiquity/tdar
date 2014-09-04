@@ -33,7 +33,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     private Resource copy;
 
     @Action(value = "duplicate", results = {
-            @Result(name = SUCCESS, type = FREEMARKER, location="confirm-duplicate.ftl"),
+            @Result(name = SUCCESS, type = FREEMARKER, location = "confirm-duplicate.ftl"),
             @Result(name = INPUT, type = FREEMARKER, location = "duplicate-error.ftl")
     })
     public String execute() {
@@ -45,7 +45,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     }
 
     @Action(value = "duplicate-final",
-//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
                     @Result(name = INPUT, type = FREEMARKER, location = "duplicate_error.ftl")
@@ -73,7 +73,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     @Override
     public void prepare() throws Exception {
         setResource(resourceService.find(id));

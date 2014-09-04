@@ -715,7 +715,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             jdbcTemplate.execute(createColumnSql);
 
         }
-        
+
         String sql = UPDATE_COLUMN_SET_VALUE;
         switch (columnDataType) {
             case TEXT:

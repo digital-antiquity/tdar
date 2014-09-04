@@ -1,21 +1,16 @@
 package org.tdar.struts.action;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.tdar.utils.SimpleHttpUtils.nameValuePair;
-import static org.tdar.utils.SimpleHttpUtils.parseResponse;
-import static org.tdar.utils.SimpleHttpUtils.post;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +22,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
@@ -44,8 +40,6 @@ import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
 import org.tdar.struts.action.cart.InvoiceController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.utils.Pair;
-import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
 
@@ -145,19 +139,19 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPrematurePayment() throws TdarActionException {
-        //action errors are expected in this test
+        // action errors are expected in this test
         setIgnoreActionErrors(true);
 
         InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
         Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
 
-        //simulate struts workflow: prepare and validate the action but don't execute it
+        // simulate struts workflow: prepare and validate the action but don't execute it
         controller.getSessionData().setInvoiceId(invoiceId);
         controller.prepare();
         controller.validate();
 
-        //at this point we should have validation errors.
+        // at this point we should have validation errors.
         logger.info("action errors from controller:{}", controller.getActionErrors());
         assertThat(controller.getActionErrors(), contains(getText("cartController.valid_payment_method_is_required")));
 
@@ -180,7 +174,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
         String msg = TdarActionSupport.SUCCESS;
-        //this test fails intermittently unless we do a synchronize.  I have no idea why.
+        // this test fails intermittently unless we do a synchronize. I have no idea why.
         genericService.synchronize();
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
@@ -225,13 +219,13 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assert billingItem != null;
         genericService.saveOrUpdate(billingItem.getActivity());
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
-        //controller.getInvoice().setBillingPhone("123-415-9999");
+        // controller.getInvoice().setBillingPhone("123-415-9999");
 
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         genericService.saveOrUpdate(invoice);
-        //simulate the "process payment" action, which implicitly sets the invoice total amongst other things
+        // simulate the "process payment" action, which implicitly sets the invoice total amongst other things
         simulateNewSession();
-        controller  = generateNewInitializedController(CartController.class);
+        controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoiceId);
         controller.prepare();
         controller.validate();
@@ -239,7 +233,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(CartController.POLLING, response);
         assertPolingResponseCorrect(invoice.getId(), TdarActionSupport.SUCCESS);
         String redirectUrl = controller.getRedirectUrl();
-        //simulateNewSession();
+        // simulateNewSession();
         invoice = genericService.find(Invoice.class, invoice.getId());
         String response2 = processMockResponse(invoice, redirectUrl, true);
         assertEquals(Action.SUCCESS, response2);
@@ -268,7 +262,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         simulateCartUpdate(invoice);
         simulateNewSession();
 
-
         CartController controller2 = generateNewInitializedController(CartController.class);
         controller2.getSessionData().setInvoiceId(invoiceId);
         controller2.prepare();
@@ -290,13 +283,13 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
 
-        //create an invoice,  then make some changes and save the invoice again
+        // create an invoice, then make some changes and save the invoice again
         invoice.setPaymentMethod(PaymentMethod.MANUAL);
         String otherReason = "this is my reasoning";
         invoice.setOtherReason(otherReason);
         simulateCartUpdate(invoice);
 
-        //navigate back to /cart/process-payment
+        // navigate back to /cart/process-payment
         controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
@@ -343,7 +336,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     /**
      * in the context of a web application, struts actions typically execute in their own hibernate session. if a single test executes multiple actions,
-     * it might be necessary to purge/clear the current session to ensure pending db transactions occur and to avoid loads from hibernate cache instead of the db.
+     * it might be necessary to purge/clear the current session to ensure pending db transactions occur and to avoid loads from hibernate cache instead of the
+     * db.
      */
     private void simulateNewSession() {
         genericService.synchronize();
@@ -354,14 +348,14 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testCartPaymentInvalidParams() throws TdarActionException, IOException {
         setIgnoreActionErrors(true);
-        //ensure that the cart controllers do not return success messages if you pass it bogus data
+        // ensure that the cart controllers do not return success messages if you pass it bogus data
         String response;
         CartController controller = setupPaymentTests();
 
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
 
-        //modify the invoice
+        // modify the invoice
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         simulateCartUpdate(invoice);
 
@@ -373,9 +367,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         cbac.validate();
         response = cbac.processBillingAccountChoice();
 
-
         simulateNewSession();
-        //go back to cart/process-payment
+        // go back to cart/process-payment
         controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
@@ -394,11 +387,14 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     }
 
     /**
-     * Update a persisted (pre-existing) invoice by simulating workflow of a user interacting w/ struts, e.g. <ol>
-     *     <li>at some point after creating (but not completing) an invoice,  user goes back to /cart/add or /cart/modify</li>
-     *     <li>user modifies some fields and then submits the form to /cart/preview</li>
+     * Update a persisted (pre-existing) invoice by simulating workflow of a user interacting w/ struts, e.g.
+     * <ol>
+     * <li>at some point after creating (but not completing) an invoice, user goes back to /cart/add or /cart/modify</li>
+     * <li>user modifies some fields and then submits the form to /cart/preview</li>
      * </ol>
-     * @param invoice  invoice w/ pending changes. must have ID.
+     * 
+     * @param invoice
+     *            invoice w/ pending changes. must have ID.
      * @return string result of the /cart/preview action
      */
     String simulateCartUpdate(Invoice invoice) {
@@ -409,7 +405,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         ucc.setInvoice(invoice);
         return ucc.processInvoice();
     }
-
 
     private String processMockResponse(Invoice invoice, String redirectUrl, boolean makeInvalid) throws TdarActionException {
         CartExternalPaymentResponseAction controller;
@@ -446,9 +441,15 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
             // fake tainted connection
             controller.setParameters(mock.getParams());
         }
+        int totalLogs = genericService.findAll(BillingTransactionLog.class).size();
         controller.prepare();
         controller.validate();
         String response2 = controller.processExternalPayment();
+        if (response2 == TdarActionSupport.SUCCESS) {
+            List<BillingTransactionLog> logs = genericService.findAll(BillingTransactionLog.class);
+            assertNotEmpty(logs);
+            assertEquals(totalLogs + 1, logs.size());
+        }
         return response2;
     }
 
@@ -501,7 +502,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         // /////// controller.chooseAddress();
 
-        //set the address of the invoice on the /cart/modify form.  You can't actually do this in the app, but let's pretend that you could.
+        // set the address of the invoice on the /cart/modify form. You can't actually do this in the app, but let's pretend that you could.
         Invoice invoice = controller.getInvoice();
         assertNull(invoice.getAddress());
         invoice.setAddress(address);
@@ -532,17 +533,6 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(Action.SUCCESS, save);
         // assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
         return controller.getInvoice().getId();
-    }
-
-    @Test
-    /**
-     * give the nelnet event notification endpoint totally bogus data.  We should get back non-200 status code and "failure" as the response body.
-     */
-    public void testCompletelyBogusEndpointRequest() {
-        String url = String.format("https://%s:%s/cart/process-external-payment-response", TestConfiguration.getInstance().getHostName(), TestConfiguration.getInstance().getHttpsPort());
-        Pair<Integer, String> responsePair = parseResponse( post( url, asList( nameValuePair("foo", "bar"), nameValuePair("ping", "pong"))));
-        assertThat(responsePair.getFirst(), is( not( 200)));
-        assertThat(responsePair.getSecond(), is( "failure"));
     }
 
 }

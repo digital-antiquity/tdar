@@ -12,7 +12,12 @@
 </head>
 
     <#macro customH1>
-    <h1>Batch Resource Upload</h1>
+    <h1>Bulk Resource Upload</h1>
+    <div class="">
+        <p><b>Note</b>
+        For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
+        </p>
+    </div>
     </#macro>
 
     <#macro basicInformation>
@@ -21,25 +26,26 @@
 
 
     <#macro beforeUpload>
+
+    <div class="alert">
         <@batchCommon.printTemplate />
-
-    <div>
-        <br>
-
-        <p><b>select all of the files you'd like to add to ${siteAcronym}. Each one will be associated with a new record along with any metadata specified
-            either in the excel spreadsheet specified above, or with any values selected on this form.</b></p>
+        <p>
+            Select the files you'd like to add to ${siteAcronym}. Each file will be associated with a new record along with any metadata specified
+            either in the excel spreadsheet specified above, or with any values selected on this form.</p>
     </div>
     </#macro>
 
     <#macro localSection>
-    <div class="glide">
-        <h3>Note</h3>
-        For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
+
+    <p></p>
+    <div class="well">
+        <span class="label label-important">Please Note </span>
+        ${siteAcronym} will apply information in the fields below to all of the records you've chosen to upload above.
     </div>
     </#macro>
 
-
     <#macro footer>
+
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit._fileProxyRow />
     </table>

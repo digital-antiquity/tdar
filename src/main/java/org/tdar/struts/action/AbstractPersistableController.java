@@ -21,6 +21,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -38,6 +39,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -64,7 +66,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Autowired
     private transient RecaptchaService recaptchaService;
 
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
@@ -89,7 +91,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private transient GenericService genericService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -159,13 +161,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
-//        genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
+        // genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
 
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
 
         resultName = loadViewMetadata();
         loadExtraViewMetadata();
-        getLogger().debug("to Freemarker");
         return resultName;
     }
 
@@ -179,7 +180,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @HttpsOnly
     @Action(value = DELETE,
-// FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
+            // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
@@ -227,7 +228,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String save() throws TdarActionException {
         // checkSession();
-//        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
+        // genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
@@ -248,6 +249,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 if (persistable instanceof Indexable) {
                     ((Indexable) persistable).setReadyToIndex(false);
                 }
+                if (persistable instanceof XmlLoggable) {
+                    ((XmlLoggable) persistable).setReadyToStore(false);
+                }
+
                 actionReturnStatus = save(persistable);
 
                 try {
@@ -258,7 +263,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
                 // should there not be "one" save at all? I think this should be here
                 if (shouldSaveResource()) {
+                    if (persistable instanceof XmlLoggable) {
+                        ((XmlLoggable) persistable).setReadyToStore(true);
+                    }
                     getGenericService().saveOrUpdate(persistable);
+                    // NOTE: the below should not be necessary with the hibernate listener, but it seems like the saveOrUpdate above
+                    // does not catch the change of the transient readyToStore boolean
+                    XMLFilestoreLogger xmlLogger = new XMLFilestoreLogger();
+                    xmlLogger.logRecordXmlToFilestore(persistable);
                 }
 
                 indexPersistable();
@@ -397,7 +409,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @HttpsOnly
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
-//        genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
+        // genericService.setCacheModeForCurrentSession(CacheMode.IGNORE);
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         logAction("EDITING");
         return loadEditMetadata();
@@ -426,7 +438,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
     }
-
 
     /**
      * Generic method enabling override for whether a record is viewable
@@ -542,7 +553,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         if (!ADD.equals(getActionName())) {
-            getLogger().info("id:{}, persistable:{}", getId(), p);
+            getLogger().trace("id:{}, persistable:{}", getId(), p);
         }
     }
 
@@ -634,7 +645,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      *            the startTime to set
      */
     public void setStartTime(Long startTime) {
-        getLogger().info("set start time: " + startTime);
+        getLogger().trace("set start time: " + startTime);
         this.startTime = startTime;
     }
 

@@ -108,7 +108,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // choose the large package
         find("#divlarge button").click();
 
-        // review
+        // review  (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
+        waitForPageload();
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());

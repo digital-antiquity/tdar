@@ -93,6 +93,6 @@ public enum PdfFontHelper {
     }
 
     public int estimateWidth(String text) {
-        return Math.round((this.fontSize /2 )* text.length());
+        return Math.round((this.fontSize / 2) * text.length());
     }
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.JSONTransient;
 
 public class ResultMetadataWrapper implements JsonModel {
 
@@ -63,8 +62,7 @@ public class ResultMetadataWrapper implements JsonModel {
     public String getsColumns() {
         return getSColumns();
     }
-    
-    @JSONTransient
+
     public String getSColumns() {
         if (StringUtils.isEmpty(sColumns)) {
             List<String> tmp = new ArrayList<String>();

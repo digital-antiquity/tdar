@@ -2,6 +2,7 @@ package org.tdar.struts.interceptor;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.Pair;
 
@@ -55,6 +57,9 @@ public class ObfuscationResultListener implements PreResultListener {
     }
 
     public void prepareResult(Action action) throws Exception {
+        if (action instanceof TdarActionSupport) {
+            ((TdarActionSupport) action).setFreemarkerProcessingTime(new Date());
+        }
         logger.trace("begin obfuscation");
         Class<? extends Object> controllerClass = action.getClass();
         // get a list of the getters that are either a Collection<?> or <? extends Obfuscatable>
@@ -104,7 +109,7 @@ public class ObfuscationResultListener implements PreResultListener {
                 }
             }
         }
-        logger.debug("complete obfuscation");
+        logger.trace("complete obfuscation");
     }
 
     /*
@@ -142,6 +147,7 @@ public class ObfuscationResultListener implements PreResultListener {
 
         /*
          * Proxy all methods
+         * 
          * @see net.sf.cglib.proxy.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
          */
         @Override

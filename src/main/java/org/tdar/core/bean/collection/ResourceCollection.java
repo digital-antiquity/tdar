@@ -33,6 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -70,12 +72,12 @@ import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -112,9 +114,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement(name = "ResourceCollection")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.collection.ResourceCollection")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -162,7 +164,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.resources")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
@@ -186,7 +188,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL, region="org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
@@ -199,9 +201,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private TdarUser updater;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(nullable = true, name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @ManyToOne
@@ -258,8 +262,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Fields({
-        @Field,
-        @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+            @Field,
+            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
+                    impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
     @Override
     @JsonView(JsonLookupFilter.class)
@@ -449,13 +454,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
@@ -478,7 +481,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
@@ -487,7 +489,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
@@ -585,8 +586,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Fields({
-        @Field,
-        @Field(name = QueryFieldNames.TITLE_PHRASE, norms= Norms.NO, store=Store.NO, analyzer = @Analyzer(impl= TdarCaseSensitiveStandardAnalyzer.class))
+            @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     })
     // @Boost(1.5f)
     @Override
@@ -628,10 +630,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.orientation = orientation;
     }
 
+    private transient boolean readyToStore = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
+
     @Override
     @XmlTransient
     @Transient
-    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -696,7 +709,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @Transient
-    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
@@ -729,7 +741,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Transient
     @Field(name = QueryFieldNames.COLLECTION_TREE)
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public Set<Long> getParentIds() {

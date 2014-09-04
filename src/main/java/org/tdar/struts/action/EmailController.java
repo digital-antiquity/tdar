@@ -35,7 +35,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
     @Autowired
     private transient RecaptchaService recaptchaService;
 
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
     private Long toId;
     private Person from;
@@ -117,7 +117,7 @@ public class EmailController extends AuthenticationAware.Base implements Prepara
 
     @Override
     public void prepare() throws Exception {
-        h.checkForSpammers(true);
+        h.checkForSpammers(recaptchaService, true);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Person.class, toId);
         resource = genericService.find(Resource.class, resourceId);

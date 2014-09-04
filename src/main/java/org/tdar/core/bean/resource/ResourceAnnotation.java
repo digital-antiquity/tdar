@@ -22,7 +22,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -41,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_annotation", indexes = {
         @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.resource.ResourceAnnotation")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotation")
 @Cacheable
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 
@@ -62,7 +61,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Field
-    @JsonView( JsonLookupFilter.class)
+    @JsonView(JsonLookupFilter.class)
     private String value;
 
     @Temporal(TemporalType.DATE)
@@ -79,7 +78,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public String getFormattedValue() {
         ResourceAnnotationDataType annotationDataType = resourceAnnotationKey.getAnnotationDataType();

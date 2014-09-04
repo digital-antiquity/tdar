@@ -34,6 +34,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
+import org.tdar.core.service.processes.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -103,12 +104,21 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     /**
-     * Generate DOIs
+     * Send emails at midnight
      */
-    @Scheduled(cron = "1 15 0 * * *")
+    @Scheduled(cron = "0 1 0 * * *")
     public void cronDailyEmail() {
-        logger.info("updating Daily EmailIs");
+        logger.info("updating Daily Emails");
         queue(scheduledProcessMap.get(DailyEmailProcess.class));
+    }
+
+    /**
+     * Send emails at midnight
+     */
+    @Scheduled(cron = "0 15 0 * * *")
+    public void cronDailyStats() {
+        logger.info("updating Daily stats");
+        queue(scheduledProcessMap.get(DailyStatisticsUpdate.class));
     }
 
     /**

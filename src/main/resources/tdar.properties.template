@@ -386,3 +386,8 @@ upload.maxFilesPerResource=50
 archive.enabled=false
 video.enabled=false
 xml.export.enabled=false
+
+# URL Rewrite Filter refresh rate
+# how often to re-read the URL Rewrite Filter
+# default: -1 (never)
+#urlRewrite.refresh= 

@@ -31,7 +31,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
             }
         }
     }
-    
+
     @Transactional(readOnly = true)
     public boolean isAlreadyBookmarked(Resource resource, TdarUser person) {
         return getDao().isAlreadyBookmarked(resource, person);
@@ -44,7 +44,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public boolean bookmarkResource(Resource resource, TdarUser person) {
         getDao().markWritableOnExistingSession(person);
         if (getDao().isAlreadyBookmarked(resource, person)) {
@@ -59,8 +59,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         try {
             getDao().save(bookmark);
             return true;
-        }
-        catch (ConstraintViolationException exception) {
+        } catch (ConstraintViolationException exception) {
             getLogger().error("Didn't save duplicate bookmark {}", bookmark, exception);
             return false;
         }
@@ -73,12 +72,12 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
      * @param person
      * @return
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public boolean removeBookmark(Resource resource, TdarUser person) {
         BookmarkedResource bookmark = getDao().findBookmark(resource, person);
         getDao().markWritableOnExistingSession(bookmark);
         getDao().markWritableOnExistingSession(person);
-       if (bookmark == null) {
+        if (bookmark == null) {
             return false;
         }
         person.getBookmarkedResources().remove(bookmark);

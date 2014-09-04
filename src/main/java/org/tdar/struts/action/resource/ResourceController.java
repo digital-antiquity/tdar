@@ -32,8 +32,6 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public static final String BILLING = "billing";
 
-//    private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
-
     @Autowired
     private transient AccountService accountService;
 
@@ -58,6 +56,7 @@ public class ResourceController extends AuthenticationAware.Base {
             addActionMessage(getText("resourceController.must_be_contributor"));
             return CONTRIBUTOR;
         }
+        accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
         if (!getTdarConfiguration().isPayPerIngestEnabled() || isAllowedToCreateResource()) {
             return SUCCESS;
         }
@@ -96,11 +95,8 @@ public class ResourceController extends AuthenticationAware.Base {
     }
 
     public boolean isAllowedToCreateResource() {
-        // getLogger().info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if ((getTdarConfiguration().isPayPerIngestEnabled() == false) || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null, true)) {
-            return true;
-        }
-        return false;
+        getLogger().trace("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
     }
 
     /**
@@ -134,28 +130,6 @@ public class ResourceController extends AuthenticationAware.Base {
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
-
-    // /**
-    // * Returns a sorted map of the allowable subset of resource types that can be
-    // * entered.
-    // */
-    // public SortedMap<ResourceType, String> getResourceTypes() {
-    // synchronized (resourceTypes) {
-    // if (resourceTypes.isEmpty()) {
-    // addResourceType(ResourceType.CODING_SHEET);
-    // addResourceType(ResourceType.DATASET);
-    // addResourceType(ResourceType.DOCUMENT);
-    // addResourceType(ResourceType.SENSORY_DATA);
-    // addResourceType(ResourceType.IMAGE);
-    // addResourceType(ResourceType.ONTOLOGY);
-    // }
-    // }
-    // return resourceTypes;
-    // }
-    //
-    // private void addResourceType(ResourceType resourceType) {
-    // resourceTypes.put(resourceType, resourceType.getLabel());
-    // }
 
     public Long getProjectId() {
         return projectId;

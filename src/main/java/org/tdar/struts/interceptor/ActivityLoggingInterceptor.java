@@ -9,6 +9,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.SessionData;
@@ -59,18 +60,27 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
                 activity.setUser(genericService.find(TdarUser.class, sessionData.getTdarUserId()));
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
-            logger.debug("<< activity begin: {} ", activity);
+            logger.debug(activity.getStartString());
         }
 
         // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
         NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
         logger.trace(String.format("marking %s/%s session", action.getClass().getSimpleName(), methodName));
-        String invoke = invocation.invoke();
-        if (activity != null) {
-            activity.end();
-            logger.debug(">> activity end: {} ", activity);
+        String invoke = TdarActionSupport.SUCCESS;
+        try {
+            invoke = invocation.invoke();
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            if (activity != null) {
+                if (action instanceof TdarActionSupport) {
+                    activity.setFreemarkerHandoffDate(((TdarActionSupport) action).getFreemarkerProcessingTime());
+                }
+                activity.end();
+                logger.debug(activity.getEndString());
+            }
+            NDC.pop();
         }
-        NDC.pop();
         return invoke;
     }
 

@@ -46,7 +46,7 @@ public class DownloadTransferObject implements Serializable {
     private String mimeType;
     private Long contentLength;
     private InformationResource informationResource;
-    private List<InformationResourceFileVersion> versionsToDownload;
+    private List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
     private String fileName;
     private InputStream stream;
     private DownloadResult result;
@@ -57,10 +57,8 @@ public class DownloadTransferObject implements Serializable {
 
     private DownloadService downloadService;
 
-    public DownloadTransferObject(InformationResource resourceToDownload, List<InformationResourceFileVersion> versionsToDownload, TdarUser user,
-            TextProvider textProvider, DownloadService downloadService) {
+    public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService) {
         this.informationResource = resourceToDownload;
-        this.versionsToDownload = versionsToDownload;
         this.downloadService = downloadService;
         this.setTextProvider(textProvider);
         this.setAuthenticatedUser(user);
@@ -113,11 +111,13 @@ public class DownloadTransferObject implements Serializable {
     }
 
     public InputStream getInputStream() throws Exception {
-        logger.debug("calling getInputStream");
+        logger.trace("calling getInputStream");
+        // NOTE: this is used for logging
+        logger.debug("{} is DOWNLOADING {}", getAuthenticatedUser(), downloads);
         if (CollectionUtils.size(downloads) > 1) {
             return new DownloadLockInputStream(getZipInputStream(), this);
         }
-        logger.debug("{}", downloads.get(0));
+        logger.trace("{}", downloads.get(0));
         return new DownloadLockInputStream(downloads.get(0).getInputStream(), this);
     }
 
@@ -241,7 +241,7 @@ public class DownloadTransferObject implements Serializable {
     public void registerDownloadLock() {
         downloadService.enforceDownloadLock(authenticatedUser, versionsToDownload);
     }
-    
+
     public void setAttachment(boolean isAttachment) {
         this.setDispositionPrefix(ATTACHMENT);
     }

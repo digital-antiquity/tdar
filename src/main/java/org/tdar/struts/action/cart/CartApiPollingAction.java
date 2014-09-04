@@ -21,6 +21,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -36,6 +37,7 @@ import org.tdar.utils.json.JsonLookupFilter;
         @Result(name = INPUT, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "400" }),
         @Result(name = ERROR, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "500" }),
 })
+@HttpForbiddenErrorResponseOnly
 public class CartApiPollingAction extends AbstractCartController {
 
     private static final long serialVersionUID = 3205742744549028287L;

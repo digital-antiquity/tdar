@@ -24,7 +24,9 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -78,6 +80,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
      * @return
      */
     @Action(value = "select-authority", results = { @Result(name = SUCCESS, location = "select-authority.ftl"), @Result(name = INPUT, location = "index.ftl") })
+    @PostOnly
     public String selectAuthority() {
         if (hasActionErrors()) {
             return INPUT;
@@ -104,6 +107,8 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
     @Action(value = "merge-duplicates",
             results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
+    @PostOnly
+    @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
             addActionError(getText("authorityManagementController.error_no_authority_record"));

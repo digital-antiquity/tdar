@@ -58,7 +58,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
-public class WorkspaceController extends AuthenticationAware.Base implements Preparable{
+public class WorkspaceController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -3538370664425794045L;
     @Autowired
@@ -75,7 +75,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
     @Autowired
     private transient PersonalFilestoreService filestoreService;
-    
+
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;
     private List<IntegrationColumn> integrationColumns;
@@ -192,7 +192,8 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         try {
             integrationContextXml = dataIntegrationService.serializeIntegrationContext(getIntegrationColumns(),
                     getGenericService().merge(getAuthenticatedUser()));
-                resourceService.logResourceModification(null, getAuthenticatedUser(), "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
+            resourceService.logResourceModification(null, getAuthenticatedUser(), "display filtered results (payload: tableToDisplayColumns)",
+                    integrationContextXml);
         } catch (Exception e) {
             getLogger().error("could not serialize to XML", e);
         }
@@ -385,7 +386,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         this.sharedOntologies = sharedOntologies;
     }
 
-    //ensure that the integration columns are cleaned up prior to executing an action
+    // ensure that the integration columns are cleaned up prior to executing an action
     public void prepare() {
         getLogger().trace("prepare integrationColumns(before):{}", integrationColumns);
         cleanupIntegrationColumns();

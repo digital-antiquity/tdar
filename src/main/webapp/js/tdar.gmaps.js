@@ -413,9 +413,9 @@ TDAR.maps = function ($, TDAR) {
             //if no bounds, user clicked 'clear' button -- clear all input textboxes
             if (!latLngBounds) {
                 $('input[type=text]', inputContainer).val("");
+                $('input.latLongInput', inputContainer).val("");
                 return;
             }
-            ;
 
             var sw = latLngBounds.getSouthWest();
             var ne = latLngBounds.getNorthEast();

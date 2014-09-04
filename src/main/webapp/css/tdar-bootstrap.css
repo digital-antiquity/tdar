@@ -1663,6 +1663,7 @@ div.orgChart div.node.level1.special {
     width: 100%;
     font-size: 10pt;
 }
+
 .table-invoice tr .invoice-total {
     font-size: 23pt;
 }
@@ -1675,13 +1676,16 @@ div.orgChart div.node.level1.special {
     border-top: 1px solid #999;
 }
 .table-invoice thead th {
-    padding-bottom: 3px;
+    padding-bottom: 2px;
 }
 
 .table-invoice tbody tr:first-child td{
     border-top: 1px solid #999;
 }
 
+.table-invoice th, .table-invoice td {
+    padding:4px;
+}
 
 div.tdar-rates {
     border-right: 1px dashed #bbb;padding-right: 40px;
@@ -1689,4 +1693,8 @@ div.tdar-rates {
 
 .tdar-button {
     line-height: normal;
+}
+
+.well.form-condensed {
+    padding:10px;
 }

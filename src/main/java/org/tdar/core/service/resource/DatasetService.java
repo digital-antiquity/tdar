@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
@@ -71,8 +73,6 @@ import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.TextProvider;
 
-
-
 /**
  * $Id$
  * 
@@ -84,9 +84,11 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
 
+    Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
+
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
-    
+
     @Autowired
     private SearchIndexService searchIndexService;
 
@@ -250,10 +252,19 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // if (columnName.equals(DataTableColumn.TDAR_ROW_ID.getName())) {
             // continue;
             // }
-            DataTableColumn column = dataTable.getColumnByName(columnName);
+            String lookupName = columnName;
+            Matcher match = originalColumnPattern.matcher(columnName);
+            String suffix = "";
+            if (match.matches()) {
+                lookupName = match.group(1);
+                suffix = " (original)";
+            }
+            DataTableColumn column = dataTable.getColumnByName(lookupName);
+            logger.trace("name: {} - {}", columnName, column);
             if (column != null) {
                 columnName = column.getDisplayName();
             }
+            columnName += suffix;
 
             columnNames.add(columnName);
         }
@@ -311,8 +322,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // take the dataset off the session at the last moment, and then bring it back on
 
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
-        Collection<DataTable> tablesToRemove =reconcileTables.getFirst();
-        
+        Collection<DataTable> tablesToRemove = reconcileTables.getFirst();
+
         reconcileRelationships(dataset, transientDatasetToPersist);
 
         cleanupUnusedTablesAndColumns(dataset, tablesToRemove, reconcileTables.getSecond());

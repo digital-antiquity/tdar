@@ -41,6 +41,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
                 } else {
                     resource.markUpdated(getUser());
                     resource.setTitle("test");
+                    resource.setDescription("test");
                     genericService.save(resource);
                     ResourceController controller = generateNewInitializedController(ResourceController.class);
                     controller.setResourceType(type);

@@ -54,7 +54,7 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testValidKeywordLookup() {
-        assertJsonResult("/lookup/keyword?minLookupLength=0", "items");
+        assertJsonResult("/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
     }
 
     @Test

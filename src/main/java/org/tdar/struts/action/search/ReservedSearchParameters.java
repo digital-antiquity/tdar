@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -29,7 +28,6 @@ public class ReservedSearchParameters extends SearchParameters {
     }
 
     public List<Status> getStatuses() {
-        statuses.removeAll(Collections.singletonList(null));
         return statuses;
     }
 
@@ -45,7 +43,7 @@ public class ReservedSearchParameters extends SearchParameters {
         QueryPartGroup queryPartGroup = super.toQueryPartGroup(support);
         // TODO: not just statusQueryPart, but also maps, resourceTypes
         StatusAndRelatedPermissionsQueryPart statusQueryPart = new StatusAndRelatedPermissionsQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
-//        FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
+        // FieldQueryPart<String> generated = new FieldQueryPart<String>("generated", "true");
         if (isUseSubmitterContext()) {
             if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
                 throw new TdarRecoverableRuntimeException(support.getText("reservedSearchParameter.logged_in"));
@@ -55,9 +53,9 @@ public class ReservedSearchParameters extends SearchParameters {
             queryPartGroup.append(fqp);
         }
 
-//        generated.setInverse(true);
-//        generated.setDescriptionVisible(false);
-//        queryPartGroup.append(generated);
+        // generated.setInverse(true);
+        // generated.setDescriptionVisible(false);
+        // queryPartGroup.append(generated);
         queryPartGroup.append(statusQueryPart);
         return queryPartGroup;
     }

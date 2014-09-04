@@ -11,6 +11,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.DownloadUserRegistration;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -26,14 +27,19 @@ import com.opensymphony.xwork2.Validateable;
 public class DownloadRegistrationController extends AbstractDownloadController implements Validateable, Preparable {
 
     private static final long serialVersionUID = -893535919691607147L;
+    private DownloadUserRegistration downloadRegistration = new DownloadUserRegistration(getH());
 
     @Autowired
     private AuthenticationService authenticationService;
 
     @Action(value = "process-download-registration",
-//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
-            results = { @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
+            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            results = {
+                    @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
+                    @Result(
+                            name = SUCCESS,
+                            type = TdarActionSupport.REDIRECT,
+                            location = "/filestore/confirm?informationResourceId=${informationResourceId}&informationResourceFileVersionId=${informationResourceFileVersionId}")
             })
     @HttpsOnly
     @PostOnly
@@ -61,12 +67,21 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService);
+        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService, getRecaptchaService());
         processErrorObject(errors);
     }
-    
+
     @Override
     public void prepare() {
         super.prepare();
     }
+
+    public DownloadUserRegistration getDownloadRegistration() {
+        return downloadRegistration;
+    }
+
+    public void setDownloadRegistration(DownloadUserRegistration downloadRegistration) {
+        this.downloadRegistration = downloadRegistration;
+    }
+
 }

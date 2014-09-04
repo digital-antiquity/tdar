@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * 
  * Tells the Obfuscation Results Listener not to Obfuscate the object (getter); action (method); or entireClass
  *
- * FIXME: can we change reason to 'value' to leverage shorthand annotation syntax?  (e.g. @DoNotObfuscate("not needed / performance test")
+ * FIXME: can we change reason to 'value' to leverage shorthand annotation syntax? (e.g. @DoNotObfuscate("not needed / performance test")
  * 
  * @author <a href='mailto:adam.brin@asu.edu'>Adam Brin</a>
  * @version $Rev$

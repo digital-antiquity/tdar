@@ -32,8 +32,8 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     @SuppressWarnings("unchecked")
-    public RangeQueryPart(String field, Operator operator, List<Range<C>> values) {
-        this(field, "Value");
+    public RangeQueryPart(String field, String label, Operator operator, List<Range<C>> values) {
+        this(field, label);
         if (CollectionUtils.isNotEmpty(values)) {
             for (Range<C> range : values) {
                 if ((range == null) || !range.isInitialized() || ((range.getStart() == null) && (range.getEnd() == null))) {

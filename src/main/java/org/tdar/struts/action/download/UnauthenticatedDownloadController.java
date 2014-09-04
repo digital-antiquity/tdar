@@ -1,5 +1,6 @@
 package org.tdar.struts.action.download;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -37,7 +39,12 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
                     @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") })
     @HttpsOnly
     public String download() {
-        if(!isAuthenticated()) {return LOGIN;}
+        if (!isAuthenticated()) {
+            if (!isAuthenticated() && StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
+                getH().generateRecapcha(getRecaptchaService());
+            }
+            return LOGIN;
+        }
 
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
             return SUCCESS;
@@ -81,11 +88,12 @@ public class UnauthenticatedDownloadController extends AbstractDownloadControlle
             return FORBIDDEN;
         }
 
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
-       return getDownloadTransferObject().getResult().name().toLowerCase();
+        return getDownloadTransferObject().getResult().name().toLowerCase();
     }
 
     @Override

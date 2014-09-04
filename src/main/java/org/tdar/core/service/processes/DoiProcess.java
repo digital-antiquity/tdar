@@ -40,7 +40,6 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     private static final String ERRORS = "errors";
     public static final String DOI_KEY = "DOI";
 
-
     @Autowired
     private transient UrlService urlService;
     @Autowired
@@ -129,6 +128,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
             if (total > 0) {
                 logger.info("sending email");
                 Email email = new Email();
+                email.setUserGenerated(false);
                 email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + SUBJECT);
                 emailService.queueWithFreemarkerTemplate("doi-daily.ftl", map, email);
             }

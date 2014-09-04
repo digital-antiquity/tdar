@@ -34,7 +34,7 @@ public class ScholarMetadataTransformer implements Serializable {
                 }
             }
             SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-             addMetaTag(toReturn, "citation_online_date", format.format(resource.getDateCreated()));
+            addMetaTag(toReturn, "citation_online_date", format.format(resource.getDateCreated()));
             if (ir instanceof Document) {
                 Document doc = (Document) ir;
                 switch (doc.getDocumentType()) {

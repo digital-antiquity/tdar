@@ -35,11 +35,11 @@ public class XMLFilestoreLogger implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static Class<?>[] jaxbClasses;
-    
+
     public XMLFilestoreLogger() throws ClassNotFoundException {
         jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
-    
+
     /**
      * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
      * 
@@ -118,7 +118,6 @@ public class XMLFilestoreLogger implements Serializable {
 
         return document;
     }
-
 
     /**
      * Convert the existing object to an XML representation using JAXB

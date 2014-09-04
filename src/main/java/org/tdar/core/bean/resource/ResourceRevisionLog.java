@@ -32,7 +32,8 @@ public class ResourceRevisionLog extends Persistable.Base {
 
     private static final long serialVersionUID = -6544867903833975781L;
 
-    public ResourceRevisionLog() {}
+    public ResourceRevisionLog() {
+    }
 
     public ResourceRevisionLog(String message, Resource resource, TdarUser person) {
         this.person = person;

@@ -136,7 +136,15 @@
                     of results.">
             <h2>Add/Remove Resources</h2>
 
-            <@edit.resourceDataTable false true />
+            <@edit.resourceDataTable false true>
+            <#--
+        <div class="btn-group">
+            <button class="button btn" name="showAll" id="showAll" type="button">Show All Resources</button>
+            <button class="button btn" name="limitToCollection" id="limitToCollection" type="button">Show Only resources in this collection</button>
+        </div>
+        <br><br>
+        -->
+            </@edit.resourceDataTable>
 
 
 
@@ -147,37 +155,41 @@
                 </div>
             </div>
 
-            <div id="divSelectedResources">
-<#--                <#list resources as resource><input type="hidden" name="resources.id" value="${resource.id?c}" id="hrid${resource.id?c}"></#list> -->
-            </div>
         </div>
 
-        <div class="glide">
-            <h2>Selected Resources</h2>
-    <table class="table table-condensed table-hover" id="tblCollectionResources">
-        <colgroup>
-            <col style="width:4em">
-            <col>
-            <col style="width:3em">
-        </colgroup>
-        <thead>
-        <tr>
-            <th style="width: 4em">ID
-            <th colspan="2">Name
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+        <div id="divAddRemove">
+            <h2>Modifications</h2>
+
+            <div id="divToAdd">
+                <h3>The following resources will be added to the collection</h3>
+                <table id="tblToAdd" class="table table-condensed"></table>
+            </div>
+
+            <div id="divToRemove">
+                <h3>The folllwing resources will be removed from the collection</h3>
+                <table id="tblToRemove" class="table table-condensed"></table>
+            </div>
         </div>
 
 
             <@edit.submit fileReminder=false />
         </@s.form>
 
-        <@edit.resourceDataTableJavascript false true />
         <#noescape>
         <script type='text/javascript'>
+            //selectResourcesFromCollectionid
+
+            $(function () {
+                TDAR.datatable.setupDashboardDataTable({
+                    isAdministrator: ${(editor!false)?string},
+                    isSelectable: true,
+                    showDescription: false,
+                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
+                });
+            });
+
+
+
             $(function () {
                 'use strict';
                 var form = $("#metadataForm")[0];

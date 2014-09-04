@@ -56,7 +56,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Autowired
     private transient CodingSheetService codingSheetService;
-    
+
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
     private Ontology ontology;
@@ -127,8 +127,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     @Action(value = SAVE_MAPPING,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
-            @Result(name = INPUT, location = "mapping.ftl") })
+                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {

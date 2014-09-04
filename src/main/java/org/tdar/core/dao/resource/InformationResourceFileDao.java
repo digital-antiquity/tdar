@@ -3,17 +3,15 @@ package org.tdar.core.dao.resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,6 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceProxy;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -76,9 +73,8 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     }
 
     public Number getDownloadCount(InformationResourceFile irFile) {
-        Criteria createCriteria = getCriteria(FileDownloadStatistic.class).setProjection(Projections.rowCount())
-                .add(Restrictions.eq("reference", irFile));
-        return (Number) createCriteria.list().get(0);
+        String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
+        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {

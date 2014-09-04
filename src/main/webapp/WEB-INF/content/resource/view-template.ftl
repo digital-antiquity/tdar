@@ -86,9 +86,38 @@
     <@common.description resource.description />
 
     <#if authenticatedUser?has_content>
-     <div id="email-form" class="hide">
-     <hr>
-        <h3>Send Email</h3>
+     <div id="email-form"  class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
+     
+         <form id="followup">
+          <div class="modal-header">
+                <h3>Send Email</h3>
+           </div>
+           <div class="modal-body">
+                <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
+                 <br/>
+                <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
+                <#assign contactId = resource.submitter.id />
+                <#if contactProxies?has_content>
+                <#list contactProxies as prox>
+                <#assign contactId = prox.person.id />
+                <#break/>
+                </#list>
+                </#if>
+                <@s.hidden name="toId" value="${contactId?c}" />
+                <@s.hidden name="resourceId" value="${resource.id?c}" />
+                <@s.hidden name="fromId" value="${(authenticatedUser.id)!-1?c}" /> 
+                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5"/>
+                <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
+                <@common.antiSpam />
+            </div>
+            <div class="modal-footer">
+                 <button name="send" data-dismiss="modal" aria-hidden="true"  id="followup-send" class="button btn btn-primary">send</button>
+                 <button name="cancel" data-dismiss="modal" aria-hidden="true"  id="followup-cancel" class="button btn btn-cancel">cancel</button>
+            </div>
+     </form>
+    </div>
+    
+    
         <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
           <div class="modal-header">
             <h3 class="success">Success</h3>
@@ -108,25 +137,6 @@
                 <a href="#" data-dismiss="modal" aria-hidden="true" id="email-close-button" class="btn">Close</a>
             </div>
         </div>
-     <form id="followup">
-     <br/>
-        <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
-        <#assign contactId = resource.submitter.id />
-        <#if contactProxies?has_content>
-        <#list contactProxies as prox>
-        <#assign contactId = prox.person.id />
-        <#break/>
-        </#list>
-        </#if>
-        <@s.hidden name="toId" value="${contactId?c}" />
-        <@s.hidden name="resourceId" value="${resource.id?c}" />
-        <@s.hidden name="fromId" value="${(authenticatedUser.id)!-1?c}" /> 
-        <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span9"/>
-        <@common.antiSpam />
-     <button name="send" id="followup-send" class="button btn btn-primary">send</button>
-     <button name="cancel" id="followup-cancel" class="button btn btn-cancel">cancel</button>
-     </form>
-    </div>
     </#if>
 <hr/>
     <#noescape>
@@ -289,7 +299,7 @@
         </#if>
     </#if>
 
-    <span class="Z3988" title="<#noescape>${openUrl}</#noescape>"></span>
+    <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
@@ -376,7 +386,7 @@
             <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
             <!-- ${resource.managedGeographicKeywords } -->
             <#if userAbleToViewUnobfuscatedMap>
-                <#if resource.firstActiveLatitudeLongitudeBox.actuallyObfuscated!false> [obfuscated]</#if>
+                <#if resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent> [obfuscated]</#if>
             </#if>
         </p>
     </div>
@@ -491,7 +501,7 @@
             <#else>
                     <a href="/login?url=${currentUrl}?showEmail">${txt} (requires login)</a>
             </#if>
-            </div>            
+            </div>
             </li>
         </ul>
     <h3>Basic Information</h3>
@@ -521,6 +531,11 @@
                 <#if resource.degree?has_content>${resource.degree.label}</#if>
                 <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
             </li>
+        </#if>
+        <#if resource.doi?has_content>
+            <li><strong>DOI</strong><br><a href="http://dx.doi.org/${resource.doi}">${resource.doi}</a></li>
+        <#elseif resource.externalId?has_content>
+            <li><strong>DOI</strong><br>${resource.externalId}</li>
         </#if>
         <#if local_.sidebarDataBottom?? && local_.sidebarDataBottom?is_macro>
             <@local_.sidebarDataBottom />

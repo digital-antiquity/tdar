@@ -47,6 +47,7 @@ import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -472,12 +473,18 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
-        jsonifyResult(JsonLookupFilter.class);
+        if (isEditor()) {
+            jsonifyResult(JsonAdminLookupFilter.class);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
         return SUCCESS;
     }
 
     @Autowired
     XmlService xmlService;
+
+    private Map<String, Object> result = new HashMap<>();
 
     public void jsonifyResult(Class<?> filter) {
         List<I> actual = new ArrayList<>();
@@ -488,16 +495,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             obfuscationService.obfuscateObject(obj, getAuthenticatedUser());
             actual.add(obj);
         }
-        Map<String, Object> result = new HashMap<>();
         Map<String, Object> status = new HashMap<>();
-        result.put(getLookupSource().getCollectionName(), actual);
-        result.put("status", status);
+        getResult().put(getLookupSource().getCollectionName(), actual);
+        getResult().put("status", status);
         status.put("recordsPerPage", getRecordsPerPage());
         status.put("startRecord", getStartRecord());
         status.put("totalRecords", getTotalRecords());
         status.put("sortField", getSortField());
-        getLogger().debug("{}", filter);
-        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, filter, callback).getBytes());
+        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {
@@ -569,6 +574,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     public void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
+    }
+
+    public Map<String, Object> getResult() {
+        return result;
+    }
+
+    public void setResult(Map<String, Object> result) {
+        this.result = result;
     }
 
 }

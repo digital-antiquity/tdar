@@ -14,6 +14,7 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.DownloadUserLogin;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -30,10 +31,11 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     private static final long serialVersionUID = 1525006233392261028L;
 
     public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
+    private DownloadUserLogin downloadUserLogin = new DownloadUserLogin(getH());
 
     @Autowired
     private AuthenticationService authenticationService;
-    
+
     @Autowired
     private AuthorizationService authorizationService;
 
@@ -41,10 +43,10 @@ public class DownloadLoginController extends AbstractDownloadController implemen
     private GenericService genericService;
 
     @Action(value = "process-download-login",
-//            interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
-            @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING),
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
+                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING),
                     @Result(name = INPUT, type = FREEMARKER, location = LOGIN_REGISTER_PROMPT)
             })
     @HttpsOnly
@@ -75,7 +77,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
         }
         return SUCCESS;
     }
-    
+
     @Override
     public void prepare() {
         super.prepare();
@@ -83,12 +85,20 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService);
+        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getRecaptchaService());
         processErrorObject(errors);
 
         if (!isPostRequest() || errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getDownloadUserLogin().getLoginUsername());
         }
+    }
+
+    public DownloadUserLogin getDownloadUserLogin() {
+        return downloadUserLogin;
+    }
+
+    public void setDownloadUserLogin(DownloadUserLogin downloadUserLogin) {
+        this.downloadUserLogin = downloadUserLogin;
     }
 
 }

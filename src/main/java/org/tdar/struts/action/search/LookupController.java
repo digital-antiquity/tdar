@@ -1,6 +1,9 @@
 package org.tdar.struts.action.search;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
@@ -15,7 +18,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
@@ -50,6 +55,8 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Scope("prototype")
 public class LookupController extends AbstractLookupController<Indexable> {
 
+    public static final String SELECTED_RESULTS = "selectedResults";
+
     private static final long serialVersionUID = 176288602101059922L;
 
     private String firstName;
@@ -70,6 +77,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
     @Autowired
     private transient AuthorizationService authorizationService;
+
+    private Long selectResourcesFromCollectionid;
 
     @Action(value = "person",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
@@ -124,6 +133,20 @@ public class LookupController extends AbstractLookupController<Indexable> {
             return ERROR;
         }
 
+        if (Persistable.Base.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
+            ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
+            if (collectionContainer != null) {
+                Set<Long> resourceIds = new HashSet<Long>();
+                for (Indexable result_ : getResults()) {
+                    Resource resource = (Resource) result_;
+                    if (resource != null && resource.isViewable() && resource.getResourceCollections().contains(collectionContainer)) {
+                        resourceIds.add(resource.getId());
+                    }
+                }
+                getResult().put(SELECTED_RESULTS, resourceIds);
+            }
+        }
+
         if (isIncludeCompleteRecord()) {
             jsonifyResult(null);
         } else {
@@ -138,12 +161,23 @@ public class LookupController extends AbstractLookupController<Indexable> {
             })
     public String lookupKeyword() {
         // only return results if query length has enough characters
-        if (!checkMinString(term) && !checkMinString(keywordType)) {
+        getLogger().trace("term: {} , minLength: {}", term, getMinLookupLength());
+        setLookupSource(LookupSource.KEYWORD);
+
+        if (StringUtils.isBlank(keywordType)) {
+            addActionError(getText("lookupController.specify_keyword_type"));
+            jsonifyResult(JsonLookupFilter.class);
+            return ERROR;
+        }
+
+        if (!checkMinString(term)) {
+            setResults(new ArrayList<Indexable>());
+            jsonifyResult(JsonLookupFilter.class);
+            getLogger().debug("returning ... too short?" + term);
             return SUCCESS;
         }
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
@@ -357,5 +391,13 @@ public class LookupController extends AbstractLookupController<Indexable> {
     @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
+    }
+
+    public Long getSelectResourcesFromCollectionid() {
+        return selectResourcesFromCollectionid;
+    }
+
+    public void setSelectResourcesFromCollectionid(Long selectResourcesFromCollectionid) {
+        this.selectResourcesFromCollectionid = selectResourcesFromCollectionid;
     }
 }

@@ -130,10 +130,8 @@
             <label class="control-label">Invoice Owner</label>
             <div class="controls">
             <#--if no owner specified already, supply a 'blank' user -->
-                    <@edit.registeredUserRow prefix="invoice.owner"
-            person=((invoice.owner)!blankAuthorizedUser.user)
-            _indexNumber=""
-            includeRepeatRow=false/>
+                    <@edit.registeredUserRow prefix="invoice.owner" person=((invoice.owner)!blankAuthorizedUser.user)
+                        _indexNumber="" includeRepeatRow=false/>
 
                 <span class="help-block">
                     Use this field to create a <em>proxy invoice</em> on behalf of another user.
@@ -144,8 +142,6 @@
 
         <#if (billingManager && allPaymentMethods?size > 1)>
             <h3>Payment Method</h3>
-            <#--<@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method"-->
-            <#--listValue="label"    cssClass="transactionType fadeIfZeroed" value="CREDIT_CARD"  />-->
             <@invoicecommon.paymentMethod />
         </#if>
 

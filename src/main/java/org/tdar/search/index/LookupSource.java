@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.utils.MessageHelper;
@@ -37,7 +38,8 @@ public enum LookupSource implements HasLabel, Localizable {
             SiteNameKeyword.class, SiteTypeKeyword.class),
     RESOURCE("resources", Resource.class, Document.class, Dataset.class, Ontology.class, CodingSheet.class, Project.class,
             SensoryData.class, Video.class, Geospatial.class, Archive.class, Audio.class),
-    COLLECTION("collections", ResourceCollection.class);
+    COLLECTION("collections", ResourceCollection.class),
+    RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class);
 
     private String collectionName;
     private Class<? extends Indexable>[] classes;

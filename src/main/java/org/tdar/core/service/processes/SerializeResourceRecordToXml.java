@@ -21,6 +21,7 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
     private static final long serialVersionUID = 7024941986161148001L;
 
     private XMLFilestoreLogger xmlFilestoreLogger;
+
     public SerializeResourceRecordToXml() throws ClassNotFoundException {
         xmlFilestoreLogger = new XMLFilestoreLogger();
     }

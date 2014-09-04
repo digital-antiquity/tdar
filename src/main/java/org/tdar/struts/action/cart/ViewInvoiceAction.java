@@ -25,18 +25,18 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 public class ViewInvoiceAction extends AuthenticationAware.Base implements Preparable, ValidationWorkflowAware {
 
     private static final long serialVersionUID = -8280706863708228864L;
-    
+
     private Long id;
-    
+
     private Invoice invoice;
-    
+
     private String inputResultName;
 
     @Autowired
     private AccountService accountService;
 
     private Account account;
-    
+
     @Override
     public void prepare() {
         invoice = getGenericService().find(Invoice.class, id);
@@ -44,7 +44,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
             setAccount(accountService.getAccountForInvoice(invoice));
         }
     }
-    
+
     @Override
     public void validate() {
         if (invoice == null) {
@@ -61,7 +61,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
             inputResultName = FORBIDDEN;
         }
     }
-    
+
     @Action("view")
     public String execute() {
         return SUCCESS;
@@ -74,7 +74,7 @@ public class ViewInvoiceAction extends AuthenticationAware.Base implements Prepa
     public Invoice getInvoice() {
         return invoice;
     }
-    
+
     public String getInputResultName() {
         return inputResultName;
     }

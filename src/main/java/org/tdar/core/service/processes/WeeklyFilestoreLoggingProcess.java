@@ -71,7 +71,6 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
 
         while (taskExecutor.getActiveCount() != 0) {
             int count = taskExecutor.getActiveCount();
-            logger.debug("Active Threads : {}", count);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -111,8 +110,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
                 try {
                     FileStoreFileProxy result = setupVersionFromResult();
                     current.add(result);
-                } 
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error("error in loading from resultsset: {}", e);
                 }
             }
@@ -133,7 +131,9 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("missing", missing);
         Thread.yield();
         StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
-        if (count == 0) {
+        int totalIssues = other.size() + tainted.size() + missing.size();
+
+        if (totalIssues == 0) {
             subject.append(" [NONE]");
         }
         else {
@@ -142,6 +142,8 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("siteAcronym", TdarConfiguration.getInstance().getSiteAcronym());
         map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
         map.put("dateRun", new Date());
+        map.put("count", count);
+        map.put("totalIssues", totalIssues);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String filename = "verify-" + df.format(new Date()) + ".txt";
         try {
@@ -184,7 +186,7 @@ public class WeeklyFilestoreLoggingProcess extends ScheduledProcess.Base<Homepag
     public boolean isSingleRunProcess() {
         return false;
     }
-    
+
     @Override
     public void cleanup() {
         missing.clear();

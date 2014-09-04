@@ -41,7 +41,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         return ret;
     }
 
-
     public void validateUniqueEmail() {
         if (StringUtils.isBlank(getPersistable().getEmail())) {
             return;
@@ -68,7 +67,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
             stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "contributorReason",
                     key = "userAccountController.contributorReason_invalid", maxLength = "512") }
             )
-    public String save(Person person) {
+            public String save(Person person) {
         return savePersonInfo(person);
     }
 
@@ -107,7 +106,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         return true;
     };
 
-
     @Override
     public boolean isEditable() {
         return getAuthenticatedUser().equals(getPersistable())
@@ -118,7 +116,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     protected void delete(Person persistable) {
         // the actual delete is being done by persistableController. We don't delete any relations since we want the operation to fail if any exist.
     }
-
 
     @Override
     public String loadViewMetadata() {
@@ -131,7 +128,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
         return SUCCESS;
     }
-
 
     public String getInstitutionName() {
         return institutionName;
@@ -146,7 +142,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         return getAuthenticatedUser().equals(getPersistable());
     }
 
-
     @Override
     public String getSaveSuccessPath() {
         // instead of a custom view page we will co-opt the browse/creator page.
@@ -154,7 +149,6 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
         getLogger().debug("{}?id={}", path, getId());
         return path;
     }
-
 
     public String getEmail() {
         return email;

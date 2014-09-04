@@ -455,6 +455,10 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WEEKLY_EMAIL_STATS,
+                query = "select count(*) from Email where status='SENT' and dateSent >= :date and userGenerated=TRUE"),
+
 })
 package org.tdar.core.dao;
 

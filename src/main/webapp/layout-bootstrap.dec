@@ -143,7 +143,7 @@
             </nav>
         </header>
     </div>
-    <#if bodyid == 'home'>
+    <#if bodyid == 'home'>  
         <div class="row">
             <div class="hero">
                 <#include "${themeDir}/homepage-banner.dec" />
@@ -170,7 +170,7 @@
                         </#if>
                     </#if>
                 </ul>
-                <#if actionName!='login' && actionName!='register' && actionName!='review'>
+                <#if actionName!='login' && actionName!='register' && actionName!='download' && actionName!='review-unauthenticated'>
                     <@common.loginMenu true />
                 </#if>
             </div>

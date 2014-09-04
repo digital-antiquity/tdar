@@ -86,10 +86,11 @@
                 </ul>
             </#if>
             <form>
-                <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
-                <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
-                <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
-                <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+        <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+        <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
+        <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
+        <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+
             </form>
         </div>
         <div class="visible-phone">
@@ -158,7 +159,7 @@
             <#list collectionResults as col>
                 <#if (col_index >= current)> 
                 <#if col?has_content>
-                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name}</a></li>
+                <li><a href="<@s.url value="/${col.urlNamespace}/${col.id?c}"/>">${col.name!"unnamed"}</a></li>
                 </#if>
                 </#if>
             </#list>

@@ -106,14 +106,14 @@ public class SearchService {
 
     private final DatasetDao datasetDao;
 
-    @Autowired 
+    @Autowired
     public SearchService(SessionFactory sessionFactory, ObfuscationService obfuscationService, GenericService genericService, DatasetDao datasetDao) {
         this.sessionFactory = sessionFactory;
         this.obfuscationService = obfuscationService;
         this.genericService = genericService;
         this.datasetDao = datasetDao;
     }
-    
+
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
@@ -289,6 +289,7 @@ public class SearchService {
             }
             toReturn.add(p);
         }
+        boolean trustCache = true;
         // iterate over all of the objects and create an objectMap if needed
         if (CollectionUtils.isNotEmpty(ids.keySet())) {
             switch (projectionModel) {
@@ -296,9 +297,11 @@ public class SearchService {
                     toReturn.clear();
                     createSpareObjectFromProjection(resultHandler, projections, ids);
                     break;
+                case RESOURCE_PROXY_INVALIDATE_CACHE:
+                    trustCache = false;
                 case RESOURCE_PROXY:
                     toReturn.clear();
-                    toReturn.addAll(datasetDao.findSkeletonsForSearch(ids.keySet().toArray(new Long[0])));
+                    toReturn.addAll(datasetDao.findSkeletonsForSearch(trustCache, ids.keySet().toArray(new Long[0])));
                     break;
                 default:
                     break;
@@ -314,7 +317,8 @@ public class SearchService {
                     Explanation ex = (Explanation) obj[projections.indexOf(ProjectionConstants.EXPLANATION)];
                     p.setExplanation(ex);
                 }
-                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled() && Persistable.Base.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
+                if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()
+                        && Persistable.Base.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
                     obfuscationService.obfuscate((Obfuscatable) p, resultHandler.getAuthenticatedUser());
                 }
                 getAuthenticationAndAuthorizationService().applyTransientViewableFlag(p, resultHandler.getAuthenticatedUser());
@@ -439,7 +443,7 @@ public class SearchService {
                 if (Persistable.Base.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
                 } else {
-                    logger.info("not adding: {} ", idLookupMap.get(cls), fieldValue);
+                    logger.trace("not adding: {} ", idLookupMap.get(cls), fieldValue);
                 }
             }
             part.update();

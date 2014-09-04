@@ -110,7 +110,7 @@
             <div data-tiplabel="Title"
                  data-tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
-                title="A title is required for all ${resource.resourceType.label}s" name='${itemPrefix}.title'
+                title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>
@@ -183,6 +183,12 @@
             <#if local_.citationInformation?? && local_.citationInformation?is_macro>
                 <@local_.citationInformation />
             </#if>
+
+            <#if !resource.resourceType.project>
+            <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
+            </div>
+            </#if>        
 
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
                 <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />

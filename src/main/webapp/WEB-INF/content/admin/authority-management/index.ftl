@@ -5,7 +5,7 @@
     <title>Authority Management - Merge Duplicates</title>
     <script type='text/javascript'>
         $(function () {
-            TDAR.auth.initAuthTable();
+            TDAR.authority.initAuthTable();
             $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", function () {
                         $("#dupe_datatable").dataTable().fnDraw();
                     }, 500);
@@ -51,7 +51,7 @@
 </div>
 
 <div class="glide" id="divSearchControl">
-    <form method="get" action="#" id="frm">
+    <form method="post" action="#" id="frm">
         <@s.token name='struts.csrf.token' />
         <div id="divKeywordSearchControl" class="searchControl">
             <h3>Keyword Search</h3>

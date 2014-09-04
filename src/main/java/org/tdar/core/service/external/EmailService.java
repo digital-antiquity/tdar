@@ -22,8 +22,8 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.FreemarkerService;
-import org.tdar.core.service.GenericService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.MessageHelper;
 
@@ -39,13 +39,15 @@ import org.tdar.utils.MessageHelper;
 @Service
 public class EmailService {
 
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private MailSender mailSender;
 
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -73,12 +75,12 @@ public class EmailService {
     public void queue(Email email) {
         logger.debug("Queuing email {}", email);
         enforceFromAndTo(email);
-        genericService.save(email);
+        genericDao.save(email);
     }
 
     private void enforceFromAndTo(Email email) {
         if (StringUtils.isBlank(email.getTo())) {
-            email.addToAddress(getTdarConfiguration().getSystemAdminEmail());
+            email.addToAddress(CONFIG.getSystemAdminEmail());
         }
         if (StringUtils.isBlank(email.getFrom())) {
             email.setFrom(getFromEmail());
@@ -98,7 +100,7 @@ public class EmailService {
         if (email.getNumberOfTries() < 1) {
             logger.debug("too many tries {}", email.getStatus());
             email.setStatus(Status.ERROR);
-            genericService.saveOrUpdate(email);
+            genericDao.saveOrUpdate(email);
         }
         if (email.getStatus() != Status.QUEUED) {
             logger.trace("email rejected -- not queued {}", email.getStatus());
@@ -120,15 +122,11 @@ public class EmailService {
             email.setErrorMessage(me.getMessage());
             logger.error("email error: {} {}", email, me);
         }
-        genericService.saveOrUpdate(email);
+        genericDao.saveOrUpdate(email);
     }
 
     public String getFromEmail() {
-        return getTdarConfiguration().getDefaultFromEmail();
-    }
-
-    public TdarConfiguration getTdarConfiguration() {
-        return TdarConfiguration.getInstance();
+        return CONFIG.getDefaultFromEmail();
     }
 
     /**
@@ -153,22 +151,25 @@ public class EmailService {
     @Transactional(readOnly = false)
     public Email constructEmail(Person from, Person to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type) {
         Email email = new Email();
-        genericService.markWritable(email);
-        email.setFrom(getTdarConfiguration().getDefaultFromEmail());
-        if (TdarConfiguration.getInstance().isSendEmailToTester()) {
+        genericDao.markWritable(email);
+        email.setFrom(CONFIG.getDefaultFromEmail());
+        if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String subject = String.format("%s: %s [id: %s] %s", TdarConfiguration.getInstance().getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(), from.getProperName());
+        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
+                from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
-        } 
+        }
         email.setSubject(subject);
         email.setStatus(Status.IN_REVIEW);
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
-        map.put("baseUrl", TdarConfiguration.getInstance().getBaseUrl());
+        map.put("baseUrl", CONFIG.getBaseUrl());
+        map.put("siteAcronym", CONFIG.getSiteAcronym());
+        map.put("serviceProvider", CONFIG.getServiceProvider());
         if (resource != null) {
             map.put("resource", resource);
         }
@@ -180,19 +181,19 @@ public class EmailService {
 
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void changeEmailStatus(Status action, List<Email> emails) {
         for (Email email : emails) {
-            genericService.markUpdatable(email);
+            genericDao.markUpdatable(email);
             logger.debug("changing email[id={}] status from: {} to: {}", email.getId(), email.getStatus(), action);
             email.setStatus(action);
-            genericService.saveOrUpdate(email);
+            genericDao.saveOrUpdate(email);
         }
-        
+
     }
 
     public List<Email> findEmailsWithStatus(Status status) {
-        List<Email> allEmails = genericService.findAll(Email.class);
+        List<Email> allEmails = genericDao.findAll(Email.class);
         List<Email> toReturn = new ArrayList<>();
         for (Email email : allEmails) {
             if (email.getStatus() == status) {

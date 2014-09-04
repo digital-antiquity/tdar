@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -13,11 +14,10 @@ public class UserLogin extends UserAuthData {
     private static final long serialVersionUID = -4359468001090001733L;
     private String loginUsername;
     private String loginPassword;
-    
+
     public String getPrefix() {
         return "userLogin.";
     };
-
 
     public UserLogin(AntiSpamHelper h) {
         setH(h);
@@ -45,7 +45,7 @@ public class UserLogin extends UserAuthData {
         this.loginPassword = loginPassword;
     }
 
-    public ErrorTransferObject validate(AuthorizationService authService) {
+    public ErrorTransferObject validate(AuthorizationService authService, RecaptchaService recaptchaService) {
 
         ErrorTransferObject errors = new ErrorTransferObject();
 
@@ -57,7 +57,7 @@ public class UserLogin extends UserAuthData {
             errors.addFieldError(getPrefix() + "loginPassword", "loginController.error_choose_password");
         }
 
-        checkForSpammers(errors, true);
+        checkForSpammers(errors, true, recaptchaService);
         return errors;
     }
 

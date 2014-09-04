@@ -3,6 +3,7 @@ package org.tdar.struts.action;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     // result name constants
     private boolean hideExceptionArea = false;
+    private Date freemarkerProcessingTime = null;
 
     private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
     // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
@@ -642,4 +644,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void registerErrorListener(ErrorListener listener) {
         this.errorListener = listener;
     }
+
+    public Date getFreemarkerProcessingTime() {
+        return freemarkerProcessingTime;
+    }
+
+    public void setFreemarkerProcessingTime(Date freemarkerProcessingTime) {
+        this.freemarkerProcessingTime = freemarkerProcessingTime;
+    }
+
 }

@@ -42,5 +42,4 @@ public enum ResourceAccessType implements HasLabel, Localizable {
         this.label = label;
     }
 
-
 }

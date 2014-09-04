@@ -22,6 +22,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -44,7 +46,6 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -186,6 +187,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private String description;
 
     @Column(name = "file_created_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fileCreatedDate;
 
     @Column(name = "part_of_composite", columnDefinition = "boolean default false")
@@ -225,6 +227,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.
     @Column(name = "date_made_public")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
@@ -324,7 +327,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public InformationResourceFileVersion getLatestTranslatedVersion() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(getLatestVersion()) && version.isTranslated()) {
-                logger.info("version: {}", version);
+                logger.trace("version: {}", version);
                 return version;
             }
         }
@@ -546,7 +549,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public WorkflowContext getWorkflowContext() {
         return workflowContext;

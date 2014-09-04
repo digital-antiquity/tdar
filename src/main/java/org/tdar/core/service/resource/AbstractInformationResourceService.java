@@ -306,7 +306,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
             // will be reassigned in a REPLACE or ADD_DERIVATIVE
             InformationResourceFile irFile = new InformationResourceFile();
-            irFile.setFilename(proxy.getFilename());
             if (proxy.getAction().requiresExistingIrFile()) {
                 irFile = findInformationResourceFile(proxy);
 
@@ -314,7 +313,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     // handling error case user is on the input page (rolled-back transaction for upload) we have a sequence # for an IRFile, but that file
                     // does not exist
                     // case: id == -1 -- cause, likely that there was a validation error caught in the WorkflowContext
-                    // case: id > -1, but not in DB -- cause, likely that the transaction failed in the workflow context (access database died in tDAR database creation)
+                    // case: id > -1, but not in DB -- cause, likely that the transaction failed in the workflow context (access database died in tDAR database
+                    // creation)
                     if (Persistable.Base.isNotNullOrTransient(proxy.getFileId())) {
                         logger.debug("resetting: {} {}", proxy, proxy.getAction());
                         rollbackIssues.add(proxy);
@@ -331,6 +331,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                     }
                 }
             }
+
+            if (proxy.getAction() == FileAction.REPLACE || proxy.getAction() == FileAction.ADD) {
+                irFile.setFilename(proxy.getFilename());
+            }
+
             proxy.setInformationResourceFile(irFile);
         }
         // if we have a 1:1 relationship between server created proxies and rollback issues (proxies w/ids that don't exist), remove the server-created files

@@ -110,7 +110,7 @@
                                             &nbsp;&nbsp;&nbsp;&nbsp;
                                         </#list>
                                         <input type='checkbox' id='${node_id}'
-                                               name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id'
+                                               name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes.id'
                                                value='${ontologyNode.id?c}'
                                                <#if checkForUser>canautocheck="true"</#if>     <#if ontologyNode.disabled>disabled="disabled"</#if> />
                                         <#assign totalCheckboxCount=totalCheckboxCount+1>

@@ -1,6 +1,5 @@
 package org.tdar.struts.interceptor;
 
-import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,6 @@ public class UserAgreementInterceptor implements SessionDataAware, Interceptor {
         // user is authenticated and authorized to perform requested action.
         // now we check for any outstanding notices require user attention
         String result = null;
-        logger.debug("namespace:{}", ServletActionContext.getActionMapping().getNamespace());
 
         if (authenticationService.userHasPendingRequirements(user)
                 // avoid infinite redirect

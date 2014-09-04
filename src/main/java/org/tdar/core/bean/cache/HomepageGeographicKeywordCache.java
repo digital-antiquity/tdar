@@ -23,7 +23,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 @Entity
 @Table(name = "homepage_cache_geographic_keyword")
 @Cacheable
-@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region="org.tdar.core.bean.cache.HomepageGeographicKeywordCache")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "org.tdar.core.bean.cache.HomepageGeographicKeywordCache")
 public class HomepageGeographicKeywordCache extends Base implements ResourceCache<String> {
 
     private static final long serialVersionUID = -8037868535122993612L;

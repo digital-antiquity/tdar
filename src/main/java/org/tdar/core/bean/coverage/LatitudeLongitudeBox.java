@@ -1,5 +1,6 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -30,7 +31,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
@@ -144,7 +144,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
-    @JSONTransient
+
     public boolean isObfuscatedObjectDifferent() {
         if (obfuscatedObjectDifferent == null) {
             logger.debug("should call obfuscate before testing obfuscation");
@@ -236,6 +236,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         Double result = obfuscatedValue;
         if (isOkayToShowExactLocation) {
             result = actualValue;
+        }
+        if (!Objects.equals(actualValue, obfuscatedValue)) {
+            setObfuscatedObjectDifferent(true);
         }
         return result;
     }
@@ -512,7 +515,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     @XmlTransient
-    @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
@@ -525,7 +527,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private transient Boolean obfuscatedObjectDifferent;
 
     @XmlTransient
-    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
@@ -536,7 +537,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     @Override
     // @XmlTransient
-    @JSONTransient
     public Set<Obfuscatable> obfuscate() {
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
@@ -627,10 +627,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isInitialized() {
-        if (maximumLatitude == null || minimumLatitude == null || maximumLongitude == null || minimumLongitude == null) {
-            return false;
-        }
-        return true;
+        return maximumLatitude != null && minimumLatitude != null && maximumLongitude != null && minimumLongitude != null;
     }
 
     public boolean isInitializedAndValid() {

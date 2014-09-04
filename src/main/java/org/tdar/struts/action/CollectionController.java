@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -70,8 +71,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient AuthorizationService authorizationService;
 
     private static final long serialVersionUID = 5710621983240752457L;
-//    private List<Resource> resources = new ArrayList<>();
-    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
+    // private List<Resource> resources = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
@@ -92,7 +93,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     private List<Long> toRemove = new ArrayList<>();
-    private List<Long> toAdd  = new ArrayList<>();
+    private List<Long> toAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
 
     @Override
@@ -119,8 +120,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return isEditable() || authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
-    
-    
     @Override
     protected String save(ResourceCollection persistable) {
         if (persistable.getType() == null) {
@@ -139,10 +138,15 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
-        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+        if (!Objects.equals(parentId, persistable.getParentId())) {
+            resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), persistable, parent);
+        }
+
         resourceCollectionService.reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resourcesToAdd, resourcesToRemove);
+
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
+
         return SUCCESS;
     }
 
@@ -227,7 +231,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
-            if (au != null && au.getUser() != null ) {
+            if (au != null && au.getUser() != null) {
                 name = au.getUser().getProperName();
             }
             getAuthorizedUsersFullNames().add(name);
@@ -264,13 +268,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         return result;
     }
 
-
     @Override
     public void loadExtraViewMetadata() {
         if (Persistable.Base.isNullOrTransient(getPersistable())) {
             return;
         }
-        getLogger().debug("child collections: begin");
+        getLogger().trace("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
@@ -289,9 +292,9 @@ public class CollectionController extends AbstractPersistableController<Resource
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));
-        getLogger().debug("child collections: sort");
+        getLogger().trace("child collections: sort");
         Collections.sort(collections);
-        getLogger().debug("child collections: end");
+        getLogger().trace("child collections: end");
 
         // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
@@ -315,7 +318,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
-        getLogger().debug("lucene: end");
+        getLogger().trace("lucene: end");
     }
 
     public List<Long> getSelectedResourceIds() {
@@ -347,6 +350,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         fullUserProjects.removeAll(getAllSubmittedProjects());
         getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
 
+        // always place current resource collection as the first option
+        if (Persistable.Base.isNotTransient(getResourceCollection())) {
+            getAllResourceCollections().remove(getResourceCollection());
+            getAllResourceCollections().add(0, getResourceCollection());
+        }
     }
 
     public void setFullUserProjects(List<Resource> projects) {

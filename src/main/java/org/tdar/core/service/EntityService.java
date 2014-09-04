@@ -133,7 +133,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findByEmail(email.trim());
     }
 
-    
     @Transactional(readOnly = true)
     public TdarUser findUserByEmail(String email) {
         if ((email == null) || email.isEmpty()) {

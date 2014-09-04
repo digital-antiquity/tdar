@@ -50,7 +50,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
 
     @Autowired
     private transient ProjectService projectService;
-    
+
     @Override
     @Action("batch")
     public String execute() {

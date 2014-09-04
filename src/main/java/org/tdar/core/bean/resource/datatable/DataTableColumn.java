@@ -36,7 +36,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
@@ -332,14 +331,12 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Override
-    @JSONTransient
     public boolean isValidForController() {
         // not implemented
         return true;
     }
 
     @Override
-    @JSONTransient
     public boolean isValid() {
         List<Object> keys = new ArrayList<>();
         keys.add(getName());
@@ -389,7 +386,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public String getJsSimpleName() {
         return getName().replaceAll("[\\s\\,\"\']", "_");

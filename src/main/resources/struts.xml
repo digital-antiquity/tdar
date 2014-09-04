@@ -168,8 +168,11 @@
 				<param name="location">/unauthorized</param>
             </result>
             <result name="forbidden" type="freemarkerhttp">
-            	<param name="status">403</param>
-            	<param name='location'>/WEB-INF/content/errors/unauthorized.ftl</param>
+                <param name="status">403</param>
+                <param name='location'>/WEB-INF/content/errors/unauthorized.ftl</param>
+            </result>
+            <result name="forbidden-status-only" type="httpheader">
+                <param name="status">403</param>
             </result>
             <result name="invalid.token" type="redirect">
                 <param name="location">/invalid-token</param>

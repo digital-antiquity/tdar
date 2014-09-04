@@ -122,7 +122,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
             @SuppressWarnings("unchecked")
             List<Integer> result = query.list();
-            getLogger().debug("results: {}", result);
+            getLogger().trace("results: {}", result);
             if (result.isEmpty() || result.get(0) != 1) {
                 updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE);
                 return false;

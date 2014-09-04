@@ -629,8 +629,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>"
                             data-toggle="button">Institution
                     </button>
-                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type"
-                    value="${selectedType}" cssClass="toggleValue" />
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].type" value="${selectedType}" cssClass="toggleValue" />
+                    <#if !resource.resourceType.project && resource.inheritingIndividualAndInstitutionalCredit && prefix=='credit'>
+                    <@s.hidden name="${prefix}Proxies[${proxy_index}].id" value="" cssClass="toggleValue resourceCreatorId" />
+                    <#else>
+                        <@s.hidden name="${prefix}Proxies[${proxy_index}].id" cssClass="toggleValue resourceCreatorId" />
+                    </#if>
                 </div>
             </div>
             <div class="controls controls-row">
@@ -1022,12 +1026,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
             <div class="span4">
                 <label class="" for="collection-selector">Collection</label>
-
+                <#local selectedId=-1/>
+                <#-- limit to just this collection
+                <#if namespace=='/collection' && (id!-1) != -1>
+                    <#local selectedId=id/>
+                </#if>
+                -->
                 <div class="">
                     <select name="_tdar.collection" id="collection-selector" class="input-block-level">
-                        <option value="" selected='selected'>All Collections</option>
+                        <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
                         <@s.iterator value='allResourceCollections' var='rc'>
-                            <option value="${rc.id?c}" title="${rc.name!""?html}"><@common.truncate rc.name!"(No Name)" 70 /></option>
+                            <option value="${rc.id?c}" title="${rc.name!""?html}"
+                            <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
+                            ><@common.truncate rc.name!"(No Name)" 70 /></option>
                         </@s.iterator>
                     </select>
                 </div>
@@ -1063,6 +1074,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
 
     </div>
+    <#nested />
     <div class="row">
         <div class="span9">
 
@@ -1212,6 +1224,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+{% var confclass = (document.location.pathname === "/batch/add") ? "" : "confidential-contact-required" ;%}
 {% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
     <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
             <td colspan="4">
@@ -1231,11 +1244,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <div class="control-group">
                     <label class="control-label">Restriction</label>
                     <div class="controls">
-                        <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
         <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
         style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
         onchange="TDAR.fileupload.updateFileAction(this)"
-        cssClass="fileProxyConfidential confidential-contact-required"/>
+        cssClass="fileProxyConfidential {%=confclass%}"/>
                     </div>
 
                     <label class="control-label" for="">Date Created</label>
@@ -1386,8 +1398,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local personPrefix="" />
         <#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
         <#local strutsPrefix="${prefix}${_index}" />
-        <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
-        <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+        <#local rowIdElement="${prefix?replace('.','_')}Row_${_indexNumber}_p" />
+        <#local idIdElement="${prefix?replace('.','_')}Id__id_${_indexNumber}_p" />
         <#local idIdElement=idIdElement?replace(".","_") /> <#-- strip dots to make css selectors easier to write  -->
         <#local requiredClass><#if required>required</#if></#local>
         <#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
@@ -1396,6 +1408,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#local properNameField>${prefix}.properName</#local>
         <#if _index != ''>
             <#local properNameField>authorizedUsersFullNames${_index}</#local>
+        <#elseif prefix == 'submitter'>
+            <#local properNameField>submitterProperName</#local>
         </#if>
 
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
@@ -1439,7 +1453,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
-        <@s.hidden name='${strutsPrefix}${institutionPrefix}.' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
         <div class="controls-row">
             <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="name"

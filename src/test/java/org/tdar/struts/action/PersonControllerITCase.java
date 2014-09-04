@@ -17,7 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.entity.AbstractCreatorController;
 import org.tdar.struts.action.entity.PersonController;
-import org.tdar.struts.action.entity.UserInfoController;
+import org.tdar.struts.action.entity.TdarUserController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
@@ -36,14 +36,14 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testSavingPerson() throws Exception {
         // simulate the edit
-        UserInfoController uc = generateNewInitializedController(UserInfoController.class, getAdminUser());
+        TdarUserController uc = generateNewInitializedController(TdarUserController.class, getAdminUser());
         uc.setId(1L);
         uc.prepare();
         uc.edit();
         Assert.assertEquals(uc.getPersistable().getFirstName().toLowerCase(), "allen");
 
         // simulate the save()
-        uc = generateNewInitializedController(UserInfoController.class);
+        uc = generateNewInitializedController(TdarUserController.class);
         uc.setId(1L);
         uc.prepare();
         Person p = uc.getPerson();
@@ -249,7 +249,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testBlankEmailForActiveUser() throws TdarActionException {
         setIgnoreActionErrors(true);
-        UserInfoController uc = generateNewInitializedController(UserInfoController.class, getAdminUser());
+        TdarUserController uc = generateNewInitializedController(TdarUserController.class, getAdminUser());
         uc.setId(getUserId());
         uc.prepare();
         uc.setEmail("");

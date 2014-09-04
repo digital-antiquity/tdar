@@ -43,6 +43,5 @@ public enum VersionType {
     public boolean isArchival() {
         return ((this == VersionType.ARCHIVAL) || (this == VersionType.UPLOADED_ARCHIVAL));
     }
-    
-    
+
 }

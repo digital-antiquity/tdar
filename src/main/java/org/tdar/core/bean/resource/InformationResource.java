@@ -71,10 +71,10 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.index.bridge.PersistentReaderBridge;
@@ -154,9 +154,8 @@ public abstract class InformationResource extends Resource {
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
-    @JSONTransient
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
@@ -182,6 +181,13 @@ public abstract class InformationResource extends Resource {
     @Type(type = "org.hibernate.type.StringClobType")
     @Lob
     private String licenseText;
+
+    @BulkImportField(label = "DOI")
+    @Field
+    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Column(name = "external_doi")
+    private String doi;
 
     @Column(name = "external_reference", nullable = true)
     @XmlTransient
@@ -214,14 +220,14 @@ public abstract class InformationResource extends Resource {
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(label = "Publisher")
     @JoinColumn(name = "publisher_id")
     @IndexedEmbedded
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
     @BulkImportField(label = "Publisher Location")
@@ -235,27 +241,30 @@ public abstract class InformationResource extends Resource {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Creator copyrightHolder;
 
+    public static final String INVESTIGATION_TYPE_INHERITANCE_TOGGLE = "inheriting_investigation_information";
+    public static final String SITE_NAME_INHERITANCE_TOGGLE = "inheriting_site_information";
+    public static final String MATERIAL_TYPE_INHERITANCE_TOGGLE = "inheriting_material_information";
+    public static final String OTHER_INHERITANCE_TOGGLE = "inheriting_other_information";
+    public static final String GEOGRAPHIC_INHERITANCE_TOGGLE = "inheriting_spatial_information";
+    public static final String CULTURE_INHERITANCE_TOGGLE = "inheriting_cultural_information";
+    public static final String TEMPORAL_INHERITANCE_TOGGLE = "inheriting_temporal_information";
+
     // downward inheritance sections
-    @Column(name = InvestigationType.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
+    @Column(name = INVESTIGATION_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation = false;
-    @Column(name = SiteNameKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
+    @Column(name = SITE_NAME_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSiteInformation = false;
-    @Column(name = MaterialKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
+    @Column(name = MATERIAL_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingMaterialInformation = false;
-    @Column(name = OtherKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
+    @Column(name = OTHER_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingOtherInformation = false;
-    @Column(name = CultureKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
-
+    @Column(name = CULTURE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingCulturalInformation = false;
 
-    @Column(name = GeographicKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = GEOGRAPHIC_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingSpatialInformation = false;
 
-    @Column(name = TemporalKeyword.INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = TEMPORAL_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation = false;
 
     @Column(name = "inheriting_note_information", nullable = false, columnDefinition = "boolean default FALSE")
@@ -466,7 +475,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    @JSONTransient
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
 
@@ -482,12 +490,10 @@ public abstract class InformationResource extends Resource {
 
     @XmlElementWrapper(name = "informationResourceFiles")
     @XmlElement(name = "informationResourceFile")
-    @JSONTransient
     public Set<InformationResourceFile> getInformationResourceFiles() {
         return informationResourceFiles;
     }
 
-    @JSONTransient
     @XmlTransient
     public InformationResourceFile getFirstInformationResourceFile() {
         if (getInformationResourceFiles().isEmpty()) {
@@ -496,7 +502,6 @@ public abstract class InformationResource extends Resource {
         return informationResourceFiles.iterator().next();
     }
 
-    @JSONTransient
     @XmlTransient
     public Set<InformationResourceFile> getActiveInformationResourceFiles() {
         HashSet<InformationResourceFile> files = new HashSet<>();
@@ -517,7 +522,6 @@ public abstract class InformationResource extends Resource {
         logger.debug("adding information resource file: {} ({})", informationResourceFile, informationResourceFiles.size());
     }
 
-    @JSONTransient
     @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
         // FIXME: this method will become increasingly expensive as the number of files increases
@@ -543,7 +547,6 @@ public abstract class InformationResource extends Resource {
         return latest;
     }
 
-    @JSONTransient
     @XmlTransient
     public InformationResourceFileVersion getLatestUploadedVersion() {
         Collection<InformationResourceFileVersion> latestUploadedVersions = getLatestUploadedVersions();
@@ -554,7 +557,6 @@ public abstract class InformationResource extends Resource {
         return getLatestUploadedVersions().iterator().next();
     }
 
-    @JSONTransient
     @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestUploadedVersions() {
         return getLatestVersions(VersionType.UPLOADED);
@@ -566,7 +568,6 @@ public abstract class InformationResource extends Resource {
     @Transient
     // @Boost(0.5f)
     @XmlTransient
-    @JSONTransient
     public List<InformationResourceFileVersion> getContent() {
         logger.trace("getContent");
         List<InformationResourceFile> files = getPublicFiles();
@@ -609,7 +610,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    @JSONTransient
     public boolean isPublicallyAccessible() {
         return getResourceAccessType() == ResourceAccessType.PUBLICALLY_ACCESSIBLE;
     }
@@ -811,14 +811,12 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    @JSONTransient
     @Override
     public boolean hasConfidentialFiles() {
         return !getConfidentialFiles().isEmpty();
     }
 
     @Transient
-    @JSONTransient
     @Override
     public boolean hasEmbargoedFiles() {
         for (InformationResourceFile file : getConfidentialFiles()) {
@@ -848,14 +846,12 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    @JSONTransient
     public List<InformationResourceFile> getConfidentialFiles() {
         return getFilesWithRestrictions(true);
     }
 
     @Override
     @XmlTransient
-    @JSONTransient
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
         sb.append(getCopyLocation()).append(" ").append(date);
@@ -863,7 +859,7 @@ public abstract class InformationResource extends Resource {
             sb.append(" ").append(getResourceProviderInstitution().getName());
         }
         sb.append(" ").append(getPublisherName());
-
+        sb.append(" ").append(getDoi());
         if (MapUtils.isNotEmpty(relatedDatasetData)) {
             for (String v : relatedDatasetData.values()) {
                 sb.append(v);
@@ -888,13 +884,11 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    @JSONTransient
     public List<InformationResourceFile> getPublicFiles() {
         return getFilesWithRestrictions(false);
     }
 
     @Override
-    @JSONTransient
     public boolean isValidForController() {
         if (date == null) {
             throw new TdarValidationException("informationResource.created_date_required", Arrays.asList(getResourceType()));
@@ -930,7 +924,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    @JSONTransient
     public boolean isInheritingSomeMetadata() {
         return (inheritingCulturalInformation || inheritingInvestigationInformation || inheritingMaterialInformation || inheritingOtherInformation ||
                 inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation || inheritingIdentifierInformation
@@ -938,7 +931,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    @JSONTransient
     @Override
     public Set<Obfuscatable> obfuscate() {
         // don't claim to inherit data from Projects which are inactive
@@ -965,7 +957,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public List<String> getCreatorRoleIdentifiers() {
         List<String> list = super.getCreatorRoleIdentifiers();
@@ -1009,7 +1000,6 @@ public abstract class InformationResource extends Resource {
 
     // shortcut for non-deleted, visible files
     @Transient
-    @JSONTransient
     @XmlTransient
     @IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
@@ -1027,7 +1017,6 @@ public abstract class InformationResource extends Resource {
 
     // shortcut for non-deleted, visible files
     @Transient
-    @JSONTransient
     @XmlTransient
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
@@ -1047,7 +1036,6 @@ public abstract class InformationResource extends Resource {
 
     // get the latest version of the first non-deleted thumbnail (or null)
     @Transient
-    @JSONTransient
     @XmlTransient
     public InformationResourceFileVersion getPrimaryThumbnail() {
         if (hasPrimaryThumbnail != null) {
@@ -1063,7 +1051,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @XmlTransient
-    @JSONTransient
     public List<InformationResourceFile> getNonDeletedFiles() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irf : getInformationResourceFiles()) {
@@ -1115,7 +1102,6 @@ public abstract class InformationResource extends Resource {
     };
 
     @XmlTransient
-    @JSONTransient
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
@@ -1127,7 +1113,6 @@ public abstract class InformationResource extends Resource {
     }
 
     @XmlTransient
-    @JSONTransient
     public List<InformationResourceFile> getFilesWithFatalProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
@@ -1175,4 +1160,13 @@ public abstract class InformationResource extends Resource {
             boolean inheritingIndividualAndInstitutionalCredit) {
         this.inheritingIndividualAndInstitutionalCredit = inheritingIndividualAndInstitutionalCredit;
     }
+
+    public String getDoi() {
+        return doi;
+    }
+
+    public void setDoi(String doi) {
+        this.doi = doi;
+    }
+
 }

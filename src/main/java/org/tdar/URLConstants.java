@@ -15,11 +15,12 @@ public interface URLConstants {
     String ENTITY_NAMESPACE = "browse/creators";
     String COLUMNS_RESOURCE_ID = "columns?id=${resource.id}&startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "view?id=${resource.id}";
+    String VIEW_RESOURCE_ID_AS_ID = "/resource/${id}";
     String MY_PROFILE = "/entity/user/myprofile";
 
     String CART_ADD = "/cart/add";
     String CART_REVIEW_PURCHASE = "/cart/review";
     String CART_REVIEW_UNAUTHENTICATED = "/cart/review-unauthenticated";
     String CART_PROCESS_PAYMENT_REQUEST = "/cart/process-payment-request";
-    
+
 }

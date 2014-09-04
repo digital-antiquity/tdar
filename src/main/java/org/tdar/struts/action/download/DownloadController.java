@@ -36,7 +36,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
     public String confirm() throws TdarActionException {
         getSessionData().clearPassthroughParameters();
 
-        DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this);
+        DownloadTransferObject dto = downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this);
         setInformationResource(dto.getInformationResource());
         if (dto.getResult() != DownloadResult.SUCCESS) {
             return ERROR;
@@ -61,7 +62,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
         if (Persistable.Base.isNotNullOrTransient(getInformationResourceId())) {
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null, isCoverPageIncluded(), this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this));
         getDownloadTransferObject().setAttachment(forceAttachment);
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
@@ -76,7 +78,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
         if (Persistable.Base.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(), this));
+        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
+                this));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

@@ -37,14 +37,10 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
 
     protected String inputResultName = INPUT;
 
-    // // Owner of the invoice. Typically the current user, though an administrator may create an invoice on behalf of owner.
-    // private TdarUser owner = new TdarUser();
-    // private Long ownerId;
-
     @Autowired
     protected transient RecaptchaService recaptchaService;
     // FIXME: this is unsafe, depends on order of initialization
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
 
     /**
      * Return a pending invoice if found in session scope
@@ -103,7 +99,7 @@ public abstract class AbstractCartController extends AuthenticationAware.Base im
     }
 
     /**
-     * Validates an invoices. If invoice is not valid,  this method adds an actionError <strong>and also changes the input result name to 'redirect-start'
+     * Validates an invoices. If invoice is not valid, this method adds an actionError <strong>and also changes the input result name to 'redirect-start'
      * </strong> (the assumption being that the user cannot correct the issue by doing anything other than going back to the start of the cart workflow).
      *
      * @return true if valid (invoice is not null), otherwise false

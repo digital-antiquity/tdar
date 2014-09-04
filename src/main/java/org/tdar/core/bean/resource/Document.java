@@ -20,8 +20,6 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.configuration.JSONTransient;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
@@ -95,12 +93,6 @@ public class Document extends InformationResource {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
-
-    @BulkImportField(label = "DOI")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
-    private String doi;
 
     @BulkImportField(label = "Start Page", order = 10)
     @Column(name = "start_page")
@@ -220,14 +212,6 @@ public class Document extends InformationResource {
         this.numberOfPages = numberOfPages;
     }
 
-    public String getDoi() {
-        return doi;
-    }
-
-    public void setDoi(String doi) {
-        this.doi = doi;
-    }
-
     public String getStartPage() {
         return startPage;
     }
@@ -276,7 +260,6 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @JSONTransient
     @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
@@ -286,7 +269,7 @@ public class Document extends InformationResource {
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+
     @Override
     // TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {
@@ -338,7 +321,7 @@ public class Document extends InformationResource {
     @Override
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").append(getDoi()).
+        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").
                 append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
                 append(getSeriesName());
         return sb.toString();

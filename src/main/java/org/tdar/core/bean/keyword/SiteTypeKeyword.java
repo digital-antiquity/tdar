@@ -33,17 +33,16 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "site_type_keyword", indexes = {
         @Index(name = "sitetype_appr", columnList = "approved, id") })
 @Indexed(index = "Keyword")
-@Check(constraints="label <> ''")
-@Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL,region="org.tdar.core.bean.keyword.SiteTypeKeyword")
+@Check(constraints = "label <> ''")
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteTypeKeyword")
 @Cacheable
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = 4043710177198125088L;
-    public static final String INHERITANCE_TOGGLE = SiteNameKeyword.INHERITANCE_TOGGLE;
     private boolean approved;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private SiteTypeKeyword parent;
 
     @XmlAttribute
@@ -70,7 +69,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage=CacheConcurrencyStrategy.TRANSACTIONAL)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
 
     @Override
@@ -84,6 +83,11 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     public String getSynonymFormattedName() {
         return getLabel();
+    }
+
+    @Override
+    public String getUrlNamespace() {
+        return KeywordType.SITE_TYPE_KEYWORD.getUrlNamespace();
     }
 
 }

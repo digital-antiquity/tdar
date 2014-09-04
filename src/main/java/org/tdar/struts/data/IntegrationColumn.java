@@ -103,8 +103,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlElement(name = "mappingRule")
     public List<CodingRule> getCodingRules() {
         List<CodingRule> rules = new ArrayList<CodingRule>();
-        for (DataTableColumn column : getColumns()) {
-            if (column.getDefaultCodingSheet() == null) {
+        columns.removeAll(Collections.singletonList(null));
+        for (DataTableColumn column : columns) {
+            if (column != null && column.getDefaultCodingSheet() == null) {
                 continue;
             }
             rules.addAll(column.getDefaultCodingSheet().getCodingRules());
@@ -115,7 +116,6 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")
     public List<OntologyNode> getFilteredOntologyNodes() {
-        filteredOntologyNodes.removeAll(Collections.singletonList(null));
         return filteredOntologyNodes;
     }
 
@@ -140,8 +140,8 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             // the intervals (shorter is better). maintain the parent as the shortest.
             for (OntologyNode node : getOntologyNodesForSelect()) {
                 int distance = Integer.MAX_VALUE;
-                for (OntologyNode filteredOntologyNode : getFilteredOntologyNodes()) {
-                    if (node.isChildOf(filteredOntologyNode)) {
+                for (OntologyNode filteredOntologyNode : filteredOntologyNodes) {
+                    if (filteredOntologyNode != null && node.isChildOf(filteredOntologyNode)) {
                         int localDistance = filteredOntologyNode.getIntervalEnd() - filteredOntologyNode.getIntervalStart();
                         if (distance > localDistance) {
                             parentMap.put(node, filteredOntologyNode);
@@ -208,7 +208,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
             return null;
         }
 
-        if (getFilteredOntologyNodes().contains(child)) {
+        if (filteredOntologyNodes.contains(child)) {
             return child;
         }
 

@@ -93,6 +93,15 @@ public class AuthenticationService {
         return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
     }
 
+    /*
+     * Returns a list of the people in the @link groupMembershipCache which is useful in tracking what's going on with tDAR at a given moment. This would be
+     * helpful for
+     * a shutdown hook, as well as, for knowing when it's safe to deploy.
+     */
+    public synchronized List<TdarUser> getCurrentlyActiveUsers() {
+        return new ArrayList<>(groupMembershipCache.keySet());
+    }
+
     public List<TdarGroup> findGroupMemberships(TdarUser user) {
         String[] groups = getProvider().findGroupMemberships(user);
         logger.trace("Found {} memberships for {}", Arrays.asList(groups), user.getUsername());
@@ -236,8 +245,8 @@ public class AuthenticationService {
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
     public void createAuthenticationToken(TdarUser person, SessionData session) {
-//        AuthenticationToken token = AuthenticationToken.create(person);
-//        personDao.save(token);
+        // AuthenticationToken token = AuthenticationToken.create(person);
+        // personDao.save(token);
         session.setTdarUser(person);
     }
 
@@ -391,6 +400,7 @@ public class AuthenticationService {
             Email email = new Email();
             email.setSubject(subject);
             email.addToAddress(person.getEmail());
+            email.setUserGenerated(false);
             emailService.queueWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, email);
         } catch (Exception e) {
             // we don't want to ruin the new user's experience with a nasty error message...
@@ -434,9 +444,9 @@ public class AuthenticationService {
 
     @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-//        AuthenticationToken token = sessionData.getAuthenticationToken();
-//        token.setSessionEnd(new Date());
-//        personDao.update(token);
+        // AuthenticationToken token = sessionData.getAuthenticationToken();
+        // token.setSessionEnd(new Date());
+        // personDao.update(token);
         sessionData.clearAuthenticationToken();
         getAuthenticationProvider().logout(servletRequest, servletResponse);
     }
@@ -511,12 +521,12 @@ public class AuthenticationService {
     public void satisfyUserPrerequisites(SessionData sessionData, Collection<AuthNotice> notices) {
         // we actually need to update two person instances: the persisted user record, and the detached user
         // associated with the session. We hide this detail from the caller.
-//        TdarUser detachedUser = sessionData.getTdarUser();
+        // TdarUser detachedUser = sessionData.getTdarUser();
         TdarUser persistedUser = personDao.find(TdarUser.class, sessionData.getTdarUserId());
-//        satisfyPrerequisites(detachedUser, notices);
+        // satisfyPrerequisites(detachedUser, notices);
         satisfyPrerequisites(persistedUser, notices);
         personDao.saveOrUpdate(persistedUser);
-//        logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
+        // logger.trace(" detachedUser:{}, tos:{}, ca:{}", detachedUser, detachedUser.getTosVersion(), detachedUser.getContributorAgreementVersion());
         logger.trace(" persistedUser:{}, tos:{}, ca:{}", persistedUser, persistedUser.getTosVersion(), persistedUser.getContributorAgreementVersion());
     }
 

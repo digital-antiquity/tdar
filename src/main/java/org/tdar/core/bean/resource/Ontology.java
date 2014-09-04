@@ -31,7 +31,7 @@ import org.tdar.core.bean.SupportsResource;
 /**
  * $Id$
  * 
- * OntologyS in tDAR are InformationResources with a collection of OntologyNodeS that can be categorized. 
+ * OntologyS in tDAR are InformationResources with a collection of OntologyNodeS that can be categorized.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision $

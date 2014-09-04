@@ -29,14 +29,13 @@
             </td>
 
         </#macro>
-
         <div id='fixedList' class="affix-top no-indent span12 row navbar-static" data-offset-top="250" data-offset-bottom="250" data-spy="affix">
             <h4>Each Column Below will be a Column In Excel</h4>
             <div class="btn-group pull-right">
                 <span class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add Column</span>
-                <span class="btn" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
+                <span class="btn <#if (sharedOntologies?size < 1)>disabled</#if>" id="autoselect"><i class=" icon-ok-circle"></i> Auto-select integratable columns</span>
                 <div class="btn-group">
-                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                      <a class="btn dropdown-toggle <#if (sharedOntologies?size < 1)>disabled</#if>" data-toggle="dropdown" href="#">
                         Add Integration Column
                         <span class="caret"></span>
                       </a>

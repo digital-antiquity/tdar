@@ -106,7 +106,7 @@ public class PairtreeFilestore extends BaseFilestore {
             if (version.getType() == Type.RESOURCE) {
                 updateVersionInfo(outFile, version);
             }
-            
+
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
                 version.setChecksumType(digest.getAlgorithm());
@@ -351,6 +351,5 @@ public class PairtreeFilestore extends BaseFilestore {
             }
         }
     }
-
 
 }

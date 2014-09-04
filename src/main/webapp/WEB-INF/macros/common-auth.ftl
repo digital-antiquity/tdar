@@ -7,13 +7,10 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart" embedded=true>
+<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.chromeAutofillWorkaround />
-<#if embedded>
-    <@common.embeddedAntiSpam bean=beanPrefix />
-<#else>
     <@common.antiSpam  />
-</#if>    
+
     <#local level = 1/>
     <#local showMinimal = true />
     <#if detail == 'verbose'>
@@ -130,13 +127,9 @@
 </#macro>
 
 
-<#macro login showLegend=false beanPrefix="userLogin" embedded=true>
-<#if embedded>
-    <@common.embeddedAntiSpam bean=beanPrefix />
-<#else>
-    <@common.antiSpam  />
-</#if>    
+<#macro login showLegend=false beanPrefix="userLogin">
 
+    <@common.antiSpam  />
     <#if showLegend>
         <legend>Login</legend>
     </#if>

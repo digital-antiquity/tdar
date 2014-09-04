@@ -30,7 +30,7 @@ public class XMLDocumentResult implements Result {
 
     @Autowired
     XmlService xmlService;
-    
+
     public XMLDocumentResult() {
         super();
     }
@@ -59,7 +59,7 @@ public class XMLDocumentResult implements Result {
         }
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
-        resp.setStatus(getStatusCode() );
+        resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }

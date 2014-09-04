@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -100,7 +101,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
-    private List<EmailMessageType> emailTypes = Arrays.asList(EmailMessageType.values());
+    private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
+
+    private String submitterProperName = "";
 
     @Autowired
     private XmlService xmlService;
@@ -176,7 +179,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceCollection> viewableResourceCollections;
 
-
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
         if (isViewPage) {
@@ -212,11 +214,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void loadCustomMetadata() throws TdarActionException {
     }
 
-
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
     }
-    
+
     public String getGoogleScholarTags() throws Exception {
         ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
         StringWriter sw = new StringWriter();
@@ -226,8 +227,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return sw.toString();
     }
-    
-    
+
     @Override
     public String loadAddMetadata() {
         if (Persistable.Base.isNotNullOrTransient(getResource())) {
@@ -243,7 +243,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 setAccountId(getResource().getAccount().getId());
             }
             for (Account account : getActiveAccounts()) {
-                getLogger().info(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
+                getLogger().trace(" - active accounts to {} files: {} mb: {}", account, account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb());
             }
         }
         return SUCCESS;
@@ -280,6 +280,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
+        setupSubmitterField();
         return super.save();
     }
 
@@ -312,13 +313,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @HttpsOnly
     @Override
     public String add() throws TdarActionException {
+        accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
+        setupSubmitterField();
+        // if user has no invoices/funds to bill against, redirect to cart page
         if (!isAbleToCreateBillableItem()) {
+            addActionMessage(getText("resourceController.requires_funds"));
             return BILLING;
         }
+
+        // if user could otherwise create a billable item but isn't a contributor (an unlikely event), redirect to the profile page so that they can change
+        // their status.
         if (!isContributor()) {
             addActionMessage(getText("resourceController.must_be_contributor"));
             return CONTRIBUTOR;
         }
+
         return super.add();
     }
 
@@ -329,7 +338,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @HttpsOnly
     @Override
     public String edit() throws TdarActionException {
+        setupSubmitterField();
         return super.edit();
+    }
+
+    private void setupSubmitterField() {
+        if (Persistable.Base.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
+            if (getSubmitter().getFirstName() != null && getSubmitter().getLastName() != null)
+                setSubmitterProperName(getSubmitter().getProperName());
+        } else {
+            setSubmitterProperName(getAuthenticatedUser().getProperName());
+        }
     }
 
     @Override
@@ -388,8 +407,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setupAccountForSaving();
 
         if (SUCCESS.equals(actionMessage)) {
-            // accountService.getResourceEvaluator().evaluateResources(getResource());
             if (shouldSaveResource()) {
+                if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                    getResource().setStatus(getResource().getPreviousStatus());
+                }
                 updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
             }
         } else {
@@ -420,13 +441,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return true;
     }
 
+    /**
+     * Returns true if authuser is able to create billable items, contributor status notwithstanding.
+     * 
+     * @return
+     */
     @Override
     public boolean isAbleToCreateBillableItem() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || ((isContributor() == true)
-                && accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true))) {
-            return true;
-        }
-        return false;
+        return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType()));
     }
 
     // return a persisted annotation based on incoming pojo
@@ -488,7 +510,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return result;
     }
-
 
     protected void saveKeywords() {
         getLogger().debug("siteNameKeywords=" + siteNameKeywords);
@@ -653,27 +674,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (creditProxies != null) {
             allProxies.addAll(creditProxies);
         }
-        getLogger().info("ResourceCreators before DB lookup: {} ", allProxies);
-        int sequence = 0;
-        List<ResourceCreator> incomingResourceCreators = new ArrayList<>();
-        // convert the list of proxies to a list of resource creators
-        for (ResourceCreatorProxy proxy : allProxies) {
-            if ((proxy != null) && proxy.isValid()) {
-                ResourceCreator resourceCreator = proxy.getResourceCreator();
-                resourceCreator.setSequenceNumber(sequence++);
-                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
-
-                entityService.findOrSaveResourceCreator(resourceCreator);
-                incomingResourceCreators.add(resourceCreator);
-                getLogger().trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
-            } else {
-                getLogger().trace("can't create creator from proxy {} {}", proxy);
-            }
-        }
-
-        // FIXME: Should this throw errors?
-        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, incomingResourceCreators,
-                getResource().getResourceCreators(), ResourceCreator.class);
+        resourceService.saveResourceCreatorsFromProxies(allProxies, getPersistable(), shouldSaveResource());
     }
 
     public void loadBasicMetadata() {
@@ -707,7 +708,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
-            if (au != null && au.getUser() != null ) {
+            if (au != null && au.getUser() != null) {
                 name = au.getUser().getProperName();
             }
             getAuthorizedUsersFullNames().add(name);
@@ -716,7 +717,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();
     }
-    
 
     public void loadBasicViewMetadata() {
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
@@ -877,7 +877,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return uncontrolledCultureKeywords;
     }
-
 
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer
@@ -1198,7 +1197,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     protected void loadCustomViewMetadata() throws TdarActionException {
         // TODO Auto-generated method stub
-        
+
     }
 
     public List<EmailMessageType> getEmailTypes() {
@@ -1207,6 +1206,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setEmailTypes(List<EmailMessageType> emailTypes) {
         this.emailTypes = emailTypes;
+    }
+
+    public String getSubmitterProperName() {
+        return submitterProperName;
+    }
+
+    public void setSubmitterProperName(String submitterProperName) {
+        this.submitterProperName = submitterProperName;
     }
 
 }

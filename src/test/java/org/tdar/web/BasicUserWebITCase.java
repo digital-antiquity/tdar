@@ -164,4 +164,5 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = false;");
         }
     }
+
 }

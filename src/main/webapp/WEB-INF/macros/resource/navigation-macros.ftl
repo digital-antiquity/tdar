@@ -91,6 +91,31 @@ navigation freemarker macros
         </#if>
     </#macro>
 
+
+<#-- emit toolbar for use on a "keyword" page
+    @param current:string name of the current struts action (e.g. edit/view/save)
+    @requires keywordType:string
+    @requires sessionData:SessionData
+    @requires authenticatedUser:Person
+ -->
+
+    <#macro keywordToolbar current>
+
+        <#if editor>
+            <div class="span12 resource-nav  screen" id="toolbars" parse="true">
+                <ul>
+                    <@makeLink keyword.urlNamespace "" "view" "view" current true />
+
+            <#if "edit" != current>
+                    <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />
+                <#else>
+                    <@makeLink "entity/keyword" "edit" "edit" "edit" current true />
+                </#if>
+                </ul>
+            </div>
+        </#if>
+    </#macro>
+
 <#-- Emit a link to a page which corresponds  specified namespace and action and resourceId.  For example, <@makeLink "coding-sheet" "add">
     will emit <a href="http://{hostname}/coding-sheet/add">{label}</a>.
 
@@ -122,12 +147,18 @@ navigation freemarker macros
         <#if disabled>
         <span class="disabled">
         <#else>
-        <a href="<#compress><@s.url value="/${namespace}/${action}">
+        <#local localAction="/" + action />
+        <#if localAction == '/'>
+            <#local localAction="" />
+        </#if>
+        <a href="<#compress><@s.url value="/${namespace}${localAction}">
 	        <#if includeResourceId>
 	            <#if persistable??>
 	                <#local _id = persistable.id />
-	            <#else>
-	                <#local _id = creator.id />
+                <#elseif creator?? >
+                    <#local _id = creator.id />
+                <#elseif keyword?? >
+                    <#local _id = keyword.id />
 	            </#if>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>

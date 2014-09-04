@@ -42,7 +42,7 @@
                         <legend>Register</legend>
                         <div class="authpane">
                             <div class="authfields">
-                                <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false  embedded=false />
+                                <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false />
                             </div>
                             <div class="form-actions">
                                 <input type="submit" class='submitButton tdar-button' name="submitAction" value="Register and Continue">
@@ -63,7 +63,7 @@
                 </fieldset>
                 <div class="authpane">
                     <div class="authfields">
-                        <@auth.login showLegend=false embedded=false >
+                        <@auth.login showLegend=false>
 
                     </div>
                     <div class="form-actions">

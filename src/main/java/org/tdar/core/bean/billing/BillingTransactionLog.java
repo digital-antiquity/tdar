@@ -6,7 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+
 
 //import net.sf.json.JSONObject;
 //import net.sf.json.JsonConfig;
@@ -34,6 +37,7 @@ public class BillingTransactionLog extends Base {
 
     @NotNull
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice
 
@@ -74,12 +78,9 @@ public class BillingTransactionLog extends Base {
         this.transactionId = transactionId;
     }
 
-    // public Invoice getInvoice() {
-    // return invoice;
-    // }
-    //
-    // public void setInvoice(Invoice invoice) {
-    // this.invoice = invoice;
-    // }
+    @Override
+    public String toString() {
+        return String.format("TransactionLog (%s) - %s", getId(), getTransactionId());
+    }
 
 }

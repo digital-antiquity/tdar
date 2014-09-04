@@ -10,11 +10,12 @@ ${message}
 ---
 
 You may correspond with ${from.properName} via ${from.email}.  To make 
-edits to your tDAR resource, log-in to tDAR and visit ${baseUrl}/${resource.urlNamespace}/${resource.id?c}.  
+edits to your ${siteAcronym} resource, log in to ${siteAcronym} and visit ${baseUrl}/${resource.urlNamespace}/${resource.id?c}.  
 Select the edit tab at the top of the page, make any changes, and press save. 
 
 Kind regards,
 
-Staff at The Center for Digital Antiquity
+Staff at ${serviceProvider}
 
+---------
 Note: please do not reply to this automated email

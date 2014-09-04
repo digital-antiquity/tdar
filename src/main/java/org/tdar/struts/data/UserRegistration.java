@@ -9,6 +9,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -33,7 +34,7 @@ public class UserRegistration extends UserAuthData {
     public UserRegistration() {
         this(new AntiSpamHelper());
     }
-    
+
     public String getPrefix() {
         return "registration.";
     }
@@ -45,7 +46,7 @@ public class UserRegistration extends UserAuthData {
         setH(h);
     }
 
-    public ErrorTransferObject validate(AuthenticationService authService) {
+    public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchService) {
 
         ErrorTransferObject errors = new ErrorTransferObject();
 
@@ -114,7 +115,7 @@ public class UserRegistration extends UserAuthData {
             errors.getActionErrors().add("userAccountController.error_passwords_dont_match");
         }
 
-        checkForSpammers(errors, false);
+        checkForSpammers(errors, false, recaptchService);
         return errors;
     }
 

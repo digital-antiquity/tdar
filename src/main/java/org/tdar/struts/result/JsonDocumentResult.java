@@ -63,7 +63,7 @@ public class JsonDocumentResult implements Result {
     public void setStream(String stream) {
         this.stream = stream;
     }
-    
+
     private ActionInvocation invocation;
 
     @Override
@@ -81,9 +81,9 @@ public class JsonDocumentResult implements Result {
 
         if (jsonObject_ != null) {
             if (jsonObject_ instanceof Map && invocation.getAction() instanceof TdarActionSupport) {
-                TdarActionSupport tas = (TdarActionSupport)invocation.getAction();
-                Map<String, Object> result = (Map<String, Object>)jsonObject_;
-                Map<String, Object> errors = (Map<String, Object>)result.get(ERRORS_KEY);
+                TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
+                Map<String, Object> result = (Map<String, Object>) jsonObject_;
+                Map<String, Object> errors = (Map<String, Object>) result.get(ERRORS_KEY);
                 if (errors == null) {
                     errors = new HashMap<>();
                     result.put(ERRORS_KEY, errors);
@@ -100,11 +100,11 @@ public class JsonDocumentResult implements Result {
                     errors.put(FIELD_ERRORS, tas.getFieldErrors());
                 }
             }
-            
+
             String jsonForStream = xmlService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
         }
-        
+
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
         resp.setStatus(getStatusCode());
@@ -117,9 +117,8 @@ public class JsonDocumentResult implements Result {
         return object_;
     }
 
-
     private Class<?> getJsonViewValue() {
-        Class<?> object_ = (Class<?>)invocation.getStack().findValue(jsonView);
+        Class<?> object_ = (Class<?>) invocation.getStack().findValue(jsonView);
         return object_;
     }
 

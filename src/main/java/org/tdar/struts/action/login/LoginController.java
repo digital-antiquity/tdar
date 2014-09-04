@@ -53,7 +53,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Autowired
     private RecaptchaService recaptchaService;
-    private AntiSpamHelper h = new AntiSpamHelper(recaptchaService);
+    private AntiSpamHelper h = new AntiSpamHelper();
     private UserLogin userLogin = new UserLogin(h);
 
     @Autowired
@@ -90,7 +90,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     @Actions(
     {
             @Action(value = "process",
-//                    interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+                    // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
                             @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),
@@ -180,7 +180,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = userLogin.validate(authorizationService);
+        ErrorTransferObject errors = userLogin.validate(authorizationService, recaptchaService);
         processErrorObject(errors);
 
         if (!isPostRequest() || errors.isNotEmpty()) {

@@ -86,7 +86,6 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         return SUCCESS;
     }
 
-
     @Override
     public void prepare() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
@@ -95,7 +94,7 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
     }
-    
+
     public String getJsonStats() {
         String json = "null";
         // FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this? Also, why bail if only one is null?
@@ -111,7 +110,6 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         }
         return json;
     }
-
 
     public List<ResourceRevisionLog> getLogEntries() {
         return logEntries;
@@ -153,21 +151,17 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         this.id = id;
     }
 
-
     public Resource getResource() {
         return resource;
     }
-
 
     public void setResource(Resource resource) {
         this.resource = resource;
     }
 
-
     public Set<ResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
-
 
     public void setEffectiveResourceCollections(Set<ResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;

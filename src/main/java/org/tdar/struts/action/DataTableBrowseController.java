@@ -1,8 +1,6 @@
 package org.tdar.struts.action;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -20,6 +18,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 @ParentPackage("secured")
 @Component
@@ -32,7 +31,6 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     private Long id;
     private Integer recordsPerPage = 50;
     private Integer startRecord = 0;
-    private List<List<String>> results = Collections.emptyList();
     private String callback;
     private int totalRecords;
     private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
@@ -52,6 +50,7 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
                     @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" })
             })
+    @HttpForbiddenErrorResponseOnly
     public String getDataResults() {
         if (Persistable.Base.isNullOrTransient(id)) {
             return ERROR;
@@ -67,18 +66,10 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }
             setResultsWrapper(selectAllFromDataTable);
-            setResults(getResultsWrapper().getResults());
+            // getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
         setJsonResult(getResultsWrapper());
         return SUCCESS;
-    }
-
-    public List<List<String>> getResults() {
-        return results;
-    }
-
-    public void setResults(List<List<String>> results) {
-        this.results = results;
     }
 
     public Integer getStartRecord() {
