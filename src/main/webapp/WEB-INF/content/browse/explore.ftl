@@ -86,24 +86,24 @@
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
     <#list investigationTypes?sort as keyword>
-<#--         <@_searchFor keyword /> -->
-        <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence />
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].investigationTypeIdLists[0]" investigationType.id investigationType.label "li" investigationType.occurrence /> -->
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul class="inline">
     <#list siteTypeKeywords?sort as keyword>
-<#--         <@_searchFor keyword />-->
-        <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> 
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].approvedSiteTypeIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
 <h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
-<#--        <@_searchFor keyword />-->
-         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> 
+        <@_searchFor keyword />
+<#--         <@searchFor "groups[0].approvedCultureKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
@@ -111,8 +111,8 @@
 <h2>Browse by Material Type</h2>
 <ul class="inline">
     <#list materialTypes?sort as keyword>
-<#--        <@_searchFor keyword />-->
-          <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> 
+        <@_searchFor keyword />
+<#--          <@searchFor "groups[0].materialKeywordIdLists[0]" keyword.id keyword.label "li" keyword.occurrence /> -->
      </#list>
 </ul>
 
