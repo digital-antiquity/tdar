@@ -14,7 +14,11 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -552,5 +556,13 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
         logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
         logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+    }
+
+    public Number findCountOfFlaggedResourcesInAccount(Account account) {
+        Criteria criteria = getCriteria(Resource.class).add(Restrictions.eq("status", Status.FLAGGED_ACCOUNT_BALANCE)).setProjection(Projections.rowCount());
+        Number result = (Number) criteria.uniqueResult();
+        return result;
+        // TODO Auto-generated method stub
+        
     }
 }
