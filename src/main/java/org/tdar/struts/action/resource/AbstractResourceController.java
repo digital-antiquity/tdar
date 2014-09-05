@@ -165,7 +165,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private Set<Account> activeAccounts;
+    private List<Account> activeAccounts;
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -235,7 +235,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
-            setActiveAccounts(new HashSet<>(determineActiveAccounts()));
+            setActiveAccounts(new ArrayList<>(determineActiveAccounts()));
             if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -1046,14 +1046,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.accountId = accountId;
     }
 
-    public Set<Account> getActiveAccounts() {
+    public List<Account> getActiveAccounts() {
         if (activeAccounts == null) {
-            activeAccounts = new HashSet<>(determineActiveAccounts());
+            activeAccounts = new ArrayList<>(determineActiveAccounts());
         }
         return activeAccounts;
     }
 
-    public void setActiveAccounts(Set<Account> activeAccounts) {
+    public void setActiveAccounts(List<Account> activeAccounts) {
         this.activeAccounts = activeAccounts;
     }
 
