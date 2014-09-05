@@ -111,20 +111,6 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     /*
      * (non-Javadoc)
      * 
-     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#processResponse(java.util.Map)
-     */
-    @Override
-    public NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters) {
-        logger.info("parameters: {}  ", parameters);
-        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretResponseWord());
-        response.setValues(parameters);
-
-        return response;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see
      * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate
      * )
@@ -162,8 +148,7 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
 
     @Override
     public TransactionResponse setupTransactionResponse(Map<String, String[]> values) {
-        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretResponseWord());
-        response.setValues(values);
+        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretResponseWord(), values);
         return response;
     }
 }

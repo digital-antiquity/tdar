@@ -11,8 +11,6 @@ public interface PaymentTransactionProcessor {
 
     String getTransactionPostUrl();
 
-    NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters);
-
     boolean validateResponse(TransactionResponse response);
 
     Invoice locateInvoice(TransactionResponse response);
