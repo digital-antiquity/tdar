@@ -144,11 +144,6 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
     public Persistable getPersistable() {
         return getResource();
     }

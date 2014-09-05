@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.billing;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,11 +28,12 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -206,35 +207,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @Override
-    public boolean isViewable() throws TdarActionException {
-        getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
-            return false;
-        }
-
-        if (authorizationService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-
-        if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
     public Class<Account> getPersistableClass() {
         return Account.class;
-    }
-
-    @Override
-    public String loadViewMetadata() {
-        setAccountGroup(accountService.getAccountGroup(getAccount()));
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
-        getResources().addAll(getAccount().getResources());
-        Persistable.Base.sortByUpdatedDate(getResources());
-        return SUCCESS;
     }
 
     public Account getAccount() {
@@ -369,6 +343,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setInvoices(List<Invoice> invoices) {
         this.invoices = invoices;
+    }
+
+    @Override
+    public String loadEditMetadata() throws TdarActionException {
+        return SUCCESS;
     }
 
 }

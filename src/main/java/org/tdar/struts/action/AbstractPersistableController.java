@@ -35,7 +35,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.struts.data.AntiSpamHelper;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -57,7 +56,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
-    public static final String SAVE_SUCCESS_PATH = "${saveSuccessPath}?id=${persistable.id}";
+    public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
 
@@ -148,33 +147,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public Collection<? extends Persistable> getDeleteIssues() {
         return Collections.emptyList();
-    }
-
-    @SkipValidation
-    @HttpOnlyIfUnauthenticated
-    @Action(value = VIEW,
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-            results = {
-                    @Result(name = SUCCESS, location = "view.ftl"),
-                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
-                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
-            })
-    public String view() throws TdarActionException {
-        String resultName = SUCCESS;
-        // genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
-
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-
-        resultName = loadViewMetadata();
-        loadExtraViewMetadata();
-        return resultName;
-    }
-
-    /*
-     * override this to load extra metadata for the "view"
-     */
-    public void loadExtraViewMetadata() {
-
     }
 
     @SkipValidation
@@ -415,9 +387,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return loadEditMetadata();
     }
 
-    public String loadEditMetadata() throws TdarActionException {
-        return loadViewMetadata();
-    }
+    public abstract String loadEditMetadata() throws TdarActionException;
 
     public enum RequestType {
         EDIT(true),
@@ -425,7 +395,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         DELETE(true),
         MODIFY_EXISTING(true),
         SAVE(true),
-        VIEW(false),
+//        VIEW(false),
         NONE(false);
         private final boolean authenticationRequired;
 
@@ -437,17 +407,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return authenticationRequired;
         }
 
-    }
-
-    /**
-     * Generic method enabling override for whether a record is viewable
-     * 
-     * @return boolean whether the user can VIEW this resource
-     * @throws TdarActionException
-     */
-    @Override
-    public boolean isViewable() throws TdarActionException {
-        return true;
     }
 
     @Override
@@ -567,8 +526,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public void setPersistableClass(Class<P> persistableClass) {
         this.persistableClass = persistableClass;
     }
-
-    public abstract String loadViewMetadata() throws TdarActionException;
 
     protected boolean isNullOrNew() {
         return !isPersistableIdSet();

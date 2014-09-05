@@ -48,9 +48,10 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.CollectionController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.collection.CollectionViewAction;
 import org.tdar.struts.action.search.BrowseCollectionController;
 
 import com.opensymphony.xwork2.Action;
@@ -228,24 +229,19 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
 
-        controller = generateNewInitializedController(CollectionController.class, testPerson);
-        controller.setId(id);
-        controller.prepare();
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class, testPerson);
+        vc.setId(id);
+        vc.prepare();
         try {
-            controller.view();
+            vc.view();
         } catch (TdarActionException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        logger.info("results: {} ", controller.getResults());
-//        logger.info("results: {} ", controller.getResources());
-        assertTrue(controller.getResults().contains(normal));
-        assertTrue(controller.getResults().contains(draft));
-        genericService.delete(controller.getResourceCollection().getAuthorizedUsers());
-        // return null;
-        // }
-        //
-        // });
+        logger.info("results: {} ", vc.getResults());
+        assertTrue(vc.getResults().contains(normal));
+        assertTrue(vc.getResults().contains(draft));
+        genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
 
     @Test
@@ -539,13 +535,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.save();
 
         Long id = rc.getId();
-        controller = generateNewController(CollectionController.class);
-        controller.setSessionData(getSessionData());
-        controller.setId(id);
-        controller.prepare();
-        controller.view();
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setSessionData(getSessionData());
+        vc.setId(id);
+        vc.prepare();
+        vc.view();
 
-        ResourceCollection rc2 = controller.getResourceCollection();
+        ResourceCollection rc2 = vc.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
 
@@ -630,38 +626,30 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
         assertFalse(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
-        controller = generateNewController(CollectionController.class);
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         // TESTING ANONYMOUS USER
-        initAnonymousUser(controller);
-        controller.setId(parentCollection.getId());
-        controller.prepare();
-        assertEquals(Action.SUCCESS, controller.view());
-        collections = controller.getCollections();
+        initAnonymousUser(vc);
+        vc.setId(parentCollection.getId());
+        vc.prepare();
+        assertEquals(Action.SUCCESS, vc.view());
+        collections = vc.getCollections();
         assertTrue(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
-        assertEquals(1, controller.getResults().size());
+        assertEquals(1, vc.getResults().size());
 
         // TESTING MORE ADVANCED VIEW RIGHTS
-        logger.info("{}", controller.getActionErrors());
-        controller = generateNewController(CollectionController.class);
-        init(controller, testPerson);
-        controller.setId(parentCollection.getId());
-        controller.prepare();
-        assertEquals(Action.SUCCESS, controller.view());
-        collections = controller.getCollections();
+        logger.info("{}", vc.getActionErrors());
+        vc = generateNewController(CollectionViewAction.class);
+        init(vc, testPerson);
+        vc.setId(parentCollection.getId());
+        vc.prepare();
+        assertEquals(Action.SUCCESS, vc.view());
+        collections = vc.getCollections();
         assertEquals(2, collections.size());
         assertTrue(collections.contains(childCollection));
         assertTrue(collections.contains(childCollectionHidden));
 
-        logger.info("{}", controller.getActionErrors());
-
-        // controller =
-        // generateNewInitializedController(CollectionController.class);
-        // controller.setId(parentCollection.getId());
-        // controller.prepare();
-        // assertEquals(TdarActionSupport.SUCCESS, controller.view());
-        // assertTrue(collections.contains(childCollection));
-        // assertTrue(collections.contains(childCollectionHidden));
+        logger.info("{}", vc.getActionErrors());
 
         evictCache();
     }
@@ -800,12 +788,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(document.getResourceCollections().contains(collection1));
         assertEquals(1, collection1.getResources().size());
         searchIndexService.index(document);
-        CollectionController controller2 = generateNewInitializedController(CollectionController.class);
-        controller2.setId(collection1.getId());
-        controller2.prepare();
-        assertEquals(Action.SUCCESS, controller2.view());
-        logger.info("results: {}", controller2.getResults());
-        assertTrue(controller2.getResults().contains(document));
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setId(collection1.getId());
+        vc.prepare();
+        assertEquals(Action.SUCCESS, vc.view());
+        logger.info("results: {}", vc.getResults());
+        assertTrue(vc.getResults().contains(document));
     }
 
     @Test
@@ -1017,20 +1005,20 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         collection.setOwner(getAdminUser());
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
         searchIndexService.flushToIndexes();
-        controller = generateNewInitializedController(CollectionController.class);
-        controller.setId(collection.getId());
-        controller.prepare();
-        logger.info(controller.view());
-        assertTrue(controller.getResults().contains(draftDocument));
-        assertTrue(controller.getResults().contains(activeDocument));
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setId(collection.getId());
+        vc.prepare();
+        logger.info(vc.view());
+        assertTrue(vc.getResults().contains(draftDocument));
+        assertTrue(vc.getResults().contains(activeDocument));
         
-        controller = generateNewController(CollectionController.class);
-        initAnonymousUser(controller);
-        controller.setId(collection.getId());
-        controller.prepare();
-        controller.view();
-        assertFalse(controller.getResults().contains(draftDocument));
-        assertTrue(controller.getResults().contains(activeDocument));
+        vc = generateNewController(CollectionViewAction.class);
+        initAnonymousUser(vc);
+        vc.setId(collection.getId());
+        vc.prepare();
+        vc.view();
+        assertFalse(vc.getResults().contains(draftDocument));
+        assertTrue(vc.getResults().contains(activeDocument));
     }
 
     @Test
@@ -1169,11 +1157,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Long rcid = rc.getId();
         searchIndexService.flushToIndexes();
         // so, wait, is this resource actually in the collection?
-        controller = generateNewInitializedController(CollectionController.class);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
-        assertEquals("okay, we should have one resource in this collection now", 1, controller.getResults().size());
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
+        assertEquals("okay, we should have one resource in this collection now", 1, vc.getResults().size());
 
         project.getResourceCollections().add(rc);
         genericService.saveOrUpdate(project);
@@ -1189,10 +1177,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.synchronize();
         searchIndexService.flushToIndexes();
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
-        controller = generateNewInitializedController(CollectionController.class, getUser());
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
+        vc = generateNewInitializedController(CollectionViewAction.class, getUser());
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
         List<Long> results = Persistable.Base.extractIds(controller.getResults());
         logger.debug("pid: {}  | {}", pid, results);
         Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
@@ -1238,12 +1226,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         logger.info("{}", project2.getResourceCollections());
         assertTrue(Persistable.Base.extractIds(project2.getResourceCollections()).contains(rcid));
-        controller = generateNewInitializedController(CollectionController.class);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
-        logger.info("{}", controller.getResourceCollection().getResources().iterator().next().getStatus());
-        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResults()));
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
+        logger.info("{}", vc.getResourceCollection().getResources().iterator().next().getStatus());
+        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
         controller = generateNewInitializedController(CollectionController.class);
@@ -1281,18 +1269,18 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Long rcid = rc.getId();
 
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(CollectionController.class);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
-        assertEquals("collection should have one resource inside", 1, controller.getResults().size());
-        controller = null;
+        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
+        assertEquals("collection should have one resource inside", 1, vc.getResults().size());
+        vc = null;
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
-        controller = generateNewInitializedController(CollectionController.class, registeredUser);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
+        vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
         assertEquals(controller.getAuthenticatedUser(), registeredUser);
         assertTrue("resource should not be viewable", controller.getResults().isEmpty());
         // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
@@ -1312,21 +1300,21 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
-        controller = generateNewInitializedController(CollectionController.class, registeredUser);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
-        assertTrue("resource should be viewable", ((Viewable) (controller.getResults().get(0))).isViewable());
+        vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
+        assertTrue("resource should be viewable", ((Viewable) (vc.getResults().get(0))).isViewable());
 
         // now make the registeredUser a non-contributor. make sure they can see the resource (TDAR-2028)
         registeredUser.setContributor(false);
         genericService.saveOrUpdate(registeredUser);
         searchIndexService.index(registeredUser);
-        controller = generateNewInitializedController(CollectionController.class, registeredUser);
-        controller.setId(rcid);
-        controller.prepare();
-        controller.view();
-        assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
+        vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
+        vc.setId(rcid);
+        vc.prepare();
+        vc.view();
+        assertTrue("resource should be viewable", ((Viewable) vc.getResults().get(0)).isViewable());
     }
 
     @Test

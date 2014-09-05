@@ -10,15 +10,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.CrudAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.ViewableAction;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
 
@@ -32,7 +29,7 @@ import edu.asu.lib.mods.ModsDocument;
 @Scope("prototype")
 @ParentPackage("default")
 @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
-public class JAXBMetadataViewController extends AuthenticationAware.Base implements Preparable, CrudAction<Resource> {
+public class JAXBMetadataViewController extends ResourceViewAction implements Preparable, ViewableAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
     public static final String DC = "dc";
@@ -64,7 +61,6 @@ public class JAXBMetadataViewController extends AuthenticationAware.Base impleme
             @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "modsDocument", "formatOutput", "true" })
     })
     public String viewMods() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
         return SUCCESS;
     }
 
@@ -81,7 +77,6 @@ public class JAXBMetadataViewController extends AuthenticationAware.Base impleme
             @Result(name = SUCCESS, type = JAXBRESULT, params = { "documentName", "dcDocument", "formatOutput", "true" })
     })
     public String viewDc() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
         return SUCCESS;
     }
 
@@ -94,7 +89,7 @@ public class JAXBMetadataViewController extends AuthenticationAware.Base impleme
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         resource = genericService.find(Resource.class, id);
         if (Persistable.Base.isNullOrTransient(resource)) {
             addActionError(getText("jaxbMetadataViewController.resource_does_not_exist"));
@@ -110,32 +105,12 @@ public class JAXBMetadataViewController extends AuthenticationAware.Base impleme
     }
 
     @Override
-    public boolean isCreatable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
-    public boolean isEditable() throws TdarActionException {
-        return authorizationService.isResourceEditable(getAuthenticatedUser(), getResource());
-    }
-
-    @Override
-    public boolean isSaveable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
-    public boolean isDeleteable() throws TdarActionException {
-        return false;
-    }
-
-    @Override
     public boolean isViewable() throws TdarActionException {
         return authorizationService.isResourceViewable(getAuthenticatedUser(), getResource());
     }
 
     @Override
-    public Persistable getPersistable() {
+    public Resource getPersistable() {
         return resource;
     }
 

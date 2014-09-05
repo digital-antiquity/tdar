@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.billing.AccountService;
+import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
 

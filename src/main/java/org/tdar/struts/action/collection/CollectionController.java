@@ -1,14 +1,11 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -27,7 +24,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
@@ -39,7 +35,9 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.DataTableResourceDisplay;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -115,10 +113,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return publicResourceCollections;
     }
 
-    @Override
-    public boolean isViewable() {
-        return isEditable() || authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
-    }
 
     @Override
     protected String save(ResourceCollection persistable) {
@@ -214,20 +208,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public String loadViewMetadata() {
-        setParentId(getPersistable().getParentId());
-        if (!isEditor()) {
-            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
-            getGenericService().saveOrUpdate(rcvs);
-        } else {
-            setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
-        }
-        return SUCCESS;
-    }
-
-    @Override
     public String loadEditMetadata() throws TdarActionException {
-        super.loadEditMetadata();
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
         for (AuthorizedUser au : getAuthorizedUsers()) {
             String name = null;
@@ -268,58 +249,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return result;
     }
 
-    @Override
-    public void loadExtraViewMetadata() {
-        if (Persistable.Base.isNullOrTransient(getPersistable())) {
-            return;
-        }
-        getLogger().trace("child collections: begin");
-        Set<ResourceCollection> findAllChildCollections;
 
-        if (isAuthenticated()) {
-            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
-            findAllChildCollections = getPersistable().getTransientChildren();
-
-            if (isEditor()) {
-                List<Long> collectionIds = Persistable.Base.extractIds(resourceCollectionService.buildCollectionTreeForController(getPersistable(),
-                        getAuthenticatedUser(), CollectionType.SHARED));
-                collectionIds.add(getId());
-                setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatistics(null, null, collectionIds, null,
-                        Arrays.asList(Status.ACTIVE, Status.DRAFT)));
-            }
-        } else {
-            findAllChildCollections = new LinkedHashSet<ResourceCollection>(resourceCollectionService.findDirectChildCollections(getId(), true,
-                    CollectionType.SHARED));
-        }
-        setCollections(new ArrayList<>(findAllChildCollections));
-        getLogger().trace("child collections: sort");
-        Collections.sort(collections);
-        getLogger().trace("child collections: end");
-
-        // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
-        // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
-        // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
-
-        // the visibilty fence should take care of visible vs. shared above
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                getResourceCollection(), getAuthenticatedUser(), this);
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
-        setSortField(getPersistable().getSortBy());
-        if (getSortField() != SortOption.RELEVANCE) {
-            setSecondarySortField(SortOption.TITLE);
-            if (getPersistable().getSecondarySortBy() != null) {
-                setSecondarySortField(getPersistable().getSecondarySortBy());
-            }
-        }
-
-        try {
-            searchService.handleSearch(qb, this, this);
-        } catch (Exception e) {
-            addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
-        }
-        getLogger().trace("lucene: end");
-    }
 
     public List<Long> getSelectedResourceIds() {
         return selectedResourceIds;

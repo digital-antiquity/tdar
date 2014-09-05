@@ -418,19 +418,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    protected void loadCustomViewMetadata() throws TdarActionException {
-        super.loadCustomViewMetadata();
-
-        try {
-            datasetService.assignMappedDataForInformationResource(getResource());
-        } catch (Exception e) {
-            getLogger().error("could not attach additional dataset data to resource", e);
-        }
-
-        setTransientViewableStatus(getResource(), getAuthenticatedUser());
-    }
-
-    @Override
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
         resolveProject();

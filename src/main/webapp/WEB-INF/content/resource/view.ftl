@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 
-    <#import "/WEB-INF/content/${namespace}/view.ftl" as local_ />
+    <#import "/WEB-INF/content/${resource.urlNamespace}/view.ftl" as local_ />
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
@@ -10,7 +10,7 @@
     <meta name="lastModifiedDate" content="$Date$"/>
     <#if includeRssAndSearchLinks??>
         <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-        <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${project.id?c}&groups[0].projects[0].name=${(project.name!'untitled')?url}">
+        <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${resource.id?c}&groups[0].projects[0].name=${(resource.name!'untitled')?url}">
         <@search.rssUrlTag url=rssUrl />
         <@search.headerLinks includeRss=false />
     </#if>
@@ -54,7 +54,7 @@
     <div id="subtitle">
         <p>Part of the
             <#if resource.projectVisible || editable>
-                <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.coreTitle}</a>
+                <a href="<@s.url value='/project/${resource.project.id?c}'/>">${resource.project.coreTitle}</a>
             <#else>
             ${resource.project.coreTitle}
             </#if>
@@ -158,15 +158,15 @@
     </#if>
 
     <#if resource.resourceType.dataTableSupported>
-        <#if (dataset.dataTables?has_content)>
+        <#if (resource.dataTables?has_content)>
             <#if resource.viewable && authenticated >
             <h3>Browse the Data Set</h3>
 
-                <#if (dataset.dataTables?size > 1)>
+                <#if (resource.dataTables?size > 1)>
                 <form>
                     <label for="table_select">Choose Table:</label>
                     <select id="table_select" name="dataTableId" onChange="window.location =  '?dataTableId=' + $(this).val()">
-                        <#list dataset.dataTables as dataTable_>
+                        <#list resource.dataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
                         </#list>
@@ -197,7 +197,7 @@
             <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
 
-            <#list dataset.dataTables as dataTable>
+            <#list resource.dataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <table class="tableFormat table table-striped table-bordered">
                 <thead class='highlight'>
@@ -242,7 +242,7 @@
                 </#list>
             </table>
             </#list>
-                <#if dataset.relationships?size != 0>
+                <#if resource.relationships?size != 0>
                 <h4>Data Table Relationships:</h4>
                 <table class="tableFormat table table-striped table-bordered">
                     <thead class="highlight">
@@ -253,7 +253,7 @@
                         <th>Column Relationships</th>
                     </tr>
                     </thead>
-                    <#list dataset.relationships as relationship>
+                    <#list resource.relationships as relationship>
                         <tr>
                             <td>${relationship.type}</td>
                             <td>${relationship.localTable.displayName}</td>

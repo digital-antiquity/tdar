@@ -146,11 +146,6 @@ public interface AuthenticationAware extends SessionDataAware {
                         return;
                     }
                     break;
-                case VIEW:
-                    if (action.isViewable()) {
-                        return;
-                    }
-                    break;
                 case SAVE:
                     if (action.isSaveable()) {
                         return;
