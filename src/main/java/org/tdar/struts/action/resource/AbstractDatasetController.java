@@ -160,7 +160,8 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     public void resolvePostSaveAction(Dataset persistable) {
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath("columns");
+                setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
+                setSaveSuccessSuffix("/columns");
             }
         }
     }

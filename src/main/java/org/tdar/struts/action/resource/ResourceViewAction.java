@@ -41,8 +41,10 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -1137,4 +1139,22 @@ public class ResourceViewAction extends AbstractPersistableViewableAction<Resour
         }
         return editable;
     }
+
+    public boolean isOkToMapOntology() {
+        CodingSheet persistable = (CodingSheet)getPersistable();
+        if (persistable.getResourceType().isCodingSheet()) {
+            Ontology defaultOntology = persistable.getDefaultOntology();
+            if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
+                getLogger().debug("cannot map, ontology issues, null or transient");
+                return false;
+            }
+            if (CollectionUtils.isEmpty(persistable.getCodingRules()) || CollectionUtils.isNotEmpty(persistable.getFilesWithProcessingErrors())) {
+                getLogger().debug("cannot map, coding sheet has errors or no rules");
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
 }

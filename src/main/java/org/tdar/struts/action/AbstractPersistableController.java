@@ -56,7 +56,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
-    public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}";
+    public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String LIST = "list";
     public static final String DRAFT = "draft";
 
@@ -75,6 +75,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private Long id;
     private Status status;
     private String saveSuccessPath = "view";
+    private String saveSuccessSuffix = "";
     @SuppressWarnings("unused")
     private Class<P> persistableClass;
     public final static String msg = "%s is %s %s (%s): %s";
@@ -709,6 +710,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
         this.authorizedUsersFullNames = authorizedUsersFullNames;
+    }
+
+    public String getSaveSuccessSuffix() {
+        return saveSuccessSuffix;
+    }
+
+    public void setSaveSuccessSuffix(String saveSuccessSuffix) {
+        this.saveSuccessSuffix = saveSuccessSuffix;
     }
 
 }

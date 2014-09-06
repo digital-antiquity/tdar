@@ -1,9 +1,9 @@
 package org.tdar.struts.interceptor;
 
-import org.apache.log4j.NDC;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
@@ -64,7 +64,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         }
 
         // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
-        NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
+        MDC.put("path",Activity.formatRequest(ServletActionContext.getRequest()));
         logger.trace(String.format("marking %s/%s session", action.getClass().getSimpleName(), methodName));
         String invoke = TdarActionSupport.SUCCESS;
         try {
@@ -79,7 +79,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
                 activity.end();
                 logger.debug(activity.getEndString());
             }
-            NDC.pop();
+            MDC.remove("path");
         }
         return invoke;
     }

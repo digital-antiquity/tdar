@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.ViewableAction;
@@ -29,7 +30,7 @@ import edu.asu.lib.mods.ModsDocument;
 @Scope("prototype")
 @ParentPackage("default")
 @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
-public class JAXBMetadataViewController extends ResourceViewAction implements Preparable, ViewableAction<Resource> {
+public class JAXBMetadataViewController extends AbstractPersistableViewableAction<Resource> implements Preparable, ViewableAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
     public static final String DC = "dc";
@@ -118,4 +119,10 @@ public class JAXBMetadataViewController extends ResourceViewAction implements Pr
     public Class<Resource> getPersistableClass() {
         return Resource.class;
     }
+
+    @Override
+    public String loadViewMetadata() throws TdarActionException {
+        return SUCCESS;
+    }
+
 }
