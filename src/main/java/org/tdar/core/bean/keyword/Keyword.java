@@ -65,6 +65,8 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
     @XmlType(name = "kwdbase")
     public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
 
+        private static final String KEYWORD_SLUG_REGEXP = "[^(A-Za-z0-9)]";
+
         private static final long serialVersionUID = -7516574981065004043L;
 
         @Column(nullable = false, unique = true)
@@ -96,6 +98,10 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         private Long occurrence = 0L;
 
+        public String getSlug() {
+            return getLabel().replaceAll(KEYWORD_SLUG_REGEXP, "-").replaceAll("\\--*","-").replaceAll("(\\-)+$", "");
+        }
+        
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;

@@ -73,42 +73,42 @@
     </rule>
 
     <rule>
-        <from>^/browse/culture/(\d+)\??(.*)</from>
+        <from>^/browse/culture-keyword/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/siteName/(\d+)\??(.*)</from>
+        <from>^/browse/site-name/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/siteType/(\d+)\??(.*)</from>
+        <from>^/browse/site-type/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=SITE_TYPE_KEYWORD&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/investigationType/(\d+)\??(.*)</from>
+        <from>^/browse/investigation-type/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=INVESTIGATION_TYPE&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/material/(\d+)\??(.*)</from>
+        <from>^/browse/material-type/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=MATERIAL_TYPE&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/geographic/(\d+)\??(.*)</from>
+        <from>^/browse/geographic-keyword/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=GEOGRAPHIC_KEYWORD&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/temporal/(\d+)\??(.*)</from>
+        <from>^/browse/temporal-keyword/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=TEMPORAL_KEYWORDS&amp;id=$1&amp;$2</to>
     </rule>
 
     <rule>
-        <from>^/browse/other/(\d+)\??(.*)</from>
+        <from>^/browse/other-keyword/(\d+)(?:/[^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;$2</to>
     </rule>
 
