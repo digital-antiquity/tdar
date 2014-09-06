@@ -140,7 +140,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(persistable, persistable, getAuthorizedUsers(), shouldSaveResource(),
                 getAuthenticatedUser());
-
+        setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
 

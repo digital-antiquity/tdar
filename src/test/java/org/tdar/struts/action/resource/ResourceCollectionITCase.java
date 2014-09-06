@@ -1181,7 +1181,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc.setId(rcid);
         vc.prepare();
         vc.view();
-        List<Long> results = Persistable.Base.extractIds(controller.getResults());
+        List<Long> results = Persistable.Base.extractIds(vc.getResults());
         logger.debug("pid: {}  | {}", pid, results);
         Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
 
@@ -1282,7 +1282,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc.prepare();
         vc.view();
         assertEquals(controller.getAuthenticatedUser(), registeredUser);
-        assertTrue("resource should not be viewable", controller.getResults().isEmpty());
+        assertTrue("resource should not be viewable", vc.getResults().isEmpty());
         // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
 
         // now make the user an authorizedUser

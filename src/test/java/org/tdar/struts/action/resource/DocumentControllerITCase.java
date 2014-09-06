@@ -355,18 +355,20 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     }
 
     private ResourceViewAction deleteResource(Long newId, String deletionReason) throws TdarActionException {
-        DocumentController controller;
-        ResourceViewAction rva;
-        rva = generateNewInitializedController(ResourceViewAction.class);
+        ResourceViewAction rva = generateNewInitializedController(ResourceViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
-        setHttpServletRequest(getServletPostRequest());
-        controller = generateNewInitializedController(DocumentController.class, getAdminUser());
-        controller.setDelete("delete");
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        controller.setServletRequest(getServletPostRequest());
+        controller.setId(newId);
+        controller.prepare();
+        controller.setDelete(DocumentController.DELETE);
         controller.setDeletionReason(deletionReason);
-        controller.delete();
-
+        String delete = controller.delete();
+        assertEquals(TdarActionSupport.SUCCESS, delete);
+        logger.debug("status: {}", delete);
+        genericService.synchronize();
         rva = generateNewInitializedController(ResourceViewAction.class, getAdminUser());
         rva.setId(newId);
         rva.prepare();

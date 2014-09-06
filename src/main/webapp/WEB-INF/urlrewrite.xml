@@ -320,6 +320,11 @@
         <to>/$1/view?id=$2</to>
     </rule>
     <outbound-rule>
+        <from>^/(billing|cart|collection)/view?id=([0-9]+)$</from>
+        <to>/$1/$2</to>
+    </outbound-rule>
+
+    <outbound-rule>
         <from>^/(billing|cart|collection)/([0-9]+)/view$
         </from>
         <to>/$1/$2</to>

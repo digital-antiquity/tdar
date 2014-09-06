@@ -37,7 +37,7 @@ import org.tdar.utils.PaginationHelper;
 
 @Component
 @Scope("prototype")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Namespace("/collection")
 public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource> {
 
@@ -372,6 +372,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public boolean isEditable() {
+        return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
 }

@@ -161,6 +161,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String delete() throws TdarActionException {
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistableClass().getSimpleName());
         checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
+        getLogger().trace("post: {} ; delete: {}", isPostRequest(), getDelete());
         if (isPostRequest() && DELETE.equals(getDelete())) {
             if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
                 addActionError(getText("abstractPersistableController.cannot_delete"));

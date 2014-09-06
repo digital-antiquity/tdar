@@ -65,7 +65,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     }
 
     @Override
-    public boolean isViewable()  {
+    public boolean isViewable() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
@@ -79,6 +79,17 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
             return true;
         }
 
+        return false;
+    }
+
+    public boolean isEditable() {
+        if (authorizationService.can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
+            return true;
+        }
+
+        if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
+            return true;
+        }
         return false;
     }
 

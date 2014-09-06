@@ -83,7 +83,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     @Action(value = VIEW,
-            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = "view.ftl"),
                     @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
