@@ -27,6 +27,8 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.UrlUtils;
+import org.tdar.core.service.UrlService;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
@@ -52,6 +54,8 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
     @Override
     public String getLabel();
+
+    String getSlug();
 
     public void setLabel(String label);
 
@@ -96,6 +100,10 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         private Long occurrence = 0L;
 
+        public String getSlug() {
+            return UrlUtils.slugify(getLabel());
+        }
+        
         private transient Float score = -1f;
         private transient Explanation explanation;
         private transient boolean readyToIndex = true;

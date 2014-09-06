@@ -866,5 +866,15 @@ true for our registration page or our profile page).-->
 <input type="password" name="_cr42-2" value="" style="display:none">
 </#macro>
 
+
+<#-- Create a search-link for a keyword -->
+    <#macro searchFor keyword list=true>
+        <#if list><li class="bullet"></#if>
+            <a href="<@s.url value="/${keyword.urlNamespace}/${keyword.id?c}/${(keyword.slug)}" />">${keyword.label}
+            <#if keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
+            </a>
+        <#if list></li></#if>
+    </#macro>
+
 </#escape>
 

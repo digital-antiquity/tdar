@@ -9,8 +9,6 @@ public interface TransactionResponse {
 
     Map<String, String[]> getValues();
 
-    void setValues(Map<String, String[]> values);
-
     Long getInvoiceId();
 
     Address getAddress();

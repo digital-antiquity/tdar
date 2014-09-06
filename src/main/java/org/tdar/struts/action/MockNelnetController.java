@@ -158,8 +158,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
             responseCode = "4";
         }
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_STATUS.getKey(), new String[] { responseCode });
-        NelNetTransactionResponseTemplate resp = new NelNetTransactionResponseTemplate(nelnet.getSecretResponseWord());
-        resp.setValues(responseParams);
+        NelNetTransactionResponseTemplate resp = new NelNetTransactionResponseTemplate(nelnet.getSecretResponseWord(), responseParams);
         getLogger().info(resp.generateHashKey());
         responseParams.put(NelnetTransactionItemResponse.HASH.getKey(), new String[] { resp.generateHashKey() });
 
