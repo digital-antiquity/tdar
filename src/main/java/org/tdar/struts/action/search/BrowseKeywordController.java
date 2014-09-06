@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,6 +24,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -31,6 +32,8 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("default")
 @Namespace("/browse")
 public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable {
+
+    private static final String BAD_SLUG = "bad-slug";
 
     private static final long serialVersionUID = 5267144668224536569L;
 
@@ -43,6 +46,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
+    private String slug = "";
+    private String suffix = "";
 
     private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
     public Keyword getKeyword() {
@@ -81,11 +86,22 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
     }
 
-    @Action(value = "keywords", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
+    @Action(value = "keywords",
+            results={
+            @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
+            @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+    })
     public String view() {
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
+        if (!Objects.equal(keyword.getSlug(), slug)) {
+            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != DEFAULT_RESULT_SIZE) {
+                setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
+            }
+            return BAD_SLUG;
+        }
+        
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
@@ -113,6 +129,22 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 
 }
