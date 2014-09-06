@@ -868,12 +868,12 @@ true for our registration page or our profile page).-->
 
 
 <#-- Create a search-link for a keyword -->
-    <#macro searchFor keyword list=true>
-        <#if list><li class="bullet"></#if>
+    <#macro searchFor keyword=keyword asList=true showOccurrence=false>
+        <#if asList><li class="bullet"></#if>
             <a href="<@s.url value="/${keyword.urlNamespace}/${keyword.id?c}/${(keyword.slug)}" />">${keyword.label}
-            <#if keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
+            <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
             </a>
-        <#if list></li></#if>
+        <#if asList></li></#if>
     </#macro>
 
 </#escape>
