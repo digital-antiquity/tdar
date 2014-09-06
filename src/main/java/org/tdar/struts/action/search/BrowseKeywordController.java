@@ -33,7 +33,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/browse")
 public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable {
 
-    private static final String BAD_SLUG = "bad-slug";
+    public static final String BAD_SLUG = "bad-slug";
 
     private static final long serialVersionUID = 5267144668224536569L;
 
