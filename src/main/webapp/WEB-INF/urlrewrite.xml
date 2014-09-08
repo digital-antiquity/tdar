@@ -104,11 +104,11 @@
 
     <rule>
         <from>^/browse/temporal-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
-        <to>/browse/keywords?keywordType=TEMPORAL_KEYWORDS&amp;id=$1&amp;slug=$2&amp;$3</to>
+        <to>/browse/keywords?keywordType=TEMPORAL_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
     </rule>
 
     <rule>
-        <from>^/browse/other-keyword/(\d+)(/[^\?]+)?\??(.*)</from>
+        <from>^/browse/other-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
     </rule>
 

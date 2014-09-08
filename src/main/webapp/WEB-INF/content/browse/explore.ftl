@@ -86,21 +86,21 @@
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
     <#list investigationTypes?sort as keyword>
-        <@common.searchFor keyword />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul class="inline">
     <#list siteTypeKeywords?sort as keyword>
-        <@common.searchFor keyword />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
-        <@common.searchFor keyword />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
@@ -108,7 +108,7 @@
 <h2>Browse by Material Type</h2>
 <ul class="inline">
     <#list materialTypes?sort as keyword>
-        <@common.searchFor keyword />
+        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
