@@ -80,8 +80,8 @@
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUseAndContributorAgreement" id="tou-id"  />
                 I have read and accept the ${siteAcronym}
-                <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
-                <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
+                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
             </label>
             <#else>
                 <@tos beanPrefix=beanPrefix />
@@ -96,7 +96,7 @@
                     <label class="checkbox">
                         <@s.checkbox theme="simple" name="${beanPrefix}.requestingContributorAccess" id="contributor-id"  />
                         I accept the ${siteAcronym}
-                        <@s.a href="contributorAgreementUrl" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                        <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                         and wish to add ${siteAcronym} content.
                     </label>
                 </div>

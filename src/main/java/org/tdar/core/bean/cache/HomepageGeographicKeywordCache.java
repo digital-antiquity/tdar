@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.core.bean.util.UrlUtils;
 
 /**
  * This caches the count of geographic keywords for the world map on the homepage.
@@ -147,5 +148,9 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
         }
         return 8;
 
+    }
+    
+    public String getSlug() {
+        return UrlUtils.slugify(getLabel());
     }
 }

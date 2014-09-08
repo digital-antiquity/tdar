@@ -653,4 +653,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.freemarkerProcessingTime = freemarkerProcessingTime;
     }
 
+
+    public String getTosUrl() {
+        return getTdarConfiguration().getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return getTdarConfiguration().getContributorAgreementUrl();
+    }
+
 }
