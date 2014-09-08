@@ -171,6 +171,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
     }
 
     private void populateInvoiceFromResponse(Invoice invoice) {
+        invoice.setPaymentMethod(nelnetTransactionType.getPaymentMethod());
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
             String value = getValuesFor(item.key);
             Number numericValue = null;
@@ -200,9 +201,6 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
                 case TRANSACTION_STATUS:
                     NelnetTransactionStatus status = NelnetTransactionStatus.fromOrdinal(numericValue.intValue());
                     invoice.setTransactionStatus(status.getStatus());
-                    break;
-                case TRANSACTION_TYPE:
-                    invoice.setPaymentMethod(NelnetTransactionType.fromOrdinalToPaymentMethod(numericValue.intValue()));
                     break;
                 default:
                     break;
