@@ -1491,3 +1491,6 @@ tr.DELETED {
     display:none;
     visibility:hidden;
 }
+
+.modal.modal-big {
+}

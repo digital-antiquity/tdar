@@ -434,19 +434,26 @@
 
     //return serialized list of checked checkboxes (caution: we do not escape css reserved characters (e.g period/tilde)
     function cb2str() {
-        var elems = $.map($("[id]:checkbox:checked").get(), function (el) {
-            return el.id;
+        var checkboxes = $("[id]:checkbox:checked").get();
+        var labelNames = [], elems = [];
+        var output ="";
+        $.each(checkboxes, function (i, el) {
+            elems.push(el.id);
+            labelNames.push($(el).parent().find(".nodeName").text());
         });
         if (elems.length) {
-            return JSON.stringify(elems);
-        } else {
-            return "";
+            output =  (
+                    JSON.stringify(elems)
+                    + "\n//selected labels:" + labelNames.join(", "));
+
         }
+        return output;
     }
 
     //check the boxes from a serialized list of checkboxes
     function str2cb(str) {
         if (str) {
+            str = str.replace(/\/\/selected labels:.+/, "");
             $.each(JSON.parse(str), function (i, cbid) {
                 $("#" + cbid).prop('checked', true);
             });
@@ -457,7 +464,7 @@
      * Initialize the "Filter Ontology Values" page
      * @private
      */
-    var _initOntologyFilterPage = function () {
+    var _initOntologyFilterPage = function (data) {
 
         $("#filterForm").submit(function () {
             var errors = "";

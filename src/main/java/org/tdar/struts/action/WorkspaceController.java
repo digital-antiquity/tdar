@@ -35,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -75,6 +76,9 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
     @Autowired
     private transient PersonalFilestoreService filestoreService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;
@@ -178,6 +182,16 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
             return INPUT;
         }
         return SUCCESS;
+    }
+
+    public String getIntegrationColumnData() {
+        String data = "null";
+        try {
+            data = xmlService.convertToJson(getIntegrationColumns());
+        } catch (IOException e) {
+            getLogger().warn("failed to generate integration column json", e);
+        }
+        return data;
     }
 
     @Action(value = "display-filtered-results",
