@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -77,6 +78,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
             return null;
         }
         DateTime dateTime = new DateTime(date);
+        //we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
+        //dates in a date range.
+        dateTime = dateTime.toDateTime(DateTimeZone.UTC);
         return dateTime.toString(dtf);
     }
 

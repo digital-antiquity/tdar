@@ -1,7 +1,9 @@
 package org.tdar.struts.action.search;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -11,15 +13,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -759,6 +758,46 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getResults().contains(document));
     }
 
+    /**
+     * lucene translates dates to utc prior to indexing. When performing a search the system must similarly transform the begin/end
+     * dates in a daterange
+     */
+    @Test @Rollback public void testTimezoneEdgeCase() {
+        Resource doc = createAndSaveNewInformationResource(Document.class);
+        DateTime createDateTime = new DateTime(2005, 3, 26, 23, 0, 0, 0);
+        DateTime searchDateTime = new DateTime(2005, 3, 26,  0, 0, 0, 0);
+        doc.setDateCreated(createDateTime.toDate());
+        doc.setDateUpdated(createDateTime.toDate());
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+
+        //converstion from MST to UTC date advances registration date by one day.
+        searchIndexService.flushToIndexes();
+        DateRange dateRange = new DateRange();
+        dateRange.setStart(searchDateTime.toDate());
+        dateRange.setEnd(searchDateTime.plusDays(1).toDate());
+
+        firstGroup().getRegisteredDates().add(dateRange);
+        doSearch();
+        assertThat(controller.getResults(), contains(doc));
+
+        //if we advance the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.plusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.plusDays(2).toDate());
+        resetController();
+        firstGroup().getRegisteredDates().add(dateRange);
+        assertThat(controller.getResults(), not(contains(doc)));
+
+        //if we decrement the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.minusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.toDate());
+        resetController();
+        firstGroup().getRegisteredDates().add(dateRange);
+        assertThat(controller.getResults(), not(contains(doc)));
+    }
+
+
+
     @Test
     @Rollback
     public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException {
@@ -1181,6 +1220,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         assertThat(sparseCollection.getTitle(), equalTo(firstGroup().getCollections().get(0).getTitle()));
     }
+
 
     private void assertOnlyResultAndProject(InformationResource informationResource) {
         doSearch();

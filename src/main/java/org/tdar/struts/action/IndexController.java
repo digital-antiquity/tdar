@@ -22,6 +22,7 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -95,6 +96,7 @@ public class IndexController extends AuthenticationAware.Base {
     @Actions({
             @Action("contact"),
             @Action("credit"),
+            @Action(value = "terms", results = {@Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${tosUrl}") }),
             @Action(value = "opensearch", results = {
                     @Result(name = SUCCESS, location = "opensearch.ftl", type = FREEMARKER, params = { "contentType", "application/xml" })
             }),
