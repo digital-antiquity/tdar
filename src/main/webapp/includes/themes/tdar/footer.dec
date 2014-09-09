@@ -1,0 +1,66 @@
+<div class="row  screen">
+    <div class="span3">
+        <h4>About</h4>
+        <ul>
+            <li><a href="http://www.tdar.org/news/">News</a></li>
+            <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
+            <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
+            <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
+            <li><a href="http://www.tdar.org/about/history/">History</a></li>
+            <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Use</h4>
+        <ul>
+            <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
+            <li><a href="http://www.tdar.org/about/help/">Help &amp; Tutorials</a></li>
+            <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
+            <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
+            <li><a href="http://www.tdar.org/about/pricing/">Pricing</a></li>
+            <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Contact</h4>
+        <ul>
+            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
+            </li>
+            <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
+            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Start Digging</h4>
+        <ul>
+            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+            <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
+            <li><a href="<@s.url value="/login"/>">Log In</a></li>
+            <li><a href="<@s.url value="/account/new"/>">Sign Up</a></li>
+        </ul>
+
+    </div>
+</div>
+<div class="row  screen" id="copyright">
+    <p class="copyright-notice span12">
+
+        tDAR is the digital repository of <a
+
+            href="http://www.digitalantiquity.org" target='_blank'>Digital Antiquity</a>, a collaborative organization dedicated to enhancing preservation and
+        access to the digital records
+        of archaeological investigations. Hosted by <a href="http://www.asu.edu" target='_blank'>Arizona State University</a>, <a href="http://www.tdar.org"
+                                                                                                                                  target='_blank'>tDAR</a> is
+        supported by
+        grants from the <a href="http://www.mellon.org" target='_blank'>Andrew W. Mellon Foundation</a>, and the <a href="http://www.nsf.gov" target='_blank'>National
+        Science Foundation</a> (0433959
+        and 0624341), and a grant jointly funded by the <a href="http://neh.gov/" target='_blank'>National Endowment for the Humanities</a> (PX-50022-09) and
+        the Higher Education Funding Council for
+        England of the United Kingdom acting through the <a href="http://www.jisc.ac.uk/" target='_blank'>Joint Information Systems Committee</a> (JISC). Any
+        opinions, findings, conclusions
+        or recommendations expressed in this material are those of the author(s) and do not necessarily reflect those of the National Science Foundation, the
+        Mellon Foundation, the National Endowment
+        for the Humanities or the Joint Information Systems Committee. <br/>Copyright &copy; ${.now?string("yyyy")} Digital Antiquity. <a href="/credit">Design
+        Info</a>
+    </p>
+</div>
