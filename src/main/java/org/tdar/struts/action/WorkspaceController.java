@@ -152,6 +152,7 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
 
                 // rehydrate all of the resources being passed in, we just had empty beans with ids
                 List<DataTableColumn> hydrated = getGenericService().loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
+                hydrated.removeAll(Collections.singletonList(null));
                 integrationColumn.setColumns(hydrated);
                 getLogger().info("hydrated columns {}", hydrated);
                 Ontology defaultOntology = null;
