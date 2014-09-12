@@ -1149,17 +1149,32 @@ TDAR.common = function () {
     }
 
     /**
+     * format number w/ comma grouping
+     * @param num
+     * @returns {string}
+     */
+    function _formatNumber(num) {
+        var numparts = num.toString().split('.');
+        var str = numparts[0].split('').reverse().join('').replace(/(\d{3})\B/g, '$1,').split('').reverse().join('');
+        str += numparts[1] ? '.'  + numparts[1] : '';
+        return str;
+    }
+
+
+    /**
      * return string that describes size of specified bytes in easier syntax
      * @param bytes  size in bytes
      * @param si true if description should be in SI units (e.g. kilobyte, megabyte) vs. IEC (e.g. kibibyte, mebibyte)
      * @returns {string} size as human readable equivalent of specified bytecount
      */
-    function humanFileSize(bytes, si) {
+    function _humanFileSize(bytes, si) {
         var thresh = si ? 1000 : 1024;
         if (bytes < thresh) {
             return bytes + ' B';
         }
-        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        //jtd: IEC names would be less ambiguous, but JEDEC names are more consistent with what we show elsewhere on the site
+        //var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] :  ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         var u = -1;
         do {
             bytes /= thresh;
@@ -1168,21 +1183,6 @@ TDAR.common = function () {
         return bytes.toFixed(1) + ' ' + units[u];
     };
 
-    function logarithm(base, n) {
-      return Math.log(n) / Math.log(base);
-    }
-
-    function friendlySize(bytes, si) {
-        var thresh = si ? 1000 : 1024;
-        var units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-        var logbytes = logarithm(thresh, bytes);
-        var idx = Math.floor(logbytes);
-        var base = Math.pow(thresh, idx );
-        var baseUnits = bytes / base;
-        return {amt: baseUnits, unit: units[idx], msg: baseUnits.toFixed(0) + " " + units[idx]};
-    }
-
-    
     function _initImageGalleryForView() {
         //init bootstrap image gallery (if found)
         $(".image-carousel").each(function(idx, elem) {
@@ -1238,8 +1238,11 @@ TDAR.common = function () {
         "tmpl": tmpl,
 
         "collectionTreeview": _collectionTreeview,
-        "humanFileSize": humanFileSize,
-        "initImageGallery": _initImageGalleryForView
+        "humanFileSize": _humanFileSize,
+        "initImageGallery": _initImageGalleryForView,
+        "formatNumber": _formatNumber
+
+
     });
 
     return self;

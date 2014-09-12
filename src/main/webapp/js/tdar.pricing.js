@@ -61,13 +61,8 @@
             /* give the user an understanding of size in GB if size is > 1/2 GB */
             var mb = "";
             if (numMb > 512) {
-                var num = numMb / 1024;
-                if (num.toString().indexOf(".") > 0) {
-                    num = num.toFixed(3);
-                }
-                mb = "(" + (num) + " GB)";
+                $("#convert").html(TDAR.common.humanFileSize(numMb * 1024*1024));
             }
-            $("#convert").html(mb);
 
             var $est = $("#estimated");
             $est.val("");
@@ -101,7 +96,7 @@
                         $est.append(line);
 
                     } else {
-                        $("#price").html(item.subtotal);
+                        $("#price").html(TDAR.common.formatNumber(item.subtotal));
 
                         checked = "";
                         //(i +1), data[i].model, data[i].subtotal );
@@ -111,14 +106,20 @@
                             for (var j = 0; j < item.items.length; j++) {
                                 var part = item.items[j];
                                 part.name = part.activity.numberOfFiles ===0 ?  "Extra Space" : "Files";
-                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>",
-                                        part.name, part.activity.numberOfFiles * part.quantity, part.activity.numberOfMb * part.quantity, part.subtotal);
+                                var line = TDAR.common.sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>${3}</td></tr>",
+                                                part.name,
+                                                TDAR.common.formatNumber(part.activity.numberOfFiles * part.quantity),
+                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''),
+                                                TDAR.common.formatNumber(part.subtotal));
                                 total_files += part.activity.numberOfFiles * part.quantity;
                                 total_mb += part.activity.numberOfMb * part.quantity;
                                 $est.append(line);
                             }
                         }
-                        var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1} MB</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
+                        var line = TDAR.common.sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>",
+                                TDAR.common.formatNumber(total_files),
+                                TDAR.common.humanFileSize(total_mb * 1024*1024),
+                                TDAR.common.formatNumber(subtotal));
                         $est.append(line);
                     }
                 },
