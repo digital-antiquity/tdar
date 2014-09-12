@@ -66,7 +66,7 @@ navigation freemarker macros
     <#macro creatorToolbar current>
 
         <#if editor || id == ((authenticatedUser.id)!-1)>
-            <#if (persistable.registered)!>
+            <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
                 <#local creatorType = creator.creatorType.toString().toLowerCase() />
@@ -74,7 +74,7 @@ navigation freemarker macros
                 <#local creatorType = persistable.creatorType.toString().toLowerCase() />
             </#if>
 
-            <#if (sessionData.authenticated)!>
+            <#if (sessionData.authenticated)!false>
             <div class="span12 resource-nav  screen" id="toolbars" parse="true">
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
