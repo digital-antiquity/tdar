@@ -89,7 +89,6 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     }
 
     public void setColumns(List<DataTableColumn> columns) {
-        columns.removeAll(Collections.singletonList(null));
         this.columns = columns;
     }
 

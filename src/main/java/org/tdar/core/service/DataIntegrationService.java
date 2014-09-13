@@ -242,7 +242,9 @@ public class DataIntegrationService {
 
         // for each column, rehydrate the column and selected ontology nodes
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            integrationColumn.setColumns(genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class));
+            List<DataTableColumn> dataTableColumns = genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
+            dataTableColumns.removeAll(Collections.singletonList(null));
+            integrationColumn.setColumns(dataTableColumns);
             List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
             if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
                 filteredOntologyNodes.removeAll(Collections.singletonList(null));
