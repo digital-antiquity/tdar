@@ -174,14 +174,6 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         this.passwordResetURL = url;
     }
 
-    public String getTosUrl() {
-        return getTdarConfiguration().getTosUrl();
-    }
-
-    public String getContributorAgreementUrl() {
-        return getTdarConfiguration().getContributorAgreementUrl();
-    }
-
     public String getUrl() {
         return url;
     }

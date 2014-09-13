@@ -513,9 +513,9 @@ with that datapoint -->
                 <#if entry.keywordId?has_content>
                     <#local color = settings.mapColors[entry.colorGroup]!"#ffffff" />
 
-                    <#local term>geographicKeywords=${entry.keywordId?c}</#local>
+                    <#local path>/browse/geographic-keyword/${entry.keywordId?c}/${entry.slug}</#local>
                 <area coords="${coords}" shape="poly" title="${title} (${entry.count?c})" alt="${title} (${entry.count?c})" target="_top"
-                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
+                      href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${path}"/>' iso="${code}"
                       class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}">
                 </#if>
             </#if>

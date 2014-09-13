@@ -101,7 +101,7 @@
                                         <tr>
                                             <th>Item</th>
                                             <th> # Files</th>
-                                            <th>Space in MB</th>
+                                            <th>Space</th>
                                             <th>Subtotal</th>
                                         </tr>
                                         <tbody id="estimated">

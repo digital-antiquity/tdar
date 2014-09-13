@@ -154,12 +154,17 @@
     </@s.form>
 
 
+<#noescape>
 <script type='text/javascript'>
     $(function () {
-        TDAR.integration.initOntologyFilterPage();
+        <#-- //var data = ${integrationColumnData}; -->
+        var data = [];
+        TDAR.integration.initOntologyFilterPage(data);
     })
+
 </script>
-<div id="divModalStore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
+</#noescape>
+<div id="divModalStore" class="modal modal-big hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="divModalStoreLabel">Ontology Filter Codes</h3>
@@ -167,7 +172,7 @@
         <span>To restore ontology filter selections from a previous integration, paste those selection codes into the textbox. </span>
     </div>
     <div class="modal-body">
-        <textarea id="txtStr2cb" cols=300 rows=5 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal"
+        <textarea id="txtStr2cb" cols=300 rows=20 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal"
                   spellcheck="false"></textarea>
     </div>
     <div class="modal-footer">
