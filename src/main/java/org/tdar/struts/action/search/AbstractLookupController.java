@@ -584,4 +584,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.result = result;
     }
 
+    /**
+     * Hint to view layer: true if it should display collection search results along with resource search results.
+     * @return false, by default
+     */
+    public boolean isShowCollectionResults() {
+        return false;
+    }
+
 }
