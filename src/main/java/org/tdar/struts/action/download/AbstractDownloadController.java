@@ -137,7 +137,9 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
         if (Persistable.Base.isNotNullOrTransient(irfvId)) {
             setInformationResourceFileVersion(getGenericService().find(InformationResourceFileVersion.class, irfvId));
             // bad, but force onto session until better way found
-            authorizationService.applyTransientViewableFlag(informationResourceFileVersion, getAuthenticatedUser());
+            if (Persistable.Base.isNotNullOrTransient(getInformationResourceFileVersion())) {
+                authorizationService.applyTransientViewableFlag(informationResourceFileVersion, getAuthenticatedUser());
+            }
         }
     }
 
