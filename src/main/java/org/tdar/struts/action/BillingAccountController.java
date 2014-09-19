@@ -24,6 +24,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
@@ -232,6 +233,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String loadViewMetadata() {
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+
+        for (TdarUser au : getAuthorizedMembers()) {
+            String name = null;
+            if (au != null ) {
+                name = au.getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
+
         getResources().addAll(getAccount().getResources());
         Persistable.Base.sortByUpdatedDate(getResources());
         return SUCCESS;

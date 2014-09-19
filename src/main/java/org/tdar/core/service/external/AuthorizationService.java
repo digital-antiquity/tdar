@@ -527,6 +527,9 @@ public class AuthorizationService implements Accessible {
 
     public void applyTransientViewableFlag(InformationResourceFileVersion informationResourceFileVersion, TdarUser authenticatedUser) {
         boolean visible = false;
+        if (informationResourceFileVersion == null) {
+            return;
+        }
         InformationResourceFile irFile = informationResourceFileVersion.getInformationResourceFile();
         if (irFile.isPublic() || canDownload(irFile, authenticatedUser)) {
             visible = true;
