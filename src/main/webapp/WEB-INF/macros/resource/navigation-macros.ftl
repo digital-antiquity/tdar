@@ -31,7 +31,7 @@ navigation freemarker macros
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
-                    <#local _deleteable = persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted') >
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
         </#if>
         <#if persistable.resourceType??>
@@ -69,9 +69,9 @@ navigation freemarker macros
             <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
-                <#local creatorType = creator.creatorType.toString().toLowerCase() />
+                <#local creatorType = creator.creatorType?lower_case />
             <#else>
-                <#local creatorType = persistable.creatorType.toString().toLowerCase() />
+                <#local creatorType = persistable.creatorType?lower_case />
             </#if>
 
             <#if (sessionData.authenticated)!false>

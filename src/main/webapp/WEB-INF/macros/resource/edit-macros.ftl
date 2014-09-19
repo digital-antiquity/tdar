@@ -369,7 +369,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- emit the manual-text-entry section (i.e. for ontology or coding-sheet values) -->
     <#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
     <#-- show manual option by default -->
-        <#local usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
+        <#local usetext=(resource.latestVersions.empty || (fileTextInput!"") != "")>
     <div id="enter-data">
         <h2>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h2>
 

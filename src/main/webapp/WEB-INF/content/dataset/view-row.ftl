@@ -12,12 +12,13 @@
         </tr>
         </thead>
         <tbody>
-            <#list dataTableRowAsMap.entrySet() as entry>
-                <#if entry.key.visible>
+            <#list dataTableRowAsMap?keys as key>
+                <#if key.visible>
                 <tr>
-                    <td>${entry.key.displayName}</td>
-                    <td>${entry.value} <#if (entry.key.defaultOntology.id)?has_content>(<a
-                            href="<@s.url value="/ontology/${entry.key.defaultOntology.id?c}"/>">${entry.key.defaultOntology.title}</a>)</#if></td>
+                    <td>${key.displayName}</td>
+                    <#-- dataTableRowAsMap(key) also works, for some reason -->
+                    <td>${dataTableRowAsMap.get(key)} <#if (key.defaultOntology.id)?has_content>(<a
+                            href="<@s.url value="/ontology/${key.defaultOntology.id?c}"/>">${key.defaultOntology.title}</a>)</#if></td>
                 </tr>
                 </#if>
             </#list>

@@ -45,7 +45,7 @@
     </table>
     <hr/>
 
-        <#if !resource.sensoryDataScans.isEmpty()>
+        <#if resource.sensoryDataScans?has_content>
         <h3>Scan Information</h3>
         <table class="table table-striped tableFormat">
             <thead>
@@ -69,19 +69,19 @@
                 <tr>
                     <td>${_scan.filename!""}</td>
                     <td>${_scan.transformationMatrix!""}</td>
-                    <td><#if _scan.matrixApplied?? && _scan.matrixApplied>Yes</#if></td>
+                    <td><#if (_scan.matrixApplied!false)>Yes</#if></td>
                     <td>${_scanDate}</td>
                     <td>
-                        <#if (_scan.scannerTechnology?? && _scan.scannerTechnology.label.length()>0)>
+                        <#if (_scan.scannerTechnology.label)?has_content>
                             <em>Type:</em> ${_scan.scannerTechnology.label}
-                            <#if (_scan.tofReturn?? && _scan.tofReturn.length()>0)><br/><em>Return Type:</em>${_scan.tofReturn}</#if>
-                            <#if (_scan.cameraExposureSettings?? && _scan.cameraExposureSettings.length()>0)><br/><em>Exposure
+                            <#if (_scan.tofReturn)?has_content><br><em>Return Type:</em>${_scan.tofReturn}</#if>
+                            <#if (_scan.cameraExposureSettings)?has_content><br><em>Exposure
                                 Settings: </em>${_scan.cameraExposureSettings}</#if>
-                            <#if (_scan.phaseFrequencySettings?? && _scan.phaseFrequencySettings.length()>0)><br/><em>Frequency
+                            <#if (_scan.phaseFrequencySettings)?has_content><br><em>Frequency
                                 Settings: </em>${_scan.phaseFrequencySettings}</#if>
-                            <#if (_scan.phaseNoiseSettings?? && _scan.phaseNoiseSettings.length()>0)><br/><em>Noise
+                            <#if (_scan.phaseNoiseSettings)?has_content><br><em>Noise
                                 Settings: </em>${_scan.phaseNoiseSettings}</#if>
-                            <#if (_scan.triangulationDetails?? && _scan.triangulationDetails.length()>0)><br/><em>Lens/FOV
+                            <#if (_scan.triangulationDetails?has_content)><br><em>Lens/FOV
                                 Details: </em>${_scan.triangulationDetails}</#if>
                         </#if>
                     </td>
@@ -93,7 +93,7 @@
         </table>
         </#if>
 
-        <#if !resource.sensoryDataImages.isEmpty()>
+        <#if resource.sensoryDataImages?has_content>
         <h3>Sensory Data Image Information</h3>
         <table class="table table-striped tableFormat">
             <thead>
