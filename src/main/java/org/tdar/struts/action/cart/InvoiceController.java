@@ -225,7 +225,7 @@ public class InvoiceController extends AbstractCartController {
     void setupActivities() {
         // we only care about the production+active activities
         for(BillingActivity act : invoiceService.getActiveBillingActivities()) {
-            if(act.isProduction()) {
+            if(act.isProduction() || isEditor()) {
                 getActivities().add(act);
             }
         }
