@@ -2,7 +2,7 @@ package org.tdar.core.bean.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.   LinkedHashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
