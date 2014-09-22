@@ -54,6 +54,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 ems.add(StringUtils.trim(pers.getEmail()));
             }
+
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
                 String institution = StringUtils.trim(pers.getInstitutionName());
                 institution = PhraseFormatter.ESCAPED.format(institution);
@@ -89,6 +90,13 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
 
         if (registered) {
+            // adding wildcard search for username too
+            if (CollectionUtils.isNotEmpty(fns)) {
+                FieldQueryPart<String> fqp = new FieldQueryPart<String>("username", fns);
+                fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+                group.append(fqp);
+            }
+
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);
             qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));

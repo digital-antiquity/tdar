@@ -94,6 +94,20 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         List<Indexable> people = controller.getResults();
     }
 
+    
+    @Test
+    // we should properly escape input
+    public void testPersonByUsername() {
+        searchIndexService.indexAll(getAdminUser(), Person.class);
+        controller.setTerm("billingAdmin");
+        controller.setRegistered("true");
+        String result = controller.lookupPerson();
+        assertEquals("result should be success", Action.SUCCESS, result);
+        List<Indexable> people = controller.getResults();
+        assertNotEmpty(people);
+        assertTrue(people.contains(getBillingUser()));
+    }
+
     @Test
     public void testRegisteredPersonLookupWithOneResult() {
         searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
