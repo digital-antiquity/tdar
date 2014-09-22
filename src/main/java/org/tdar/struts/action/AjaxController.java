@@ -69,7 +69,7 @@ public class AjaxController extends TdarActionSupport {
      */
     public List<CategoryVariable> getSubcategories() {
         if (Persistable.Base.isNullOrTransient(categoryVariableId)) {
-            return Collections.emptyList();
+            return new ArrayList<CategoryVariable>();
         }
         return new ArrayList<CategoryVariable>(getCategoryVariable().getSortedChildren());
     }
