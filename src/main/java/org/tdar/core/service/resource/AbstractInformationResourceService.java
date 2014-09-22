@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,16 +13,16 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -389,12 +388,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         InformationResourceFile irFile = fileProxy.getInformationResourceFile();
         irFile.setRestriction(fileProxy.getRestriction());
         Integer sequenceNumber = fileProxy.getSequenceNumber();
-        if (fileProxy.getRestriction() == FileAccessRestriction.EMBARGOED) {
+        if (fileProxy.getRestriction().isEmbargoed()) {
             if (irFile.getDateMadePublic() == null) {
-                Calendar calendar = Calendar.getInstance();
-                // set date made public to 5 years now.
-                calendar.add(Calendar.YEAR, TdarConfiguration.getInstance().getEmbargoPeriod());
-                irFile.setDateMadePublic(calendar.getTime());
+                DateTime currentDate = new DateTime();
+                DateTime embargoDate = currentDate.plusDays(fileProxy.getRestriction().getEmbargoPeriod());
+                irFile.setDateMadePublic(embargoDate.toDate());
             }
         } else {
             irFile.setDateMadePublic(null);

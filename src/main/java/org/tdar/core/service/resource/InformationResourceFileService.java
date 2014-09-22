@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -97,6 +97,14 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
 
     public ScrollableResults findScrollableVersionsForVerification() {
         return getDao().findScrollableVersionsForVerification();
+    }
+
+    public List<InformationResourceFile> findAllExpiredEmbargoFiles() {
+        return getDao().findAllExpiredEmbargoes();
+    }
+
+    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
+        return getDao().findAllEmbargoFilesExpiringTomorrow();
     }
 
 }

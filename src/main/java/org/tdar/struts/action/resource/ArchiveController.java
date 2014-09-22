@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Archive;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.InformationResourceService;

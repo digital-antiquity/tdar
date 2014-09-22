@@ -20,7 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -132,7 +132,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
 
         gotoPage("/image/add");
         setInput("ticketId", ticketId);
-        addFileProxyFields(0, FileAccessRestriction.EMBARGOED, TEST_IMAGE_NAME);
+        addFileProxyFields(0, FileAccessRestriction.EMBARGOED_FIVE_YEARS, TEST_IMAGE_NAME);
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }

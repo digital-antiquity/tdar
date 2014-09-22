@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.EntityService;
@@ -56,7 +56,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     private Document setupEmbargoedDoc() throws InstantiationException, IllegalAccessException {
         Document doc = (Document) generateInformationResourceWithFile();
         InformationResourceFile file = doc.getInformationResourceFiles().iterator().next();
-        file.setRestriction(FileAccessRestriction.EMBARGOED);
+        file.setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         file.setDateMadePublic(new DateTime().plusYears(4).toDate());
         genericService.save(doc);
         return doc;

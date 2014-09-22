@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -174,7 +175,7 @@ public class DownloadService {
                     dto.getTextProvider());
         }
 
-        if (InformationResourceFile.FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
+        if (FileType.IMAGE != irFileVersion.getInformationResourceFile().getInformationResourceFileType()) {
             dto.setAttachment(true);
         }
 

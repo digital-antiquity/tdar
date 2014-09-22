@@ -33,7 +33,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -556,7 +556,7 @@ public class BulkManifestProxy implements Serializable {
             if (StringUtils.isBlank(stringCellValue) || tableCellName.equals(stringCellValue) || stringCellValue.startsWith(tableCellName)) {
                 continue;
             }
-            FileProxy fp = new FileProxy();
+        FileProxy fp = new FileProxy();
             fp.setFilename(stringCellValue);
             fp.setAction(FileAction.ADD);
             logger.debug("creating validation proxy from {}", stringCellValue);
