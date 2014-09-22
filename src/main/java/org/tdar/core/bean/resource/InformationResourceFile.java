@@ -32,7 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.SortNatural;
@@ -42,14 +41,11 @@ import org.hibernate.search.annotations.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -78,101 +74,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient WorkflowContext workflowContext;
 
-    public enum FileAction {
-        NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
-
-        public boolean shouldExpectFileHandle() {
-            switch (this) {
-                case ADD:
-                case ADD_DERIVATIVE:
-                case REPLACE:
-                    // user added a file but changed mind and clicked delete. NONE instructs the system to ignore the pending file
-                case NONE:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public boolean requiresWorkflowProcessing() {
-            switch (this) {
-                case ADD:
-                case REPLACE:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public boolean requiresExistingIrFile() {
-            switch (this) {
-                case ADD:
-                    return false;
-                case NONE:
-                    return false;
-                default:
-                    return true;
-            }
-        }
-
-        public boolean updatesMetadata() {
-            switch (this) {
-                case ADD:
-                case MODIFY_METADATA:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    }
-
-    public enum FileType {
-        IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, GEOSPATIAL, AUDIO, VIDEO, OTHER;
-
-        public boolean isComposite() {
-            switch (this) {
-                case COLUMNAR_DATA:
-                case GEOSPATIAL:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-    }
-
-    public enum FileAccessRestriction implements HasLabel, Localizable {
-        PUBLIC,
-        EMBARGOED,
-        CONFIDENTIAL;
-
-        @Override
-        public String getLabel() {
-            return WordUtils.capitalize(this.name().toLowerCase());
-        }
-
-        @Override
-        public String getLocaleKey() {
-            return MessageHelper.formatLocalizableKey(this);
-        }
-
-        public boolean isRestricted() {
-            switch (this) {
-                case PUBLIC:
-                    return false;
-                default:
-                    return true;
-            }
-        }
-    }
-
-    public enum FileStatus {
-        // whether or not the file is in the middle of a queued process
-        QUEUED,
-        // whether or not this InformationResourceFile has been converted into postgres
-        PROCESSED,
-        PROCESSING_ERROR,
-        PROCESSING_WARNING;
-    }
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
@@ -575,7 +476,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public boolean isEmbargoed() {
-        return this.restriction == FileAccessRestriction.EMBARGOED;
+        return this.restriction != null && this.restriction.isEmbargoed();
     }
 
     public String getErrorMessage() {

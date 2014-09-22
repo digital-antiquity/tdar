@@ -69,7 +69,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;

@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
@@ -84,7 +84,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         }
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion();
         if ((latestUploadedTextVersion != null)
-                && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != InformationResourceFile.FileStatus.PROCESSING_ERROR)) {
+                && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != FileStatus.PROCESSING_ERROR)) {
             if (Objects.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
                 getLogger().info("incoming and current file input text is the same, skipping further actions");
                 return null;

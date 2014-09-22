@@ -26,9 +26,6 @@ import org.hibernate.annotations.SortNatural;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 
 /**
  * $Id$
