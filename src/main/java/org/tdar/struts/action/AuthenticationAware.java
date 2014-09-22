@@ -30,9 +30,6 @@ import org.tdar.web.SessionDataAware;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
-        @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
-})
 public interface AuthenticationAware extends SessionDataAware {
 
     final String TYPE_REDIRECT = "redirect";
