@@ -12,7 +12,7 @@
         <tr>
         </thead>
         <#list datasetList as dataset>
-            <#if ! dataset.dataTables.isEmpty()>
+            <#if dataset.dataTables?has_content>
                 <tbody class="integrate_dataset" id="dataset_${dataset.id?c}">
                     <@listDataTables dataset />
                 </tbody>
@@ -23,7 +23,7 @@
 
     <#macro listDataTables dataset>
         <#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
-            <#list dataset.getDataTables() as table>
+            <#list dataset.dataTables as table>
             <tr>
                 <td>
                     <@s.checkbox id="datatable_checkbox_${table.id?c}" name="tableIds" fieldValue="${table.id?c}" disabled="${((table.columnsWithOntologyMappings?size!0) == 0)?c }"/>
