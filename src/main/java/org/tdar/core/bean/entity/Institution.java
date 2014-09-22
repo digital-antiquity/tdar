@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -38,6 +39,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$
@@ -83,6 +85,11 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution parentInstitution;
+
+    @Column(unique = true, nullable = true)
+    @Field(name = "inst_email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
+    private String email;
 
     public Institution() {
     }
@@ -184,5 +191,15 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
 }

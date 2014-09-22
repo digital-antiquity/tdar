@@ -36,8 +36,10 @@
             </div>
         </#if>
 
-        <br/><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
-        <br/><@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
+        <@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
+        <@s.textfield name="institution.email" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
+
+        <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
 
         <h3>Address List</h3>
         <@common.listAddresses entity=institution entityType="institution" />
