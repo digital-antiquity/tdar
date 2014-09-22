@@ -67,7 +67,7 @@ public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<Informati
         Email email = new Email();
         email.setSubject(SUBJECT);
         email.setUserGenerated(false);
-        emailService.queueWithFreemarkerTemplate("expiration-admin.ftl", map, email);
+        emailService.queueWithFreemarkerTemplate("embargo/expiration-admin.ftl", map, email);
     }
 
     private void expire(List<InformationResourceFile> expired) {
@@ -93,10 +93,10 @@ public class EmbargoedFilesUpdateProcess extends ScheduledBatchProcess<Informati
         email.setUserGenerated(false);
         if (isExpiration) {
             email.setSubject(SUBJECT_EXPIRED);
-            emailService.queueWithFreemarkerTemplate("expiration.ftl", map, email);
+            emailService.queueWithFreemarkerTemplate("embargo/expiration.ftl", map, email);
         } else {
             email.setSubject(SUBJECT_WARNING);
-            emailService.queueWithFreemarkerTemplate("expiration-warning.ftl", map, email);
+            emailService.queueWithFreemarkerTemplate("embargo/expiration-warning.ftl", map, email);
         }
 
     }

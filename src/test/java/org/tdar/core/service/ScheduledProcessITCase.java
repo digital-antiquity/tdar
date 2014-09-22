@@ -32,6 +32,7 @@ import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.DailyEmailProcess;
+import org.tdar.core.service.processes.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.RebuildHomepageCache;
@@ -135,6 +136,19 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+    }
+    
+    
+
+    @Test
+    @Rollback
+    public void testEmbargo() throws InstantiationException, IllegalAccessException {
+        // queue the embargo task
+        scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
+        scheduledProcessService.runScheduledProcessesInQueue();
+        // queue the email task
+        scheduledProcessService.queueTask(SendEmailProcess.class);
+        scheduledProcessService.runScheduledProcessesInQueue();
     }
 
     @Test
