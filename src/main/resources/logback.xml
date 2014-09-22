@@ -10,6 +10,9 @@
 <configuration>
   <!-- Errors were reported during translation. -->
   <!-- Could not find transformer for org.tdar.utils.PatternSubjectSMTPAppender -->
+
+  <!-- performance notes -->
+  <!-- http://www.javacodegeeks.com/2014/07/how-to-instantly-improve-your-java-logging-with-7-logback-tweaks.html -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>%d{HH:mm:ss.SSS}%-15([%thread %X{path}]) %-5level %logger - %msg%n</pattern>
