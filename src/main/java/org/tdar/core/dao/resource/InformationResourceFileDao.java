@@ -12,6 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,5 +139,20 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     public ScrollableResults findScrollableVersionsForVerification() {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION);
         return query.setReadOnly(true).setCacheable(false).scroll(ScrollMode.FORWARD_ONLY);
+    }
+
+    public List<InformationResourceFile> findAllExpiredEmbargoes() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED);
+        DateTime today = new DateTime().withTimeAtStartOfDay();
+        query.setParameter("dateStart", today.toDate());
+        return query.list();
+    }
+
+    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW);
+        DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();
+        query.setParameter("dateStart", today.toDate());
+        query.setParameter("dateEnd", today.plusDays(1).toDate());
+        return query.list();
     }
 }

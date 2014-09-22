@@ -130,6 +130,8 @@ public interface TdarNamedQueries {
     String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
     String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
     String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
+    String QUERY_RESOURCE_FILE_EMBARGO_EXIPRED = "query.expired";
+    String QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW = "query.expires_tomorrow";
     // raw SQL/HQL queries
 
     /**

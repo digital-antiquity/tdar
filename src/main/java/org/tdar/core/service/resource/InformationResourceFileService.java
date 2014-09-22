@@ -99,4 +99,12 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
         return getDao().findScrollableVersionsForVerification();
     }
 
+    public List<InformationResourceFile> findAllExpiredEmbargoFiles() {
+        return getDao().findAllExpiredEmbargoes();
+    }
+
+    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
+        return getDao().findAllEmbargoFilesExpiringTomorrow();
+    }
+
 }

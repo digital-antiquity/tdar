@@ -459,6 +459,13 @@
                 name = TdarNamedQueries.WEEKLY_EMAIL_STATS,
                 query = "select count(*) from Email where status='SENT' and dateSent >= :date and userGenerated=TRUE"),
 
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGO_EXIPRED,
+                query = "from InformationResourceFile where date_made_public <= dateStart and restriction like 'EMBARGO%'"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
+                query = "from InformationResourceFile where date_made_public <= dateStart  and date_made_public >=dateEnd and restriction like 'EMBARGO%'"),
+
 })
 package org.tdar.core.dao;
 

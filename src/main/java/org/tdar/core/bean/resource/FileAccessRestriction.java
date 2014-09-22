@@ -17,7 +17,9 @@ public enum FileAccessRestriction implements HasLabel, Localizable {
 
     @Override
     public String getLabel() {
-        return WordUtils.capitalize(this.name().toLowerCase());
+        String name = this.name();
+        name = name.replace("_", " ");
+        return WordUtils.capitalize(name.toLowerCase());
     }
 
     @Override
