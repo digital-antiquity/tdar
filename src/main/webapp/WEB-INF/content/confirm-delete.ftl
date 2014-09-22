@@ -6,7 +6,7 @@
     <#if !persistable.status?? || persistable.status != 'DELETED'>
 
 
-        <#if deleteIssues?? && !deleteIssues.isEmpty()>
+        <#if (deleteIssues![])?has_content>
             <#assign deleteable= false />
             <#list deleteIssues as issue>
                 <#if issue.deleted?? && !issue.deleted> <#assign deleteable = false> </#if>

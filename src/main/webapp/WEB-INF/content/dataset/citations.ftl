@@ -13,7 +13,7 @@
     <@s.token name='struts.csrf.token' />
     <fieldset>
         <legend><b>Source Citations</b></legend>
-        <#if resource.sourceCitations?? && ! resource.sourceCitations.isEmpty()>
+        <#if ((resource.sourceCitations)![])?has_content>
             <ul list-style='none'>
                 <@s.iterator status='rowStatus' value='resource.sourceCitations' var='sourceCitation'>
                     <li><a href="<@s.url value='/document/view' resourceId='${sourceCitation.id?c}'/>">${sourceCitation.title}
@@ -30,7 +30,7 @@
 
     <fieldset>
         <legend><b>Related citations</b></legend>
-        <#if resource.relatedCitations?? && ! resource.relatedCitations.isEmpty()>
+        <#if ((resource.relatedCitations)![])?has_content>
             <table>
                 <@s.iterator status='rowStatus' value='resource.relatedCitations' var='relatedCitation'>
                     <tr>

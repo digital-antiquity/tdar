@@ -104,6 +104,15 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         getResources().addAll(getAccount().getResources());
         Persistable.Base.sortByUpdatedDate(getResources());
+
+        for (TdarUser au : getAuthorizedMembers()) {
+            String name = null;
+            if (au != null) {
+                name = au.getProperName();
+            }
+            getAuthorizedUsersFullNames().add(name);
+        }
+
         return SUCCESS;
     }
 

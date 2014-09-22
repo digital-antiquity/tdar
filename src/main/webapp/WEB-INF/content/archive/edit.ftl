@@ -6,7 +6,7 @@
     <#global inheritanceEnabled=true />
     <#macro afterUpload>
         <h2>Import Action</h2>
-        <#if !resource.isImportDone()>
+        <#if !resource.importDone>
             <@helptext.unpackArchiveTip />
             <div class="" id="unpackArchiveSection" data-tiplabel="Unpack the archive?" data-tooltipcontent="#divUnpackArchiveTip" >
                 <@boolfield label='Unpack the uploaded archive (.bz2) into the repository?' name="resource.doImportContent" id="do_import_content" value=resource.doImportContent!false  />

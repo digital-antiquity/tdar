@@ -223,6 +223,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             searchService.handleSearch(queryBuilder, result, this);
             setMode("SEARCH");
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
+            getCollectionResults().removeAll(Collections.singleton(null));
             for (ResourceCollection col : getCollectionResults()) {
                 authorizationService.applyTransientViewableFlag(col, getAuthenticatedUser());
             }
@@ -613,8 +614,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
-            getLogger().debug("inflating parameters for group {}", sp);
             searchService.inflateSearchParameters(sp);
+            getLogger().debug("inflating parameters for group {}", sp);
         }
 
         return SUCCESS;
@@ -1183,6 +1184,16 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
         this.collectionSearchBoxVisible = collectionSearchBoxVisible;
+    }
+
+    /**
+     * Hint to view layer: true if it should display collection search results along with resource search results.
+     * @return true,  if rendering search results, the list of results is not empty, the collection search box is visible
+     */
+    public boolean isShowCollectionResults() {
+       return getLookupSource() == LookupSource.RESOURCE
+               && collectionSearchBoxVisible
+               && collectionTotalRecords > 0;
     }
 
 }

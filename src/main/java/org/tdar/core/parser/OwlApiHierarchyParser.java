@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Ontology;
@@ -52,12 +53,12 @@ public class OwlApiHierarchyParser implements OntologyParser {
         List<OWLClass> allClasses = new ArrayList<OWLClass>(owlOntology.getClassesInSignature());
         sortOwlClassCollection(owlOntology, allClasses);
         for (OWLClass owlClass : allClasses) {
-            if (owlClass.getSuperClasses(owlOntology).isEmpty()) {
+            if (EntitySearcher.getSuperClasses(owlClass, owlOntology).isEmpty()) {
                 rootClasses.add(owlClass);
             }
             SortedSet<OWLClass> subclasses = new TreeSet<OWLClass>();
             owlHierarchyMap.put(owlClass, subclasses);
-            for (OWLClassExpression subclassDescription : owlClass.getSubClasses(owlOntology)) {
+            for (OWLClassExpression subclassDescription : EntitySearcher.getSubClasses(owlClass, owlOntology)) {
                 OWLClass subclass = subclassDescription.asOWLClass();
                 subclasses.add(subclass);
             }
@@ -144,7 +145,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             logger.trace("skipping: {}", displayName);
             return index;
         }
-        for (OWLClassExpression equiv : owlClass.getEquivalentClasses(owlOntology)) {
+        for (OWLClassExpression equiv : EntitySearcher.getEquivalentClasses(owlClass, owlOntology)) {
             // making the assumption that we see the "real" node before we see the synonyms
             for (OWLClass syn : equiv.getClassesInSignature()) {
                 String label = extractNodeLabel(syn);
@@ -162,7 +163,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         node.setUri(uri_string);
         node.setIntervalStart(Integer.valueOf(index));
         String indexString = String.valueOf(index);
-        for (OWLClassExpression owlClassExpression : owlClass.getSuperClasses(owlOntology)) {
+        for (OWLClassExpression owlClassExpression : EntitySearcher.getSuperClasses(owlClass, owlOntology)) {
             OWLClass parentClass = owlClassExpression.asOWLClass();
             OntologyNode parentNode = classNodeMap.get(parentClass);
             // append parent indices recursively
@@ -196,7 +197,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
     private String extractNodeLabel(OWLClass owlClass) {
         String txt = "";
 
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isLabel()) {
                 String annTxt = ann.getValue().toString();
                 annTxt = annTxt.replaceAll("^\"", "");
@@ -208,7 +209,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private Long extractImportOrder(OWLClass owlClass) {
         String txt = "";
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isComment()) {
                 logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();
@@ -230,7 +231,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private String extractDescription(OWLClass owlClass) {
         String txt = "";
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isComment()) {
                 logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();

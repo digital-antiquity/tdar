@@ -22,6 +22,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -46,6 +47,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private PaginationHelper paginationHelper;
 
     @Action("edit")
+    @HttpsOnly
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String edit() {
         return SUCCESS;

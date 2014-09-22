@@ -181,7 +181,7 @@
                     <table id="dataTable" class="dataTable table tableFormat table-striped table-bordered"></table>
                 </div>
             </div>
-                <#if tdarConfiguration.isXmlExportEnabled()>
+                <#if tdarConfiguration.xmlExportEnabled>
                 <p class="faims_xml_logo"><a href="/dataset/xml?dataTableId=${dataTable.id?c}" target="_blank">XML</a></p>
                 </#if>
             </#if>
@@ -407,7 +407,7 @@
     <hr/>
     </#if>
 
-    <#if ! resource.activeResourceAnnotations.isEmpty()>
+    <#if (resource.activeResourceAnnotations)?has_content>
     <h3>Record Identifiers</h3>
 
         <#list allResourceAnnotationKeys as key>
@@ -439,7 +439,7 @@
     <hr/>
     </#if>
 <#-- display linked data <-> ontology nodes -->
-    <#if relatedResources?? && !relatedResources.empty>
+    <#if relatedResources?has_content>
     <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
     <ol style='list-style-position:inside'>
         <#list relatedResources as related >
@@ -449,7 +449,7 @@
     </#if>
 
     <@view.unapiLink resource />
-    <#if !viewableResourceCollections.empty>
+    <#if viewableResourceCollections?has_content>
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
         <#list viewableResourceCollections as collection>
@@ -587,7 +587,7 @@
 
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
     <#macro _relatedSimpleItem listitems label>
-        <#if ! listitems.isEmpty()>
+        <#if listitems?has_content>
         <h3>${label}</h3>
         <table>
             <#list listitems as citation>
