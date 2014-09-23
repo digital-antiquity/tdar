@@ -20,9 +20,9 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -36,7 +36,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
+
+import com.opensymphony.xwork2.Action;
 
 @Transactional
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
@@ -73,11 +74,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     @Autowired
     protected GenericKeywordService genericKeywordService;
-
-    @Override
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Before
     public void reset() {
@@ -128,7 +124,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return setupImage(getUser());
     }
 
-    protected Long setupImage(Person user) {
+    protected Long setupImage(TdarUser user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");
@@ -215,10 +211,10 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         }
         if (b == Boolean.TRUE) {
             Assert.assertTrue(String.format("there should be an exception %s or returned input %s", e, msg),
-                    e != null || AbstractLookupController.INPUT.equals(msg));
+                    (e != null) || Action.INPUT.equals(msg));
         } else if (b == Boolean.FALSE) {
             Assert.assertTrue("there should not be an exception: " + ExceptionUtils.getFullStackTrace(e), e == null);
-            assertEquals(AbstractLookupController.SUCCESS, msg);
+            assertEquals(Action.SUCCESS, msg);
         } else {
             // "maybe" state -- in some cases (looped state in AdvancedSearchController.testResultCountsAsBasicUser for example)
         }
@@ -229,7 +225,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void doSearch(String query, Boolean exceptions) {
-        genericService.synchronize();
+        evictCache();
         controller.setQuery(query);
         doSearch(controller, LookupSource.RESOURCE, exceptions);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
@@ -261,7 +257,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return null;
     }
 

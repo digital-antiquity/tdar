@@ -8,27 +8,41 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.resource.FileStatus;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.UserNotificationService;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.SortOption;
-import org.tdar.utils.activity.Activity;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 
 /**
  * $Id$
@@ -42,7 +56,7 @@ import org.tdar.utils.activity.Activity;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class DashboardController extends AuthenticationAware.Base {
+public class DashboardController extends AuthenticationAware.Base implements DataTableResourceDisplay {
 
     private static final long serialVersionUID = -2959809512424441740L;
     private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
@@ -53,47 +67,105 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private Map<ResourceType, Map<Status, Long>> resourceCountAndStatusForUser = new HashMap<ResourceType, Map<Status, Long>>();
-    private List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
+    private List<InformationResource> resourcesWithErrors;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient GenericService genericService;
+    @Autowired
+    private transient ProjectService projectService;
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+    @Autowired
+    private transient AccountService accountService;
+    @Autowired
+    private transient SearchService searchService;
+    @Autowired
+    private transient EntityService entityService;
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient UserNotificationService userNotificationService;
+
+    private List<Project> allSubmittedProjects;
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<Resource> recentResources = new ArrayList<Resource>();
+    private List<UserNotification> currentNotifications;
 
     // remove when we track down what exactly the perf issue is with the dashboard;
     // toggles let us turn off specific queries / parts of homepage
 
+    private void setupRecentResources() {
+        int count = 10;
+        try {
+            getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
+        } catch (ParseException pe) {
+            getLogger().debug("parse exception", pe);
+        }
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+
+    }
+
     @Override
     @Action("dashboard")
     public String execute() {
-        setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
-        setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
-        setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
-        getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
-        List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollections());
-        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
-        getResourceCollectionService().reconcileCollectionTree(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        getResourceCollectionService().reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // try {
-        // getResourceCollectionService().reconcileCollectionTree2(getResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // getResourceCollectionService().reconcileCollectionTree2(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
-        // } catch (ParseException e1) {
-        // getLogger().error("parse exception: {} ", e1);
-        // }
-        getSharedResourceCollections().removeAll(getResourceCollections());
-        Collections.sort(resourceCollections);
-        Collections.sort(sharedResourceCollections);
-        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+        setupRecentResources();
+        setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
+        getLogger().trace("find recently edited resources");
+        setRecentlyEditedResources(projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
+        getLogger().trace("find empty projects");
+        setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
+        getLogger().trace("counts for graphs");
+        setResourceCountAndStatusForUser(resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
+        setupResourceCollectionTreesForDashboard();
+        setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(getAuthenticatedUser(),
+                Arrays.asList(Status.ACTIVE, Status.DRAFT), Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
         for (Account account : getAccounts()) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
             }
         }
+
+        prepareProjectStuff();
+        setupBookmarks();
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
 
         return SUCCESS;
+    }
+
+    private void setupResourceCollectionTreesForDashboard() {
+        getLogger().trace("parent/ owner collections");
+        getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+        getLogger().trace("accessible collections");
+        getSharedResourceCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
+        List<Long> collectionIds = Persistable.Base.extractIds(getAllResourceCollections());
+        collectionIds.addAll(Persistable.Base.extractIds(getSharedResourceCollections()));
+        getLogger().trace("reconcile tree1");
+        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(), collectionIds);
+        getLogger().trace("reconcile tree2");
+        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(), collectionIds);
+
+        getLogger().trace("removing duplicates");
+        getSharedResourceCollections().removeAll(getAllResourceCollections());
+        getLogger().trace("sorting");
+        Collections.sort(allResourceCollections);
+        Collections.sort(sharedResourceCollections);
+        getLogger().trace("done sort");
     }
 
     /**
@@ -146,45 +218,71 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<Resource> getBookmarkedResources() {
-        if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findBookmarkedResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        }
-
-        for (Resource res : bookmarkedResources) {
-            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
-        }
         return bookmarkedResources;
     }
 
+    public void setBookmarkedResource(List<Resource> bookmarks) {
+        this.bookmarkedResources = bookmarks;
+    }
+
+    private void setupBookmarks() {
+        if (bookmarkedResources == null) {
+            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
+
+        for (Resource res : bookmarkedResources) {
+            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
+        }
+    }
+
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
     public List<Resource> getFullUserProjects() {
-        if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-            Collections.sort(fullUserProjects);
-            fullUserProjects.removeAll(getAllSubmittedProjects());
-        }
         return fullUserProjects;
     }
 
+    public void setFullUserProjects(List<Resource> projects) {
+        fullUserProjects = projects;
+    }
+
+    public void setAllSubmittedProjects(List<Project> projects) {
+        allSubmittedProjects = projects;
+    }
+
+    public void setFilteredFullUserProjects(List<Resource> projects) {
+        filteredFullUserProjects = projects;
+    }
+
+    public void setEditableProjects(Set<Resource> projects) {
+        editableProjects = projects;
+    }
+
     public List<Resource> getFilteredFullUserProjects() {
-        if (filteredFullUserProjects == null) {
-            filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
-            filteredFullUserProjects.removeAll(getAllSubmittedProjects());
-        }
         return filteredFullUserProjects;
     }
 
-    public Set<Resource> getEditableProjects() {
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(
+    private Set<Resource> editableProjects = new HashSet<>();
+
+    private void prepareProjectStuff() {
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        editableProjects = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
-        return findSparseTitleIdProjectListByPerson;
+
+        fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        Collections.sort(fullUserProjects);
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
+        fullUserProjects.removeAll(getAllSubmittedProjects());
+        filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
+        filteredFullUserProjects.removeAll(getAllSubmittedProjects());
+
+    }
+
+    public Set<Resource> getEditableProjects() {
+        return editableProjects;
     }
 
     public void prepare() {
@@ -199,11 +297,11 @@ public class DashboardController extends AuthenticationAware.Base {
             for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
                 Long count = 0L;
                 for (Status status : getResourceCountAndStatusForUser().get(type).keySet()) {
-                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
+                    if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
                             && status == Status.DELETED) {
                         continue;
                     }
-                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
+                    if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
                             && status == Status.FLAGGED) {
                         continue;
                     }
@@ -219,16 +317,16 @@ public class DashboardController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(statusCountForUser.keySet())) {
             for (Status status : Status.values()) {
                 Long count = 0L;
-                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
+                if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser())
                         && status == Status.DELETED) {
                     continue;
                 }
-                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
+                if (authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser())
                         && status == Status.FLAGGED) {
                     continue;
                 }
                 if ((!TdarConfiguration.getInstance().isPayPerIngestEnabled() ||
-                        getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
+                        authorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
                         && status == Status.FLAGGED_ACCOUNT_BALANCE) {
                     continue;
                 }
@@ -250,28 +348,30 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {
-        return getResourceService().getAllResourceTypes();
+        return resourceService.getAllResourceTypes();
     }
 
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
+    @DoNotObfuscate(reason = "not needed / performance test")
+    public List<ResourceCollection> getAllResourceCollections() {
+        return allResourceCollections;
     }
 
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
+        this.allResourceCollections = resourceCollections;
     }
 
     /**
      * @return the sharedResourceCollections
      */
+    @DoNotObfuscate(reason = "not needed / performance test")
     public List<ResourceCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
@@ -298,6 +398,38 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
         this.overdrawnAccounts = overdrawnAccounts;
+    }
+
+    public List<InformationResource> getResourcesWithErrors() {
+        return resourcesWithErrors;
+    }
+
+    public void setResourcesWithErrors(List<InformationResource> resourcesWithErrors) {
+        this.resourcesWithErrors = resourcesWithErrors;
+    }
+
+    public List<Resource> getRecentResources() {
+        return recentResources;
+    }
+
+    public void setRecentResources(List<Resource> recentResources) {
+        this.recentResources = recentResources;
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
+    }
+
+    public List<UserNotification> getCurrentNotifications() {
+        return currentNotifications;
+    }
+
+    public void setCurrentNotifications(List<UserNotification> currentNotifications) {
+        this.currentNotifications = currentNotifications;
     }
 
 }

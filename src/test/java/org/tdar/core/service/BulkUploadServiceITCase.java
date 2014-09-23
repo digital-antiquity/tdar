@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -30,12 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -58,11 +58,17 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     BulkUploadService bulkUploadService;
 
+    @Autowired
+    ReflectionService reflectionService;
+
+    @Autowired
+    BulkUploadTemplateService bulkUploadTemplateService;
+
     @Test
     @Rollback
     public void testLookupMaps() {
-        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getAllValidFieldNames(ResourceType.DOCUMENT);
-        Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMapByName(importFields);
+        LinkedHashSet<CellMetadata> importFields = bulkUploadTemplateService.getAllValidFieldNames(ResourceType.DOCUMENT);
+        Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(importFields);
         assertTrue("testing local field", cellLookupMap.containsKey("documentType"));
         assertTrue("testing parent class", cellLookupMap.containsKey("description"));
         logger.info("{}", importFields);
@@ -75,7 +81,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testTemplate() throws FileNotFoundException, IOException {
-        HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
+        HSSFWorkbook workbook = bulkUploadTemplateService.createExcelTemplate();
         File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());
         workbook.write(new FileOutputStream(file));
         logger.info(file.getAbsolutePath());
@@ -96,19 +102,22 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
             excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
-            excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL + "*");
-            excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
+            excelUnit.assertCellEquals(0, 14, BulkImportField.YEAR_LABEL + "*");
+            excelUnit.assertCellCommentEquals(0, 14, BulkImportField.YEAR_DESCRIPTION);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
             excelUnit.assertRowContains(0, BulkImportField.YEAR_LABEL + "*");
         }
 
+        // for the time being we are assuming that copyright holders won't be fed in via the spreadsheet, 
+        // as the back end logic as written will apply the same copyright holder entered on the final screen in the process
+        // to all of the files imported.
         if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
             excelUnit.assertRowDoesNotContain(0, BulkImportField.COPYRIGHT_HOLDER);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.COPYRIGHT_HOLDER);
         }
-
+        
         sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 
@@ -131,10 +140,9 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     public <R extends Resource> void parseBasicFile() throws InvalidFormatException, IOException {
         BulkManifestProxy manifestProxy = generateManifest("manifest.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
         manifestProxy.setResourcesCreated(filenameResourceMap);
-        bulkUploadService.readExcelFile(manifestProxy, receiver);
-
+        manifestProxy.readExcelFile();
+        
         for (Resource resource : filenameResourceMap.values()) {
             logger.info("{}", resource);
             logger.info("title:" + resource.getTitle());
@@ -176,7 +184,12 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     private BulkManifestProxy generateManifest(String filename) throws IOException, InvalidFormatException {
         Workbook workbook = WorkbookFactory.create(new FileInputStream(TestConstants.TEST_BULK_DIR + filename));
-        BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
+        Image image = new Image();
+        image.setTitle("template_valid_title");
+        image.setDescription("test description");
+        image.setProject(Project.NULL);
+        image.markUpdated(getBasicUser());
+        BulkManifestProxy manifestProxy = bulkUploadService.validateManifestFile(workbook.getSheetAt(0), image, getBasicUser(), null, null);
         return manifestProxy;
     }
 
@@ -188,9 +201,9 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Resource> filenameResourceMap = setup();
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy,  receiver);
-        assertTrue(receiver.getAsyncErrors().contains("is not a valid value for the"));
+        manifestProxy.readExcelFile();
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
+        assertTrue(asyncErrors.contains("is not a valid value for the"));
     }
 
     @Test
@@ -203,8 +216,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             Map<String, Resource> filenameResourceMap = setup();
             manifestProxy.setResourcesCreated(filenameResourceMap);
 
-            AsyncUpdateReceiver receiver = new DefaultReceiver();
-            bulkUploadService.readExcelFile(manifestProxy, receiver);
+            manifestProxy.readExcelFile();
         } catch (Exception e) {
             String msg = e.getMessage();
             logger.info(msg);
@@ -221,10 +233,9 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Resource> filenameResourceMap = setup();
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy,  receiver);
-        logger.info(receiver.getAsyncErrors());
-        assertTrue(receiver.getAsyncErrors().contains("is expecting an integer value, but found"));
+        manifestProxy.readExcelFile();
+        logger.info("{}", manifestProxy.getAsyncUpdateReceiver().getAsyncErrors());
+        assertTrue(StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors().toArray()).contains("is expecting an integer value, but found"));
     }
 
     @Test
@@ -234,10 +245,11 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         BulkManifestProxy manifestProxy = generateManifest("bad_filename.xlsx");
         Map<String, Resource> filenameResourceMap = setup();
 
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
         manifestProxy.setResourcesCreated(filenameResourceMap);
-        bulkUploadService.readExcelFile(manifestProxy, receiver);
-        assertTrue(receiver.getAsyncErrors().contains("skipping line in excel file as resource with the filename"));
+        manifestProxy.readExcelFile();
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
+        logger.debug(asyncErrors);
+        assertTrue(asyncErrors.contains("was not found in the import batchFilename"));
     }
 
     @Test
@@ -249,8 +261,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             Map<String, Resource> filenameResourceMap = setup();
             manifestProxy.setResourcesCreated(filenameResourceMap);
 
-            AsyncUpdateReceiver receiver = new DefaultReceiver();
-            bulkUploadService.readExcelFile(manifestProxy, receiver);
+            manifestProxy.readExcelFile();
         } catch (Exception e) {
             logger.info(e.getMessage());
             assertTrue(e.getMessage().contains("the first column must be the filename"));
@@ -265,9 +276,9 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         Map<String, Resource> filenameResourceMap = setup();
         manifestProxy.setResourcesCreated(filenameResourceMap);
 
-        AsyncUpdateReceiver receiver = new DefaultReceiver();
-        bulkUploadService.readExcelFile(manifestProxy, receiver);
-        assertTrue(receiver.getAsyncErrors().contains("is not valid for the resource type"));
+        manifestProxy.readExcelFile();
+        String asyncErrors = StringUtils.join(manifestProxy.getAsyncUpdateReceiver().getAsyncErrors(), "");
+        assertTrue(asyncErrors.contains("is not valid for the resource type"));
     }
 
     @Test
@@ -283,9 +294,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         }
         boolean noException = true;
         try {
-            AsyncUpdateReceiver receiver = new DefaultReceiver();
             manifestProxy.setResourcesCreated(filenameResourceMap);
-            bulkUploadService.readExcelFile(manifestProxy,  receiver);
+            manifestProxy.readExcelFile();
         } catch (TdarRecoverableRuntimeException ex) {
             noException = false;
         }

@@ -20,7 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -56,8 +56,8 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+        docValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
+        docValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
 
         docValMap.put("authorshipProxies[0].person.firstName", "Adam");
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");
@@ -132,12 +132,12 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
 
         gotoPage("/image/add");
         setInput("ticketId", ticketId);
-        addFileProxyFields(0, FileAccessRestriction.EMBARGOED, TEST_IMAGE_NAME);
+        addFileProxyFields(0, FileAccessRestriction.EMBARGOED_FIVE_YEARS, TEST_IMAGE_NAME);
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
         logger.trace(getPageText());
         submitForm();
@@ -180,8 +180,9 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         for (String key : docValMap.keySet()) {
 
             String val = docValMap.get(key);
-            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (key.startsWith("individual") || key.startsWith("sourceC") || key.startsWith("relatedC") || key.startsWith("institution") ||
                     key.contains("authorized")) {
@@ -189,8 +190,9 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
                 continue;
             }
 
-            if (key.contains("dateType"))
+            if (key.contains("dateType")) {
                 continue;
+            }
 
             HtmlElement input = getInput(key);
             assertTrue(String.format("element: %s should be set to: %s but was", key, val, input.asText()), checkInput(key, val));

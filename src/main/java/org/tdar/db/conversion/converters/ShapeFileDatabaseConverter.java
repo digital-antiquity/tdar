@@ -32,7 +32,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.utils.MessageHelper;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -145,7 +144,9 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         try {
             @SuppressWarnings("unused")
             int rowCount = collection.size();
+            int rowNum = 0;
             while (iterator.hasNext()) {
+                rowNum++;
                 HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                 Feature feature = iterator.next();
                 StringBuilder sb = new StringBuilder();
@@ -154,7 +155,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
                     String value = prop.getValue().toString();
                     valueColumnMap.put(column, value);
                     sb.append(value).append(" ");
-                    statisticsManager.updateStatistics(column, value);
+                    statisticsManager.updateStatistics(column, value, rowNum);
 
                 }
                 targetDatabase.addTableRow(dataTable, valueColumnMap);
@@ -164,7 +165,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             }
         } catch (Exception e) {
             logger.error("could not process shapefile: {}", e);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("shapeFileConveter.corrupt"));
+            throw new TdarRecoverableRuntimeException("shapeFileConveter.corrupt");
         } finally {
             iterator.close();
             dataStore.dispose();

@@ -39,8 +39,9 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         super(name, store, index, Field.TermVector.NO);
         // fundamental set: this instructs Lucene not to call the stringValue on field creation, but only when needed
         super.lazy = true;
-        if (boost != null)
+        if (boost != null) {
             setBoost(boost);
+        }
         this.paths = paths;
     }
 

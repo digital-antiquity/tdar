@@ -2,23 +2,19 @@ package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.NDC;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.activity.Activity;
-import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -44,9 +40,9 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     enum SessionType {
-        READ_ONLY,WRITEABLE
+        READ_ONLY, WRITEABLE
     }
-    
+
     @Autowired
     private transient GenericService genericService;
     @Autowired
@@ -67,23 +63,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             methodName = "execute";
         }
 
-        Activity activity = null;
-        if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
-            activity = new Activity(ServletActionContext.getRequest());
-            if (getSessionData() != null && getSessionData().isAuthenticated()) {
-                activity.setUser(sessionData.getPerson());
-            }
-            ActivityManager.getInstance().addActivityToQueue(activity);
-        }
-        logger.debug("<< activity begin: {} ", activity);
-
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
-            HttpServletResponse response = ServletActionContext.getResponse();
-            response.setHeader("Cache-Control", "no-store,no-Cache");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
-        }
-        
+        HttpServletResponse response = ServletActionContext.getResponse();
         SessionType mark = SessionType.READ_ONLY;
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
@@ -93,38 +73,24 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         }
         try {
             // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
-            NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
                 if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, sessionData.getPerson()));
+                    TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
+                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));
                 }
             }
             String invoke = invocation.invoke();
             return invoke;
         } catch (TdarActionException exception) {
             if (StatusCode.shouldShowException(exception.getStatusCode())) {
-                logger.warn("caught TdarActionException", exception.getMessage());
-            } else {
-                logger.warn("caught TdarActionException", exception);
+                logger.warn("caught TdarActionException ({})", exception.getStatusCode(), exception);
             }
-            HttpServletResponse response = ServletActionContext.getResponse();
             response.setStatus(exception.getStatusCode());
             logger.debug("clearing session due to {} -- returning to {}", exception.getResponseStatusCode(), exception.getResultName());
             genericService.clearCurrentSession();
             setSessionClosed(true);
             return exception.getResultName();
-        } finally {
-            try {
-                if (activity != null) {
-                    activity.end();
-                    logger.debug(">> activity end: {} ", activity);
-                }
-            } finally {
-                // overkill perhaps, but we need to be absolutely certain that we pop the NDC.
-                NDC.pop();
-            }
-
         }
     }
 

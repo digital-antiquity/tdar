@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -28,7 +29,6 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
@@ -136,7 +136,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 currentColumn.getProperties();
 
                 Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
-                if (description_ != null && !StringUtils.isEmpty(description_.toString())) {
+                if ((description_ != null) && !StringUtils.isEmpty(description_.toString())) {
                     dataTableColumn.setDescription(description_.toString());
                 }
                 if (dataType == DataTableColumnType.VARCHAR) {
@@ -152,12 +152,13 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             int rowNumber = 0;
             try {
                 int rowCount = getDatabase().getTable(tableName).getRowCount();
-                for (rowNumber =0; rowNumber < rowCount; rowNumber++) {
+                for (rowNumber = 0; rowNumber < rowCount; rowNumber++) {
                     HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                     Map<String, Object> currentRow = currentTable.getNextRow();
                     int j = 0;
-                    if (currentRow == null)
+                    if (currentRow == null) {
                         continue;
+                    }
                     for (Object currentObject : currentRow.values()) {
                         DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
                         if (currentObject == null) {
@@ -167,11 +168,11 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         String currentObjectAsString = currentObject.toString();
                         if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
 
-                            //logger.info(currentObject.getClass().getCanonicalName());
+                            // logger.info(currentObject.getClass().getCanonicalName());
                             byte[] data = (byte[]) currentObject;
                             // InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
                             // byte[] uncompressed = IOUtils.toByteArray(iis);
-                            //logger.info("{}", Hex.encodeHexString(data));
+                            // logger.info("{}", Hex.encodeHexString(data));
                             // logger.info("{}", uncompressed);
                             // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
                             GeometryFactory factory = new GeometryFactory();
@@ -189,7 +190,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             try {
                                 g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());
                             } catch (Exception e) {
-//                                logger.error("{}", e);
+                                // logger.error("{}", e);
                             }
                             // logger.info("data: {} ", data);
                         }
@@ -201,12 +202,11 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     IOUtils.write("\r\n", indexedFileOutputStream);
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
                 }
-            } catch (BufferUnderflowException | IllegalStateException  bex) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.error_corrupt"));
+            } catch (BufferUnderflowException | IllegalStateException bex) {
+                throw new TdarRecoverableRuntimeException("accessDatabaseConverter.error_corrupt");
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("accessDatabaseConverter.cannot_read_Row",rowNumber, tableName), e);
-            }
-            finally {
+                throw new TdarRecoverableRuntimeException("accessDatabaseConverter.cannot_read_Row", e, Arrays.asList(rowNumber, tableName));
+            } finally {
                 completePreparedStatements();
             }
         }
@@ -214,11 +214,13 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
-                if (tableName1.equals(tableName2))
+                if (tableName1.equals(tableName2)) {
                     continue;
+                }
                 for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
-                    if (!tableName1.equals(relationship.getFromTable().getName()))
+                    if (!tableName1.equals(relationship.getFromTable().getName())) {
                         continue;
+                    }
                     logger.trace(relationship.getName());
                     DataTableRelationship relationshipToPersist = new DataTableRelationship();
                     // iterate over the two lists of columns (from- and to-) and pair them up
@@ -232,7 +234,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
-                        columnRelationship.setRelationship(relationshipToPersist);
+                        // columnRelationship.setRelationship(relationshipToPersist);
                         relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
 
@@ -274,8 +276,9 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
      */
     private boolean isUniqueKey(List<Column> possiblyUniqueKeyColumns) {
         // an empty list of columns is bogus
-        if (possiblyUniqueKeyColumns.isEmpty())
+        if (possiblyUniqueKeyColumns.isEmpty()) {
             return false;
+        }
 
         // search through the table's indexes...
         for (Index index : possiblyUniqueKeyColumns.get(0).getTable().getIndexes()) {

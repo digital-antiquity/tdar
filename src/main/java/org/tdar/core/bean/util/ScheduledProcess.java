@@ -8,9 +8,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /**
- * Class to manage scheduled processes, both upgrade tasks and scheduled tasks.  It allows for batch processing. 
+ * Class to manage scheduled processes, both upgrade tasks and scheduled tasks. It allows for batch processing.
+ * 
  * @author abrin
- *
+ * 
  * @param <P>
  */
 public interface ScheduledProcess<P extends Persistable> extends Serializable {
@@ -57,7 +58,7 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
 
         private static final long serialVersionUID = -8630791495469441646L;
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
 
         private Long lastId;
 

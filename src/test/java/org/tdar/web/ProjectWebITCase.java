@@ -14,11 +14,10 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testAddingInformationResourceToProject() {
         String resourceName = "newresource";
         setupDocumentWithProject(resourceName);
-        
+
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
         assertTextPresent(resourceName);
     }
-
 
     private void setupDocumentWithProject(String resourceName) {
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
@@ -35,15 +34,14 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
     }
 
-
     @Test
     public void testChangingProject() {
         String resourceName = "changing project resource";
-        Long projectId = createResourceFromType(ResourceType.PROJECT,PROJECT_NAME);
+        Long projectId = createResourceFromType(ResourceType.PROJECT, PROJECT_NAME);
         setupDocumentWithProject(resourceName);
         String url = getCurrentUrlPath();
-        //get the id of the new resource
-        
+        // get the id of the new resource
+
         gotoPage("/project/" + TestConstants.PARENT_PROJECT_ID);
         assertTextPresent(resourceName);
         gotoPage(url);

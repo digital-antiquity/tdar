@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -23,16 +23,16 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAction;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -40,8 +40,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
-import org.tdar.core.service.processes.SetupBillingAccountsProcess;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.data.FileProxy;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
@@ -49,26 +48,17 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Autowired
     AccountService accountService;
 
-    @Autowired
-    SetupBillingAccountsProcess accountProcess;
-
-    @Test
-    @Rollback
-    public void testBillingAccountSetup() throws InstantiationException, IllegalAccessException {
-        Document document = generateDocumentWithFileAndUser();
-        accountProcess.process(document.getSubmitter());
-        genericService.synchronize();
-    }
 
     @Test
     @Rollback
     public void testUnassignedInvoice() {
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(person)));
         Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()), person);
         setupInvoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         genericService.saveOrUpdate(setupInvoice);
-        assertTrue(accountService.hasSpaceInAnAccount(person, null, true));
+        accountService.assignOrphanInvoicesIfNecessary(person);
+        assertTrue(accountService.hasSpaceInAnAccount(person, null));
         assertNotEmpty(accountService.listAvailableAccountsForUser(person));
     }
 
@@ -106,7 +96,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         Account account = new Account();
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, account.canAddResource(re));
@@ -128,7 +118,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountCanAddResource() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
         Account account = setupAccountWithInvoiceForOneResource(model, getUser());
@@ -156,7 +146,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         updateModel(model, false, false, true);
         Account account = setupAccountWithInvoiceFor6Mb(model, getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -182,7 +172,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountForPerson(getUser());
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -215,8 +205,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
-        Document resource = generateDocumentWithFileAndUser();
-        Document resource2 = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource2 = generateDocumentWithFileAndUseDefaultUser();
         // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
 
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
@@ -357,11 +347,13 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setCountingResources(true);
         assertFalse(re.accountHasMinimumForNewResource(new Account(), null));
         Image img = new Image();
-        InformationResource irfile = generateDocumentWithFileAndUser();
-        InformationResource irfile2 = generateDocumentWithFileAndUser();
+        InformationResource irfile = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource irfile2 = generateDocumentWithFileAndUseDefaultUser();
         InformationResourceFile irfProcessed = new InformationResourceFile(FileStatus.PROCESSED, null);
+        InformationResourceFile irfDeleted = new InformationResourceFile(FileStatus.PROCESSED, null);
+        irfDeleted.setDeleted(true);
         img.getInformationResourceFiles().addAll(
-                Arrays.asList(new InformationResourceFile(FileStatus.DELETED, null), irfProcessed,
+                Arrays.asList(irfDeleted, irfProcessed,
                         irfProcessed, irfProcessed));
         img.setStatus(null);
         List<Resource> resources = Arrays.asList(irfile, irfile2, new Project(), new Ontology(), new CodingSheet(), img);
@@ -374,7 +366,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(3, re.getResourcesUsed());
         assertEquals(3, re.getFilesUsed());
         // WARN: brittle...
-        assertEquals(11687168, re.getSpaceUsedInBytes());
+        assertEquals(3013848, re.getSpaceUsedInBytes());
 
     }
 
@@ -397,9 +389,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(4L, invoice.getTotalNumberOfFiles().longValue());
         assertEquals(2L, invoice.getTotalResources().longValue());
         assertEquals(6L, invoice.getTotalSpaceInMb().longValue());
-        assertEquals(222.2, invoice.getCalculatedCost().floatValue(), 1);
-        assertEquals(null, invoice.getTotal());
-
+        assertEquals(222.2, invoice.getCalculatedCost().floatValue(), .1);
+        assertEquals(invoice.getCalculatedCost(), invoice.getTotal());
         // account is empty because invoice is not finalized
         assertEquals(0L, account.getTotalSpaceInMb().longValue());
         assertEquals(0L, account.getTotalNumberOfResources().longValue());
@@ -407,7 +398,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
-        assertEquals(222.2, invoice.getTotal().floatValue(), 1);
+        assertEquals(222.2, invoice.getTotal().floatValue(), .1);
         assertEquals(4L, account.getTotalNumberOfFiles().longValue());
         assertEquals(2L, account.getTotalNumberOfResources().longValue());
         assertEquals(6L, account.getTotalSpaceInMb().longValue());

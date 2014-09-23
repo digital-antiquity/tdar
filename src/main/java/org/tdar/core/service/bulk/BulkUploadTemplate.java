@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -26,12 +26,13 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
+import org.tdar.core.service.excel.CellFormat.Style;
 
 /**
  * Create an Excel Template for use by the @link BulkUploadService
  * 
  * @author abrin
- *
+ * 
  */
 public class BulkUploadTemplate implements Serializable {
 
@@ -47,7 +48,7 @@ public class BulkUploadTemplate implements Serializable {
 
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     /**
      * Initialize with the @link ExcelService
      * 
@@ -74,11 +75,12 @@ public class BulkUploadTemplate implements Serializable {
         // When the comment box is visible, have it show in a 1x3 space
 
         CellStyle defaultStyle = getExcelService().createSummaryStyle(workbook);
-        CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.createStyle(workbook);
+        CellStyle resourceCreatorRoleStyle = CellFormat.build(Style.NORMAL).createStyle(workbook);
         resourceCreatorRoleStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
         resourceCreatorRoleStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
-        CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
-        CellStyle requiredStyle = CellFormat.BOLD.setWrapping(false).createStyle(workbook);
+        CellStyle headerStyle2 = CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10)
+                .createStyle(workbook);
+        CellStyle requiredStyle = CellFormat.build(Style.BOLD).setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
 
         HashMap<String, String> exampleDoc = new HashMap<String, String>();
@@ -119,7 +121,7 @@ public class BulkUploadTemplate implements Serializable {
 
             row.createCell(i).setCellValue(field.getOutputName());
             CellStyle style = defaultStyle;
-            if (field.getMappedClass() != null && field.getMappedClass().equals(Document.class)) {
+            if ((field.getMappedClass() != null) && field.getMappedClass().equals(Document.class)) {
                 style = headerStyle2;
             } else if (field.isRequired()) {
                 style = requiredStyle;
@@ -173,8 +175,9 @@ public class BulkUploadTemplate implements Serializable {
 
         i = 0;
         for (CellMetadata field : enumFields) {
-            if (field.getName().equals("ResourceCreatorInstitution.role"))
+            if (field.getName().equals("ResourceCreatorInstitution.role")) {
                 continue;
+            }
             addReferenceColumn(referenceSheet, field.getEnumList().toArray(new Enum[0]), field.getDisplayName() + " Values:", summaryStyle, i);
             i++;
         }
@@ -192,6 +195,7 @@ public class BulkUploadTemplate implements Serializable {
 
     /**
      * Add a column with a list of definited Enum Values
+     * 
      * @param wb
      * @param labels
      * @param header

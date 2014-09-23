@@ -25,12 +25,12 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
     @SuppressWarnings("deprecation")
     @Override
     @Actions({
-            @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = "freemarker",
+            @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = FREEMARKER,
                     location = "../../errors/access-denied.ftl") })
     })
     public String execute() {
         getLogger().trace(System.getProperty("enableContextSwitchingConfig"));
-        if (getConfigurationFile() != null && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
+        if ((getConfigurationFile() != null) && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
             getLogger().info("switching tDarConfig to:" + getConfigurationFile());
             TdarConfiguration.getInstance().setConfigurationFile(configurationFile);
         } else {

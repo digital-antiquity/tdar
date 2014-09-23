@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -17,14 +19,19 @@ import org.tdar.core.bean.HasLabel;
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public enum ResourceAnnotationType implements HasLabel {
-    
-	IDENTIFIER("Resource Identifier");
+public enum ResourceAnnotationType implements HasLabel, Localizable {
+
+    IDENTIFIER("Resource Identifier");
 
     private final String label;
 
     private ResourceAnnotationType(String label) {
         this.label = label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     @Override

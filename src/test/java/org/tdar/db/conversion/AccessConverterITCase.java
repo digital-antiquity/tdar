@@ -45,9 +45,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
             logger.info("{}", table);
         }
 
-        //FIXME: add more depth to testing
+        // FIXME: add more depth to testing
     }
-
 
     @Override
     @Autowired
@@ -74,7 +73,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
         DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         assertNotNull(dataTable);
-        
+
         // need to solidfy the relationships before passing it onto the list function
         Dataset dataset = new Dataset();
         for (DataTable table : converter.getDataTables()) {
@@ -166,7 +165,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("bone_common_name", meta.getColumnName(6));
                         assertEquals("side", meta.getColumnName(7));
                         assertEquals("part", meta.getColumnName(8));
-                        assertEquals("no", meta.getColumnName(9));
+                        assertEquals("col_no", meta.getColumnName(9));
                         assertEquals("fus_prox", meta.getColumnName(10));
                         assertEquals("fus_dis", meta.getColumnName(11));
                         assertEquals("prop", meta.getColumnName(12));

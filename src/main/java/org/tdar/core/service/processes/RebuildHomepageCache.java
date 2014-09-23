@@ -1,9 +1,11 @@
 package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +20,10 @@ import org.tdar.core.bean.cache.WeeklyPopularResourceCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.data.AggregateViewStatistic;
-import org.tdar.struts.data.DateGranularity;
 
 /**
  * $Id$
@@ -81,8 +82,6 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.deleteAll(BrowseYearCountCache.class);
         resourceService.deleteAll(WeeklyPopularResourceCache.class);
         resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
-        
-
 
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
@@ -91,26 +90,36 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
             hfic.add(new HomepageFeaturedItemCache((InformationResource) res));
         }
 
-        logger.debug("homepage featured item cache ({})",hfic.size());
+        logger.debug("homepage featured item cache ({})", hfic.size());
 
         List<WeeklyPopularResourceCache> wrc = new ArrayList<WeeklyPopularResourceCache>();
 
         int max = 20;
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, start.toDate(), end.toDate(), 1L);
+        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getOverallUsageStats(start.toDate(), end.toDate(), 40L);
         if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
-            if (CollectionUtils.size(aggregateUsageStats) < max) {
-                max = aggregateUsageStats.size();
-            }
-            for (int i=0; i < max ; i++) {
-                Resource resource = resourceService.find(aggregateUsageStats.get(i).getResourceId());
-                if (resource != null && resource.isActive()) {
+            Set<Long> seen = new HashSet<>();
+            for (AggregateViewStatistic avs : aggregateUsageStats) {
+                Long resourceId = avs.getResource().getId();
+                // handling unique resource ids across the timeperiod
+                if (seen.contains(resourceId)) {
+                    continue;
+                }
+
+                if (max == 0) {
+                    break;
+                }
+                max--;
+
+                seen.add(resourceId);
+                Resource resource = resourceService.find(resourceId);
+                if ((resource != null) && resource.isActive()) {
                     wrc.add(new WeeklyPopularResourceCache(resource));
                 }
             }
         }
-        logger.debug("weekly popular stats ({})",wrc.size());
+        logger.debug("weekly popular stats ({})", wrc.size());
         resourceService.save(wrc);
         resourceService.save(hfic);
 

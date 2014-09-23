@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.Query;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
@@ -40,7 +40,6 @@ public class ProjectDao extends ResourceDao<Project> {
         return query.list();
     }
 
-
     public Boolean containsIntegratableDatasets(Project project) {
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS);
         query.setLong("projectId", project.getId());
@@ -48,8 +47,9 @@ public class ProjectDao extends ResourceDao<Project> {
     }
 
     public Boolean containsIntegratableDatasets(List<Long> projectIds) {
-        if (projectIds.isEmpty())
+        if (projectIds.isEmpty()) {
             return Boolean.FALSE;
+        }
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS);
         logger.debug("setting parameter list");
         query.setParameterList("projectIdList", projectIds, StandardBasicTypes.LONG);

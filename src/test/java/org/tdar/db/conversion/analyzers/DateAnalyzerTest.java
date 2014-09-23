@@ -5,9 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DateAnalyzerTest {
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     private String[] validDates = {
             "1st June, 2003",
@@ -66,8 +70,18 @@ public class DateAnalyzerTest {
         assertTrue("DateAnalyzer.getType() should return DataTableColumnType.DATE, not " + type, DataTableColumnType.DATE.equals(type));
     }
 
+    @Test
+    public void testInvalidMonthDay() {
+        boolean result = da.analyze("9-01", null, 1);
+        logger.debug("result: {}", result);
+        assertFalse(result);
+        result = da.analyze("9-01-2014", null, 1);
+        logger.debug("result: {}", result);
+        assertTrue(result);
+    }
+    
     private void testLength(final String target, final int expectation) {
-        da.analyze(target);
+        da.analyze(target, null, 1);
         final int length = da.getLength();
         assertTrue("DateAnalyzer.getLength() should return " + expectation + " for the string '" + target + "', not " + length, length == expectation);
     }
@@ -96,46 +110,46 @@ public class DateAnalyzerTest {
 
     @Test
     public void doesNotThrowExceptionOnNonDateString() {
-        da.analyze("ostridge");
+        da.analyze("ostridge", null, 1);
     }
 
     @Test
     public void doesNotReturnDateOnNonDateString() {
-        assertFalse("An ostridge is not a date!", da.analyze("ostridge"));
+        assertFalse("An ostridge is not a date!", da.analyze("ostridge", null, 1));
     }
 
     @Test
     public void doesFindValidDate() {
         for (String aDate : validDates) {
-            assertTrue("A valid date has not been found: " + aDate, da.analyze(aDate));
+            assertTrue("A valid date has not been found: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void doesFindFaultyDates() {
         for (String aDate : faultyDates) {
-            assertTrue("A valid date has not been created: " + aDate, da.analyze(aDate));
+            assertTrue("A valid date has not been created: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void invalidDatesAreRejected() {
         for (String aDate : invalidDates) {
-            assertFalse("An invalid date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An invalid date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void alternativeDatesAreRejected() {
         for (String aDate : alternativeDates) {
-            assertFalse("An alternate date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An alternate date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 
     @Test
     public void recurringDatesAreRejected() {
         for (String aDate : recurringDates) {
-            assertFalse("An recurring date has been accepted: " + aDate, da.analyze(aDate));
+            assertFalse("An recurring date has been accepted: " + aDate, da.analyze(aDate, null, 1));
         }
     }
 }

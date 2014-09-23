@@ -1,16 +1,12 @@
 package org.tdar.core.service.resource;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 
@@ -24,9 +20,7 @@ import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
  */
 public class OntologyServiceTest {
 
-
     private Logger logger = Logger.getLogger(getClass());
-
 
     @Test
     public void testSuggestions() {

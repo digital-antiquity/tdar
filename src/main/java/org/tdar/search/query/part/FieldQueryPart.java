@@ -5,18 +5,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * @author abrin
@@ -24,9 +24,8 @@ import org.tdar.utils.MessageHelper;
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
-    private static final String NOT = " NOT ";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String NOT = " NOT ";
 
     private String fieldName;
     private String displayName;
@@ -38,7 +37,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     private Operator operator = Operator.AND;
     private boolean inverse;
     private boolean descriptionVisible = true;
-
     private boolean allowInvalid = false;
 
     public FieldQueryPart() {
@@ -63,13 +61,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = oper;
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, String displayName, Operator oper, C... incomingValues) {
         this(fieldName, displayName, Arrays.asList(incomingValues));
         this.operator = oper;
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, C... incomingValues) {
         this(fieldName, "", Arrays.asList(incomingValues));
     }
@@ -82,7 +80,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this(fieldName, "", oper, incomingValues);
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public FieldQueryPart(String fieldName, Operator oper, C... incomingValues) {
         this(fieldName, "", oper, incomingValues);
     }
@@ -108,7 +106,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     @Override
     public String toString() {
         return generateQueryString();
-    };
+    }
 
     @Override
     public String generateQueryString() {
@@ -119,9 +117,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (sb.length() == 0) {
             return "";
         }
-
         constructQueryPhrase(sb, getFieldName());
-
         return sb.toString();
     }
 
@@ -131,12 +127,12 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (StringUtils.isNotBlank(fieldName)) {
             startPhrase.append(fieldName).append(":");
         }
-        startPhrase.append("(");
+        startPhrase.append('(');
         sb.insert(0, startPhrase);
-        sb.append(")");
+        sb.append(')');
 
         if (getBoost() != null) {
-            sb.append("^").append(getBoost());
+            sb.append('^').append(getBoost());
         }
     }
 
@@ -144,7 +140,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         String value = "";
         value = formatValueAsStringForQuery(index);
 
-        if (value == null || StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value)) {
             return;
         }
         if (CollectionUtils.isNotEmpty(phraseFormatters)) {
@@ -159,11 +155,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         sb.append(value);
 
         if (getFuzzy() != null) {
-            sb.append("~").append(getFuzzy());
+            sb.append('~').append(getFuzzy());
         }
 
         if (getProximity() != null) {
-            sb.append("~").append(getProximity());
+            sb.append('~').append(getProximity());
         }
     }
 
@@ -242,7 +238,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
      */
     public FieldQueryPart<C> setFuzzy(Float fuzzy) {
         if (fuzzy > 1) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("fieldQueryPart.fuzzyness_out_of_range"));
+            throw new TdarRecoverableRuntimeException("fieldQueryPart.fuzzyness_out_of_range");
         }
         this.fuzzy = fuzzy;
         return this;
@@ -269,26 +265,30 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     @Override
-    public String getDescription() {
-        if (!descriptionVisible)
+    public String getDescription(TextProvider provider) {
+        if (!descriptionVisible) {
             return "";
+        }
         List<Object> vals = new ArrayList<Object>();
         for (int i = 0; i < getFieldValues().size(); i++) {
-            Object val = getFieldValues().get(i);
-            if (SimpleSearch.class.isAssignableFrom(val.getClass())) {
-                val = ((SimpleSearch) val).getTitle();
-            } else if (val instanceof HasLabel) {
-                val = ((HasLabel) val).getLabel();
+            Object fieldValue = getFieldValues().get(i);
+            StringBuilder builder = new StringBuilder();
+            if (SimpleSearch.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((SimpleSearch) fieldValue).getTitle();
+            } else if (fieldValue instanceof Localizable) {
+                fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
+            } else if (fieldValue instanceof HasLabel) {
+                fieldValue = ((HasLabel) fieldValue).getLabel();
             }
-            vals.add(val);
+            builder.append(' ').append(fieldValue).append(' ');
+            vals.add(builder.toString());
         }
-
-        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator()));
+        return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override
@@ -309,8 +309,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     protected String getInverse() {
-        if (isInverse())
+        if (isInverse()) {
             return NOT;
+        }
         return "";
     }
 
@@ -352,10 +353,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     // should a fieldValue be ignored when adding it to the value list? breaking out into separate method so that subclasses can make the call
     protected boolean validate(C value) {
-        if (value == null)
+        if (value == null) {
             return false;
-        if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarValidationException(MessageHelper.getMessage("fieldQueryPart.is_not_valid", value));
+        }
+        if ((value instanceof Validatable) && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
+            throw new TdarValidationException("fieldQueryPart.is_not_valid", Arrays.asList(value.toString()));
         }
         return true;
     }
@@ -392,12 +394,16 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     public void update() {
     }
 
-    public String getDescriptionOperator() {
-        String delim = MessageHelper.getMessage("fieldQueryPart.and");
+    public String getDescriptionOperator(TextProvider provider) {
+        StringBuilder builder = new StringBuilder(" ");
         if (getOperator() == Operator.OR) {
-            delim = MessageHelper.getMessage("fieldQueryPart.or");
+            builder.append(provider.getText("fieldQueryPart.or"));
         }
-        return delim;
+        else {
+            builder.append(provider.getText("fieldQueryPart.and"));
+        }
+        builder.append(' ');
+        return builder.toString();
     }
 
 }

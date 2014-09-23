@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-import static java.util.regex.Pattern.quote;
-
 /**
  * User: jimdevos
  * Date: 7/1/13
@@ -18,7 +16,8 @@ public class BrowseSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public BrowseSeleniumWebITCase() {
-        setJavascriptIgnorePatterns(IGNOREPATTERN_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
+        //assumption: google quota errors are only expected on pages that show maps
+        getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT);
     }
 
     private void browseTest(String url) {

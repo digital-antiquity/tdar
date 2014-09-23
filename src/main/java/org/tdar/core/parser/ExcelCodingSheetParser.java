@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -50,7 +49,7 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
                 Cell codeCell = row.getCell(CODE_INDEX);
                 Cell termCell = row.getCell(TERM_INDEX);
                 Cell descriptionCell = row.getCell(DESCRIPTION_INDEX);
-                if (codeCell == null || termCell == null) {
+                if ((codeCell == null) || (termCell == null)) {
                     logger.warn("null code/term cell: " + codeCell + termCell + " - skipping");
                     continue;
                 }
@@ -72,13 +71,13 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
             }
         } catch (IllegalStateException e) {
             logger.error("Couldn't parse excel file", e);
-            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields",e);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_missing_fields", e);
         } catch (IOException e) {
             logger.error("Couldn't construct POI Workbook from input stream", e);
-            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), e);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", e);
         } catch (InvalidFormatException exception) {
             logger.error("Couldn't create POI Workbook from input stream", exception);
-            throw new CodingSheetParserException(MessageHelper.getMessage("excelCodingSheetParser.could_not_parse_poi"), exception);
+            throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", exception);
         }
         return codingRules;
     }

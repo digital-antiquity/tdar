@@ -33,11 +33,19 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8092, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8093, NULL, NULL, NULL);
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8094, NULL, NULL, NULL);
+--DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, url) VALUES (8095, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', NULL, 12088);
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8094, true, 'editor@tdar.org', 'editor', 'user', true, NULL, '', NULL, 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8092, 'test@tdar.org', 'test', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8093, 'admin@tdar.org', 'admin', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8094, 'editor@tdar.org', 'editor', 'user', NULL, '', 12088);
+--DONT-PROCESS-- INSERT INTO person (id, email, first_name, last_name, rpa_number, phone, institution_id) VALUES (8095, 'billing@tdar.org', 'billing', 'user', NULL, '', 12088);
+
+
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8092, 'test@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8093, 'admin@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8094, 'editor@tdar.org', true); 
+--DONT-PROCESS-- INSERT INTO tdar_user(id, username, contributor) VALUES (8095, 'billing@tdar.org', true); 
 
 
 --DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
@@ -49,6 +57,15 @@
 create temporary table test (id bigint);
 --- ADD RESOURCE IDs TO EXTRACT OUT FROM tdarmetadata.zip
 insert into test (id) VALUES(4),(3794),(191),(322),(140),(627),(626),(141),(142),(151),(165),(161),(155),(162),(148),(164),(144),(143),(163),(149),(153),(159),(160),(157),(146),(156),(154),(152),(147),(158),(150),(145),(636),(166),(167),(183),(184),(170),(4230),(4231),(4232),(1628),(262),(1656),(449),(2420),(139),(3738),(3805),(3479),(4287),(3088),(3074), (3029);
+create temporary table creatorids (id bigint);
+insert into creatorids select submitter_id from resource where id in (select id from test)
+    UNION select updater_id from resource where id in (select id from test)
+    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
+    UNION select publisher_id from information_resource
+    UNION select creator_id from resource_creator where resource_id in (select id from test)
+    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
+    UNION select provider_institution_id from information_resource where id in (select id from test);
+insert into creatorids select institution_id from person where id in (select * from creatorids);
 
 select * from category_variable where type = 'CATEGORY' order by id;
 select * from category_variable where type = 'SUBCATEGORY' order by id asc;
@@ -59,40 +76,11 @@ select * from investigation_type;
 select * from material_keyword; 
 
 
-select * from creator where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-	UNION select publisher_id from information_resource
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test)) ;
-
-select * from institution where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-	UNION select publisher_id from information_resource
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test));
-
-select * from person where id in (select submitter_id from resource where id in (select id from test)
-    UNION select updater_id from resource where id in (select id from test)
-    UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-    UNION select person_id from bookmarked_resource where resource_id in (select id from test)
-    UNION select creator_id from resource_creator where resource_id in (select id from test)
-    UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
-      UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
-      UNION select creator_id from resource_creator where resource_id in (select id from test)
-      UNION select person_id from bookmarked_resource where resource_id in (select id from test) )
-    UNION select provider_institution_id from information_resource where id in (select id from test));
+select * from creator where id in (select id from creatorIds) order by id asc;
+select * from institution where id in (select id from creatorIds) order by id asc;
+select * from person where id in (select id from creatorIds) order by id asc;
+select * from tdar_user where id in (select id from creatorIds) order by id asc;
+--select * from user_info where user_id in (select id from creatorIds) order by id asc;
 
 
 
@@ -251,7 +239,6 @@ drop table test;
 
 
 --DONT-PROCESS-- SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
---DONT-PROCESS-- SELECT setval('contributor_request_id_seq', (SELECT MAX(id) FROM contributor_request)+1);
 --DONT-PROCESS-- SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
 --DONT-PROCESS-- SELECT setval('culture_keyword_id_seq', (SELECT MAX(id) FROM culture_keyword)+1);
 --DONT-PROCESS-- SELECT setval('geographic_keyword_id_seq', (SELECT MAX(id) FROM geographic_keyword)+1);
@@ -283,7 +270,6 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('resource_note_id_seq', (SELECT MAX(id) FROM resource_note)+1);
 --DONT-PROCESS-- SELECT setval('stats_id_seq', (SELECT MAX(id) FROM stats)+1);
 --DONT-PROCESS-- SELECT setval('upgrade_task_id_seq', (SELECT MAX(id) FROM upgrade_task)+1);
---DONT-PROCESS-- SELECT setval('user_session_id_seq', (SELECT MAX(id) FROM user_session)+1);
 
 --DONT-PROCESS-- SELECT setval('collection_id_seq', (SELECT MAX(id) FROM collection)+1);
 --DONT-PROCESS-- SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
@@ -301,7 +287,6 @@ drop table test;
 --DONT-PROCESS-- update data_table_column set mappingcolumn=false where mappingcolumn is null;
 --DONT-PROCESS-- update data_table_column set visible=true where visible is null;
 --DONT-PROCESS-- update data_table_column set ignorefileextension=true where ignorefileextension is null;
---DONT-PROCESS-- update person set username=email where registered=true;
 --DONT-PROCESS-- update creator set status='ACTIVE';
 --DONT-PROCESS-- update culture_keyword set status='ACTIVE';
 --DONT-PROCESS-- update geographic_keyword set status='ACTIVE';
@@ -325,5 +310,7 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
 --DONT-PROCESS-- update pos_billing_activity set activity_type='PRODUCTION';
 --DONT-PROCESS-- update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
---DONT-PROCESS-- -- update person set tos_version = 99, contributor_agreement_version = 99;
-
+--DONT-PROCESS-- --update user_info set tos_version = 99, contributor_agreement_version = 99;
+--DONT-PROCESS-- insert into user_notification(date_created, message_key,message_type,display_type) VALUES(now(), 'lithic.announce','SYSTEM_BROADCAST','NORMAL');
+--DONT-PROCESS-- SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
+--DONT-PROCESS-- update information_resource_file set restriction='EMBARGOED_FIVE_YEARS' where restriction='EMBARGOED';

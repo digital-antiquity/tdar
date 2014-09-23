@@ -14,7 +14,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.exception.StatusCode;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.utils.MessageHelper;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.hp.hpl.jena.util.FileUtils;
 
 import freemarker.ext.dom.NodeModel;
 
@@ -42,8 +42,10 @@ public class FileSystemResourceDao {
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/ROOT/";
     private XPathFactory xPathFactory = XPathFactory.newInstance();
 
-    public static Boolean wroExists;
-    
+    private String wroTempDirName;
+
+    public static Boolean wroExists = null;
+
     public boolean testWRO() {
         if (wroExists != null) {
             return wroExists;
@@ -54,21 +56,24 @@ public class FileSystemResourceDao {
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
             XPathExpression xPathExpr = xpath.compile(".//groups/group");
-            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             if (nodes.getLength() > 0) {
                 Node group = nodes.item(0).getAttributes().getNamedItem("name");
-                Resource resource = resourceLoader.getResource("wro/"+group.getTextContent()+".js");
+                String wroFile = getWroDir() + "/" + group.getTextContent() + ".js";
+                logger.debug("wroFile: {}", wroFile);
+                Resource resource = resourceLoader.getResource(wroFile);
                 wroExists = resource.exists();
                 if (wroExists) {
                     logger.debug("WRO found? true");
                     return true;
                 }
             } else {
+                logger.debug("wro does not exist");
                 wroExists = false;
             }
 
         } catch (Exception e) {
-            logger.error("{}",e);
+            logger.error("{}", e);
         }
         logger.debug("WRO found? false");
         return false;
@@ -83,7 +88,7 @@ public class FileSystemResourceDao {
         Document dom = db.parse(getClass().getClassLoader().getResourceAsStream("wro.xml"));
         return dom;
     }
-    
+
     // helper to load the PDF Template for the cover page
     public File loadTemplate(String path) throws IOException, FileNotFoundException {
         Resource resource = resourceLoader.getResource(path);
@@ -104,23 +109,22 @@ public class FileSystemResourceDao {
         return template;
     }
 
-    public List<String> parseWroXML(String prefix) throws TdarActionException {
+    public List<String> parseWroXML(String prefix) {
         List<String> toReturn = new ArrayList<>();
         try {
             Document dom = getWroDom();
             // Create XPath object from XPathFactory
             XPath xpath = xPathFactory.newXPath();
             XPathExpression xPathExpr = xpath.compile(".//" + prefix);
-            NodeList nodes = (NodeList)xPathExpr.evaluate(dom, XPathConstants.NODESET);
+            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
             for (int i = 0; i < nodes.getLength(); i++) {
                 toReturn.add(nodes.item(i).getTextContent());
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, "could not read javascript/css config file",e);
+            throw new TdarRecoverableRuntimeException("fileSystemResourceDao.wro_missing", e);
         }
         return toReturn;
     }
-
 
     public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
         logger.info("opening {}", filename);
@@ -135,8 +139,7 @@ public class FileSystemResourceDao {
         return dom;
     }
 
-
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
+    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
         List<NodeModel> toReturn = new ArrayList<>();
         if (dom == null) {
             return toReturn;
@@ -165,9 +168,24 @@ public class FileSystemResourceDao {
                 toReturn.add(NodeModel.wrap(nodes.item(i)));
             }
         } catch (Exception e) {
-            throw new TdarActionException(StatusCode.UNKNOWN_ERROR, MessageHelper.getMessage("browseController.parse_creator_log"), e);
+            throw new TdarRecoverableRuntimeException("browseController.parse_creator_log", e);
         }
         return toReturn;
+    }
+
+    public String getWroDir() {
+        if (wroTempDirName != null) {
+            return wroTempDirName;
+        }
+        try {
+            String file = FileUtils.readWholeFileAsUTF8(getClass().getClassLoader().getResourceAsStream("version.txt"));
+            file = StringUtils.replace(file, "+", "");
+            wroTempDirName = "/wro/" + file.trim();
+            return wroTempDirName;
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
+        return null;
     }
 
 }

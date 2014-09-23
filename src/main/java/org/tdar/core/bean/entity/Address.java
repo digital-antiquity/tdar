@@ -8,22 +8,20 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Represents a physical address for a person or institution.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "creator_address")
@@ -128,40 +126,38 @@ public class Address extends Base implements Persistable, Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
         return isValid();
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValid() {
         if (StringUtils.isBlank(street1)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.street_required"));
+            throw new TdarValidationException("address.street_required");
         }
         if (StringUtils.isBlank(city)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.city_required"));
+            throw new TdarValidationException("address.city_required");
         }
         if (StringUtils.isBlank(state)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.state_required"));
+            throw new TdarValidationException("address.state_required");
         }
         if (StringUtils.isBlank(country)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.country_required"));
+            throw new TdarValidationException("address.country_required");
         }
         if (StringUtils.isBlank(postal)) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.postal_required"));
+            throw new TdarValidationException("address.postal_required");
         }
         if (type == null) {
-            throw new TdarValidationException(MessageHelper.getMessage("address.type_required"));
+            throw new TdarValidationException("address.type_required");
         }
         return true;
     }
 
     public String getAddressSingleLine() {
         StringBuilder sb = new StringBuilder(getStreet1());
-        if (sb.length() > 0 && StringUtils.isNotBlank(getStreet2())) {
+        if ((sb.length() > 0) && StringUtils.isNotBlank(getStreet2())) {
             sb.append(" ").append(getStreet2());
         }
         if (sb.length() > 0) {

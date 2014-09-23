@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,15 +18,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -39,7 +39,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Rev$
  */
 @Entity
-@Table(name = "ontology_node")
+@Table(name = "ontology_node", indexes = {
+        @Index(name = "ontology_node_interval_start_index", columnList = "interval_start"),
+        @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
+        @Index(name = "ontology_node_index", columnList = "index")
+})
 public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
@@ -59,32 +63,25 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
+    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_start")
-    @Index(name = "ontology_node_interval_start_index")
     private Integer intervalStart;
 
-    //FIXME: jtd: i think this index may be unnecessary - TDAR-3417
+    // FIXME: jtd: i think this index may be unnecessary - TDAR-3417
     @Column(name = "interval_end")
-    @Index(name = "ontology_node_interval_end_index")
     private Integer intervalEnd;
 
     @Column(name = "display_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 
-    @Length(max = 2048)
+    @Length(max = FieldLength.FIELD_LENGTH_2048)
     private String description;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
-    private transient OntologyNode parentNode;
-
-    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
-
-    @Index(name = "ontology_node_index")
     private String index;
 
     private String iri;
@@ -94,6 +91,15 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Column(name = "import_order")
     private Long importOrder;
+
+    // is this ontology node a synonym of another ontology node?
+    private transient boolean synonym;
+    // true if this ontology node or its children doesn't have any mapped data
+    private transient boolean mappedDataValues;
+    private transient boolean parent;
+    private transient boolean[] columnHasValueArray;
+    private transient OntologyNode parentNode;
+    private transient Set<OntologyNode> synonymNodes = new HashSet<>();
 
     public OntologyNode() {
     }
@@ -169,8 +175,9 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Transient
     public int getNumberOfParents() {
-        if (StringUtils.isEmpty(index))
+        if (StringUtils.isEmpty(index)) {
             return 0;
+        }
         return StringUtils.split(index, '.').length;
     }
 
@@ -178,10 +185,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     public int compareTo(OntologyNode other) {
         return ObjectUtils.compare(index, other.getIndex());
     }
-
-    private transient boolean parent = false;
-
-    private transient boolean[] columnHasValueArray;
 
     @Transient
     public String getIndentedLabel() {
@@ -209,9 +212,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         this.importOrder = importOrder;
     }
 
-    /**
-     * @return the importOrder
-     */
     public Long getImportOrder() {
         return importOrder;
     }
@@ -236,8 +236,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public String getNormalizedIri() {
         String iri_ = StringUtils.trim(iri);
-        //backwards compatibility to help with mappings which start with digests
-        if (iri_ != null && iri_.matches("^\\_\\d.*")) {
+        // backwards compatibility to help with mappings which start with digests
+        if ((iri_ != null) && iri_.matches("^\\_\\d.*")) {
             return StringUtils.substring(iri_, 1);
         } else {
             return iri_;
@@ -258,7 +258,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         for (String displayName_ : getEquivalenceSet()) {
             for (String existingDisplayName : existing.getEquivalenceSet()) {
                 if (existingDisplayName.equalsIgnoreCase(displayName_)) {
-                    logger.trace("\tcomparing " + displayName_ + "<>" + existingDisplayName + " --> equivalent");
+                    logger.trace("\tcomparing {} <> {}", displayName, existingDisplayName);
                     return true;
                 }
             }
@@ -267,7 +267,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    @JSONTransient
     public OntologyNode getParentNode() {
         return parentNode;
     }
@@ -277,7 +276,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     @XmlTransient
-    @JSONTransient
     public Set<OntologyNode> getSynonymNodes() {
         return synonymNodes;
     }
@@ -288,7 +286,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     @Transient
     public boolean isChildOf(OntologyNode parentNode) {
-        return parentNode != null && parentNode.getIntervalStart() < getIntervalStart() && parentNode.getIntervalEnd() >= getIntervalEnd();
+        return (parentNode != null) && (parentNode.getIntervalStart() < getIntervalStart()) && (parentNode.getIntervalEnd() >= getIntervalEnd());
     }
 
     public boolean isParent() {
@@ -305,6 +303,40 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     public void setColumnHasValueArray(boolean[] columnsWithValue) {
         this.columnHasValueArray = columnsWithValue;
+    }
+
+    @XmlTransient
+    public boolean isSynonym() {
+        return synonym;
+    }
+
+    public void setSynonym(boolean synonym) {
+        this.synonym = synonym;
+    }
+
+    public String getFormattedNameWithSynonyms() {
+        if (CollectionUtils.isNotEmpty(getSynonyms())) {
+            String txt = String.format("%s (%s)", getDisplayName(), StringUtils.join(getSynonyms(), ", "));
+            logger.debug(txt);
+            return txt;
+        } else {
+            logger.debug(getDisplayName());
+            return getDisplayName();
+        }
+    }
+
+    @Transient
+    public boolean isDisabled() {
+        return !mappedDataValues;
+    }
+
+    @Transient
+    public boolean hasMappedDataValues() {
+        return mappedDataValues;
+    }
+
+    public void setMappedDataValues(boolean mappedDataValues) {
+        this.mappedDataValues = mappedDataValues;
     }
 
 }

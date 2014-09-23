@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
@@ -47,15 +47,10 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     }
 
     @Test
-    public void mustBeArchiveResourceType() {
+    public void mustBeArchiveResourceType() throws Exception {
         task.getWorkflowContext().setResourceType(ResourceType.DOCUMENT);
-        try {
-            task.run();
-            assertTrue("Should not be here", false);
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("The Extract Archive Task has been called for a non archive resource!"));
-        }
+        task.run();
+        assertFalse(task.getWorkflowContext().isProcessedSuccessfully());
     }
 
     @Test
@@ -97,7 +92,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveValidControlFileDir() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         task.setKettleInputPath("");
         try {
             task.run();
@@ -111,7 +106,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveValidCopyFileDir() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         task.getWorkflowContext().setWorkingDirectory(new File(""));
         try {
             task.run();
@@ -125,7 +120,7 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
     @SuppressWarnings("deprecation")
     @Test
     public void mustHaveAFileToWorkWith() {
-        archive.setProject(new Project(1L, "test" ));
+        archive.setProject(new Project(1L, "test"));
         try {
             task.run();
             assertTrue("Should not be here", false);
@@ -134,20 +129,20 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
             assertTrue(e.getMessage(), e.getMessage().startsWith("Must have an archive file to work with"));
         }
     }
-    
+
     @Test
     public void willSelectAdminEmailIfNoUploaderEmail() {
         assertTrue(task.getEmailToNotify(archive).equals(TdarConfiguration.getInstance().getSystemAdminEmail()));
     }
-    
+
     @Test
     public void willSelectUploaderEmailIfSet() {
-        Person updater = new Person();
+        TdarUser updater = new TdarUser();
         updater.setEmail(BOB_AT_CAT_COM);
         archive.setUpdatedBy(updater);
         assertTrue(task.getEmailToNotify(archive).equals(BOB_AT_CAT_COM));
     }
-    
+
     @Test
     public void mustHaveAProjectAssigned() {
         try {

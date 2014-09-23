@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -83,15 +83,16 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return last element of the selection, or null if this selection is empty.
      */
     public WebElement last() {
-        if (elements.isEmpty())
+        if (elements.isEmpty()) {
             return null;
+        }
         return get(elements.size() - 1);
     }
 
     /**
      * click on every item in the selection
      */
-    public void click() {
+    public WebElementSelection click() {
         for (WebElement elem : this) {
             try {
                 elem.click();
@@ -102,6 +103,7 @@ public class WebElementSelection implements Iterable<WebElement> {
                 elem.click();
             }
         }
+        return this;
     }
 
     /**
@@ -135,6 +137,7 @@ public class WebElementSelection implements Iterable<WebElement> {
             logger.debug("{} sendKeys: {}", elem, keysToSend);
             elem.sendKeys(keysToSend);
         }
+
     }
 
     /**
@@ -169,8 +172,9 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @see org.openqa.selenium.WebElement#getAttribute(java.lang.String)
      */
     public String getAttribute(String name) {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         return first().getAttribute(name);
     }
 
@@ -229,8 +233,8 @@ public class WebElementSelection implements Iterable<WebElement> {
      * create a WebElementSelection of the combined results of applying findElements() to each element in the selection
      * 
      * @see WebElement#findElements(By)
-     * @param css
-     *            selector
+     * @param cssSelector
+     *            css selector string
      * @return selection containing combined results of all findElements(By) from each element in the selection.
      */
     public WebElementSelection find(String cssSelector) {
@@ -296,7 +300,7 @@ public class WebElementSelection implements Iterable<WebElement> {
     /**
      * return the element at the specified index
      * 
-     * @param idx
+     * @param i
      *            index of the element to retreive
      * @return element at idx
      */
@@ -381,10 +385,11 @@ public class WebElementSelection implements Iterable<WebElement> {
      * 
      * @param val
      *            the string value apply to the selected elements
+     * @return the selection.
      */
     // TODO: implement convention that makes it easy choose SELECT option by index. for example, if val is "[0]" and tag is SELECT, extract number and
     // translate to Select.selectByIndex();
-    public void val(String val) {
+    public WebElementSelection val(String val) {
         for (WebElement elem : this) {
             String tag = elem.getTagName();
             String type = elem.getAttribute("type");
@@ -439,7 +444,9 @@ public class WebElementSelection implements Iterable<WebElement> {
 
             }
         }
+        return this;
     }
+
 
     /**
      * return first element of selection as Select object.
@@ -468,10 +475,12 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return Selection containing
      */
     public WebElementSelection parent() {
-        if (isEmpty())
+        if (isEmpty()) {
             return this;
-        if (StringUtils.equalsIgnoreCase("body", getTagName()))
+        }
+        if (StringUtils.equalsIgnoreCase("body", getTagName())) {
             return new WebElementSelection(driver);
+        }
         return new WebElementSelection(first().findElements(By.xpath("..")), driver);
     }
 
@@ -503,8 +512,9 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     private static boolean hasClass(WebElement elem, String cssClass) {
         String attr = elem.getAttribute("class");
-        if (attr == null)
+        if (attr == null) {
             return false;
+        }
         List<String> cssClasses = Arrays.asList(attr.split(" "));
         return cssClasses.contains(cssClass);
     }

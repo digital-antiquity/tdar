@@ -4,28 +4,28 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.FacetGroup;
 
-public class SearchResult implements SearchResultHandler<Indexable>,Serializable {
+public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
 
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
     private SortOption secondarySortField;
-    private int resultSize;
-    private int totalRecords;
-    private int startRecord;
-    private int recordsPerPage;
+    private int resultSize = 0;
+    private int totalRecords = 0;
+    private int startRecord = 0;
+    private int recordsPerPage = 20;
     private boolean debug;
     private boolean showAll;
     private List<Indexable> results;
     private String mode;
     private boolean reindexing;
-    private Person authenticatedUser;
+    private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+
     @Override
     public SortOption getSortField() {
         return sortField;
@@ -131,11 +131,11 @@ public class SearchResult implements SearchResultHandler<Indexable>,Serializable
     }
 
     @Override
-    public Person getAuthenticatedUser() {
+    public TdarUser getAuthenticatedUser() {
         return authenticatedUser;
     }
 
-    public void setAuthenticatedUser(Person authenticatedUser) {
+    public void setAuthenticatedUser(TdarUser authenticatedUser) {
         this.authenticatedUser = authenticatedUser;
     }
 
@@ -170,7 +170,7 @@ public class SearchResult implements SearchResultHandler<Indexable>,Serializable
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub
         return null;
     }

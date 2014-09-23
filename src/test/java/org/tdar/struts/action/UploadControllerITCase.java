@@ -7,10 +7,6 @@ public class UploadControllerITCase extends AbstractAdminControllerITCase {
 
     UploadController controller;
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-    }
 
     @Before
     public void setup() {
@@ -20,7 +16,6 @@ public class UploadControllerITCase extends AbstractAdminControllerITCase {
     @Test
     public void listUploadedFiles() throws Exception {
         controller.setInformationResourceId(4230L);
-        controller.listUploadedFiles();
     }
 
 }

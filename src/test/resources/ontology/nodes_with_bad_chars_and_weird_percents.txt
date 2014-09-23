@@ -149,9 +149,9 @@ Feet
 		Tarsal
 			Astragalus
 			Calcaneus
-			Cuboid (4th Tarsal)
+			Cuboid (4th Tarsal3)
 			Navicular (Central)
-			Navicular (Central) & Cuboid (4th Tarsal)
+			Navicular (Central) & Cuboid (4th Tarsal2)
 			1st Cuneiform (1st Tarsal)
 			2nd Cuneiform (2nd Tarsal)
 			3rd Cuneiform (3rd Tarsal)

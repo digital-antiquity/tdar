@@ -11,13 +11,14 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.resource.ArchiveController;
 
 /**
- * The aim of this test is simple: to ensure that the path from TdarActionSupport through to the property file yields the expected results for the 
+ * The aim of this test is simple: to ensure that the path from TdarActionSupport through to the property file yields the expected results for the
  * switchable.map.obfuscation setting. The FAIMS configuration file has it set to true: the TDAR configuration file doesn't even have it.
+ * 
  * @author Martin Paulo
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class TdarActionSupportITCase extends AbstractDataIntegrationTestCase {
-    
+
     /** Our proxy for the abstract TdarActionSupport class */
     private ArchiveController controller;
 

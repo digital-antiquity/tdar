@@ -1,13 +1,10 @@
 <head>
-<title>Duplicate submission detected</title>
-<meta name="lastModifiedDate" content="$Date$"/>
+    <title>Invalid submission</title>
 </head>
-<p>
-This data has already been posted to the server.  Typically the only times
-this will happen is if you clicked on a submit button twice or if you used
-your browser's back button to resubmit data that has already been submit to
-our server.  If you feel this is in error, please <a href="<@s.url
-value='/contact'/>">let us know!</a>
-</p>
+<div class='alert alert-block alert-warning'>
+    Sorry, we were not able to process your request, or you've already submitted this data to the server. Typically the
+    only time this will happen is if you clicked on a submit button twice or if you used your browser's back button to
+    resubmit data our server. If you feel this is in error, please <a href="<@s.url value='/contact'/>">let us know!</a>
+</div>
 
 

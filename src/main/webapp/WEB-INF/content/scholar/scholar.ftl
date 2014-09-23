@@ -8,15 +8,14 @@
 <head>
     <@search.headerLinks includeRss=false />
     <title>Browse By Year: ${year?c}</title>
-    <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
 <body>
-    <h1>Browse By Year: ${year?c}</h1>
-		    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow orientation="LIST" />
-        </div>
+<h1>Browse By Year: ${year?c}</h1>
+    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow orientation="LIST" />
+</div>
 
-            <@search.basicPagination "Records" />
+    <@search.basicPagination "Records" />
 
 </body>
 </#escape>

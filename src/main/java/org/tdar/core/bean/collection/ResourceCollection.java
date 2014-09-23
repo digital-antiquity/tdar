@@ -17,34 +17,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Explanation;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
-import org.hibernate.annotations.FetchProfiles;
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
@@ -55,10 +58,13 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
@@ -66,17 +72,21 @@ import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -88,23 +98,29 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * 
  *         <b>INTERNAL</b> collections enable access rights to a specific resource. Users never see these, they simply see the rights on the resource.
  *         <b>SHARED</b> collections are ones that users create and enable access. Shared collections can be public or private
+ *         <b>PUBLIC</b> collections do not store rights and can be used for bookmarks and such things (not fully implemented).
+ * 
+ *         The Tree structure that is represented is a hybrid of a "materialized path" implementation -- see
+ *         http://vadimtropashko.wordpress.com/2008/08/09/one-more-nested-intervals-vs-adjacency-list-comparison/.
+ *         It's however, optimized so that the node's children are manifested in a supporting table to optimize rights queries, which will be the most common
+ *         lookup.
  */
 @Entity
 @Indexed(index = "Collection")
-@Table(name = "collection")
-@FetchProfiles(value = {
-        @FetchProfile(name = "simple", fetchOverrides = {
-                @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
-                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
-        })
+@Table(name = "collection", indexes = {
+        @Index(name = "collection_parent_id_idx", columnList = "parent_id"),
+        @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
+        @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
+@XmlRootElement(name = "ResourceCollection")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable {
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable {
 
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
 
     // private transient boolean readyToIndex = true;
@@ -130,10 +146,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Explanation explanation;
 
     @Column
+    @JsonView(JsonLookupFilter.class)
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
-    // @Boost(1.5f)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
@@ -143,59 +159,63 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name="description_admin")
+    @Column(name = "description_admin")
     private String adminDescription;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY,
-            mappedBy = "resourceCollections", targetEntity = Resource.class)
-    // cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE },
-    // @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "collection_id") })
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", length = 25)
+    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption sortBy = DEFAULT_SORT_OPTION;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = 25)
+    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption secondarySortBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = 50)
+    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Enumerated(EnumType.STRING)
     @Column(name = "collection_type", length = FieldLength.FIELD_LENGTH_255)
+    @NotNull
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(name = "owner_id", nullable = false)
-    @Index(name = "collection_owner_id_idx")
-    private Person owner;
+    private TdarUser owner;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id", nullable = true)
-    @Index(name = "collection_updater_id_idx")
-    private Person updater;
+    private TdarUser updater;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(nullable = true, name = "date_updated")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    @Index(name = "collection_parent_id_idx")
     private ResourceCollection parent;
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "parent_id")
+    private Set<Long> parentIds = new HashSet<>();
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
@@ -211,7 +231,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setId(id);
     }
 
-    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, Person creator) {
+    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, TdarUser creator) {
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
@@ -225,13 +245,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setDateCreated(new Date());
     }
 
-    public ResourceCollection(Resource resource, Person owner) {
+    public ResourceCollection(Resource resource, TdarUser owner) {
         this(CollectionType.SHARED);
         this.owner = owner;
         getResources().add(resource);
     }
 
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getName() {
         return name;
     }
@@ -240,9 +261,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    // @Boost(1.2f)
-    @Field
+    @Fields({
+            @Field,
+            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
+                    impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     @Override
+    @JsonView(JsonLookupFilter.class)
     public String getDescription() {
         return description;
     }
@@ -283,11 +308,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "ownerIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getOwner() {
+    public TdarUser getOwner() {
         return owner;
     }
 
-    public void setOwner(Person owner) {
+    public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
 
@@ -310,7 +335,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field
     @XmlTransient
     public boolean isTopLevel() {
-        if (getParent() == null || getParent().isVisible() == false) {
+        if ((getParent() == null) || (getParent().isVisible() == false)) {
             return true;
         }
         return false;
@@ -323,14 +348,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     /*
      * Convenience Method that provides a list of users that match the permission
      */
-    public Set<Person> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
-        Set<Person> people = new HashSet<Person>();
+    public Set<TdarUser> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
+        Set<TdarUser> people = new HashSet<>();
         for (AuthorizedUser user : authorizedUsers) {
             if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
                 people.add(user.getUser());
             }
         }
-        if (getParent() != null && recurse) {
+        if ((getParent() != null) && recurse) {
             people.addAll(getParent().getUsersWhoCan(permission, recurse));
         }
         return people;
@@ -342,8 +367,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * @see org.tdar.core.bean.Updatable#markUpdated(org.tdar.core.bean.entity.Person)
      */
     @Override
-    public void markUpdated(Person p) {
-        if (getDateCreated() == null || getOwner() == null) {
+    public void markUpdated(TdarUser p) {
+        if ((getDateCreated() == null) || (getOwner() == null)) {
             setDateCreated(new Date());
             setOwner(p);
             setUpdater(p);
@@ -423,14 +448,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Transient
     public Long getParentId() {
-        if (getParent() == null)
+        if (getParent() == null) {
             return null;
+        }
         return getParent().getId();
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return new String[] { "id", "name" };
     }
 
     /*
@@ -438,7 +459,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanModify() {
@@ -446,11 +466,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     private List<Long> toUserList(GeneralPermissions permission) {
-        ArrayList<Long> users = new ArrayList<Long>();
-        HashSet<Person> writable = new HashSet<Person>();
+        ArrayList<Long> users = new ArrayList<>();
+        HashSet<TdarUser> writable = new HashSet<>();
         writable.add(getOwner());
         writable.addAll(getUsersWhoCan(permission, true));
-        for (Person p : writable) {
+        for (TdarUser p : writable) {
             if (Persistable.Base.isNullOrTransient(p)) {
                 continue;
             }
@@ -461,7 +481,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanAdminister() {
@@ -470,7 +489,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
-    @JSONTransient
     @ElementCollection
     @IndexedEmbedded
     public List<Long> getUsersWhoCanView() {
@@ -484,7 +502,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public int compareTo(ResourceCollection o) {
         List<String> tree = getParentNameList();
         List<String> tree_ = o.getParentNameList();
-        while (!tree.isEmpty() && !tree_.isEmpty() && tree.get(0) == tree_.get(0)) {
+        while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
             tree.remove(0);
             tree_.remove(0);
         }
@@ -541,22 +559,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return parentNameTree;
     }
 
-    /*
-     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
-     */
-    @Transient
-    @Field(name = QueryFieldNames.COLLECTION_TREE)
-    @JSONTransient
-    @ElementCollection
-    @IndexedEmbedded
-    public List<Long> getParentIdList() {
-        ArrayList<Long> parentIdTree = new ArrayList<Long>();
-        for (ResourceCollection collection : getHierarchicalResourceCollections()) {
-            parentIdTree.add(collection.getId());
-        }
-        return parentIdTree;
-    }
-
     @Override
     public boolean isValidForController() {
         return StringUtils.isNotBlank(getName());
@@ -564,11 +566,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     public boolean isValid() {
-        if (isValidForController() || getType() == CollectionType.INTERNAL) {
-            if (getType() == CollectionType.SHARED && sortBy == null) {
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName(), getSortBy());
+        if ((getType() == CollectionType.INTERNAL) || isValidForController()) {
+            if ((getType() == CollectionType.SHARED) && (sortBy == null)) {
                 return false;
             }
-            return (getOwner() != null && getOwner().getId() != null && getOwner().getId() > -1);
+            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
         }
         return false;
     }
@@ -576,12 +579,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Override
     public String getTitleSort() {
-        if (getTitle() == null)
+        if (getTitle() == null) {
             return "";
+        }
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Field
+    @Fields({
+            @Field,
+            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    })
     // @Boost(1.5f)
     @Override
     public String getTitle() {
@@ -608,8 +616,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return type == CollectionType.PUBLIC;
     }
 
+    @Override
     @Transient
-    public Person getSubmitter() {
+    public TdarUser getSubmitter() {
         return owner;
     }
 
@@ -621,10 +630,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.orientation = orientation;
     }
 
+    private transient boolean readyToStore = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToStore() {
+        return readyToStore;
+    }
+
+    public void setReadyToStore(boolean readyToStore) {
+        this.readyToStore = readyToStore;
+    }
+
     @Override
     @XmlTransient
     @Transient
-    @JSONTransient
     public boolean isReadyToIndex() {
         // TODO Auto-generated method stub
         return false;
@@ -647,11 +667,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlAttribute(name = "updaterIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getUpdater() {
+    public TdarUser getUpdater() {
         return updater;
     }
 
-    public void setUpdater(Person updater) {
+    public void setUpdater(TdarUser updater) {
         this.updater = updater;
     }
 
@@ -660,13 +680,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
-        Logger staticLogger = Logger.getLogger(ResourceCollection.class);
+        Logger staticLogger = LoggerFactory.getLogger(ResourceCollection.class);
         staticLogger.trace("incoming " + authorizedUsers);
         Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
         while (iterator.hasNext()) {
             AuthorizedUser incoming = iterator.next();
-            if (incoming == null || incoming.getUser() == null) {
+            if ((incoming == null) || (incoming.getUser() == null)) {
                 continue;
             }
             Long user = incoming.getUser().getId();
@@ -689,7 +709,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @XmlTransient
     @Transient
-    @JSONTransient
     public Set<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
@@ -712,5 +731,31 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setAdminDescription(String adminDescription) {
         this.adminDescription = adminDescription;
+    }
+
+    /**
+     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
+     * 
+     * Note: in earlier implementations this contained the currentId as well, I've removed this, but am unsure
+     * whether it should be there
+     */
+    @Transient
+    @Field(name = QueryFieldNames.COLLECTION_TREE)
+    @ElementCollection
+    @IndexedEmbedded
+    public Set<Long> getParentIds() {
+        return parentIds;
+    }
+
+    public void setParentIds(Set<Long> parentIds) {
+        this.parentIds = parentIds;
+    }
+
+    public boolean isChangesNeedToBeLogged() {
+        return changesNeedToBeLogged;
+    }
+
+    public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
+        this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
 }

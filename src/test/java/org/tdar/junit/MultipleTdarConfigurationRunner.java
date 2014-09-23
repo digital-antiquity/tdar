@@ -8,7 +8,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.web.AbstractWebTestCase;
@@ -16,6 +18,7 @@ import org.tdar.web.AbstractWebTestCase;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 
+@ContextConfiguration(classes=TdarAppConfiguration.class)
 public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -53,7 +56,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         return description;
     }
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_24);
 
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
@@ -62,8 +65,8 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
         RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
-        if (annotation != null &&
-                method.getAnnotation(Ignore.class) == null) {
+        if ((annotation != null) &&
+                (method.getAnnotation(Ignore.class) == null)) {
             String[] configs = annotation.runWith();
 
             if (configs.length > 0) {

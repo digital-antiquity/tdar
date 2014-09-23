@@ -29,7 +29,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Ontology;
@@ -37,13 +37,12 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.service.DownloadService;
+import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * $Id$
@@ -76,7 +75,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void test() {
-        Person p = genericService.find(Person.class, getUser().getId());
+        TdarUser p = genericService.find(TdarUser.class, getUser().getId());
         Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
         dataset.setTitle("test");
         dataset.setSubmitter(p);
@@ -100,13 +99,15 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
-        AbstractResourceControllerITCase.loadResourceFromId(codingSheetController, column.getDefaultCodingSheet().getId());
+        codingSheetController.setId(column.getDefaultCodingSheet().getId());
+        codingSheetController.prepare();
         codingSheetController.loadOntologyMappedColumns();
         List<String> findAllDistinctValues = dataTableService.findAllDistinctValues(column);
         List<String> tibias = new ArrayList<String>();
         for (String distinct : findAllDistinctValues) {
-            if (distinct.toLowerCase().contains("tibia"))
+            if (distinct.toLowerCase().contains("tibia")) {
                 tibias.add(distinct);
+            }
         }
 
         int tibia = -1;
@@ -122,8 +123,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                 tibia = i;
             }
             i++;
-            if (key.toLowerCase().contains("tibia"))
+            if (key.toLowerCase().contains("tibia")) {
                 suggestedTibias.add(key);
+            }
         }
 
         assertEquals(tibias.size(), suggestedTibias.size());
@@ -150,16 +152,16 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                 try {
                     String result = (String) method.invoke(controller);
                     if (successActions.contains(method.getName())) {
-                        assertEquals("DatasetController." + method.getName() + "() should return success", DatasetController.SUCCESS, result);
+                        assertEquals("DatasetController." + method.getName() + "() should return success", com.opensymphony.xwork2.Action.SUCCESS, result);
                     } else {
                         setIgnoreActionErrors(true);
-                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS, result);
+                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS, result);
                     }
                 } catch (Exception e) {
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
-                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS,
+                        assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
                                 exception.getResultName());
                     }
 
@@ -181,7 +183,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Rollback
     public void tableAsXmlReturnsErrorIfXmlExportNotEnabled() {
         controller = generateNewInitializedController(DatasetController.class);
-        assertSame(TdarActionSupport.ERROR, controller.getTableAsXml());
+        assertSame(com.opensymphony.xwork2.Action.ERROR, controller.getTableAsXml());
     }
 
     @Test
@@ -194,7 +196,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataset.getId());
         controller.setDataTableId(dataTable.getId());
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getTableAsXml());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.getTableAsXml());
         InputStream xmlStream = controller.getXmlStream();
         String xml = IOUtils.toString(xmlStream, "UTF-8");
         assertTrue(xml.contains("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""));
@@ -215,11 +217,13 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getElementValueMap(), bElementOntology);
         Map<String, List<Long>> valueToOntologyNodeIdMap = elementColumn.getValueToOntologyNodeIdMap();
         elementColumn = null;
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
         controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
         // FIXME: I believe this causes the NonUniqueObjectException because we're
         // still actually using the same Hibernate Session / thread of execution that we were in initially
         // (when setupAndLoadResource was invoked at the top of the method)
@@ -239,12 +243,14 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetReplaceDifferentExcel() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         String filename = "evmpp-fauna.xls";
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
     }
 
     @Test
@@ -265,12 +271,14 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     public void testDatasetReplaceDifferentMdb() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         String filename = SPITAL_DB_NAME;
         controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
     }
 
     @Test
@@ -291,7 +299,9 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
         InformationResourceFile file = dataset.getFirstInformationResourceFile();
         controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
+        controller.edit();
         datasetService.reprocess(dataset);
         assertEquals(file, dataset.getFirstInformationResourceFile());
         assertEquals(file.getLatestUploadedVersion(), dataset.getFirstInformationResourceFile().getLatestUploadedVersion());
@@ -314,15 +324,11 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         Iterator<List<String>> expectedColumnDataIterator = expectedColumnData.iterator();
         for (DataTableColumn column : dataTable.getSortedDataTableColumns()) {
             // verify column values
+            logger.debug(String.format("column: %s (%s) %s ", column.getName(), column.getDisplayName(), column.getId()));
             List<String> expectedValues = expectedColumnDataIterator.next();
             List<String> actualValues = tdarDataImportDatabase.selectAllFrom(column);
             assertEquals(expectedValues, actualValues);
         }
-    }
-
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
     }
 
 }

@@ -1,8 +1,11 @@
 package org.tdar.struts.action;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,13 +15,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
@@ -40,7 +48,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
@@ -48,17 +56,13 @@ import org.tdar.struts.data.IntegrationDataResult;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
-//    public static final long SPITAL_IR_ID = 503l;
+    // public static final long SPITAL_IR_ID = 503l;
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
 
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
-    @Override
-    protected TdarActionSupport getController() {
-        return null;
-    }
 
     @Override
     protected String getTestFilePath() {
@@ -120,23 +124,23 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
         version.setId(id);
-        filestore.store(name, version);
+        filestore.store(ObjectType.RESOURCE, name, version);
         version.setTransientFile(name);
         return version;
     }
 
-
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
-        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(),converter.getTableNames().toArray(new String[0])));
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
         return converter;
     }
 
-    static Long spitalIrId = (long)(Math.random()* 10000);
+    static Long spitalIrId = (long) (Math.random() * 10000);
+
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
         spitalIrId++;
         DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
@@ -150,12 +154,12 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     String[] dataImportTables = new String[0];
-    
+
     public String[] getDataImportTables() {
         return dataImportTables;
     }
-    
-    public void setDataImportTables(String[] dataImportTables ) {
+
+    public void setDataImportTables(String[] dataImportTables) {
         this.dataImportTables = dataImportTables;
     }
 
@@ -173,7 +177,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
         CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, column.getDefaultCodingSheet().getId());
+        controller.setId(column.getDefaultCodingSheet().getId());
+        controller.prepare();
         controller.loadOntologyMappedColumns();
         Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
         // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
@@ -209,7 +214,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         logger.info("{}", dataTable);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setDataTableId(dataTable.getId());
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setId(dataset.getId());
+        controller.prepare();
         controller.setDataTableColumns(Arrays.asList(mappings));
         controller.saveColumnMetadata();
 
@@ -239,8 +245,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             colCount += integrationDataResult.getIntegrationColumns().size();
 
             for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
-                if (!col.isDisplayColumn())
+                if (!col.isDisplayColumn()) {
                     colCount++;
+                }
             }
 
             int size = 0;
@@ -267,8 +274,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();
         for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (integrationColumn.isDisplayColumn())
+            if (integrationColumn.isDisplayColumn()) {
                 continue;
+            }
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
                 int foundNodeCount = 0;
                 for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
@@ -287,4 +295,61 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         }
         return checkedNodeList;
     }
+
+
+
+    public void assertArchiveContents(Collection<File> expectedFiles, File archive) throws IOException {
+        assertArchiveContents(expectedFiles, archive, true);
+    }
+
+    public void assertArchiveContents(Collection<File> expectedFiles, File archive, boolean strict) throws IOException {
+
+        Map<String, Long> nameSize = unzipArchive(archive);
+        List<String> errs = new ArrayList<>();
+        for (File expected : expectedFiles) {
+            Long size = nameSize.get(expected.getName());
+            if (size == null) {
+                errs.add("expected file not in archive:" + expected.getName());
+                continue;
+            }
+            // if doing a strict test, assert that file is exactly the same
+            if (strict) {
+                if (size.longValue() != expected.length()) {
+                    errs.add(String.format("%s: item in archive %s does not have same content", size.longValue(), expected));
+                }
+                // otherwise, just make sure that the actual file is not empty
+            } else {
+                if (expected.length() > 0) {
+                    assertThat(size, greaterThan(0L));
+                }
+            }
+        }
+        if (errs.size() > 0) {
+            for (String err : errs) {
+                logger.error(err);
+            }
+            fail("problems found in archive:" + archive);
+        }
+    }
+
+    public Map<String, Long> unzipArchive(File archive) {
+        Map<String, Long> files = new HashMap<>();
+        ZipFile zipfile = null;
+        try {
+            zipfile = new ZipFile(archive);
+            for (Enumeration e = zipfile.entries(); e.hasMoreElements();) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                files.put(entry.getName(), entry.getSize());
+                logger.info("{} {}", entry.getName(), entry.getSize());
+            }
+        } catch (Exception e) {
+            logger.error("Error while extracting file " + archive, e);
+        } finally {
+            if (zipfile!=null) {
+                IOUtils.closeQuietly(zipfile);
+            }
+        }
+        return files;
+    }
+
 }

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.resource.SensoryData.RgbCapture;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.TdarActionException;
 
@@ -38,6 +40,9 @@ import org.tdar.struts.action.TdarActionException;
 public class SensoryDataController extends AbstractInformationResourceController<SensoryData> {
 
     private static final long serialVersionUID = -7329500931137726805L;
+
+    @Autowired
+    private transient ResourceService resourceService;
 
     private List<SensoryDataImage> sensoryDataImages;
     private List<SensoryDataScan> sensoryDataScans;
@@ -72,10 +77,10 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     private void saveCustomMetadata() {
         Persistable.Sequence.applySequence(getSensoryDataImages());
-        getResourceService().saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
+        resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
                 getPersistable().getSensoryDataImages(), SensoryDataImage.class);
         Persistable.Sequence.applySequence(getSensoryDataScans());
-        getResourceService().saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataScans(),
+        resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataScans(),
                 getPersistable().getSensoryDataScans(), SensoryDataScan.class);
 
     }
@@ -97,8 +102,9 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public List<SensoryDataImage> getSensoryDataImages() {
-        if (sensoryDataImages == null)
+        if (sensoryDataImages == null) {
             sensoryDataImages = new ArrayList<SensoryDataImage>();
+        }
         return sensoryDataImages;
     }
 
@@ -107,8 +113,9 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public List<SensoryDataScan> getSensoryDataScans() {
-        if (sensoryDataScans == null)
+        if (sensoryDataScans == null) {
             sensoryDataScans = new ArrayList<SensoryDataScan>();
+        }
         return sensoryDataScans;
     }
 
@@ -148,8 +155,9 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     @Override
     public SensoryData getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

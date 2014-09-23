@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
-import org.tdar.utils.MessageHelper;
+import org.tdar.filestore.Filestore.ObjectType;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -53,6 +54,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Find all ontologies, but return them with sparse objects (Title, Description only)
+     * 
      * @return
      */
     public List<Ontology> findSparseOntologyList() {
@@ -64,7 +66,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      * 
      * @param ontology
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void shred(Ontology ontology) {
         InformationResourceFileVersion latestUploadedFile = ontology.getLatestUploadedVersion();
         // Collection<InformationResourceFileVersion> latestVersions = ontology.getLatestVersions(VersionType.UPLOADED);
@@ -86,7 +88,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 parser = new OwlApiHierarchyParser(ontology, converter.toOwlOntology(latestUploadedFile));
             } catch (FileNotFoundException e) {
                 logger.warn("file not found: {}", e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.file_not_found", latestUploadedFile.getFilename()), e);
+                throw new TdarRecoverableRuntimeException("error.file_not_found", e, Arrays.asList(latestUploadedFile.getFilename()));
             }
             List<OntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
@@ -148,7 +150,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
             Long incomingId = incoming.getId();
             incoming = getDao().merge(incoming, existing);
 
-            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(), original);
+            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(),
+                    original);
             incomingOntologyNodes.set(index, incoming);
             existingOntologyNodes.remove(existing);
             existingSet.remove(existing.getIri());
@@ -163,9 +166,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
     }
 
-
     /**
      * Takes an Ontology and finds the OWL @link InformationResourceFileVersion of the @link Ontology and returns the OntologyModel
+     * 
      * @param ontology
      * @return
      * @throws FileNotFoundException
@@ -174,15 +177,16 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
         int size = files.size();
         if (size != 1) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ontologyService.could_not_determine_which_file", size));
+            throw new TdarRecoverableRuntimeException("ontologyService.could_not_determine_which_file", Arrays.asList(size));
         }
         for (InformationResourceFileVersion irFile : files) {
-            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile);
+            File file = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile);
             if (file.exists()) {
                 OntModel ontologyModel = ModelFactory.createOntologyModel();
                 String url = ontology.getUrl();
-                if (url == null)
+                if (url == null) {
                     url = "";
+                }
                 try {
                     ontologyModel.read(new FileReader(file), url);
                     return ontologyModel;
@@ -197,6 +201,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Filters a List of @link OntologyNode entries to to just the direct children of the @link OntologyNode.
+     * 
      * @param allNodes
      * @param parent
      * @return
@@ -204,8 +209,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
-            if (currentNode.getIndex().equals(parent.getIndex() + "." + currentNode.getIntervalStart()))
+            if (currentNode.getIndex().equals(parent.getIndex() + "." + currentNode.getIntervalStart())) {
                 toReturn.add(currentNode);
+            }
         }
         getLogger().trace("returning: {}", toReturn);
         return toReturn;
@@ -213,6 +219,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Returns @link OntologyNode entries that are at the root of their trees (i.e. first Branches; their parent is the root).
+     * 
      * @param allNodes
      * @return
      */
@@ -229,6 +236,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Find the number of @link CodingRule entries that refer to the @link DataTableColumn
+     * 
      * @param dataTableColumn
      * @return
      */
@@ -239,6 +247,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Check if the @link DataTableColumn has any associations with an @link Ontology
+     * 
      * @param dataTableColumn
      * @return
      */
@@ -249,6 +258,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     /**
      * Converts a Text representation of an @link Ontology using TABs to an RDF/XML/OWL Ontology
+     * 
      * @param id
      * @param fileTextInput
      * @return

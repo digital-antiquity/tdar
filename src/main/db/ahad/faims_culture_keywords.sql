@@ -21,7 +21,10 @@
 --
 -- Data for Name: culture_keyword; Type: TABLE DATA; Schema: public; Owner: tdar
 --
-insert into culture_keyword (id, label, approved, index, selectable) values (2101, 'Archaeology', true, '2101', false);
+
+
+update culture_keyword set definition = null, label = 'Archaeology', approved = true, index = '2101', selectable = false, parent_id = null where id = 2101;
+--insert into culture_keyword (id, label, approved, index, selectable) values (2101, 'Archaeology', true, '2101', false);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210101, 'Aboriginal and Torres Strait Islander Archaeology (FOR 210101)', true, '2101.1', true, 2101);
 
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210102, 'Archaeological Science (FOR 210102)', true, '2101.2', true, 2101);
@@ -43,14 +46,16 @@ insert into culture_keyword (id, label, approved, index, selectable, parent_id) 
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210110, 'Maritime Archaeology (FOR 210110)', true, '2101.10', true, 2101);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210199, 'Archaeology not elsewhere classified (FOR 210199)', true, '2101.99', true, 2101);
 
-insert into culture_keyword (id, label, approved, index, selectable) values (2102, 'Curatorial and Related Studies', true, '2102', false);
+update culture_keyword set definition = null, label = 'Curatorial and Related Studies', approved = true, index = '2102', selectable = false, parent_id = null where id = 2102;
+--insert into culture_keyword (id, label, approved, index, selectable) values (2102, 'Curatorial and Related Studies', true, '2102', false);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210201, 'Archival, Repository and Related Studies (FOR 210201)', true, '2102.1', true, 2102);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210202, 'Heritage and Cultural Conservation (FOR 210202)', true, '2102.2', true, 2102);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210203, 'Materials Conservation (FOR 210203)', true, '2102.3', true, 2102);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210204, 'Museum Studies (FOR 210204)', true, '2102.4', true, 2102);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210205, 'Curatorial and Related Studies not elsewhere classified (FOR 210205)', true, '2102.5', true, 2102);
 
-insert into culture_keyword (id, label, approved, index, selectable) values (2103, 'Historical Studies', true, '2103', false);
+update culture_keyword set definition = null, label = 'Historical Studies', approved = true, index = '2103', selectable = false, parent_id = null where id = 2103;
+--insert into culture_keyword (id, label, approved, index, selectable) values (2103, 'Historical Studies', true, '2103', false);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210301, 'Aboriginal and Torres Strait Islander History (FOR 210301)', true, '2103.1', true, 2103);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210302, 'Asian History (FOR 210302)', true, '2103.2', true, 2103);
 insert into culture_keyword (id, label, approved, index, selectable, parent_id) values (210303, 'Australian History (excl. Aboriginal and Torres Strait Islander History) (FOR 210303)', true, '2103.3', true, 2103);
@@ -81,3 +86,4 @@ delete from resource_culture_keyword where culture_keyword_id <> 210108;
 -- Step 7) Remove the existing culture keywords
 delete from culture_keyword_synonym where culturekeyword_id < 2101; 
 delete from culture_keyword where id < 2101;
+delete from culture_keyword where id = 10002;

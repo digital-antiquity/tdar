@@ -18,15 +18,18 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
@@ -39,16 +42,44 @@ public interface Filestore {
         NO_ROTATION,
         ROTATE,
         DATE;
-        private int rotations = 0;
+        private int rotations = 5;
 
         public int getRotations() {
+            if (this != ROTATE) {
+                return 0;
+            }
             return rotations;
         }
 
-        public void setRotations(int rotations) {
-            this.rotations = rotations;
+    }
+
+    public enum ObjectType {
+        LOG,
+        RESOURCE,
+        CREATOR,
+        COLLECTION;
+
+        public static ObjectType fromClass(Class<?> cls) {
+            if (Resource.class.isAssignableFrom(cls)) {
+                return RESOURCE;
+            }
+            if (ResourceCollection.class.isAssignableFrom(cls)) {
+                return COLLECTION;
+            }
+            if (Creator.class.isAssignableFrom(cls)) {
+                return CREATOR;
+            }
+            return null;
         }
 
+        public String getRootDir() {
+            switch (this) {
+                case RESOURCE:
+                    return "";
+                default:
+                    return this.name().toLowerCase();
+            }
+        }
     }
 
     public enum LogType {
@@ -73,7 +104,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(InputStream content, InformationResourceFileVersion version) throws IOException;
+    String store(ObjectType type, InputStream content, FileStoreFileProxy object) throws IOException;
 
     long getSizeInBytes();
 
@@ -90,7 +121,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -99,9 +130,9 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    String store(File content, InformationResourceFileVersion version) throws IOException;
+    String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException;
 
-    String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
+    String storeAndRotate(ObjectType type, File content, FileStoreFileProxy object, StorageMethod rotation) throws IOException;
 
     void storeLog(LogType type, String filename, String message);
 
@@ -113,7 +144,7 @@ public interface Filestore {
      * @return {@link File} associated with the given ID.
      * @throws {@link FileNotFoundException }
      */
-    File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException;
+    File retrieveFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException;
 
     /**
      * Delete the file with the given fileId.
@@ -122,17 +153,16 @@ public interface Filestore {
      *            file identifier
      * @throws {@link IOException }
      */
-    void purge(InformationResourceFileVersion version) throws IOException;
+    void purge(ObjectType type, FileStoreFileProxy object) throws IOException;
 
     String getFilestoreLocation();
 
     MessageDigest createDigest(File f);
 
-    boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
+    boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
         private static final String MD5 = "MD5";
-        private static final String LOG_DIR = "logs";
         // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
         protected static final Logger logger = LoggerFactory.getLogger(BaseFilestore.class);
 
@@ -176,7 +206,7 @@ public interface Filestore {
         public static String getContentType(File file, String overrideValue) {
             MediaType mediaType = null;
             Metadata md = new Metadata();
-            md.set(Metadata.RESOURCE_NAME_KEY, file.getName());
+            md.set(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
             Detector detector = new DefaultDetector(TikaConfig.getDefaultConfig().getMimeRepository());
             try {
                 FileInputStream fis = new FileInputStream(file);
@@ -191,35 +221,42 @@ public interface Filestore {
             return mediaType.getType() + "/" + mediaType.getSubtype();
         }
 
-        protected InformationResourceFileVersion updateVersionInfo(File file, InformationResourceFileVersion version) throws IOException {
+        protected FileStoreFileProxy updateVersionInfo(File file, FileStoreFileProxy version) throws IOException {
             String mimeType = getContentType(file, "UNKNOWN/UNKNOWN");
             logger.trace("MIMETYPE: {}", mimeType);
-            if (StringUtils.isEmpty(version.getFilename()))
+            if (StringUtils.isEmpty(version.getFilename())) {
                 version.setFilename(file.getName());
-            if (StringUtils.isEmpty(version.getMimeType()))
+            }
+            if (StringUtils.isEmpty(version.getMimeType())) {
                 version.setMimeType(mimeType);
+            }
             String relative = getRelativePath(file);
             File parent = getParentDirectory(new File(relative));
-            if (StringUtils.isEmpty(version.getPath()))
+            if (StringUtils.isEmpty(version.getPath())) {
                 version.setPath(parent.getPath());
-            if (version.getFileLength() == null)
+            }
+            if (version.getFileLength() == null) {
                 version.setFileLength(file.length());
-            if (version.getUncompressedSizeOnDisk() == null)
+            }
+            if (version.getUncompressedSizeOnDisk() == null) {
                 version.setUncompressedSizeOnDisk(file.length());
+            }
             if (StringUtils.isEmpty(version.getChecksum())) {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
-                if (version.isArchival() || version.isUploaded()) {
+                if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                     File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
                     FileUtils.write(checksum, version.getChecksum());
                 }
             }
-            if (version.getDateCreated() == null)
+            if (version.getDateCreated() == null) {
                 version.setDateCreated(new Date());
+            }
 
-            if (StringUtils.isEmpty(version.getExtension()))
+            if (StringUtils.isEmpty(version.getExtension())) {
                 version.setExtension(FilenameUtils.getExtension(file.getName()));
+            }
             return version;
         }
 
@@ -230,7 +267,7 @@ public interface Filestore {
         @Override
         public void storeLog(LogType type, String filename, String message) {
             File logdir = new File(FilenameUtils.concat(getFilestoreLocation(),
-                    String.format("%s/%s/%s", LOG_DIR, type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
+                    String.format("%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
             if (!logdir.exists()) {
                 logdir.mkdirs();
             }
@@ -244,9 +281,9 @@ public interface Filestore {
 
         @Override
         public List<File> listLogFiles(LogType type, Integer year) {
-            String subdir = String.format("%s/%s", LOG_DIR, type.getDir());
+            String subdir = String.format("%s/%s", ObjectType.LOG.getRootDir(), type.getDir());
             if (year != null) {
-                subdir = String.format("%s/%s/%s", LOG_DIR, type.getDir(), year);
+                subdir = String.format("%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), year);
             }
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return Arrays.asList(logDir.listFiles());
@@ -254,19 +291,19 @@ public interface Filestore {
 
         @Override
         public File getLogFile(LogType type, Integer year, String filename) {
-            String subdir = String.format("%s/%s/%s/%s", LOG_DIR, type.getDir(), year, filename);
+            String subdir = String.format("%s/%s/%s/%s", ObjectType.LOG.getRootDir(), type.getDir(), year, filename);
             File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
             return logDir;
         }
 
         @Override
-        public boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException {
-            File toVerify = retrieveFile(version);
+        public boolean verifyFile(ObjectType type, FileStoreFileProxy object) throws FileNotFoundException {
+            File toVerify = retrieveFile(type, object);
             MessageDigest newDigest = createDigest(toVerify);
             String hex = formatDigest(newDigest);
-            logger.debug("Verifying file: {}", version.getFilename());
-            logger.trace("\told: {} new: {}", version.getChecksum(), hex);
-            return hex.trim().equalsIgnoreCase(version.getChecksum().trim());
+            logger.debug("Verifying file: {}", object.getFilename());
+            logger.trace("\told: {} new: {}", object.getChecksum(), hex);
+            return hex.trim().equalsIgnoreCase(object.getChecksum().trim());
         }
 
         public DigestInputStream appendMessageDigestStream(InputStream content) {
@@ -354,4 +391,6 @@ public interface Filestore {
         }
 
     }
+
+    void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess);
 }

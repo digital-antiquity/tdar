@@ -6,7 +6,6 @@
  */
 package org.tdar.utils;
 
-import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.lineSeparator;
 import static java.lang.System.out;
@@ -29,32 +28,26 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -62,11 +55,11 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
- * 
+ *
  * @author Adam Brin
  */
 public class CommandLineAPITool {
@@ -87,7 +80,8 @@ public class CommandLineAPITool {
     /** The billing account ID that the upload is to be charge against */
     private static final String API_FIELD_ACCOUNT_ID = "accountId";
 
-    private static final String IMPORT_LOG_FILE = "import.log";
+    private static final String IMPORT_SEEN_FILE = "files_seen";
+    private static final String IMPORT_SEEN_FILE_EXTENSION = "txt";
     private static final String HTTP_PROTOCOL = "http://";
     private static final String HTTPS_PROTOCOL = "https://";
     private static final String ALPHA_PASSWORD = "alpha";
@@ -102,7 +96,7 @@ public class CommandLineAPITool {
     private static final String OPTION_PASSWORD = "password";
     private static final String OPTION_USERNAME = "username";
     private static final String OPTION_HOST = "host";
-    private static final String OPTION_LOG_FILE = "logFile";
+    private static final String OPTION_SEEN_FILE = "seenFile";
     private static final String OPTION_ACCOUNTID = "accountid";
     private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
@@ -114,11 +108,13 @@ public class CommandLineAPITool {
     private static final String OPTION_SHOW_LOG = "log";
 
     private static final Logger logger = Logger.getLogger(CommandLineAPITool.class);
-    private CloseableHttpClient httpclient;
+
+    private static int errorCount = 0;
+    private DefaultHttpClient httpclient = new DefaultHttpClient();
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = ALPHA_USER_NAME;
     private String password = ALPHA_PASSWORD;
-    private File logFile = new File(IMPORT_LOG_FILE);
+    private File seenFile;
     private Long projectId;
     private Long accountId;
     private long msSleepBetween;
@@ -134,29 +130,32 @@ public class CommandLineAPITool {
      * <li>0 : no issues were encountered and the run completed successfully
      * <li>any number > 0 : the number of files that the tool was not able to import successfully.
      * </ul>
-     * 
+     *
      * @param args
+     * @throws IOException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         CommandLineAPITool importer = new CommandLineAPITool();
+        importer.seenFile = File.createTempFile(IMPORT_SEEN_FILE, IMPORT_SEEN_FILE_EXTENSION);
+        logger.warn("Seen file is: " + importer.seenFile.getCanonicalPath());
         Options options = buildCommandLineOptions();
         try {
             parseArguments(args, importer, options);
+            errorCount = 0;
             importer.verifyState();
-            int errorCount = importer.processFiles();
+            importer.processFiles();
             if (errorCount > 0) {
-                err.println("Exiting with errors...");
+                logger.error("Exiting with errors...");
                 exit(errorCount);
             }
         } catch (ParseException | IOException exp) {
-            exp.printStackTrace();
-            err.println("Exception: " + exp.getMessage());
+            logger.error(exp.getMessage(), exp);
             showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
         }
     }
 
     private static void parseArguments(String[] args, CommandLineAPITool importer, Options options) throws ParseException, IOException {
-        logger.info("args are: " + Arrays.toString(args));
+        logger.info("====> Start of run with args: " + Arrays.toString(args));
         CommandLineParser parser = new GnuParser();
         CommandLine line = parser.parse(options, args);
         if (hasNoOptions(line) || line.hasOption(OPTION_HELP)) {
@@ -179,7 +178,7 @@ public class CommandLineAPITool {
             importer.setUsername(line.getOptionValue(OPTION_USERNAME));
         }
         if (line.hasOption(OPTION_HOST)) {
-            err.println("Setting host to " + line.getOptionValue(OPTION_HOST));
+            logger.warn("Setting host to " + line.getOptionValue(OPTION_HOST));
             importer.setHostname(line.getOptionValue(OPTION_HOST));
         }
         if (line.hasOption(OPTION_PASSWORD)) {
@@ -200,8 +199,8 @@ public class CommandLineAPITool {
         if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
             importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
         }
-        if (line.hasOption(OPTION_LOG_FILE)) {
-            importer.setLogFile(line.getOptionValue(OPTION_LOG_FILE));
+        if (line.hasOption(OPTION_SEEN_FILE)) {
+            importer.setSeenFile(line.getOptionValue(OPTION_SEEN_FILE));
         }
     }
 
@@ -228,9 +227,9 @@ public class CommandLineAPITool {
                 .create(OPTION_ACCOUNTID));
         options.addOption(OptionBuilder.withArgName(OPTION_SLEEP).hasArg().withDescription("the time to wait between server calls, in milliseconds")
                 .create(OPTION_SLEEP));
-        options.addOption(OptionBuilder.withArgName(OPTION_LOG_FILE).hasArg()
-                .withDescription("the name of the file to record successful file tranfers to (defaults to " + IMPORT_LOG_FILE + ")")
-                .create(OPTION_LOG_FILE));
+        options.addOption(OptionBuilder.withArgName(OPTION_SEEN_FILE).hasArg()
+                .withDescription("the name of the file to record successful file tranfers to (defaults to " + IMPORT_SEEN_FILE + ")")
+                .create(OPTION_SEEN_FILE));
         options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
                 .withDescription("the access restriction to be applied - one of [" + getFileAccessRestrictionChoices() + "]")
                 .create(OPTION_ACCESS_RESTRICTION));
@@ -263,8 +262,8 @@ public class CommandLineAPITool {
                 case OPTION_SLEEP:
                     importer.setMsSleepBetween(getAsLong(property));
                     break;
-                case OPTION_LOG_FILE:
-                    importer.setLogFile(property);
+                case OPTION_SEEN_FILE:
+                    importer.setSeenFile(property);
                     break;
                 case OPTION_ACCESS_RESTRICTION:
                     importer.setFileAccessRestriction(FileAccessRestriction.valueOf(property));
@@ -309,7 +308,7 @@ public class CommandLineAPITool {
 
     private static boolean hasUnrecognizedOptions(CommandLine line) {
         if (line.getArgs().length > 0) {
-            err.println("Unrecognized arguments found: " + Arrays.toString(line.getArgs()));
+            logger.error("Unrecognized arguments found: " + Arrays.toString(line.getArgs()));
             return true;
         }
         return false;
@@ -358,58 +357,45 @@ public class CommandLineAPITool {
     /**
      * process all the files that were read in from the command line, and any nested sub-directories.
      */
-    @SuppressWarnings("deprecation")
-    private int processFiles() {
-
-        int errorCount = 0;
+    private void processFiles() {
         try {
-
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.BEST_MATCH).build();
-            CookieStore cookieStore = new BasicCookieStore();
-            HttpClientContext context = HttpClientContext.create();
-            context.setCookieStore(cookieStore);
-
-            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();
-         
             if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
-                AuthScope scope = new AuthScope(getHostname(), 443);
-                credsProvider.setCredentials(scope, new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD));
-//                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
+                AuthScope scope = new AuthScope(getHostname(), 80);
+                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD);
+                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
                 logger.info("creating challenge/response authentication request for alpha");
                 HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
                 logger.debug(tdarIPAuth.getRequestLine());
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
                 entity.consumeContent();
-            } else {
-                httpclient = HttpClients.custom().build();
             }
             // make tdar authentication call
             HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/login/process");
             List<NameValuePair> postNameValuePairs = new ArrayList<>();
-            postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
-            postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
+            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", getUsername()));
+            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", getPassword()));
 
             tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
             HttpResponse response = httpclient.execute(tdarAuth);
             HttpEntity entity = response.getEntity();
             logger.trace("Login form get: " + response.getStatusLine());
             logger.trace("Post logon cookies:");
-            List<Cookie> cookies = cookieStore.getCookies();
+            List<Cookie> cookies = httpclient.getCookieStore().getCookies();
             boolean sawCrowdAuth = false;
             if (cookies.isEmpty()) {
                 logger.trace("None");
             } else {
                 for (int i = 0; i < cookies.size(); i++) {
-                    if (cookies.get(i).getName().equals("crowd.token_key"))
+                    if (cookies.get(i).getName().equals("crowd.token_key")) {
                         sawCrowdAuth = true;
+                    }
                     logger.trace("- " + cookies.get(i).toString());
                 }
             }
 
             if (!sawCrowdAuth) {
-                logger.warn("unable to authenticate, check username and password " + getHostname());
+                logger.error("unable to authenticate, check username and password " + getHostname());
                 exit(-1);
             }
             logger.trace(EntityUtils.toString(entity));
@@ -417,7 +403,7 @@ public class CommandLineAPITool {
 
             for (File file : files) {
                 out.print("*"); // give the user some sort of visual indicator as to progress
-                errorCount += processDirectory(file);
+                processDirectory(file);
             }
             out.println(); // end of progress indicator
 
@@ -425,7 +411,6 @@ public class CommandLineAPITool {
             e.printStackTrace();
             errorCount++;
         }
-        return errorCount;
     }
 
     /**
@@ -433,16 +418,16 @@ public class CommandLineAPITool {
      * @throws IOException
      * @throws UnsupportedEncodingException
      */
-    private int processDirectory(File parentDir) throws UnsupportedEncodingException, IOException {
+    private void processDirectory(File parentDir) {
         List<File> directories = new ArrayList<>();
         List<File> attachments = new ArrayList<>();
         List<File> records = new ArrayList<>();
 
-        int errorCount = 0;
         if (parentDir.isDirectory()) {
             for (File file : parentDir.listFiles()) {
-                if (file.isHidden())
+                if (file.isHidden()) {
                     continue;
+                }
                 String fileName = file.getName();
                 if (file.isDirectory()) {
                     directories.add(file);
@@ -454,7 +439,7 @@ public class CommandLineAPITool {
             }
         } else if (FilenameUtils.getExtension(parentDir.getName()).equalsIgnoreCase("xml")) {
             records.add(parentDir);
-        } 
+        }
 
         // if there is more than one record in a directory after scanning of the directory is
         // complete, then ignore all files that are not xml records
@@ -475,66 +460,80 @@ public class CommandLineAPITool {
         for (File directory : directories) {
             processDirectory(directory);
         }
-        return errorCount;
     }
 
-    @SuppressWarnings("deprecation")
-    public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
-        String path = record.getPath();
-        HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "=" + URLEncoder.encode(path, "UTF-8"));
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//        MultipartEntity reqEntity = new MultipartEntity();
+    public boolean makeAPICall(File record, List<File> attachments) {
         boolean callSuccessful = true;
-        if (seen.contains(path)) {
-            logger.debug("skipping: " + path);
-        }
-        builder.addTextBody(API_FIELD_RECORD, FileUtils.readFileToString(record));
+        String path = record.getPath();
+        try {
+            HttpPost apicall = new HttpPost(httpProtocol + getHostname() + "/api/upload?" + API_UPLOADED_ITEM + "="
+                    + URLEncoder.encode(path, "UTF-8"));
+            MultipartEntity reqEntity = new MultipartEntity();
+            if (seen.contains(path)) {
+                logger.warn("skipping: " + path);
+            }
+            reqEntity.addPart(API_FIELD_RECORD, new StringBody(FileUtils.readFileToString(record)));
 
-        if (projectId != null) {
-            logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
-            builder.addTextBody(API_FIELD_PROJECT_ID, projectId.toString());
-        }
-        if (accountId != null) {
-            logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
-            builder.addTextBody(API_FIELD_ACCOUNT_ID, accountId.toString());
-        }
+            if (projectId != null) {
+                logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
+                reqEntity.addPart(API_FIELD_PROJECT_ID, new StringBody(projectId.toString()));
+            }
+            if (accountId != null) {
+                logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
+                reqEntity.addPart(API_FIELD_ACCOUNT_ID, new StringBody(accountId.toString()));
+            }
 
-        builder.addTextBody(API_FIELD_FILE_ACCESS_RESTRICTION, getFileAccessRestriction().name());
+            reqEntity.addPart(API_FIELD_FILE_ACCESS_RESTRICTION, new StringBody(getFileAccessRestriction().name()));
 
-        if (!CollectionUtils.isEmpty(attachments)) {
-            for (int i = 0; i < attachments.size(); i++) {
-                builder.addBinaryBody(API_FIELD_UPLOAD_FILE, attachments.get(i));
-                if (getFileAccessRestriction().isRestricted()) {
-                    builder.addTextBody(API_FIELD_RESTRICTED_FILES, attachments.get(i).getName());
+            if (!CollectionUtils.isEmpty(attachments)) {
+                for (int i = 0; i < attachments.size(); i++) {
+                    reqEntity.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
+                    if (getFileAccessRestriction().isRestricted()) {
+                        reqEntity.addPart(API_FIELD_RESTRICTED_FILES, new StringBody(attachments.get(i).getName()));
+                    }
                 }
             }
-        }
 
-        apicall.setEntity(builder.build());
-        logger.debug("      files: " + StringUtils.join(attachments, ", "));
+            apicall.setEntity(reqEntity);
+            logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
-        HttpResponse response = httpclient.execute(apicall);
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
-            err.println("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
-            callSuccessful = false;
-        }
-        logger.info(record.toString() + " - " + response.getStatusLine());
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-            String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
-            entity.consumeContent();
-            if (StringUtils.isNotBlank(resp)) {
-                logger.info(resp);
+            HttpResponse response = httpclient.execute(apicall);
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
+                logger.error("Server returned error: [" + record.getAbsolutePath() + "]:"
+                        + response.getStatusLine().getReasonPhrase());
+                callSuccessful = false;
+            } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                logger.error("Server returned found: [" + record.getAbsolutePath() + "]:"
+                        + response.getStatusLine().getReasonPhrase());
+                callSuccessful = false;
             }
-        }
+            logger.info(record.toString() + " - " + response.getStatusLine());
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
+                entity.consumeContent();
+                if (StringUtils.isNotBlank(resp)) {
+                    logger.info(resp);
+                }
+            }
+            if (callSuccessful) {
+                FileUtils.writeStringToFile(getSeenFile(), path + " successful: " + callSuccessful + lineSeparator(),
+                        true);
+                logger.info("successful: " + path);
+            } else {
+                logger.error("couldn't import: " + path);
+            }
 
-        FileUtils.writeStringToFile(getLogFile(), path + " successful: " + callSuccessful + lineSeparator(), true);
-        logger.info("done: " + path);
-        try {
-            Thread.sleep(msSleepBetween);
+            try {
+                Thread.sleep(msSleepBetween);
+            } catch (Exception e) {
+                // we woke up early...
+            }
         } catch (Exception e) {
-            // we woke up early...
+            // we want to suppress all exceptions that might stop the next file from being imported
+            logger.error("couldn't import: " + path, e);
         }
         return callSuccessful;
     }
@@ -590,13 +589,13 @@ public class CommandLineAPITool {
         this.msSleepBetween = msSleepBetween;
     }
 
-    public File getLogFile() {
-        return logFile;
+    public File getSeenFile() {
+        return seenFile;
     }
 
-    public void setLogFile(String logFile) throws IOException {
-        this.logFile = new File(logFile);
-        getSeen().addAll(FileUtils.readLines(this.logFile));
+    public void setSeenFile(String logFile) throws IOException {
+        this.seenFile = new File(logFile);
+        getSeen().addAll(FileUtils.readLines(this.seenFile));
     }
 
     public List<String> getSeen() {

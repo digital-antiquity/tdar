@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +17,15 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.OtherKeyword;
-import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
@@ -50,7 +44,6 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.StringRange;
 import org.tdar.utils.MessageHelper;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -73,6 +66,7 @@ public class SearchParameters {
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
 
     private static final Operator defaultOperator = Operator.AND;
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<SearchFieldType> fieldTypes = new ArrayList<SearchFieldType>();
@@ -301,58 +295,77 @@ public class SearchParameters {
         this.resourceIds = resourceIds;
     }
 
+    TextProvider support = MessageHelper.getInstance();
+
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public QueryPartGroup toQueryPartGroup(TextProvider support) {
-        if (support == null) {
-            support = MessageHelper.getInstance();
+    public QueryPartGroup toQueryPartGroup(TextProvider support_) {
+        if (support_ != null) {
+            this.support = support_;
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
-        queryPartGroup.append(new TitleQueryPart(this.getTitles(),getOperator()));
+        queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames));
-        
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"),
+                getOperator(), filenames));
+
         // freeform keywords
-        appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
-        appendKeywordQueryParts(queryPartGroup, SiteNameKeyword.class, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, Arrays.asList(this.getSiteNames()));
-        appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS,
-                Arrays.asList(this.getUncontrolledCultureKeywords()));
-        appendKeywordQueryParts(queryPartGroup, TemporalKeyword.class, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, Arrays.asList(this.getTemporalKeywords()));
-        appendKeywordQueryParts(queryPartGroup, GeographicKeyword.class, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS,
-                Arrays.asList(this.getGeographicKeywords()));
-        appendKeywordQueryParts(queryPartGroup, SiteTypeKeyword.class, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS,
-                Arrays.asList(this.getUncontrolledSiteTypes()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.OTHER_KEYWORD, Arrays.asList(this.getOtherKeywords()));
+        if (CollectionUtils.isNotEmpty(siteNames)) {
+            QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
+            for (String q : siteNames) {
+                if (SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
+                    FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
+                    siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+                    siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));
+                    subgroup.append(siteCodePart.setBoost(5f));
+                }
+            }
+            appendKeywordQueryParts(subgroup, KeywordType.SITE_NAME_KEYWORD, Arrays.asList(siteNames));
+            queryPartGroup.append(subgroup);
+        }
+        appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, Arrays.asList(this.getUncontrolledCultureKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.TEMPORAL_KEYWORD, Arrays.asList(this.getTemporalKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.GEOGRAPHIC_KEYWORD, Arrays.asList(this.getGeographicKeywords()));
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, Arrays.asList(this.getUncontrolledSiteTypes()));
 
         // managed keywords (in the form of lists of lists of ids)
-        appendKeywordQueryParts(queryPartGroup, MaterialKeyword.class, QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, this.getMaterialKeywordIdLists());
-        appendKeywordQueryParts(queryPartGroup, SiteTypeKeyword.class, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, this.getApprovedSiteTypeIdLists());
-        appendKeywordQueryParts(queryPartGroup, InvestigationType.class, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, this.getInvestigationTypeIdLists());
-        appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_TYPE, this.getMaterialKeywordIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getApprovedSiteTypeIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getInvestigationTypeIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, this.getApprovedCultureKeywordIdLists());
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class, getOperator(), getProjects()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
+                getOperator(), getProjects()));
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
 
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
                 Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE,support.getText("searchParameter.integrable"), getIntegratableOptions(), Operator.OR,
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, support.getText("searchParameter.integratable"), getIntegratableOptions(),
+                Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
 
-        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_Type"), Operator.OR, getDocumentTypes()));
-        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support.getText("searchParameter.resource_access_type"), Operator.OR,
+        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, support.getText("searchParameter.document_type"), Operator.OR,
+                getDocumentTypes()));
+        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, support
+                .getText("searchParameter.resource_access_type"), Operator.OR,
                 getResourceAccessTypes()));
 
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, getOperator(), getRegisteredDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, getOperator(), getUpdatedDates()));
-        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, getOperator(), getCreatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, support.getText("searchParameter.date_created"), getOperator(),
+                getRegisteredDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, support.getText("searchParameter.date_updated"), getOperator(),
+                getUpdatedDates()));
+        queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                ResourceCollection.class,getOperator(), getCollections()));
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                support.getText("searchParameter.resource_collection"), "resourceCollections.",
+                ResourceCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -361,7 +374,7 @@ public class SearchParameters {
         // explore: title starts with
         if (startingLetter != null) {
             FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, startingLetter.toLowerCase());
-            part.setDisplayName(support.getText("searchParameter.title_starts_with"));
+            part.setDisplayName(support.getText("searchParameter.title_starts_with", Arrays.asList(startingLetter)));
             part.setPhraseFormatters(PhraseFormatter.WILDCARD);
             queryPartGroup.append(part);
         }
@@ -378,7 +391,7 @@ public class SearchParameters {
             tqp.setPrefix(prefix);
             for (Persistable p : values) {
                 HasName name = (HasName) p;
-                if (name != null && StringUtils.isNotBlank(name.getName())) {
+                if ((name != null) && StringUtils.isNotBlank(name.getName())) {
                     tqp.add(name.getName());
                 }
             }
@@ -400,39 +413,42 @@ public class SearchParameters {
         queryPartGroup.append(new FieldQueryPart<C>(fieldName, fieldDisplayName, operator, incomingList));
     }
 
-    protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, Class<K> type, String fieldName, List<List<String>> idListList) {
+    protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, KeywordType type, List<List<String>> idListList) {
         for (List<String> strings : idListList) {
-            if (CollectionUtils.isNotEmpty(strings))
-                group.append(createKeywordQueryPart(type, fieldName, strings));
+            if (CollectionUtils.isNotEmpty(strings)) {
+                group.append(createKeywordQueryPart(type, strings));
+            }
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected <I, K extends Keyword> HydrateableKeywordQueryPart createKeywordQueryPart(Class<K> type, String fieldName, List<I> values) {
+    protected <I, K extends Keyword> HydrateableKeywordQueryPart createKeywordQueryPart(KeywordType type, List<I> values) {
         List<K> kwdValues = new ArrayList<K>();
         for (I value : values) {
             if (value == null) {
                 continue;
             }
             try {
-                K keyword = type.newInstance();
+                K keyword = (K) type.getKeywordClass().newInstance();
                 if (value instanceof Keyword) {
                     keyword = (K) value;
                 } else if (StringUtils.isNotBlank(value.toString()) && StringUtils.isNumeric(value.toString())) {
                     Long id = Long.valueOf(value.toString());
-                    if (id != null && id > -1) {
+                    if ((id != null) && (id > -1)) {
                         keyword.setId(id);
                     }
                 } else {
                     keyword.setLabel(value.toString());
                 }
+                logger.debug("kwd: {}", keyword);
                 kwdValues.add(keyword);
             } catch (Exception e) {
                 throw new TdarRecoverableRuntimeException(e);
             }
         }
-        HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(fieldName, type, kwdValues);
+        HydrateableKeywordQueryPart hydrateableKeywordQueryPart = new HydrateableKeywordQueryPart(type, kwdValues);
         hydrateableKeywordQueryPart.setIncludeChildren(!explore);
+        hydrateableKeywordQueryPart.setDisplayName(support.getText(type.getSearchDescriptionKey()));
         return hydrateableKeywordQueryPart;
     }
 
@@ -456,7 +472,12 @@ public class SearchParameters {
 
     @Override
     public String toString() {
-        return toQueryPartGroup(null).toString();
+        try {
+            return toQueryPartGroup(null).toString();
+        } catch (Exception e) {
+            logger.error("error in toString()", e);
+            return super.toString();
+        }
     }
 
     public List<StringRange> getCreatedDates() {

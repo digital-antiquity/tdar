@@ -38,17 +38,8 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();
-        // getDatasetService().saveOrUpdate(persistable);
-        // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
-        // to mask weird sounds your engine is making
 
         handleUploadedFiles();
-//        boolean fileChanged = false;
-//        for (FileProxy proxy : getFileProxies()) {
-//            if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
-//                fileChanged = true;
-//            }
-//        }
 
         resolvePostSaveAction(getPersistable());
         return SUCCESS;
@@ -76,19 +67,14 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
                 "aux", "aux", "ovr", "rrd", "mxd", "adf" };
         Collections.addAll(extensionsForTypes, geoexts);
 
-        // extensionsForTypes.add("shx");
-        // extensionsForTypes.add("shp.xml");
-        // extensionsForTypes.add("sbx");
-        // extensionsForTypes.add("xml");
-        // extensionsForTypes.add("dbf");
-        // extensionsForTypes.add("sbn");
         return extensionsForTypes;
     }
 
     @Override
     public Geospatial getResource() {
-        if (getPersistable() == null)
+        if (getPersistable() == null) {
             setPersistable(createPersistable());
+        }
         return getPersistable();
     }
 

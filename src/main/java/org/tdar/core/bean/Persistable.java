@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -32,6 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -63,16 +68,14 @@ public interface Persistable extends Serializable {
     @MappedSuperclass
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "base")
-    @SuppressWarnings({
-        "PMD.ShortVariable"  })
-    public abstract static class Base extends JsonModel.Base implements Persistable {
+    public abstract static class Base implements Persistable, JsonModel {
 
         private static final long serialVersionUID = -458438238558572364L;
 
         protected final static String[] DEFAULT_JSON_PROPERTIES = { "id" };
 
         @Transient
-        private final transient Logger logger = LoggerFactory.getLogger(getClass());
+        protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
         /**
          * Uses GenerationType.IDENTITY, which translates to the (big)serial column type for
@@ -80,6 +83,7 @@ public interface Persistable extends Serializable {
          */
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @JsonView(JsonLookupFilter.class)
         private Long id = -1L;
 
         // @XmlTransient
@@ -118,7 +122,7 @@ public interface Persistable extends Serializable {
             if (object == this) {
                 return true;
             }
-            if (object instanceof Persistable && getClass().isInstance(object)) {
+            if ((object instanceof Persistable) && getClass().isInstance(object)) {
                 return isEqual(this, getClass().cast(object));
             }
             return false;
@@ -210,8 +214,9 @@ public interface Persistable extends Serializable {
         public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
             Map<Long, P> map = new HashMap<>();
             for (P item : items) {
-                if (item == null)
+                if (item == null) {
                     continue;
+                }
                 map.put(item.getId(), item);
             }
             return map;
@@ -219,8 +224,9 @@ public interface Persistable extends Serializable {
 
         public static int toHashCode(Persistable persistable) {
             // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
-            if (persistable == null)
+            if (persistable == null) {
                 return 0;
+            }
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
 
             if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
@@ -252,7 +258,7 @@ public interface Persistable extends Serializable {
          */
         public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
             if (existing == null) {
-                throw new TdarRuntimeException("the existing collection should not be null");
+                throw new TdarRuntimeException("persistable.collection_null");
             }
             if (incoming == null) {
                 if (!CollectionUtils.isEmpty(existing)) {
@@ -282,20 +288,15 @@ public interface Persistable extends Serializable {
 
         public static boolean isTransient(Persistable persistable) {
             // object==primative only works for certain primative values (see http://stackoverflow.com/a/3815760/103814)
-            return persistable == null || isNullOrTransient(persistable.getId());
+            return (persistable == null) || isNullOrTransient(persistable.getId());
         }
 
         public static boolean isNullOrTransient(Persistable persistable) {
-            return persistable == null || isTransient(persistable);
+            return (persistable == null) || isTransient(persistable);
         }
 
         public static boolean isNullOrTransient(Number val) {
-            return val == null || val.longValue() == -1L;
-        }
-
-        @Override
-        protected String[] getIncludedJsonProperties() {
-            return DEFAULT_JSON_PROPERTIES;
+            return (val == null) || (val.longValue() == -1L);
         }
 
         public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
@@ -320,8 +321,9 @@ public interface Persistable extends Serializable {
                     ids.add(null);
                 }
                 count++;
-                if (count == max)
+                if (count == max) {
                     break;
+                }
             }
             return ids;
         }
@@ -346,6 +348,38 @@ public interface Persistable extends Serializable {
             return n1 / n2;
         }
 
+        /**
+         * Sort @link Updatable by their updated date.
+         * 
+         * @param resourcesToEvaluate
+         */
+        public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
+            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+                @Override
+                public int compare(T o1, T o2) {
+                    return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
+                }
+            });
+
+        }
+
+        /**
+         * Sort @link Updatable by their created date.
+         * 
+         * @param resourcesToEvaluate
+         */
+        public static <T extends Updatable> void sortByCreatedDate(List<T> resourcesToEvaluate) {
+            Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+                @Override
+                public int compare(T o1, T o2) {
+                    return ObjectUtils.compare(o1.getDateCreated(), o2.getDateCreated());
+                }
+            });
+
+        }
+
     }
 
     @MappedSuperclass
@@ -357,7 +391,7 @@ public interface Persistable extends Serializable {
 
         @Override
         public final int compareTo(E other) {
-            if (sequenceNumber == null || other.sequenceNumber == null) {
+            if ((sequenceNumber == null) || (other.sequenceNumber == null)) {
                 return 0;
             }
             return sequenceNumber.compareTo(other.sequenceNumber);

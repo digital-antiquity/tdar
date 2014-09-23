@@ -1,6 +1,10 @@
 <h1>User Agreements</h1>
 
 <@s.form namespace="/" action="agreement-response" theme="simple">
+    <@s.token name='struts.csrf.token' />
+    <p>Some of ${siteAcronym}'s Terms have changed. Please review the changed versions of the terms and accept.  If you have any questions or concerns, please <a href="mailto:${contactEmail}">contact us</a>.
+    
+    </p>
     <#if tosAcceptanceRequired>
     <label class="checkbox">
         <input type="checkbox" name="acceptedAuthNotices" id="cbta" value="TOS_AGREEMENT">
@@ -15,9 +19,9 @@
     </label>
     </#if>
 
-    <div class="form-actions">
-        <button name="submit" type="submit" value="accept" id="accept" class="btn btn-primary">Accept Agreement And Go To Dashboard</button>
-        <button name="submit" type="submit" value="decline" id="decline" class="btn">I Will Decide Later - Logout</button>
-    </div>
+<div class="form-actions">
+    <button name="submit" type="submit" value="accept" id="accept" class="btn btn-primary">Accept Agreement And Go To Dashboard</button>
+    <button name="submit" type="submit" value="decline" id="decline" class="btn">I Will Decide Later - Logout</button>
+</div>
 
 </@s.form>

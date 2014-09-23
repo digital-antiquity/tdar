@@ -1,5 +1,7 @@
 package org.tdar;
 
+import java.util.regex.Pattern;
+
 public interface TestConstants {
     // public static final String DEFAULT_HOST = "localhost";
     /** id for a user that has admin rights **/
@@ -39,6 +41,7 @@ public interface TestConstants {
     // public static String ADMIN_PASSWORD = "admin";
     public static Long ADMIN_INDEPENDENT_PROJECT_ID = 1L;
     public static final String TEST_DOCUMENT_NAME = "pia-09-lame-1980.pdf";
+    public static final String TEST_DOCUMENT_NAME_SMALL = "pia-09-lame-1980-small.pdf";
     public static final String TEST_DOCUMENT = TEST_DOCUMENT_DIR + TEST_DOCUMENT_NAME;
 
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
@@ -63,4 +66,13 @@ public interface TestConstants {
 
     public static final Long NO_ASSOCIATED_PROJECT = -1L;
 
+    // max number of screenshots per test (to protect against infinite loops killing our disk space)
+    int MAX_SCREENSHOTS_PER_TEST = 100;
+    // time conversion constant
+    int MILLIS_PER_SECOND = 1000;
+    // regex pattern for js error that typically occurs when rendering google maps in test environment
+    public static final Pattern REGEX_GOOGLE_QUOTA_SERVICE_RECORD_EVENT = Pattern.compile(Pattern.quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
+    // [[{"message":"errorEvent::(no error message)","tag":"<script async=\"\" src=\"//use.typekit.net/czp6njc.js\"></script>","time":"0.293s"}, {"message":"errorEvent::(no error message)","tag":"<script src=\"https://ssl.google-analytics.com/ga.js\" async=\"\" type=\"text/javascript\"></script>","time":"0.294s"}]]
+    public static final Pattern REGEX_TYPEKIT = Pattern.compile("use.typekit.net");
+    public static final Pattern REGEX_GOOGLE_ANALYTICS = Pattern.compile("ssl.google-analytics.com");
 }

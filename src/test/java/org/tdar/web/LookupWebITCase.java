@@ -54,21 +54,20 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testValidKeywordLookup() {
-        assertJsonResult("/lookup/keyword?minLookupLength=0", "items");
+        assertJsonResult("/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
     }
 
-     @Test
-     public void testValidCollectionLookup() {
-     //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-     assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
-     }
-    
-     @Test
-     public void testValidAnnotationKeyLookup() {
-     //TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-     assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
-     
-     }
-    
+    @Test
+    public void testValidCollectionLookup() {
+        // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+        assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
+    }
+
+    @Test
+    public void testValidAnnotationKeyLookup() {
+        // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
+        assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
+
+    }
 
 }

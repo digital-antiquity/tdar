@@ -1,18 +1,18 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Objects;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.TdarGroup;
@@ -28,8 +28,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     private static final long serialVersionUID = 6891881586235180640L;
 
-    @Transient
-    private transient final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final long BYTES_IN_MB = 1_048_576L;
 
     public enum BillingActivityType {
         PRODUCTION, TEST;
@@ -47,33 +46,15 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "activity_type", length = 25)
+    @Column(name = "activity_type", length = FieldLength.FIELD_LENGTH_25)
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
 
     @Column(name = "sort_order")
     private Integer order;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @NotNull
     private BillingActivityModel model;
-
-    public BillingActivity() {
-    }
-
-    public BillingActivity(String name, Float price, BillingActivityModel model) {
-        this();
-        this.name = name;
-        this.price = price;
-        this.model = model;
-    }
-
-    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb, BillingActivityModel model) {
-        this(name, price, model);
-        setNumberOfHours(numHours);
-        setNumberOfFiles(numberOfFiles);
-        setNumberOfMb(numberOfMb);
-        setNumberOfResources(numberOfResources);
-    }
 
     // if the rates are based on total # of files; you might have a different rate based on 50 or 500 files
     @Column(updatable = false, name = "min_allowed_files")
@@ -96,6 +77,23 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     @Column(name = "groupName", length = FieldLength.FIELD_LENGTH_255)
     private TdarGroup group;
 
+    public BillingActivity() {
+    }
+
+    public BillingActivity(String name, Float price, BillingActivityModel model) {
+        this.name = name;
+        this.price = price;
+        this.model = model;
+    }
+
+    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb, BillingActivityModel model) {
+        this(name, price, model);
+        setNumberOfHours(numHours);
+        setNumberOfFiles(numberOfFiles);
+        setNumberOfMb(numberOfMb);
+        setNumberOfResources(numberOfResources);
+    }
+
     public Integer getNumberOfHours() {
         return numberOfHours;
     }
@@ -109,7 +107,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public Long getNumberOfBytes() {
-        return getNumberOfMb() * 1048576L;
+        return getNumberOfMb() * BYTES_IN_MB;
     }
 
     public void setNumberOfMb(Long numberOfMb) {
@@ -218,10 +216,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     public boolean supportsFileLimit() {
-        if (getNumberOfFiles() != null && getNumberOfFiles() > 0) {
-            return true;
-        }
-        return false;
+        return (getNumberOfFiles() != null) && (getNumberOfFiles() > 0);
     }
 
     public boolean isProduction() {
@@ -246,7 +241,7 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     @Override
     public int compareTo(BillingActivity o) {
-        if (!ObjectUtils.equals(getOrder(), o.getOrder())) {
+        if (!Objects.equals(getOrder(), o.getOrder())) {
             return ObjectUtils.compare(getOrder(), o.getOrder());
         } else {
             return ObjectUtils.compare(getName(), o.getName());
@@ -254,23 +249,19 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
     }
 
     private boolean isNullOrZero(Number number) {
-        if (number == null || number.floatValue() == 0.0) {
-            return true;
-        }
-        return false;
+        return (number == null) || (number.floatValue() == 0.0);
     }
-    
+
     public boolean isSpaceOnly() {
-        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfBytes() != null && getNumberOfBytes() > 0 && isNullOrZero(getNumberOfFiles()) ) {
-            return true;
-        }
-        return false;
+        return (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources())
+                && (getNumberOfBytes() != null) && (getNumberOfBytes() > 0)
+                && isNullOrZero(getNumberOfFiles()));
+
     }
 
     public boolean isFilesOnly() {
-        if (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources()) && getNumberOfFiles() != null && getNumberOfFiles() > 0 && isNullOrZero(getNumberOfBytes()) ) {
-            return true;
-        }
-        return false;
+        return (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources())
+                && (getNumberOfFiles() != null) && (getNumberOfFiles() > 0)
+                && isNullOrZero(getNumberOfBytes()));
     }
 }

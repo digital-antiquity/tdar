@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
@@ -47,9 +47,10 @@ public abstract class QueryBuilder extends QueryPartGroup {
         this.overrides = over;
     }
 
-    public void append(SearchParameters param,TextProvider provider) {
-        if (param != null)
+    public void append(SearchParameters param, TextProvider provider) {
+        if (param != null) {
             append(param.toQueryPartGroup(provider));
+        }
     }
 
     /*
@@ -92,8 +93,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
     }
 
     public String stringContainedInLabel(String label) {
-        if (createPartialLabelOverrides() == null)
+        if (createPartialLabelOverrides() == null) {
             return null;
+        }
         Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
 
         for (String omitItem : omitContainedLabels) {

@@ -12,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
@@ -33,6 +35,10 @@ public class ReflectionServiceTest {
                 for (Object obj : cls.getEnumConstants()) {
                     String label = ((HasLabel) obj).getLabel();
                     assertNotNull(label);
+                    if (obj instanceof Localizable) {
+                        Localizable l = ((Localizable) obj);
+                        logger.debug(l.getLocaleKey() + "==" + label);
+                    }
                     logger.trace("cls: {} label: {}", cls, label);
                 }
             }
@@ -56,7 +62,7 @@ public class ReflectionServiceTest {
 
     @Test
     public void testPersonReferences() {
-        Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, Person.class);
+        Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, TdarUser.class);
         Assert.assertEquals(3, set.size());
     }
 

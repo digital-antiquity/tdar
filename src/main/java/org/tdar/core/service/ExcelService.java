@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -38,19 +38,18 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
+import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.core.service.excel.SheetProxy;
-import org.tdar.utils.MessageHelper;
 
 /**
- * This is a service specific to trying to centralize all of the specific issues with writing 
+ * This is a service specific to trying to centralize all of the specific issues with writing
  * excel files. It could handle helper functions for reading in the future too.
  * 
  * @author abrin
- *
+ * 
  */
 @Service
 public class ExcelService {
-
 
     private static final String TRUNCATED = "[TRUNCATED]";
 
@@ -114,6 +113,7 @@ public class ExcelService {
 
     /**
      * Adds Integer validation for a column of a Worksheet
+     * 
      * @param sheet
      * @param i
      * @param validationHelper
@@ -144,6 +144,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR red to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -153,6 +154,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR beige to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -162,6 +164,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR dark beige to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -171,6 +174,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR dark green to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -180,6 +184,7 @@ public class ExcelService {
 
     /**
      * Adds a the tDAR light yellow to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -189,6 +194,7 @@ public class ExcelService {
 
     /**
      * Adds a generic color to the color palate
+     * 
      * @param wb
      * @return
      */
@@ -235,7 +241,7 @@ public class ExcelService {
      * @return
      */
     public CellStyle createBasicSummaryStyle(Workbook workbook) {
-        return CellFormat.BOLD.createStyle(workbook);
+        return CellFormat.build(Style.BOLD).createStyle(workbook);
     }
 
     /**
@@ -254,10 +260,11 @@ public class ExcelService {
      * @return
      */
     public Workbook createWorkbook(SpreadsheetVersion version) {
-        if (version == DEFAULT_EXCEL_VERSION)
+        if (version == DEFAULT_EXCEL_VERSION) {
             return new HSSFWorkbook();
-        else
+        } else {
             return new XSSFWorkbook();
+        }
 
     }
 
@@ -324,7 +331,7 @@ public class ExcelService {
 
         if (!StringUtils.isEmpty(value)) {
             if (value.startsWith("http")) {
-                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(Hyperlink.LINK_URL);
+                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);
                 cell.setHyperlink(hyperlink);
@@ -374,8 +381,9 @@ public class ExcelService {
      * @param commentText
      */
     public void addComment(CreationHelper factory, Drawing drawing, Cell cell, String commentText) {
-        if (StringUtils.isEmpty(commentText))
+        if (StringUtils.isEmpty(commentText)) {
             return;
+        }
         ClientAnchor anchor = factory.createClientAnchor();
         anchor.setCol1(cell.getColumnIndex());
         anchor.setCol2(cell.getColumnIndex() + 3);
@@ -411,7 +419,7 @@ public class ExcelService {
      * @param fieldNames
      */
     public CellStyle addDocumentHeaderRow(Sheet sheet, int rowNum, int columnNumber, List<String> fieldNames) {
-        CellStyle headerStyle = CellFormat.BOLD.setFontSize((short) 14).setBackgroundColor(new HSSFColor.WHITE()).createStyle(sheet.getWorkbook());
+        CellStyle headerStyle = CellFormat.build(Style.BOLD).setFontSize((short) 14).setBackgroundColor(new HSSFColor.WHITE()).createStyle(sheet.getWorkbook());
         addRow(sheet, rowNum, columnNumber, fieldNames, headerStyle);
         return headerStyle;
     }
@@ -428,7 +436,7 @@ public class ExcelService {
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
         if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("excelService.too_many_rows"));
+            throw new TdarRecoverableRuntimeException("excelService.too_many_rows");
         }
         Row row = sheet.getRow(rowNum);
         if (row == null) {
@@ -459,11 +467,10 @@ public class ExcelService {
      * @return
      */
     public CellStyle createDefaultHeaderStyle(Workbook workbook) {
-        return CellFormat.NORMAL
+        return CellFormat.build(Style.BOLD)
                 .setColor(new HSSFColor.GREY_25_PERCENT())
                 .setBorderBottom(CellStyle.BORDER_THIN)
                 .setWrapping(true)
-                .setBoldweight(Font.BOLDWEIGHT_BOLD)
                 .createStyle(workbook);
     }
 
@@ -498,6 +505,7 @@ public class ExcelService {
         Workbook workbook = proxy.getWorkbook();
         proxy.preProcess();
         Iterator<Object[]> data = proxy.getData();
+
         // if the startRow is something other than 0, we assume that the caller was working on this sheet prior
         boolean newSheetNeeded = startRow == 0;
         if (newSheetNeeded) {
@@ -515,12 +523,12 @@ public class ExcelService {
             try {
                 row = data.next();
             } catch (RuntimeException re) {
-                logger.error("RuntimeException, table empty?", re);
+                logger.warn("RuntimeException, table empty?", re);
                 break;
             }
             rowNum++;
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
-            if (rowNum >= maxRows - 1) {
+            if (rowNum >= (maxRows - 1)) {
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
                 }
@@ -533,9 +541,9 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-
     /**
      * try to auto-size each column
+     * 
      * @param sheet
      */
     private void autoSizeColumnsOnSheet(Sheet sheet) {
@@ -548,19 +556,20 @@ public class ExcelService {
     }
 
     /**
-     * Add a key-value pair column eg: 
-     *      KEY: value
-     *      KEY: value
-     *      ..
+     * Add a key-value pair column eg:
+     * KEY: value
+     * KEY: value
+     * ..
+     * 
      * @param sheet
      * @param rowNum
      * @param i
      * @param asList
      */
     public void addPairedHeaderRow(Sheet sheet, int rowNum, int i, List<String> asList) {
-        addRow(sheet, rowNum, i, asList, CellFormat.NORMAL.createStyle(sheet.getWorkbook()));
+        addRow(sheet, rowNum, i, asList, CellFormat.build(Style.NORMAL).createStyle(sheet.getWorkbook()));
         sheet.getRow(rowNum).getCell(i)
-                .setCellStyle(CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
+                .setCellStyle(CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
     }
 
     /**

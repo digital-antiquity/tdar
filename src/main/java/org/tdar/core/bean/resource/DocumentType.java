@@ -1,7 +1,8 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.search.query.QueryFieldNames;
+import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -12,7 +13,7 @@ import org.tdar.utils.MessageHelper;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum DocumentType implements HasLabel, Facetable<DocumentType> {
+public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
 
     BOOK("book", "book", "Book"),
     BOOK_SECTION("chapter", "bookitem", "Book"),
@@ -25,7 +26,6 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     private final String openUrlGenre;
     private String publisherName;
     private String publisherLocationName;
-    private transient Integer count;
     private String schema;
 
     public boolean isPartOfLargerDocument() {
@@ -45,7 +45,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         this.schema = schema;
     }
 
-    private DocumentType(String label,  String genre, String pubName, String pubLoc, String schema) {
+    private DocumentType(String label, String genre, String pubName, String pubLoc, String schema) {
         this.label = label;
         this.openUrlGenre = genre;
         this.publisherName = pubName;
@@ -58,6 +58,16 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return label;
     }
 
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
+    @Override
+    public String getPluralLocaleKey() {
+        return MessageHelper.formatPluralLocalizableKey(this);
+    }
+
     public boolean isBookTitleDisplayed() {
         switch (this) {
             case BOOK_SECTION:
@@ -65,15 +75,15 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
             default:
                 return false;
         }
-        
+
     }
-    
+
     /**
      * Returns the ResourceType corresponding to the String given or null if none exists. Used in place of valueOf since
      * valueOf throws RuntimeExceptions.
      */
     public static DocumentType fromString(String string) {
-        if (string == null || "".equals(string)) {
+        if ((string == null) || "".equals(string)) {
             return null;
         }
         // try to convert incoming resource type String query parameter to ResourceType enum.. unfortunately valueOf only throws RuntimeExceptions.
@@ -100,33 +110,13 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         return openUrlGenre;
     }
 
-    @Override
-    public Integer getCount() {
-        return count;
-    }
-
-    @Override
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
     public String getPlural() {
-        return MessageHelper.getMessage("documentType."+label+"_plural");
-    }
-
-    @Override
-    public String getLuceneFieldName() {
-        return QueryFieldNames.DOCUMENT_TYPE;
-    }
-
-    @Override
-    public DocumentType getValueOf(String val) {
-        return valueOf(val);
+        return MessageHelper.getMessage(getLocaleKey() + "_PLURAL");
     }
 
     public String getPublisherLocationName() {
         if (publisherLocationName == null) {
-            return MessageHelper.getMessage("documentType.publisher_location");
+            return MessageHelper.getMessage("DocumentType.publisher_location");
         }
         return publisherLocationName;
     }
@@ -137,7 +127,7 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     public String getPublisherName() {
         if (publisherName == null) {
-            return MessageHelper.getMessage("documentType.publisher");
+            return MessageHelper.getMessage("DocumentType.publisher");
         }
         return publisherName;
     }

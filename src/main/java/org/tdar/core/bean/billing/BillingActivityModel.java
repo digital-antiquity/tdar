@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
@@ -48,6 +50,7 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
     private String description;
 
     @Column(name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, mappedBy = "model")

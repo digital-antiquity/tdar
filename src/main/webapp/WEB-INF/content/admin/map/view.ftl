@@ -1,4 +1,3 @@
-
 <!--[if lte IE 8]>
     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
             codebase="" id="mySVGViewerObj" width=1250.0 height=750.0 style='float: left'>
@@ -13,4 +12,4 @@
     </object>
 
 <![endif]-->
-    <img src="/admin/map/map"/>
+<img src="/admin/map/map"/>

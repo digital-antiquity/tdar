@@ -100,7 +100,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         final int waitPerAttempt = 50;
         Bag bag = null;
         RuntimeException lastException = null;
-        while (attempt < maxAttempts && bag == null) {
+        while ((attempt < maxAttempts) && (bag == null)) {
             try {
                 bag = bagFactory.createBag(sourceFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
             } catch (RuntimeException rex) {
@@ -129,7 +129,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
     }
 
     @Override
-    public synchronized File store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
+    public synchronized PersonalFilestoreFile store(PersonalFilestoreTicket personalFilestoreTicket, File file, String incomingFileName) throws IOException {
         logger.debug("ticket:{}\t file:{}\t name:{}", new Object[] { personalFilestoreTicket, file, incomingFileName });
         String pathToBag = getPath(personalFilestoreTicket);
         File pathToBagFile = new File(pathToBag);
@@ -146,13 +146,18 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
         newBag.write(writer, pathToBagFile);
+
         FileUtils.deleteQuietly(tempFileDirectory);
         for (BagFile storedBagFile : newBag.getPayload()) {
-            if (storedBagFile.getFilepath().contains(tempFileDirectoryName)) {
-                return new File(pathToBag, storedBagFile.getFilepath());
+            String filepath = storedBagFile.getFilepath();
+            if (filepath.contains(tempFileDirectoryName)) {
+                Map<Algorithm, String> checksums = newBag.getChecksums(filepath);
+                return new PersonalFilestoreFile(new File(pathToBag, filepath), checksums.get(Algorithm.MD5));
             }
         }
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("bagitPersonalFilestore.could_not_find_file_created", incomingFileName));
+        List<String> names = new ArrayList<>();
+        names.add(incomingFileName);
+        throw new TdarRecoverableRuntimeException("bagitPersonalFilestore.could_not_find_file_created", names);
     }
 
     @Override
@@ -196,8 +201,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
 
     private void purge(PersonalFilestoreTicket ticket, boolean quiet) {
         File directory = new File(getPath(ticket));
-        if (!directory.exists())
+        if (!directory.exists()) {
             return;
+        }
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
@@ -217,8 +223,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
     @Override
     public void purge(Person person, PersonalFileType personalFileType) {
         File directory = new File(getPath(person, personalFileType));
-        if (!directory.exists())
+        if (!directory.exists()) {
             return;
+        }
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
@@ -241,8 +248,9 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         logger.trace("{}", result.getMessages());
         for (BagFile bf : bagOut.getPayload()) {
             File file = new File(pathToBag, bf.getFilepath());
-            if (!file.getName().equals(filename))
+            if (!file.getName().equals(filename)) {
                 continue;
+            }
             PersonalFilestoreFile pff = new PersonalFilestoreFile();
             pff.setFile(file);
             Map<Algorithm, String> map = bagOut.getChecksums(bf.getFilepath());

@@ -160,7 +160,7 @@ public class OAIResumptionToken {
             setUntilDate(tokenPart[2]);
             setMetadataPrefix(tokenPart[3]);
         } catch (Exception e) {
-            throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid"),e, OaiErrorCode.BAD_RESUMPTION_TOKEN);
+            throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid"), e, OaiErrorCode.BAD_RESUMPTION_TOKEN);
         }
     }
 

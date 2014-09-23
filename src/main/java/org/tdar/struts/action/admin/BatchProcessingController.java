@@ -11,6 +11,7 @@ import java.util.TreeSet;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Project;
@@ -18,6 +19,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.BatchAction;
@@ -41,6 +44,12 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private BatchAction batchAction;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient ProjectService projectService;
 
     @Override
     @Action("batch")
@@ -68,15 +77,15 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     }
 
     public List<Project> getAllSubmittedProjects() {
-        List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
+        List<Project> allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
         return allSubmittedProjects;
     }
 
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
-            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+            boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             Collections.sort(fullUserProjects);
             fullUserProjects.removeAll(getAllSubmittedProjects());
         }
@@ -92,8 +101,8 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     }
 
     public Set<Resource> getEditableProjects() {
-        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        SortedSet<Resource> findSparseTitleIdProjectListByPerson = new TreeSet<Resource>(projectService.findSparseTitleIdProjectListByPerson(
                 getAuthenticatedUser(), canEditAnything));
         return findSparseTitleIdProjectListByPerson;
     }
@@ -102,7 +111,7 @@ public class BatchProcessingController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {

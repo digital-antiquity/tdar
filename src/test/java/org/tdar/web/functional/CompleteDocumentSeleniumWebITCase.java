@@ -38,7 +38,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.web.AbstractWebTestCase;
@@ -90,11 +90,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         // docValMap.put("authorizedUsers[1].user.id", "5349");
         // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        // docValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        // docValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
+        docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
         docValMap.put("resourceLanguage", Language.SPANISH.name());
@@ -167,7 +165,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         prepIndexedFields(docMultiValMap.keySet());
         prepIndexedFields(docUnorderdValMap.keySet());
     }
-    
+
     @Test
     public void testAuthUser() {
         gotoPage("/document/add");
@@ -178,9 +176,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setFieldByName("projectId", "-1");
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
         submitForm();
     }
 
@@ -298,16 +298,18 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#accessRightsRecordsAddAnotherButton").click();
         find("#accessRightsRecordsAddAnotherButton").click();
 
-        addAuthuser("authorizedUsers[0].user.tempDisplayName", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu","person-121",
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle.elliott@asu.edu",
+                "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsers[1].user.tempDisplayName", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349", VIEW_ALL);
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua.watts@asu.edu", "person-5349",
+                VIEW_ALL);
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
         docUnorderdValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
         docUnorderdValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
-        docUnorderdValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+        docUnorderdValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
 
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
@@ -360,8 +362,9 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email"))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val) || key.contains("email")) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTrue("looking for '" + val + "' in text", textContains(val));
@@ -387,19 +390,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // make sure our 'async' file was added to the resource
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
-    }
-
-    private void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
-
-        WebElement blankField = find(By.name(nameField)).first();
-        if (!selectAutocompleteValue(blankField, name, email, selector)) {
-            String fmt = "Failed to add authuser %s because selenium failed to select a user from the autocomplete " +
-                    "dialog.  Either the autocomplete failed to appear or an appropriate value was not in the " +
-                    "menu.";
-            fail(String.format(fmt, email));
-        }
-        find(By.name(selectField)).val(permissions.name());
-
     }
 
 }

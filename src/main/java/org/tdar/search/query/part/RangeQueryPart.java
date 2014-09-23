@@ -5,21 +5,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.struts.data.Range;
-import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
-
 
     private String descriptionLabel;
     private boolean inclusive = true;
@@ -32,11 +33,11 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     @SuppressWarnings("unchecked")
-    public RangeQueryPart(String field, Operator operator, List<Range<C>> values) {
-        this(field, "Value");
+    public RangeQueryPart(String field, String label, Operator operator, List<Range<C>> values) {
+        this(field, label);
         if (CollectionUtils.isNotEmpty(values)) {
             for (Range<C> range : values) {
-                if (range == null || !range.isInitialized() || range.getStart() == null && range.getEnd() == null) {
+                if ((range == null) || !range.isInitialized() || ((range.getStart() == null) && (range.getEnd() == null))) {
                     continue;
                 }
                 add(range);
@@ -55,10 +56,12 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         Range<C> value = getFieldValues().get(index);
         String start = convert(value.getStart());
         String end = convert(value.getEnd());
-        if (StringUtils.isBlank(start))
+        if (StringUtils.isBlank(start)) {
             start = "*";
-        if (StringUtils.isBlank(end))
+        }
+        if (StringUtils.isBlank(end)) {
             end = "*";
+        }
 
         String phrase = String.format("%s TO %s", start, end);
         if (inclusive) {
@@ -71,15 +74,20 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     private static String convert(Date date) {
-        if (date == null)
+        if (date == null) {
             return null;
+        }
         DateTime dateTime = new DateTime(date);
+        //we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
+        //dates in a date range.
+        dateTime = dateTime.toDateTime(DateTimeZone.UTC);
         return dateTime.toString(dtf);
     }
 
     private static String convert(Object object) {
-        if (object == null)
+        if (object == null) {
             return null;
+        }
         if (object instanceof Date) {
             return convert((Date) object);
         }
@@ -95,40 +103,42 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     }
 
     private static String convert(Number number) {
-        if (number == null)
+        if (number == null) {
             return null;
+        }
         return TdarIndexNumberFormatter.format(number);
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String fmt = "%s is %s";
         String op = " " + getOperator().toString().toLowerCase() + " ";
         List<String> valueDescriptions = new ArrayList<String>();
         for (Range<C> range : getFieldValues()) {
-            valueDescriptions.add(getDescription(range));
+            valueDescriptions.add(getDescription(provider, range));
         }
         return String.format(fmt, descriptionLabel, StringUtils.join(valueDescriptions, op));
     }
 
-    private String getDescription(Range<C> singleValue) {
+    private String getDescription(TextProvider provider, Range<C> singleValue) {
 
-        String fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_between");
+        String fmt = provider.getText("rangeQueryPart.fmt_description_value_between");
         C start = singleValue.getStart();
         C end = singleValue.getEnd();
         if (isBlank(start) || isBlank(end)) {
             if (isBlank(start)) {
-                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_less");
+                fmt = provider.getText("rangeQueryPart.fmt_description_value_less");
             } else {
-                fmt = MessageHelper.getMessage("rangeQueryPart.fmt_description_value_greater");
+                fmt = provider.getText("rangeQueryPart.fmt_description_value_greater");
             }
         }
         return MessageFormat.format(fmt, start, end);
     }
 
     private boolean isBlank(C item) {
-        if (item == null)
+        if (item == null) {
             return true;
+        }
         return StringUtils.isBlank(item.toString());
     }
 

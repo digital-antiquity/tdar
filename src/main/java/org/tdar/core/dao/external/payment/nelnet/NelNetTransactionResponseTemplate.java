@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,19 +24,15 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 public class NelNetTransactionResponseTemplate implements Serializable, TransactionResponse {
 
     private static final long serialVersionUID = -5575891484534148580L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private NelnetTransactionType nelnetTransactionType;
 
-    private Map<String, String[]> values = new HashMap<String, String[]>();
+    private Map<String, String[]> values = new HashMap<>();
     private String secret = "";
-
-    public NelNetTransactionResponseTemplate(String secret) {
-        this.secret = secret;
-    }
 
     public enum NelnetTransactionItemResponse {
         TRANSACTION_TYPE("transactionType", "transactionType", 1),
@@ -98,33 +95,31 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
         private int order;
 
         private NelnetTransactionItemResponse(String label, String key, int order) {
-            this.setKey(key);
-            this.setLabel(label);
-            this.setOrder(order);
+            this.key = key;
+            this.label = label;
+            this.order = order;
         }
 
         public String getKey() {
             return key;
         }
 
-        public void setKey(String key) {
-            this.key = key;
-        }
-
         public int getOrder() {
             return order;
-        }
-
-        public void setOrder(int order) {
-            this.order = order;
         }
 
         public String getLabel() {
             return label;
         }
+    }
 
-        public void setLabel(String label) {
-            this.label = label;
+
+    public NelNetTransactionResponseTemplate(String secret, Map<String, String[]>requestParms) {
+        this.secret = secret;
+        this.values = requestParms;
+        String value = getValuesFor(NelnetTransactionItemResponse.TRANSACTION_TYPE);
+        if(value != null) {
+            this.nelnetTransactionType = NelnetTransactionType.fromOrdinal(Integer.parseInt(value));
         }
     }
 
@@ -135,10 +130,11 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
 
     @Override
     public boolean validate() {
+        //jtd: I assume a multivalued entry for most of these keys (excepting maybe the custom fields) would indicate an error, yeah?
         String hashkey = generateHashKey();
         String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
         if (!actual.equals(hashkey)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionResponseTemplate.hash_keys_do_not_match", actual, hashkey));
+            throw new TdarRecoverableRuntimeException("nelNetTransactionResponseTemplate.hash_keys_do_not_match", Arrays.asList(actual, hashkey));
         }
         return true;
     }
@@ -148,14 +144,16 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
                 new Comparator<NelnetTransactionItemResponse>() {
                     @Override
                     public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
-                        return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                        // NOTE: watch change in objectUtils compare and numberUtils
+                        return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
                     }
                 });
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (item == NelnetTransactionItemResponse.HASH || item == NelnetTransactionItemResponse.KEY)
+            if ((item == NelnetTransactionItemResponse.HASH) || (item == NelnetTransactionItemResponse.KEY)) {
                 continue;
+            }
             String value = getValuesFor(item);
             if (getValues().containsKey(item.getKey()) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
@@ -173,6 +171,7 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
     }
 
     private void populateInvoiceFromResponse(Invoice invoice) {
+        invoice.setPaymentMethod(nelnetTransactionType.getPaymentMethod());
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
             String value = getValuesFor(item.key);
             Number numericValue = null;
@@ -188,131 +187,39 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
             } catch (Exception e) {
                 logger.trace("cannot parse: {} as a date , {}", value, e);
             }
+            //jtd: if we're using a fraction of the enum values, i think enum method overriding would be a more succinct approach (http://stackoverflow.com/questions/14968075)
             switch (item) {
-                case ACCOUNT_HOLDER_NAME:
-                case ACTUAL_PAYER_FULL_NAME:
-                case ACTUAL_PAYER_IDENTIFIER:
-                    break;
-                case ACTUAL_PAYER_TYPE:
-                    break;
-                case CITY:
-                    break;
-                case COUNTRY:
-                    break;
-                case DAYTIME_PHONE:
-                    break;
-                case EMAIL:
-                    break;
-                case EVENING_PHONE:
-                    break;
-                case HASH:
-                    break;
-                case KEY:
-                    break;
-                case ORDER_AMOUNT:
-                    break;
-                case ORDER_AMOUNT_DUE:
-                    break;
-                case ORDER_BALANCE:
-                    break;
-                case ORDER_CURRENT_STATUS_AMOUNT_DUE:
-                    break;
-                case ORDER_CURRENT_STATUS_BALANCE:
-                    break;
-                case ORDER_DESCRIPTION:
-                    break;
-                case ORDER_DUE_DATE:
-                    break;
-                case ORDER_FEE:
-                    break;
-                case ORDER_NAME:
-                    break;
-                case ORDER_NUMBER:
-                    break;
-                case ORDER_TYPE:
-                    break;
-                case ORIGINAL_TRANSACTION_ID:
-                    break;
-                case PAYER_FULL_NAME:
-                    break;
-                case PAYER_IDENTIFIER:
-                    break;
-                case PAYER_TYPE:
-                    break;
-                case STATE:
-                case STREET_ONE:
-                case STREET_TWO:
-                case TIMESTAMP:
-                    break;
                 case TRANSACTION_ACCOUNT_TYPE:
                     invoice.setAccountType(value);
                     break;
                 case TRANSACTION_DATE:
                     invoice.setTransactionDate(dateValue);
                     break;
-                case TRANSACTION_DESCRIPTION:
-                    break;
-                case TRANSACTION_EFFECTIVE_DATE:
-                    break;
                 case TRANSACTION_ID:
                     invoice.setTransactionId(value);
-                    break;
-                case TRANSACTION_RESULT_CODE:
-                    break;
-                case TRANSACTION_RESULT_DATE:
-                    break;
-                case TRANSACTION_RESULT_EFFECTIVE_DATE:
-                    break;
-                case TRANSACTION_RESULT_MESSAGE:
-                    break;
-                case TRANSACTION_SOURCE:
-                    break;
-                case TRANSACTION_SOURCE_REF:
                     break;
                 case TRANSACTION_STATUS:
                     NelnetTransactionStatus status = NelnetTransactionStatus.fromOrdinal(numericValue.intValue());
                     invoice.setTransactionStatus(status.getStatus());
                     break;
-                case TRANSACTION_TOTAL:
+                default:
                     break;
-                case TRANSACTION_TYPE:
-                    invoice.setPaymentMethod(NelnetTransactionType.fromOrdinalToPaymentMethod(numericValue.intValue()));
-                    break;
-                case USER_CHOICE_1:
-                    break;
-                case USER_CHOICE_10:
-                    break;
-                case USER_CHOICE_2:
-                    break;
-                case USER_CHOICE_3:
-                    break;
-                case USER_CHOICE_4:
-                    break;
-                case USER_CHOICE_5:
-                    break;
-                case USER_CHOICE_6:
-                    break;
-                case USER_CHOICE_7:
-                    break;
-                case USER_CHOICE_8:
-                    break;
-                case USER_CHOICE_9:
-                    break;
-                case ZIP:
-                    break;
-
             }
         }
     }
 
     @Override
-    public Map<String, String[]> getValues() {
-        return values;
+    public boolean isRefund() {
+        return getTransactionType() == NelnetTransactionType.CREDIT_CARD_REFUND;
+    }
+
+    public NelnetTransactionType getTransactionType() {
+        return nelnetTransactionType;
     }
 
     @Override
-    public void setValues(Map<String, String[]> values) {
-        this.values = values;
+    public Map<String, String[]> getValues() {
+        return values;
     }
 
     @Override

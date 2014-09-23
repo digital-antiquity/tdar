@@ -2,17 +2,18 @@ package org.tdar.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.resources.image.ImageUtilities;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -31,17 +32,15 @@ import org.tdar.filestore.PairtreeFilestore;
  */
 public class TdarConfiguration {
 
+    public static final int HTTPS_PORT_DEFAULT = 443;
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
             "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not");
-    private static final String JIRA_LINK = "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
+    private static final String JIRA_LINK = "dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String DESCRIPTION = "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
-    private static final String MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED = "Message Queue is enabled, but a username and password is not defined";
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
-
-
 
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final int DEFAULT_PORT = 80; // we use this in test
@@ -49,13 +48,12 @@ public class TdarConfiguration {
     private final static String FROM_EMAIL_NAME = "info@";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
-    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 100;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 1000;
 
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
     private final transient static Logger logger = LoggerFactory.getLogger(TdarConfiguration.class);
-
     private ConfigurationAssistant assistant;
 
     private Filestore filestore;
@@ -73,6 +71,24 @@ public class TdarConfiguration {
         this("/tdar.properties");
     }
 
+    public void printConfig() {
+        logger.info("---------------------------------------------");
+        logger.info("| Name:{} ({})", getRepositoryName(), isProductionEnvironment());
+        logger.info("| ");
+        logger.info("| HostName: {}  SecureHost: {}", getBaseUrl(), getBaseSecureUrl());
+        logger.info("| CDN Host: {} (enabled: {})", getStaticContentHost(), isStaticContentEnabled());
+        logger.info("| MailHost: {} (override to for testing: {}", getSmtpHost(), isSendEmailToTester());
+        logger.info("| ");
+        logger.info("| Storage:");
+        logger.info("| FileStoreLocation: {}", getFileStoreLocation());
+        logger.info("| PersonalFileStoreLocation: {}", getPersonalFileStoreLocation());
+        logger.info("| ");
+        logger.info("| RunScheduledProcesses: {}", shouldRunPeriodicEvents());
+        logger.info("| PayPerIngest: {}", isPayPerIngestEnabled());
+        logger.info("| CORS Hosts: {} ({})", getAllAllowedDomains(), getContentSecurityPolicyEnabled());
+        logger.info("---------------------------------------------");
+    }
+
     /*
      * Do not use this except for via the @MultipleTdarConfigurationRunner
      */
@@ -83,8 +99,21 @@ public class TdarConfiguration {
         this.configurationFile = configurationFile;
         filestore = loadFilestore();
         initPersonalFilestorePath();
-        testQueue();
+    }
+
+    /**
+     * Called separately so we can better handle configuration exceptions
+     */
+    public void initialize() {
+        logger.debug("initializing filestore and setup");
+
+//        initializeTimeZoneInfo();
+
+        if (isProductionEnvironment()) {
+            printConfig();
+        }
         initializeStopWords();
+        intializeCouponCodes();
 
         if (ImageUtilities.isMediaLibAvailable()) {
             logger.info("JAI ImageIO available and configured");
@@ -94,7 +123,34 @@ public class TdarConfiguration {
                 throw new IllegalStateException("cannot start up in production without JAI");
             }
         }
-        intializeCouponCodes();
+
+        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+        }
+
+        File filestoreLoc = new File(getFileStoreLocation());
+        if (!filestoreLoc.exists()) {
+            throw new IllegalStateException("could not create filestore path:" + filestoreLoc.getAbsolutePath());
+        }
+
+        initPersonalFilestorePath();
+    }
+
+    private void initializeTimeZoneInfo() {
+        // Note: tdar timestamps do not currently encode timezone information. However, we set the timezone here because there are other systems (e.g.
+        // DateBridge) that convert datetime values to UTC. Therefore. We set the default timezone to UTC to prevent these systems from modifying the
+        // timestamp.
+
+        // use JodaTime to load TimeZone
+        DateTimeZone timeZone = getTimeZone();
+        DateTimeZone.setDefault(timeZone);
+        // use JodaTime TiemZone to initialize Java TimeZone
+        TimeZone.setDefault(timeZone.toTimeZone());
+
+    }
+
+    private DateTimeZone getTimeZone() {
+        return DateTimeZone.forID(assistant.getStringProperty("time.zone", DateTimeZone.UTC.getID()));
     }
 
     public String getConfigurationFile() {
@@ -174,10 +230,8 @@ public class TdarConfiguration {
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClassName = assistant.getStringProperty("file.store.class",
-                PairtreeFilestore.class.getCanonicalName());
+        String filestoreClassName = assistant.getStringProperty("file.store.class", PairtreeFilestore.class.getCanonicalName());
         Filestore filestore = null;
-
         File filestoreLoc = new File(getFileStoreLocation());
         try {
             if (!filestoreLoc.exists()) {
@@ -199,27 +253,28 @@ public class TdarConfiguration {
         return filestore;
     }
 
+    boolean personalFilestorePathInitialized = false;
+
     // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
     private void initPersonalFilestorePath() {
+        if (personalFilestorePathInitialized) {
+            return;
+        }
+        personalFilestorePathInitialized = true;
         File personalFilestoreHome = new File(getPersonalFileStoreLocation());
         String msg = null;
-        boolean pathExists = true;
         try {
             logger.info("initializing personal filestore at {}", getPersonalFileStoreLocation());
             if (!personalFilestoreHome.exists()) {
-                pathExists = personalFilestoreHome.mkdirs();
+                boolean pathExists = personalFilestoreHome.mkdirs();
                 if (!pathExists) {
                     msg = "Could not create personal filestore at " + getPersonalFileStoreLocation();
                 }
             }
         } catch (SecurityException ex) {
             logger.error(SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY, ex);
-            pathExists = false;
-        }
-        if (!pathExists) {
             throw new IllegalStateException(msg);
         }
-
     }
 
     public static TdarConfiguration getInstance() {
@@ -232,7 +287,7 @@ public class TdarConfiguration {
 
     public String getBaseUrl() {
         String base = "http://" + getHostName();
-        if (getPort() != 80) {
+        if (getPort() != DEFAULT_PORT) {
             base += ":" + getPort();
         }
         return base;
@@ -240,7 +295,7 @@ public class TdarConfiguration {
 
     public String getBaseSecureUrl() {
         String base = "https://" + getHostName();
-        if (getHttpsPort() != 443) {
+        if (getHttpsPort() != HTTPS_PORT_DEFAULT) {
             base += ":" + getHttpsPort();
         }
         return base;
@@ -263,7 +318,7 @@ public class TdarConfiguration {
     }
 
     public String getHelpUrl() {
-        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/User+Documentation");
+        return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/Documentation+Home");
     }
 
     public String getAboutUrl() {
@@ -350,49 +405,6 @@ public class TdarConfiguration {
     /**
      * @return
      */
-    public boolean useExternalMessageQueue() {
-        return assistant.getBooleanProperty("message.queue.enabled", false);
-    }
-
-    public String getMessageQueueURL() {
-        return assistant.getStringProperty("message.queue.server", "dev.tdar.org");
-    }
-
-    public String getMessageQueueUser() {
-        return assistant.getStringProperty("message.queue.user");
-    }
-
-    public String getMessageQueuePwd() {
-        return assistant.getStringProperty("message.queue.pwd");
-    }
-
-    public String getQueuePrefix() {
-        return assistant.getStringProperty("message.queue.prefix", getDefaultQueuePrefix());
-    }
-
-    /**
-     * @return
-     */
-    public String getDefaultQueuePrefix() {
-        String host = "";
-        try {
-            InetAddress localMachine = InetAddress.getLocalHost();
-            host = localMachine.getHostName();
-        } catch (UnknownHostException e) {
-            logger.debug("unknownhost: ", e);
-        }
-        return host + ".";
-    }
-
-    private void testQueue() {
-        if (useExternalMessageQueue() && (StringUtils.isEmpty(getMessageQueuePwd()) || StringUtils.isEmpty(getMessageQueueUser()))) {
-            throw new IllegalStateException(MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED);
-        }
-    }
-
-    /**
-     * @return
-     */
     public int getScrollableFetchSize() {
         return assistant.getIntProperty("scrollableResult.fetchSize", 100);
     }
@@ -421,16 +433,22 @@ public class TdarConfiguration {
             dir = dir.substring(1);
         }
         if (dir.endsWith("/") || dir.startsWith("\\")) {
-            dir = dir.substring(0,dir.length() -1);
+            dir = dir.substring(0, dir.length() - 1);
         }
         return dir;
     }
 
     public Set<String> getStopWords() {
+        if (CollectionUtils.isEmpty(stopWords)) {
+            initializeStopWords();
+        }
         return stopWords;
     }
 
     public List<String> getCouponCodes() {
+        if (CollectionUtils.isEmpty(couponCodes)) {
+            intializeCouponCodes();
+        }
         return couponCodes;
     }
 
@@ -472,8 +490,7 @@ public class TdarConfiguration {
     }
 
     public String getSystemDescription() {
-        return assistant
-                .getStringProperty("oai.repository.description", DESCRIPTION);
+        return assistant.getStringProperty("oai.repository.description", DESCRIPTION);
     }
 
     public int getScheduledProcessStartId() {
@@ -549,6 +566,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("site.acronym", "tDAR");
     }
 
+    public String getServiceProvider() {
+        return assistant.getStringProperty("service.provider", "Digital Antiquity");
+    }
+
     public String getSiteName() {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }
@@ -590,7 +611,7 @@ public class TdarConfiguration {
     }
 
     public Integer getHttpsPort() {
-        return assistant.getIntProperty("https.port", 443);
+        return assistant.getIntProperty("https.port", HTTPS_PORT_DEFAULT);
     }
 
     public Integer getMaxUploadFilesPerRecord() {
@@ -651,8 +672,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("is.geolocation.to.be.used", false);
     }
 
-    public String getCreatorFOAFDir() {
-        return getPersonalFileStoreLocation() + "/creatorInfo";
+    public String getFileCacheDirectory() {
+        return getPersonalFileStoreLocation() + "/fileCache";
     }
 
     public String getCulturalTermsLabel() {
@@ -696,15 +717,11 @@ public class TdarConfiguration {
     }
 
     public boolean obfuscationInterceptorDisabled() {
-        return assistant.getBooleanProperty("obfuscation.interceptor.disabled",false);
+        return assistant.getBooleanProperty("obfuscation.interceptor.disabled", false);
     }
 
     public String getDefaultFromEmail() {
         return assistant.getStringProperty("email.default.from", FROM_EMAIL_NAME + getEmailHostName());
-    }
-    
-    public boolean isJSCSSMergeServletEnabled() {
-        return assistant.getBooleanProperty("use.JSCSSMergeServlet", true);
     }
 
     public boolean isJaiImageJenabled() {
@@ -714,15 +731,93 @@ public class TdarConfiguration {
     public boolean isStaticContentEnabled() {
         return assistant.getBooleanProperty("static.content.enabled", false);
     }
-    
+
     public int getStaticContentSSLPort() {
-        return assistant.getIntProperty("static.content.sslPort", 443);
+        return assistant.getIntProperty("static.content.sslPort", HTTPS_PORT_DEFAULT);
     }
+
     public int getStaticContentPort() {
-        return assistant.getIntProperty("static.content.port", 80);
+        return assistant.getIntProperty("static.content.port", DEFAULT_PORT);
     }
-    
+
     public String getStaticContentHost() {
-        return assistant.getStringProperty("static.content.host",getHostName());
+        return assistant.getStringProperty("static.content.host", getHostName());
     }
+
+    public String getContentSecurityPolicyAdditions() {
+        return assistant.getStringProperty("content.security.policy.additions", "");
+    }
+
+    public boolean getContentSecurityPolicyEnabled() {
+        return assistant.getBooleanProperty("content.security.policy.enabled", false);
+    }
+
+    public boolean ignoreMissingFilesInFilestore() {
+        return assistant.getBooleanProperty("filestore.ignoreMissing", false);
+    }
+
+    public String getAllAllowedDomains() {
+        List<String> baseUrls = new ArrayList<>();
+        baseUrls.add(getBaseSecureUrl());
+        baseUrls.add(getBaseUrl());
+        List<String> hosts = new ArrayList<>(Arrays.asList(getStaticContentHost(), "googleapis.com", "netda.bootstrapcdn.com", "ajax.aspnetcdn.com",
+                "typekit.com", "api.recaptcha.net"));
+        for (String term : StringUtils.split(getContentSecurityPolicyAdditions(), " ")) {
+            term = StringUtils.trim(term);
+            if (StringUtils.isBlank(term)) {
+                continue;
+            }
+
+            if (term.startsWith("http")) {
+                baseUrls.add(term);
+            } else {
+                hosts.add(term);
+            }
+        }
+        for (String url : hosts) {
+            url = StringUtils.trim(url);
+            if (StringUtils.isBlank(url) || url.equals("\"\"")) {
+                continue;
+            }
+            baseUrls.add("http://" + url);
+            baseUrls.add("https://" + url);
+        }
+        String result = StringUtils.join(baseUrls, ",");
+        return result;
+    }
+
+    public boolean shouldThrowExceptionOnConcurrentUserDownload() {
+        return assistant.getBooleanProperty("exception.on.bad.download", false);
+    }
+
+    public boolean shouldUseCDN() {
+        return assistant.getBooleanProperty("use.cdn", true);
+    }
+
+    public boolean shouldAutoDownload() {
+        return assistant.getBooleanProperty("js.autodownload", true);
+    }
+
+    public boolean isSendEmailToTester() {
+        boolean dflt = false;
+        if (!isProductionEnvironment()) {
+            dflt = true;
+        }
+        return assistant.getBooleanProperty("email.to.tester", dflt);
+    }
+
+    /**
+     * Hibernate seems to have issues with our Asynchronous indexing and ehCache; probably thread issues + race condition? Regardless, for project
+     * saves/indexes, this seems to be an issue, hence we wait X minutes before fully trusting the cache
+     * 
+     * @return
+     */
+    public int getAsyncWaitToTrustCache() {
+        return 1;
+    }
+
+    public String getURLRewriteRefresh() {
+        return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
+    }
+
 }

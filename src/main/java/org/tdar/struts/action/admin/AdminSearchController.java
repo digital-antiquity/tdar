@@ -11,7 +11,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.SortOption;
@@ -52,8 +51,8 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         return SUCCESS;
     }
 
-    @Action(value = "lookup", results = { @Result(name = "success", location = "../../lookup/lookup.ftl", type = "freemarker", params = { "contentType",
-            "application/json" }) })
+    @Action(value = "lookup",
+            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String lookup() {
         QueryBuilder q = null;
         switch (queryBuilder) {
@@ -75,7 +74,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
         }
         setMode("admin lookup");
         if (q == null) {
-            throw new TdarRecoverableRuntimeException("cannot determine QueryBuilder");
+            throw new TdarRecoverableRuntimeException("adminSearchController.cannot_determine_query_builder");
         }
         q.setRawQuery(rawQuery);
         try {
@@ -85,7 +84,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
             addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
             return ERROR;
         }
-
+        jsonifyResult(null);
         return SUCCESS;
     }
 
@@ -97,7 +96,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
     public ProjectionModel getProjectionModel() {
         return ProjectionModel.HIBERNATE_DEFAULT;
     };
-    
+
     public QueryBuilders getQueryBuilder() {
         return queryBuilder;
     }
@@ -112,7 +111,7 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
 }

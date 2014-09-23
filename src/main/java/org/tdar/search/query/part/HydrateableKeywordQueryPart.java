@@ -3,12 +3,14 @@ package org.tdar.search.query.part;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.utils.MessageHelper;
+import org.tdar.core.bean.keyword.KeywordType;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * 
@@ -27,13 +29,12 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
     private static final String LABEL_KEYWORD = ".labelKeyword";
     private static final String LABEL = ".label";
     private static final String INFORMATION_RESOURCES = "informationResources.";
-    private String descriptionLabel = MessageHelper.getMessage("keywordQueryPart.label");
     private boolean includeChildren = true;
 
-    public HydrateableKeywordQueryPart(String fieldName, Class<K> originalClass, List<K> fieldValues_) {
+    public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {
         setOperator(Operator.OR);
-        setActualClass(originalClass);
-        setFieldName(fieldName);
+        setActualClass((Class<K>) type.getKeywordClass());
+        setFieldName(type.getFieldName());
         setFieldValues(fieldValues_);
     }
 
@@ -73,23 +74,22 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         return topLevel.generateQueryString();
     }
 
-    public String getDescriptionLabel() {
-        return descriptionLabel;
-    }
-
-    public void setDescriptionLabel(String label) {
-        descriptionLabel = label;
+    public String getDescriptionLabel(TextProvider provider) {
+        return provider.getText("searchParameters." + getFieldName());
     }
 
     @Override
-    public String getDescription() {
-        String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator());
-        return String.format("%s: \"%s\"", descriptionLabel, strValues);
+    public String getDescription(TextProvider provider) {
+        String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator(provider));
+        if (StringUtils.isNotBlank(strValues)) {
+            return String.format("%s: \"%s\"", getDescriptionLabel(provider), strValues);
+        }
+        return "";
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     public boolean isIncludeChildren() {

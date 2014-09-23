@@ -42,8 +42,9 @@ public class BufferUnderflowTestCase {
         for (int i = 0; i < rowCount; ++i) {
             logger.debug("processing row {}", i);
             Map<String, Object> currentRow = currentTable.getNextRow();
-            if (currentRow == null)
+            if (currentRow == null) {
                 continue;
+            }
             for (Object currentObject : currentRow.entrySet()) {
                 if (currentObject != null) {
                     String currentObjectAsString = currentObject.toString();

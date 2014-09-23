@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.EmailService;
@@ -18,16 +19,14 @@ import org.tdar.utils.Pair;
  * Abstract class to help with batch processes, track errors, and managing the batches.
  * 
  * @author abrin
- *
+ * 
  * @param <P>
  */
 public abstract class ScheduledBatchProcess<P extends Persistable> extends ScheduledProcess.Base<P> {
 
     private static final long serialVersionUID = -8936499060533204646L;
 
-    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
     protected final List<Pair<P, Throwable>> errors = new ArrayList<Pair<P, Throwable>>();
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     // this seems really weird to have @Autowired fields in beans...
@@ -48,7 +47,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     @Override
-    public final void cleanup() {
+    public synchronized final void cleanup() {
         if (!isCompleted()) {
             logger.warn("Trying to cleanup {} which hasn't run to completion yet (remaining ids: {}), ignoring.",
                     this, getBatchIdQueue());
@@ -60,13 +59,15 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         }
         if (sb.length() > 0) {
             try {
-                emailService.send(sb.toString(),
-                        String.format("%s: %s messages", tdarConfiguration.getSiteAcronym(), getDisplayName()));
+                Email email = new Email();
+                email.setSubject(String.format("%s: %s messages", getTdarConfiguration().getSiteAcronym(), getDisplayName()));
+                email.setMessage(sb.toString());
+                emailService.send(email);
             } catch (Exception e) {
                 logger.error("could not send email:{}\n\n{}", sb.toString(), e);
             }
         }
-        allIds = null;
+        setAllIds(null);
         batchCleanup();
     }
 
@@ -79,11 +80,11 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     @Override
-    public void execute() {
+    public synchronized void execute() {
         processBatch(getNextBatch());
     }
 
-    public List<Long> getNextBatch() {
+    public synchronized List<Long> getNextBatch() {
         List<Long> queue = getBatchIdQueue();
         if (queue.isEmpty()) {
             logger.trace("No more ids to process");
@@ -104,8 +105,9 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public void processBatch(List<Long> batch) {
-        if (batch.isEmpty())
+        if (batch.isEmpty()) {
             return;
+        }
         for (P entity : genericDao.findAll(getPersistentClass(), batch)) {
             try {
                 process(entity);
@@ -123,7 +125,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     }
 
     public int getBatchSize() {
-        return tdarConfiguration.getScheduledProcessBatchSize();
+        return getTdarConfiguration().getScheduledProcessBatchSize();
     }
 
     /**
@@ -138,21 +140,23 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         // we use subList to iterate and clear
         // batches and so LinkedList may offer better traversal/removal
         // performance at the cost of increased memory usage.
-        if (tdarConfiguration.getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID &&
-                tdarConfiguration.getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID) {
+        if ((getTdarConfiguration().getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID)
+                && (getTdarConfiguration().getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID)) {
             return genericDao.findAllIds(getPersistentClass());
-        } else {
+        }
+        else {
             return genericDao.findAllIds(getPersistentClass(),
-                    tdarConfiguration.getScheduledProcessStartId(), tdarConfiguration.getScheduledProcessEndId());
+                    getTdarConfiguration().getScheduledProcessStartId(), getTdarConfiguration().getScheduledProcessEndId());
         }
     }
 
     public synchronized List<Long> getBatchIdQueue() {
-        if (allIds == null) {
-            allIds = findAllIds();
-            Collections.sort(allIds);
+        if (getAllIds() == null) {
+            setAllIds(findAllIds());
+            Collections.sort(getAllIds());
+            logger.debug("{} ids in queue", CollectionUtils.size(getAllIds()));
         }
-        return allIds;
+        return getAllIds();
     }
 
     @Override
@@ -168,5 +172,13 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     @Override
     public boolean isCompleted() {
         return getBatchIdQueue().isEmpty();
+    }
+
+    public List<Long> getAllIds() {
+        return allIds;
+    }
+
+    public void setAllIds(List<Long> allIds) {
+        this.allIds = allIds;
     }
 }

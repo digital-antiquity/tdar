@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
@@ -22,7 +22,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.db.model.abstracts.Database;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
@@ -42,11 +41,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     private static final String BONE_COMMON_NAME_COL = "bone_common_name";
     private static final String TAXON_COL = "taxon";
     private static final String SPECIES_COMMON_NAME_COL = "species_common_name";
-
-    /**
-     * 
-     * @throws Exception
-     */
+    
     @Test
     @Rollback
     public void testFilteredNodesSurviveHierarchy() throws Exception {
@@ -133,8 +128,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         DataTable spitalMainTable = spitalDb.getDataTableByGenericName("spital_abone_database_mdb_main_table");
 
         // bookmark datasets
-        bookmarkResource(alexandriaDb);
-        bookmarkResource(spitalDb);
+        bookmarkResource(alexandriaDb, getUser());
+        bookmarkResource(spitalDb, getUser());
 
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");
@@ -173,7 +168,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertTrue(controller.getBookmarkedDatasets().size() == 2);
 
         // select tables
-        List<Long> tableIds = new ArrayList<Long>();
+        List<Long> tableIds = new ArrayList<>();
         tableIds.add(alexandriaTable.getId());
         tableIds.add(spitalMainTable.getId());
         controller = generateNewInitializedController(WorkspaceController.class);
@@ -183,14 +178,14 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.selectColumns();
         controller.execute();
         assertTrue("expected 2 selected tables", controller.getSelectedDataTables().size() == 2);
-        List<IntegrationColumn> integrationColumns = new ArrayList<IntegrationColumn>();
+        List<IntegrationColumn> integrationColumns = new ArrayList<>();
         integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalMainTable.getColumnByName(SPECIES_COMMON_NAME_COL), alexandriaTable
                 .getColumnByName(TAXON_COL)));
         integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalMainTable.getColumnByName(BONE_COMMON_NAME_COL), alexandriaTable
                 .getColumnByName(BELEMENT_COL)));
 
-        List<String> displayRulesColumns = new ArrayList<String>();
-        displayRulesColumns.addAll(Arrays.asList(new String[] { "no", "fus_prox" }));
+        List<String> displayRulesColumns = new ArrayList<>();
+        displayRulesColumns.addAll(Arrays.asList("no", "fus_prox"));
 
         for (String col : displayRulesColumns) {
             integrationColumns.add(new IntegrationColumn(ColumnType.DISPLAY, spitalMainTable.getColumnByName(col)));
@@ -203,16 +198,19 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.setIntegrationColumns(integrationColumns);
         controller.filterDataValues();
         for (IntegrationColumn column : controller.getIntegrationColumns()) {
-            if (column.isDisplayColumn())
+            if (column.isDisplayColumn()) {
                 continue;
+            }
             for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
                 logger.info("node: {} ", node);
                 if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
                     logger.info("node: {} - {}", node, node.getColumnHasValueArray());
                     boolean oneTrue = false;
                     for (boolean val : node.getColumnHasValueArray()) {
-                        if (val)
+                        if (val) {
                             oneTrue = true;
+                            break;
+                        }
                     }
                     assertTrue(String.format("Mapped value for :%s should be true", node.getIri()), oneTrue);
                 }
@@ -224,13 +222,14 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(4, integrationColumns.size());
         int integ = 0;
         for (IntegrationColumn ic : integrationColumns) {
-            if (ic.isIntegrationColumn())
+            if (ic.isIntegrationColumn()) {
                 integ++;
+            }
         }
 
         assertEquals(2, integ);
         assertEquals(2, integrationColumns.size() - integ);
-        HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<Ontology, String[]>();
+        HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<>();
         nodeSelectionMap.put(taxonOntology, new String[] { "Felis catus (Cat)", "Canis familiaris (Dog)", "Ovis aries (Sheep)" });
         nodeSelectionMap.put(bElementOntology, new String[] { "Atlas", "Axis", "Carpal", "Tooth", "Ulna" });
 
@@ -249,10 +248,12 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             logger.debug("\n{}\n\trowdata: {}", result, result.getRowData());
             assertFalse("Should have integration results from each dataset", CollectionUtils.isEmpty(result.getRowData()));
             for (String[] rowData : result.getRowData()) {
-                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
+                if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
-                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value")))
+                }
+                if (rowData[3].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenSpeciesNull = true;
+                }
             }
         }
 
@@ -287,8 +288,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(alexandriaTable);
         logger.debug(spitalTable.getName());
         // bookmark datasets
-        bookmarkResource(alexandriaDb);
-        bookmarkResource(spitalDb);
+        bookmarkResource(alexandriaDb, getUser());
+        bookmarkResource(spitalDb, getUser());
 
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");
@@ -312,7 +313,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(2, controller.getBookmarkedDatasets().size());
 
         // select tables
-        List<Long> tableIds = new ArrayList<Long>();
+        List<Long> tableIds = new ArrayList<>();
         tableIds.add(alexandriaTable.getId());
         tableIds.add(spitalTable.getId());
         controller = generateNewInitializedController(WorkspaceController.class);
@@ -322,7 +323,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.selectColumns();
         controller.execute();
         assertEquals("expected 2 selected tables", 2, controller.getSelectedDataTables().size());
-        List<IntegrationColumn> integrationColumns = new ArrayList<IntegrationColumn>();
+        List<IntegrationColumn> integrationColumns = new ArrayList<>();
         integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalTable.getColumnByName(BONE_COMMON_NAME_COL), alexandriaTable
                 .getColumnByName(BELEMENT_COL)));
 
@@ -335,7 +336,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         integrationColumns = controller.getIntegrationColumns();
         assertFalse(integrationColumns.isEmpty());
         assertEquals(1, integrationColumns.size());
-        HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<Ontology, String[]>();
+        HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<>();
         nodeSelectionMap.put(bElementOntology, new String[] { "Tarsal", "Astragalus", "Ulna" });
 
         List<IntegrationDataResult> results = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
@@ -352,14 +353,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                 if (rowData[1].equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
-                if (rowData[2].equalsIgnoreCase("tarsal"))
+                if (rowData[2].equalsIgnoreCase("tarsal")) {
                     tarsal++;
-                if (rowData[2].equalsIgnoreCase("ulna"))
+                }
+                if (rowData[2].equalsIgnoreCase("ulna")) {
                     ulna++;
-                if (rowData[2].equalsIgnoreCase("astragalus"))
+                }
+                if (rowData[2].equalsIgnoreCase("astragalus")) {
                     astragalus++;
-                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value")))
+                }
+                if (rowData[2].equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
                     empty++;
+                }
             }
         }
         logger.info("tarsal: {}", tarsal);

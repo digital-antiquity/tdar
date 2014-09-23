@@ -4,14 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.hibernate.annotations.Index;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -20,8 +20,6 @@ import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.configuration.JSONTransient;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
@@ -39,7 +37,9 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  */
 @Entity
 @Indexed
-@Table(name = "document")
+@Table(name = "document", indexes = {
+        @Index(name = "document_type_index", columnList = "document_type")
+})
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 
@@ -47,13 +47,12 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
-    @Index(name = "document_type_index")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "degree", length = 50)
+    @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
     private DegreeType degree;
@@ -94,12 +93,6 @@ public class Document extends InformationResource {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
-
-    @BulkImportField(label = "DOI")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
-    private String doi;
 
     @BulkImportField(label = "Start Page", order = 10)
     @Column(name = "start_page")
@@ -204,7 +197,7 @@ public class Document extends InformationResource {
         Integer count = 0;
         if (CollectionUtils.isNotEmpty(getInformationResourceFiles())) {
             for (InformationResourceFile file : getInformationResourceFiles()) {
-                if (!file.isDeleted() && file.getNumberOfParts() != null) {
+                if (!file.isDeleted() && (file.getNumberOfParts() != null)) {
                     count += file.getNumberOfParts();
                 }
             }
@@ -217,14 +210,6 @@ public class Document extends InformationResource {
 
     public void setNumberOfPages(Integer numberOfPages) {
         this.numberOfPages = numberOfPages;
-    }
-
-    public String getDoi() {
-        return doi;
-    }
-
-    public void setDoi(String doi) {
-        this.doi = doi;
     }
 
     public String getStartPage() {
@@ -275,7 +260,6 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @JSONTransient
     @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
@@ -285,7 +269,7 @@ public class Document extends InformationResource {
     }
 
     // FIXME: ADD IS?N
-    @JSONTransient
+
     @Override
     // TODO: refactor using MessageFormat or with a freemarker template
     public String getFormattedSourceInformation() {
@@ -328,7 +312,7 @@ public class Document extends InformationResource {
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
         }
-        if (getDate() != null && getDate() != -1) {
+        if ((getDate() != null) && (getDate() != -1)) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
         return sb.toString();
@@ -337,7 +321,7 @@ public class Document extends InformationResource {
     @Override
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").append(getDoi()).
+        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").
                 append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
                 append(getSeriesName());
         return sb.toString();

@@ -3,7 +3,7 @@ $Id$
 navigation freemarker macros
 -->
 <#escape _untrusted as _untrusted?html>
-<#import "list-macros.ftl" as list>
+    <#import "list-macros.ftl" as list>
 
 
 <#-- emit a toolbar for use on a resource view page
@@ -18,45 +18,44 @@ navigation freemarker macros
                 would otherwise not be able to edit the current resource were they not an admin user.
   @requires authenticatedUser:Person person object of the authenticated user
 -->
-<#macro toolbar namespace current="view">
-  <#if resource??>
-    <#if resource.id == -1>
-        <#return>
-    </#if>
-  </#if>
-  <#if (sessionData.authenticated)!false>
-    <div class="span12 resource-nav  screen " id="toolbars" parse="true">
-      <ul >
-       <#if persistable??>
+    <#macro toolbar namespace current="view">
+        <#if resource??>
+            <#if resource.id == -1>
+                <#return>
+            </#if>
+        </#if>
+        <#if (sessionData.authenticated)!false>
+        <div class="span12 resource-nav  screen " id="toolbars" parse="true">
+            <ul>
+                <#if persistable??>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-           <@makeLink namespace "edit" "edit" "edit" current />
+                    <@makeLink namespace "edit" "edit" "edit" current />
+                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+                    <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
         </#if>
-        <#if editable>
-          <#local _deleteable = persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted') >
-          <@makeLink namespace "delete" "delete" "delete" current true _deleteable />
-       </#if>
         <#if persistable.resourceType??>
-	        <@list.bookmark resource true true />
-	        <#if resource.resourceType == "PROJECT">
-	          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
-	          <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
-	        </#if>
-        </#if>
+                    <@list.bookmark resource true true />
+                    <#if resource.resourceType == "PROJECT">
+                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
+                        <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
+                    </#if>
+            <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+                </#if>
         <#nested>
        <#elseif creator??>
-           <@makeLink namespace "view" "view" "view" current />
-        <#if ableToEditAnything>
-          <@makeLink namespace "edit" "edit" "edit" current />
+                    <@makeLink namespace "view" "view" "view" current />
+                    <#if ableToEditAnything>
+                        <@makeLink namespace "edit" "edit" "edit" current />
+                    </#if>
+                <#else>
+                    <@makeLink "workspace" "list" "bookmarked resources" "list" current false />
+                    <@makeLink "workspace" "select-tables" "integrate data tables in your workspace" "select-tables" current false />
+                </#if>
+            </ul>
+        </div>
         </#if>
-       <#else>
-        <@makeLink "workspace" "list" "bookmarked resources" "list" current false />
-        <@makeLink "workspace" "select-tables" "integrate data tables in your workspace" "select-tables" current false />
-       </#if>
-      </ul>
-    </div>
-  </#if>
-</#macro>
+    </#macro>
 
 <#-- emit toolbar for use on a "creator" page
     @param current:string name of the current struts action (e.g. edit/view/save)
@@ -64,30 +63,57 @@ navigation freemarker macros
     @requires sessionData:SessionData
     @requires authenticatedUser:Person
  -->
-<#macro creatorToolbar current>
+    <#macro creatorToolbar current>
 
-    <#if editor || authenticatedUser?? && id == authenticatedUser.id>
-        <#if creator??>
-        <#local creatorType = creator.creatorType.toString().toLowerCase() />
-        <#else>
-        <#local creatorType = persistable.creatorType.toString().toLowerCase() />
-        </#if>
-    
-  <#if sessionData?? && sessionData.authenticated>
-    <div class="span12 resource-nav  screen" id="toolbars" parse="true">
-      <ul >
-    <@makeLink "browse" "creators" "view" "view" current true />
+        <#if editor || id == ((authenticatedUser.id)!-1)>
+            <#if (persistable.registered)!false>
+                <#local creatorType = "user" />
+            <#elseif creator??>
+                <#local creatorType = creator.creatorType?lower_case />
+            <#else>
+                <#local creatorType = persistable.creatorType?lower_case />
+            </#if>
+
+            <#if (sessionData.authenticated)!false>
+            <div class="span12 resource-nav  screen" id="toolbars" parse="true">
+                <ul>
+                    <@makeLink "browse" "creators" "view" "view" current true />
 
     <#if "edit" != current>
-        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
-    <#else>
-        <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
-    </#if>
-      </ul>
-    </div>
-  </#if>
-  </#if>
-</#macro>
+                    <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
+                <#else>
+                    <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
+                </#if>
+                </ul>
+            </div>
+            </#if>
+        </#if>
+    </#macro>
+
+
+<#-- emit toolbar for use on a "keyword" page
+    @param current:string name of the current struts action (e.g. edit/view/save)
+    @requires keywordType:string
+    @requires sessionData:SessionData
+    @requires authenticatedUser:Person
+ -->
+
+    <#macro keywordToolbar current>
+
+        <#if editor>
+            <div class="span12 resource-nav  screen" id="toolbars" parse="true">
+                <ul>
+                    <@makeLink keyword.urlNamespace "" "view" "view" current true />
+
+            <#if "edit" != current>
+                    <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />
+                <#else>
+                    <@makeLink "entity/keyword" "edit" "edit" "edit" current true />
+                </#if>
+                </ul>
+            </div>
+        </#if>
+    </#macro>
 
 <#-- Emit a link to a page which corresponds  specified namespace and action and resourceId.  For example, <@makeLink "coding-sheet" "add">
     will emit <a href="http://{hostname}/coding-sheet/add">{label}</a>.
@@ -101,46 +127,54 @@ navigation freemarker macros
     @param label:string? text to display for the link
     @param current:string? struts action name of the current page.
  -->
-<#macro makeLink namespace=namespace action=action label=label name=name  current="" includeResourceId=true disabled=false  extraClass="">
-    <#assign state = "" />
-    <#if disabled>
-        <#assign state="disabled" />
-    <#elseif current?string == name?string>
-        <#assign state="active" />
-    </#if>
-    <#local action_ = action/>
-    <#if (action?last_index_of("?") > 0)>
-    	<#local action_ = action?substring(0,action?last_index_of("?")) />
-    </#if>
-    <#if action_ == 'creators'>
-		<#local action_ = "view" />    
-    </#if>
-    
+    <#macro makeLink namespace=namespace action=action label=label name=name  current="" includeResourceId=true disabled=false  extraClass="">
+        <#assign state = "" />
+        <#if disabled>
+            <#assign state="disabled" />
+        <#elseif current?string == name?string>
+            <#assign state="active" />
+        </#if>
+        <#local action_ = action/>
+        <#if (action?last_index_of("?") > 0)>
+            <#local action_ = action?substring(0,action?last_index_of("?")) />
+        </#if>
+        <#if action_ == 'creators'>
+            <#local action_ = "view" />
+        </#if>
+
     <li class="${state} ${extraClass}">
-    	<#if disabled>
-    		<span class="disabled">
-    	<#else>
-	        <a href="<#compress><@s.url value="/${namespace}/${action}">
+        <#if disabled>
+        <span class="disabled">
+        <#else>
+        <#local localAction="/" + action />
+        <#if localAction == '/'>
+            <#local localAction="" />
+        </#if>
+        <a href="<#compress><@s.url value="/${namespace}${localAction}">
 	        <#if includeResourceId>
 	            <#if persistable??>
 	                <#local _id = persistable.id />
-	            <#else>
-	                <#local _id = creator.id />
+                <#elseif creator?? >
+                    <#local _id = creator.id />
+                <#elseif keyword?? >
+                    <#local _id = keyword.id />
 	            </#if>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>
 	        </@s.url></#compress>">
-	     </#if>
+        </#if>
         <i class="tdar-icon-${action_}<#if state?has_content>-${state}</#if>"></i>
         <#nested> ${label}<#if disabled></span><#else></a></#if>
     </li>
-</#macro>
+    </#macro>
 
 
 <#-- emit "delete" button for use with repeatable form field rows -->
-<#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
-    <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
-</#macro>
+    <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
+    <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i
+            class="icon-trash"></i></button>
+    </#macro>
+
 </#escape>
 
 <#-- Return the URL associated with the current form. The URL always includes the scheme & host,  if the application uses a nonstandard

@@ -4,16 +4,21 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +28,21 @@ import org.tdar.core.bean.FieldLength;
  * Proxy object for InformationResourceFileVersion difference from original is that it has no back-references
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Immutable
-@Subselect(value="select * from information_resource_file_version")
-public class InformationResourceFileVersionProxy  implements Serializable {
+@Table(name = "information_resource_file_version")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
+public class InformationResourceFileVersionProxy implements Serializable {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Id
     private Long id;
-    
 
     private static final long serialVersionUID = 8358699149214481070L;
-
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String filename;
@@ -70,6 +75,7 @@ public class InformationResourceFileVersionProxy  implements Serializable {
     private String checksumType;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(name = "file_type")
@@ -222,12 +228,10 @@ public class InformationResourceFileVersionProxy  implements Serializable {
         this.path = path;
     }
 
-
     @Override
     public String toString() {
         return String.format("%s (%s, #%d )", filename, fileVersionType, version);
     }
-
 
     public Long getId() {
         return id;
@@ -252,6 +256,7 @@ public class InformationResourceFileVersionProxy  implements Serializable {
         vers.setHeight(getHeight());
         vers.setWidth(getWidth());
         vers.setExtension(getExtension());
+        vers.setFileVersionType(getFileVersionType());
         vers.setDateCreated(getDateCreated());
         vers.setFormat(getFormat());
         vers.setMimeType(getMimeType());

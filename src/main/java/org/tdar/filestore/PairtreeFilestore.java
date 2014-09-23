@@ -10,16 +10,21 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.VersionType;
+//import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.filestore.FileStoreFile.Type;
 import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
 
@@ -34,6 +39,7 @@ import org.tdar.utils.MessageHelper;
  */
 public class PairtreeFilestore extends BaseFilestore {
 
+    private static final String SUPPORT = "support";
     public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
@@ -68,35 +74,24 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
+    public String store(ObjectType type, InputStream content, FileStoreFileProxy version) throws IOException {
         StorageMethod rotate = StorageMethod.NO_ROTATION;
-        return storeAndRotate(content, version, rotate);
+        return storeAndRotate(type, content, version, rotate);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
     @Override
-    public String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotate) throws IOException {
+    public String storeAndRotate(ObjectType type, InputStream content, FileStoreFileProxy version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
-        String path = getAbsoluteFilePath(version);
+        String path = getAbsoluteFilePath(type, version);
 
         File outFile = new File(path);
-        if (outFile.exists() && rotate.getRotations() > 0) {
-            rotate(outFile, rotate);
-        }
+        outFile = rotateFileIfNeeded(rotate, outFile);
 
-        if (rotate == StorageMethod.DATE) {
-            String baseName = FilenameUtils.getBaseName(outFile.getName());
-            String ext = FilenameUtils.getExtension(outFile.getName());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
-            String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
-            outFile = new File(outFile.getParentFile(), rotationTarget);
-
-        }
         logger.info("storing at: {}", outFile.getAbsolutePath());
-        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", outFile.getAbsolutePath());
+        String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", Arrays.asList(outFile.getAbsolutePath()));
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
         try {
             FileUtils.forceMkdir(outFile.getParentFile());
@@ -107,12 +102,11 @@ public class PairtreeFilestore extends BaseFilestore {
                 logger.error(errorMessage);
                 throw new TdarRuntimeException(errorMessage);
             }
-            
-            if (version.isUploaded()) {
-                outFile.setWritable(false);
+
+            if (version.getType() == Type.RESOURCE) {
+                updateVersionInfo(outFile, version);
             }
-            
-            updateVersionInfo(outFile, version);
+
             MessageDigest digest = digestInputStream.getMessageDigest();
             if (StringUtils.isEmpty(version.getChecksum())) {
                 version.setChecksumType(digest.getAlgorithm());
@@ -131,11 +125,28 @@ public class PairtreeFilestore extends BaseFilestore {
         }
     }
 
+    private File rotateFileIfNeeded(StorageMethod rotate, File outFile) {
+        if (outFile.exists() && (rotate.getRotations() > 0)) {
+            rotate(outFile, rotate);
+        }
+
+        if (rotate == StorageMethod.DATE) {
+            String baseName = FilenameUtils.getBaseName(outFile.getName());
+            String ext = FilenameUtils.getExtension(outFile.getName());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
+            String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
+            outFile = new File(outFile.getParentFile(), rotationTarget);
+
+        }
+        return outFile;
+    }
+
     public static String toPairTree(Number val) {
         String s = Long.toString(val.longValue());
         int i = 0;
         StringBuffer out = new StringBuffer(File.separator);
-        while (i + CHARACTERS_PER_LEVEL < s.length()) {
+        while ((i + CHARACTERS_PER_LEVEL) < s.length()) {
             out.append(s.substring(i, i + CHARACTERS_PER_LEVEL));
             out.append(File.separator);
             i += CHARACTERS_PER_LEVEL;
@@ -154,31 +165,32 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String store(File content, InformationResourceFileVersion version) throws IOException {
-        return storeAndRotate(content, version, StorageMethod.NO_ROTATION);
+    public String store(ObjectType type, File content, FileStoreFileProxy version) throws IOException {
+        return storeAndRotate(type, content, version, StorageMethod.NO_ROTATION);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#store(File)
      */
     @Override
-    public String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotations) throws IOException {
-        if (content == null || !content.isFile()) {
+    public String storeAndRotate(ObjectType type, File content, FileStoreFileProxy version, StorageMethod rotations) throws IOException {
+        if ((content == null) || !content.isFile()) {
             logger.warn("Trying to store null or non-file content: {}", content);
             return "";
         }
-        return storeAndRotate(new FileInputStream(content), version, rotations);
+        return storeAndRotate(type, new FileInputStream(content), version, rotations);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#retrieveFile(java.lang.String)
      */
     @Override
-    public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
-        File file = new File(getAbsoluteFilePath(version));
+    public File retrieveFile(ObjectType type, FileStoreFileProxy version) throws FileNotFoundException {
+        File file = new File(getAbsoluteFilePath(type, version));
         logger.trace("file requested: {}", file);
-        if (!file.isFile())
-            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found",file.getAbsolutePath()));
+        if (!file.isFile()) {
+            throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getAbsolutePath())));
+        }
 
         // version.setTransientFile(file);
         return file;
@@ -200,8 +212,8 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return
      */
-    public String getResourceDirPath(Number fileId) {
-        String filePath = getFilestoreLocation() + File.separator;
+    public String getResourceDirPath(ObjectType type, Number fileId) {
+        String filePath = getFilestoreLocation() + File.separator + type.getRootDir() + File.separator;
         filePath = FilenameUtils.normalize(filePath + toPairTree(fileId));
         return filePath;
     }
@@ -222,25 +234,32 @@ public class PairtreeFilestore extends BaseFilestore {
      * @param fileId
      * @return String
      */
-    public String getAbsoluteFilePath(InformationResourceFileVersion version) {
-        Long irID = version.getInformationResourceId();
+    public String getAbsoluteFilePath(ObjectType type, FileStoreFileProxy version) {
+        Long irID = version.getPersistableId();
         StringBuffer base = new StringBuffer();
-        base.append(getResourceDirPath(irID));
-        if (version.getInformationResourceFileId() != null) {
-            base.append(version.getInformationResourceFileId());
-            base.append(File.separator);
-            base.append("v" + version.getVersion());
-            base.append(File.separator);
-            if (version.isArchival()) {
-                base.append(ARCHIVAL);
-                base.append(File.separator);
-            } else if (!version.isUploaded()) {
-                base.append(DERIV);
-                base.append(File.separator);
+        base.append(getResourceDirPath(type, irID));
+        if (version.getType() == Type.RESOURCE) {
+            if (Persistable.Base.isNotNullOrTransient(version.getInformationResourceFileId())) {
+                append(base, version.getInformationResourceFileId());
+                append(base, "v" + version.getVersion());
+                if (version.getVersionType().isArchival()) {
+                    append(base, ARCHIVAL);
+                } else if (!version.getVersionType().isUploaded()) {
+                    append(base, DERIV);
+                }
+            }
+        } else {
+            if (version.getVersionType() == VersionType.METADATA && "xml".equalsIgnoreCase(version.getExtension())) {
+                append(base, SUPPORT);
             }
         }
         logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
+    }
+
+    private void append(StringBuffer base, Object obj) {
+        base.append(obj);
+        base.append(File.separator);
     }
 
     /**
@@ -275,22 +294,29 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#purge(java.lang.String)
      */
     @Override
-    public void purge(InformationResourceFileVersion version) throws IOException {
-        File file = new File(getAbsoluteFilePath(version));
-        if (!version.isDerivative() && !version.isTranslated()) {
-            try {
-                // if archival, need to go up one more
-                if (version.isArchival()) {
-                    file = file.getParentFile();
+    public void purge(ObjectType type, FileStoreFileProxy version) throws IOException {
+        File file = new File(getAbsoluteFilePath(type, version));
+        if (version.getType() == Type.RESOURCE) {
+            if (version.getVersionType().isDerivative() || version.getVersionType() == VersionType.TRANSLATED) {
+                FileUtils.deleteQuietly(file);
+                cleanEmptyParents(file.getParentFile());
+            } else {
+                try {
+                    // if archival, need to go up one more
+                    if (version.getVersionType().isArchival()) {
+                        file = file.getParentFile();
+                    }
+                    File parentFile = file.getParentFile();
+                    String canonicalPath = parentFile.getCanonicalPath();
+                    File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
+
+                    logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
+                    FileUtils.moveDirectory(parentFile, deletedFile);
+                    return;
+                } catch (Exception e) {
+                    logger.warn("cannot purge file", e);
+                    return;
                 }
-                File parentFile = file.getParentFile();
-                String canonicalPath = parentFile.getCanonicalPath();
-                File deletedFile = new File(canonicalPath + DELETED_SUFFIX);
-                
-                logger.debug("renaming: {} ==> {}", parentFile.getAbsolutePath(), deletedFile.getAbsoluteFile());
-                FileUtils.moveDirectory(parentFile, deletedFile);
-            } catch (Exception e) {
-                logger.warn("cannot purge file", e);
             }
         } else {
             FileUtils.deleteQuietly(file);
@@ -306,11 +332,23 @@ public class PairtreeFilestore extends BaseFilestore {
      * @throws {@link IOException}
      */
     private void cleanEmptyParents(File dir) throws IOException {
-        if (dir == null)
+        if (dir == null) {
             return;
-        if (dir.exists() && dir.list().length == 0) {
+        }
+        if (dir.exists() && (dir.list().length == 0)) {
             FileUtils.deleteDirectory(dir);
             cleanEmptyParents(dir.getParentFile());
+        }
+    }
+
+    @Override
+    public void markReadOnly(ObjectType type, List<FileStoreFileProxy> filesToProcess) {
+        for (FileStoreFileProxy version : filesToProcess) {
+            String absoluteFilePath = getAbsoluteFilePath(type, version);
+            File file = new File(absoluteFilePath);
+            if (version.getVersionType().isUploaded() || version.getVersionType().isArchival()) {
+                file.setWritable(false);
+            }
         }
     }
 

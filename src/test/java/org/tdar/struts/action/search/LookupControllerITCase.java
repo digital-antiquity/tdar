@@ -2,46 +2,37 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.JsonModel;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
-import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.ProjectController;
-import org.tdar.struts.interceptor.ObfuscationResultListener;
 
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
@@ -53,111 +44,47 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setRecordsPerPage(99);
     }
 
-    String[] collectionNames = new String[] { "Kalaupapa National Historical Park, Hawaii", "Kaloko-Honokohau National Historical Park, Hawaii", "Kapsul",
-            "KBP Artifact Photographs", "KBP Field Notes", "KBP Level Maps", "KBP Maps", "KBP Profiles", "KBP Reports", "KBP Site Photographs",
-            "Kharimkotan 1", "Kienuka", "Kintigh - Carp Fauna Coding Sheets", "Kintigh - Cibola Excavation", "Kintigh - Cibola Research",
-            "Kintigh - Cibola Survey Projects", "Kintigh - Context Ontologies", "Kintigh - Fauna Ontologies", "Kintigh - HARP Coding Sheets",
-            "Kintigh - Quantitative and Formal Methods Class - Assignments & Data", "Kleis", "Klinko", "Kokina 1", "Kompaneyskyy 1",
-            "Kuril Biocomplexity Research", "Kuybyshevskaya 1",
-            "Spielmann/Kintigh - Fauna Ontologies - Current" };
-
     @Test
     @Rollback(true)
-    public void testCollectionLookup() {
-        setupCollections();
-        controller.setTerm("Kin");
-        controller.lookupResourceCollection();
-        for (Indexable collection_ : controller.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
-            logger.info("{}", collection);
-            if (collection != null) {
-                assertFalse(collection.getTitle().equals("Kleis"));
-            }
-        }
-        initController();
-        controller.setTerm("Kintigh - C");
-        controller.lookupResourceCollection();
-        for (Indexable collection_ : controller.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
-            logger.info("{}", collection);
-            if (collection != null) {
-                assertTrue(collection.getTitle().contains("Kintigh - C"));
-            }
-        }
-
+    public void testSelectedResourceLookup() {
+        ResourceCollection collection = new ResourceCollection("test","test",SortOption.TITLE,CollectionType.SHARED, true, getUser());
+        collection.markUpdated(getUser());
+        Ontology ont = createAndSaveNewInformationResource(Ontology.class);
+        genericService.saveOrUpdate(collection);
+        collection.getResources().add(ont);
+        //babysitting bidirectional relationshi[
+        genericService.saveOrUpdate(collection);
+        ont.getResourceCollections().add(collection);
+        genericService.saveOrUpdate(ont);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        controller.setSelectResourcesFromCollectionid(collection.getId());
+        controller.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
+        controller.lookupResource();
+        assertFalse(controller.getResults().isEmpty());
+        assertTrue(((Collection<Long>)controller.getResult().get(LookupController.SELECTED_RESULTS)).contains(ont.getId()));
     }
-
+    
     @Test
     @Rollback(true)
-    public void testCollectionLookupUnauthenticated() {
-        setupCollections();
+    public void testModifyEditor() {
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        init(controller, getEditorUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids = Persistable.Base.extractIds(controller.getResults());
+
         controller = generateNewController(LookupController.class);
-        initAnonymousUser(controller);
-        controller.setTerm("Kintigh - C");
-        controller.lookupResourceCollection();
-        for (Indexable collection_ : controller.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
-            logger.info("{}", collection);
-            if (collection != null) {
-                assertTrue(collection.getTitle().contains("Kintigh - C"));
-            }
-        }
-
-    }
-
-    private void setupCollections() {
-        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
-        for (String collectionName : collectionNames) {
-            ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
-            collections.add(e);
-            e.markUpdated(getBasicUser());
-
-        }
-        genericService.save(collections);
-        searchIndexService.index(collections.toArray(new ResourceCollection[0]));
-    }
-
-    @Test
-    @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicOwner() {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        controller.setTerm("test");
-        controller.lookupResourceCollection();
-        assertTrue(controller.getResults().contains(e));
-    }
-
-    @Test
-    @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUser() {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        init(controller, getBasicUser());
-        controller.setTerm("test");
-        controller.lookupResourceCollection();
-        assertTrue(controller.getResults().contains(e));
-    }
-
-    @Test
-    @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUserForModification() {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        init(controller, getBasicUser());
-        controller.setTerm("test");
-        controller.setPermission(GeneralPermissions.ADMINISTER_GROUP);
-        controller.lookupResourceCollection();
-        assertFalse(controller.getResults().contains(e));
-    }
-
-    private ResourceCollection setupResourceCollectionForPermissionsTests(Person owner, boolean visible, Person user, GeneralPermissions permission) {
-        assertFalse(getSessionUser().equals(getAdminUser()));
-        ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
-        e.markUpdated(owner);
-        genericService.save(e);
-        if (user != null) {
-            AuthorizedUser au = new AuthorizedUser(user, permission);
-            e.getAuthorizedUsers().add(au);
-        }
-        searchIndexService.index(e);
-        return e;
+        init(controller, getAdminUser());
+        controller.setRecordsPerPage(1000);
+        controller.setTerm("");
+        controller.setPermission(GeneralPermissions.MODIFY_METADATA);
+        controller.lookupResource();
+        logger.debug("results:{}", controller.getResults());
+        List<Long> ids2 = Persistable.Base.extractIds(controller.getResults());
+        Assert.assertArrayEquals(ids.toArray(), ids2.toArray());
     }
 
     @Test
@@ -297,6 +224,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 null, null, 11, 11, 36, null, 53, 52, 56, 85, 85 };
 
         List<CodingSheet> sheets = new ArrayList<CodingSheet>();
+
         List<CodingSheet> allSheets = new ArrayList<CodingSheet>();
         for (int i = 0; i < titles.length; i++) {
             String title = titles[i];
@@ -311,15 +239,22 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 logger.info("{} {}", cs, cs.getCategoryVariable().getId());
                 sheets.add(cs);
             }
+            cs = null;
+            genericService.synchronize();
+
         }
+        List<Long> sheetIds = Persistable.Base.extractIds(sheets);
+        sheets = null;
+        genericService.synchronize();
+        genericService.findAll(CodingSheet.class);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
         controller.setRecordsPerPage(10);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        logger.info("{}", sheets);
-        assertTrue(controller.getResults().containsAll(sheets));
+        logger.info("{}", sheetIds);
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
 
         controller = generateNewInitializedController(LookupController.class, getBasicUser());
         controller.setRecordsPerPage(10);
@@ -328,7 +263,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(controller.getResults().containsAll(sheets));
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
         Resource col = ((Resource) controller.getResults().get(0));
         assertEquals("Taxonomic Level 1", col.getName());
 
@@ -338,7 +273,9 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setSortCategoryId(85l);
         controller.lookupResource();
         logger.info("{}", controller.getResults());
-        assertTrue(controller.getResults().containsAll(sheets));
+        assertTrue(Persistable.Base.extractIds(controller.getResults()).containsAll(sheetIds));
+        genericService.synchronize();
+
     }
 
     @Test
@@ -370,39 +307,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         assertTrue("at least one document", resources.size() >= 1);
     }
 
-    @Test
-    public void testKeywordLookup() {
-        searchIndexService.indexAll(getAdminUser(), GeographicKeyword.class, CultureKeyword.class);
-        controller.setKeywordType("culturekeyword");
-        controller.setTerm("Folsom");
-        controller.lookupKeyword();
-        List<Indexable> resources = controller.getResults();
-        assertTrue("at least one document", resources.size() >= 1);
-    }
-
-    @Test
-    public void testAnnotationLookup() {
-        ResourceAnnotationKey key = new ResourceAnnotationKey();
-        key.setKey("ISSN");
-        key.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
-        genericService.save(key);
-        ResourceAnnotationKey key2 = new ResourceAnnotationKey();
-        key2.setKey("ISBN");
-        key2.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
-        genericService.save(key2);
-
-        searchIndexService.indexAll(getAdminUser(), ResourceAnnotationKey.class);
-        controller.setTerm("IS");
-        controller.lookupAnnotationKey();
-        List<Indexable> resources = controller.getResults();
-        assertTrue("at least one document", resources.size() == 2);
-
-        // FIXME: not properly simulating new page request
-        controller.setTerm("ZZ");
-        controller.lookupAnnotationKey();
-        resources = controller.getResults();
-        assertEquals("ZZ should return no results", 0, resources.size());
-    }
 
     @Test
     @Rollback(value = true)
@@ -463,7 +367,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.getIncludedStatuses().add(null);
         controller.setSortField(SortOption.RELEVANCE);
         controller.setTerm(null);
-        controller.setProjectId((String) null);
+        controller.setProjectId(null);
         controller.setCollectionId(null);
     }
 
@@ -498,18 +402,12 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testResourceLookup() {
+    public void testResourceLookup() throws IOException {
         initControllerFields();
         controller.setTitle("HARP");
         controller.lookupResource();
 
-        JSONArray jsonArray = new JSONArray();
-        for (Indexable persistable : controller.getResults()) {
-            if (persistable instanceof JsonModel) {
-                jsonArray.add(((JsonModel) persistable).toJSON());
-            }
-        }
-        String json = jsonArray.toString();
+        String json = IOUtils.toString(controller.getJsonInputStream());
         logger.debug("resourceLookup results:{}", json);
         // assertTrue(json.contains("iTotalRecords"));
         assertTrue(json.contains("HARP"));
@@ -557,51 +455,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     }
 
-    @Autowired
-    ObfuscationService obfuscationService;
-
-    @Autowired
-    ReflectionService reflectionService;
-
-    @Test
-    @Rollback
-    public void testSanitizedPersonRecords() throws Exception {
-
-        // important! normally the SessionSecurityInterceptor would mark the session as readonly, but we need to do it manually in a test
-        genericService.markReadOnly();
-
-        searchIndexService.indexAll(getAdminUser(), Person.class);
-        // "log out"
-        controller = generateNewController(LookupController.class);
-        initAnonymousUser(controller);
-        controller.setRecordsPerPage(Integer.MAX_VALUE);
-        controller.setMinLookupLength(0);
-        controller.lookupPerson();
-        ObfuscationResultListener listener = new ObfuscationResultListener(obfuscationService, reflectionService,null, null);
-        listener.prepareResult(controller);
-        assertTrue(controller.getResults().size() > 0);
-        for (Indexable result : controller.getResults()) {
-            assertNull(((Person) result).getEmail());
-        }
-
-        // normally these two requests would belong to separate hibernate sessions. We flush the session here so that the we don't get back the
-        // same cached objects that the controller sanitized in the previous lookup.
-        genericService.clearCurrentSession();
-        genericService.markReadOnly();
-
-        // okay now "log in" and make sure that email lookup is still working
-        controller = generateNewInitializedController(LookupController.class);
-        controller.setRecordsPerPage(Integer.MAX_VALUE);
-        controller.setMinLookupLength(0);
-        String email = "james.t.devos@asu.edu";
-        controller.setEmail(email);
-        controller.lookupPerson();
-        assertEquals(1, controller.getResults().size());
-        Person jim = (Person) controller.getResults().get(0);
-        assertEquals(email, jim.getEmail());
-
-    }
-
     @Test
     @Rollback
     // special characters need to be escaped or stripped prior to search
@@ -610,6 +463,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setMinLookupLength(0);
         controller.lookupPerson();
         controller.lookupInstitution();
+        controller.setKeywordType("TemporalKeyword");
         controller.lookupKeyword();
         controller.lookupResource();
         controller.lookupResourceCollection();

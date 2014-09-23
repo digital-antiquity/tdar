@@ -2,17 +2,19 @@ package org.tdar.core.service.resource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -22,7 +24,11 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.XmlService;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
  * $Id$
@@ -42,25 +48,20 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
-//    /**
-//     * Find Project by Id
-//     */
-//    @Transactional(readOnly = true)
-//    public Project find(Long id) {
-//        Project project = getDao().find(id);
-//        if (project == null) {
-//            return Project.NULL;
-//        }
-//        return project;
-//    }
+    @Autowired
+    private ObfuscationService obfuscationService;
+
+    @Autowired
+    private XmlService xmlService;
 
     /**
      * Find @link Project resources by their submitter (@link Person).
+     * 
      * @param submitter
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Project> findBySubmitter(Person submitter) {
+    public List<Project> findBySubmitter(TdarUser submitter) {
         if (submitter == null) {
             getLogger().warn("Trying to find projects for a null Person submitter, ignoring.");
             return Collections.emptyList();
@@ -70,6 +71,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     /**
      * Find @link Project resources by their matching title.
+     * 
      * @param title
      * @return
      */
@@ -84,6 +86,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     /**
      * Find all @link Project resources by the submitter, but return only sparse (title, description) objects.
+     * 
      * @param person
      * @return
      */
@@ -92,7 +95,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findAllEditableProjects(person);
     }
 
-
     /**
      * Find all @link Project resources, but only return sparse objects (title, description)
      */
@@ -100,7 +102,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     public List<Project> findAllSparse() {
         return getDao().findAllSparse();
     }
-
 
     /**
      * Finds all @link Resource entries that are part of the specified @link Project. These entries are maintained transiently on the Project entity, and must
@@ -119,6 +120,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     /**
      * Find Projects that were edited recently by the specified user, and return sparse objects (title, description)
+     * 
      * @param updater
      * @param maxResults
      * @return
@@ -130,6 +132,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     /**
      * Find projects with no resources.
+     * 
      * @param updater
      * @return
      */
@@ -138,28 +141,26 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findEmptyProjects(updater);
     }
 
-
     // @Transactional(readOnly = true)
     // public List<Resource> findSparseTitleIdProjectListByPersonOld(Person person, boolean isAdmin) {
-    //     return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
+    // return authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true);
     // }
 
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(Person person, boolean isAdmin) {
-        //get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
+        // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
         Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
 
-        //find all of the editable projects for the user (either directly assigned or via the specified collections)
+        // find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = Persistable.Base.extractIds(collections);
         List<Resource> editableResources = authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true, collectionIds);
 
         return editableResources;
     }
-    
-
 
     /**
      * Check if specified @link Project contains a @link Dataset entity that has mapped @link CodingSheet entries and @link Ontology entities.
+     * 
      * @param project
      * @return
      */
@@ -175,5 +176,23 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      */
     public Boolean containsIntegratableDatasets(List<Long> projectIds) {
         return getDao().containsIntegratableDatasets(projectIds);
+    }
+
+    public String getProjectAsJson(Project project, TdarUser user, String callback) {
+        getLogger().trace("getprojectasjson called");
+        Object result = new HashMap<String, Object>();
+
+        try {
+            if (Persistable.Base.isNotNullOrTransient(project)) {
+                getLogger().trace("Trying to convert blank or null project to json: " + project);
+                // obfuscationService.obfuscate(project, user);
+                result = project;
+            } else {
+                result = Project.NULL;
+            }
+        } catch (Exception ex) {
+            throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
+        }
+        return xmlService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
 }

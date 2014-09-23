@@ -5,7 +5,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
@@ -15,7 +14,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * Represents a relationship between two data-tables via columns
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "data_table_column_relationship")
@@ -26,13 +25,6 @@ public class DataTableColumnRelationship extends Persistable.Base {
      * 
      */
     private static final long serialVersionUID = 715161001656287643L;
-
-    /**
-     * The relationship which this inter-column relationship forms part of
-     */
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "relationship_id")
-    private DataTableRelationship relationship;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "local_column_id")
@@ -74,21 +66,5 @@ public class DataTableColumnRelationship extends Persistable.Base {
      */
     public void setForeignColumn(DataTableColumn foreignColumn) {
         this.foreignColumn = foreignColumn;
-    }
-
-    /**
-     * @return the relationship
-     */
-    @XmlTransient
-    public DataTableRelationship getRelationship() {
-        return relationship;
-    }
-
-    /**
-     * @param relationship
-     *            the relationship to set
-     */
-    public void setRelationship(DataTableRelationship relationship) {
-        this.relationship = relationship;
     }
 }

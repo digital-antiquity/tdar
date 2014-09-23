@@ -1,8 +1,12 @@
 package org.tdar.struts.data;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
@@ -13,8 +17,6 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
-
-import com.drew.lang.annotations.SuppressWarnings;
 
 /**
  * $Id$
@@ -33,6 +35,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
+    private Set<String> seenImportFieldNames = new HashSet<>();
 
     // either person or institution will be updated by the view and then
     // conditionally placed in the resourceCreator
@@ -50,6 +53,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     private CreatorType type = CreatorType.PERSON;
+    private Long id;
 
     public ResourceCreatorProxy(Creator creator, ResourceCreatorRole role) {
         if (creator instanceof Person) {
@@ -69,6 +73,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             this.institution = (Institution) rc.getCreator();
         }
         this.role = rc.getRole();
+        this.setId(rc.getId());
     }
 
     // properly set the state of the resourceCreator field by determining if the proxy represents a person or an institution
@@ -79,7 +84,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
                     resourceCreator.setCreator(person);
                     Institution institution = person.getInstitution();
                     // FIXME: what is the purpose of this check?
-                    if (institution == null || StringUtils.isBlank(institution.getName())) {
+                    if ((institution == null) || StringUtils.isBlank(institution.getName())) {
                         person.setInstitution(null);
                     }
                     logger.trace("creator type implicitly set to person:" + person);
@@ -92,6 +97,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
                 logger.warn("no resource creator was initialized becase no creator was set");
             }
             initialized = true;
+            resourceCreator.setId(getId());
         }
     }
 
@@ -112,8 +118,9 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     public ResourceCreator getResourceCreator() {
-        if (!initialized)
+        if (!initialized) {
             resolveResourceCreator();
+        }
         return resourceCreator;
     }
 
@@ -126,17 +133,19 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * 
      * @return creatorType, if system can figure out based on available info. otherwise null.
      */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="NP_NULL_ON_SOME_PATH", justification="ignoring null derefernece because findbugs is not paying attention to the null-check above")
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH",
+            justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     private CreatorType determineActualCreatorType() {
-        if (institution == null && person == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreatorProxy.err_determine_creator_insufficient_info"));
+        if ((institution == null) && (person == null)) {
+            throw new TdarRecoverableRuntimeException("resourceCreatorProxy.err_determine_creator_insufficient_info");
         }
         boolean hasNoPersistableValues = institution.hasNoPersistableValues();
         if (hasNoPersistableValues && person.hasNoPersistableValues()) {
             return null;
         }
         if (!hasNoPersistableValues && !person.hasNoPersistableValues()) {
-            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info", getPerson(), getInstitution(), getType());
+            String err = MessageHelper.getMessage("resourceCreatorProxy.err_fmt2_determine_creator_too_much_info",
+                    Arrays.asList(getPerson(), getInstitution(), getType()));
             logger.warn(err);
             return type;
         }
@@ -147,7 +156,6 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return CreatorType.INSTITUTION;
         }
     }
-
 
     @Transient
     public CreatorType getActualCreatorType() {
@@ -167,10 +175,10 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * @return
      */
     public boolean isValid() {
-        if (person != null && !person.hasNoPersistableValues()) {
+        if ((person != null) && !person.hasNoPersistableValues()) {
             return true;
         }
-        if (institution != null && !institution.hasNoPersistableValues()) {
+        if ((institution != null) && !institution.hasNoPersistableValues()) {
             return true;
         }
         return false;
@@ -200,6 +208,22 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     public void setType(CreatorType type) {
         this.type = type;
+    }
+
+    public Set<String> getSeenImportFieldNames() {
+        return seenImportFieldNames;
+    }
+
+    public void setSeenImportFieldNames(Set<String> seenImportFieldNames) {
+        this.seenImportFieldNames = seenImportFieldNames;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

@@ -6,18 +6,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 public class NelNetTransactionRequestTemplate implements Serializable {
 
@@ -83,18 +83,14 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         private int length;
 
         private NelnetTransactionItem(int order, String name, ItemType type, int length) {
-            this.setKey(name);
-            this.setOrder(order);
-            this.setType(type);
+            this.key = name;
+            this.order = order;
+            this.type = type;
             this.length = length;
         }
 
         public int getLength() {
             return length;
-        }
-
-        public void setLength(int length) {
-            this.length = length;
         }
 
         public ItemType getType() {
@@ -109,25 +105,18 @@ public class NelNetTransactionRequestTemplate implements Serializable {
             return USER_CHOICE_3.getKey();
         }
 
-        public void setType(ItemType type) {
-            this.type = type;
-        }
-
         public int getOrder() {
             return order;
-        }
-
-        public void setOrder(int order) {
-            this.order = order;
         }
 
         public String getKey() {
             return key;
         }
 
-        public void setKey(String key) {
-            this.key = key;
+        public NameValuePair pairWith(String value) {
+            return new BasicNameValuePair(key, value);
         }
+
     }
 
     public String constructHashKey() {
@@ -135,14 +124,15 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         Collections.sort(list, new Comparator<NelnetTransactionItem>() {
             @Override
             public int compare(NelnetTransactionItem o1, NelnetTransactionItem o2) {
-                return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                return ObjectUtils.compare(o1.getOrder(), o2.getOrder());
             }
         });
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItem item : list) {
-            if (item == NelnetTransactionItem.HASH)
+            if (item == NelnetTransactionItem.HASH) {
                 continue;
+            }
             String key = item.key;
             String value = values.get(key);
             if (values.containsKey(key) && StringUtils.isNotBlank(value)) {
@@ -179,13 +169,13 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                     break;
                 case USER_CHOICE_2:
                     if (!NelnetTransactionItem.getUserIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.user_id_key_changed"));
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.user_id_key_changed");
                     }
                     value = invoice.getOwner().getId().toString();
                     break;
                 case USER_CHOICE_3:
                     if (!NelnetTransactionItem.getInvoiceIdKey().equals(item.getKey())) {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("nelNetTransactionRequestTemplate.invoice_id_key_changed"));
+                        throw new TdarRecoverableRuntimeException("nelNetTransactionRequestTemplate.invoice_id_key_changed");
                     }
                     value = invoice.getId().toString();
                     break;
@@ -219,8 +209,9 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case STREET_ONE:
                 case STREET_TWO:
                 case ZIP:
-                    if (Persistable.Base.isNullOrTransient(invoice.getAddress()))
+                    if (Persistable.Base.isNullOrTransient(invoice.getAddress())) {
                         break;
+                    }
                     switch (item) {
                         case CITY:
                             value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.getLength());
@@ -266,16 +257,20 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         this.values = values;
     }
 
-    public String constructUrlSuffix() throws URIException {
-        StringBuilder suffix = new StringBuilder();
+    /**
+     * return list of name/value pair entries, omitting entries with blank values
+     * 
+     * @return
+     */
+    public List<NameValuePair> getNameValuePairs() {
+        List<NameValuePair> pairs = new ArrayList<>();
         for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
-            String key = item.key;
-            String value = values.get(key);
-            if (values.containsKey(key) && StringUtils.isNotBlank(value) && StringUtils.isNotBlank(key)) {
-                suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&amp;");
+            if (StringUtils.isNotBlank(values.get(item.getKey())) && item != NelnetTransactionItem.SECRET) {
+                NameValuePair pair = item.pairWith(values.get(item.getKey()));
+                pairs.add(pair);
             }
         }
-        return suffix.toString();
+        return pairs;
     }
 
     public String getOrderType() {

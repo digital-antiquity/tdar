@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.struts.action.search.SearchFieldType;
+
+import com.opensymphony.xwork2.TextProvider;
 
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 6f;
@@ -20,6 +22,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
+    private boolean useProximity = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public GeneralSearchQueryPart() {
@@ -51,7 +54,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
                 fields.add(txt);
             }
         }
-        
+
         FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, fields).setBoost(ANY_FIELD_BOOST);
 
         allFieldsAsPart.setOperator(Operator.AND);
@@ -59,14 +62,21 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
+            titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE_PHRASE, cleanedQueryString);
+            descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION_PHRASE, cleanedQueryString);
             FieldQueryPart<String> phrase = new FieldQueryPart<String>(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             // FIXME: magic words
-            phrase.setProximity(4);
+            if (useProximity) {
+                phrase.setProximity(4);
+            }
             phrase.setBoost(PHRASE_BOOST);
             primary.append(phrase);
-            titlePart.setProximity(3);
-            descriptionPart.setProximity(4);
+            if (useProximity) {
+                titlePart.setProximity(3);
+                descriptionPart.setProximity(4);
+            }
         }
+
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);
@@ -95,17 +105,25 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         String fields = StringUtils.join(getFieldValues(), ", ");
         if (StringUtils.isBlank(fields)) {
             return "";
         }
-        return SearchFieldType.ALL_FIELDS.getLabel() + ": " + fields;
+        return provider.getText(SearchFieldType.ALL_FIELDS.getLocaleKey()) + ": " + fields + " ";
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
+    }
+
+    public boolean isUseProximity() {
+        return useProximity;
+    }
+
+    public void setUseProximity(boolean useProximity) {
+        this.useProximity = useProximity;
     }
 
 }

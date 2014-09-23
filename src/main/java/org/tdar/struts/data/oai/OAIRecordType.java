@@ -3,6 +3,8 @@
  */
 package org.tdar.struts.data.oai;
 
+import java.util.Arrays;
+
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
 import org.tdar.utils.MessageHelper;
@@ -34,7 +36,7 @@ public enum OAIRecordType {
     }
 
     public void checkCanDisseminateFormat(OAIMetadataFormat format) throws OAIException {
-        if (format != OAIMetadataFormat.TDAR || TdarConfiguration.getInstance().enableTdarFormatInOAI()) {
+        if ((format != OAIMetadataFormat.TDAR) || TdarConfiguration.getInstance().enableTdarFormatInOAI()) {
             for (OAIMetadataFormat validFormat : metadataFormats) {
                 if (validFormat.equals(format)) {
                     return;
@@ -52,7 +54,7 @@ public enum OAIRecordType {
                 return type;
             }
         }
-        throw new OAIException(MessageHelper.getMessage("oaiRecordType.metadata_format_unknown",val), OaiErrorCode.ID_DOES_NOT_EXIST);
+        throw new OAIException(MessageHelper.getMessage("oaiRecordType.metadata_format_unknown", Arrays.asList(val)), OaiErrorCode.ID_DOES_NOT_EXIST);
     }
 
 }

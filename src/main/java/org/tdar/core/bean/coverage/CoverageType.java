@@ -1,12 +1,12 @@
 package org.tdar.core.bean.coverage;
 
 import org.tdar.core.bean.HasLabel;
-import org.tdar.utils.MessageHelper;
 
 /**
  * Enum to help manage the type of Date Information... it manages comparators and controller distinction logic.
+ * 
  * @author abrin
- *
+ * 
  */
 public enum CoverageType implements HasLabel {
 
@@ -30,14 +30,15 @@ public enum CoverageType implements HasLabel {
     }
 
     public boolean validate(Integer start, Integer end) {
-        if (start == null && end == null)
+        if ((start == null) && (end == null)) {
             return false;
+        }
 
         switch (this) {
             case CALENDAR_DATE:
                 return (start <= end);
             case RADIOCARBON_DATE:
-                return (start >= end && end > 0);
+                return ((start >= end) && (end > 0));
             case NONE:
                 return true;
             default:

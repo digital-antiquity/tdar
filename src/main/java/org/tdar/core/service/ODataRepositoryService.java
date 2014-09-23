@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -26,8 +27,8 @@ import org.tdar.web.SessionDataAware;
 /**
  * Provide core methods needed to support the OData Data editing protocol
  * 
- * @author 
- *
+ * @author
+ * 
  */
 @Service
 public class ODataRepositoryService implements RepositoryService, SessionDataAware {
@@ -39,7 +40,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
 
     @Autowired
     private EntityService entityService;
-    
+
     @Autowired
     private RowOperations databaseService;
 
@@ -66,18 +67,17 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Transactional(propagation = Propagation.REQUIRED)
     public List<Dataset> findAllOwnedDatasets() {
         List<Dataset> ownedDatasets = new ArrayList<Dataset>();
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             List<ResourceType> types = new ArrayList<>();
             types.add(ResourceType.DATASET);
             for (Resource resource : authService.findEditableResources(knownPerson, false, types)) {
-                ownedDatasets.add((Dataset)resource);
+                ownedDatasets.add((Dataset) resource);
             }
         }
         return ownedDatasets;
     }
-
 
     /**
      * Find All @link DataTable entries that a user has access to
@@ -101,7 +101,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
         assert entitySetName != null;
         assert entitySetName.length() > 0;
         List<DataTable> dataTables = findAllOwnedDataTables();
-        for (DataTable table :dataTables) {
+        for (DataTable table : dataTables) {
             if (entitySetName.equals(table.getName())) {
                 return table;
             }
@@ -133,14 +133,15 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     public List<AbstractDataRecord> findAllDataRecordsForDataTable(DataTable dataTable) {
 
         List<AbstractDataRecord> dataRecords = new ArrayList<AbstractDataRecord>();
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             Dataset dataset = dataTable.getDataset();
             assert dataset != null;
             if (!authService.canView(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_view",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             dataRecords.addAll(databaseService.findAllRows(dataTable));
         }
@@ -153,8 +154,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateRecord(AbstractDataRecord dataRecord) {
-        Person authenticatedUser = getSessionData().getPerson();
-        Person knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
+        TdarUser authenticatedUser = genericService.find(TdarUser.class, getSessionData().getTdarUserId());
+        TdarUser knownPerson = entityService.findByUsername(authenticatedUser.getUsername());
         if (knownPerson != null) {
             DataTable dataTable = dataRecord.getDataTable();
             assert dataTable != null;
@@ -162,7 +163,8 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
             assert dataset != null;
             if (!authService.canEdit(authenticatedUser, dataset)) {
                 // We use the OData exception since it is serialised and sends an appropriate HTTP status code to the client.
-                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit", authenticatedUser, dataset));
+                throw new NotAuthorizedException(MessageHelper.getMessage("odataRepositoryService.user_not_allowed_edit",
+                        Arrays.asList(authenticatedUser, dataset)));
             }
             Map<?, ?> data = dataRecord.asMap();
             databaseService.editRow(dataTable, dataRecord.getId(), data);

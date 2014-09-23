@@ -15,11 +15,12 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
- * Tracks administrative changes. When the UI changes a resource, a log entry should be added. 
+ * Tracks administrative changes. When the UI changes a resource, a log entry should be added.
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -31,6 +32,16 @@ public class ResourceRevisionLog extends Persistable.Base {
 
     private static final long serialVersionUID = -6544867903833975781L;
 
+    public ResourceRevisionLog() {
+    }
+
+    public ResourceRevisionLog(String message, Resource resource, TdarUser person) {
+        this.person = person;
+        this.timestamp = new Date();
+        this.resource = resource;
+        this.logMessage = message;
+    }
+
     @ManyToOne(optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
     @ForeignKey(name = "none")
@@ -41,12 +52,12 @@ public class ResourceRevisionLog extends Persistable.Base {
     private Date timestamp;
 
     // the action taken
-    @Column(name = "log_message", length = 512)
-    @Length(max = 512)
+    @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
+    @Length(max = FieldLength.FIELD_LENGTH_512)
     private String logMessage;
 
     @ManyToOne(optional = false)
-    private Person person;
+    private TdarUser person;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
@@ -77,11 +88,11 @@ public class ResourceRevisionLog extends Persistable.Base {
         this.logMessage = action;
     }
 
-    public Person getPerson() {
+    public TdarUser getPerson() {
         return person;
     }
 
-    public void setPerson(Person actor) {
+    public void setPerson(TdarUser actor) {
         this.person = actor;
     }
 

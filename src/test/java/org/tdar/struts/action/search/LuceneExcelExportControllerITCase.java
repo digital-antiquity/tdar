@@ -21,15 +21,16 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.web.SessionData;
+
+import com.opensymphony.xwork2.Action;
 
 @Transactional
 public class LuceneExcelExportControllerITCase extends AbstractSearchControllerITCase {
@@ -43,19 +44,19 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Autowired
     ExcelService excelService;
 
-    private Person currentUser = null;
+    private TdarUser currentUser = null;
 
     @Test
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
-//        currentUser = getBasicUser();
-        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(Person.class, getBasicUserId()));
+        // currentUser = getBasicUser();
+        controller = generateNewInitializedController(AdvancedSearchController.class, genericService.find(TdarUser.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
         doSearch("");
-        assertEquals(TdarActionSupport.SUCCESS, controller.viewExcelReport());
+        assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
         FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
@@ -73,6 +74,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Rollback(true)
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
+        setIgnoreActionErrors(true);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -89,11 +91,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         }
         assertNotNull(except);
         assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), except.getStatusCode());
-        setIgnoreActionErrors(true);
     }
 
     @Override
-    public Person getSessionUser() {
+    public TdarUser getSessionUser() {
         return currentUser;
     }
 

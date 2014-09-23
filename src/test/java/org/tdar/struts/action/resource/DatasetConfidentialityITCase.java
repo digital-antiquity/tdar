@@ -16,13 +16,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
@@ -38,7 +37,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         // CodingSheet codingSheet = setupCodingSheet();
 
         Dataset dataset = setupAndLoadResource(TEST_DATA_SET_FILE_PATH, Dataset.class, FileAccessRestriction.CONFIDENTIAL);
-        genericService.synchronize();
+        evictCache();
         datasetId = dataset.getId();
         assertNotNull(datasetId);
 
@@ -92,9 +91,4 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         });
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

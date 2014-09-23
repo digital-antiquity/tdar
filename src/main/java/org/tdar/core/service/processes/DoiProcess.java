@@ -2,24 +2,26 @@ package org.tdar.core.service.processes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.service.AbstractConfigurableService;
-import org.tdar.core.service.ConfigurableService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
@@ -35,6 +37,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     public static final String DELETED = "deleted";
     public static final String UPDATED = "updated";
     public static final String CREATED = "created";
+    private static final String ERRORS = "errors";
     public static final String DOI_KEY = "DOI";
 
     @Autowired
@@ -44,21 +47,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     @Autowired
     private transient EmailService emailService;
 
-    private ConfigurableService<ExternalIDProvider> providers = new AbstractConfigurableService<ExternalIDProvider>() {
-        @Override
-        public boolean isServiceRequired() {
-            // no need to check that the provider used is null, because this service will not be enabled if no provider is found.
-            return false;
-        }
-    };
-    
-    /**
-     * Used in testing
-     * @return the providers
-     */
-    public ConfigurableService<ExternalIDProvider> getProviders() {
-        return providers;
-    }
+    private ExternalIDProvider provider;
 
     private Map<String, List<Pair<Long, String>>> batchResults = new HashMap<>();
 
@@ -67,9 +56,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     }
 
     private void initializeBatchResults() {
-        batchResults.put(DELETED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(UPDATED, new ArrayList<Pair<Long, String>>());
-        batchResults.put(CREATED, new ArrayList<Pair<Long, String>>());
+        for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+            batchResults.put(key, new ArrayList<Pair<Long, String>>());
+        }
     }
 
     @Override
@@ -89,34 +78,37 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     @Override
     public void execute() {
-        ExternalIDProvider idProvider = providers.getProvider();
         try {
-            idProvider.connect();
+            provider.connect();
             processBatch(getNextBatch());
-            idProvider.logout();
+            provider.logout();
         } catch (IOException e) {
-            logger.error("connection issues with idProvider " + idProvider, e);
+            logger.error("connection issues with provider " + provider, e);
             throw new TdarRuntimeException(e);
         }
     }
 
     @Override
     public void process(InformationResource resource) throws Exception {
-        ExternalIDProvider idProvider = providers.getProvider();
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
-                Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
-                resource.setExternalId(createdIds.get(DOI_KEY));
-                datasetDao.saveOrUpdate(resource);
-                batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                Map<String, String> createdIds = provider.create(resource, urlService.absoluteUrl(resource));
+                String externalId = createdIds.get(DOI_KEY);
+                if (StringUtils.isNotBlank(externalId)) {
+                    resource.setExternalId(externalId);
+                    datasetDao.saveOrUpdate(resource);
+                    batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                } else {
+                    batchResults.get(ERRORS).add(new Pair<>(resource.getId(), resource.getExternalId()));
+                }
             } else {
-                idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
+                provider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(UPDATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
             logger.debug("setting external id {} for {} ", resource.getExternalId(), resource.getId());
         } else {
             if (StringUtils.isNotEmpty(resource.getExternalId())) {
-                idProvider.delete(resource, urlService.absoluteUrl(resource), resource.getExternalId());
+                provider.delete(resource, urlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(DELETED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
         }
@@ -127,17 +119,18 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         if (batchResults != null) {
             long total = 0;
             Map<String, Object> map = new HashMap<>();
-            map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
-            map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
-            map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
-            total += batchResults.get(DoiProcess.CREATED).size();
-            total += batchResults.get(DoiProcess.UPDATED).size();
-            total += batchResults.get(DoiProcess.DELETED).size();
+            for (String key : Arrays.asList(DELETED, UPDATED, CREATED, ERRORS)) {
+                map.put(key, batchResults.get(key));
+                total += batchResults.get(key).size();
+            }
             map.put("total", total);
             map.put("date", new Date());
             if (total > 0) {
                 logger.info("sending email");
-                emailService.sendWithFreemarkerTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym() + SUBJECT);
+                Email email = new Email();
+                email.setUserGenerated(false);
+                email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + SUBJECT);
+                emailService.queueWithFreemarkerTemplate("doi-daily.ftl", map, email);
             }
             batchResults.clear();
             initializeBatchResults();
@@ -148,14 +141,23 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         return batchResults;
     }
 
-    @Autowired
-    private void setAllServices(List<ExternalIDProvider> providers) {
-        ((AbstractConfigurableService<ExternalIDProvider>) this.providers).setAllServices(providers);
-    }
-
     @Override
     public boolean isEnabled() {
-        ExternalIDProvider idProvider = providers.getProvider();
-        return idProvider != null && idProvider.isConfigured();
+        return (provider != null) && provider.isConfigured();
+    }
+
+    public ExternalIDProvider getProvider() {
+        return provider;
+    }
+
+    @Autowired
+    @Qualifier("DoiProvider")
+    public void setProvider(ExternalIDProvider provider) {
+        this.provider = provider;
+        if (provider != null) {
+            logger.debug("DOI Provider: {}", provider.getClass().getSimpleName());
+        } else {
+            logger.debug("DOI Provider: NOT CONFIGURED");
+        }
     }
 }

@@ -1,7 +1,7 @@
 package org.tdar.core.bean.keyword;
 
 /**
- * An interface to manage suggested keywords 
+ * An interface to manage suggested keywords
  * 
  * @version $Rev$
  */

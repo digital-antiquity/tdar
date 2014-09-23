@@ -11,40 +11,32 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
-import org.tdar.utils.MessageHelper;
 
 /**
- * $Id$
+ * Uses OWL-API to parse OWL ontologies into a Map<OWLClass, OntologyNode>.
  * 
- * Uses OWL-API to parse OWL ontologies (supposedly this should be done via
- * Reasoners but haven't gotten that far into OWL yet).
- * 
- * Generates a Map of OWLClass-s to OntologyNode-s.
- * 
- * Use one parser instance per ontology - this class needs to maintain state as
- * it recursively generates ontology node labels.
+ * This class is not thread-safe, use one parser instance per ontology. It maintains state as it recursively generates ontology node labels.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Rev$
  */
-
 public class OwlApiHierarchyParser implements OntologyParser {
 
     private final OWLOntology owlOntology;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     private final List<OWLClass> rootClasses = new ArrayList<OWLClass>();
     private final HashMap<OWLClass, Set<OWLClass>> owlHierarchyMap = new HashMap<OWLClass, Set<OWLClass>>();
     private final HashMap<OWLClass, OntologyNode> classNodeMap = new HashMap<OWLClass, OntologyNode>();
@@ -61,12 +53,12 @@ public class OwlApiHierarchyParser implements OntologyParser {
         List<OWLClass> allClasses = new ArrayList<OWLClass>(owlOntology.getClassesInSignature());
         sortOwlClassCollection(owlOntology, allClasses);
         for (OWLClass owlClass : allClasses) {
-            if (owlClass.getSuperClasses(owlOntology).isEmpty()) {
+            if (EntitySearcher.getSuperClasses(owlClass, owlOntology).isEmpty()) {
                 rootClasses.add(owlClass);
             }
             SortedSet<OWLClass> subclasses = new TreeSet<OWLClass>();
             owlHierarchyMap.put(owlClass, subclasses);
-            for (OWLClassExpression subclassDescription : owlClass.getSubClasses(owlOntology)) {
+            for (OWLClassExpression subclassDescription : EntitySearcher.getSubClasses(owlClass, owlOntology)) {
                 OWLClass subclass = subclassDescription.asOWLClass();
                 subclasses.add(subclass);
             }
@@ -136,32 +128,29 @@ public class OwlApiHierarchyParser implements OntologyParser {
         IRI iri = owlClass.getIRI();
         node.setImportOrder(extractImportOrder(owlClass));
         node.setDescription(extractDescription(owlClass));
-        if (node.getDescription() != null) {
-        logger.debug(node.getDescription());
-        }
         node.setIri(iri.getFragment());
         String uri_string = iri.toURI().toString();
-        //FIXME: the OWL API does not appear to support IRIs that start with numbers... 
+        // FIXME: the OWL API does not appear to support IRIs that start with numbers...
         // https://github.com/owlcs/owlapi/wiki/Documentation
         // this is a workaround
 
-        // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with  () in them
-        logger.trace("node: {}", node.getIri());
-        if (StringUtils.isBlank(node.getIri()) && StringUtils.indexOf(uri_string, "#")> 0){
-          node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#")+1));
-        logger.info(uri_string);
+        // this is a backup for parsing older ontologies that have degenerate IRIs eg. those with () in them
+        logger.trace("node: {}", node);
+        if (StringUtils.isBlank(node.getIri()) && (StringUtils.indexOf(uri_string, "#") > 0)) {
+            node.setIri(StringUtils.substring(uri_string, uri_string.indexOf("#") + 1));
+            logger.info(uri_string);
         }
         String displayName = extractNodeLabel(owlClass);
         if (allSynonymLabels.contains(displayName)) {
             logger.trace("skipping: {}", displayName);
             return index;
         }
-        for (OWLClassExpression equiv : owlClass.getEquivalentClasses(owlOntology)) {
+        for (OWLClassExpression equiv : EntitySearcher.getEquivalentClasses(owlClass, owlOntology)) {
             // making the assumption that we see the "real" node before we see the synonyms
             for (OWLClass syn : equiv.getClassesInSignature()) {
                 String label = extractNodeLabel(syn);
                 synonymLabels.add(label);
-                logger.trace(syn.getIRI().getFragment() + " - " + iri.getFragment() + " ["+label+"]");
+                logger.trace("{} - {} [{}]", syn.getIRI().getFragment(), iri.getFragment(), label);
             }
         }
         node.setSynonyms(synonymLabels);
@@ -174,7 +163,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         node.setUri(uri_string);
         node.setIntervalStart(Integer.valueOf(index));
         String indexString = String.valueOf(index);
-        for (OWLClassExpression owlClassExpression : owlClass.getSuperClasses(owlOntology)) {
+        for (OWLClassExpression owlClassExpression : EntitySearcher.getSuperClasses(owlClass, owlOntology)) {
             OWLClass parentClass = owlClassExpression.asOWLClass();
             OntologyNode parentNode = classNodeMap.get(parentClass);
             // append parent indices recursively
@@ -195,9 +184,11 @@ public class OwlApiHierarchyParser implements OntologyParser {
             firstSibling = false;
         }
         logger.trace("{}", node);
-        
+
         if (StringUtils.isBlank(node.getIri())) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("owlApiHierarchyParser.blank_iri", node));
+            List<Object> vals = new ArrayList<>();
+            vals.add(node);
+            throw new TdarRecoverableRuntimeException("owlApiHierarchyParser.blank_iri", vals);
         }
         node.setIntervalEnd(Integer.valueOf(index));
         return index + 1;
@@ -206,7 +197,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
     private String extractNodeLabel(OWLClass owlClass) {
         String txt = "";
 
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isLabel()) {
                 String annTxt = ann.getValue().toString();
                 annTxt = annTxt.replaceAll("^\"", "");
@@ -218,7 +209,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private Long extractImportOrder(OWLClass owlClass) {
         String txt = "";
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isComment()) {
                 logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();
@@ -240,7 +231,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private String extractDescription(OWLClass owlClass) {
         String txt = "";
-        for (OWLAnnotation ann : owlClass.getAnnotations(owlOntology)) {
+        for (OWLAnnotation ann : EntitySearcher.getAnnotations(owlClass, owlOntology)) {
             if (ann.getProperty().isComment()) {
                 logger.trace("{}", ann.getValue());
                 String annTxt = ann.getValue().toString();

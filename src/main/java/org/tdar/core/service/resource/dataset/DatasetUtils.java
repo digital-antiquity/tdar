@@ -19,7 +19,8 @@ public class DatasetUtils {
     /*
      * Converts a JDBC @link ResultSet row into a Map of @link DataTableColumn (key) and String (value).
      */
-    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs, boolean returnRowId) throws SQLException {
+    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs, boolean returnRowId)
+            throws SQLException {
         Map<DataTableColumn, String> results = new LinkedHashMap<>();
         if (returnRowId) {
             // we want this to be the very first entry in the linked hash map
@@ -28,7 +29,7 @@ public class DatasetUtils {
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
             // ignore if null (non translated version of translated)
-            if (col != null && col.isVisible()) {
+            if ((col != null) && col.isVisible()) {
                 results.put(col, null);
             }
         }

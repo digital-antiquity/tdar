@@ -2,7 +2,6 @@ package org.tdar.core.bean.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -20,8 +20,10 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.Field;
@@ -37,6 +39,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$
@@ -48,18 +51,15 @@ import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
  */
 
 @Entity
-@Table(name = "institution")
+@Table(name = "institution", indexes = {
+        @Index(name = "institution_name_key", columnList = "name")
+})
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
-//FIXME: I don't think we can implement institution_name_lc w/ annotations because we can't specify lower(name)
-//@org.hibernate.annotations.Table(appliesTo = "institution", indexes = {@Index(name = "institution_name_lc", columnNames = {"name", "id"})})
 public class Institution extends Creator implements Comparable<Institution>, Dedupable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
-
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "name", "url" };
 
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
@@ -69,10 +69,10 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_creator_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
-    @Index(name = "institution_name_key")
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
@@ -82,8 +82,14 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return name.compareTo(candidate.name);
     }
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution parentInstitution;
+
+    @Column(unique = true, nullable = true)
+    @Field(name = "inst_email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
+    private String email;
 
     public Institution() {
     }
@@ -143,17 +149,12 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return CreatorType.INSTITUTION;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return JSON_PROPERTIES;
-    }
-
     public static String[] getIgnorePropertiesForUniqueness() {
         return IGNORE_PROPERTIES_FOR_UNIQUENESS;
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
+    public Set<Obfuscatable> obfuscate() {
         return null;
     }
 
@@ -164,7 +165,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Override
     public boolean isValid() {
-        return isValidForController() && getId() != null;
+        return isValidForController() && (getId() != null);
     }
 
     @Override
@@ -190,5 +191,15 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
 }

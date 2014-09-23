@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.service.UrlService;
 
 public class URLServiceTest {
@@ -18,5 +19,12 @@ public class URLServiceTest {
         assertEquals("/project/1234?startRecord=100", UrlService.reformatViewUrl("/project/view?id=1234&startRecord=100"));
         assertEquals("/browse/creators/1234?startRecord=100", UrlService.reformatViewUrl("/browse/creators?id=1234&startRecord=100"));
         assertEquals("/browse/creators/1234", UrlService.reformatViewUrl("/browse/creators?id=1234"));
+    }
+    
+    @Test
+    public void testKeywordSlug() {
+        CultureKeyword keyword = new CultureKeyword("a b / / d - ? \\ % ^ å ");
+        logger.debug("{}",keyword.getSlug());
+        assertEquals("a-b-d", keyword.getSlug());
     }
 }

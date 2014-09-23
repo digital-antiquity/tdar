@@ -30,9 +30,11 @@ public class AsynchTester {
 
     public void test() throws InterruptedException {
         thread.join();
-        if (error != null)
+        if (error != null) {
             throw error;
-        if (runtimeExc != null)
+        }
+        if (runtimeExc != null) {
             throw runtimeExc;
+        }
     }
 }

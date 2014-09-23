@@ -1,11 +1,12 @@
-(function(TDAR, $) {
+(function (TDAR, $) {
     'use strict';
 
     /**
-     * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changesthe color if mapped properly
+     * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes the color if mapped properly
      * to something
      */
     function _registerCheckboxInfo() {
+        console.log("registerCheckboxInfo called", arguments[0], arguments[1]);
         var $target = $($(this).parents(".datatablecolumn").first());
         var val = $('.columnEncoding:checked', $target).val();
         var square = $target.find("span.columnSquare");
@@ -14,6 +15,7 @@
         var codingInfo = $target.find("div.codingInfo");
         var measurementInfo = $target.find("div.measurementInfo");
 
+        //show the relevant fields in this section based off the choice of column type
         if (val == 'CODED_VALUE' || val == 'UNCODED_VALUE') {
             mapping.show();
         } else {
@@ -39,7 +41,13 @@
             measurementInfo.hide();
         }
 
-        square.removeClass();
+        // Decorate the 'column square' element in this section of the form to indicate the type of column and it's
+        // level of "completeness". We start out by removing all decorations from the indicator, and (potentially)
+        // add them back as we analyze this section.
+        //square.removeClass();
+
+        //workaround for jquery-ui removeClass() bug #9015 (http://bugs.jqueryui.com/ticket/9015)
+        square.removeAttr("class");
 
         square.addClass("columnSquare");
 
@@ -53,7 +61,6 @@
         mapDetail.hide();
 
         if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
-            // TODO: confirm test coverage, then delete this comment.
             $(".columnEncoding[value='MEASUREMENT']", $target).prop('disabled', true);
             $(".columnEncoding[value='COUNT']", $target).prop('disabled', true);
         }
@@ -62,13 +69,12 @@
         var uncoded = false;
         if (val == 'COUNT') {
             square.addClass("count");
+            valid = true;
         } else if (val == 'MEASUREMENT') {
             if (unit != undefined && unit.val() != '') {
                 square.addClass("measurement");
                 valid = true;
             }
-        } else if (ontolog != undefined && ontolog != '') {
-            square.addClass("integration");
         } else if (val == 'CODED_VALUE') {
             // console.log(codingSheetId + " " + isNaN(parseInt(codingSheetId)));
             if (!isNaN(parseInt(codingSheetId))) {
@@ -81,16 +87,17 @@
             valid = true;
         }
 
+        if (ontolog != undefined && ontolog != '') {
+            square.addClass("integration");
+        }
+
         if (map != undefined && map.val() == "true") {
             square.addClass("mapped");
             mapDetail.show();
         }
 
-        if (valid) {
-            square.removeClass('invalid');
-            if (!uncoded) {
-                square.removeClass('uncoded');
-            }
+        if (!valid) {
+            square.addClass("invalid");
         }
 
         var subcat = $target.find(".categorySelect").first();
@@ -123,18 +130,19 @@
 
         var $form = $(formId);
 
+        //Use a plugin if browser doesn't support resizeable textareas
         if (!Modernizr.cssresize) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
 
         // set up ajax calls, no caching
         $.ajaxSetup({
-            cache : false
+            cache: false
         });
 
         TDAR.common.applyWatermarks(document);
 
-        $('#table_select').change(function() {
+        $('#table_select').change(function () {
             window.location = '?dataTableId=' + $(this).val();
         });
 
@@ -155,24 +163,38 @@
         pageInitialized = true;
         TDAR.datasetMetadata.updateSummaryTable();
         // clear all hidden ontology/coding sheet hidden fields to avoid polluting the controller
-        $form.submit(function() {
+        $form.submit(function () {
             $('input', $('.ontologyInfo:hidden')).val('');
             $('input', $('.codingInfo:hidden')).val('');
         });
 
-        $("#fakeSubmitButton").click(function() {
+        $("#fakeSubmitButton").click(function () {
             $("#submitButton").click();
         });
 
         var $window = $(window);
 
-        $("#chooseColumn").change(function(e) {
+        $("#chooseColumn").change(function (e) {
             TDAR.datasetMetadata.gotoColumn($(this));
         });
 
         TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
+    function _pagination(idPrefix) {
+        var $id = $("#recordsPerPage" + idPrefix); 
+        $id.change(function () {
+            var url = window.location.search.replace(/([?&]+)recordsPerPage=([^&]+)/g, "");
+            //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
+            var prefix = "";
+            if (url.indexOf("?") != 0) {
+                prefix = "?";
+            }
+            url = prefix + url + "&recordsPerPage=" + $id.val();
+            window.location = url;
+        });
+    }
+    
     /**
      * Updates the SummaryTable based on column validation
      */
@@ -186,12 +208,14 @@
         $(".mapped_label", $summary).html($("div.datatablecolumn .columnSquare.mapped").length);
         $(".measurement_label", $summary).html($("div.datatablecolumn .columnSquare.measurement").length);
     }
+
     // expose public elements
     TDAR.datasetMetadata = {
-        "init" : _init,
-        "gotoColumn" : _gotoColumn,
-        "updateSummaryTable" : _updateSummaryTable,
-        "registerCheckboxInfo" : _registerCheckboxInfo
+        "init": _init,
+        "gotoColumn": _gotoColumn,
+        "updateSummaryTable": _updateSummaryTable,
+        "registerCheckboxInfo": _registerCheckboxInfo,
+        "initPagination": _pagination
     };
 
 })(TDAR, jQuery);

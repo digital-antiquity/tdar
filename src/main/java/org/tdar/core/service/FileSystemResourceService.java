@@ -9,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.dao.FileSystemResourceDao;
-import org.tdar.struts.action.TdarActionException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -38,16 +37,20 @@ public class FileSystemResourceService {
         return fileSystemResourceDao.loadTemplate(path);
     }
 
-    public List<String> parseWroXML(String prefix) throws TdarActionException {
+    public List<String> parseWroXML(String prefix) {
         return fileSystemResourceDao.parseWroXML(prefix);
     }
 
     public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
         return fileSystemResourceDao.openCreatorInfoLog(filename);
     }
-    
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) throws TdarActionException {
+
+    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
         return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
+    }
+
+    public String getWroDir() {
+        return fileSystemResourceDao.getWroDir();
     }
 
 }

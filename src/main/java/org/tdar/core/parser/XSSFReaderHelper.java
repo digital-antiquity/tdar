@@ -9,7 +9,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -19,7 +19,7 @@ import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.model.StylesTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.utils.MessageHelper;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -77,9 +77,8 @@ public class XSSFReaderHelper {
         } catch (IndexOutOfBoundsException aob) {
             logger.error("{}", aob);
         } catch (ParserConfigurationException e) {
-            throw new RuntimeException(MessageHelper.getMessage("xssfReaderHelpher.sax_parser_broken",e.getMessage()));
-        }
-        finally {
+            throw new TdarRuntimeException("xssfReaderHelpher.sax_parser_broken", e);
+        } finally {
             if (sheetInputStream != null) {
                 IOUtils.closeQuietly(sheetInputStream);
             }

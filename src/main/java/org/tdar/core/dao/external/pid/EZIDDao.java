@@ -9,15 +9,17 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -33,14 +35,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.transform.DcTransformer;
-import org.tdar.utils.MessageHelper;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -48,7 +49,6 @@ import edu.asu.lib.dc.DublinCoreDocument;
  * @author Adam Brin
  * 
  */
-@Service
 public class EZIDDao implements ExternalIDProvider {
 
     // DOCUMENTATION: http://n2t.net/ezid/doc/apidoc.html#operation-get-identifier-metadata
@@ -86,12 +86,12 @@ public class EZIDDao implements ExternalIDProvider {
     public EZIDDao() {
         try {
             assistant.loadProperties("ezid.properties");
-            
+
             URL url = new URL(getDOIProviderHostname());
-            int port = 80;
+            int port = TdarConfiguration.DEFAULT_PORT;
             if (url.getPort() == -1) {
                 if (getDOIProviderHostname().toLowerCase().startsWith(HTTPS)) {
-                    port = 443;
+                    port = TdarConfiguration.HTTPS_PORT_DEFAULT;
                 }
             }
             AuthScope scope = new AuthScope(url.getHost(), port);
@@ -111,7 +111,7 @@ public class EZIDDao implements ExternalIDProvider {
                 StringUtils.isNotBlank(getDOIProviderUsername()) && StringUtils.isNotBlank(getDOIProviderPassword())) {
             return true;
         }
-        logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);
+        logger.warn("a required parameter for the EzidDao was not provided. " + configIssue);
         return false;
     }
 
@@ -153,10 +153,10 @@ public class EZIDDao implements ExternalIDProvider {
         String result = IOUtils.toString(content);
         content.close();
 
-        if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201) {
+        if ((response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) && (response.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED)) {
             logger.error("StatusCode:{}", response.getStatusLine().getStatusCode());
             logger.trace(result);
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_connect",result , authenticationRequest.getRequestLine()));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_connect", Arrays.asList(result, authenticationRequest.getRequestLine().toString()));
         }
         recievedEntity.consumeContent();
         return result;
@@ -244,7 +244,7 @@ public class EZIDDao implements ExternalIDProvider {
 
         logger.trace(result);
         if (!StringUtils.containsIgnoreCase(result, SUCCESS)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("ezidDao.could_not_create_doi",result));
+            throw new TdarRecoverableRuntimeException("ezidDao.could_not_create_doi", Arrays.asList(result));
         }
         return typeMap;
     }
@@ -296,7 +296,7 @@ public class EZIDDao implements ExternalIDProvider {
             }
         }
 
-        if (r.getStatus() != Status.ACTIVE || delete) {
+        if ((r.getStatus() != Status.ACTIVE) || delete) {
             // EZID does not support DELETION, instead SETTING ALL VALUES TO EMPTY
             // responseBuilder.append(DATACITE_CREATOR).append(":").append("\n");
             // responseBuilder.append(DATACITE_RESOURCE_TYPE).append(":").append("\n");
@@ -326,8 +326,9 @@ public class EZIDDao implements ExternalIDProvider {
     }
 
     protected String aNVLEscape(String s) {
-        if (StringUtils.isEmpty(s))
+        if (StringUtils.isEmpty(s)) {
             return "";
+        }
         return s.replace("%", "%25").replace("\n", "%0A").
                 replace("\r", "%0D").replace(":", "%3A");
     }

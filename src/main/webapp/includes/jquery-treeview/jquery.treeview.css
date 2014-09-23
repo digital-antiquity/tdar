@@ -1,3 +1,5 @@
+/* Note: this file has been modified from original. (this seems a safe bet since jquery treeview is abandonware */
+
 .treeview, .treeview ul { 
 	padding: 0;
 	margin: 0;
@@ -67,3 +69,10 @@
 .filetree li.expandable span.folder { background: url(/includes/jquery-treeview/images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(/includes/jquery-treeview/images/file.gif) 0 0 no-repeat; }
 
+
+/* jtd: tweaking presentation issues w/ tdar collections and hierarchical keyword lists using  bootstrap */
+.collection-treeview li a, .treeview li input, .treeview li label{
+	position: relative;
+	bottom: 3px;
+	padding-left: 2px;
+}

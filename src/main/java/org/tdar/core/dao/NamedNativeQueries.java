@@ -6,11 +6,10 @@
  */
 package org.tdar.core.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
@@ -38,7 +37,7 @@ public final class NamedNativeQueries {
         for (int i = 0; i < filenames.size(); i++) {
             filenames.set(i, StringEscapeUtils.escapeSql(filenames.get(i).toLowerCase()));
         }
-        String filenameCheck = "lower(filename)";
+        String filenameCheck = "lower(irfv.filename)";
         if (column.isIgnoreFileExtension()) {
             filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
         }
@@ -54,19 +53,19 @@ public final class NamedNativeQueries {
                 filenameCheck, filenameList, versionList);
     }
 
-    public static String removeDatasetMappings(Project project, Collection<DataTableColumn> columns) {
+    public static String removeDatasetMappings(Long projectId, List<Long> columnIds) {
         StringBuilder sb = new StringBuilder();
-        for (DataTableColumn column : columns) {
+        for (Long columnId : columnIds) {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(column.getId());
+            sb.append(columnId);
         }
 
         String sql = "update information_resource ir_ set mappeddatakeycolumn_id=NULL, mappedDataKeyValue=NULL " +
                 "WHERE ir_.project_id=%s and mappeddatakeycolumn_id in (%s)";
 
-        return String.format(sql, project.getId(), sb.toString());
+        return String.format(sql, projectId, sb.toString());
     }
 
     public static String generateDashboardGraphQuery(Person user, GeneralPermissions permission) {

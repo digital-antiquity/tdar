@@ -59,7 +59,8 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private void chooseFirstBillingAccount() {
         HtmlElement input = null;
-        if (getTdarConfiguration().getInstance().isPayPerIngestEnabled()) {
+        getTdarConfiguration();
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             try {
                 input = getInput("accountId");
             } catch (ElementNotFoundException ex) {
@@ -67,8 +68,9 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         } else {
             assertTrue("there should be no accountId input if pay-per-ingest is enabled", input == null);
         }
-        if (input == null)
+        if (input == null) {
             return;
+        }
 
         // get the 2nd option which is the first billing account
         Iterator<DomElement> options = input.getChildElements().iterator();
@@ -85,7 +87,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public void assertEditPageForInputResult() {
         String url = internalPage.getUrl().toString();
-        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.action.*"));
+        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.*"));
     }
 
     public void fillOutRequiredfields(ResourceType resourceType) {
@@ -162,4 +164,5 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             assertTextPresentInCode("TDAR.maps.defaults.isGeoLocationToBeUsed = false;");
         }
     }
+
 }

@@ -475,7 +475,7 @@ public class TDarODataProducer implements ODataProducer {
     // TODO RR: Keeping things simple for now. Use later.
     @SuppressWarnings("unused")
     private boolean isExpanded(String navigablePropertyName, QueryInfo queryInfo) {
-        if (null == queryInfo || null == queryInfo.expand) {
+        if ((null == queryInfo) || (null == queryInfo.expand)) {
             return false;
         }
         PropertyPathHelper h = new PropertyPathHelper(queryInfo.select, queryInfo.expand);

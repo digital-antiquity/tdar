@@ -7,9 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
@@ -20,7 +22,7 @@ import org.tdar.core.bean.resource.SensoryData;
  * Represents a sensory-data scan.
  * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "sensory_data_scan")
@@ -75,6 +77,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     private String cameraExposureSettings;
 
     @Column(name = "scan_date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date scanDate;
 
     @Column(name = "matrix_applied", nullable = false)

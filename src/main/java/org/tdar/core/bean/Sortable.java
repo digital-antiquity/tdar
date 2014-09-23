@@ -4,8 +4,9 @@ import org.tdar.search.query.SortOption;
 
 /**
  * Allows abstraction for objects that can be sorted.
+ * 
  * @author abrin
- *
+ * 
  */
 public interface Sortable {
 

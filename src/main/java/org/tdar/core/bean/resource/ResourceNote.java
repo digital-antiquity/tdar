@@ -6,12 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Norms;
@@ -21,35 +20,38 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.json.JsonProjectLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
- * <p> ResourceNotes allow for free-text notes about a resource.
+ * <p>
+ * ResourceNotes allow for free-text notes about a resource.
  * 
  * @author Adam Brin
  * @version $Revision$
  */
 
 @Entity
-@Table(name = "resource_note")
-@org.hibernate.annotations.Table( appliesTo="resource_note", indexes = {
-        @Index(name="resid_noteid", columnNames={"resource_id", "id"})})
+@Table(name = "resource_note", indexes = {
+        @Index(name = "resid_noteid", columnList = "resource_id, id") })
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "note", "type" };
 
     // @ManyToOne(optional = false)
     // private Resource resource;
 
-    @Column(length = 5000)
+    @Column(length = FieldLength.FIELD_LENGTH_5000)
     @Field
-    @Length(max = 5000)
+    @Length(max = FieldLength.FIELD_LENGTH_5000)
+    @JsonView(JsonProjectLookupFilter.class)
     private String note;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type", length = FieldLength.FIELD_LENGTH_255)
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    @JsonView(JsonProjectLookupFilter.class)
     private ResourceNoteType type;
 
     @Override
@@ -66,8 +68,9 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     }
 
     public String getNote() {
-        if (note == null)
+        if (note == null) {
             return "";
+        }
         return note;
     }
 
@@ -77,8 +80,9 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @XmlAttribute
     public ResourceNoteType getType() {
-        if (type == null)
+        if (type == null) {
             return ResourceNoteType.GENERAL;
+        }
         return type;
     }
 
@@ -93,7 +97,7 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @Override
     public boolean isValid() {
-        if (type != null && !StringUtils.isEmpty(note)) {
+        if ((type != null) && !StringUtils.isEmpty(note)) {
             return true;
         }
         return false;
@@ -104,8 +108,4 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
         return true;
     }
 
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return super.getIncludedJsonProperties();
-    }
 }

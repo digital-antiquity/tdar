@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -21,27 +22,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.SupportsResource;
 
 /**
  * $Id$
  * 
- * Represents an Ontology in tDAR. There are two ways to access an Ontology, via the URL (getUrl()) and
- * via the filesystem via getFilename()).
+ * OntologyS in tDAR are InformationResources with a collection of OntologyNodeS that can be categorized.
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision $
  */
 @Entity
 @Indexed
-@Table(name = "ontology")
+@Table(name = "ontology", indexes = { @Index(name = "ontology_catvar_id", columnList = "category_variable_id") })
 @XmlRootElement(name = "ontology")
-@org.hibernate.annotations.Table(appliesTo = "ontology", indexes = {@Index(name="ontology_catvar_id", columnNames={"category_variable_id"})})
 public class Ontology extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = -5871337600253105652L;
@@ -52,11 +50,11 @@ public class Ontology extends InformationResource implements SupportsResource {
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
-    private List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
+    private List<OntologyNode> ontologyNodes = new ArrayList<>();
 
-    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<Long, OntologyNode>();
-    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<String, OntologyNode>();
-    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<String, OntologyNode>();
+    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
     private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
         @Override
@@ -85,7 +83,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public Map<Long, OntologyNode> getIdToNodeMap() {
-        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<Long, OntologyNode>();
+        HashMap<Long, OntologyNode> idToNodeMap = new HashMap<>();
         for (OntologyNode node : ontologyNodes) {
             idToNodeMap.put(node.getId(), node);
         }
@@ -99,18 +97,19 @@ public class Ontology extends InformationResource implements SupportsResource {
      */
     public SortedMap<Integer, List<OntologyNode>> toOntologyNodeMap() {
         List<OntologyNode> sortedOntologyNodes = getSortedOntologyNodes();
-        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<Integer, List<OntologyNode>>();
+        TreeMap<Integer, List<OntologyNode>> map = new TreeMap<>();
         for (OntologyNode node : sortedOntologyNodes) {
             Integer intervalStart = node.getIntervalStart();
             String index = node.getIndex();
             for (String indexId : StringUtils.split(index, '.')) {
                 Integer parentId = Integer.valueOf(indexId);
                 // don't include this node if the parent id is the same as this node's interval start
-                if (parentId.equals(intervalStart))
+                if (parentId.equals(intervalStart)) {
                     continue;
+                }
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
-                    children = new ArrayList<OntologyNode>();
+                    children = new ArrayList<>();
                     map.put(parentId, children);
                 }
                 children.add(node);
@@ -121,7 +120,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByName(String name) {
-        if (CollectionUtils.isEmpty(nameMap)) {
+        if (MapUtils.isEmpty(nameMap)) {
             initializeNameAndIriMaps();
         }
         return nameMap.get(name);
@@ -129,14 +128,14 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByIri(String iri) {
-        if (CollectionUtils.isEmpty(iriMap)) {
+        if (MapUtils.isEmpty(iriMap)) {
             initializeNameAndIriMaps();
         }
         return iriMap.get(iri);
     }
 
     private void initializeNameAndIriMaps() {
-        for (OntologyNode node: getOntologyNodes()) {
+        for (OntologyNode node : getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
             iriMap.put(node.getNormalizedIri(), node);
         }
@@ -145,7 +144,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {
-            if (StringUtils.equalsIgnoreCase(node.getDisplayName(),name)) {
+            if (StringUtils.equalsIgnoreCase(node.getDisplayName(), name)) {
                 return node;
             }
         }
@@ -162,7 +161,7 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public List<OntologyNode> getSortedOntologyNodes(Comparator<OntologyNode> comparator) {
-        ArrayList<OntologyNode> sortedNodes = new ArrayList<OntologyNode>(getOntologyNodes());
+        ArrayList<OntologyNode> sortedNodes = new ArrayList<>(getOntologyNodes());
         Collections.sort(sortedNodes, comparator);
         return sortedNodes;
     }

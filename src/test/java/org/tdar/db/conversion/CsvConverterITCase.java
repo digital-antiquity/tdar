@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.utils.MessageHelper;
 
@@ -77,7 +78,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     public void testCsvConverterMalformedFile()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "malformed_csv_dataset.csv"), 505);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         try {
@@ -94,7 +95,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     public void testCsvConverterWordQuotedFile()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "word_formed_csv_dataset.csv"), 504);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
@@ -110,7 +111,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     public void testCsvWithTooManyColumns()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "too_many_columns.tab"), 504);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         Exception ex = null;
@@ -120,7 +121,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
             ex = e;
         }
         assertNotNull(ex);
-        assertEquals(MessageHelper.getMessage("postgresDatabase.datatable_to_long"),ex.getMessage());
+        assertEquals(MessageHelper.getMessage("postgresDatabase.datatable_to_long"), ex.getMessage());
     }
 
     @Test
@@ -128,7 +129,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     public void testCsvConverterWithMultipleTables()
             throws Exception {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(new File(getTestFilePath(), "Workbook1.csv"), 503);
-        File storedFile = filestore.retrieveFile(accessDatasetFileVersion);
+        File storedFile = filestore.retrieveFile(ObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
         converter.execute();
@@ -162,8 +163,8 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("aaaa", rs.getString(1));
                         final Date date = rs.getDate(2);
                         // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
-                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == 2003 - 1900);
-                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == 1 - 1);
+                        assertTrue("Year should be 2003: " + date.getYear(), date.getYear() == (2003 - 1900));
+                        assertTrue("Month should be 1: " + date.getMonth(), date.getMonth() == (1 - 1));
                         assertTrue("Day should be 2: " + date.getDate(), date.getDate() == 2);
                         assertEquals(0, rs.getLong(3));
                         assertTrue(rs.wasNull());

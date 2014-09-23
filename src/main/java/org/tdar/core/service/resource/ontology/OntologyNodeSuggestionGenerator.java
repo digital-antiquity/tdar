@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.CodingRule;
@@ -31,7 +31,6 @@ public class OntologyNodeSuggestionGenerator {
     public int getDefaultAcceptableEditDistance() {
         return defaultAcceptableEditDistance;
     }
-
 
     /**
      * Setup a Map of @link CodingRule values and @link OntologyNode entries based upon the likely matching OntologyNode entries for each unique value. This
@@ -125,6 +124,7 @@ public class OntologyNodeSuggestionGenerator {
 
     /**
      * Calculate the actual similarity of the @link CodingRule value and the @link OntologyNode label.
+     * 
      * @param columnValue
      * @param ontologyLabel
      * @return
@@ -152,6 +152,7 @@ public class OntologyNodeSuggestionGenerator {
 
     /**
      * Calculate the actual similarity of the @link CodingRule value and the @link OntologyNode label. Returns true if there's any similarity (not -1)
+     * 
      * @param columnValue
      * @param ontologyLabel
      * @return

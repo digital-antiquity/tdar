@@ -1,6 +1,6 @@
 package org.tdar.struts.data;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Validatable;
 import org.tdar.utils.Pair;
 
@@ -44,8 +44,9 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
     @Override
     // range is valid if only one value is nonblank (an open-ended range), or if both values are nonblank and start <= end
     public boolean isValid() {
-        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond()))
+        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond())) {
             return false;
+        }
 
         if (StringUtils.isNotBlank(getFirst()) && StringUtils.isNotBlank(getSecond())) {
             return getFirst().compareTo(getSecond()) <= 0;
@@ -55,8 +56,9 @@ public class StringRange extends Pair<String, String> implements Range<String>, 
 
     @Override
     public boolean isInitialized() {
-        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond()))
+        if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond())) {
             return false;
+        }
 
         return true;
     }

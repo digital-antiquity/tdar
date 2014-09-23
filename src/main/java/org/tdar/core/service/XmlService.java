@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -20,16 +22,13 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.proxy.HibernateProxy;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,19 +39,27 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.CreatorInfoLog;
 import org.tdar.core.service.processes.CreatorAnalysisProcess.LogPart;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFile.Type;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -81,8 +88,6 @@ public class XmlService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Class<?>[] jaxbClasses;
-
     @Autowired
     private UrlService urlService;
 
@@ -92,7 +97,13 @@ public class XmlService {
     @Autowired
     private ObfuscationService obfuscationService;
 
-    /** 
+    XMLFilestoreLogger xmlFilestoreLogger;
+
+    public XmlService() throws ClassNotFoundException {
+        xmlFilestoreLogger = new XMLFilestoreLogger();
+    }
+
+    /**
      * Convert the existing object to an XML representation using JAXB
      * 
      * @param object
@@ -101,9 +112,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
-        StringWriter sw = new StringWriter();
-        convertToXML(object, sw);
-        return sw.toString();
+        return xmlFilestoreLogger.convertToXML(object);
     }
 
     /**
@@ -126,12 +135,12 @@ public class XmlService {
             }
         });
 
-        
         return tempFile;
     }
 
     /**
      * Convert an Object to XML via JAXB, but use the writer instead of a String (For writing directly to a file or Stream)
+     * 
      * @param object
      * @param writer
      * @return
@@ -139,23 +148,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
-        if (jaxbClasses == null) {
-            jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
-        }
-
-        // get rid of proxies
-        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
-            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
-        }
-
-        JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getPairedSchemaUrl());
-        // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
-        logger.trace("converting: {}", object);
-        marshaller.marshal(object, writer);
-        return writer;
+        return xmlFilestoreLogger.convertToXML(object, writer);
     }
 
     /**
@@ -167,20 +160,22 @@ public class XmlService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer) throws IOException {
+    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JaxbAnnotationModule());
-        ObjectWriter objectWriter = null;
-        if(logger.isTraceEnabled()) {
-            objectWriter = mapper.writerWithDefaultPrettyPrinter();
-        } else {
-            objectWriter = mapper.writer();
+
+        mapper.registerModules(new JaxbAnnotationModule(), new Hibernate4Module());
+
+        ObjectWriter objectWriter = mapper.writer();
+        if (view != null) {
+            mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+            objectWriter = mapper.writerWithView(view);
         }
         objectWriter.writeValue(writer, object);
     }
 
     /**
      * Convert an object to JSON using JAXB to string
+     * 
      * @param object
      * @return
      * @throws IOException
@@ -188,7 +183,50 @@ public class XmlService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer);
+        convertToJson(object, writer, null);
+        return writer.toString();
+    }
+
+    /*
+     * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
+     * Most commonly used to produce a stream.
+     */
+    @Transactional
+    public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
+        Object wrapper = wrapObjectIfNeeded(object, callback);
+        String result = null;
+        try {
+            result = convertToFilteredJson(wrapper, view);
+        } catch (IOException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            wrapper = wrapObjectIfNeeded(error, callback);
+            try {
+                result = convertToJson(wrapper);
+            } catch (IOException e1) {
+            }
+        } finally {
+            if (result == null) {
+                result = "{error:'unknown'}";
+            }
+        }
+
+        return result;
+
+    }
+
+    private Object wrapObjectIfNeeded(Object object, String callback) {
+        Object wrapper = object;
+        if (StringUtils.isNotBlank(callback)) {
+            wrapper = new JSONPObject(callback, object);
+        }
+        return wrapper;
+    }
+
+    @Transactional
+    public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
+        StringWriter writer = new StringWriter();
+        convertToJson(object, writer, view);
         return writer.toString();
     }
 
@@ -202,15 +240,7 @@ public class XmlService {
      */
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
-        // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
-        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
-            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
-        }
-        JAXBContext jc = JAXBContext.newInstance(object.getClass());
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.marshal(object, document);
-
-        return document;
+        return xmlFilestoreLogger.convertToXML(object, document);
     }
 
     /**
@@ -274,9 +304,9 @@ public class XmlService {
                 break;
         }
         if (rdf == null) {
-            throw new TdarRecoverableRuntimeException("cannot determine whether creator is person or institution");
+            throw new TdarRecoverableRuntimeException("xmlService.cannot_determine_creator");
         }
-        
+
         for (LogPart part : log.getCollaboratorLogPart()) {
             com.hp.hpl.jena.rdf.model.Resource res = model.createResource();
             if (part.getSimpleClassName().equals(INSTITUTION)) {
@@ -301,12 +331,13 @@ public class XmlService {
         }
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEAN), log.getKeywordMean().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEDIAN), log.getKeywordMedian().toString());
-        File dir = new File(TdarConfiguration.getInstance().getCreatorFOAFDir());
-        dir.mkdir();
-        File file = new File(dir, creator.getId() + FOAF_XML);
+
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + FOAF_XML);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
+        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
 
     }
 
@@ -345,5 +376,34 @@ public class XmlService {
             person_.addProperty(FOAF.member, addInstitution(model, baseUrl, institution));
         }
         return person_;
+    }
+
+    /**
+     * Stores the CreatorXML Log in the filestore
+     * 
+     * @param model
+     * @param baseUrl
+     * @param person
+     * @return
+     * @throws Exception
+     */
+    public void generateCreatorLog(Creator creator, CreatorInfoLog log) throws Exception {
+        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
+        convertToXML(log, writer);
+        IOUtils.closeQuietly(writer);
+        FileStoreFile fsf = new FileStoreFile(Type.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
+        TdarConfiguration.getInstance().getFilestore().store(ObjectType.CREATOR, file, fsf);
+
+    }
+
+    public <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(cls);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+        logger.trace("converting: {}", object);
+        marshaller.marshal(object, writer);
+
     }
 }

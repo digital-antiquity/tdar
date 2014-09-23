@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -55,7 +54,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                     continue;
                 }
                 if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("csvCodingSheetParser.null_code_or_term", code, term));
+                    throw new TdarRecoverableRuntimeException("csvCodingSheetParser.null_code_or_term", Arrays.asList(code, term));
                 }
 
                 CodingRule codingRule = new CodingRule();
@@ -72,10 +71,10 @@ public class CsvCodingSheetParser implements CodingSheetParser {
             throw new CodingSheetParserException(e);
         } catch (ArrayIndexOutOfBoundsException e) {
             logger.error("Invalid CSV format for coding sheets.", e);
-            throw new CodingSheetParserException(MessageHelper.getMessage("csvCodingSheetParser.could_not_parse_columns"), e);
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_columns", e);
         }
         if (emptyBecauseOfParseIssues) {
-            throw new CodingSheetParserException(MessageHelper.getMessage("csvCodingSheetParser.could_not_parse_comma"));
+            throw new CodingSheetParserException("csvCodingSheetParser.could_not_parse_comma");
         }
         return codingRules;
     }

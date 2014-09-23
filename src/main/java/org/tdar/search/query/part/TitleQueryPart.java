@@ -1,12 +1,15 @@
 package org.tdar.search.query.part;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.TextProvider;
 
 public class TitleQueryPart extends FieldQueryPart<String> {
 
@@ -28,11 +31,13 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     @Override
     public boolean isEmpty() {
         // we define this as empty if we have no values or if ALL values are blank.
-        if (getFieldValues().isEmpty())
+        if (getFieldValues().isEmpty()) {
             return true;
+        }
         for (String value : getFieldValues()) {
-            if (StringUtils.isNotBlank(value))
+            if (StringUtils.isNotBlank(value)) {
                 return false;
+            }
         }
         return true;
     }
@@ -43,8 +48,9 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     }
 
     protected QueryPart<?> getQueryPart(String value) {
-        if (StringUtils.isBlank(value))
+        if (StringUtils.isBlank(value)) {
             return null;
+        }
 
         QueryPartGroup group = new QueryPartGroup();
         group.setOperator(Operator.OR);
@@ -76,13 +82,15 @@ public class TitleQueryPart extends FieldQueryPart<String> {
     }
 
     @Override
-    public String getDescription() {
-        return MessageHelper.getMessage("titleQueryPart.description", StringUtils.join(getFieldValues(),";"));
+    public String getDescription(TextProvider provider) {
+        List<String> vals = new ArrayList<>();
+        vals.add(StringUtils.join(getFieldValues(), ";"));
+        return provider.getText("titleQueryPart.description", vals);
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml4(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     public String getPrefix() {

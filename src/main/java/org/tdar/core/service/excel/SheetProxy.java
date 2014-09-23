@@ -2,6 +2,7 @@ package org.tdar.core.service.excel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +12,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
-import org.tdar.utils.MessageHelper;
 
 /**
  * A sheet proxy holds context needed to construct one or more sheets; it's goal is to attempt to hide Excel / POI from whatever is writing to it
@@ -84,8 +84,9 @@ public class SheetProxy implements Serializable {
     }
 
     public String getSheetName(int sheetNum) {
-        if (sheetNum == 0)
+        if (sheetNum == 0) {
             return name;
+        }
         return String.format("%s (%s)", name, sheetNum);
     }
 
@@ -94,8 +95,8 @@ public class SheetProxy implements Serializable {
     }
 
     public void setName(String name) {
-        if (workbook != null && workbook.getSheet(name) != null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("sheetProxy.workbook_name_already_exists", name));
+        if ((workbook != null) && (workbook.getSheet(name) != null)) {
+            throw new TdarRecoverableRuntimeException("sheetProxy.workbook_name_already_exists", Arrays.asList(name));
         }
         this.name = name;
     }
@@ -133,8 +134,9 @@ public class SheetProxy implements Serializable {
     }
 
     public SpreadsheetVersion getVersion() {
-        if (workbook instanceof HSSFWorkbook)
+        if (workbook instanceof HSSFWorkbook) {
             return SpreadsheetVersion.EXCEL97;
+        }
         return SpreadsheetVersion.EXCEL2007;
     }
 
@@ -175,13 +177,15 @@ public class SheetProxy implements Serializable {
     }
 
     public void preProcess() {
-        if (preCallback != null)
+        if (preCallback != null) {
             preCallback.apply(workbook);
+        }
     }
 
     public void postProcess() {
-        if (postCallback != null)
+        if (postCallback != null) {
             postCallback.apply(workbook);
+        }
     }
 
     public String getExtension() {

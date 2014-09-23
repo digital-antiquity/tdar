@@ -17,28 +17,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.MessageHelper;
 
+import com.opensymphony.xwork2.TextProvider;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.georss.GMLModuleImpl;
@@ -87,8 +90,9 @@ public class RssService implements Serializable {
 
     /**
      * Types of spatial objects returned by GeoRSS extension;
+     * 
      * @author abrin
-     *
+     * 
      */
     public enum GeoRssMode {
         NONE, POINT, ENVELOPE;
@@ -101,7 +105,7 @@ public class RssService implements Serializable {
     private transient ObfuscationService obfuscationService;
 
     @Autowired
-    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authenticationAndAuthorizationService;
 
     /**
      * Strip invalid characters from a string for XML (low-level ASCII)
@@ -125,6 +129,10 @@ public class RssService implements Serializable {
         return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
+    @CacheEvict(allEntries = true, value = "rssFeed")
+    public void evictRssCache() {
+
+    }
 
     /**
      * Parse a RSS feed
@@ -135,8 +143,10 @@ public class RssService implements Serializable {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
+    @Cacheable(value = "rssFeed")
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
+        logger.debug("requesting rss");
         HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
         // Reading the feed
         SyndFeedInput input = new SyndFeedInput();
@@ -145,7 +155,7 @@ public class RssService implements Serializable {
             SyndFeed feed = input.build(xmlReader);
             result.addAll(feed.getEntries());
         } catch (ParsingFeedException pfe) {
-            // faims are filling up the log files with stack traces that are very distracting, 
+            // faims are filling up the log files with stack traces that are very distracting,
             // simply because their feed isn't parsing correctly.
             logger.warn(pfe.getMessage());
         }
@@ -165,18 +175,21 @@ public class RssService implements Serializable {
      */
     @SuppressWarnings({ "unused", "unchecked" })
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
-            boolean includeEnclosures) throws IOException, FeedException {
+            boolean includeEnclosures, TextProvider provider) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType(ATOM_1_0);
 
-        feed.setTitle(MessageHelper.getMessage("rssService.title",TdarConfiguration.getInstance().getSiteAcronym() , cleanStringForXML(handler.getSearchTitle())));
+        List<Object> vals = new ArrayList<>();
+        vals.add(TdarConfiguration.getInstance().getSiteAcronym());
+        vals.add(cleanStringForXML(handler.getSearchTitle()));
+        feed.setTitle(provider.getText("rssService.title", vals));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(handler.getRecordsPerPage());
         osm.setStartIndex(handler.getStartRecord());
         osm.setTotalResults(handler.getTotalRecords());
 
         Link link = new Link();
-        link.setHref(urlService.getBaseUrl() + INCLUDES_OPENSEARCH_XML);
+        link.setHref(UrlService.getBaseUrl() + INCLUDES_OPENSEARCH_XML);
         link.setType(APPLICATION_OPENSEARCHDESCRIPTION_XML);
         osm.setLink(link);
         List<Module> modules = feed.getModules();
@@ -209,12 +222,14 @@ public class RssService implements Serializable {
      * @param resource_
      * @return
      */
-    private <I extends Indexable> SyndEntry createRssEntryForResource(SearchResultHandler<I> handler, GeoRssMode mode, boolean includeEnclosures, List<SyndEntry> entries,
+    private <I extends Indexable> SyndEntry createRssEntryForResource(SearchResultHandler<I> handler, GeoRssMode mode, boolean includeEnclosures,
+            List<SyndEntry> entries,
             I resource_) {
-        if (resource_ instanceof Viewable && !((Viewable) resource_).isViewable())
+        if ((resource_ instanceof Viewable) && !((Viewable) resource_).isViewable()) {
             return null;
+        }
         if (resource_ instanceof Obfuscatable) {
-            obfuscationService.obfuscate((Obfuscatable)resource_,handler.getAuthenticatedUser());
+            obfuscationService.obfuscate((Obfuscatable) resource_, handler.getAuthenticatedUser());
         }
         SyndEntry entry = new SyndEntryImpl();
         if (resource_ instanceof OaiDcProvider) {
@@ -239,13 +254,12 @@ public class RssService implements Serializable {
                     entry.setAuthors(authors);
                 }
 
-                
                 boolean hasRestrictions = false;
                 if (includeEnclosures) {
                     hasRestrictions = addFileEnclosures(handler, resource_, entry, resource);
                 }
 
-                if (mode != GeoRssMode.NONE ) {
+                if (mode != GeoRssMode.NONE) {
                     addGeoRssLatLongBox(mode, entry, resource, hasRestrictions);
                 }
             }
@@ -254,13 +268,14 @@ public class RssService implements Serializable {
             entry.setPublishedDate(oaiResource.getDateCreated());
             entries.add(entry);
         } else {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("rssService.cannot_generate_rss"));
+            throw new TdarRecoverableRuntimeException("rssService.cannot_generate_rss");
         }
         return entry;
     }
 
     /**
      * Add file Enclosures to a Entry for a @link Resource
+     * 
      * @param handler
      * @param includeEnclosures
      * @param resource_
@@ -299,7 +314,7 @@ public class RssService implements Serializable {
         /*
          * If LatLong is not Obfuscated and we don't have confidential files then ...
          */
-        if (latLong != null && !latLong.isObfuscated() && !hasRestrictions) {
+        if ((latLong != null) && !latLong.isObfuscated() && !hasRestrictions) {
             GeoRSSModule geoRss = new GMLModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
                 geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
@@ -312,7 +327,6 @@ public class RssService implements Serializable {
         }
     }
 
-
     /**
      * Add an enclosure
      * 
@@ -321,11 +335,12 @@ public class RssService implements Serializable {
      * @param version
      */
     @SuppressWarnings("unchecked")
-    private void addEnclosure(Person user, SyndEntry entry, InformationResourceFileVersion version) {
-        if (version == null)
+    private void addEnclosure(TdarUser user, SyndEntry entry, InformationResourceFileVersion version) {
+        if (version == null) {
             return;
-        if (user != null && authenticationAndAuthorizationService.canDownload(version, user)) {
-            logger.info("allowed:" + version);
+        }
+        if ((user != null) && authenticationAndAuthorizationService.canDownload(version, user)) {
+            logger.trace("allowed: {}", version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());

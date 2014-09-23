@@ -16,7 +16,7 @@ import freemarker.template.Configuration;
  * Enables the use of Freemarker for non-ftl files, such as emails
  * 
  * @author jtdevos
- *
+ * 
  */
 @Service
 public class FreemarkerService {
@@ -30,7 +30,7 @@ public class FreemarkerService {
     private FileSystemResourceDao fileDao;
 
     /**
-     * Given a template name and an object model, render the FTL to the string. 
+     * Given a template name and an object model, render the FTL to the string.
      * 
      * @param templateName
      * @param dataModel

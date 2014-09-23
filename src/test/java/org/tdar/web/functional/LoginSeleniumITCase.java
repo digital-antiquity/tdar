@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 /**
  * This is a rewrite of org.tdar.web.LoginWebITCase.
@@ -32,13 +32,13 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Test
     public void testAbstractLogin() {
-        assertTrue(getText().contains("Welcome back,"));
+        assertTrue(getText().contains("Welcome"));
     }
 
     @Test
     public void testSecondLogin() {
         gotoPage("/login");
-        assertTrue(getText().contains("Featured Content"));
+        assertTrue(getText().contains("test user's Dashboard"));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
         logout();
         login("BADUSERNAME", "BADPASSWORD");
         logger.trace(getDom());
-        assertTrue(getDom().contains(AuthenticationResult.INVALID_PASSWORD.getMessage()));
+        assertTrue(getDom().contains(AuthenticationResultType.INVALID_PASSWORD.getMessage()));
         assertFalse(getText().contains("Your submitted projects"));
     }
 

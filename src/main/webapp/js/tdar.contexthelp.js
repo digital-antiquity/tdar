@@ -1,7 +1,7 @@
 /**
  * Contextual help service.
  */
-TDAR.contexthelp = (function() {
+TDAR.contexthelp = (function () {
     "use strict";
 
     /**
@@ -43,22 +43,22 @@ TDAR.contexthelp = (function() {
             console.error("unable to bind tooltip - no tooltip element or tooltipcontent found");
         }
         var $notice = $("#notice:visible");
-        if ($notice.length > 0 ) {
+        if ($notice.length > 0) {
             var noteOff = $notice.offset();
             $notice.offset({
-                left : noteOff.left,
-                top : fieldOff.top
+                left: noteOff.left,
+                top: fieldOff.top
             });
-        
+
             $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
             //hack: if h2 in content, move it out.
             $notice.prepend($('#noticecontent h2').first().remove());
             $targetElem.popover("destroy");
         } else {
             $targetElem.popover({
-                placement:'top',
-                trigger:'hover',
-                html:true,
+                placement: 'top',
+                trigger: 'hover',
+                html: true,
                 'title': label,
                 'content': content
             });
@@ -71,12 +71,14 @@ TDAR.contexthelp = (function() {
      * @param form
      */
     function initializeTooltipContent(form) {
-        if(typeof form === "undefined") return;
-        $(form).on("mouseenter focusin", "[data-tooltipcontent]",  function() {
+        if (typeof form === "undefined") {
+            return;
+        }
+        $(form).on("mouseenter focusin", "[data-tooltipcontent]", function () {
             setToolTipContents(this);
         });
     }
-    
+
     return {
         initializeTooltipContent: initializeTooltipContent
     };

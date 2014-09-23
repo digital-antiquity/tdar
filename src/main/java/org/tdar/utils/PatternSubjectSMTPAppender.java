@@ -12,7 +12,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -48,8 +48,9 @@ public class PatternSubjectSMTPAppender extends SMTPAppender {
             sbuf.append("this ERROR occurred on: " + host + "\r\n");
 
             String t = layout.getHeader();
-            if (t != null)
+            if (t != null) {
                 sbuf.append(t);
+            }
             int len = cb.length();
             for (int i = 0; i < len; i++) {
                 // sbuf.append(MimeUtility.encodeText(layout.format(cb.get())));
@@ -74,8 +75,9 @@ public class PatternSubjectSMTPAppender extends SMTPAppender {
                 }
             }
             t = layout.getFooter();
-            if (t != null)
+            if (t != null) {
                 sbuf.append(t);
+            }
             part.setContent(sbuf.toString(), layout.getContentType());
 
             Multipart mp = new MimeMultipart();

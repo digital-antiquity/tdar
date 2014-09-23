@@ -13,16 +13,16 @@ import static org.junit.Assert.assertTrue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.service.AccountService;
+import org.tdar.core.service.billing.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.BillingAccountController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
@@ -39,16 +39,6 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
 
     @Autowired
     AccountService accountService;
-
-    public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
-        controller.setId(id);
-        controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
-        if (controller instanceof AbstractInformationResourceController) {
-            ((AbstractInformationResourceController<?>) controller).loadInformationResourceProperties();
-        }
-    }
 
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();
@@ -70,7 +60,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         controller.setNumberOfFiles(numberOfFiles);
         controller.setNumberOfMb(numberOfMb);
         try {
-            assertEquals(TdarActionSupport.SUCCESS, controller.createCouponCode());
+            assertEquals(Action.SUCCESS, controller.createCouponCode());
         } catch (Exception e) {
             logger.warn("{}", e);
         }
@@ -81,7 +71,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.markFinal();
         genericService.saveOrUpdate(invoice);
-        genericService.synchronize();
+        evictCache();
         logger.info("{}", invoice);
 
         assertTrue(invoice.getNumberOfFiles() > 0);
@@ -96,7 +86,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         accountService.updateQuota(controller.getAccount());
         try {
             logger.info("saving account");
-            assertEquals(TdarActionSupport.SUCCESS, controller.save());
+            assertEquals(Action.SUCCESS, controller.save());
         } catch (Exception e) {
             logger.error("exception : {}", e);
             seen = true;

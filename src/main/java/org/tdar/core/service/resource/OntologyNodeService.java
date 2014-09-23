@@ -46,6 +46,7 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
 
     /**
      * Find all child nodes of the specified @link OntologyNode entries.
+     * 
      * @param selectedOntologyNodes
      * @return
      */
@@ -56,6 +57,7 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
 
     /**
      * Find all @link Dataset Resources that are mapped to the specified @link OntologyNode
+     * 
      * @param node
      * @return
      */
@@ -65,6 +67,7 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
 
     /**
      * Find the parent @link OntologyNode of the specified node
+     * 
      * @param node
      * @return
      */

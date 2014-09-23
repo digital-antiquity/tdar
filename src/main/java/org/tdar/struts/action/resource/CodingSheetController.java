@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
@@ -22,9 +25,11 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 /**
@@ -48,6 +53,9 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     public static final String MAPPING = "mapping";
 
     private static final long serialVersionUID = 377533801938016848L;
+
+    @Autowired
+    private transient CodingSheetService codingSheetService;
 
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
@@ -74,7 +82,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
 
-        getCodingSheetService().reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
+        codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
 
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();
@@ -106,7 +114,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
 
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
-        OntologyNodeSuggestionGenerator generator  = new OntologyNodeSuggestionGenerator();
+        OntologyNodeSuggestionGenerator generator = new OntologyNodeSuggestionGenerator();
         suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
@@ -114,10 +122,13 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     }
 
     @WriteableSession
+    @PostOnly
     @SkipValidation
-    @Action(value = SAVE_MAPPING, results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
-            @Result(name = INPUT, location = "mapping.ftl") })
+    @Action(value = SAVE_MAPPING,
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {
@@ -159,7 +170,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         this.setPersistable(codingSheet);
     }
 
-
     @Override
     public Set<String> getValidFileExtensions() {
         return getAnalyzer().getExtensionsForType(ResourceType.CODING_SHEET);
@@ -195,5 +205,18 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     public void setOntology(Ontology ontology) {
         this.ontology = ontology;
+    }
+
+    public boolean isOkToMapOntology() {
+        Ontology defaultOntology = getPersistable().getDefaultOntology();
+        if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
+            getLogger().debug("cannot map, ontology issues, null or transient");
+            return false;
+        }
+        if (CollectionUtils.isEmpty(getPersistable().getCodingRules()) || CollectionUtils.isNotEmpty(getPersistable().getFilesWithProcessingErrors())) {
+            getLogger().debug("cannot map, coding sheet has errors or no rules");
+            return false;
+        }
+        return true;
     }
 }

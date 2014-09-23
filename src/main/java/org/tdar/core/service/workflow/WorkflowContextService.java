@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
@@ -85,7 +85,6 @@ public class WorkflowContextService {
                     // this should be a no-op; but just in case; the resource shouldn't be on the session to begin with
                     // FIXME: look at removing
                     genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                    logger.info("resource: ", ctx.getTransientResource());
                     logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
                     datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                     genericDao.saveOrUpdate(dataset);

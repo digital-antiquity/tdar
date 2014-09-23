@@ -12,12 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
- * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction. 
+ * an Activity + quantity for a financial transaction. Multiple activities may be associated with a single financial transaction.
  * 
  */
 @Entity
@@ -51,7 +49,7 @@ public class BillingItem extends Base implements Validatable {
     }
 
     public Integer getQuantity() {
-        if (quantity == null || quantity < 1) {
+        if ((quantity == null) || (quantity < 1)) {
             return 0;
         }
         return quantity;
@@ -62,20 +60,18 @@ public class BillingItem extends Base implements Validatable {
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
         if (getActivity() == null) {
-            throw new TdarValidationException(MessageHelper.getMessage("billingItem.specify_activity"));
+            throw new TdarValidationException("billingItem.specify_activity");
         }
         if (getQuantity() < 1) {
-            throw new TdarValidationException(MessageHelper.getMessage("billingItem.non_zero_value"));
+            throw new TdarValidationException("billingItem.non_zero_value");
         }
         return true;
     }
 
     @Override
-    @JSONTransient
     @XmlTransient
     public boolean isValid() {
         return isValidForController();

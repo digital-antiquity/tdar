@@ -3,7 +3,6 @@ package org.tdar.core.bean.coverage;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
 /**
  * @author Adam Brin
@@ -38,7 +37,7 @@ public class LatLongObfuscationTest {
     @SuppressWarnings("static-method")
     @Test
     public void testWrappingLong() {
-        double two = LatitudeLongitudeBox.MAX_LONGITUDE - LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2;
+        double two = LatitudeLongitudeBox.MAX_LONGITUDE - (LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2);
         double result = LatitudeLongitudeBox.randomizeIfNeedBe(LatitudeLongitudeBox.MAX_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " > " + two, result < two);
     }
@@ -46,7 +45,7 @@ public class LatLongObfuscationTest {
     @SuppressWarnings("static-method")
     @Test
     public void testWrappingLong2() {
-        double two = LatitudeLongitudeBox.MIN_LONGITUDE + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2;
+        double two = LatitudeLongitudeBox.MIN_LONGITUDE + (LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2);
         double result = LatitudeLongitudeBox.randomizeIfNeedBe(LatitudeLongitudeBox.MIN_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE);
         assertTrue("result:" + result + " < " + two, result > two);
     }

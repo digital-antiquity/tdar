@@ -81,7 +81,7 @@ public class PaginationHelper {
             }
 
             minimumPageNumber = currentPage - currentPageIndex;
-            maximumPageNumber = minimumPageNumber + windowSize - 1;
+            maximumPageNumber = (minimumPageNumber + windowSize) - 1;
         }
 
         padding = Integer.toString(maximumPageNumber).length();
@@ -164,8 +164,8 @@ public class PaginationHelper {
 
     public int getLastItem() {
         int firstItem = firstItemOnPage(currentPage);
-        int lastItem = firstItem + itemsPerPage - 1;
-        if (lastItem > totalNumberOfItems - 1) {
+        int lastItem = (firstItem + itemsPerPage) - 1;
+        if (lastItem > (totalNumberOfItems - 1)) {
             lastItem = totalNumberOfItems - 1;
         }
         return lastItem;

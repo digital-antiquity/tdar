@@ -83,9 +83,10 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
             testers[i].start();
         }
 
-        for (AsynchTester tester : testers)
+        for (AsynchTester tester : testers) {
             if (tester != null) {
                 tester.test();
             }
+        }
     }
 }

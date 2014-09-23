@@ -27,7 +27,7 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -35,7 +35,6 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.DateRange;
 import org.tdar.utils.MessageHelper;
 
@@ -45,12 +44,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
-
-    @Override
-    @Autowired
-    public TdarActionSupport getController() {
-        return controller;
-    }
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -125,7 +118,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
-        
+
         setupTestDocuments();
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         doSearch(resourceTitle);
@@ -281,6 +274,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testCalDateSearchPhrase() {
+        controller = generateNewInitializedController(AdvancedSearchController.class);
         setResourceTypes(ResourceType.DOCUMENT, ResourceType.IMAGE);
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
         firstGroup().getCoverageDates().add(cd);
@@ -467,7 +461,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         controller.setId(expectedId);
         controller.search();
         assertEquals("expecting only one result", 1, controller.getResults().size());
-        Resource resource = (Resource) controller.getResults().iterator().next();
+        Resource resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());
     }
 
@@ -494,11 +488,11 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         DateTimeZone dtz = DateTimeZone.forID("GMT");
 
         // first create two documents with two separate create dates
-        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@mailinator.com", ""));
+        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.net", ""));
         DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
         document1.setDateCreated(dm1.toDate());
 
-        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@mailinator.com", ""));
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.net", ""));
         DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
         document2.setDateCreated(dm2.toDate());
 

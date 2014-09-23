@@ -1,5 +1,7 @@
 package org.tdar.web;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -10,8 +12,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.URLConstants;
+import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -29,20 +32,20 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user124");
-        testLogin(personmap, true);
-        assertTextPresent("Create a new project");
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH);
+        assertTextPresent("Start a new Project");
 
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        // setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         assertTrue(accountId != "-1");
 
-        createDocumentAndUploadFile("my first document");
-        createDocumentAndUploadFile("my second document");
+        createDocumentAndUploadFile("my first document", Long.parseLong(accountId));
+        createDocumentAndUploadFile("my second document", Long.parseLong(accountId));
         gotoPage("/document/add");
         assertTextPresent("What would you like to put into tDAR");
         gotoPage("/resource/add");
@@ -55,48 +58,55 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     public void testCartWithCoupon() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user1124");
-        testLogin(personmap, true);
-        assertTextPresent("Create a new project");
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH);
+        assertTextPresent("Start a new Project");
 
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        // setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         assertTrue(accountId != "-1");
         logger.info(getCurrentUrlPath());
-
+        gotoPage("/billing/" + accountId);
         setInput("numberOfFiles", "1");
         submitForm("Create Voucher");
+
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
-        logger.info("=======================================================\n" + code);
-        gotoPage("/cart/add");
+
+        logger.info("coupon code is:" + code);
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfFiles", "1");
         setInput("code", code);
         submitForm();
-        invoiceId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL);
 
+        //sanity check: after submitting the cart form we should wind up on the review page.
+        assertThat(getCurrentUrlPath(), containsString("/review"));
+
+        accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         gotoPage("/logout");
     }
+
+
 
     @Test
     public void testAccountListWhenEditingAsAdmin() throws Exception {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw123");
-        testLogin(personmap, true);
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH);
 
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountName = "loblaw account";
-        String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
+        logger.debug("curernt page:{}", getCurrentUrlPath());
+        // setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
 
-        createDocumentAndUploadFile("my first document");
+        createDocumentAndUploadFile("my first document", Long.parseLong(accountId));
         logger.debug("page url is: {}", internalPage.getUrl());
 
         Long docid = extractTdarIdFromCurrentURL();
@@ -106,7 +116,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
 
         gotoPage("/document/" + docid + "/edit");
-        assertTextPresent(accountName);
+        assertTextPresent("Default account for");
     }
 
     @Test
@@ -116,14 +126,14 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
      * even if the billing account has plenty of space remaining.
      * @throws Exception
      */
-    public void testUploadOnSecondEditProperAccountDecriment() throws Exception {
+    public void testUploadOnSecondEditProperAccountDecrement() throws Exception {
         // create 2 accounts w/ 10 files & 4x the MB that we need
         File file = new File(TestConstants.TEST_DOCUMENT);
         int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234");
-        testLogin(personmap, true);
-
+        // personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
         // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);
@@ -137,13 +147,17 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     }
 
     public int createNewAccountWithInvoice(String accountName, int files, int mb) throws Exception {
-        gotoPage("/cart/add");
+        gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
+        logger.debug("about to submit form:{}", getForm());
         submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
+        setInputIfExists("invoice.paymentMethod", "CREDIT_CARD");
+        setInputIfExists("account.id", "-1");
+        setInputIfExists("account.name", "generated account (2)");
+        logger.debug(getCurrentUrlPath());
+        logger.debug(getPageText());
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
         return Integer.parseInt(accountId);
     }
 
@@ -157,7 +171,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("document.description", "Abstract");
         setInput("document.date", "2012");
         setInput("projectId", TestConstants.NO_ASSOCIATED_PROJECT);
-        setInput("accountId", accountId);
+        setInputIfExists("accountId", Integer.toString(accountId));
         setInput("status", Status.DRAFT);
         submitForm();
         String url = getCurrentUrlPath();
@@ -168,7 +182,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         clickLinkWithText("edit");
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, filename);
-        setInput("accountId", accountId);
+        setInputIfExists("accountId", Integer.toString(accountId));
         submitForm();
 
         // make sure we're on the view page

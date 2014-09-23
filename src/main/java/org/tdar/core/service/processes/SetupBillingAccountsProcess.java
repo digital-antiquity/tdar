@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +16,16 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 
@@ -39,7 +40,7 @@ import org.tdar.struts.data.PricingOption;
  */
 
 @Component
-public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
+public class SetupBillingAccountsProcess extends ScheduledBatchProcess<TdarUser> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -50,6 +51,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Autowired
     private transient AccountService accountService;
+
+    @Autowired
+    private transient InvoiceService invoiceService;
 
     @Autowired
     private transient EntityService entityService;
@@ -66,13 +70,13 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     @Override
-    public Class<Person> getPersistentClass() {
-        return Person.class;
+    public Class<TdarUser> getPersistentClass() {
+        return TdarUser.class;
     }
 
     @Override
     public List<Long> findAllIds() {
-        return new ArrayList<Long>(entityService.findAllContributorIds());
+        return new ArrayList<>(entityService.findAllContributorIds());
     }
 
     @Override
@@ -87,23 +91,23 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         }
         int endIndex = Math.min(queue.size(), 100);
         List<Long> sublist = queue.subList(0, endIndex);
-        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+        ArrayList<Long> batch = new ArrayList<>(sublist);
         sublist.clear();
         logger.trace("batch {}", batch);
         return resourceService.findAll(Resource.class, batch);
     }
 
     @Override
-    public void process(Person person) {
-        List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
+    public void process(TdarUser person) {
+        List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         BillingActivity oneFileActivity = null;
         BillingActivity oneMbActivity = null;
         for (BillingActivity activity : activeBillingActivities) {
-            if (activity.getEnabled() == true && !activity.isProduction()) {
-                if (activity.getNumberOfFiles() == 1L && activity.getNumberOfMb() == 0L) {
+            if ((activity.getEnabled() == true) && !activity.isProduction()) {
+                if ((activity.getNumberOfFiles() == 1L) && (activity.getNumberOfMb() == 0L)) {
                     oneFileActivity = activity;
                 }
-                if (activity.getNumberOfFiles() == 0L && activity.getNumberOfMb() == 1L) {
+                if ((activity.getNumberOfFiles() == 0L) && (activity.getNumberOfMb() == 1L)) {
                     oneMbActivity = activity;
                 }
             }
@@ -148,14 +152,14 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
-            PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
-            PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
-            PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
-            logger.info("****** RE : " + re.toString());
-            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), properName, option, option2, option3, re.getFilesUsed(),
-                    re.getResourcesUsed(),
-                    re.getSpaceUsedInMb()));
-            List<BillingItem> items = new ArrayList<BillingItem>();
+            PricingOption option = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
+            PricingOption option2 = invoiceService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+            PricingOption option3 = invoiceService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
+            logger.info("****** RE : {}", re.toString());
+            logger.info("{}|{}|{}|{}|{}|{}|{}|{}",
+                    person.getId(), properName, option, option2, option3, re.getFilesUsed(),
+                    re.getResourcesUsed(), re.getSpaceUsedInMb());
+            List<BillingItem> items = new ArrayList<>();
             logger.info(" {}  {} ", Long.valueOf(spaceUsedInMb).intValue(), Long.valueOf(filesUsed).intValue());
             items.add(new BillingItem(oneMbActivity, Long.valueOf(spaceUsedInMb).intValue()));
             items.add(new BillingItem(oneFileActivity, Long.valueOf(filesUsed).intValue()));
@@ -196,7 +200,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 
 }

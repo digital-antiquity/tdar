@@ -18,7 +18,6 @@
 </#if>
  /> 
 </#if>
-<#-- FIXME: TDAR-3542: rename listKeywords to just 'list' -->
 <#--render a HierarchicalKeyword object as a 'treeview' widget with checkboxes at each node
     @param node:HierarchicalKeyword the keyword object that should serve as the "root" node
     @param name:string  name of valuestack entry that contains list<long> keyword.id values. For

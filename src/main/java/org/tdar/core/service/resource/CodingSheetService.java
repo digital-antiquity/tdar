@@ -10,11 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,7 @@ import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
+import org.tdar.filestore.Filestore.ObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
@@ -77,8 +77,9 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         InformationResourceFileVersion toProcess = files.iterator().next();
         if (files.size() > 1) {
             for (InformationResourceFileVersion file : files) {
-                if (file.isArchival())
+                if (file.isArchival()) {
                     toProcess = file;
+                }
             }
         }
         // should always be 1 based on the check above
@@ -87,7 +88,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             parseUpload(codingSheet, toProcess);
             saveOrUpdate(codingSheet);
         } catch (Throwable e) {
-            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), ExceptionUtils.getFullStackTrace(e)));
+            ctx.getExceptions().add(new ExceptionWrapper(e.getMessage(), e));
             ctx.setErrorFatal(true);
             ctx.setProcessedSuccessfully(false);
             getDao().saveOrUpdate(toProcess.getInformationResourceFile());
@@ -98,7 +99,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
     /*
      * Parses a coding sheet file and adds it to the coding sheet. Part of the Post-Workflow process, and @see ingestCodingSheet; exposed for testing
      */
-   @Transactional
+    @Transactional
     protected void parseUpload(CodingSheet codingSheet, InformationResourceFileVersion version)
             throws IOException, CodingSheetParserException {
         // FIXME: ensure that this is all in one transaction boundary so if an exception occurs
@@ -110,7 +111,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         Set<String> duplicates = new HashSet<String>();
         List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
         try {
-            stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(version));
+            stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, version));
             incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
             Set<String> uniqueSet = new HashSet<String>();
             for (CodingRule rule : incomingCodingRules) {
@@ -122,11 +123,12 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         } catch (Exception e) {
             throw new CodingSheetParserException(MessageHelper.getMessage("codingSheet.could_not_parse_unknown"));
         } finally {
-            if (stream != null)
+            if (stream != null) {
                 IOUtils.closeQuietly(stream);
+            }
         }
         logger.debug("{} rules found, {} duplicates", incomingCodingRules.size(), duplicates.size());
-        
+
         if (CollectionUtils.isNotEmpty(duplicates)) {
             throw new CodingSheetParserException("codingSheet.duplicate_keys", duplicates);
         }
@@ -143,15 +145,17 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         getDao().saveOrUpdate(codingSheet);
     }
 
-   /*
-    * Factory wrapper to identify a coding sheet parser for a given coding sheet return it
-    * @return CodingSheetParser parser
-    * @throws CodingSheetParserException when a parser cannot be found
-    */
+    /*
+     * Factory wrapper to identify a coding sheet parser for a given coding sheet return it
+     * 
+     * @return CodingSheetParser parser
+     * 
+     * @throws CodingSheetParserException when a parser cannot be found
+     */
     private CodingSheetParser getCodingSheetParser(String filename) throws CodingSheetParserException {
         CodingSheetParser parser = CodingSheetParserFactory.getInstance().getParser(filename);
         if (parser == null) {
-            throw new CodingSheetParserException(MessageHelper.getMessage("codingSheet.coul_not_parse", filename));
+            throw new CodingSheetParserException("codingSheet.could_not_parse", Arrays.asList(filename));
         }
         return parser;
     }
@@ -167,7 +171,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         }
 
         public CodingSheetParser getParser(String filename) {
-            if (filename == null || filename.isEmpty()) {
+            if ((filename == null) || filename.isEmpty()) {
                 return null;
             }
             GenericColumnarDataWorkflow workflow = new GenericColumnarDataWorkflow();
@@ -188,8 +192,9 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
      */
     @Transactional
     public void reconcileOntologyReferencesOnRulesAndDataTableColumns(CodingSheet codingSheet, Ontology ontology) {
-        if (ontology == null && codingSheet.getDefaultOntology() == null)
+        if ((ontology == null) && (codingSheet.getDefaultOntology() == null)) {
             return;
+        }
 
         if (ObjectUtils.notEqual(ontology, codingSheet.getDefaultOntology())) {
             if (Persistable.Base.isNullOrTransient(ontology)) {

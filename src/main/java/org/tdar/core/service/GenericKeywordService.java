@@ -1,13 +1,14 @@
 package org.tdar.core.service;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -28,7 +30,6 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /*
@@ -58,6 +59,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find all Approved keywords (controlled) from the keyword cache
+     * 
      * @param cls
      * @return
      */
@@ -71,6 +73,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find all @link HierarchicalKeyword entries that are children of the specified class
+     * 
      * @param cls
      * @param keyword
      * @return
@@ -82,6 +85,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find or create a set of keywords by label
+     * 
      * @see #findOrCreateByLabel(Class, String)
      * 
      * @param cls
@@ -114,27 +118,35 @@ public class GenericKeywordService extends GenericService {
      */
     @Transactional(readOnly = true)
     public <K extends Keyword> K findByLabel(Class<K> cls, String label) {
-        if (label == null)
+        if (label == null) {
             return null;
+        }
         return genericKeywordDao.findByLabel(cls, label);
     }
-    
+
     /**
      * Find or Create a keyword of specified class by Label
+     * 
      * @param cls
      * @param label
      * @return
      */
     @Transactional(readOnly = false)
     public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label) {
-        if (label == null)
+        if (StringUtils.isBlank(label)) {
             return null;
+        }
+        // trim and strip quotes
+        label = label.trim();
+        if (label.startsWith("\"") && label.endsWith("\"")) {
+            label = label.substring(1, label.length() - 1);
+        }
         K keyword = genericKeywordDao.findByLabel(cls, label);
         if (keyword == null) {
             try {
                 keyword = cls.newInstance();
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.could_not_create_class", cls));
+                throw new TdarRecoverableRuntimeException("error.could_not_create_class", Arrays.asList(cls));
             }
             keyword.setLabel(label);
             genericKeywordDao.save(keyword);
@@ -146,6 +158,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get uncontrolled Culture keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -155,6 +168,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get controlled Culture keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -164,6 +178,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Geographic keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -173,6 +188,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get InvestigationType keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -182,6 +198,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Material keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -191,6 +208,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get Other keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -200,6 +218,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get SiteName keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -209,6 +228,7 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Get controlled SiteType Keyword occurrence stats
+     * 
      * @return
      */
     @Transactional
@@ -247,12 +267,31 @@ public class GenericKeywordService extends GenericService {
 
     /**
      * Find the Authority version of a @link Keyword based on the duplicate
+     * 
      * @param kwd
      * @return
      */
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         return genericKeywordDao.findAuthority(kwd);
+    }
+
+    @Transactional(readOnly = false)
+    public void saveKeyword(String label, String description, Keyword keyword) {
+        genericKeywordDao.markUpdatable(keyword);
+        keyword.setLabel(label);
+        keyword.setDefinition(description);
+        saveOrUpdate(keyword);
+    }
+
+    @Transactional(readOnly = true)
+    public Number countActiveKeyword(KeywordType type, boolean controlled) {
+        return genericKeywordDao.countActiveWithStatus(type, controlled);
+    }
+
+    @Transactional(readOnly = true)
+    public Number countActiveKeyword(KeywordType type) {
+        return genericKeywordDao.countActiveWithStatus(type, null);
     }
 
 }

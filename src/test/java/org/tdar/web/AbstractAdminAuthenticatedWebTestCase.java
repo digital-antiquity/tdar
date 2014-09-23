@@ -7,8 +7,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 
@@ -33,10 +36,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         for (int i = 0; i < someResources.size(); i++) {
             Resource resource = someResources.get(i);
             // FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax. fix it so that it can.
-            String fieldName = "resources[" + i + "].id";
+            String fieldName = "toAdd[" + i + "]";
             String fieldValue = "" + resource.getId();
             logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
-            createInput("hidden", "resources.id", fieldValue);
+            createInput("hidden", fieldName, fieldValue);
         }
         submitForm();
     }
@@ -47,10 +50,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         return somedocs;
     }
 
-    protected List<Person> getSomeUsers() {
+    protected List<TdarUser> getSomeUsers() {
         // let's only get authorized users
-        List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers();
-        List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10, allRegisteredUsers.size()));
+        List<TdarUser> allRegisteredUsers = entityService.findAllRegisteredUsers();
+        List<TdarUser> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10, allRegisteredUsers.size()));
         return someRegisteredUsers;
     }
 
@@ -58,6 +61,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         List<Person> allNonUsers = entityService.findAll();
         allNonUsers.removeAll(entityService.findAllRegisteredUsers());
         List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10, allNonUsers.size()));
+        logger.debug("non-users: {}", someNonUsers);
+        if (CollectionUtils.isEmpty(someNonUsers)) {
+            Assert.fail("expecting users");
+        }
         return someNonUsers;
     }
 

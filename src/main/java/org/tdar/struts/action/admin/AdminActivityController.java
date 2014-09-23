@@ -1,5 +1,10 @@
 package org.tdar.struts.action.admin;
 
+import java.io.ByteArrayInputStream;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,7 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -18,16 +22,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
+import org.tdar.utils.json.JsonLookupFilter;
 
 @Component
 @Scope("prototype")
@@ -40,7 +47,13 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 6261948544478872563L;
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+    private transient ScheduledProcessService scheduledProcessService;
+
+    @Autowired
+    private transient XmlService xmlService;
+
+    @Autowired
+    private transient AuthenticationService authenticationService;
 
     private Statistics sessionStatistics;
     private Boolean scheduledProcessesEnabled;
@@ -50,24 +63,20 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     private List<Activity> activityList = new ArrayList<Activity>();
 
+    private HashMap<String, Object> moreInfo = new HashMap<>();
     private HashMap<String, Integer> counters;
-    private List<Person> activePeople;
+    private List<TdarUser> activePeople;
 
-    @Action(value = "active-users",
-    interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-    results = {
-            @Result(name = SUCCESS, location = "list-users.ftl",
-                    params = { "contentType", "application/json" },
-                    type = "freemarker"
-                    ) 
-            })
+    private ByteArrayInputStream jsonInputStream;
+
+    @Action(value = "active-users", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    })
     public String listActiveUsers() {
-        // FIXME: filter for localhost before enabling
-//        setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        setJsonInputStream(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null).getBytes()));
         return SUCCESS;
     }
 
-    
     @Action(value = "activity")
     @Override
     public String execute() {
@@ -80,7 +89,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
             @Override
             public int compare(Activity o1, Activity o2) {
-                if (o1.getTotalTime() != -1L && o2.getTotalTime() != -1) {
+                if ((o1.getTotalTime() != -1L) && (o2.getTotalTime() != -1)) {
                     return o1.getStartDate().compareTo(o2.getStartDate());
                 }
                 if (o1.getTotalTime() == -1L) {
@@ -104,9 +113,28 @@ public class AdminActivityController extends AuthenticationAware.Base {
             getCounters().put(activity.getSimpleBrowserName(), num);
         }
 
-        setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        setActivePeople(authenticationService.getCurrentlyActiveUsers());
 
+        initSystemStats();
         return SUCCESS;
+    }
+
+    public void initSystemStats() {
+        ManagementFactory.getMemoryMXBean().getHeapMemoryUsage();
+        getMoreInfo().put("Heap Memory", ManagementFactory.getMemoryMXBean().getHeapMemoryUsage());
+        getMoreInfo().put("NonHeap Memory", ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage());
+        List<MemoryPoolMXBean> beans = ManagementFactory.getMemoryPoolMXBeans();
+        for (MemoryPoolMXBean bean : beans) {
+            getLogger().trace("{}: {}", bean.getName(), bean.getUsage());
+        }
+
+        for (GarbageCollectorMXBean bean : ManagementFactory.getGarbageCollectorMXBeans()) {
+            getLogger().trace("{}: {} {}", bean.getName(), bean.getCollectionCount(), bean.getCollectionTime());
+        }
+
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        // What % CPU load this current JVM is taking, from 0.0-1.0
+        getMoreInfo().put("system load", osBean.getSystemLoadAverage());
     }
 
     public Collection<ScheduledProcess<Persistable>> getScheduledProcessQueue() {
@@ -157,12 +185,28 @@ public class AdminActivityController extends AuthenticationAware.Base {
         this.counters = counters;
     }
 
-    public List<Person> getActivePeople() {
+    public List<TdarUser> getActivePeople() {
         return activePeople;
     }
 
-    public void setActivePeople(List<Person> activePeople) {
+    public void setActivePeople(List<TdarUser> activePeople) {
         this.activePeople = activePeople;
+    }
+
+    public HashMap<String, Object> getMoreInfo() {
+        return moreInfo;
+    }
+
+    public void setMoreInfo(HashMap<String, Object> moreInfo) {
+        this.moreInfo = moreInfo;
+    }
+
+    public ByteArrayInputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(ByteArrayInputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
     }
 
 }

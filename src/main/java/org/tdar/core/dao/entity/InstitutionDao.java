@@ -3,7 +3,7 @@ package org.tdar.core.dao.entity;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
@@ -26,13 +26,13 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
 
     @SuppressWarnings("unchecked")
     public List<Institution> withNameLike(final String name) {
-        return (List<Institution>) getCriteria().add(Restrictions.like("name", addWildCards(name))).list();
+        return getCriteria().add(Restrictions.like("name", addWildCards(name))).list();
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = (List<BigInteger>) query.list();
+        List<BigInteger> result = query.list();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

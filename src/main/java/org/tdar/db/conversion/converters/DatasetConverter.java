@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -22,7 +25,6 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.utils.MessageHelper;
 
 import com.healthmarketscience.jackcess.Database;
 
@@ -57,7 +59,7 @@ public interface DatasetConverter {
     Set<DataTableRelationship> getKeys();
 
     DataTable getDataTableByName(String name);
-    
+
     DataTable getDataTableByOriginalName(String name);
 
     Set<DataTableRelationship> getRelationships();
@@ -84,9 +86,11 @@ public interface DatasetConverter {
         protected InformationResourceFileVersion informationResourceFileVersion;
         protected TargetDatabase targetDatabase;
         protected Connection connection;
-        protected Set<DataTable> dataTables = new HashSet<DataTable>();
-        protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
-        private Set<String> dataTableNames = new HashSet<String>();
+        protected Set<DataTable> dataTables = new HashSet<>();
+        protected Set<DataTableRelationship> dataTableRelationships = new HashSet<>();
+        private File indexedContentsFile;
+        private Set<String> dataTableNames = new HashSet<>();
+        private Map<String, List<String>> dataTableColumnNames = new HashMap<>();
 
         protected abstract void openInputDatabase() throws IOException;
 
@@ -118,8 +122,6 @@ public interface DatasetConverter {
             return dataTables;
         }
 
-        private File indexedContentsFile;
-
         public DataTable createDataTable(String name) {
             DataTable dataTable = new DataTable();
             dataTable.setDisplayName(name);
@@ -127,18 +129,7 @@ public interface DatasetConverter {
             logger.info(name_);
 
             if (dataTableNames.contains(name_)) {
-                int add = 1;
-
-                if (name_.length() + 1 > targetDatabase.getMaxTableLength()) {
-                    name_ = name_.substring(0, targetDatabase.getMaxTableLength() - 2);
-                }
-
-                while (dataTableNames.contains(name_ + add)) {
-                    add++;
-                }
-                String tmpName = name_ + add;
-                logger.debug("renaming table from " + name_ + " to " + tmpName);
-                name_ = tmpName;
+                name_ = extractAndIncrementIfDuplicate(name_, dataTableNames, targetDatabase.getMaxTableLength());
             }
             dataTableNames.add(name_);
             dataTable.setName(name_);
@@ -147,10 +138,40 @@ public interface DatasetConverter {
             return dataTable;
         }
 
+        private String extractAndIncrementIfDuplicate(String name, Collection<String> existingNames, int maxTableLength) {
+            int add = 1;
+
+            if ((name.length() + 1) > maxTableLength) {
+                name = name.substring(0, maxTableLength - 2);
+            }
+
+            while (existingNames.contains(name + add)) {
+                add++;
+            }
+            String rename = name + add;
+            logger.debug("renaming from {} to {}", name, rename);
+            name = rename;
+            return name;
+        }
+
         public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
             DataTableColumn dataTableColumn = new DataTableColumn();
+            if (StringUtils.length(name) > 250) {
+                name = name.substring(0, 250);
+            }
             dataTableColumn.setDisplayName(name);
-            dataTableColumn.setName(targetDatabase.normalizeTableOrColumnNames(name));
+            String internalName = targetDatabase.normalizeTableOrColumnNames(name);
+            String tableName = dataTable.getInternalName();
+            List<String> columnNames = dataTableColumnNames.get(tableName);
+            if (columnNames == null) {
+                columnNames = new ArrayList<>();
+                dataTableColumnNames.put(tableName, columnNames);
+            }
+            if (columnNames.contains(internalName)) {
+                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
+            }
+            dataTableColumn.setName(internalName);
+            columnNames.add(internalName);
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             dataTableColumn.setDataTable(dataTable);
@@ -178,15 +199,15 @@ public interface DatasetConverter {
                 return getDataTables();
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetService.io_exception)"), e);
+                throw new TdarRecoverableRuntimeException("datasetService.io_exception", e);
             } catch (TdarRecoverableRuntimeException tex) {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
-                // message
-                // with a friendly-yet-generic error message.
+                // message with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error("unable to prcess file:  " + getInformationResourceFileVersion().getFilename(), e);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("datasetConverter.error_unable_to_process", getInformationResourceFileVersion().getFilename()), e);
+                logger.error("unable to process file:  " + getInformationResourceFileVersion().getFilename(), e);
+                throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion()
+                        .getFilename()));
             }
         }
 
@@ -202,8 +223,9 @@ public interface DatasetConverter {
         @Override
         public DataTable getDataTableByName(String name) {
             for (DataTable table : dataTables) {
-                if (name.equals(table.getName()))
+                if (name.equals(table.getName())) {
                     return table;
+                }
             }
             return null;
         }
@@ -211,7 +233,7 @@ public interface DatasetConverter {
         @Override
         public DataTable getDataTableByOriginalName(String name) {
             for (DataTable table : dataTables) {
-                if (ObjectUtils.equals(getInternalTableName(name),getInternalTableName(table.getName()))) {
+                if (Objects.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
                     return table;
                 }
             }
@@ -219,9 +241,8 @@ public interface DatasetConverter {
         }
 
         protected void alterTableColumnTypes(DataTable dataTable, Map<DataTableColumn, List<ColumnAnalyzer>> statistics) {
-            logger.debug("altering table column types for " + dataTable.getDisplayName());
-            for (Map.Entry<DataTableColumn, List<ColumnAnalyzer>> entry : statistics
-                    .entrySet()) {
+            logger.debug("altering table column types for {}", dataTable.getDisplayName());
+            for (Map.Entry<DataTableColumn, List<ColumnAnalyzer>> entry : statistics.entrySet()) {
                 DataTableColumn column = entry.getKey();
                 // the first item in the list is our "most desired" conversion choice
                 ColumnAnalyzer best = entry.getValue().get(0);
@@ -268,8 +289,9 @@ public interface DatasetConverter {
         protected String generateDataTableName(String tableName) {
             StringBuilder sb = new StringBuilder(getDatabasePrefix());
             sb.append('_').append(getIrFileId()).append('_');
-            if (!StringUtils.isBlank(getFilename()))
+            if (!StringUtils.isBlank(getFilename())) {
                 sb.append(getFilename()).append('_');
+            }
             sb.append(targetDatabase.normalizeTableOrColumnNames(tableName));
             return targetDatabase.normalizeTableOrColumnNames(sb.toString());
         }

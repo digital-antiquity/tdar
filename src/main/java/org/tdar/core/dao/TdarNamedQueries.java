@@ -4,6 +4,8 @@ public interface TdarNamedQueries {
     /**
      * constants to map between the Annotation Keys for HQL queries and the queries in the DAOs
      */
+    String QUERY_CURRENT_USER_NOTIFICATIONS = "userNotifications.current";
+    String QUERY_USER_NOTIFICATIONS_BY_TYPE = "userNotifications.byType";
     String QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES = "informationResourceFileVersion.deleteDerivatives";
     String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY = "ontology.isMapped";
     String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN = "ontology.isMappedToColumn";
@@ -30,6 +32,7 @@ public interface TdarNamedQueries {
     String QUERY_PROJECT_EDITABLE = "project.editable";
     String QUERY_PROJECT_VIEWABLE = "project.viewable";
     String QUERY_FILE_STATUS = "file.with.statuses";
+    String QUERY_RESOURCE_FILE_STATUS = "resources.with.file.status";
     String QUERY_LOGIN_STATS = "admin.userLogin";
     String QUERY_PROJECT_ALL_OTHER = "project.all.other";
     String QUERY_RESOURCE_RESOURCETYPE = "resource.resourceType";
@@ -55,7 +58,7 @@ public interface TdarNamedQueries {
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse" ;
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
     String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
@@ -75,7 +78,7 @@ public interface TdarNamedQueries {
     String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     String QUERY_RECENT = "adminStats.recentFiles";
-//    String QUERY_MATCHING_FILES = "datasetRelated.Files";
+    // String QUERY_MATCHING_FILES = "datasetRelated.Files";
     String QUERY_USAGE_STATS = "adminStats.usage";
     String QUERY_FILE_STATS = "adminStats.fileDetails";
     String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
@@ -90,6 +93,7 @@ public interface TdarNamedQueries {
     String SPACE_BY_COLLECTION = "admin.size.collection";
     String SPACE_BY_SUBMITTER = "admin.size.submitter";
     String ACCESS_BY = "admin.access";
+    String ACCESS_BY_OVERALL = "admin.access.overall";
     String DOWNLOAD_BY = "admin.download";
     String LOGS_FOR_RESOURCE = "admin.logsforResource";
     String FIND_ACTIVE_COUPON = "coupon.active";
@@ -107,17 +111,27 @@ public interface TdarNamedQueries {
     String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
     String FIND_INVOICE_FOR_COUPON = "invoices.coupons";
     String QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY = "sparseCodingSheets.ontology";
-    String QUERY_FILE_SIZE_TOTAL ="file.total_size";
+    String QUERY_FILE_SIZE_TOTAL = "file.total_size";
     String QUERY_RELATED_RESOURCES = "resource.related";
     String QUERY_PROXY_RESOURCE_FULL = "resourceProxy.full";
     String QUERY_PROXY_RESOURCE_SHORT = "resourceProxy.short";
     String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
-    String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY ="irfv.delete";
+    String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "irfv.delete";
     String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited" ;
-    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted" ;
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited";
+    String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
+    String COLLECTION_VIEW = "collection.views";
+    String CREATOR_VIEW = "creator.views";
+    String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
+    String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
+    String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
+    String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
+    String FIND_BY_TDAR_YEAR = "query.sparse_by_tdar_year";
+    String FIND_BY_TDAR_YEAR_COUNT = "query.sparse_by_tdar_year_count";
+    String QUERY_RESOURCE_FILE_EMBARGO_EXIPRED = "query.expired";
+    String QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW = "query.expires_tomorrow";
     // raw SQL/HQL queries
 
     /**
@@ -132,6 +146,7 @@ public interface TdarNamedQueries {
                     "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
+    String QUERY_FIND_ALL = "FROM %s";
     String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
     String QUERY_FIND_ALL_WITH_STATUS = "FROM %s WHERE status in (:statuses)";
     String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE' and resourceType='%2$s' ";
@@ -169,17 +184,20 @@ public interface TdarNamedQueries {
     String QUERY_HQL_UPDATE_MANY_TO_MANY_REFERENCES = ""; // TODO: //Not possible, I think.
     String QUERY_HQL_UPDATE_MANY_TO_ONE_REFERENCES = ""; // TODO: use many_to_one_count in exists clause.
 
-    String HQL_EDITABLE_RESOURCE_SUFFIX = "FROM Resource as res  where " +
-            " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-            "(res.submitter.id=:userId or exists (" +
-            " from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
-            " join rescol.resources as colres " +
-            " where colres.id = res.id and " +
-            "(TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where "
+            +
+            " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
+            + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
+            +
+            " (res.submitter.id=:userId or exists "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and "
+            +
+            " (TRUE=:admin or rescol.owner.id=:userId or exists ( "
+            + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
+            + ")"
+            + ")  ";
 
     String HQL_EDITABLE_RESOURCE_SORTED_SUFFIX = HQL_EDITABLE_RESOURCE_SUFFIX + " order by res.title, res.id";
-    String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
-    String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
     String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
     String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
     String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
@@ -193,10 +211,23 @@ public interface TdarNamedQueries {
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT = "update creator set occurrence=occurrence + coalesce((select count(information_resource.id) from information_resource where copyright_holder_id=creator.id group by copyright_holder_id),0) ";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER = "update creator set occurrence=occurrence + coalesce((select count(resource.id) from resource where submitter_id=creator.id group by submitter_id),0)";
     String UPDATE_CREATOR_OCCURRENCE_RESOURCE = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id group by creator_id),0) ";
+    String UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED = "update creator set occurrence = occurrence+ coalesce((select count(resource_id) from resource_creator where creator_id=creator.id and resource_id in (select project_id from information_resource where inheriting_individual_institutional_credit is true)  group by creator_id),0) ";
+    String UPDATE_CREATOR_OCCURRENCE_INSTITUTION = "update creator set occurrence = occurrence+ coalesce((select count(person.id) from person where institution_id=creator.id group by institution_id),0) ";
     String DATASETS_USING_NODES = "select id from resource where id in (select dataset_id from data_table where data_table.id in (select data_table_id from data_table_column, coding_rule, coding_sheet where data_table_column.default_coding_sheet_id=coding_sheet_id and coding_rule.coding_sheet_id=coding_sheet.id and  ontology_node_id=%s)) and status = 'ACTIVE'";
-    
+
     String SELECT_RAW_IMAGE_SITEMAP_FILES = "select r.id as resourceId, r.title, r.description as resourceDescription, r.resource_type, irf.description, irfv.id from resource r, information_resource ir, information_resource_file irf, "
             + "information_resource_file_version irfv where r.id=ir.id and ir.id=irf.information_resource_id and "
             + "irf.id=irfv.information_resource_file_id and internal_type='WEB_SMALL' and resource_type in ('IMAGE','SENSORY_DATA','GEOSPATIAL') "
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
+
+    String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
+    String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, date_accessed, count) select resource_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from resource_access_statistics where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
+    String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_trunc('day', date_accessed)";
+
+    String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
+    String FIND_ACTIVE_CREATOR_BY_ID = "select id from %s where status in ('ACTIVE') and occurrence > 0";
+    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
+
+    String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and ras.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
+    String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
 }

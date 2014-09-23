@@ -20,7 +20,8 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -70,13 +71,52 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    @Rollback
+    public void testReplaceWithLBNLTableIssue() {
+        docValMap.put(PROJECT_ID_FIELDNAME, "3805");
+        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA.xlsx" );
+        uploadDataset();
+        Long datasetId = extractTdarIdFromCurrentURL();
+
+        String filename = TestConstants.TEST_DATA_INTEGRATION_DIR + "replace_prob/" + "LBNL_CA_v2.xls";
+        String ticketId = getPersonalFilestoreTicketId();
+        assertTrue("Expected integer number for ticket - but got: " + ticketId, ticketId.matches("([0-9]*)"));
+        docValMap.remove("uploadedFiles");
+        uploadFileToPersonalFilestore(ticketId, filename);
+        gotoPage("/dataset/" + datasetId + "/edit");
+        setInput("ticketId", ticketId);
+        Long fileId = Long.parseLong(getInput("fileProxies[0].fileId").getAttribute("value"));
+        addFileProxyFields(1, FileAccessRestriction.PUBLIC, filename, fileId, FileAction.REPLACE);
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("dataset/save"));
+        
+    }
+
+
+    @Test
+    @Rollback
+    public void testDeleteIssue() {
+        docValMap.put(PROJECT_ID_FIELDNAME, "3805");
+        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
+        uploadDataset();
+        Long datasetId = extractTdarIdFromCurrentURL();
+
+        gotoPage("/dataset/" + datasetId + "/edit");
+        setInput("fileProxies[0].action", FileAction.DELETE);
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("dataset/save"));
+        assertFalse(getPageText().contains(SPITAL_DB_NAME));
+
+    }
+
+    @Test
     @Rollback(true)
     public void testCreateDatasetRecordSpitalfields() {
         // upload a file ahead of submitting the form
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
         uploadDataset();
-
         Long datasetId = extractTdarIdFromCurrentURL();
+        String datasetUrl = "/dataset/" + datasetId;
         Dataset dataset = datasetService.find(datasetId);
         DataTable datatable = dataset.getDataTables().iterator().next();
         String browseDataUrl = String.format("/dataset/view-row?id=%s&dataTableId=%s&rowId=1", datasetId, datatable.getId());
@@ -87,7 +127,14 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         } else {
             assertTextNotPresentIgnoreCase("Row number 1");
         }
+        gotoPage(datasetUrl);
+        clickLinkOnPage("duplicate");
+        submitForm("duplicate");
+        assertPageTitleContains(" (Copy)");
+        assertNotEquals(datasetUrl, getCurrentUrlPath());
+        assertNoErrorTextPresent();
     }
+    
 
     @Test
     @Rollback(true)
@@ -152,7 +199,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login();
 
         gotoPage(browseDataUrl);
-        assertTextPresentInCode("{}");
+        assertTextPresentInCode("{\"recordsPerPage\":50,\"startRecord\":0,\"totalRecords\":0,\"results\":[],\"fields\":[],\"sColumns\":\"\",\"scolumns\":\"\"}");
     }
 
     @Test
@@ -187,7 +234,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
         logger.trace(getPageText());
         submitForm();
@@ -197,11 +244,12 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long
-            if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
+            if (key.equals(PROJECT_ID_FIELDNAME) || !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             assertTextPresentInPage(docValMap.get(key), false);
 
         }
@@ -220,8 +268,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : docValMap.keySet()) {
 
             String val = docValMap.get(key);
-            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
         }
@@ -268,8 +317,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             if (!key.contains("ontology.id")) {
                 assertTextPresentInPage(codingMap.get(key), false);
             }
@@ -293,13 +343,14 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
         logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
 
-        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
+        String regex = "id: \\\"(\\d+)\\\",(?:\\s+)name: \\\"(.+)\\\"";
+        logger.info("regex is: {}", regex);
         Pattern p = Pattern.compile(regex);
 
         HashMap<String, Long> ontologyMap = new HashMap<String, Long>();
         for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
-            logger.info(line);
             Matcher matcher = p.matcher(line);
+            logger.info("line:{} \t matches:{}", line, matcher.matches());
             if (matcher.matches()) {
                 String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
                 logger.info("{} : {}", matcher.group(1), key);
@@ -351,8 +402,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
-                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
+                    && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 continue;
+            }
             assertTextPresentInPage(codingMap.get(key), false);
         }
         assertTextPresent(NEW_YORK_1);
@@ -364,5 +416,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         return tdarId;
     }
+
+
+
 
 }

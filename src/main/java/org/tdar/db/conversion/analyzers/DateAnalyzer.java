@@ -4,9 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.antlr.runtime.tree.Tree;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 import com.joestelmach.natty.DateGroup;
@@ -81,6 +82,10 @@ public class DateAnalyzer implements ColumnAnalyzer {
             if (!StringUtils.equals(candidate.getText(), value)) {
                 result = null;
             }
+
+            if (value.matches("(\\d+)\\-(\\d+)")) {
+                return null;
+            }
             logger.trace("== result: {} ", result);
         }
         return result;
@@ -93,8 +98,8 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * @return
      */
     private static boolean isOnlyOneDateFound(List<DateGroup> candidateDates) {
-        return candidateDates.size() == 1
-                && candidateDates.get(0).getDates().size() == 1
+        return (candidateDates.size() == 1)
+                && (candidateDates.get(0).getDates().size() == 1)
                 && !candidateDates.get(0).isRecurring();
     }
 
@@ -102,7 +107,7 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * For a String, see if it can be converted to a valid date
      */
     @Override
-    public boolean analyze(final String value) {
+    public boolean analyze(final String value, final DataTableColumn column, final int rowNumber) {
         if (null == value) {
             return false;
         }

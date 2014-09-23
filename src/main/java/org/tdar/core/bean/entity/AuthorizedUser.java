@@ -6,10 +6,12 @@
  */
 package org.tdar.core.bean.entity;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +19,8 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
@@ -30,15 +33,16 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @author Adam Brin
  *         This is the representation of a user and a permission combined and an association with a resource collection.
  */
-@Table(name = "authorized_user")
-@org.hibernate.annotations.Table( appliesTo="authorized_user", indexes = {
-        @Index(name="authorized_user_cid", columnNames={"id", "resource_collection_id"}),
-        @Index(name="authorized_user_cid2", columnNames={"user_id", "resource_collection_id"}),
-        @Index(name="authorized_user_perm", columnNames={"resource_collection_id", "general_permission_int", "user_id"}),
-        @Index(name = "authorized_user_resource_collection_id_idx", columnNames = {"resource_collection_id"})
-
+@Table(name = "authorized_user", indexes = {
+        @Index(name = "authorized_user_cid", columnList = "id, resource_collection_id"),
+        @Index(name = "authorized_user_cid2", columnList = "user_id, resource_collection_id"),
+        @Index(name = "authorized_user_perm", columnList = "resource_collection_id, general_permission_int, user_id"),
+        @Index(name = "authorized_user_resource_collection_id_idx", columnList = "resource_collection_id"),
+        @Index(name = "authorized_user_user_id_idx", columnList = "user_id")
 })
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.AuthorizedUser")
 public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
@@ -55,7 +59,7 @@ public class AuthorizedUser extends Base implements Persistable {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "general_permission", length = 50)
+    @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")
@@ -66,8 +70,7 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
-    @Index(name = "authorized_user_user_id_idx")
-    private Person user;
+    private TdarUser user;
 
     private transient boolean enabled = false;
 
@@ -78,7 +81,7 @@ public class AuthorizedUser extends Base implements Persistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(Person person, GeneralPermissions permission) {
+    public AuthorizedUser(TdarUser person, GeneralPermissions permission) {
         this.user = person;
         setGeneralPermission(permission);
     }
@@ -93,11 +96,11 @@ public class AuthorizedUser extends Base implements Persistable {
 
     @XmlElement(name = "personRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Person getUser() {
+    public TdarUser getUser() {
         return user;
     }
 
-    public void setUser(Person user) {
+    public void setUser(TdarUser user) {
         this.user = user;
     }
 
@@ -127,14 +130,14 @@ public class AuthorizedUser extends Base implements Persistable {
             name = user.toString();
         }
         logger.trace("calling validate collection for user/permission/registered: [{} / {} / {}]", name, generalPermission != null, registered);
-        return user != null && generalPermission != null && user.isRegistered();
+        return (user != null) && (generalPermission != null) && user.isRegistered();
     }
 
     @Override
     public String toString() {
         Long userid = null;
         String properName = null;
-        if(user != null) {
+        if (user != null) {
             userid = user.getId();
             properName = user.getProperName();
         }
@@ -165,6 +168,13 @@ public class AuthorizedUser extends Base implements Persistable {
         this.test = test;
     }
 
+    /**
+     * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation. When enabled is false,
+     * the system should not allow operations which would alter the fields in this object, and also should not allow operations that would add or remove the
+     * object to/from an authorized user list.
+     *
+     * @return
+     */
     public boolean isEnabled() {
         if (Persistable.Base.isNullOrTransient(this) && Persistable.Base.isNullOrTransient(user)) {
             return true;

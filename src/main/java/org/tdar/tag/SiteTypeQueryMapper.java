@@ -19,8 +19,9 @@ public class SiteTypeQueryMapper implements QueryMapper<SubjectType> {
     @Override
     public List<String> findMappedValues(SubjectType sub) {
         List<String> vals = tagTermMap.get(sub);
-        if (vals == null)
+        if (vals == null) {
             return Collections.emptyList();
+        }
         return vals;
     }
 

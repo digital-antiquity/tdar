@@ -4,17 +4,16 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
 import org.tdar.core.bean.resource.InformationResourceFile;
 
 @Entity
-@Table(name = "information_resource_file_download_statistics")
-@org.hibernate.annotations.Table( appliesTo = "information_resource_file_download_statistics", indexes = {
-        @Index(name="file_download_stats_count_id", columnNames={"information_resource_file_id", "id"})
+@Table(name = "information_resource_file_download_statistics", indexes = {
+        @Index(name = "file_download_stats_count_id", columnList = "information_resource_file_id, id")
 })
 /**
  * Tracks anonymous download statistics

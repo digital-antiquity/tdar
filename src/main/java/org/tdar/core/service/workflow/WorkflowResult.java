@@ -6,10 +6,12 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.ExceptionWrapper;
@@ -59,15 +61,21 @@ public class WorkflowResult implements Serializable {
         return success;
     }
 
-    public void addActionErrorsAndMessages(ActionMessageErrorSupport actionSupport) {
+    public ErrorTransferObject getActionErrorsAndMessages() {
+        ErrorTransferObject eto = new ErrorTransferObject();
         for (ExceptionWrapper exception : getExceptions()) {
             if (getFatalErrors()) {
-                actionSupport.addActionError(exception.getMessage());
+                eto.getActionErrors().add(exception.getMessage());
             } else {
-                actionSupport.addActionMessage(exception.getMessage());
+                eto.getActionMessages().add(exception.getMessage());
             }
-            actionSupport.getStackTraces().add(exception.getStackTrace());
+            logger.error("error processing file [code:{}]: {} ", exception.getErrorCode(), exception.getStackTrace());
+            eto.getStackTraces().add(exception.getErrorCode());
+            if (StringUtils.isNotBlank(exception.getMoreInfoUrlKey())) {
+                eto.setMoreInfoUrlKey(exception.getMoreInfoUrlKey());
+            }
         }
+        return eto;
     }
 
     public Boolean getFatalErrors() {

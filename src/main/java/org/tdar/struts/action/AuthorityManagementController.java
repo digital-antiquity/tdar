@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -16,7 +17,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -24,6 +24,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.AuthorityManagementService.DupeMode;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -79,10 +80,12 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
      * @return
      */
     @Action(value = "select-authority", results = { @Result(name = SUCCESS, location = "select-authority.ftl"), @Result(name = INPUT, location = "index.ftl") })
+    @PostOnly
     public String selectAuthority() {
-        if (hasActionErrors())
+        if (hasActionErrors()) {
             return INPUT;
-        getLogger().debug("{}" , getLocale());
+        }
+        getLogger().debug("{}", getLocale());
         if (authorityManagementService.countProtectedRecords(selectedDuplicates.values()) > 1) {
             addActionError(getText("authorityManagementController.error_too_many_protected_records"));
             return INPUT;
@@ -97,13 +100,14 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     private void inflateSelectedDupes() {
         // populate the list of selected items
         for (Long id : selectedDupeIds) {
-            Dedupable<?> p = (Dedupable<?>) getGenericService().find(entityType.getType(), id);
+            Dedupable<?> p = getGenericService().find(entityType.getType(), id);
             selectedDuplicates.put(id, p);
         }
     }
 
     @Action(value = "merge-duplicates",
             results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
+    @PostOnly
     @WriteableSession
     public String mergeDuplicates() {
         if (authorityId == null) {
@@ -112,7 +116,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         }
 
         // remove the authority record from the selected items
-        Dedupable<?> authority = (Dedupable<?>) getGenericService().find(entityType.getType(), authorityId);
+        Dedupable<?> authority = getGenericService().find(entityType.getType(), authorityId);
         selectedDuplicates.remove(authority.getId());
         selectedDupeIds.remove(authorityId);
 
@@ -124,12 +128,12 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode);
+            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode, true);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionErrorWithException(getText("authorityManagementController.could_not_dedup"), trex);
             return INPUT;
         }
-        
+
         return SUCCESS;
     }
 

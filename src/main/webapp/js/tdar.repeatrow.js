@@ -1,4 +1,4 @@
-TDAR.repeatrow = function(TDAR, $) {
+TDAR.repeatrow = function (TDAR, $) {
     "use strict";
     /**
      * Register a "repeatable container". That is, a table element (or any other block-level element) which
@@ -43,24 +43,24 @@ TDAR.repeatrow = function(TDAR, $) {
      *          rowSelector: selector that the add-another click handler uses to  identify the element that the
      *                          hanler will clone when the  add-another button.
      */
-    var registerRepeatable = function(selector, options) {
+    var registerRepeatable = function (selector, options) {
 
         var _options = {
-                //select the last bootstrap "controls" div,  or the last element with the 'repeat-row' class
-                rowSelector: "> div.controls, .repeat-row",
-                addAnother: "add another"
+            //select the last bootstrap "controls" div,  or the last element with the 'repeat-row' class
+            rowSelector: "> div.controls, .repeat-row",
+            addAnother: "add another"
         };
 
         $.extend(_options, options);
 
         var $parents = $(selector);
-        $parents.each(function(index, parentElement){
+        $parents.each(function (index, parentElement) {
             //tag the repeat rows so we know which element to delete if delete button clicked
             $(_options.rowSelector, parentElement).addClass("repeat-row");
-            
-            var btnLabel =$(parentElement).data("add-another") || _options.addAnother;
+
+            var btnLabel = $(parentElement).data("add-another") || _options.addAnother;
             var $button = _button(btnLabel, parentElement.id + "AddAnotherButton");
-            $('button', $button).click(function() {
+            $('button', $button).click(function () {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = cloneSection(element, parentElement);
                 var idx = $(parentElement).find('.repeat-row').length;  //FIXME: shouldn't this be length -1?
@@ -68,12 +68,12 @@ TDAR.repeatrow = function(TDAR, $) {
 
                 // set focus on the first input field (or designate w/ repeatrow-focus class).
                 $("input[type=text], textarea, .repeatrow-focus", $clone).filter(":visible:first").focus();
-                
+
             });
             $(parentElement).after($button);
             registerDeleteButtons(parentElement);
         });
-        
+
     };
 
     /**
@@ -81,8 +81,8 @@ TDAR.repeatrow = function(TDAR, $) {
      * @param parentElement the repeeat-row button element
      * @private
      */
-    var registerDeleteButtons = function(parentElement) {
-        $(parentElement).on("click", ".repeat-row-delete", function(e){
+    var registerDeleteButtons = function (parentElement) {
+        $(parentElement).on("click", ".repeat-row-delete", function (e) {
             var rowElem = $(this).parents(".repeat-row")[0];
             $(rowElem).trigger("repeatrowbeforedelete");
             deleteRow(rowElem);
@@ -103,7 +103,7 @@ TDAR.repeatrow = function(TDAR, $) {
      * @returns {*} the cloned element.
      * @private
      */
-    var cloneSection = function(element, appendTo) {
+    var cloneSection = function (element, appendTo) {
 
         var $element = $(element);
         var $clone = $element.clone();
@@ -115,21 +115,20 @@ TDAR.repeatrow = function(TDAR, $) {
         var rex = /^(.*?_)(\d+)(_.*)$/i;
         var elementIdAttr = $element.attr("id");
         var match = rex.exec(elementIdAttr);
-        
+
         //if element's id is in right format the rownum will be the 2nd submatch
-        var currentId = parseInt(match[2]); 
+        var currentId = parseInt(match[2]);
 
         var nextId = currentId + 1;
         var newRowId = nextId;
-        
+
         var cloneIdAttr = elementIdAttr.replace(rex, "$1" + nextId + "$3");
-        
+
         //TODO: remove error/warning labels from $clone (e.g.  form validation fails on last row, then you click 'add new row').
         $clone.find(".repeat-row-remove").remove();
         // update the id for our new row
         $clone.attr('id', cloneIdAttr);
-        
-        
+
         /*
          * Now that we've cloned the row, certain element attributes may need to be renamed (for example, input tags with name attributes of the form
          * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that every ID or NAME attribute that contains either "_num_" or "[num]" will
@@ -140,9 +139,9 @@ TDAR.repeatrow = function(TDAR, $) {
         //remove any tags that shouldn't be copied
         $clone;
         // skip any tags that with the repeat-row-skip attribute
-        $clone.find('*').not(".repeat-row-skip").each(function() {
+        $clone.find('*').not(".repeat-row-skip").each(function () {
             var elem = this;
-            $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function(i, attrName) {
+            $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function (i, attrName) {
                 // replace occurrences of [num]
                 _replaceAttribute(elem, attrName, '[' + currentId + ']', '[' + nextId + ']');
 
@@ -166,14 +165,17 @@ TDAR.repeatrow = function(TDAR, $) {
      * @param rep replacement string
      * @private
      */
-    var _replaceAttribute = function(elem, attrName, str, rep) {
+    var _replaceAttribute = function (elem, attrName, str, rep) {
         var oldval = $(elem).attr(attrName);
-        if (!oldval) return;
-        if (oldval.indexOf(str) === -1) return;
-        
+        if (!oldval) {
+            return;
+        }
+        if (oldval.indexOf(str) === -1) {
+            return;
+        }
+
         var beginPart = oldval.substring(0, oldval.lastIndexOf(str));
-        var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length,
-                oldval.length);
+        var endPart = oldval.substring(oldval.lastIndexOf(str) + str.length, oldval.length);
         var newval = beginPart + rep + endPart;
         $(elem).attr(attrName, newval);
     };
@@ -186,7 +188,7 @@ TDAR.repeatrow = function(TDAR, $) {
      * @param $element container element (a jqselection)
      * @private
      */
-    var _clearInputs = function($element) {
+    var _clearInputs = function ($element) {
 
         // enable any inputs in the row
         $(":input", $element).removeAttr("readonly").removeAttr("disabled").prop("readonly", false).prop("disabled", false);
@@ -202,7 +204,7 @@ TDAR.repeatrow = function(TDAR, $) {
 
         // revert all select inputs to first option. 
         $("select", $element).find('option:first').attr("selected", "selected");
-        
+
         // allow html5 polyfills for watermarks to be added.
         TDAR.common.applyWatermarks($element);
     };
@@ -214,17 +216,16 @@ TDAR.repeatrow = function(TDAR, $) {
      * @returns {boolean} true if a the function deleted a row, or false if the function simply cleared the values
      * @private
      */
-    var deleteRow = function(elem) {
+    var deleteRow = function (elem) {
         var $row = $(elem).closest(".repeat-row");
         var bDelete = $row.siblings(".repeat-row").length > 0;
-        if(bDelete) {
+        if (bDelete) {
             $row.remove();
         } else {
             _clearInputs($row);
         }
         return bDelete;
     };
-
 
     /**
      * generate an add-another button
@@ -233,24 +234,20 @@ TDAR.repeatrow = function(TDAR, $) {
      * @returns {*|jQuery|HTMLElement}
      * @private
      */
-    var _button = function(label, id) {
+    var _button = function (label, id) {
         var buttonId = id;
-        if(!id) {
+        if (!id) {
             buttonId = "btn" + label.replace(" ", "").toLowerCase();
         }
-        var html = "<div class='control-group add-another-control'>" +
-                "<div class='controls'>" +
-                "<button class='btn addanother' id='" + buttonId + "' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
-                "</div>" +
-                "</div>";
-       return $(html);
+        var html = "<div class='control-group add-another-control'>" + "<div class='controls'>" + "<button class='btn addanother' id='" + buttonId + "' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" + "</div>" + "</div>";
+        return $(html);
     };
-    
+
     return {
         registerRepeatable: registerRepeatable,
         registerDeleteButtons: registerDeleteButtons,
         cloneSection: cloneSection,
         deleteRow: deleteRow
     };
-    
+
 }(TDAR, jQuery);

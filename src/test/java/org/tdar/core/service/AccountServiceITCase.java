@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,31 +18,35 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.core.service.billing.AccountService;
+import org.tdar.core.service.billing.InvoiceService;
 
 public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     AccountService accountService;
+    
+    @Autowired
+    InvoiceService invoiceService;
 
     @Test
     @Rollback
-    public void testAccountList() throws TdarActionException {
-        Person p = createAndSaveNewPerson();
+    public void testAccountList() {
+        TdarUser p = createAndSaveNewPerson();
         Account account = setupAccountForPerson(p);
         Account accountWithPermissions = new Account("my account");
-        Person p2 = createAndSaveNewPerson("a@aas", "bb");
+        TdarUser p2 = createAndSaveNewPerson("a@aas", "bb");
         accountWithPermissions.setOwner(p2);
         accountWithPermissions.markUpdated(getUser());
         accountWithPermissions.setStatus(Status.ACTIVE);
         accountWithPermissions.getAuthorizedMembers().add(p);
         genericService.saveOrUpdate(accountWithPermissions);
 
-        Set<Account> accountsForUser = accountService.listAvailableAccountsForUser(p);
+        List<Account> accountsForUser = accountService.listAvailableAccountsForUser(p);
         assertTrue(accountsForUser.contains(account));
         assertTrue(accountsForUser.contains(accountWithPermissions));
 
@@ -54,7 +57,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountGroups() throws TdarActionException {
+    public void testAccountGroups() {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
@@ -78,7 +81,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100);
         genericService.saveOrUpdate(model);
-        Document resource = generateDocumentWithFileAndUser();
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
         resource.setAccount(account);
         final long rid = resource.getId();
         final long accountId = account.getId();
@@ -131,14 +134,14 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAccountGroupPermissions() throws TdarActionException {
+    public void testAccountGroupPermissions()  {
         AccountGroup group = new AccountGroup();
         group.setName("my account group");
         group.markUpdated(getBasicUser());
         Account accountForPerson = setupAccountForPerson(getBasicUser());
         Account accountForPerson2 = setupAccountForPerson(getBasicUser());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
-        Person person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson();
         group.getAuthorizedMembers().add(person);
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
@@ -150,7 +153,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAvaliableActivities() throws TdarActionException {
+    public void testAvaliableActivities() {
         BillingActivityModel model = new BillingActivityModel();
         BillingActivity disabledDctivity = new BillingActivity();
         disabledDctivity.setEnabled(false);
@@ -164,7 +167,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         ctivity.setName("active");
         genericService.saveOrUpdate(ctivity);
 
-        List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
+        List<BillingActivity> activeBillingActivities = invoiceService.getActiveBillingActivities();
         assertTrue(activeBillingActivities.contains(ctivity));
         assertFalse(activeBillingActivities.contains(disabledDctivity));
     }

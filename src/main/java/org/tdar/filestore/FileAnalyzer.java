@@ -4,20 +4,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.FileType;
 import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -89,8 +91,9 @@ public class FileAnalyzer {
     public ResourceType suggestTypeForFileExtension(String ext, ResourceType... types) {
         for (ResourceType type : types) {
             for (Workflow w : workflows) {
-                if (w.getValidExtensionsForResourceType(type).contains(ext.toLowerCase()))
+                if (w.getValidExtensionsForResourceType(type).contains(ext.toLowerCase())) {
                     return type;
+                }
             }
         }
         return null;
@@ -102,8 +105,8 @@ public class FileAnalyzer {
             Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
             if (wf == null) {
                 wf = w;
-            } else if (w != null && wf.getClass() != w.getClass()) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
+            } else if ((w != null) && (wf.getClass() != w.getClass())) {
+                throw new TdarRecoverableRuntimeException("filestore.file_version_null");
             }
         }
         return wf;
@@ -111,11 +114,11 @@ public class FileAnalyzer {
 
     public boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         if (informationResourceFileVersions == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("filestore.file_version_null"));
+            throw new TdarRecoverableRuntimeException("filestore.file_version_null");
         }
         Workflow workflow = getWorkflow(informationResourceFileVersions);
         if (workflow == null) {
-            String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", java.util.Arrays.toString(informationResourceFileVersions));
+            String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", Arrays.asList(Arrays.toString(informationResourceFileVersions)));
             throw new TdarRecoverableRuntimeException(message);
         }
         checkFilesExist(informationResourceFileVersions);
@@ -130,10 +133,10 @@ public class FileAnalyzer {
             File file = version.getTransientFile();
 
             if (file == null) {
-                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist",version));
+                throw new FileNotFoundException(MessageHelper.getMessage("filestore.file_does_not_exist", Arrays.asList(version)));
             }
             if (!file.exists()) {
-                throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", file.getCanonicalPath()));
+                throw new FileNotFoundException(MessageHelper.getMessage("error.file_not_found", Arrays.asList(file.getCanonicalPath())));
             }
 
         }
@@ -178,6 +181,11 @@ public class FileAnalyzer {
             return true;
         }
         return false;
+    }
+
+    public ResourceType suggestTypeForFileName(String fileName, ResourceType[] resourceTypesSupportingBulkUpload) {
+        String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
+        return suggestTypeForFileExtension(extension, resourceTypesSupportingBulkUpload);
     }
 
 }

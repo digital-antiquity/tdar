@@ -15,7 +15,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -24,18 +24,28 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.bean.resource.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.AuthorityManagementService;
+import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.processes.CreatorAnalysisProcess;
+import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SitemapGeneratorProcess;
+import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
 
 /**
@@ -55,10 +65,26 @@ public class AdminController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 4385039298623767568L;
 
-    private List<ContributorRequest> pendingContributorRequests;
+    @Autowired
+    private transient ScheduledProcessService scheduledProcessService;
 
     @Autowired
-    private ScheduledProcessService scheduledProcessService;
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+
+    @Autowired
+    private transient StatisticService statisticService;
+
+    @Autowired
+    private transient GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private transient EntityService entityService;
+
+    @Autowired
+    private transient AuthorityManagementService authorityManagementService;
 
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
@@ -73,7 +99,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<SiteTypeKeyword, Integer>> uncontrolledSiteTypeKeywordStats;
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
     private Map<String, Float> extensionStats;
-    private List<Person> recentUsers;
+    private List<TdarUser> recentUsers;
     private List<Pair<Long, Long>> userLoginStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
@@ -84,7 +110,7 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
     private List<InformationResourceFile> files;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
-    private List<Person> recentLogins;
+    private List<TdarUser> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
     private Map<String, Long> fileStats;
@@ -98,28 +124,29 @@ public class AdminController extends AuthenticationAware.Base {
     })
     @Override
     public String execute() {
-        setCurrentResourceStats(getStatisticService().getCurrentResourceStats());
-        setHistoricalRepositorySizes(getStatisticService().getRepositorySizes());
-        setRecentlyUpdatedResources(getResourceService().findRecentlyUpdatedItemsInLastXDays(7));
-        setRecentLogins(getEntityService().showRecentLogins());
+        setCurrentResourceStats(statisticService.getCurrentResourceStats());
+        setHistoricalRepositorySizes(statisticService.getRepositorySizes());
+        setRecentlyUpdatedResources(resourceService.findRecentlyUpdatedItemsInLastXDays(7));
+        setRecentLogins(entityService.showRecentLogins());
         return SUCCESS;
     }
 
     @Action("resource")
     public String resourceInfo() {
-        setHistoricalResourceStats(getStatisticService().getResourceStatistics());
-        setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
-        setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
+        setHistoricalResourceStats(statisticService.getResourceStatistics());
+        setHistoricalResourceStatsWithFiles(statisticService.getResourceStatisticsWithFiles());
+        setHistoricalCollectionStats(statisticService.getCollectionStatistics());
         return SUCCESS;
     }
 
     @Action("file-info")
     public String fileInfo() {
-        setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileStats(getStatisticService().getFileStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
-        setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
-        setFiles(getInformationResourceFileService().findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
+        setFileAverageStats(statisticService.getFileAverageStats(Arrays.asList(VersionType.values())));
+        setFileStats(statisticService.getFileStats(Arrays.asList(VersionType.values())));
+        setFileUploadedAverageStats(statisticService.getFileAverageStats(
+                Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
+        setExtensionStats(informationResourceFileService.getAdminFileExtensionStats());
+        setFiles(informationResourceFileService.findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));
         return SUCCESS;
     }
 
@@ -127,7 +154,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String verifyFilestore() throws IOException {
-        scheduledProcessService.verifyTdarFiles();
+        scheduledProcessService.cronVerifyTdarFiles();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -136,7 +163,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String updateDois() throws IOException {
-        scheduledProcessService.updateDois();
+        scheduledProcessService.cronUpdateDois();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -145,7 +172,7 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String runWeekly() throws IOException {
-        scheduledProcessService.generateWeeklyStats();
+        scheduledProcessService.queueTask(WeeklyStatisticsLoggingProcess.class);
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -154,32 +181,33 @@ public class AdminController extends AuthenticationAware.Base {
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
     public String rebuildCaches() {
-        scheduledProcessService.updateSitemap();
-        scheduledProcessService.updateHomepage();
+        scheduledProcessService.queueTask(SitemapGeneratorProcess.class);
+        scheduledProcessService.queueTask(RebuildHomepageCache.class);
         getActionMessages().add("Scheduled... check admin activity controller to test");
+        return SUCCESS;
+    }
+
+    @Action(value = "buildCreators", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String buildCreators() {
+        getLogger().debug("manually running 'build creator'");
+        scheduledProcessService.queueTask(CreatorAnalysisProcess.class);
         return SUCCESS;
     }
 
     @Action("user")
     public String userInfo() {
-        setHistoricalUserStats(getStatisticService().getUserStatistics());
-        setRecentUsers(getEntityService().findAllRegisteredUsers(10));
-        setUserLoginStats(getStatisticService().getUserLoginStats());
+        setHistoricalUserStats(statisticService.getUserStatistics());
+        setRecentUsers(entityService.findAllRegisteredUsers(10));
+        setUserLoginStats(statisticService.getUserLoginStats());
         return SUCCESS;
     }
-
 
     @Action("user-mailchimp")
     public String userMailchipInfo() {
-        setRecentUsers(getEntityService().findAllRegisteredUsers());
+        setRecentUsers(entityService.findAllRegisteredUsers());
         return SUCCESS;
-    }
-
-    public List<ContributorRequest> getPendingContributorRequests() {
-        if (pendingContributorRequests == null) {
-            pendingContributorRequests = getEntityService().findAllPendingContributorRequests();
-        }
-        return pendingContributorRequests;
     }
 
     public List<ResourceRevisionLog> getResourceRevisionLogs() {
@@ -190,77 +218,84 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action("keyword-stats")
+    @WriteableSession
     public String viewKeywordStats() {
         return SUCCESS;
     }
 
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         if (uncontrolledCultureKeywordStats == null) {
-            uncontrolledCultureKeywordStats = getGenericKeywordService().getUncontrolledCultureKeywordStats();
+            uncontrolledCultureKeywordStats = genericKeywordService.getUncontrolledCultureKeywordStats();
         }
         return uncontrolledCultureKeywordStats;
     }
 
     public List<Pair<CultureKeyword, Integer>> getControlledCultureKeywordStats() {
         if (controlledCultureKeywordStats == null) {
-            controlledCultureKeywordStats = getGenericKeywordService().getControlledCultureKeywordStats();
+            controlledCultureKeywordStats = genericKeywordService.getControlledCultureKeywordStats();
         }
+        authorityManagementService.findPluralDups(CultureKeyword.class, getAuthenticatedUser(), false);
         return controlledCultureKeywordStats;
     }
 
     public List<Pair<GeographicKeyword, Integer>> getGeographicKeywordStats() {
         if (geographicKeywordStats == null) {
-            geographicKeywordStats = getGenericKeywordService().getGeographicKeywordStats();
+            geographicKeywordStats = genericKeywordService.getGeographicKeywordStats();
         }
+        authorityManagementService.findPluralDups(GeographicKeyword.class, getAuthenticatedUser(), false);
         return geographicKeywordStats;
     }
 
     public List<Pair<InvestigationType, Integer>> getInvestigationTypeStats() {
         if (investigationTypeStats == null) {
-            investigationTypeStats = getGenericKeywordService().getInvestigationTypeStats();
+            investigationTypeStats = genericKeywordService.getInvestigationTypeStats();
         }
         return investigationTypeStats;
     }
 
     public List<Pair<MaterialKeyword, Integer>> getMaterialKeywordStats() {
         if (materialKeywordStats == null) {
-            materialKeywordStats = getGenericKeywordService().getMaterialKeywordStats();
+            materialKeywordStats = genericKeywordService.getMaterialKeywordStats();
         }
         return materialKeywordStats;
     }
 
     public List<Pair<OtherKeyword, Integer>> getOtherKeywordStats() {
         if (otherKeywordStats == null) {
-            otherKeywordStats = getGenericKeywordService().getOtherKeywordStats();
+            otherKeywordStats = genericKeywordService.getOtherKeywordStats();
         }
+        authorityManagementService.findPluralDups(OtherKeyword.class, getAuthenticatedUser(), false);
         return otherKeywordStats;
     }
 
     public List<Pair<SiteNameKeyword, Integer>> getSiteNameKeywordStats() {
         if (siteNameKeywordStats == null) {
-            siteNameKeywordStats = getGenericKeywordService().getSiteNameKeywordStats();
+            siteNameKeywordStats = genericKeywordService.getSiteNameKeywordStats();
         }
+        authorityManagementService.findPluralDups(SiteNameKeyword.class, getAuthenticatedUser(), false);
         return siteNameKeywordStats;
     }
 
     public List<Pair<SiteTypeKeyword, Integer>> getControlledSiteTypeKeywordStats() {
         if (controlledSiteTypeKeywordStats == null) {
-            controlledSiteTypeKeywordStats = getGenericKeywordService().getControlledSiteTypeKeywordStats();
+            controlledSiteTypeKeywordStats = genericKeywordService.getControlledSiteTypeKeywordStats();
         }
+        authorityManagementService.findPluralDups(SiteTypeKeyword.class, getAuthenticatedUser(), false);
         return controlledSiteTypeKeywordStats;
     }
 
     public List<Pair<SiteTypeKeyword, Integer>> getUncontrolledSiteTypeKeywordStats() {
         if (uncontrolledSiteTypeKeywordStats == null) {
-            uncontrolledSiteTypeKeywordStats = getGenericKeywordService().getUncontrolledSiteTypeKeywordStats();
+            uncontrolledSiteTypeKeywordStats = genericKeywordService.getUncontrolledSiteTypeKeywordStats();
         }
         return uncontrolledSiteTypeKeywordStats;
     }
 
     public List<Pair<TemporalKeyword, Integer>> getTemporalKeywordStats() {
         if (temporalKeywordStats == null) {
-            temporalKeywordStats = getGenericKeywordService().getTemporalKeywordStats();
+            temporalKeywordStats = genericKeywordService.getTemporalKeywordStats();
         }
+        authorityManagementService.findPluralDups(TemporalKeyword.class, getAuthenticatedUser(), false);
         return temporalKeywordStats;
     }
 
@@ -280,11 +315,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.recentlyUpdatedResources = recentlyUpdatedResources;
     }
 
-    public List<Person> getRecentUsers() {
+    public List<TdarUser> getRecentUsers() {
         return recentUsers;
     }
 
-    public void setRecentUsers(List<Person> recentUsers) {
+    public void setRecentUsers(List<TdarUser> recentUsers) {
         this.recentUsers = recentUsers;
     }
 
@@ -320,11 +355,11 @@ public class AdminController extends AuthenticationAware.Base {
         this.historicalCollectionStats = historicalCollectionStats;
     }
 
-    public List<Person> getRecentLogins() {
+    public List<TdarUser> getRecentLogins() {
         return recentLogins;
     }
 
-    public void setRecentLogins(List<Person> recentLogins) {
+    public void setRecentLogins(List<TdarUser> recentLogins) {
         this.recentLogins = recentLogins;
     }
 

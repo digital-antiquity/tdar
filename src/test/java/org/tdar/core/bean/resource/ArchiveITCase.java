@@ -11,10 +11,9 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.workflow.ActionMessageErrorListener;
+import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.filestore.Filestore.ObjectType;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
@@ -42,17 +41,16 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(irFile.getInformationResourceFileType(), FileType.FILE_ARCHIVE);
 
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
+        evictCache();
 
         // however, whatever caused the processing error is fixed
-        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(irFile.getLatestUploadedVersion());
+        File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(ObjectType.RESOURCE, irFile.getLatestUploadedVersion());
         File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
         fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);
 
         // and the file is reprocessed
-        ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(ir, listener);
+        ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
 
         // then in memory, the following is true:
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
@@ -79,10 +77,9 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         irFile.setStatus(FileStatus.PROCESSED);
         irFile.setErrorMessage("blah");
         genericService.saveOrUpdate(irFile);
-        genericService.synchronize();
-        ActionMessageErrorListener listener = new ActionMessageErrorListener();
-        informationResourceService.reprocessInformationResourceFiles(ir, listener);
-        genericService.synchronize();
+        evictCache();
+        ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
+        evictCache();
 
         irFile = genericService.find(InformationResourceFile.class, irFile.getId());
         assertNotNull("IrFile is null", irFile);

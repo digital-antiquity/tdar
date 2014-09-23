@@ -4,15 +4,15 @@
 
 # Is the server running in production mode (less debuging data, and optimized JavaScript and CSS)
 # default: test
-server.environment=production
+server.environment=test
 
 # the hostname of the server
 # default: core.tdar.org
-app.hostname=core.tdar.org
+app.hostname=localhost
 
 # the default port for the server (http)
 # default: 80
-app.port=80
+app.port=8080
 
 # Whether HTTPS is enabled
 # default: false
@@ -20,11 +20,16 @@ https.enabled = false
 
 # What the default port for https should be
 # default: 443
-https.port
+https.port=8443
 
 # The short name of the site
 # default: tDAR
 site.acronym=tDAR
+
+# The name of the organization running the site (may be the same as the acronym)
+# default: Digital Antiquity
+service.provider=Digital Antiquity
+
 
 # The full name of the site
 # default: the Digital Archaeological Record
@@ -49,25 +54,28 @@ mail.smtp.host=localhost
 
 # The email address for the sysadmin, tDAR uses this to send notifications about problems or for users to report issues to
 # default: tdar-svn@lists.asu.edu
-sysadmin.email=
+#sysadmin.email=
 
 # the email address used for "contacting the service"
 # default: info@digitalantiquity.org
 app.contact.email=info@digitalantiquity.org
 
+# should the system send emails to the "from" address instead of the to (for testing)
+# default: false
+#email.to.tester=
 
 ####################################
 ## Billing and Purchasing Settings
 ####################################
 
 # whether payments are enabled
-pay.per.contribution.enabled
+pay.per.contribution.enabled=false
 
 # email address of the Billing Admin
-billing.admin.email
+#billing.admin.email
 
 # the file to be used for values for the coupon codes
-coupon.codes.file
+#coupon.codes.file
 
 
 #############################
@@ -75,13 +83,13 @@ coupon.codes.file
 #############################
 
 # the ID of the collection that should be used to find featured items
-featured.colletion.id=-1
+#featured.colletion.id=-1
 
 # the URL for the "news" webpage
-news.url
+#news.url
 
 # the URL for the "news" RSS Feed
-news.rssFeed
+#news.rssFeed
 
 
 
@@ -238,10 +246,10 @@ is.geolocation.to.be.used=false
 copyright.fields.enabled=false
 
 # whether users should be prompted for the LicenseType of an InformationResource
-licenses.enabled
+licenses.enabled=false
 
 # the default LicenseType to use
-default.license.type
+#default.license.type
 
 # Should the user be allowed to expose their email and phone number to anonymous users
 privacy.controls.enabled=false
@@ -279,7 +287,7 @@ obfuscation.interceptor.disabled= false
 tos.url=http://www.tdar.org/about/policies/terms-of-use/
 
 # terms of service version
-tos.version
+#tos.version
 
 # Contributors agreement URL
 # default: http://www.tdar.org/about/policies/contributors-agreement/
@@ -296,16 +304,27 @@ contributor.agreement.version
 use.WebFilePreprocessing = false
 
 # whether the static content is served on another server
-static.content.enabled
+static.content.enabled=false
 
 # the hostname of the static content server
-static.content.host
+#static.content.host
 
 # the default http port for static content
-static.content.port
+#static.content.port
 
 # the ssl http port for static content
-static.content.sslPort
+#static.content.sslPort
+
+# content security policy enabled
+#default = true
+content.security.policy.enabled = false
+
+# the additions to the content security policy headers
+# http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+content.security.policy.additions = ""
+
+#whether to use a CDN for javascript and css
+use.cdn=true
 
 ###################################
 ## SPECIAL USER SETTINGS
@@ -319,7 +338,7 @@ userids.to.ignore
 guest.user.id
 
 # whether the user should be able to enter an RPA number
-rpa.enabled
+rpa.enabled=true
 
 
 ###################################
@@ -358,12 +377,17 @@ creator.analytics.days.to.process=10
 #kettle input path: the directory that the kettle ETL tool will scan for input (for loading FAIMS data)
 kettle.input.path=
 
-odata.enabled
+odata.enabled=false
 
-embargo.period
+embargo.period=5
 
 upload.maxFilesPerResource=50
 
-archive.enabled
-video.enabled
-xml.export.enabled
+archive.enabled=false
+video.enabled=false
+xml.export.enabled=false
+
+# URL Rewrite Filter refresh rate
+# how often to re-read the URL Rewrite Filter
+# default: -1 (never)
+#urlRewrite.refresh= 

@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -31,7 +33,6 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
-
 /**
  * Represnts a 3-D scan or sensory-data scan of an object.
  * 
@@ -52,9 +53,11 @@ public class SensoryData extends Dataset {
     private String surveyLocation; // FIXME: remove this field
 
     @Column(name = "survey_date_begin")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date surveyDateBegin;
 
     @Column(name = "survey_date_end")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date surveyDateEnd;
 
     @Column(name = "survey_conditions")
@@ -77,7 +80,7 @@ public class SensoryData extends Dataset {
     @Type(type = "org.hibernate.type.StringClobType")
     private String rgbDataCaptureInfo;
 
-    @Column(name = "estimated_data_resolution", length = 254)
+    @Column(name = "estimated_data_resolution", length = FieldLength.FIELD_LENGTH_254)
     private String estimatedDataResolution;
 
     @Column(name = "total_scans_in_project")

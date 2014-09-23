@@ -1,24 +1,18 @@
 package org.tdar.struts.action.search;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.data.DateRange;
+import org.tdar.core.bean.Indexable;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
@@ -32,6 +26,11 @@ public class ScholarController extends AbstractLookupController {
 
     private static final long serialVersionUID = -4680630242612817779L;
     private int year;
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient ResourceService resourceService;
 
     public int getYear() {
         return year;
@@ -46,30 +45,17 @@ public class ScholarController extends AbstractLookupController {
             @Action(value = "scholar", results = { @Result(name = SUCCESS, location = "scholar.ftl") }),
     })
     public String execute() {
-        ReservedSearchParameters param = new ReservedSearchParameters();
-        List<Status> statuses = new ArrayList<>();
-        statuses.add(Status.ACTIVE);
-        param.setStatuses(statuses);
-        setSortField(SortOption.DATE_UPDATED);
         setRecordsPerPage(250);
-        DateTime dt = new DateTime();
-        DateTime start = dt.withYear(getYear()).withDayOfYear(1);
-        DateTime end = dt.withYear(getYear() +1).withDayOfYear(1);
-        param.getRegisteredDates().add(new DateRange(start.toDate(), end.toDate()));
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
-        queryBuilder.setOperator(QueryParser.Operator.AND);
-        queryBuilder.append(param.toQueryPartGroup(this));
-        try {
-            handleSearch(queryBuilder);
-        } catch (ParseException e) {
-            addActionErrorWithException("could not generate page",e);
-            return INPUT;
+        setResults(resourceService.findByTdarYear(this, getYear()));
+        for (Indexable p : (List<Indexable>) getResults()) {
+            authorizationService.applyTransientViewableFlag(p, getAuthenticatedUser());
         }
         return SUCCESS;
     }
 
     @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
         return null;
     }
+
 }

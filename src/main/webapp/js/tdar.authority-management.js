@@ -2,8 +2,8 @@
  * TDAR  authority-management library.  Used by the Authority-management (aka record-deduper) pages.
  * @type {{}}
  */
-TDAR.auth = {};
-TDAR.auth = function () {
+TDAR.authority = {};
+TDAR.authority = function () {
     "use strict";
     var self = {};
 
@@ -16,7 +16,7 @@ TDAR.auth = function () {
         person: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/person',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "person id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
@@ -34,7 +34,7 @@ TDAR.auth = function () {
         institution: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/institution',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
@@ -55,7 +55,7 @@ TDAR.auth = function () {
         keyword: {
             tableSelector: '#dupe_datatable',
             sAjaxSource: '/lookup/keyword',
-            "bLengthChange": false,
+            "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
@@ -115,7 +115,6 @@ TDAR.auth = function () {
         }
     }
 
-
     //FIXME: this is a dumb, hackey way to get the keywordType to send the lookup controller.
     /**
      * return the keyword class name for the specified enumVal (used for "lookupType" when performing keyword lookup
@@ -150,7 +149,6 @@ TDAR.auth = function () {
         return data;
     }
 
-
     /**
      * This is a row-selection callback for the datatable widget.  It displays a running list of selected rows
      * in a separate UL under the table.  The callback parameters are unused - they exist merely to satisfy the
@@ -169,9 +167,10 @@ TDAR.auth = function () {
             dupeCount++;
             //FIXME: need a better way to display summary label for selected item, or maybe we should just have the same table structure as datatable.
             var label = data.name;
-            if (!label) label = data.label;
-            var $li = $('<li></li>').append('<input type="hidden" name="selectedDupeIds" value="' + idx + '" />').
-                append('<span>' + label + ' (id:' + idx + ')</span>');
+            if (!label) {
+                label = data.label;
+            }
+            var $li = $('<li></li>').append('<input type="hidden" name="selectedDupeIds" value="' + idx + '" />').append('<span>' + label + ' (id:' + idx + ')</span>');
             $ul.append($li);
             console.log('renderdupes:item:' + idx + ":" + data.name);
         });

@@ -2,8 +2,6 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +12,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
@@ -28,14 +26,12 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -59,7 +55,7 @@ public class GenericService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * A 2nd-level cache of objects that don't change frequently. 
+     * A 2nd-level cache of objects that don't change frequently.
      * 
      */
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
@@ -88,12 +84,17 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public void setCacheModeForCurrentSession(CacheMode mode) {
+        genericDao.setCacheModeForCurrentSession(mode);
+    }
+
     /**
      * Find all ids given a specified class
+     * 
      * @param persistentClass
      * @return
      */
-    @Transactional 
+    @Transactional
     public <T extends Persistable> List<Long> findAllIds(Class<T> persistentClass) {
         return genericDao.findAllIds(persistentClass);
     }
@@ -123,7 +124,7 @@ public class GenericService {
     }
 
     /**
-     * Useful for comparing data across sessions.  This gets the session-id for hibernate effectively.
+     * Useful for comparing data across sessions. This gets the session-id for hibernate effectively.
      * 
      * @return
      */
@@ -207,7 +208,7 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <P extends Persistable> List<P> populateSparseObjectsById(List<P> sparseObjects, Class<?> cls) {
         if (!DeHydratable.class.isAssignableFrom(cls)) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.not_implemented"));
+            throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         // get a unique set of Ids
         Map<Long, P> ids = Persistable.Base.createIdMap(sparseObjects);
@@ -244,6 +245,7 @@ public class GenericService {
 
     /**
      * Find all @link Persistable of class.
+     * 
      * @param persistentClass
      * @return
      */
@@ -293,7 +295,7 @@ public class GenericService {
 
     /**
      * Find all @link Persistable objects, sorted by the defaultSortOption() (id).
-     *
+     * 
      * @param persistentClass
      * @return
      */
@@ -326,6 +328,11 @@ public class GenericService {
         return genericDao.findAllScrollable(persistentClass);
     }
 
+    @Transactional(readOnly = true)
+    public <E> ScrollableResults findAllScrollable(Class<E> persistentClass, int batchSize) {
+        return genericDao.findAllScrollable(persistentClass, batchSize);
+    }
+
     /**
      * Find a specific @link Persistable by id, and class.
      * 
@@ -335,7 +342,7 @@ public class GenericService {
      */
     @Transactional(readOnly = true)
     public <T> T find(Class<T> persistentClass, Long id) {
-        return (T) genericDao.find(persistentClass, id);
+        return genericDao.find(persistentClass, id);
     }
 
     /**
@@ -382,11 +389,12 @@ public class GenericService {
      */
     @Transactional
     public <T> T merge(T entity) {
-        return (T) genericDao.merge(entity);
+        return genericDao.merge(entity);
     }
 
     /**
      * Update the @link Persistable in the database with the version passed in
+     * 
      * @param obj
      */
     @Transactional
@@ -419,6 +427,7 @@ public class GenericService {
 
     /**
      * Save the obeject in the database and validate before it's done
+     * 
      * @param entity
      */
     @Transactional
@@ -461,6 +470,7 @@ public class GenericService {
 
     /**
      * Save or Update a @link Persistable based on whether it's been persisted before or not.
+     * 
      * @param obj
      */
     @Transactional
@@ -468,7 +478,7 @@ public class GenericService {
         enforceValidation(obj);
         genericDao.saveOrUpdate(obj);
     }
-    
+
     /**
      * @see #saveOrUpdate(Object)
      * @param persistentCollection
@@ -492,12 +502,15 @@ public class GenericService {
         } else {
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
             Set<ConstraintViolation<Object>> violations = validator.validate(obj);
+            List<Object> errors = new ArrayList<>();
+            errors.add(obj);
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid_with_violations", obj, violations));
+                errors.add(violations);
+                throw new TdarValidationException("genericService.object_not_valid_with_violations", errors);
             }
-            if (obj instanceof Validatable && !((Validatable) obj).isValid()) {
-                throw new TdarValidationException(MessageHelper.getMessage("genericService.object_not_valid", obj));
+            if ((obj instanceof Validatable) && !((Validatable) obj).isValid()) {
+                throw new TdarValidationException("genericService.object_not_valid", errors);
             }
         }
     }
@@ -521,6 +534,7 @@ public class GenericService {
      */
     @Transactional
     public void delete(Object obj) {
+        genericDao.markWritableOnExistingSession(obj);
         genericDao.delete(obj);
     }
 
@@ -579,6 +593,7 @@ public class GenericService {
 
     /**
      * Mark an object as "read only" so that changes are not persisted to the database (used in obfuscation, for example)..
+     * 
      * @param obj
      */
     public void markReadOnly(Object obj) {
@@ -593,6 +608,10 @@ public class GenericService {
      */
     public <O> O markWritable(O obj) {
         return genericDao.markWritable(obj);
+    }
+
+    public <O> void markUpdatable(O obj) {
+        genericDao.markUpdatable(obj);
     }
 
     /**
@@ -641,6 +660,7 @@ public class GenericService {
 
     /**
      * Get the hibernate statistics for the session, # of transactions, slow queries, etc.
+     * 
      * @return
      */
     @Transactional(readOnly = true)
@@ -666,7 +686,7 @@ public class GenericService {
      * @return the number of deleted entities
      * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
         return genericDao.deleteAll(persistentClass);
     }
@@ -677,25 +697,9 @@ public class GenericService {
      * 
      * @param entity
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void forceDelete(Object entity) {
         genericDao.forceDelete(entity);
-    }
-
-    /**
-     * Sort @link Updatable by their updated date.
-     *
-     * @param resourcesToEvaluate
-     */
-    public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
-        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
-
-            @Override
-            public int compare(T o1, T o2) {
-                return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
-            }
-        });
-
     }
 
     /**
@@ -720,6 +724,19 @@ public class GenericService {
     @Transactional
     public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
         return genericDao.findAllWithProfile(class1, ids, profileName);
+    }
+
+    public <T> boolean sessionContains(T entity) {
+        return genericDao.sessionContains(entity);
+    }
+
+    public <T> List<T> findAllWithL2Cache(Class<T> persistentClass) {
+        return genericDao.findAllWithL2Cache(persistentClass, null);
+    }
+
+    public void evictFromCache(Persistable res) {
+        genericDao.evictFromCache((Persistable) res);
+
     }
 
 }

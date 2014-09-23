@@ -1,22 +1,28 @@
 package org.tdar.core.bean.cache;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 
 /**
  * This caches the counts of resource types for the homepage.
+ * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "homepage_cache_resource_type")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.cache.HomepageResourceCountCache")
 public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache>, ResourceCache<ResourceType> {
 
     private static final long serialVersionUID = 4401314235170180736L;
@@ -25,7 +31,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
     private Long count;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type", nullable = false,  unique = true)
+    @Column(name = "resource_type", nullable = false, unique = true)
     private ResourceType resourceType;
 
     public HomepageResourceCountCache() {

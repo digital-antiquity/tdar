@@ -16,7 +16,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.MessageHelper;
 
 /**
  * @author Adam Brin
@@ -39,7 +38,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             task.run(vers);
         } catch (Throwable e) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), e);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", e);
         }
     }
 
@@ -71,7 +70,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 }
             }
         } catch (Throwable t) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.processing_error"), t);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.processing_error", t);
         }
     }
 
@@ -106,9 +105,9 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 }
                 File outputFile = new File(outputFilename);
                 getLogger().debug("output file is: {} {}", outputFile, outputFile.length());
-//                if (outputFile.exists() && outputFile.length() < 50) {
-//                    
-//                }
+                // if (outputFile.exists() && outputFile.length() < 50) {
+                //
+                // }
             } catch (Throwable e) {
                 getLogger().debug("PDF image extraction failed", e);
             }
@@ -136,7 +135,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
                 getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("pdfDerivativeTask.encryption_warning"));
+                throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
             }
 
             // try {

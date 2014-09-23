@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -20,14 +21,15 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.resource.CodingSheetService;
+import org.tdar.core.service.resource.OntologyNodeService;
+import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
- * <p>
  * Manages CRUD requests for OntologyS.
  * 
  * 
@@ -48,11 +50,18 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     private OntologyNode parentNode;
     private List<OntologyNode> children;
 
+    @Autowired
+    private transient CodingSheetService codingSheetService;
+    @Autowired
+    private transient OntologyService ontologyService;
+    @Autowired
+    private transient OntologyNodeService ontologyNodeService;
+
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
         String filename = getPersistable().getTitle() + ".owl";
         // convert text input to OWL XML text and use that as our archival version
-        String owlXml = getOntologyService().toOwlXml(getPersistable().getId(), fileTextInput);
+        String owlXml = ontologyService.toOwlXml(getPersistable().getId(), fileTextInput);
         getLogger().info("owl xml is: \n{}", owlXml);
         return new FileProxy(filename, FileProxy.createTempFileFromString(owlXml), VersionType.UPLOADED);
     }
@@ -69,7 +78,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         super.saveInformationResourceProperties();
 
         saveCategories();
-        // getOntologyService().saveOrUpdate(ontology);
+        // ontologyService.saveOrUpdate(ontology);
         handleUploadedFiles();
         return SUCCESS;
     }
@@ -81,7 +90,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
-        getCodingSheetsWithMappings().addAll(getCodingSheetService().findAllUsingOntology(getOntology()));
+        getCodingSheetsWithMappings().addAll(codingSheetService.findAllUsingOntology(getOntology()));
     }
 
     @Override
@@ -90,12 +99,12 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     public List<OntologyNode> getRootElements() {
-        return getOntologyService().getRootElements(getPersistable().getOntologyNodes());
+        return ontologyService.getRootElements(getPersistable().getOntologyNodes());
     }
 
     public List<OntologyNode> getChildElements(OntologyNode node) {
         getLogger().trace("get children:" + node);
-        return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
+        return ontologyService.getChildren(getPersistable().getOntologyNodes(), node);
     }
 
     @SkipValidation
@@ -108,20 +117,21 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     public String node() throws TdarActionException {
         setNode(getOntology().getNodeByIri(getIri()));
         if (node == null) {
-            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri() ));
+            throw new TdarActionException(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", getIri()));
         }
         setChildren(getChildElements(node));
-        setParentNode(getOntologyNodeService().getParent(node));
+        setParentNode(ontologyNodeService.getParent(node));
 
-        setDatasetsWithMappingsToNode(getOntologyNodeService().listDatasetsWithMappingsToNode(getNode()));
+        setDatasetsWithMappingsToNode(ontologyNodeService.listDatasetsWithMappingsToNode(getNode()));
         return SUCCESS;
     }
 
     public List<OntologyNode> getChildElements(String index) {
-        getLogger().trace("get children:" + index);
+        getLogger().trace("get children: {}", index);
         for (OntologyNode node : getPersistable().getOntologyNodes()) {
-            if (node.getIndex().equals(index))
-                return getOntologyService().getChildren(getPersistable().getOntologyNodes(), node);
+            if (node.getIndex().equals(index)) {
+                return ontologyService.getChildren(getPersistable().getOntologyNodes(), node);
+            }
         }
         return null;
     }

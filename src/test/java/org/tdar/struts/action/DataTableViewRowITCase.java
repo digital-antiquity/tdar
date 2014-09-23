@@ -9,14 +9,16 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.struts.action.resource.DatasetController;
+
+import com.opensymphony.xwork2.Action;
 
 public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
 
@@ -44,7 +46,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         prepareValidData();
         controller.setRowId(1L);
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
+        assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         assertTrue("A row was expected", controller.getDataTableRowAsMap().size() > 0);
     }
 
@@ -54,7 +56,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         prepareValidData();
         controller.setRowId(100000000L);
         controller.prepare();
-        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
+        assertEquals(Action.ERROR, controller.getDataResultsRow());
     }
 
     @Test
@@ -63,7 +65,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         prepareValidData();
         controller.setRowId(0L);
         controller.prepare();
-        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
+        assertEquals(Action.ERROR, controller.getDataResultsRow());
         assertTrue("No row was expected", controller.getDataTableRowAsMap().size() == 0);
     }
 
@@ -72,7 +74,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         controller.setDataTableId(0L);
         controller.setRowId(1L);
         controller.prepare();
-        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
+        assertEquals(Action.ERROR, controller.getDataResultsRow());
     }
 
     @Test
@@ -85,7 +87,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         }
         controller.setRowId(1L);
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
+        assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         assertTrue("A row was expected", controller.getDataTableRowAsMap().size() > 0);
     }
 
@@ -98,11 +100,11 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }
         genericService.save(dataset);
-        Person user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewPerson();
         init(controller, user);
         controller.setRowId(1L);
         controller.prepare();
-        assertEquals(TdarActionSupport.ERROR, controller.getDataResultsRow());
+        assertEquals(Action.ERROR, controller.getDataResultsRow());
     }
 
     @Test
@@ -111,7 +113,7 @@ public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
         prepareValidData();
         controller.setRowId(1L);
         controller.prepare();
-        assertEquals(TdarActionSupport.SUCCESS, controller.getDataResultsRow());
+        assertEquals(Action.SUCCESS, controller.getDataResultsRow());
         final Iterator<DataTableColumn> iterator = controller.getDataTableRowAsMap().keySet().iterator();
         final String name = iterator.next().getName();
         assertTrue("The row id column is expected to be first in the map, but found " + name, name.equals(TargetDatabase.TDAR_ID_COLUMN));

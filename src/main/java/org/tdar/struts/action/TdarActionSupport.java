@@ -2,8 +2,7 @@ package org.tdar.struts.action;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,8 +11,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -22,51 +23,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.coverage.CoverageType;
-import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.Localizable;
+import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.AccountService;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.DataIntegrationService;
-import org.tdar.core.service.DownloadService;
-import org.tdar.core.service.EntityService;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileSystemResourceService;
-import org.tdar.core.service.FreemarkerService;
-import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SearchIndexService;
-import org.tdar.core.service.SearchService;
-import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.XmlService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.resource.CategoryVariableService;
-import org.tdar.core.service.resource.CodingSheetService;
-import org.tdar.core.service.resource.DataTableService;
-import org.tdar.core.service.resource.DatasetService;
-import org.tdar.core.service.resource.InformationResourceFileService;
-import org.tdar.core.service.resource.InformationResourceFileVersionService;
-import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.core.service.resource.OntologyNodeService;
-import org.tdar.core.service.resource.OntologyService;
-import org.tdar.core.service.resource.ProjectService;
-import org.tdar.core.service.resource.ResourceRelationshipService;
-import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.workflow.ActionMessageErrorSupport;
+import org.tdar.struts.ErrorListener;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -79,12 +53,23 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  */
 @Scope("prototype")
 @Controller
-public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware, ActionMessageErrorSupport {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
     // result name constants
+    private boolean hideExceptionArea = false;
+    private Date freemarkerProcessingTime = null;
+
+    private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
+    // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
+    private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
+
+    public static final String JAXBRESULT = "jaxbdocument";
+    public static final String JSONRESULT = "jsonresult";
+    public static final String HTTPHEADER = "httpheader";
     public static final String REDIRECT = "redirect";
+
     public static final String WAIT = "wait";
     public static final String THUMBNAIL = "thumbnail";
     public static final String SM = "sm";
@@ -99,7 +84,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      */
     public static final String UNAUTHORIZED = "unauthorized";
 
-    // TODO: jtd: struts docs imply that Action.NONE is a more appropriate result. Research further then decide.
     public static final String AUTHENTICATED = "authenticated";
 
     /**
@@ -117,10 +101,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String VIEW = "view";
     public static final String EDIT = "edit";
     public static final String JSON = "json";
-    public static final String BILLING = "BILLING";
+    public static final String BILLING = "billing";
+    public static final String CONTRIBUTOR = "contributor";
     public static final String CONFIRM = "confirm";
     public static final String DELETE = "delete";
     public static final String NEW = "new";
+    public static final String FREEMARKER = "freemarker";
 
     /**
      * The system has authenticated the user and the user is authorized to perform the requested action, but
@@ -128,6 +114,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * updated Terms Of Service)
      */
     public static final String USER_AGREEMENT = "user_agreement";
+    public static final String RESULT_REDIRECT_START = "redirect-start";
 
     private String javascriptErrorLog;
 
@@ -140,71 +127,17 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
      * 
      */
 
+    private String moreInfoUrlKey;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient DownloadService downloadService;
-    @Autowired
-    private transient ObfuscationService obfuscationService;
-    @Autowired
-    private transient ProjectService projectService;
-    @Autowired
-    private transient EmailService emailService;
-    @Autowired
-    private transient XmlService xmlService;
-    @Autowired
     private transient FileSystemResourceService filesystemResourceService;
-    @Autowired
-    private transient AccountService accountService;
-    @Autowired
-    private transient DatasetService datasetService;
-    @Autowired
-    private transient DataTableService dataTableService;
-    @Autowired
-    private transient CodingSheetService codingSheetService;
-    @Autowired
-    private transient OntologyService ontologyService;
-    @Autowired
-    private transient OntologyNodeService ontologyNodeService;
+
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-    @Autowired
-    private transient EntityService entityService;
-    @Autowired
-    private transient FreemarkerService freemarkerService;
 
-    @Autowired
-    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
-
-    @Autowired
-    private transient CategoryVariableService categoryVariableService;
-    @Autowired
-    private transient ResourceService resourceService;
-    @Autowired
-    private transient InformationResourceService informationResourceService;
-    @Autowired
-    private transient InformationResourceFileService informationResourceFileService;
-    @Autowired
-    private transient SearchService searchService;
-    @Autowired
-    private transient GenericKeywordService genericKeywordService;
-    @Autowired
-    private transient DataIntegrationService dataIntegrationService;
     @Autowired
     private transient GenericService genericService;
-    @Autowired
-    private transient InformationResourceFileVersionService informationResourceFileVersionService;
-    @Autowired
-    private transient UrlService urlService;
-    @Autowired
-    private transient SearchIndexService searchIndexService;
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient ResourceRelationshipService resourceRelationshipService;
-
-    @Autowired
-    private transient StatisticService statisticService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
 
@@ -216,45 +149,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private Map<String, String> clientValidationInfo = new LinkedHashMap<>();
 
-    public ProjectService getProjectService() {
-        return projectService;
-    }
-
-    public DatasetService getDatasetService() {
-        return datasetService;
-    }
-
-    public ObfuscationService getObfuscationService() {
-        return obfuscationService;
-    }
-
-    public CodingSheetService getCodingSheetService() {
-        return codingSheetService;
-    }
-
-    public OntologyService getOntologyService() {
-        return ontologyService;
-    }
-
-    public ResourceService getResourceService() {
-        return resourceService;
-    }
-
-    public BookmarkedResourceService getBookmarkedResourceService() {
-        return bookmarkedResourceService;
-    }
-
-    public ResourceRelationshipService getResourceRelationshipService() {
-        return resourceRelationshipService;
-    }
-
-    public EntityService getEntityService() {
-        return entityService;
-    }
-
-    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
-        return authenticationAndAuthorizationService;
-    }
+    private ErrorListener errorListener;
 
     public TdarConfiguration getTdarConfiguration() {
         return TdarConfiguration.getInstance();
@@ -265,11 +160,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getActionName() {
-        if (ActionContext.getContext() == null)
+        if (ActionContext.getContext() == null) {
             return null;
+        }
         return ActionContext.getContext().getName();
     }
 
+    @DoNotObfuscate(reason = "Session Object")
     public SessionData getSessionData() {
         if (sessionData == null) {
             getLogger().error("Session data was null, should be managed by Spring.");
@@ -350,6 +247,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getSiteAcronym();
     }
 
+    public String getServiceProvider() {
+        return getTdarConfiguration().getServiceProvider();
+    }
+
     public String getSiteName() {
         return getTdarConfiguration().getSiteName();
     }
@@ -414,117 +315,30 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().isGeoLocationToBeUsed();
     }
 
-    protected void clearAuthenticationToken() {
-        AuthenticationToken token = getSessionData().getAuthenticationToken();
-        token.setSessionEnd(new Date());
-        getGenericService().update(token);
-        getSessionData().clearAuthenticationToken();
-    }
-
     protected Logger getLogger() {
         return logger;
-    }
-
-    public CategoryVariableService getCategoryVariableService() {
-        return categoryVariableService;
-    }
-
-    public InformationResourceService getInformationResourceService() {
-        return informationResourceService;
-    }
-
-    public SearchService getSearchService() {
-        return searchService;
-    }
-
-    public DataTableService getDataTableService() {
-        return dataTableService;
-    }
-
-    public OntologyNodeService getOntologyNodeService() {
-        return ontologyNodeService;
-    }
-
-    public InformationResourceFileService getInformationResourceFileService() {
-        return informationResourceFileService;
-    }
-
-    public EmailService getEmailService() {
-        return emailService;
-    }
-
-    public XmlService getXmlService() {
-        return xmlService;
-    }
-
-    public DataIntegrationService getDataIntegrationService() {
-        return dataIntegrationService;
-    }
-
-    public GenericKeywordService getGenericKeywordService() {
-        return genericKeywordService;
     }
 
     public GenericService getGenericService() {
         return genericService;
     }
 
-    public InformationResourceFileVersionService getInformationResourceFileVersionService() {
-        return informationResourceFileVersionService;
-    }
-
-    public UrlService getUrlService() {
-        return urlService;
-    }
-
-    public SearchIndexService getSearchIndexService() {
-        return searchIndexService;
-    }
-
-    public FreemarkerService getFreemarkerService() {
-        return freemarkerService;
-    }
-
-    /**
-     * Returns a list of Strings resulting from applying toString to each
-     * element of the incoming Collection.
-     * 
-     * Basically, map( toString, collection ), but since Java doesn't support
-     * closures yet...
-     * 
-     * @param collection
-     * @return
-     */
-    protected List<String> toSortedStringList(Collection<?> collection) {
-        ArrayList<String> stringList = new ArrayList<>(collection.size());
-        for (Object o : collection) {
-            stringList.add(o.toString());
-        }
-        Collections.sort(stringList);
-        return stringList;
-    }
-
-    protected <P extends Persistable> List<Long> toIdList(Collection<P> persistables) {
-        ArrayList<Long> ids = new ArrayList<>();
-        for (P persistable : persistables) {
-            ids.add(persistable.getId());
-        }
-        return ids;
-    }
-
     protected void addActionErrorWithException(String message, Throwable exception) {
-        String trace = ExceptionUtils.getFullStackTrace(exception);
+        String trace = ExceptionUtils.getStackTrace(exception);
 
-        getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
+        getLogger().error("{} [code: {}]: {} -- {}", new Object[] { message, ExceptionWrapper.convertExceptionToCode(exception), exception, trace });
+        if (exception instanceof TdarActionException) {
+            setHideExceptionArea(true);
+        }
         if (exception instanceof TdarRecoverableRuntimeException) {
             int maxDepth = 4;
             Throwable thrw = exception;
-            if (exception instanceof Localizable) {
-                ((Localizable) exception).setLocale(getLocale());
+            if (exception instanceof LocalizableException) {
+                ((LocalizableException) exception).setLocale(getLocale());
             }
             StringBuilder sb = new StringBuilder(exception.getLocalizedMessage());
 
-            while (thrw.getCause() != null && maxDepth > -1) {
+            while ((thrw.getCause() != null) && (maxDepth > -1)) {
                 thrw = thrw.getCause();
                 if (StringUtils.isNotBlank(thrw.getMessage())) {
                     sb.append(": ").append(thrw.getMessage());
@@ -532,45 +346,64 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 maxDepth--;
             }
 
-            super.addActionError(sb.toString());
-        } else {
-            super.addActionError(message);
+            addActionError(sb.toString());
+        } else if (StringUtils.isNotBlank(message)) {
+            addActionError(message);
         }
-        stackTraces.add(trace);
+        stackTraces.add(ExceptionWrapper.convertExceptionToCode(exception));
     }
 
+    @Override
+    public void addFieldError(String fieldName, String errorMessage) {
+        if (errorListener != null) {
+            errorListener.addError(String.format("%s:%s", fieldName, errorMessage));
+        }
+        super.addFieldError(fieldName, errorMessage);
+    }
+
+    // FIXME: shouldn't we just getText() every message here or add addActionErrorMessageKey(String messageKey)
     @Override
     public void addActionError(String message) {
         getLogger().debug("ACTIONERROR:: {}", message);
+        if (errorListener != null) {
+            errorListener.addError(message);
+        }
         super.addActionError(message);
     }
 
-    @Override
+    // FIXME: when replacing ActionErrors above, this will not need the getText calls
+    protected void processErrorObject(ErrorTransferObject errors) {
+        getLogger().trace("found errors {}", errors);
+        if (errors == null) {
+            return;
+        }
+        for (String error : errors.getActionErrors()) {
+            this.addActionError(getText(error));
+        }
+
+        Map<String, List<String>> fieldErrors = errors.getFieldErrors();
+        for (String field : fieldErrors.keySet()) {
+            for (String error : fieldErrors.get(field)) {
+                this.addFieldError(field, getText(error));
+            }
+        }
+
+        for (String msg : errors.getActionMessages()) {
+            this.addActionMessage(getText(msg));
+        }
+
+        for (String msg : errors.getStackTraces()) {
+            getStackTraces().add(msg);
+        }
+
+        setMoreInfoUrlKey(errors.getMoreInfoUrlKey());
+    }
+
     public List<String> getStackTraces() {
         return stackTraces;
     }
 
-    public ResourceCollectionService getResourceCollectionService() {
-        return resourceCollectionService;
-    }
-
-    public AccountService getAccountService() {
-        return accountService;
-    }
-
-    public DownloadService getDownloadService() {
-        return downloadService;
-    }
-
-    public StatisticService getStatisticService() {
-        return statisticService;
-    }
-
-    public FileSystemResourceService getFileSystemResourceService() {
-        return filesystemResourceService;
-    }
-    
-    protected HttpServletRequest getServletRequest() {
+    public HttpServletRequest getServletRequest() {
         return servletRequest;
     }
 
@@ -579,7 +412,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.servletRequest = servletRequest;
     }
 
-    protected HttpServletResponse getServletResponse() {
+    public HttpServletResponse getServletResponse() {
         return servletResponse;
     }
 
@@ -594,13 +427,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     protected final boolean isGetRequest() {
         return "GET".equals(servletRequest.getMethod());
-    }
-
-    public List<CoverageType> getAllCoverageTypes() {
-        List<CoverageType> coverageTypes = new ArrayList<>();
-        coverageTypes.add(CoverageType.CALENDAR_DATE);
-        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
-        return coverageTypes;
     }
 
     public boolean isHttpsEnabled() {
@@ -636,20 +462,20 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getStaticHost() {
         if (!getTdarConfiguration().isStaticContentEnabled()) {
-            //expecting that default requests are relative to root; so / becomes //
+            // expecting that default requests are relative to root; so / becomes //
             return "";
         }
-        
-        String port ="";
-        if (isSecure() && getTdarConfiguration().getStaticContentSSLPort() != 443) {
+
+        String port = "";
+        if (isSecure() && (getTdarConfiguration().getStaticContentSSLPort() != 443)) {
             port = ":" + getTdarConfiguration().getStaticContentSSLPort();
         }
 
-        if (!isSecure() && getTdarConfiguration().getStaticContentPort() != 80) {
+        if (!isSecure() && (getTdarConfiguration().getStaticContentPort() != 80)) {
             port = ":" + getTdarConfiguration().getStaticContentPort();
         }
 
-        return String.format("%s//%s%s",getProtocol(), getTdarConfiguration().getStaticContentHost(),port);
+        return String.format("%s//%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port);
     }
 
     public boolean getShowJiraLink() {
@@ -662,7 +488,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isReindexing() {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (indexingTask != null && !indexingTask.hasEnded()) {
+        if ((indexingTask != null) && !indexingTask.hasEnded()) {
             return true;
         }
         return false;
@@ -684,10 +510,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getCulturalTermsLabel();
     }
 
-    private static final String JS_ERRORLOG_NOSCRIPT = "NOSCRIPT";
-    // FIXME: UTF-8 here is likely inviting encoding errors/challenges especially if it ends up in the console which is often the "ASCII" charset
-    private static final String JS_ERRORLOG_DELIMITER = "ɹǝʇıɯıןǝp";
-
     public String getJavascriptErrorLogDefault() {
         return JS_ERRORLOG_NOSCRIPT;
     }
@@ -697,7 +519,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     /**
-     * Check the js error log and js validation error log.  If we detect any js  errors, log them at ERROR.  Validation
+     * Check the js error log and js validation error log. If we detect any js errors, log them at ERROR. Validation
      * errors are an expected part of the workflow and are only logged at INFO.
      */
     public void reportAnyJavascriptErrors() {
@@ -705,18 +527,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             getLogger().trace("No javascript errors reported by the client");
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
-            if(getLogger().isErrorEnabled()) {
-                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"), errors.length, StringUtils.join(errors, "\n\t - "));
+            if (getLogger().isErrorEnabled()) {
+                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"),
+                        errors.length, StringUtils.join(errors, "\n\t - "));
             }
         }
 
-
         List<String> lines = new ArrayList<>(clientValidationInfo.size());
-        for(Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
-            String line = String.format("%s\t %s", entry.getKey(),  entry.getValue());
+        for (Map.Entry<String, String> entry : getClientValidationInfo().entrySet()) {
+            String line = String.format("%s\t %s", entry.getKey(), entry.getValue());
             lines.add(line);
         }
-        if(!lines.isEmpty()) {
+        if (!lines.isEmpty()) {
             getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
         }
     }
@@ -729,10 +551,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return javascriptErrorLog;
     }
 
-    public boolean isJSCSSMergeServletEnabled() {
-        return getTdarConfiguration().isJSCSSMergeServletEnabled();
-    }
-    
     /**
      * @see TdarConfiguration#isSwitchableMapObfuscation()
      * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
@@ -748,21 +566,100 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setClientValidationInfo(LinkedHashMap<String, String> clientValidationInfo) {
         this.clientValidationInfo = clientValidationInfo;
     }
-    
-    public String getText(String aTextName, Object ... args) {
+
+    public String getText(String aTextName, Object... args) {
         return super.getText(aTextName, Arrays.asList(args));
     }
 
-    public List<String> getJavascriptFiles() throws TdarActionException {
+    public List<String> getJavascriptFiles() {
         return filesystemResourceService.parseWroXML("js");
     }
 
-    public List<String> getCssFiles() throws TdarActionException  {
+    public List<String> getCssFiles() {
         return filesystemResourceService.parseWroXML("css");
     }
 
     public boolean isWebFilePreprocessingEnabled() {
         return filesystemResourceService.testWRO();
     }
-    
+
+    public String getMoreInfoUrlKey() {
+        return moreInfoUrlKey;
+    }
+
+    public void setMoreInfoUrlKey(String moreInfoUrl) {
+        this.moreInfoUrlKey = moreInfoUrl;
+    }
+
+    public boolean isHideExceptionArea() {
+        return hideExceptionArea;
+    }
+
+    public void setHideExceptionArea(boolean hideExceptionArea) {
+        this.hideExceptionArea = hideExceptionArea;
+    }
+
+    public boolean isErrorWarningSectionVisible() {
+        if (hideExceptionArea) {
+            return false;
+        }
+
+        if (CollectionUtils.isNotEmpty(getActionErrors())) {
+            return true;
+        }
+        if (MapUtils.isNotEmpty(getFieldErrors())) {
+            return true;
+        }
+        if (this instanceof AbstractInformationResourceController) {
+            AbstractInformationResourceController<?> cast = (AbstractInformationResourceController<?>) this;
+            if (cast.isEditable() && CollectionUtils.isNotEmpty(cast.getHistoricalFileErrors())) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public void addActionErrors(List<String> errors) {
+        if (CollectionUtils.isEmpty(errors)) {
+            return;
+        }
+        for (String error : errors) {
+            addActionError(error);
+        }
+    }
+
+    public String getWroTempDirName() {
+        return filesystemResourceService.getWroDir();
+    }
+
+    public boolean isUseCDN() {
+        return getTdarConfiguration().shouldUseCDN();
+    }
+
+    public boolean isShouldAutoDownload() {
+        return getTdarConfiguration().shouldAutoDownload();
+    }
+
+    public void registerErrorListener(ErrorListener listener) {
+        this.errorListener = listener;
+    }
+
+    public Date getFreemarkerProcessingTime() {
+        return freemarkerProcessingTime;
+    }
+
+    public void setFreemarkerProcessingTime(Date freemarkerProcessingTime) {
+        this.freemarkerProcessingTime = freemarkerProcessingTime;
+    }
+
+
+    public String getTosUrl() {
+        return getTdarConfiguration().getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return getTdarConfiguration().getContributorAgreementUrl();
+    }
+
 }

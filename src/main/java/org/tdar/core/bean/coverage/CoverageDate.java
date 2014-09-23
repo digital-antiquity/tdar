@@ -1,14 +1,17 @@
 package org.tdar.core.bean.coverage;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.Range;
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -21,6 +24,9 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -32,8 +38,11 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
  * @version $Rev$
  */
 @Entity
-@Table(name = "coverage_date")
-@org.hibernate.annotations.Table( appliesTo="coverage_date", indexes = { @Index(name="coverage_resid", columnNames={"resource_id", "id"})})
+@Table(name = "coverage_date", indexes = {
+        @Index(name = "coverage_resid", columnList = "resource_id, id")
+})
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.CoverageDate")
 public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;
@@ -42,18 +51,21 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Field(name = "startDate", store = Store.YES)
     // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @JsonView(JsonLookupFilter.class)
     private Integer startDate;
 
     @Column(name = "end_date")
     @Field(name = "endDate", store = Store.YES)
     // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @JsonView(JsonLookupFilter.class)
     private Integer endDate;
 
     @Enumerated(EnumType.STRING)
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type", length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private CoverageType dateType;
 
     @Column(name = "start_aprox", nullable = false)
@@ -63,6 +75,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     private boolean endDateApproximate;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private String description;
 
     public CoverageDate() {
@@ -108,10 +121,11 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Transient
     @Override
     public boolean isValidForController() {
-        if (dateType == null || startDate == null || endDate == null) {
+        if ((dateType == null) || (startDate == null) || (endDate == null)) {
             return false;
-        } else
+        } else {
             return validate(startDate, endDate);
+        }
     }
 
     protected boolean validate(Integer start, Integer end) {
@@ -132,7 +146,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
 
     @Override
     public String toString() {
-        if (getDateType() == null) { 
+        if (getDateType() == null) {
             return String.format("%s: %s - %s", getDateType(), getStartDate(), getEndDate());
         }
         return String.format("%s: %s - %s", getDateType().getLabel(), getStartDate(), getEndDate());
@@ -192,20 +206,20 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
 
     // return true if the supplied covereageDate completely falls within this date range
     public boolean contains(CoverageDate coverageDate) {
-        return dateType == coverageDate.getDateType()
+        return (dateType == coverageDate.getDateType())
                 && getRange().containsRange(coverageDate.getRange());
     }
 
     // return true if start or end (or both) falls within this coverageDate
     public boolean overlaps(CoverageDate coverageDate) {
-        return dateType == coverageDate.getDateType()
+        return (dateType == coverageDate.getDateType())
                 && getRange().isOverlappedBy(coverageDate.getRange());
     }
 
     // is this date even worth 'evaluating'
     @Transient
     public boolean isInitialized() {
-        if (getStartDate() == null && getEndDate() == null) {
+        if ((getStartDate() == null) && (getEndDate() == null)) {
             return false;
         }
         return true;

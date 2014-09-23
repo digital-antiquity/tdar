@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -19,9 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
@@ -36,11 +36,9 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -51,7 +49,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  * @version $Revision$
  */
 @Entity
-@Table(name = "data_table_column")
+@Table(name = "data_table_column", indexes = {
+        @Index(name = "data_table_column_data_table_id_idx", columnList = "data_table_id"),
+        @Index(name = "data_table_column_default_ontology_id_idx", columnList = "default_ontology_id"),
+        @Index(name = "data_table_column_default_coding_sheet_id_idx", columnList = "default_coding_sheet_id")
+})
 @XmlRootElement
 public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
 
@@ -88,7 +90,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id")
-    @Index(name = "data_table_column_data_table_id_idx")
     private DataTable dataTable;
 
     @Column(nullable = false)
@@ -110,7 +111,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "column_encoding_type", length = 25)
+    @Column(name = "column_encoding_type", length = FieldLength.FIELD_LENGTH_25)
     private DataTableColumnEncodingType columnEncodingType;
 
     @ManyToOne
@@ -119,16 +120,14 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
-    @Index(name = "data_table_column_default_ontology_id_idx")
     private Ontology defaultOntology;
 
     @ManyToOne
     @JoinColumn(name = "default_coding_sheet_id")
-    @Index(name = "data_table_column_default_coding_sheet_id_idx")
     private CodingSheet defaultCodingSheet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "measurement_unit", length = 25)
+    @Column(name = "measurement_unit", length = FieldLength.FIELD_LENGTH_25)
     private MeasurementUnit measurementUnit;
 
     @Column(columnDefinition = "boolean default FALSE")
@@ -332,37 +331,38 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Override
-    @JSONTransient
     public boolean isValidForController() {
         // not implemented
         return true;
     }
 
     @Override
-    @JSONTransient
     public boolean isValid() {
+        List<Object> keys = new ArrayList<>();
+        keys.add(getName());
         if (columnEncodingType == null) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_encoding_type", getName()));
+            throw new TdarValidationException("dataTableColumn.invalid_encoding_type", keys);
         }
         switch (columnEncodingType) {
             case CODED_VALUE:
                 if (getDefaultCodingSheet() == null) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_coded_value", getName()));
+                    throw new TdarValidationException("dataTableColumn.invalid_coded_value", keys);
                 }
                 break;
             case MEASUREMENT:
                 if (measurementUnit == null) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_measurement", getName()));
+                    throw new TdarValidationException("dataTableColumn.invalid_measurement", keys);
                 }
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
-                if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid_measurement_numeric", getName()));
+                if ((columnDataType == null) || !columnDataType.isNumeric()) {
+                    throw new TdarValidationException("dataTableColumn.invalid_measurement_numeric", keys);
                 }
                 break;
             case COUNT:
                 // FIXME: Not 100% sure this is correct with the NUMERIC check
-                if (columnDataType == null || !columnDataType.isNumeric()) {
-                    throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("dataTableColumn.invalid", getName(), "count was not numeric"));
+                if ((columnDataType == null) || !columnDataType.isNumeric()) {
+                    keys.add("count was not numeric");
+                    throw new TdarValidationException("dataTableColumn.invalid_count_numeric", keys);
                 }
             case UNCODED_VALUE:
         }
@@ -382,24 +382,34 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
         logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
         return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
+                Objects.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && Objects.equals(isMappingColumn(), column.isMappingColumn()));
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public String getJsSimpleName() {
         return getName().replaceAll("[\\s\\,\"\']", "_");
     }
 
     public List<String> getMappedDataValues(OntologyNode node) {
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
-            if (ObjectUtils.equals(node, rule.getOntologyNode())) {
+            if (Objects.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }
         }
         return values;
+    }
+
+    @Transient
+    public Ontology getMappedOntology() {
+        if (getDefaultOntology() != null) {
+            return getDefaultOntology();
+        }
+        if (getDefaultCodingSheet() != null && getDefaultCodingSheet().getDefaultOntology() != null) {
+            return getDefaultCodingSheet().getDefaultOntology();
+        }
+        return null;
     }
 
 }

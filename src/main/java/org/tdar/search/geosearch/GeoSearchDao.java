@@ -14,17 +14,19 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.data.SvgMapWrapper;
@@ -37,6 +39,7 @@ import org.tdar.utils.MessageHelper;
  * @author Adam Brin
  * 
  */
+@Component
 public class GeoSearchDao {
 
     private static boolean databaseEnabled;
@@ -47,6 +50,7 @@ public class GeoSearchDao {
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
     private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
+
     // private static final String PSQL_MULTIPOLYGON_DATELINE =
     // "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
     public String convertToPolygonBox(LatitudeLongitudeBox latLong) {
@@ -152,7 +156,7 @@ public class GeoSearchDao {
                 default:
                     break;
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException("Fips Search not implemented");
         }
 
         public String getLimitColumn() {
@@ -166,7 +170,7 @@ public class GeoSearchDao {
                 default:
                     break;
             }
-            throw new NotImplementedException();
+            throw new NotImplementedException("Fips search not implemented");
         }
 
         public String getLabelColumn() {
@@ -183,12 +187,12 @@ public class GeoSearchDao {
     /*
      * generic method for performing query
      */
-    public List<Map<String, Object>> findAll(String sql) {
+    public List<Map<String, Object>> findAll(String sql, Object... params) {
         logger.trace(sql);
         List<Map<String, Object>> queryForList = new ArrayList<Map<String, Object>>();
         if (isEnabled()) {
             try {
-                queryForList = getJdbcTemplate().queryForList(sql);
+                queryForList = getJdbcTemplate().queryForList(sql, params);
             } catch (EmptyResultDataAccessException e) {
                 logger.trace("no results found for query");
             } catch (CannotGetJdbcConnectionException e) {
@@ -205,15 +209,15 @@ public class GeoSearchDao {
     /*
      * generic method for performing query
      */
-    public Map<String, Object> findFirst(String sql) {
+    public Map<String, Object> findFirst(String sql, Object... params) {
         Map<String, Object> queryForList = new HashMap<String, Object>();
         try {
-            queryForList = getJdbcTemplate().queryForMap(sql);
+            queryForList = getJdbcTemplate().queryForMap(sql, params);
         } catch (EmptyResultDataAccessException e) {
             logger.trace("no results found for query");
         } catch (CannotGetJdbcConnectionException e) {
             logger.error("gis database connection not enabled");
-            GeoSearchDao.setEnabled( false);
+            GeoSearchDao.setEnabled(false);
         } catch (Exception e) {
             logger.debug("exception in geosearch:", e);
             GeoSearchDao.setEnabled(false);
@@ -222,8 +226,9 @@ public class GeoSearchDao {
     }
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings
-    @Qualifier("tdarGeoDataSource")
-    public void setDataSource(DataSource dataSource) {
+    @Autowired(required = false)
+    @Lazy(true)
+    public void setDataSource(@Qualifier("tdarGeoDataSource") DataSource dataSource) {
         try {
             setEnabled(true);
             setJdbcTemplate(new JdbcTemplate(dataSource));
@@ -283,8 +288,9 @@ public class GeoSearchDao {
     public LatitudeLongitudeBox extractLatLongFromFipsCode(String... fipsCodes) {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         StringBuffer suffix = new StringBuffer();
-        if (ArrayUtils.isEmpty(fipsCodes))
+        if (ArrayUtils.isEmpty(fipsCodes)) {
             return null;
+        }
 
         for (int i = 0; i < fipsCodes.length; i++) {
             try {
@@ -306,15 +312,17 @@ public class GeoSearchDao {
                 }
             }
             suffix.append(String.format(QUERY_ENVELOPE_2, col, fipsCodes[i]));
-            if (i + 1 < fipsCodes.length)
+            if ((i + 1) < fipsCodes.length) {
                 suffix.append(" OR ");
+            }
         }
 
         String sql = String.format(QUERY_ENVELOPE, SpatialTables.COUNTY.getTableName(), POLYGON, suffix.toString());
         logger.trace(sql);
         Map<String, Object> fipsResults = findFirst(sql);
-        if (fipsResults == null || fipsResults.get(POLYGON) == null)
+        if ((fipsResults == null) || (fipsResults.get(POLYGON) == null)) {
             return null;
+        }
         PGgeometry poly = (PGgeometry) fipsResults.get(POLYGON);
         logger.trace(poly.getGeometry().toString());
         Point firstPoint = poly.getGeometry().getPoint(0);
@@ -341,7 +349,7 @@ public class GeoSearchDao {
     public SvgMapWrapper getMapSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
         String sql = constructSVGQuery(strokeWidth, searchPrefix, searchSuffix, table, limit);
         SvgMapWrapper wrapper = new SvgMapWrapper();
-        List<Map<String, Object>> findAll = findAll(sql);
+        List<Map<String, Object>> findAll = findAll(sql, limit);
         for (Map<String, Object> row : findAll) {
             for (Object val : row.values()) {
                 wrapper.getSqlXml().add((SQLXML) val);
@@ -350,12 +358,15 @@ public class GeoSearchDao {
         logger.info(sql);
 
         sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
-        if (StringUtils.isNotBlank(limit)) {
-            sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
-        }
+        Map<String, Object> envelope = null;
         logger.info(sql);
-        Map<String, Object> envelope = findFirst(sql);
-        if (envelope != null && envelope.get(POLYGON) != null) {
+        if (StringUtils.isNotBlank(limit)) {
+            sql += String.format(" and %s='?'", table.getLimitColumn());
+            envelope = findFirst(sql, limit);
+        } else {
+            envelope = findFirst(sql);
+        }
+        if ((envelope != null) && (envelope.get(POLYGON) != null)) {
             PGgeometry poly = (PGgeometry) envelope.get(POLYGON);
             logger.trace(poly.getGeometry().toString());
             Point firstPoint = poly.getGeometry().getPoint(0);
@@ -385,7 +396,7 @@ public class GeoSearchDao {
     public static String constructSVGQuery(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
         String ret = String.format(QUERY_SVG, table.getIdColumn(), table.getLabelColumn(), strokeWidth, searchPrefix, searchSuffix, table.getTableName());
         if (StringUtils.isNotBlank(limit)) {
-            ret += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
+            ret += String.format(" and %s='?'", table.getLimitColumn());
         }
         return ret;
     }

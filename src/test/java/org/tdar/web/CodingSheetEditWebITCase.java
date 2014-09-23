@@ -69,7 +69,7 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         submitForm();
         // we should be on the INPUT page.
         logger.trace("\n\n\n\n {} \n\n\n", getPageBodyCode());
-        assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save.action"));
+        assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save"));
         assertNoErrorTextPresent();
     }
 

@@ -1,15 +1,27 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts.interceptor.annotation.PostOnly;
+
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$
@@ -23,79 +35,90 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
-@WriteableSession
-public class BookmarkResourceController extends AuthenticationAware.Base {
+public class BookmarkResourceController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -5396034976314292120L;
+
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient XmlService xmlService;
 
     private Long resourceId;
     private Boolean success = Boolean.FALSE;
     private String callback;
+    private InputStream resultJson;
 
-    @Action(
-            value = "bookmarkAjax",
+    private Resource resource;
+
+    private TdarUser person;
+
+    @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @HttpForbiddenErrorResponseOnly
+    @PostOnly
+    public String bookmarkResourceAjaxAction() {
+        success = bookmarkResource();
+        processResultToJson();
+        return SUCCESS;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        resource = resourceService.find(resourceId);
+        person = getAuthenticatedUser();
+        if (resource == null) {
+            addActionError(getText("bookmarkResourceController.no_resource"));
+        }
+        if (person == null) {
+            addActionError(getText("bookmarkResourceController.no_user"));
+        }
+    }
+
+    private void processResultToJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put(SUCCESS, success);
+        setResultJson(new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(result, null, callback).getBytes()));
+    }
+
+    @Action(value = "bookmark",
             results = {
-                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
-            }
-            )
-            public String bookmarkResourceAjaxAction() {
+                    @Result(name = SUCCESS, type = "redirect", location = URLConstants.BOOKMARKS)
+            })
+    public String bookmarkResourceAction() {
         success = bookmarkResource();
         return SUCCESS;
     }
 
-    @Action(
-            value = "bookmark",
-            results = {
-                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
-            }
-            )
-            public String bookmarkResourceAction() {
-        success = bookmarkResource();
-        return SUCCESS;
-    }
-
-    @Action(
-            value = "removeBookmarkAjax",
-            results = {
-                    @Result(name = "success", type = "freemarker", location = "bookmark.ftl", params = { "contentType", "application/json" })
-            }
-            )
-            public String removeBookmarkAjaxAction() {
+    @Action(value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @PostOnly
+    @HttpForbiddenErrorResponseOnly
+    public String removeBookmarkAjaxAction() {
         success = removeBookmark();
+        processResultToJson();
         return SUCCESS;
     }
 
-    @Action(
-            value = "removeBookmark",
+    @Action(value = "removeBookmark",
             results = {
-                    @Result(name = "success", type = "redirect", location = URLConstants.BOOKMARKS)
-            }
-            )
-            public String removeBookmarkAction() {
+                    @Result(name = SUCCESS, type = "redirect", location = URLConstants.BOOKMARKS)
+            })
+    public String removeBookmarkAction() {
         success = removeBookmark();
         return SUCCESS;
     }
 
     private boolean bookmarkResource() {
-        Resource resource = getResourceService().find(resourceId);
-        if (resource == null) {
-            getLogger().trace("no resource with id: " + resourceId);
-            return false;
-        }
-        Person person = getAuthenticatedUser();
         getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
-        return getBookmarkedResourceService().bookmarkResource(resource, person);
+        return bookmarkedResourceService.bookmarkResource(resource, person);
     }
 
     private boolean removeBookmark() {
-        Resource resource = getResourceService().find(resourceId);
-        if (resource == null) {
-            getLogger().warn("no resource with id: " + resourceId);
-            return false;
-        }
         getLogger().trace("removing bookmark for resource: " + resource.getId());
-        Person person = getAuthenticatedUser();
-        return getBookmarkedResourceService().removeBookmark(resource, person);
+        return bookmarkedResourceService.removeBookmark(resource, person);
     }
 
     public Long getResourceId() {
@@ -120,6 +143,14 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 
     public String getCallback() {
         return callback;
+    }
+
+    public InputStream getResultJson() {
+        return resultJson;
+    }
+
+    public void setResultJson(InputStream resultJson) {
+        this.resultJson = resultJson;
     }
 
 }

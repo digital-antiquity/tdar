@@ -3,13 +3,14 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
@@ -31,13 +32,12 @@ import au.csiro.doiclient.business.DoiDTO;
  * FAQ's: http://ands.org.au/cite-data/doi_q_and_a.html
  * Technical documentation: http://ands.org.au/resource/r9-cite-my-data-v1.1-tech-doco.pdf
  * Client source code: http://andspidclient.sourceforge.net/
- * 
+ *
  * ANDS use the same server for test and production. Hence we have had to go to quite a bit of extra work to make sure that the default is, should anything
  * go wrong, "TEST" !!! See: <a href="https://jira.ands.org.au/browse/SD-4420">SD-4420</a>
- * 
+ *
  * @author Martin Paulo
  */
-@Service
 public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     protected static final String IS_PRODUCTION_SERVER_KEY = "is.production.server";
@@ -115,7 +115,9 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     private String getStringProperty(String property) {
         String result = assistant.getProperty(property, null);
         if (result == null) {
-            throw new IllegalStateException(MessageHelper.getMessage("Doi.required_property_not_set", property));
+            List<String> vals = new ArrayList<>();
+            vals.add(property);
+            throw new IllegalStateException(MessageHelper.getMessage("andsDoi.required_property_not_set", vals));
         }
         return result;
     }
@@ -174,7 +176,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     @Override
     public Map<String, String> getMetadata(String identifier) {
-        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("error.not_implemented"));
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
     }
 
     @Override
@@ -193,7 +195,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
 
     /**
      * Simply throws an exception if the operation did not succeed.
-     * 
+     *
      * @param operation
      *            A string describing the operation attempted.
      * @param response
@@ -204,7 +206,7 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
     @SuppressWarnings("static-method")
     private void validateResponse(String operation, AndsDoiResponse response) {
         if (!response.isSuccess()) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("andsDoi.could_not_complete",operation ,response.getMessage()));
+            throw new TdarRecoverableRuntimeException("andsDoi.could_not_complete", Arrays.asList(operation, response.getMessage()));
         }
     }
 
@@ -215,14 +217,14 @@ public class AndsDoiExternalIdProviderImpl implements ExternalIDProvider {
         if (r instanceof InformationResource) { // should always be true, but
             Creator copyrightHolder = ((InformationResource) r).getCopyrightHolder();
             if (copyrightHolder != null) {
-                //uploaded resources might not have these set.
+                // uploaded resources might not have these set.
                 creatorNames.add(copyrightHolder.getName());
             }
         }
-        if (creatorNames.size() <= 0) {
+        doiDTO.setCreators(creatorNames);
+        if (doiDTO.getCreators().isEmpty()) {
             return doiDTO; // no point in going further, this isn't going to be accepted.
         }
-        doiDTO.setCreators(creatorNames);
         // Ands mandate that we must list a publisher and a publication year.
         // so we provide a default (ourselves) and then overwrite with any actually found publisher
         doiDTO.setPublisher(assistant.getStringProperty("default.publisher", "FAIMS"));

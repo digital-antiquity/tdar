@@ -3,7 +3,6 @@
  */
 
 //FIXME: Audit these methods; see what needs to be modified/renamed/removed  (TDAR-3498)
-
 (function ($) {
 
     //FIXME: Not used
@@ -44,8 +43,9 @@
      * String must adhere to ISBN 10/13 digit format
      */
     $.validator.addMethod("isbn", function (value, element) {
-        if ($(element).is(':hidden'))
-            return true; // skip validation if not showing
+        if ($(element).is(':hidden')) {
+            return true;
+        } // skip validation if not showing
         return value.match(/^(((\d+)-?(\d+)-?(\d+)-?([\dX]))|((978|979)-?(\d{9}[\dXx]))|)$/);
     }, "you must include a valid 10/13 Digit ISBN");
 
@@ -53,10 +53,20 @@
      * String must adhere to 8-digit ISSN format
      */
     $.validator.addMethod("issn", function (value, element) {
-        if ($(element).is(':hidden'))
-            return true;// skip validation if not showing
+        if ($(element).is(':hidden')) {
+            return true;
+        }// skip validation if not showing
         return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
     }, "you must include a valid 8 Digit ISSN");
+
+    $.validator.addMethod("doi", function (value, element) {
+    	var $e = $(element);
+        if ($e.is(':hidden') || $e.val() == '') {
+            return true;
+        }// skip validation if not showing
+        // from : http://stackoverflow.com/questions/27910/finding-a-doi-in-a-document-or-page
+        return value.match(/^\b(10[.][0-9]{4,}(?:[.][0-9]+)*\/(?:(?!["&\'<>])\S)+)\b/);
+    }, "you must include a valid DOI e.g.: 10.1000/182");
 
     //FIXME: already implemented in additional-methods.js
     $.validator.addMethod("phoneUS", function (phone_number, element) {
@@ -77,12 +87,10 @@
         return !value.match(/^(\s*)(dataset|collection|project|document|image|coding sheet|ontology|video|scan)(\s*)$/i);
     }, "Please use a more descriptive title");
 
-
     //FIXME: not used, redundant
     $.validator.addMethod("float", function (value, element) {
         return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
     }, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
-
 
     /**
      * Only allow value in this element if it has a sibling input that stores a peristable ID which is not empty.
@@ -91,7 +99,7 @@
      */
     $.validator.addMethod("notValidIfIdEmpty", function (value, element) {
         var $id = $($(element).attr("autocompleteIdElement"));
-        if (value == undefined || value.trim() == "") {
+        if (value == undefined || $.trim(value) == "") {
             return true;
         }
         var idval = parseInt($id.val());
@@ -107,8 +115,9 @@
      * @param param other element to compare to the current element
      */
     $.validator.addMethod('lessThanEqual', function (value, element, param) {
-        if (this.optional(element))
+        if (this.optional(element)) {
             return true;
+        }
         var i = parseInt(value);
         var j = parseInt($(param[0]).val());
         return i <= j;
@@ -119,8 +128,9 @@
      * @param param other element to compare
      */
     $.validator.addMethod('greaterThanEqual', function (value, element, param) {
-        if (this.optional(element))
+        if (this.optional(element)) {
             return true;
+        }
         var i = parseInt(value);
         var j = parseInt($(param[0]).val());
         return i >= j;
@@ -169,11 +179,11 @@
      */
     $.validator.addMethod('required-visible', function (value, element) {
         var $element = $(element);
-        if ($element.is(':hidden'))
+        if ($element.is(':hidden')) {
             return true;
+        }
         return $element.val() != '';
     }, "this element is required");
-
 
     //FIXME: this needs refactoring.  Just keep reading...
     /**
@@ -192,7 +202,7 @@
 
         //if we came here by way of a form 're-validate', we need to make sure that validation logic in registerCheckboxInfo happens first.
         /* FIXME: this is the wrong way to do this.  Instead of calling out to an external validation routine,  the logic of registerCheckboxInfo needs to be a $.validation method,  and the code that is responsible for coloring the column "status" should be a listener to validation events. */
-        registerCheckboxInfo.apply(element);
+        TDAR.datasetMetadata.registerCheckboxInfo.call(element, "tdar.formValidateExtensions.js");
 
         if ($selectedElement.is(':disabled')) {
             var val = $selectedElement.val().toLowerCase().replace('_', ' ');
@@ -211,47 +221,67 @@
     });
 
     /**
+     * Submitter shouldn't appear in authuser list (because submitters already have full-access)
+     */
+    $.validator.addMethod("authuserNotSubmitter",
+        function(value, element) {
+            //skip validation if the user is not allowed to remove the element that would otherwise fail validation
+            if($(element).is(':disabled,[readonly]')) {
+                return true;
+            }
+            var authuserId = $($(element).attr("autocompleteidelement")).val();
+            if(authuserId === "-1") {return true;}
+            var submitterId = $(element.form).data("submitterid");
+            if(submitterId) {
+                return submitterId.toString() !==  authuserId;
+            }
+            else {
+                return true;
+            }
+        },
+        "Resource submitters always have full access rights. This entry is unnecessary."
+    )
+
+    /**
      * Only allow confidential file uploads if the user has added at least one  "contact" person/institution.
      */
-    $.validator.addMethod(
-        "confidential-contact-required",
-        function (value, element) {
-            if (value === "PUBLIC") return true;
-            var $table = $('#creditTable');
-            var institutions = $table.find(".creatorInstitution").not(".hidden").toArray();
-            var persons = $table.find(".creatorPerson").not(".hidden").toArray();
-            var grepForValidContacts = function (creators) {
-                //first, filter out the rows that don't have the 'contact' role selected
-                var contactRows = $.grep(creators, function (row, idx) {
+    $.validator.addMethod("confidential-contact-required", function (value, element) {
+        if (value === "PUBLIC") {
+            return true;
+        }
+                var $table = $('#creditTable');
+                var institutions = $table.find(".creatorInstitution").not(".hidden").toArray();
+                var persons = $table.find(".creatorPerson").not(".hidden").toArray();
+                var grepForValidContacts = function (creators) {
+                    //first, filter out the rows that don't have the 'contact' role selected
+                    var contactRows = $.grep(creators, function (row, idx) {
 
-                    var isContact = $(row).find(".creator-role-select").val() === "CONTACT";
-                    return isContact;
-                });
+                        var isContact = $(row).find(".creator-role-select").val() === "CONTACT";
+                        return isContact;
+                    });
 
-                //now make sure those contacts aren't blank
-                var validContacts = $.grep(contactRows, function (row, idx) {
-                    var isValid;
-                    if ($(row).hasClass("creatorPerson")) {
-                        //person must have firstname, lastname specified
+                    //now make sure those contacts aren't blank
+                    var validContacts = $.grep(contactRows, function (row, idx) {
+                        var isValid;
+                        if ($(row).hasClass("creatorPerson")) {
+                            //person must have firstname, lastname specified
 
-                        var nonBlanks = $(row).find("[name $= 'lastName'],[name $= 'firstName']").filter(function () {
-                            return $(this).val() != "";
-                        });
-                        isValid = nonBlanks.length == 2;
-                    } else {
-                        //institution must not be blank
-                        isValid = $(row).find("[name $= 'institution.name']").val() != "";
-                    }
-                    return isValid;
-                });
+                            var nonBlanks = $(row).find("[name $= 'lastName'],[name $= 'firstName']").filter(function () {
+                                return $(this).val() != "";
+                            });
+                            isValid = nonBlanks.length == 2;
+                        } else {
+                            //institution must not be blank
+                            isValid = $(row).find("[name $= 'institution.name']").val() != "";
+                        }
+                        return isValid;
+                    });
 
-                return validContacts;
-            };
+                    return validContacts;
+                };
 
-            var contactCount = grepForValidContacts(institutions).length + grepForValidContacts(persons).length;
-            return contactCount > 0;
+                var contactCount = grepForValidContacts(institutions).length + grepForValidContacts(persons).length;
+                return contactCount > 0;
 
-        },
-        "You must have at least one person/institution listed as a 'contact' under <b>Individual and Institutional Roles</b> when marking a file 'confidential'"
-    );
+            }, "You must have at least one person/institution listed as a 'contact' under <b>Individual and Institutional Roles</b> when marking a file 'confidential'");
 })(jQuery);

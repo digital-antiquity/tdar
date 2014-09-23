@@ -23,7 +23,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAccessRestriction;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceNoteType;
@@ -71,8 +71,8 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
         docUnorderdValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docUnorderdValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docUnorderdValMap.put("authorizedUsers[0].user.tempDisplayName", "Michelle Elliott");
-        docUnorderdValMap.put("authorizedUsers[1].user.tempDisplayName", "Joshua Watts");
+        docUnorderdValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
+        docUnorderdValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
@@ -222,7 +222,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             setInput(key, docValMap.get(key));
         }
         for (String key : docMultiValMap.keySet()) {
-            setInput(key, (String[]) docMultiValMap.get(key).toArray(new String[0]));
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
 
         submitForm();
@@ -286,8 +286,9 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             String val = docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
                 continue;
+            }
 
             if (docUnorderdValMap.containsKey(key)) {
                 assertTextPresent(docValMap.get(key));

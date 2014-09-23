@@ -26,12 +26,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,6 +46,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -72,9 +75,11 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
+@Component
 public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
+    public static final int MAX_COLUMN_NAME_SIZE = 63;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String SELECT_ROW_FROM_TABLE = "SELECT * FROM %s WHERE " + TDAR_ID_COLUMN + " = %s";
     private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
@@ -90,6 +95,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
+    private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
@@ -100,22 +106,77 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     private static final String CREATE_TEMPORARY_TABLE = "CREATE TEMPORARY TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
     public static final HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
-            Arrays.asList("all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric", "both", "case", "cast",
-                    "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
-                    "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having",
-                    "in",
-                    "initially", "intersect", "into", "leading", "limit", "localtime", "localtimestamp", "new", "not", "null", "off", "offset", "old", "on",
-                    "only",
-                    "or", "order", "placing", "primary", "references", "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing",
-                    "union",
-                    "unique", "user", "using", "when", "where", "false", "true", "authorization", "between", "binary", "cross", "freeze", "full", "ilike",
-                    "inner",
-                    "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose")
+            Arrays.asList("a", "abort", "abs", "absent", "absolute", "access", "according", "action", "ada", "add", "admin", "after", "aggregate", "all",
+                    "allocate", "also", "alter", "always", "analyse", "analyze", "and", "any", "are", "array", "array_agg", "array_max_cardinality", "as",
+                    "asc", "asensitive", "assertion", "assignment", "asymmetric", "at", "atomic", "attribute", "attributes", "authorization", "avg",
+                    "backward", "base64", "before", "begin", "begin_frame", "begin_partition", "bernoulli", "between", "bigint", "binary", "bit", "bit_length",
+                    "blob", "blocked", "bom", "boolean", "both", "breadth", "by", "c", "cache", "call", "called", "cardinality", "cascade", "cascaded", "case",
+                    "cast", "catalog", "catalog_name", "ceil", "ceiling", "chain", "char", "character", "characteristics", "characters", "character_length",
+                    "character_set_catalog", "character_set_name", "character_set_schema", "char_length", "check", "checkpoint", "class", "class_origin",
+                    "clob", "close", "cluster", "coalesce", "cobol", "collate", "collation", "collation_catalog", "collation_name", "collation_schema",
+                    "collect", "column", "columns", "column_name", "command_function", "command_function_code", "comment", "comments", "commit", "committed",
+                    "concurrently", "condition", "condition_number", "configuration", "connect", "connection", "connection_name", "constraint", "constraints",
+                    "constraint_catalog", "constraint_name", "constraint_schema", "constructor", "contains", "content", "continue", "control", "conversion",
+                    "convert", "copy", "corr", "corresponding", "cost", "count", "covar_pop", "covar_samp", "create", "cross", "csv", "cube", "cume_dist",
+                    "current", "current_catalog", "current_date", "current_default_transform_group", "current_path", "current_role", "current_row",
+                    "current_schema", "current_time", "current_timestamp", "current_transform_group_for_type", "current_user", "cursor", "cursor_name",
+                    "cycle", "data", "database", "datalink", "date", "datetime_interval_code", "datetime_interval_precision", "day", "db", "deallocate", "dec",
+                    "decimal", "declare", "default", "defaults", "deferrable", "deferred", "defined", "definer", "degree", "delete", "delimiter", "delimiters",
+                    "dense_rank", "depth", "deref", "derived", "desc", "describe", "descriptor", "deterministic", "diagnostics", "dictionary", "disable",
+                    "discard", "disconnect", "dispatch", "distinct", "dlnewcopy", "dlpreviouscopy", "dlurlcomplete", "dlurlcompleteonly", "dlurlcompletewrite",
+                    "dlurlpath", "dlurlpathonly", "dlurlpathwrite", "dlurlscheme", "dlurlserver", "dlvalue", "do", "document", "domain", "double", "drop",
+                    "dynamic", "dynamic_function", "dynamic_function_code", "each", "element", "else", "empty", "enable", "encoding", "encrypted", "end",
+                    "end-exec", "end_frame", "end_partition", "enforced", "enum", "equals", "escape", "event", "every", "except", "exception", "exclude",
+                    "excluding", "exclusive", "exec", "execute", "exists", "exp", "explain", "expression", "extension", "external", "extract", "false",
+                    "family", "fetch", "file", "filter", "final", "first", "first_value", "flag", "float", "floor", "following", "for", "force", "foreign",
+                    "fortran", "forward", "found", "frame_row", "free", "freeze", "from", "fs", "full", "function", "functions", "fusion", "g", "general",
+                    "generated", "get", "global", "go", "goto", "grant", "granted", "greatest", "group", "grouping", "groups", "handler", "having", "header",
+                    "hex", "hierarchy", "hold", "hour", "id", "identity", "if", "ignore", "ilike", "immediate", "immediately", "immutable", "implementation",
+                    "implicit", "import", "in", "including", "increment", "indent", "index", "indexes", "indicator", "inherit", "inherits", "initially",
+                    "inline", "inner", "inout", "input", "insensitive", "insert", "instance", "instantiable", "instead", "int", "integer", "integrity",
+                    "intersect", "intersection", "interval", "into", "invoker", "is", "isnull", "isolation", "join", "k", "key", "key_member", "key_type",
+                    "label", "lag", "language", "large", "last", "last_value", "lateral", "lc_collate", "lc_ctype", "lead", "leading", "leakproof", "least",
+                    "left", "length", "level", "library", "like", "like_regex", "limit", "link", "listen", "ln", "load", "local", "localtime",
+                    "localtimestamp", "location", "locator", "lock", "lower", "m", "map", "mapping", "match", "matched", "materialized", "max", "maxvalue",
+                    "max_cardinality", "member", "merge", "message_length", "message_octet_length", "message_text", "method", "min", "minute", "minvalue",
+                    "mod", "mode", "modifies", "module", "month", "more", "move", "multiset", "mumps", "name", "names", "namespace", "national", "natural",
+                    "nchar", "nclob", "nesting", "new", "next", "nfc", "nfd", "nfkc", "nfkd", "nil", "no", "none", "normalize", "normalized", "not", "nothing",
+                    "notify", "notnull", "nowait", "nth_value", "ntile", "null", "nullable", "nullif", "nulls", "number", "numeric", "object",
+                    "occurrences_regex", "octets", "octet_length", "of", "off", "offset", "oids", "old", "on", "only", "open", "operator", "option", "options",
+                    "or", "order", "ordering", "ordinality", "others", "out", "outer", "output", "over", "overlaps", "overlay", "overriding", "owned", "owner",
+                    "p", "pad", "parameter", "parameter_mode", "parameter_name", "parameter_ordinal_position", "parameter_specific_catalog",
+                    "parameter_specific_name", "parameter_specific_schema", "parser", "partial", "partition", "pascal", "passing", "passthrough", "password",
+                    "path", "percent", "percentile_cont", "percentile_disc", "percent_rank", "period", "permission", "placing", "plans", "pli", "portion",
+                    "position", "position_regex", "power", "precedes", "preceding", "precision", "prepare", "prepared", "preserve", "primary", "prior",
+                    "privileges", "procedural", "procedure", "program", "public", "quote", "range", "rank", "read", "reads", "real", "reassign", "recheck",
+                    "recovery", "recursive", "ref", "references", "referencing", "refresh", "regr_avgx", "regr_avgy", "regr_count", "regr_intercept",
+                    "regr_r2", "regr_slope", "regr_sxx", "regr_sxy", "regr_syy", "reindex", "relative", "release", "rename", "repeatable", "replace",
+                    "replica", "requiring", "reset", "respect", "restart", "restore", "restrict", "result", "return", "returned_cardinality",
+                    "returned_length", "returned_octet_length", "returned_sqlstate", "returning", "returns", "revoke", "right", "role", "rollback", "rollup",
+                    "routine", "routine_catalog", "routine_name", "routine_schema", "row", "rows", "row_count", "row_number", "rule", "savepoint", "scale",
+                    "schema", "schema_name", "scope", "scope_catalog", "scope_name", "scope_schema", "scroll", "search", "second", "section", "security",
+                    "select", "selective", "self", "sensitive", "sequence", "sequences", "serializable", "server", "server_name", "session", "session_user",
+                    "set", "setof", "sets", "share", "show", "similar", "simple", "size", "smallint", "snapshot", "some", "source", "space", "specific",
+                    "specifictype", "specific_name", "sql", "sqlcode", "sqlerror", "sqlexception", "sqlstate", "sqlwarning", "sqrt", "stable", "standalone",
+                    "start", "state", "statement", "static", "statistics", "stddev_pop", "stddev_samp", "stdin", "stdout", "storage", "strict", "strip",
+                    "structure", "style", "subclass_origin", "submultiset", "substring", "substring_regex", "succeeds", "sum", "symmetric", "sysid", "system",
+                    "system_time", "system_user", "t", "table", "tables", "tablesample", "tablespace", "table_name", "temp", "template", "temporary", "text",
+                    "then", "ties", "time", "timestamp", "timezone_hour", "timezone_minute", "to", "token", "top_level_count", "trailing", "transaction",
+                    "transactions_committed", "transactions_rolled_back", "transaction_active", "transform", "transforms", "translate", "translate_regex",
+                    "translation", "treat", "trigger", "trigger_catalog", "trigger_name", "trigger_schema", "trim", "trim_array", "true", "truncate",
+                    "trusted", "type", "types", "uescape", "unbounded", "uncommitted", "under", "unencrypted", "union", "unique", "unknown", "unlink",
+                    "unlisten", "unlogged", "unnamed", "unnest", "until", "untyped", "update", "upper", "uri", "usage", "user", "user_defined_type_catalog",
+                    "user_defined_type_code", "user_defined_type_name", "user_defined_type_schema", "using", "vacuum", "valid", "validate", "validator",
+                    "value", "values", "value_of", "varbinary", "varchar", "variadic", "varying", "var_pop", "var_samp", "verbose", "version", "versioning",
+                    "view", "volatile", "when", "whenever", "where", "whitespace", "width_bucket", "window", "with", "within", "without", "work", "wrapper",
+                    "write", "xml", "xmlagg", "xmlattributes", "xmlbinary", "xmlcast", "xmlcomment", "xmlconcat", "xmldeclaration", "xmldocument",
+                    "xmlelement", "xmlexists", "xmlforest", "xmliterate", "xmlnamespaces", "xmlparse", "xmlpi", "xmlquery", "xmlroot", "xmlschema",
+                    "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone")
             );
     public static final String DEFAULT_TYPE = "text";
     public static final String SCHEMA_NAME = "public";
     public static final int BATCH_SIZE = 5000;
-    public static final int MAX_NAME_SIZE = 63;
+    public static final int MAX_NAME_SIZE = 52;
     public static final int MAX_ALLOWED_COLUMNS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -129,6 +190,11 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     @Override
     public int getMaxTableLength() {
         return MAX_NAME_SIZE;
+    }
+
+    @Override
+    public int getMaxColumnNameLength() {
+        return MAX_COLUMN_NAME_SIZE;
     }
 
     @Override
@@ -154,21 +220,22 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             if (isAcceptableException(exception.getSQLException())) {
                 return;
             }
-            throw new TdarRecoverableRuntimeException(exception);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table", exception, Arrays.asList(tableName));
         }
     }
 
     public void addOrExecuteBatch(DataTable dataTable, boolean force) {
         Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
         logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
-        if (statementPair == null)
+        if (statementPair == null) {
             return;
+        }
 
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
 
         statementPair.setSecond(batchNum);
-        if (batchNum < BATCH_SIZE && !force) {
+        if ((batchNum < BATCH_SIZE) && !force) {
             try {
                 statement.addBatch();
             } catch (SQLException e) {
@@ -181,23 +248,24 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             int[] numUpdates = statement.executeBatch();
             for (int i = 0; i < numUpdates.length; i++) {
                 if (numUpdates[i] == -2) {
-                    logger.error("Execution " + i + ": unknown number of rows updated");
+                    logger.error("Execution {} : unknown number of rows updated", i);
                     success = "some";
-                } else
-                    logger.trace("Execution " + i + " successful: " + numUpdates[i] + " rows updated");
+                } else {
+                    logger.trace("Execution {} successful: {} rows updated", i, numUpdates[i]);
+                }
             }
-            logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
+            logger.debug("{} inserts/updates committed, {} successful", numUpdates.length, success);
             // cleanup
         } catch (SQLException e) {
             logger.warn("sql exception", e.getNextException());
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.prepared_statement_fail"), e);
+            throw new TdarRecoverableRuntimeException("postgresDatabase.prepared_statement_fail", e);
         } finally {
             try {
                 statement.clearBatch();
                 statement.getConnection().close();
                 preparedStatementMap.remove(dataTable);
             } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.could_not_close"), e);
+                throw new TdarRecoverableRuntimeException("postgresDatabase.could_not_close", e);
             }
         }
     }
@@ -281,8 +349,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             return Collections.emptyList();
         }
         String templateSql = SELECT_DISTINCT_NOT_BLANK;
-        if (dataTableColumn.getColumnDataType().isNumeric())
+        if (dataTableColumn.getColumnDataType().isNumeric()) {
             templateSql = SELECT_DISTINCT_NOT_BLANK_NUM;
+        }
 
         String distinctSql = String.format(templateSql, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
                 dataTableColumn.getName(), dataTableColumn.getName(), dataTableColumn.getName());
@@ -321,6 +390,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         return "42P01";
     }
 
+    @Qualifier("tdarDataImportDataSource")
+    @Autowired(required = false)
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
@@ -437,7 +508,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
         int i = 1;
         if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.datatable_to_long"));
+            throw new TdarRecoverableRuntimeException("postgresDatabase.datatable_to_long");
         }
 
         while (iterator.hasNext()) {
@@ -497,8 +568,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     @Override
     public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception {
-        if (MapUtils.isEmpty(valueColumnMap))
+        if (MapUtils.isEmpty(valueColumnMap)) {
             return;
+        }
 
         Pair<PreparedStatement, Integer> statementPair = getOrCreate(dataTable, preparedStatementMap, createPreparedStatementPairCallable(dataTable));
         PreparedStatement preparedStatement = statementPair.getFirst();
@@ -558,8 +630,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.cannot_parse_date",
-                                colValue.toString(), column.getName(), column.getDataTable().getName()));
+                        throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_parse_date",
+                                Arrays.asList(colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
                 default:
@@ -613,8 +685,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
      * @param codingSheet
      */
     @Override
-    public void translateInPlace(final DataTableColumn column,
-            final CodingSheet codingSheet) {
+    public void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet) {
         DataTable dataTable = column.getDataTable();
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
 
@@ -644,7 +715,18 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             jdbcTemplate.execute(createColumnSql);
 
         }
-        final String updateColumnSql = String.format(UPDATE_COLUMN_SET_VALUE, tableName, columnName, originalColumnName);
+
+        String sql = UPDATE_COLUMN_SET_VALUE;
+        switch (columnDataType) {
+            case TEXT:
+            case VARCHAR:
+                sql = UPDATE_COLUMN_SET_VALUE_TRIM;
+                break;
+            default:
+                break;
+        }
+
+        final String updateColumnSql = String.format(sql, tableName, columnName, originalColumnName);
         logger.debug("translating column from " + tableName + " (" + columnName + ")");
         PreparedStatementCreator translateColumnPreparedStatementCreator = new PreparedStatementCreator() {
             @Override
@@ -773,7 +855,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String selectSql = generateModernOntologyEnhancedSelect(table, proxy);
 
         if (!selectSql.toLowerCase().contains(" where ")) {
-            throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("postgresDatabase.integration_query_broken"));
+            throw new TdarRecoverableRuntimeException("postgresDatabase.integration_query_broken");
         }
 
         executeUpdateOrDelete(selectSql);
@@ -811,7 +893,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {
@@ -863,7 +945,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
             // if we're an integration column, quote and grab all of the ontology nodes for the select
             // these are the "hierarchical" values
-            if (!integrationColumn.isDisplayColumn() && column != null) {
+            if (!integrationColumn.isDisplayColumn() && (column != null)) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     for (String val : column.getMappedDataValues(node)) {

@@ -6,16 +6,21 @@
  */
 package org.tdar.struts.action.search;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -23,6 +28,11 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.SearchService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -37,6 +47,8 @@ import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.json.JsonAdminLookupFilter;
+import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -60,7 +72,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-
+    private InputStream jsonInputStream;
     private Long id = null;
     private String mode;
     private String searchTitle;
@@ -72,8 +84,20 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     private PaginationHelper paginationHelper;
 
+    @Autowired
+    private transient ResourceService resourceService;
+
+    @Autowired
+    private transient SearchService searchService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
+
+    @Autowired
+    ObfuscationService obfuscationService;
+
     protected void handleSearch(QueryBuilder q) throws ParseException {
-        getSearchService().handleSearch(q, this);
+        searchService.handleSearch(q, this, this);
     }
 
     public String getCallback() {
@@ -150,25 +174,27 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * Return true if the specified string meets the minimum length requirement (or if there is no minimum length requirement). Not to be confused w/
      * checking if the specified string is blank.
      */
-    public boolean checkMinString(String look) {
-        if (getMinLookupLength() == 0)
+    public boolean checkMinString(String value) {
+        if (getMinLookupLength() == 0) {
             return true;
-        return (!StringUtils.isEmpty(look) && look.trim().length() >= getMinLookupLength());
+        }
+        return StringUtils.isNotEmpty(value) && (value.trim().length() >= getMinLookupLength());
     }
 
     // return true if ALL of the specified strings meet the minimum length. Otherwise false;
     public boolean checkMinString(String... candidates) {
         for (String candidate : candidates) {
-            if (!checkMinString(candidate))
+            if (!checkMinString(candidate)) {
                 return false;
+            }
         }
         return true;
     }
 
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
-            getLogger().trace(field + ":" + value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
+            getLogger().trace("{}:{}", field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
             fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
         }
@@ -176,16 +202,16 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
-            getLogger().trace(field + ":" + value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
+            getLogger().trace("{}:{}", field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
         }
     }
 
-    protected void appendIf(boolean test, QueryGroup q, String field, String value) {
+    protected <C> void appendIf(boolean test, QueryGroup q, String field, C value) {
         if (test) {
-            q.append(new FieldQueryPart<String>(field, value));
+            q.append(new FieldQueryPart<C>(field, value));
         }
     }
 
@@ -200,7 +226,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms(ActionSupport support) {
-        getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
+        authorizationService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
         return getReservedSearchParameters().toQueryPartGroup(support);
     }
 
@@ -371,7 +397,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public List<ResourceType> getAllResourceTypes() {
-        return getResourceService().getAllResourceTypes();
+        return resourceService.getAllResourceTypes();
     }
 
     public List<IntegratableOptions> getIntegratableOptions() {
@@ -429,7 +455,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         pqp.add(incomingPerson);
         q.append(pqp);
         q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-        if (valid || getMinLookupLength() == 0) {
+        if (valid || (getMinLookupLength() == 0)) {
             if (StringUtils.isNotBlank(registered)) {
                 try {
                     pqp.setRegistered(Boolean.parseBoolean(registered));
@@ -447,7 +473,36 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
+        if (isEditor()) {
+            jsonifyResult(JsonAdminLookupFilter.class);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
         return SUCCESS;
+    }
+
+    @Autowired
+    XmlService xmlService;
+
+    private Map<String, Object> result = new HashMap<>();
+
+    public void jsonifyResult(Class<?> filter) {
+        List<I> actual = new ArrayList<>();
+        for (I obj : results) {
+            if (obj == null) {
+                continue;
+            }
+            obfuscationService.obfuscateObject(obj, getAuthenticatedUser());
+            actual.add(obj);
+        }
+        Map<String, Object> status = new HashMap<>();
+        getResult().put(getLookupSource().getCollectionName(), actual);
+        getResult().put("status", status);
+        status.put("recordsPerPage", getRecordsPerPage());
+        status.put("startRecord", getStartRecord());
+        status.put("totalRecords", getTotalRecords());
+        status.put("sortField", getSortField());
+        jsonInputStream = new ByteArrayInputStream(xmlService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
     }
 
     public String findInstitution(String institution) {
@@ -468,6 +523,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 return ERROR;
             }
         }
+        jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
 
@@ -480,8 +536,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null)
+        if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
+        }
         return paginationHelper;
     }
 
@@ -502,12 +559,29 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         this.defaultSort = defaultSort;
     }
 
+    @Override
     public ProjectionModel getProjectionModel() {
         return projectionModel;
     }
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
+    }
+
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(InputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
+    }
+
+    public Map<String, Object> getResult() {
+        return result;
+    }
+
+    public void setResult(Map<String, Object> result) {
+        this.result = result;
     }
 
 }

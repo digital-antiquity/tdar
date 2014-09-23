@@ -1,13 +1,15 @@
 package org.tdar.core.bean.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -17,7 +19,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.slf4j.Logger;
@@ -29,9 +32,10 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -43,32 +47,34 @@ import org.tdar.utils.MessageHelper;
  * @version $Rev$
  */
 @Entity
-@Table(name = "resource_creator")
-@org.hibernate.annotations.Table( appliesTo ="resource_creator", indexes = {
-        @Index(name="creator_sequence", columnNames={"resource_id", "sequence_number", "creator_id"}),
-        @Index(name = "creatorid", columnNames = {"creator_id"}),
-        @Index(name = "rescreator_resid", columnNames = {"resource_id"})
+@Table(name = "resource_creator", indexes = {
+        @Index(name = "creator_sequence", columnList = "resource_id, sequence_number, creator_id"),
+        @Index(name = "creatorid", columnList = "creator_id"),
+        @Index(name = "rescreator_resid", columnList = "resource_id")
 })
-public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>,Obfuscatable {
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
+public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
+    @JsonView(JsonLookupFilter.class)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
     private ResourceCreatorRole role;
-
 
     private transient Boolean obfuscatedObjectDifferent = false;
 
@@ -120,7 +126,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
      */
     @Override
     public boolean isValid() {
-        if (role == null || creator == null) {
+        if ((role == null) || (creator == null)) {
             logger.trace(String.format("role:%s creator:%s ", role, creator));
             return false;
         }
@@ -147,6 +153,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Transient
+    @JsonView(JsonLookupFilter.class)
     public final String getCreatorRoleIdentifier() {
         return getCreatorRoleIdentifier(this.getCreator(), this.getRole());
     }
@@ -154,14 +161,14 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @Transient
     public static final String getCreatorRoleIdentifier(Creator creatorToFormat, ResourceCreatorRole creatorRole) {
         String toReturn = "";
-        if (creatorToFormat != null && creatorToFormat.getCreatorType() != null) {
+        if ((creatorToFormat != null) && (creatorToFormat.getCreatorType() != null)) {
             String code = creatorToFormat.getCreatorType().getCode();
             String role = "";
             if (creatorRole != null) {
                 role = creatorRole.name();
             }
             if (isNullOrTransient(creatorToFormat)) {
-                throw new TdarRecoverableRuntimeException(MessageHelper.getMessage("resourceCreator.undefined_creator_id"));
+                throw new TdarRecoverableRuntimeException("resourceCreator.undefined_creator_id");
             }
             toReturn = String.format("%s_%s_%s", code, creatorToFormat.getId(), role).toLowerCase();
         }
@@ -170,14 +177,13 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    @JSONTransient
     public boolean isObfuscated() {
         return obfuscated;
     }
 
     @Override
-    public List<Obfuscatable> obfuscate() {
-        List<Obfuscatable> toObfuscate = new ArrayList<>();
+    public Set<Obfuscatable> obfuscate() {
+        Set<Obfuscatable> toObfuscate = new HashSet<>();
         toObfuscate.add(getCreator());
         setObfuscated(true);
         return toObfuscate;
@@ -190,7 +196,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     @XmlTransient
-    @JSONTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }

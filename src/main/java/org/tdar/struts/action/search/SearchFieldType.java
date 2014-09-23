@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -14,7 +15,7 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.utils.MessageHelper;
 
-public enum SearchFieldType implements HasLabel {
+public enum SearchFieldType implements HasLabel, Localizable {
     // basic fields
     ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"),
     TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"),
@@ -29,18 +30,18 @@ public enum SearchFieldType implements HasLabel {
     FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords
-    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords",GeographicKeyword.class),
-    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names",SiteNameKeyword.class),
+    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords", GeographicKeyword.class),
+    FFK_SITE("siteNames", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names", SiteNameKeyword.class),
     FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS, "Site Type"),
     FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"),
     FFK_TEMPORAL("temporalKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class),
-    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords",OtherKeyword.class),
+    FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
 
     // managed keywords
     KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", false, InvestigationType.class),
-    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false,SiteTypeKeyword.class),
-    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false,MaterialKeyword.class),
-    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false,CultureKeyword.class),
+    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false, SiteTypeKeyword.class),
+    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false, MaterialKeyword.class),
+    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false, CultureKeyword.class),
 
     // TODO: add these
     CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade", false),
@@ -95,6 +96,11 @@ public enum SearchFieldType implements HasLabel {
     @Override
     public String getLabel() {
         return this.label;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
     public SearchFieldGroup getFieldGroup() {

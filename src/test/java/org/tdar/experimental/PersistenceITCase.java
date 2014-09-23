@@ -31,7 +31,6 @@ public class PersistenceITCase extends AbstractIntegrationTestCase {
         assertThat(persistenceUtil, notNullValue());
     }
 
-
     @Test
     public void testEntityNotInitilized() {
         Project project = genericService.find(Project.class, PROJECT_ID);
@@ -41,7 +40,7 @@ public class PersistenceITCase extends AbstractIntegrationTestCase {
         assertThat(persistenceUtil.isLoaded(project), equalTo(true));
         assertThat(persistenceUtil.isLoaded(project, "materialKeywords"), equalTo(false));
 
-        //this should implicitly load the materialKeywords collection (unless 'extra lazy' loading enabled)
+        // this should implicitly load the materialKeywords collection (unless 'extra lazy' loading enabled)
 
         int size = project.getMaterialKeywords().size();
         assertThat(persistenceUtil.isLoaded(project, "materialKeywords"), equalTo(true));

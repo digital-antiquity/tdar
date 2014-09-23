@@ -15,8 +15,9 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     boolean indexed = false;
 
     public void reindexOnce() {
-        if (indexed)
+        if (indexed) {
             return;
+        }
 
         reindexUnauthenticated();
         indexed = true;
@@ -81,9 +82,14 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     }
 
     @Test
+    public void testRobots() {
+        gotoPage("/robots.txt");
+    }
+
+    @Test
     public void testBrowseCreators() {
         reindexOnce();
-        gotoPage("/browse/creators/1");
+        gotoPage("/browse/creators/8161");
     }
 
     @Test
@@ -103,7 +109,9 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
     @Test
     public void testViewErrorBadRequest() {
         int statusCode = gotoPageWithoutErrorCheck("/dataset/view?id=pay_no_attention_to_this_url");
-        assertTextPresent("Sorry, the page you requested cannot be found");
+        logger.debug("STATUS CODE: {}", statusCode);
+        assertEquals(HttpStatus.SC_BAD_REQUEST, statusCode);
+        assertTextPresent("error occurred");
         // FIXME: status code will be 200 instead, see http://dev.tdar.org/jira/browse/TDAR-1842 for more details
         // assertEquals("invalid id should 404: ", HttpStatus.SC_NOT_FOUND, statusCode);
         // assertEquals("expecting bad request error", HttpStatus.SC_BAD_REQUEST, statusCode);

@@ -26,8 +26,6 @@
         "http://struts.apache.org/dtds/xwork-validator-definition-1.0.dtd">
 
 <validators>
-    <validator name="uniqueemail" class="org.tdar.struts.validation.UniqueEmailValidator"/>
-    <validator name="accountexists" class="org.tdar.struts.validation.AccountExistsValidator"/>
     <validator name="required" class="com.opensymphony.xwork2.validator.validators.RequiredFieldValidator"/>
     <validator name="requiredstring" class="com.opensymphony.xwork2.validator.validators.RequiredStringValidator"/>
     <validator name="int" class="com.opensymphony.xwork2.validator.validators.IntRangeFieldValidator"/>

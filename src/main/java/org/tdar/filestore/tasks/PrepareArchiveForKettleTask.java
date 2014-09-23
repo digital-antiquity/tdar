@@ -11,11 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
@@ -56,7 +55,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             "    <project_id>${" + PROJECT_ID + "?c}</project_id>" + lineSeparator() +
             "    <updated_by>${" + UPDATED_BY_EMAIL + "}</updated_by>" + lineSeparator() +
             "</run_settings>";
-
 
     private String kettleInputPath = TdarConfiguration.getInstance().getKettleInputPath();
     private File controlFileOuputDir;
@@ -120,9 +118,8 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
         // first off, a whole raft of preconditions that we need to pass before we write the control file:
         // reality check: do we have an archive?
-        final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
-        if (Archive.class != resourceClass) {
-            recordErrorAndExit("The Extract Archive Task has been called for a non archive resource! Resource class was: " + resourceClass);
+        if (!ctx.getResourceType().isArchive()) {
+            return;
         }
 
         // if we can't get the archive, we don't have enough information to run...
@@ -142,9 +139,9 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
             getLogger().info(getLogMessage("Archive has already been imported.", archive));
             return;
         }
-        
-        // has the archive been assigned to a project? 
-        if (archive.getProjectId() == null || archive.getProjectId() <= 0) {
+
+        // has the archive been assigned to a project?
+        if ((archive.getProjectId() == null) || (archive.getProjectId() <= 0)) {
             recordErrorAndExit("Cannot unpack an archive that has not yet been assigned to a project!");
         }
 
@@ -191,19 +188,33 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     }
 
     /**
-     * @param archive that is being extracted
+     * @param archive
+     *            that is being extracted
      * @return The email address to notify about the extraction of the archive. If it is null or empty, then the administrator is notified.
      */
     protected String getEmailToNotify(Archive archive) {
         String result = null;
-        if (archive.getUpdatedBy() != null) {
-            result = archive.getUpdatedBy().getEmail();
+
+        // First try the person who submitted the archive
+        if (archive.getSubmitter() != null) {
+            result = archive.getSubmitter().getEmail();
         }
+
+        // Then the person who updated it
+        if (StringUtils.isEmpty(result)) {
+            if (archive.getUpdatedBy() != null) {
+                result = archive.getUpdatedBy().getEmail();
+            }
+        }
+
+        // Then the person who uploaded it
         if (StringUtils.isEmpty(result)) {
             if (archive.getUploader() != null) {
                 result = archive.getUploader().getEmail();
             }
         }
+
+        // Finally the administrator.
         if (StringUtils.isEmpty(result)) {
             // this should never be null, hopefully...
             result = TdarConfiguration.getInstance().getSystemAdminEmail();

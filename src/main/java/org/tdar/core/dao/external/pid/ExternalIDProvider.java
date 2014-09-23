@@ -9,6 +9,7 @@ package org.tdar.core.dao.external.pid;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.http.client.ClientProtocolException;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.Configurable;
 

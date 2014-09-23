@@ -13,6 +13,8 @@ import org.tdar.utils.Pair;
  */
 public class DateRange extends Pair<Date, Date> implements Range<Date> {
 
+    private static final long serialVersionUID = -8495377173625819907L;
+
     public DateRange() {
         super(null, null);
     }
@@ -43,10 +45,10 @@ public class DateRange extends Pair<Date, Date> implements Range<Date> {
 
     @Override
     public boolean isValid() {
-        if (getFirst() != null && getSecond() != null) {
+        if ((getFirst() != null) && (getSecond() != null)) {
             return getFirst().compareTo(getSecond()) <= 0;
         }
-        return getFirst() != null || getSecond() != null;
+        return (getFirst() != null) || (getSecond() != null);
     }
 
     @Override
@@ -56,8 +58,9 @@ public class DateRange extends Pair<Date, Date> implements Range<Date> {
 
     @Override
     public boolean isInitialized() {
-        if (getFirst() == null && getSecond() == null)
+        if ((getFirst() == null) && (getSecond() == null)) {
             return false;
+        }
 
         return true;
     }

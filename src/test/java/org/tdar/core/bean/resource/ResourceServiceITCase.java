@@ -22,7 +22,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testSaveHasResource() throws InstantiationException, IllegalAccessException {
-        Resource doc = (Document) generateDocumentWithUser();
+        Resource doc = generateDocumentWithUser();
         doc.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 1390, 1590));
         List<CoverageDate> dates = new ArrayList<CoverageDate>();
         resourceService.saveHasResources(doc, false, ErrorHandling.VALIDATE_SKIP_ERRORS, dates,
@@ -30,13 +30,11 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(0, doc.getCoverageDates().size());
     }
 
- 
-    
     @Test
     @Rollback
     public void testSaveHasResourceExistingNull() throws InstantiationException, IllegalAccessException {
 
-        Resource doc = (Document) generateDocumentWithUser();
+        Resource doc = generateDocumentWithUser();
         doc.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 1390, 1590));
         List<CoverageDate> dates = new ArrayList<CoverageDate>();
         doc.setCoverageDates(null);
@@ -50,7 +48,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testSaveHasResourceIncomingNulLCase() throws InstantiationException, IllegalAccessException {
 
-        Resource doc = (Document) generateDocumentWithUser();
+        Resource doc = generateDocumentWithUser();
         doc.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 1390, 1590));
         List<CoverageDate> dates = null;
         resourceService.saveHasResources(doc, false, ErrorHandling.VALIDATE_SKIP_ERRORS, dates,

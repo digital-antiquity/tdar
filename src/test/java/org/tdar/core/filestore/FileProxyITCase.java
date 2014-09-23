@@ -22,15 +22,16 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Adam Brin
@@ -56,7 +57,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -90,7 +91,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertEquals(TdarActionSupport.SUCCESS, save);
+        assertEquals(Action.SUCCESS, save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -129,7 +130,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
         String deletedFilename = controller.getFileProxies().get(0).getFilename();
         // replace the confidential file
@@ -189,7 +191,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
-        loadResourceFromId(controller, document.getId());
+        controller.prepare();
+        controller.edit();
 
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
@@ -232,16 +235,4 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         }
         return document;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.action.AbstractControllerITCase#getController()
-     */
-    @Override
-    protected TdarActionSupport getController() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

@@ -13,12 +13,13 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
@@ -42,9 +43,6 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "this is a test";
 
     public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
-
-    public ThumbnailWebITCase() {
-    }
 
     @Test
     // create image as confidential, then log out and see if we see the image.
@@ -141,12 +139,16 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
-        assertTrue(getCurrentUrlPath().contains("edit")); // we can be on the "edit" page with an error message
+        logger.debug("statusCode: {} ", statusCode);
+        assertEquals(StatusCode.UNAUTHORIZED.getHttpStatusCode(), statusCode);
+        // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
+        // redirects to a different page... current URL is null?
+        assertTrue(getCurrentUrlPath().contains("unauthorized")); // we can be on the "edit" page with an error message
         logger.info(getPageText());
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
         assertTextNotPresent("/img/sm");
-        
+
         Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileVersionIds);

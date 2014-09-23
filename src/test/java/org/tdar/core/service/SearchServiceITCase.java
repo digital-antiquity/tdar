@@ -48,10 +48,12 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         public final int compare(T obj1, T obj2) {
             Comparable item1 = null;
             Comparable item2 = null;
-            if (obj1 != null)
+            if (obj1 != null) {
                 item1 = getComparableFor(obj1);
-            if (obj2 != null)
+            }
+            if (obj2 != null) {
                 item2 = getComparableFor(obj2);
+            }
 
             return ObjectUtils.compare(item1, item2);
         }
@@ -89,8 +91,9 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     public static String getProjectTitle(Resource item1) {
         String title1 = "";
-        if (item1 == null)
+        if (item1 == null) {
             return title1;
+        }
         if (item1 instanceof Project) {
             title1 = ((Project) item1).getProjectTitle();
         }
@@ -186,7 +189,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
                 assertFalse("list should not be empty", results.isEmpty());
                 Comparator comparator = entry.getValue();
 
-                for (int i = 0; i < results.size() - 2; i++) {
+                for (int i = 0; i < (results.size() - 2); i++) {
                     logger.info("now testing sorting for {}.{}", sortTestInfo.type.getSimpleName(), sortOption.getSortField());
                     Object item1 = results.get(i);
                     Object item2 = results.get(i + 1);
@@ -225,7 +228,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         // ArrayList<Resource> toCompare = new ArrayList<Resource>(resources);
         // Collections.sort(toCompare, comparator);
         // ListUtils.isEqualList(resources, toCompare);
-        for (int i = 0; i < resources.size() - 2; i++) {
+        for (int i = 0; i < (resources.size() - 2); i++) {
             Resource item1 = resources.get(i);
             Resource item2 = resources.get(i + 1);
             String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);

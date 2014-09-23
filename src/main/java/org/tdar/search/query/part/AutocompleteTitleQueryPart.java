@@ -1,23 +1,31 @@
 package org.tdar.search.query.part;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
 
+import com.opensymphony.xwork2.TextProvider;
+
+/**
+ * Provides Lucene query string for autocomplete lookups.
+ * 
+ * @author Adam Brin
+ */
 public class AutocompleteTitleQueryPart implements QueryPart<String> {
+    private static final float TITLE_SORT_BOOST = 4f;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
-    private String title;
+    private final String title;
 
-    public AutocompleteTitleQueryPart() {
-    }
-
-    public AutocompleteTitleQueryPart(String value) {
-        this.title = value;
+    public AutocompleteTitleQueryPart(String title) {
+        this.title = title;
     }
 
     @Override
@@ -25,54 +33,49 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         return StringUtils.isBlank(title);
     }
 
-    protected QueryPart<?> getQueryPart(String value) {
-        if (StringUtils.isBlank(value))
-            return null;
+    protected QueryPart<?> getQueryPart() {
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
-        FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setBoost(TITLE_BOOST).setPhraseFormatters(
-                PhraseFormatter.ESCAPE_QUOTED);
-        autoPart.setOperator(Operator.AND);
+        // look up quoted leading match in autocomplete index
+        FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         // FIXME: while allowed, I'm not sure it's helpful to include non-analyzed fields in a search, especially considering the fact that it will use a
         // default analyzer at search-time. arguments otherwise?
-        FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, value).setPhraseFormatters(PhraseFormatter.ESCAPED,
+        FieldQueryPart<String> titleSortPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, title).setPhraseFormatters(PhraseFormatter.ESCAPED,
                 PhraseFormatter.WILDCARD);
-        FieldQueryPart<String> part2 = new FieldQueryPart<String>(QueryFieldNames.TITLE, value);
-        if (value.length() > 2) {
-            part2.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+        // keyword match on title
+        FieldQueryPart<String> keywordTitlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, title).setPhraseFormatters(PhraseFormatter.ESCAPED);
+        if (title.length() > 2) {
+            // FIXME: if title is over 2 characters, use escaped wildcard formatter?
+            keywordTitlePart.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
         }
-
-        if (value.contains(" ")) {
-            autoPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            part.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-            if (value.length() > 2) {
-                part2.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+        if (WHITESPACE_PATTERN.matcher(title).find()) {
+            // FIXME: if the value contains a space, should we change from ESCAPED -> WILDCARD to WILDCARD -> QUOTED?
+            titleSortPart.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+            if (title.length() > 2) {
+                // FIXME: if value contains a space, should we change from ESCAPED -> WILDCARD to WILDCARD -> QUOTED?
+                keywordTitlePart.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
             }
         }
-        titleGroup.append(autoPart);
-        titleGroup.append(part.setBoost(4f));
-        titleGroup.append(part2);
-        logger.info(titleGroup.generateQueryString());
+        titleGroup.append(autoPart.setBoost(TITLE_BOOST));
+        titleGroup.append(titleSortPart.setBoost(TITLE_SORT_BOOST));
+        titleGroup.append(keywordTitlePart);
+        logger.info("{}", titleGroup);
         return titleGroup;
 
     }
 
     @Override
     public String generateQueryString() {
-        return this.getQueryPart(title).generateQueryString();
+        return isEmpty() ? "" : getQueryPart().generateQueryString();
     }
 
-    // public void setLimit(String obj) {
-    // title = obj;
-    // }
-
     @Override
-    public String getDescription() {
+    public String getDescription(TextProvider provider) {
         return "Title: " + title;
     }
 
     @Override
-    public String getDescriptionHtml() {
-        return StringEscapeUtils.escapeHtml(getDescription());
+    public String getDescriptionHtml(TextProvider provider) {
+        return StringEscapeUtils.escapeHtml4(getDescription(provider));
     }
 
     @Override
@@ -82,7 +85,6 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
 
     @Override
     public void setDescriptionVisible(boolean visible) {
-        // TODO Auto-generated method stub
     }
 
     @Override

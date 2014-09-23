@@ -3,26 +3,34 @@ package org.tdar.core.bean.resource;
 import java.io.File;
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.filestore.FileStoreFile.Type;
+import org.tdar.filestore.FileStoreFileProxy;
 
 @Entity
 // making the assumption formally that there can only be one version of any type
@@ -31,14 +39,16 @@ import org.tdar.core.bean.Viewable;
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
-
 /**
  * Representation a specific file or derivative version of an InformationResourceFile. Each InformationResouceFile may have multiple versions, eg. web sized imzges (small/med/large) or indexable data, as well as the original file version.
  * 
  * @author abrin
  *
  */
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension {
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFileVersion")
+@Cacheable
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable, HasExtension,
+        FileStoreFileProxy {
 
     private static final long serialVersionUID = 3768354809654162949L;
 
@@ -46,9 +56,10 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private transient File transientFile;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private InformationResourceFile informationResourceFile;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -85,6 +96,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private String checksumType;
 
     @Column(nullable = false, name = "date_created")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
     @Column(name = "file_type")
@@ -155,10 +167,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.informationResourceFile = informationResourceFile;
     }
 
+    @Override
     public String getFilename() {
         return filename;
     }
 
+    @Override
     public void setFilename(String filename) {
         this.filename = filename;
     }
@@ -213,6 +227,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.filestoreId = filestoreId;
     }
 
+    @Override
     public String getChecksum() {
         return checksum;
     }
@@ -220,6 +235,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     /*
      * Only set the checksum if it is not set
      */
+    @Override
     public void setChecksum(String checksum) {
         if (StringUtils.isEmpty(this.checksum)) {
             this.checksum = checksum;
@@ -232,10 +248,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.checksum = checksum;
     }
 
+    @Override
     public String getChecksumType() {
         return checksumType;
     }
 
+    @Override
     public void setChecksumType(String checksumType) {
         this.checksumType = checksumType;
     }
@@ -303,7 +321,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     public boolean isUploaded() {
-        return (getFileVersionType() == VersionType.UPLOADED || getFileVersionType() == VersionType.UPLOADED_ARCHIVAL);
+        return getFileVersionType().isUploaded();
     }
 
     @Transient
@@ -313,8 +331,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     public boolean isArchival() {
-        // FIXME: change back later and update test
-        return (getFileVersionType() == VersionType.ARCHIVAL || getFileVersionType() == VersionType.UPLOADED_ARCHIVAL);
+        return getFileVersionType().isArchival();
     }
 
     @Transient
@@ -327,20 +344,6 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     public boolean isDerivative() {
         return getFileVersionType().isDerivative();
-        // switch (getFileVersionType()) {
-        // case INDEXABLE_TEXT:
-        // case WEB_SMALL:
-        // case WEB_MEDIUM:
-        // case WEB_LARGE:
-        // case METADATA:
-        // case TRANSLATED:
-        // return true;
-        // default:
-        // return false;
-        // }
-        // // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
-        // // || getFileVersionType() == VersionType.WEB_SMALL
-        // // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
     }
 
     /**
@@ -367,8 +370,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     @XmlAttribute(name = "informationResourceFileId")
     public Long getInformationResourceFileId() {
-        if (informationResourceFile != null)
+        if (informationResourceFile != null) {
             return informationResourceFile.getId();
+        }
         return informationResourceFileId;
     }
 
@@ -390,8 +394,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @XmlAttribute(name = "informationResourceId")
     @Transient
     public Long getInformationResourceId() {
-        if (informationResourceFile != null && informationResourceFile.getInformationResource() != null)
+        if ((informationResourceFile != null) && (informationResourceFile.getInformationResource() != null)) {
             return informationResourceFile.getInformationResource().getId();
+        }
         return informationResourceId;
     }
 
@@ -457,12 +462,29 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.primaryFile = primaryFile;
     }
 
+    @Override
     public File getTransientFile() {
         return transientFile;
     }
 
+    @Override
     public void setTransientFile(File transientFile) {
         this.transientFile = transientFile;
+    }
+
+    @Override
+    public Long getPersistableId() {
+        return getInformationResourceId();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.RESOURCE;
+    }
+
+    @Override
+    public VersionType getVersionType() {
+        return getFileVersionType();
     }
 
 }

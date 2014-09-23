@@ -3,13 +3,11 @@ package org.tdar.core.bean.billing;
 import java.util.Arrays;
 import java.util.List;
 
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.utils.MessageHelper;
-
 /**
  * Enum to track NelNet Transaction Status
+ * 
  * @author abrin
- *
+ * 
  */
 public enum NelnetTransactionStatus {
     CC_PAYMENT_ACCEPTED(1, "Accepted credit card payment/refund (successful)", TransactionStatus.TRANSACTION_SUCCESSFUL),

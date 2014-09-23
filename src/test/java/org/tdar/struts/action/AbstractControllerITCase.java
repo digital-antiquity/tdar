@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
@@ -23,25 +23,28 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.action.resource.CodingSheetController;
@@ -52,6 +55,8 @@ import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.Action;
+
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
@@ -59,23 +64,16 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public static final String REASON = "because";
 
-    @Before
-    public void init() {
-        init(getController());
+
+    public void bookmarkResource(Resource r, TdarUser user) throws Exception {
+        bookmarkResource(r, false, user);
     }
 
-    protected abstract TdarActionSupport getController();
-
-
-    public void bookmarkResource(Resource r) {
-        bookmarkResource(r, false);
+    public void removeBookmark(Resource r, TdarUser user) throws Exception {
+        removeBookmark(r, false, user);
     }
 
-    public void removeBookmark(Resource r) {
-        removeBookmark(r, false);
-    }
-
-    public Account createAccount(Person owner) {
+    public Account createAccount(TdarUser owner) {
         Account account = new Account("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
@@ -88,7 +86,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     // return createA
     // }
 
-    public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
+    public Invoice createInvoice(TdarUser person, TransactionStatus status, BillingItem... items) {
         Invoice invoice = new Invoice();
         invoice.setItems(new ArrayList<BillingItem>());
         for (BillingItem item : items) {
@@ -100,10 +98,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax) {
+    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
+        bookmarkController.prepare();
         if (ajax) {
             bookmarkController.bookmarkResourceAjaxAction();
         } else {
@@ -111,23 +110,43 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         }
         r = resourceService.find(r.getId());
         assertNotNull(r);
-        assertTrue(r.getBookmarks().size() > 0);
+        genericService.refresh(user);
+        boolean seen = false;
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        Assert.assertTrue("should have seen resource in bookmark list",seen);
     }
 
-    public void removeBookmark(Resource r, boolean ajax) {
+    public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-        int size = r.getBookmarks().size();
+        boolean seen = false;
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        
+        Assert.assertTrue("should have seen resource in bookmark list",seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
-        logger.info("{}", r.getBookmarks());
+        bookmarkController.prepare();
         if (ajax) {
             bookmarkController.removeBookmarkAjaxAction();
         } else {
             bookmarkController.removeBookmarkAction();
         }
-        r = resourceService.find(r.getId());
-        assertNotNull(r);
-        assertTrue(r.getBookmarks().isEmpty() || r.getBookmarks().size() == (size - 1));
+        seen = false;
+        genericService.synchronize();
+        user = genericService.find(TdarUser.class, user.getId());
+        for (BookmarkedResource b : user.getBookmarkedResources()) {
+            if (ObjectUtils.equals(b.getResource(), r)) {
+                seen = true;
+            }
+        }
+        Assert.assertFalse("should not see resource", seen);
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
@@ -137,9 +156,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
-            Person owner,
-            List<? extends Resource> resources, Long parentId)
-            throws Exception {
+            TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
         controller.prepare();
@@ -148,14 +165,14 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertEquals(owner, controller.getAuthenticatedUser());
         ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
-        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
+//        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
         controller.setParentId(parentId);
         resourceCollection.setType(type);
         controller.setAsync(false);
         resourceCollection.setVisible(visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getResources().addAll(resources);
+            controller.getToAdd().addAll(Persistable.Base.extractIds(resources));
         }
 
         if (users != null) {
@@ -165,7 +182,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
-        assertTrue(save.equals(TdarActionSupport.SUCCESS));
+        assertTrue(save.equals(Action.SUCCESS));
         return resourceCollection;
     }
 
@@ -187,25 +204,23 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.setUploadFileFileName(Arrays.asList(name_));
         controller.setTicketId(ticketId);
         String upload = controller.upload();
-        assertEquals(TdarActionSupport.SUCCESS, upload);
+        assertEquals(Action.SUCCESS, upload);
         return ticketId;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
+    @SuppressWarnings("unchecked")
     public <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws TdarActionException {
         AbstractInformationResourceController<?> controller = null;
         Long ticketId = -1L;
@@ -261,8 +276,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         } else if (cls.equals(CodingSheet.class)) {
             controller = generateNewInitializedController(CodingSheetController.class);
         }
-        if (controller == null)
+        if (controller == null) {
             return null;
+        }
 
         if (Persistable.Base.isNotNullOrTransient(id)) {
             controller.setId(id);
@@ -286,7 +302,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             assertTrue("file not found:" + getTestFilePath() + "/" + filename, file.exists());
             if (FilenameUtils.getExtension(filename).equals("txt") && (controller instanceof AbstractSupportingInformationResourceController<?>)) {
                 AbstractSupportingInformationResourceController<?> asc = (AbstractSupportingInformationResourceController<?>) controller;
-                asc.setFileInputMethod(asc.FILE_INPUT_METHOD);
+                asc.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
                 try {
                     asc.setFileTextInput(FileUtils.readFileToString(file));
                 } catch (Exception e) {
@@ -315,7 +331,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws FileNotFoundException {
         UploadController uploadController = generateNewInitializedController(UploadController.class);
-        assertEquals(TdarActionSupport.SUCCESS, uploadController.grabTicket());
+        assertEquals(Action.SUCCESS, uploadController.grabTicket());
         PersonalFilestoreTicket ticket = uploadController.getPersonalFilestoreTicket();
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
         uploadController = generateNewInitializedController(UploadController.class);
@@ -332,7 +348,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             toReturn.getSecond().add(fileProxy);
         }
 
-        assertEquals(TdarActionSupport.SUCCESS, uploadController.upload());
+        assertEquals(Action.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
         assertEquals("file count retrieved from personal filestore", uploadFiles.size(), files.size());
         // XXX: potentially assert that md5s and/or filenames are same across both file lists
@@ -350,7 +366,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     @Override
-    protected Person getUser() {
+    protected TdarUser getUser() {
         return getUser(getUserId());
     }
 
@@ -359,32 +375,35 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public String setupValidUserInController(UserAccountController controller, String email) {
-        Person p = new Person();
+        TdarUser p = new TdarUser();
         p.setEmail(email);
         p.setUsername(email);
         p.setFirstName("Testing auth");
         p.setLastName("User");
         p.setPhone("212 000 0000");
-        p.setContributor(true);
-        p.setContributorReason(REASON);
+        controller.getRegistration().setPerson(p);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setAcceptTermsOfUse(true);
+        controller.getRegistration().setContributorReason(REASON);
         p.setRpaNumber("214");
 
         return setupValidUserInController(controller, p);
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p) {
         return setupValidUserInController(controller, p, "password");
     }
 
-    public String setupValidUserInController(UserAccountController controller, Person p, String password) {
+    public String setupValidUserInController(UserAccountController controller, TdarUser p, String password) {
         // cleanup crowd if we need to...
-        authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
-        controller.setRequestingContributorAccess(true);
-        controller.setInstitutionName(TESTING_AUTH_INSTIUTION);
-        controller.setPassword(password);
-        controller.setConfirmPassword(password);
-        controller.setConfirmEmail(p.getEmail());
-        controller.setPerson(p);
+        authenticationService.getAuthenticationProvider().deleteUser(p);
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setInstitutionName(TESTING_AUTH_INSTIUTION);
+        controller.getRegistration().setPassword(password);
+        controller.getRegistration().setConfirmPassword(password);
+        controller.getRegistration().setConfirmEmail(p.getEmail());
+        controller.getRegistration().setPerson(p);
+        controller.getRegistration().setAcceptTermsOfUse(true);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         controller.validate();

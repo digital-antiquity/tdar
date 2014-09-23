@@ -38,7 +38,10 @@
     </#if>
 
     <#assign itemKeyStr = itemKey.toString() />
-    <#if parameters.listValue??>
+	<#if parameters.listValueKey??>
+		<#assign itemValue = stack.findString(parameters.listValueKey)/>
+		<#assign itemValue><@s.text name="${itemValue}"/></#assign>
+    <#elseif parameters.listValue??>
         <#assign itemValue = stack.findString(parameters.listValue)/>
     <#else>
         <#assign itemValue = stack.findString('top')/>

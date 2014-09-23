@@ -13,12 +13,6 @@ public class AdminStatsControllerITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(AdminController.class);
     }
 
-    @Override
-    protected TdarActionSupport getController() {
-        return controller;
-
-    }
-
     @Test
     public void testIndex() {
         controller.execute();

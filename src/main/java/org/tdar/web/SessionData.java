@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.tdar.core.bean.entity.AuthenticationToken;
-import org.tdar.core.bean.entity.Person;
+import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.TdarUser;
 
 /**
  * $Id$
@@ -22,44 +22,29 @@ public class SessionData implements Serializable {
 
     private static final long serialVersionUID = 2786144717909265676L;
 
-    private AuthenticationToken authenticationToken;
-
     private String returnUrl;
     private String[] parameters;
-
-    public SessionData()
-    {
-        super();
-    }
-
-    public Person getPerson() {
-        if (authenticationToken == null) {
-            return null;
-        }
-        return authenticationToken.getPerson();
-    }
-
-    public AuthenticationToken getAuthenticationToken() {
-        return authenticationToken;
-    }
+    private Long tdarUserId;
+    private Long invoiceId;
 
     public void clearAuthenticationToken() {
-        this.authenticationToken = null;
         this.parameters = null;
+        this.tdarUserId = null;
+        this.invoiceId = null;
+        clearPassthroughParameters();
+    }
+
+    public void clearPassthroughParameters() {
         this.returnUrl = null;
     }
 
-    public void setAuthenticationToken(AuthenticationToken authenticationToken) {
-        this.authenticationToken = authenticationToken;
-    }
-
     public boolean isAuthenticated() {
-        return authenticationToken != null && authenticationToken.isValid();
+        return Persistable.Base.isNotNullOrTransient(tdarUserId);
     }
 
     @Override
     public String toString() {
-        return String.format("Auth token: %s [object id: %s]", authenticationToken, super.toString());
+        return String.format("Auth user: %s [object id: %s]", tdarUserId, super.toString());
     }
 
     public String getReturnUrl() {
@@ -94,11 +79,24 @@ public class SessionData implements Serializable {
         return parameters;
     }
 
-    public boolean isContributor() {
-        Person person = getPerson();
-        if (person == null)
-            return false;
-        return person.getContributor();
+    public Long getTdarUserId() {
+        return tdarUserId;
+    }
+
+    public void setTdarUser(TdarUser user) {
+        if (Persistable.Base.isNotNullOrTransient(user)) {
+            this.tdarUserId = user.getId();
+        } else {
+            this.tdarUserId = null;
+        }
+    }
+
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
 }

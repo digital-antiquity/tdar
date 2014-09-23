@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.struts.data.FacetGroup;
 
 /* further abstracting some of the functions of the search result handler 
@@ -35,12 +34,13 @@ public interface SearchResultHandler<I extends Indexable> {
     public enum ProjectionModel {
         HIBERNATE_DEFAULT,
         LUCENE,
-        RESOURCE_PROXY;
-        
+        RESOURCE_PROXY,
+        RESOURCE_PROXY_INVALIDATE_CACHE;
+
         private List<String> projections = new ArrayList<>();
 
         public List<String> getProjections() {
-            if (this == RESOURCE_PROXY) {
+            if (this == RESOURCE_PROXY || this == RESOURCE_PROXY_INVALIDATE_CACHE) {
                 return Arrays.asList("id");
             }
             return projections;
@@ -49,11 +49,11 @@ public interface SearchResultHandler<I extends Indexable> {
         public void setProjections(List<String> projections) {
             this.projections = projections;
         }
-        
+
     }
-    
+
     ProjectionModel getProjectionModel();
-    
+
     /**
      * Sets the total number of records found by the SearchService.
      * When resultSize is less than startRecord + recordsPerPage, then there are more pages of results available.
@@ -105,7 +105,7 @@ public interface SearchResultHandler<I extends Indexable> {
      */
     String getMode();
 
-    Person getAuthenticatedUser();
+    TdarUser getAuthenticatedUser();
 
     String getSearchTitle();
 
@@ -116,6 +116,6 @@ public interface SearchResultHandler<I extends Indexable> {
     int getPrevPageStartRecord();
 
     @SuppressWarnings("rawtypes")
-    List<FacetGroup<? extends Facetable>> getFacetFields();
+    List<FacetGroup<? extends Enum>> getFacetFields();
 
 }

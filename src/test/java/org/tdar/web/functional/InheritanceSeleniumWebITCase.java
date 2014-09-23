@@ -172,7 +172,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     // create a project, fill out a couple inheritable sections, then inherit
     public void testBasicInheritance() throws InterruptedException {
         // ignore misc javascript errors (gmaps, et. al), our asserts will break if relevant javascript had problems
-        ignoreJavascriptErrors = true;
+        setIgnoreJavascriptErrors(true);
         gotoPage("/project/add");
 
         Project project = new Project();
@@ -189,7 +189,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
         // inherit everything
-        WebDriverWait wait = new WebDriverWait(driver, 5);
+        WebDriverWait wait = new WebDriverWait(getDriver(), 5);
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
 
@@ -204,9 +204,31 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
     }
 
-    @After
-    public void turnIgnoresOff() {
-        ignoreJavascriptErrors = false;
+    @Test
+    public void testInheritCreditSection() throws InterruptedException {
+        gotoPage("/document/add");
+        find("#resourceRegistrationTitle").val("my fancy document");
+        find("#resourceDescription").val("this test took me 8 hours to write. a lot of trial and error was involved.");
+        find("#dateCreated").val("2012");
+        find("#projectId").val("3805");
+        find("#cbInheritingCreditRoles").click();
+        // this project should have about four contributors.
+        waitFor("#creditTable > :nth-child(4)");
+        find("#submitButton").click();
     }
 
+    @After
+    public void turnIgnoresOff() {
+        //jtd: I don't think this is necessary - you get a new test class instance for each test
+        setIgnoreJavascriptErrors(false);
+    }
+
+    @Override
+    public void login() {
+        setScreenshotsAllowed(false);
+        reindexOnce();
+        loginAdmin();
+        setIgnoreModals(false);
+        setScreenshotsAllowed(true);
+    }
 }

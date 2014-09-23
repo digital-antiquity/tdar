@@ -14,7 +14,6 @@ import org.tdar.core.bean.FieldLength;
 @Indexed
 @Table(name = "video")
 @XmlRootElement(name = "video")
-
 /**
  * Represents a "video" resource.
  * @author abrin

@@ -18,8 +18,8 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 /**
  * $Id$
  * <p>
- * Transactional service layer for data tables in tDAR. Also provides access to the underlying 
- * data import database storing the actual data from datasets imported into tDAR.
+ * Transactional service layer for data tables in tDAR. Also provides access to the underlying data import database storing the actual data from datasets
+ * imported into tDAR.
  * 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
@@ -82,13 +82,12 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         return getDao().findDataTablesUsingResource(resource);
     }
 
-//    public void setDataTableColumnDao(DataTableColumnDao dataTableColumnDao) {
-//        this.dataTableColumnDao = dataTableColumnDao;
-//    }
+    // public void setDataTableColumnDao(DataTableColumnDao dataTableColumnDao) {
+    // this.dataTableColumnDao = dataTableColumnDao;
+    // }
 
-//    public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
-//        this.tdarDataImportDatabase = tdarDataImportDatabase;
-//    }
-
+    // public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
+    // this.tdarDataImportDatabase = tdarDataImportDatabase;
+    // }
 
 }

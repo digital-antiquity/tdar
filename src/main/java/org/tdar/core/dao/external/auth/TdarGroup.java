@@ -1,9 +1,10 @@
 package org.tdar.core.dao.external.auth;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
 
 public enum TdarGroup implements HasLabel {
@@ -35,13 +36,25 @@ public enum TdarGroup implements HasLabel {
         return groupName;
     }
 
+    public List<TdarGroup> getGroupsWithGreaterPermissions() {
+        List<TdarGroup> toReturn = new ArrayList<>();
+        for (TdarGroup group : TdarGroup.values()) {
+            if (group.permissionLevel >= this.permissionLevel) {
+                toReturn.add(group);
+            }
+        }
+        return toReturn;
+    }
+
     @Override
     public String toString() {
         return groupName;
     }
 
     public static TdarGroup fromString(String groupName) {
-        if(groupName == null) return UNAUTHORIZED;
+        if (groupName == null) {
+            return UNAUTHORIZED;
+        }
         for (TdarGroup group : values()) {
             if (group.getGroupName().equalsIgnoreCase(groupName.trim())) {
                 return group;

@@ -3,8 +3,8 @@ package org.tdar.search.query.part;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.search.query.QueryFieldNames;
@@ -27,11 +27,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
-                fns.add(pers.getFirstName());
+                fns.add(pers.getFirstName().trim());
                 hasName = true;
             }
             if (StringUtils.isNotBlank(pers.getLastName())) {
-                lns.add(pers.getLastName());
+                lns.add(pers.getLastName().trim());
                 hasName = true;
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
@@ -39,7 +39,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 fns.add(wildcardName);
                 lns.add(wildcardName);
                 group.setOperator(Operator.OR);
-                String wildcard = new String(wildcardName);
+                String wildcard = StringUtils.trim(new String(wildcardName));
                 wildcard = PhraseFormatter.ESCAPED.format(wildcard);
                 wildcard = PhraseFormatter.WILDCARD.format(wildcard);
                 if (wildcard.contains(" ")) {
@@ -49,13 +49,14 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 fullName.setBoost(6f);
                 group.append(fullName);
                 setOperator(Operator.OR);
-           }
-            
-            if (StringUtils.isNotBlank(pers.getEmail())) {
-                ems.add(pers.getEmail());
             }
+
+            if (StringUtils.isNotBlank(pers.getEmail())) {
+                ems.add(StringUtils.trim(pers.getEmail()));
+            }
+
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
-                String institution = pers.getInstitutionName();
+                String institution = StringUtils.trim(pers.getInstitutionName());
                 institution = PhraseFormatter.ESCAPED.format(institution);
                 // institution = PhraseFormatter.WILDCARD.format(institution);
                 if (institution.contains(" ")) {
@@ -89,6 +90,13 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
 
         if (registered) {
+            // adding wildcard search for username too
+            if (CollectionUtils.isNotEmpty(fns)) {
+                FieldQueryPart<String> fqp = new FieldQueryPart<String>("username", fns);
+                fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+                group.append(fqp);
+            }
+
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);
             qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));

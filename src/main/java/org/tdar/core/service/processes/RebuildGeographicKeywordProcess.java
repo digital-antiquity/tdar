@@ -39,7 +39,7 @@ public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resou
 
     @Override
     public void process(Resource resource) {
-        if (resource != null && resource.getActiveLatitudeLongitudeBoxes() != null && resource.getActiveLatitudeLongitudeBoxes().size() > 0) {
+        if ((resource != null) && (resource.getActiveLatitudeLongitudeBoxes() != null) && (resource.getActiveLatitudeLongitudeBoxes().size() > 0)) {
             logger.trace("GeoCleanup progress tdarId: " + resource.getId());
             resourceService.processManagedKeywords(resource, resource.getActiveLatitudeLongitudeBoxes());
             logger.debug("final keywords: " + resource.getManagedGeographicKeywords());

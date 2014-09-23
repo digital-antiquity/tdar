@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
@@ -14,8 +14,9 @@ import org.tdar.core.bean.resource.SensoryData;
 
 /**
  * represents an image
+ * 
  * @author abrin
- *
+ * 
  */
 @Entity
 @Table(name = "sensory_data_image")

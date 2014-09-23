@@ -9,15 +9,15 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.resource.FileAccessRestriction;
+import org.tdar.core.bean.resource.FileAction;
 import org.tdar.core.bean.resource.HasExtension;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -45,6 +45,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private Integer sequenceNumber = 0;
     private String description;
     private Date fileCreatedDate;
+    // used to help distinguish between user managed proxies and those that may have been created to work around an error
+    private boolean createdByServer = false;
     private InformationResourceFile informationResourceFile;
     private InformationResourceFileVersion informationResourceFileVersion;
 
@@ -63,6 +65,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.description = file.getDescription();
         this.fileCreatedDate = file.getFileCreatedDate();
         InformationResourceFileVersion latestVersion = file.getLatestUploadedVersion();
+        // this.informationResourceFile = file;
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
             this.filename = latestVersion.getFilename();
@@ -278,6 +281,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
             return true;
         }
         return false;
+    }
+
+    public boolean isCreatedByServer() {
+        return createdByServer;
+    }
+
+    public void setCreatedByServer(boolean createdByServer) {
+        this.createdByServer = createdByServer;
     }
 
 }

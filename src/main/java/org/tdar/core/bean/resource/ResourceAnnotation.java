@@ -2,9 +2,11 @@ package org.tdar.core.bean.resource;
 
 import java.util.Date;
 
+import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -13,13 +15,17 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Index;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.JSONTransient;
+import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.utils.json.JsonProjectLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -32,15 +38,13 @@ import org.tdar.core.configuration.JSONTransient;
  * @version $Rev$
  */
 @Entity
-@Table(name = "resource_annotation")
-@org.hibernate.annotations.Table( appliesTo = "resource_annotation", indexes = {
-        @Index(name="resource_id_keyid", columnNames={"resource_id", "resourceannotationkey_id", "id"})})
+@Table(name = "resource_annotation", indexes = {
+        @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotation")
+@Cacheable
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
-
-    @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "value", "resourceAnnotationKey" };
 
     public ResourceAnnotation() {
     }
@@ -51,11 +55,13 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @ManyToOne(optional = false, cascade = { CascadeType.DETACH, CascadeType.MERGE })
+    @JsonView(JsonProjectLookupFilter.class)
     private ResourceAnnotationKey resourceAnnotationKey;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     @Field
+    @JsonView(JsonLookupFilter.class)
     private String value;
 
     @Temporal(TemporalType.DATE)
@@ -72,7 +78,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @Transient
-    @JSONTransient
     @XmlTransient
     public String getFormattedValue() {
         ResourceAnnotationDataType annotationDataType = resourceAnnotationKey.getAnnotationDataType();
@@ -122,7 +127,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     @Override
     public boolean isValid() {
-        return resourceAnnotationKey != null
+        return (resourceAnnotationKey != null)
                 && StringUtils.isNotEmpty(resourceAnnotationKey.getKey())
                 && StringUtils.isNotEmpty(value);
     }
@@ -130,11 +135,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Override
     public boolean isValidForController() {
         return true;
-    }
-
-    @Override
-    protected String[] getIncludedJsonProperties() {
-        return super.getIncludedJsonProperties();
     }
 
 }

@@ -117,7 +117,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         r.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(r);
         searchIndexService.index(r);
-        genericService.synchronize();
+        evictCache();
         Thread.sleep(1000l);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
