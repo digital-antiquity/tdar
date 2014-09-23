@@ -313,3 +313,4 @@ drop table test;
 --DONT-PROCESS-- --update user_info set tos_version = 99, contributor_agreement_version = 99;
 --DONT-PROCESS-- insert into user_notification(date_created, message_key,message_type,display_type) VALUES(now(), 'lithic.announce','SYSTEM_BROADCAST','NORMAL');
 --DONT-PROCESS-- SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
+--DONT-PROCESS-- update information_resource_file set restriction='EMBARGOED_FIVE_YEARS' where restriction='EMBARGOED';
