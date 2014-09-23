@@ -8,16 +8,12 @@ package org.tdar.struts.action.search;
 
 import java.util.List;
 
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ObfuscationService;
@@ -26,8 +22,9 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
 import org.tdar.struts.data.dataOne.DataOneLogEntry;
+import org.tdar.struts.data.dataOne.DataOneCapabilitiesResponse;
+import org.tdar.struts.data.dataOne.DataOneLogEntry;
 import org.tdar.utils.activity.Activity;
-import org.tdar.utils.activity.ActivityMonitor;
 
 import com.opensymphony.xwork2.interceptor.ParameterNameAware;
 
@@ -130,16 +127,23 @@ public class DataOneController extends AbstractLookupController<Indexable> imple
         throw new TdarActionException(StatusCode.NOT_IMPLEMENTED, "not implemented");
     }
 
-    @Override
-    public List<FacetGroup<? extends Facetable>> getFacetFields() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
     @Override
     public boolean acceptableParameterName(String parameterName) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+
+    @Override
+    public List<FacetGroup<? extends Enum>> getFacetFields() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 //    // http://.../oai-pmh/oai?
