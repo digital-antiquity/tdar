@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.search.query.QueryFieldNames;
@@ -19,10 +20,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
     @Override
     public String generateQueryString() {
-        List<String> fns = new ArrayList<String>();
-        List<String> lns = new ArrayList<String>();
-        List<String> ems = new ArrayList<String>();
-        List<String> insts = new ArrayList<String>();
+        List<String> fns = new ArrayList<>();
+        List<String> lns = new ArrayList<>();
+        List<String> ems = new ArrayList<>();
+        List<String> insts = new ArrayList<>();
+        List<String> wildcards = new ArrayList<>();
         QueryPartGroup group = new QueryPartGroup();
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
@@ -36,8 +38,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             }
             if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
                 String wildcardName = pers.getWildcardName().trim();
-                fns.add(wildcardName);
-                lns.add(wildcardName);
+                wildcards.add(wildcardName);
                 group.setOperator(Operator.OR);
                 String wildcard = StringUtils.trim(new String(wildcardName));
                 wildcard = PhraseFormatter.ESCAPED.format(wildcard);
@@ -65,7 +66,10 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 insts.add(institution);
             }
         }
-
+        fns.addAll(wildcards);
+        lns.addAll(wildcards);
+        
+        
         if (CollectionUtils.isNotEmpty(fns)) {
             FieldQueryPart<String> fqp = new FieldQueryPart<String>("firstName", fns);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
@@ -91,9 +95,10 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
         if (registered) {
             // adding wildcard search for username too
-            if (CollectionUtils.isNotEmpty(fns)) {
-                FieldQueryPart<String> fqp = new FieldQueryPart<String>("username", fns);
+            if (CollectionUtils.isNotEmpty(wildcards)) {
+                FieldQueryPart<String> fqp = new FieldQueryPart<String>("username", wildcards);
                 fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+                fqp.setOperator(Operator.OR);
                 group.append(fqp);
             }
 
