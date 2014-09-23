@@ -33,7 +33,7 @@
     <constant name="struts.mapper.alwaysSelectFullNamespace" value="false"/>
 
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
-
+    <!--<constant name="struts.patternMatcher" value="regex" />-->
 
     <package name="default" extends="struts-default" namespace="/">
     <!--  based tDAR stack - this is not complete, but effectively used as a "prefix" for other stacks -->

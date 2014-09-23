@@ -71,12 +71,12 @@
         <to type="redirect">/search/results?resourceTypes=DATASET&amp;startRecord=0
         </to>
     </rule>
-
+<!--
     <rule>
         <from>^/browse/culture-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
     </rule>
-
+-->
     <rule>
         <from>^/browse/site-name/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>

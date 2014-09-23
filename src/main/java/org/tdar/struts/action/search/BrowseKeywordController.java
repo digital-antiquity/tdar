@@ -3,10 +3,7 @@ package org.tdar.struts.action.search;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -84,18 +81,32 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+
+        getLogger().debug("id:{}  slug:{}", getId(), getSlug());
     }
 
-    @Action(value = "keywords",
-            results={
-            @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
-            @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+    @Actions({
+        @Action(value = "keywords",
+                results={
+                @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
+                @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+        }),
+
+        //FIXME: urlrewrite rule 27 prevents this action from matching legacy urls,  e.g. "/browse/culture-keyword/3"
+        @Action(value = "culture-keyword/{id}/{slug}",
+                params = {"keywordType", "CULTURE_KEYWORD"},
+                results = {
+                        @Result(name="success",  location="keywords.ftl"),
+                        @Result(name="bad-slug", type="redirect", location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+                }
+        )
     })
     public String view() {
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
         if (!Objects.equal(keyword.getSlug(), slug)) {
+            getLogger().debug("slug mismatch - watnted:{}   got:{}", keyword.getSlug(), slug);
             if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != DEFAULT_RESULT_SIZE) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
             }

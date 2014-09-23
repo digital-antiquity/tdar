@@ -14,7 +14,11 @@ public class UrlUtils implements Serializable{
         if (StringUtils.isBlank(input)) {
             return input;
         }
-        return input.replaceAll(KEYWORD_SLUG_REGEXP, "-").replaceAll("\\--*","-").replaceAll("(\\-)+$", "");
+        return input
+                .replaceAll(KEYWORD_SLUG_REGEXP, "-")
+                .replaceAll("\\--*","-")
+                .replaceAll("(\\-)+$", "")
+                .toLowerCase();
         
     }
 }
