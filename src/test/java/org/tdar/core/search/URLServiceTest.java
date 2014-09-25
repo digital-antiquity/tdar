@@ -12,6 +12,9 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.core.service.UrlService;
 
+import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
+
 public class URLServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -29,9 +32,8 @@ public class URLServiceTest {
     public void testKeywordSlug() {
         CultureKeyword keyword = new CultureKeyword("a b / / d - ? \\ % ^ å ");
         logger.debug("{}",keyword.getSlug());
-        assertEquals("a-b-d", keyword.getSlug());
+        assertEquals("a-b-d-a", keyword.getSlug());
     }
-
 
     @Test
     public void testSlugify() {
@@ -43,7 +45,14 @@ public class URLServiceTest {
     }
 
     @Test
+    public void testAsciiNormalizationSlugs() {
+        assertThat( slugify("àbçdêfghîjklmñôpqrśtüvwxÿž"), is("abcdefghijklmnopqrstuvwxyz"));
+        assertThat( slugify("ÀBÇDÊFGHÎJKLMÑÔPQRŚTÜVWXŸŽ"), is("abcdefghijklmnopqrstuvwxyz"));
+    }
+
+    @Test
     public void testUnsluggableWords() {
         assertThat( slugify("技術的には可能、しかしそうではない"), is(""));
     }
+
 }
