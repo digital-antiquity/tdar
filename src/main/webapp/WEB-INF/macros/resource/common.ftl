@@ -125,6 +125,7 @@ Common macros used in multiple contexts
     querystring (in parameter named 'url).
 -->
     <#macro loginButton class="" returnUrl="">
+        <#noescape>
         <#local _current = (currentUrl!'/') >
         <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
@@ -132,6 +133,7 @@ Common macros used in multiple contexts
         <#else>
         <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
         </#if>
+        </#noescape>
     </#macro>
 
 <#--Render the "Access Permissions" section of a resource view page.  Specifically, this section shows
