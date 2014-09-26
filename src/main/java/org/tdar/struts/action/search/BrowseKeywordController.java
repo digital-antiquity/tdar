@@ -47,6 +47,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private String suffix = "";
 
     private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
+
     public Keyword getKeyword() {
         return keyword;
     }
@@ -76,6 +77,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (Persistable.Base.isNullOrTransient(getId())) {
             addActionError(getText("simpleKeywordAction.id_required"));
         }
+        if (getKeywordPath() == null) {
+            addActionError(getText("simpleKeywordAction.type_required"));
+        } else {
+            setKeywordType(KeywordType.fromPath(getKeywordPath()));
+        }
+
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
@@ -85,21 +92,21 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         getLogger().debug("id:{}  slug:{}", getId(), getSlug());
     }
 
-    @Actions({
-        @Action(value = "keywords",
-                results={
-                @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
-                @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
-        }),
+    private String keywordPath = "";
 
-        //FIXME: urlrewrite rule 27 prevents this action from matching legacy urls,  e.g. "/browse/culture-keyword/3"
-        @Action(value = "culture-keyword/{id}/{slug}",
-                params = {"keywordType", "CULTURE_KEYWORD"},
-                results = {
-                        @Result(name="success",  location="keywords.ftl"),
-                        @Result(name="bad-slug", type="redirect", location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
-                }
-        )
+    @Actions({
+        @Action(value = "{keywordPath}/{id}",
+                    results = {
+                            @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
+                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+                    }),
+            @Action(value = "{keywordPath}/{id}/{slug}",
+                    // params = {"keywordType", "CULTURE_KEYWORD"},
+                    results = {
+                            @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
+                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+                    }
+            )
     })
     public String view() {
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
@@ -107,18 +114,19 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         if (!Objects.equal(keyword.getSlug(), slug)) {
             getLogger().debug("slug mismatch - watnted:{}   got:{}", keyword.getSlug(), slug);
-            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != DEFAULT_RESULT_SIZE) {
+            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != 10) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
             }
+            getLogger().debug(suffix);
             return BAD_SLUG;
         }
-        
+
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
-//            setOrientation(DisplayOrientation.MAP);
+            // setOrientation(DisplayOrientation.MAP);
         }
         try {
             setSortField(SortOption.TITLE);
@@ -156,6 +164,14 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public String getKeywordPath() {
+        return keywordPath;
+    }
+
+    public void setKeywordPath(String keywordPath) {
+        this.keywordPath = keywordPath;
     }
 
 }

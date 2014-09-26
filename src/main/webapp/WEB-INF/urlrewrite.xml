@@ -76,7 +76,6 @@
         <from>^/browse/culture-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=CULTURE_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
     </rule>
--->
     <rule>
         <from>^/browse/site-name/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=SITE_NAME_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
@@ -111,6 +110,7 @@
         <from>^/browse/other-keyword/(\d+)/?([^\?]+)?\??(.*)</from>
         <to>/browse/keywords?keywordType=OTHER_KEYWORD&amp;id=$1&amp;slug=$2&amp;$3</to>
     </rule>
+-->
 
     <rule>
         <from>^/(coding-sheet)s?/?$</from>
@@ -170,12 +170,12 @@
     </rule>
 
     <rule>
-        <from>^/browse/(.+)/(\d+)/?$</from>
-        <to>/browse/$1?id=$2</to>
+        <from>^/browse/creators/(\d+)/?$</from>
+        <to>/browse/creators?id=$2</to>
     </rule>
     <outbound-rule>
-        <from>^/browse/(.+)\?id=(\d+)$</from>
-        <to>/browse/$1/$2</to>
+        <from>^/browse/creators\?id=(\d+)$</from>
+        <to>/browse/creators/$2</to>
     </outbound-rule>
 
     <rule>
