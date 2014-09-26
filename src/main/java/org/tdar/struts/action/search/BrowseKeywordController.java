@@ -3,7 +3,11 @@ package org.tdar.struts.action.search;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -88,7 +92,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
-
         getLogger().debug("id:{}  slug:{}", getId(), getSlug());
     }
 
@@ -96,15 +99,15 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Actions({
         @Action(value = "{keywordPath}/{id}",
-                    results = {
-                            @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
-                    }),
+            results = {
+                    @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
+                    @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath"})
+            }),
             @Action(value = "{keywordPath}/{id}/{slug}",
                     // params = {"keywordType", "CULTURE_KEYWORD"},
                     results = {
                             @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath"})
                     }
             )
     })
@@ -117,7 +120,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != 10) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
             }
-            getLogger().debug(suffix);
             return BAD_SLUG;
         }
 
@@ -166,7 +168,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         this.suffix = suffix;
     }
 
-    public String getKeywordPath() {
+    private String getKeywordPath() {
         return keywordPath;
     }
 

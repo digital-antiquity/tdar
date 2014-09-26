@@ -38,6 +38,7 @@
     <package name="default" extends="struts-default" namespace="/">
     <!--  based tDAR stack - this is not complete, but effectively used as a "prefix" for other stacks -->
         <result-types>
+            <result-type name="redirect" class="org.tdar.struts.result.RedirectResult"/>
             <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
             <result-type name="xmldocument" class="org.tdar.struts.result.XMLDocumentResult"/>
             <result-type name="jsonresult"   class="org.tdar.struts.result.JsonDocumentResult"/>
@@ -72,7 +73,6 @@
                 <!--  technically, this is not used or needed, but keeping it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect"/>
                 <interceptor-ref name="staticParams"/>
-
                 <interceptor-ref name="params">
                     <!-- Mirror changes to the second entry below as well... -->
                     <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->
@@ -81,8 +81,9 @@
                 </interceptor-ref>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="prepare"/>
-                <interceptor-ref name="staticParams"/>
-                <interceptor-ref name="actionMappingParams"/>
+<!--                 <interceptor-ref name="staticParams"/>
+ -->
+                 <interceptor-ref name="actionMappingParams"/>
             </interceptor-stack>
 
             <interceptor-stack name="tdarDefaultStackWritable" >

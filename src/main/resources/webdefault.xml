@@ -335,6 +335,10 @@ vim:sts=2:sw=2
   <session-config>
     <!-- FIXME: change to adjust when sessions are expunged -->
     <session-timeout>30</session-timeout>
+    <cookie-config>
+        <http-only>true</http-only>
+    </cookie-config>
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 
   <!-- ==================================================================== -->
