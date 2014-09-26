@@ -335,8 +335,9 @@ with that datapoint -->
             yaxis: "${yaxis}",
             rotate: "${rotate}",
             title: "${graphLabel?js_string}",
-            searchKey:"${searchKey}",
-            context:"${context?string}"
+            searchKey: "${searchKey}",
+            context: "${context?string}",
+            baseUrl: "${baseUrl}"
         };
         $(document).ready(function () {
             TDAR.charts.barGraph(props${id}, ${data},"${id}" <#if config?has_content>, ${config}</#if>);
