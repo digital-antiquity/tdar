@@ -2,6 +2,7 @@ package org.tdar.struts.action.search;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -25,7 +26,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 
-import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -115,7 +115,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
-        if (!Objects.equal(keyword.getSlug(), slug)) {
+        if (!Objects.equals(keyword.getSlug(), slug)) {
             getLogger().debug("slug mismatch - watnted:{}   got:{}", keyword.getSlug(), slug);
             if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != 10) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
