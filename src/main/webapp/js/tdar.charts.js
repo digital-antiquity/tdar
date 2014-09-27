@@ -306,7 +306,7 @@
             }
             $graph.bind('jqplotDataClick', function(ev, seriesIndex, pointIndex, data) {
                 $('#info1').html('series: ' + seriesIndex + ', point: ' + pointIndex + ', data: ' + data + ', pageX: ' + ev.pageX + ', pageY: ' + ev.pageY);
-                window.location.href = "/search/results?" + props.searchKey + "=" + data[2] + context;
+                window.location.href = props.baseUrl + "/search/results?" + props.searchKey + "=" + data[2] + context;
             });
         },
 

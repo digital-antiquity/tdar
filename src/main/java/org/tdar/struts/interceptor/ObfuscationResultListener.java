@@ -183,14 +183,17 @@ public class ObfuscationResultListener implements PreResultListener {
 
     @Override
     public void beforeResult(ActionInvocation invocation, String resultCode) {
-        try {
-            prepareResult((Action) invocation.getProxy().getAction());
-        } catch (Exception e) {
-            // if the session is already closed, then we don't want to actually worry about session closed errors
-            // if the session is not closed, then we probably have a real error here
-            if ((sessionSecurityInterceptor != null) && !sessionSecurityInterceptor.isSessionClosed()) {
-                logger.error("error durring obfuscation", e);
-                invocation.setResultCode("error");
+        Object action = invocation.getProxy().getAction();
+        if(action instanceof Action) {
+            try {
+                prepareResult((Action) invocation.getProxy().getAction());
+            } catch (Exception e) {
+                // if the session is already closed, then we don't want to actually worry about session closed errors
+                // if the session is not closed, then we probably have a real error here
+                if ((sessionSecurityInterceptor != null) && !sessionSecurityInterceptor.isSessionClosed()) {
+                    logger.error("error durring obfuscation", e);
+                    invocation.setResultCode("error");
+                }
             }
         }
     }

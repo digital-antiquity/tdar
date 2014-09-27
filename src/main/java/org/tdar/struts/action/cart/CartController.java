@@ -36,7 +36,6 @@ public class CartController extends AbstractCartController {
     private static final long serialVersionUID = 1592977664145682926L;
 
     public static final String SUCCESS_COMPLETE = "success-complete";
-    public static final String PROCESS_PAYMENT_REQUEST = "process-payment-request";
     public static final String SIMPLE = "simple";
     public static final String POLLING = "polling";
     private String redirectUrl;
@@ -76,7 +75,7 @@ public class CartController extends AbstractCartController {
      */
     @SkipValidation
     @WriteableSession
-    @Action(value = PROCESS_PAYMENT_REQUEST, results = {
+    @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "/cart/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = ADD, type = TYPE_REDIRECT, location = TdarActionSupport.ADD),

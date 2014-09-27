@@ -2,8 +2,10 @@ package org.tdar.struts.action.search;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -24,7 +26,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 
-import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -50,6 +51,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private String suffix = "";
 
     private DisplayOrientation orientation = DisplayOrientation.LIST_FULL;
+
     public Keyword getKeyword() {
         return keyword;
     }
@@ -79,35 +81,54 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (Persistable.Base.isNullOrTransient(getId())) {
             addActionError(getText("simpleKeywordAction.id_required"));
         }
+        if (getKeywordPath() == null) {
+            addActionError(getText("simpleKeywordAction.type_required"));
+        } else {
+            setKeywordType(KeywordType.fromPath(getKeywordPath()));
+        }
+
         if (getKeywordType() == null) {
             addActionError(getText("simpleKeywordAction.type_required"));
         }
 
         setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        getLogger().debug("id:{}  slug:{}", getId(), getSlug());
     }
 
-    @Action(value = "keywords",
-            results={
-            @Result(name=SUCCESS, type=FREEMARKER, location="keywords.ftl"),
-            @Result(name=BAD_SLUG, type=REDIRECT, location="/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}")
+    private String keywordPath = "";
+
+    @Actions({
+        @Action(value = "{keywordPath}/{id}",
+            results = {
+                    @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
+                    @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
+            }),
+            @Action(value = "{keywordPath}/{id}/{slug}",
+                    // params = {"keywordType", "CULTURE_KEYWORD"},
+                    results = {
+                            @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
+                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
+                    }
+            )
     })
     public String view() {
         if (Persistable.Base.isNullOrTransient(keyword) || getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
-        if (!Objects.equal(keyword.getSlug(), slug)) {
-            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != DEFAULT_RESULT_SIZE) {
+        if (!Objects.equals(keyword.getSlug(), slug)) {
+            getLogger().debug("slug mismatch - watnted:{}   got:{}", keyword.getSlug(), slug);
+            if (getStartRecord() != DEFAULT_START || getRecordsPerPage() != 10) {
                 setSuffix(String.format("?startRecord=%s&recordsPerPage=%s", getStartRecord(), getRecordsPerPage()));
             }
             return BAD_SLUG;
         }
-        
+
         setMode("KeywordBrowse");
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
-//            setOrientation(DisplayOrientation.MAP);
+            // setOrientation(DisplayOrientation.MAP);
         }
         try {
             setSortField(SortOption.TITLE);
@@ -145,6 +166,14 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    private String getKeywordPath() {
+        return keywordPath;
+    }
+
+    public void setKeywordPath(String keywordPath) {
+        this.keywordPath = keywordPath;
     }
 
 }

@@ -35,7 +35,6 @@ import com.opensymphony.xwork2.Preparable;
 public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 5114065112304206226L;
-    public static final String PROCESS_EXTERNAL_PAYMENT_RESPONSE = "process-external-payment-response";
     public static final String NELNET_RESPONSE_SUCCESS = "success";
     public static final String NELNET_RESPONSE_FAILURE = "failure";
 
@@ -70,7 +69,7 @@ public class CartExternalPaymentResponseAction extends AuthenticationAware.Base 
 
     @WriteableSession
     @PostOnly
-    @Action(value = PROCESS_EXTERNAL_PAYMENT_RESPONSE, results = {
+    @Action(value = "process-external-payment-response", results = {
             @Result(name = SUCCESS, type = "stream", params = { "contentType", "text/text", "inputName", "inputStream" }),
             @Result(name = INPUT, type = "streamhttp", params = { "contentType", "text/text", "inputName", "errorInputStream", "status", "400" }),
             // fixme: jtd I'm not sure if the following mapping is safe. Can an exception occur when the action object is undefined? And if so, will struts

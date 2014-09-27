@@ -126,10 +126,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
+        scheduledProcessService.getScheduledProcessQueue().clear();
         Document document = generateDocumentWithFileAndUseDefaultUser();
         fsp.execute();
         scheduledProcessService.queueTask(SendEmailProcess.class);
-        scheduledProcessService.runScheduledProcessesInQueue();
+        scheduledProcessService.runNextScheduledProcessesInQueue();
         SimpleMailMessage received = ((MockMailSender)emailService.getMailSender()).getMessages().get(0);
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
@@ -145,10 +146,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testEmbargo() throws InstantiationException, IllegalAccessException {
         // queue the embargo task
         scheduledProcessService.queueTask(EmbargoedFilesUpdateProcess.class);
-        scheduledProcessService.runScheduledProcessesInQueue();
+        scheduledProcessService.runNextScheduledProcessesInQueue();
         // queue the email task
         scheduledProcessService.queueTask(SendEmailProcess.class);
-        scheduledProcessService.runScheduledProcessesInQueue();
+        scheduledProcessService.runNextScheduledProcessesInQueue();
     }
 
     @Test

@@ -7,19 +7,21 @@ import org.tdar.utils.MessageHelper;
 
 public enum KeywordType implements Localizable {
 
-    CULTURE_KEYWORD(CultureKeyword.class),
-    INVESTIGATION_TYPE(InvestigationType.class),
-    MATERIAL_TYPE(MaterialKeyword.class),
-    GEOGRAPHIC_KEYWORD(GeographicKeyword.class),
-    OTHER_KEYWORD(OtherKeyword.class),
-    SITE_NAME_KEYWORD(SiteNameKeyword.class),
-    SITE_TYPE_KEYWORD(SiteTypeKeyword.class),
-    TEMPORAL_KEYWORD(TemporalKeyword.class);
+    CULTURE_KEYWORD(CultureKeyword.class, "culture-keyword"),
+    INVESTIGATION_TYPE(InvestigationType.class, "investigation-type"),
+    MATERIAL_TYPE(MaterialKeyword.class, "material-type"),
+    GEOGRAPHIC_KEYWORD(GeographicKeyword.class, "geographic-keyword"),
+    OTHER_KEYWORD(OtherKeyword.class, "other-keyword"),
+    SITE_NAME_KEYWORD(SiteNameKeyword.class, "site-name"),
+    SITE_TYPE_KEYWORD(SiteTypeKeyword.class, "site-type"),
+    TEMPORAL_KEYWORD(TemporalKeyword.class, "temporal-keyword");
 
     private Class<? extends Keyword> keywordClass;
+    private String urlSuffix;
 
-    private KeywordType(Class<? extends Keyword> cls) {
+    private KeywordType(Class<? extends Keyword> cls, String urlSuffix) {
         this.setKeywordClass(cls);
+        this.setUrlSuffix(urlSuffix);
     }
 
     public Class<? extends Keyword> getKeywordClass() {
@@ -83,25 +85,24 @@ public enum KeywordType implements Localizable {
     }
 
     public String getUrlNamespace() {
-        switch (this) {
-            case CULTURE_KEYWORD:
-                return "browse/culture-keyword";
-            case INVESTIGATION_TYPE:
-                return "browse/investigation-type";
-            case GEOGRAPHIC_KEYWORD:
-                return "browse/geographic-keyword";
-            case MATERIAL_TYPE:
-                return "browse/material-type";
-            case OTHER_KEYWORD:
-                return "browse/other-keyword";
-            case SITE_NAME_KEYWORD:
-                return "browse/site-name";
-            case SITE_TYPE_KEYWORD:
-                return "browse/site-type";
-            case TEMPORAL_KEYWORD:
-                return "browse/temporal-keyword";
+        return "browse/" + urlSuffix;
+    }
+
+    public static KeywordType fromPath(String keywordPath) {
+        for (KeywordType type : values()) {
+            if (type.urlSuffix.equals(keywordPath)) {
+                return type;
+            }
         }
         return null;
+    }
+
+    public String getUrlSuffix() {
+        return urlSuffix;
+    }
+
+    private void setUrlSuffix(String urlSuffix) {
+        this.urlSuffix = urlSuffix;
     }
 
 }

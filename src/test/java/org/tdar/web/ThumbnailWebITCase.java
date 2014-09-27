@@ -127,8 +127,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // NOW MAKE THE PAGE EMBARGED -- THE THUMBNAIL SHOULD NOT BE VISIBLE
         loginAdmin();
         gotoPage(editPage);
-        setInput("fileProxies[0].action", "MODIFY_METADATA");
-        setInput("fileProxies[0].restriction", "EMBARGOED");
+        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
+        setInput("fileProxies[0].restriction", FileAccessRestriction.EMBARGOED_FIVE_YEARS.name());
         submitForm();
         logout();
         gotoPage(viewPage);
