@@ -238,6 +238,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public int getHostPort() {
         return getTdarConfiguration().getPort();
     }
+    
+    public String getBaseUrl() {
+        return getTdarConfiguration().getBaseUrl();
+    }
 
     public String getContactEmail() {
         return getTdarConfiguration().getContactEmail();

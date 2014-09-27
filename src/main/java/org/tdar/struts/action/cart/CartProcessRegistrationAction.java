@@ -27,8 +27,6 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @Results({
         @Result(name = TdarActionSupport.INPUT, location = "review-unauthenticated.ftl"),
-        // // no need to take user to billing account selection if we no they don't have one
-        // @Result(name = SUCCESS, location = "/cart/process-payment-request", type = "redirect")
         // route to the billing account selection page for now, even though user has one choice
         @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CART_REVIEW_PURCHASE, type = "redirect")
 })

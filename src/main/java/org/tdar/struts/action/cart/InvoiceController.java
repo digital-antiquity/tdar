@@ -120,7 +120,7 @@ public class InvoiceController extends AbstractCartController {
      * 
      * @return
      */
-    @Action(URLConstants.CART_REVIEW_UNAUTHENTICATED)
+    @Action("review-unauthenticated")
     public String showInvoice() {
         if (getInvoice() == null) {
             return "redirect-start";

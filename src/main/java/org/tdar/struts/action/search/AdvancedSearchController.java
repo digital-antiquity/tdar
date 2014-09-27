@@ -615,7 +615,16 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : groups) {
             searchService.inflateSearchParameters(sp);
-            getLogger().debug("inflating parameters for group {}", sp);
+            try {
+                sp.toQueryPartGroup(null);
+                getLogger().debug("inflating parameters for group {}", sp);
+            } catch(TdarRecoverableRuntimeException trex) {
+                addActionError(trex.getMessage());
+            }
+        }
+        //in the situation where we could not reconstitute the search object graph, wipe out the search terms and show the error messages.
+        if(hasActionErrors()) {
+            groups.clear();
         }
 
         return SUCCESS;

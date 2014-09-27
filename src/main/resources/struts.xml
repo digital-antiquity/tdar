@@ -29,12 +29,16 @@
     <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true"/>
     <constant name="struts.objectFactory.spring.autoWire" value="name"/>
     
-    <!-- constant name="struts.enable.SlashesInActionNames" value="true"/> <constant
-          name="struts.mapper.alwaysSelectFullNamespace" value="false"/ -->
+    <constant name="struts.enable.SlashesInActionNames" value="true"/>
+    <constant name="struts.mapper.alwaysSelectFullNamespace" value="false"/>
+
     <constant name="struts.patternMatcher" value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher"/>
+    <!--<constant name="struts.patternMatcher" value="regex" />-->
+
     <package name="default" extends="struts-default" namespace="/">
     <!--  based tDAR stack - this is not complete, but effectively used as a "prefix" for other stacks -->
         <result-types>
+            <result-type name="redirect" class="org.tdar.struts.result.RedirectResult"/>
             <result-type name="jaxbdocument" class="org.tdar.struts.result.JaxbDocumentResult"/>
             <result-type name="xmldocument" class="org.tdar.struts.result.XMLDocumentResult"/>
             <result-type name="jsonresult"   class="org.tdar.struts.result.JsonDocumentResult"/>
@@ -43,7 +47,6 @@
         </result-types>
         <interceptors>
             <interceptor name="authenticate" class="org.tdar.struts.interceptor.AuthenticationInterceptor"/>
-            <interceptor name="trim" class="org.tdar.struts.interceptor.TrimInterceptor"/>
             <interceptor name="userAgreement" class="org.tdar.struts.interceptor.UserAgreementInterceptor"/>
             <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
             <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
@@ -69,9 +72,8 @@
                 <interceptor-ref name="checkbox"/>
                 <!--  technically, this is not used or needed, but keeping it just in case we start doing multi-selects -->
                 <interceptor-ref name="multiselect"/>
-                <interceptor-ref name="trim">
-                    <param name="excludedParams">uploadFiles,userLogin.loginPassword,registration.password,registration.confirmPassword,downloadRegistration.password,downloadRegistration.confirmPassword,downloadUserLogin.loginPassword,reg.password,reg.confirmPassword</param>
-                </interceptor-ref>
+                <interceptor-ref name="staticParams"/>
+
                 <interceptor-ref name="params">
                     <!-- Mirror changes to the second entry below as well... -->
                     <!-- The '-' is because when jQuery Ajax call is made with 'cache: false' we get a _=timestamp with each request -->

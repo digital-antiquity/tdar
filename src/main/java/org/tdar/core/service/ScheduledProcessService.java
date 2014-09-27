@@ -240,15 +240,21 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         if (CollectionUtils.isEmpty(scheduledProcessQueue)) {
             return;
         }
-        runScheduledProcessesInQueue();
+        runNextScheduledProcessesInQueue();
     }
 
-    protected void runScheduledProcessesInQueue() {
+    protected void runNextScheduledProcessesInQueue() {
         logger.debug("processes in Queue: {}", scheduledProcessQueue);
+        if (scheduledProcessQueue.size() <= 0) {
+            return;
+        }
+        
         ScheduledProcess<Persistable> process = scheduledProcessQueue.iterator().next();
         // FIXME: merge UpgradeTask and ScheduledProcess at some point, so that UpgradeTask-s are
         // created / added / managed within a ScheduledProcess.execute()
-
+        if (process == null) {
+            return;
+        }
         // look in upgradeTasks to see what's there, if the task defined is not
         // there, then run the task, and then add it
         UpgradeTask upgradeTask = checkIfRun(process.getDisplayName());

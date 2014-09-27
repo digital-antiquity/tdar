@@ -2740,3 +2740,4 @@ update pos_billing_activity set activity_type = 'TEST' where name in ('good','er
 --update user_info set tos_version = 99, contributor_agreement_version = 99;
 insert into user_notification(date_created, message_key,message_type,display_type) VALUES(now(), 'lithic.announce','SYSTEM_BROADCAST','NORMAL');
 SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
+update information_resource_file set restriction='EMBARGOED_FIVE_YEARS' where restriction='EMBARGOED';
