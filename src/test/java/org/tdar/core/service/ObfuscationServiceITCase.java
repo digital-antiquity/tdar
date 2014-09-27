@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.DocumentController;
-import org.tdar.struts.action.resource.ResourceViewAction;
+import org.tdar.struts.action.resource.DocumentViewAction;
 
 /**
  * @author Adam Brin
@@ -50,7 +50,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         controller.prepare();
         controller.getProject();
         controller.getId();
-        ResourceViewAction rva = generateNewInitializedController(ResourceViewAction.class, getBasicUser());
+        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class, getBasicUser());
         rva.setId(Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
         rva.prepare();
         rva.view();

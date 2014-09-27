@@ -304,14 +304,14 @@
     <!-- all requests for a resource supplying just an id should go to it's 
         view action -->
     <rule>
-        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/(view\?id=)?([0-9]+)$
+        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/([0-9]+)$
         </from>
-        <to>/resource/view?id=$3&amp;namespaceUrl=$1</to>
+        <to>/$1/view?id=$2</to>
     </rule>
     <outbound-rule>
-        <from>^/resource/view?id=(\d+)&amp;namespaceUrl=(\w+)$
+        <from>^/(project|dataset|ontology|image|audio|video|document|sensory-data|coding-sheet|archive|geospatial)/view?id=(\d+)$
         </from>
-        <to>/$2/$1</to>
+        <to>/$1/$2</to>
     </outbound-rule>
 
     <rule>

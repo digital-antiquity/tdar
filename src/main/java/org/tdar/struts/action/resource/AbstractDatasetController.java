@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.TemplateModelException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -153,10 +151,10 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
     private List<String> ontologyNames = new ArrayList<String>();
     private List<String> codingSheetNames = new ArrayList<String>();
 
-    private Long dataTableId;
     private Long rowId;
     private Map<DataTableColumn, String> dataTableRowAsMap;
     private PaginationHelper paginationHelper;
+    private Long dataTableId;
     private InputStream xmlStream;
 
     public void resolvePostSaveAction(Dataset persistable) {

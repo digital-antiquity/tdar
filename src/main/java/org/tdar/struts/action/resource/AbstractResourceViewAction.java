@@ -5,20 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.joda.time.DateTime;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
@@ -41,10 +40,8 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -53,15 +50,12 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SearchService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -69,21 +63,15 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.query.FacetValue;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
-import org.tdar.utils.PaginationHelper;
 
 /**
  * $Id$
@@ -101,31 +89,16 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/resource")
-public class ResourceViewAction extends AbstractPersistableViewableAction<Resource> implements SearchResultHandler<Resource> {
+public class AbstractResourceViewAction<R> extends AbstractPersistableViewableAction<Resource>  {
 
     private static final long serialVersionUID = 896347341133309643L;
 
-    public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
+//    public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
-    private String namespaceUrl;
     private String submitterProperName = "";
-    private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
-    private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 100;
-    private int totalRecords;
-    private List<Resource> results;
-    private SortOption secondarySortField;
-    private SortOption sortField;
-    private String mode = "ProjectBrowse";
-    private PaginationHelper paginationHelper;
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
-    private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
-
-    @Autowired
-    private transient SearchService searchService;
 
     @Autowired
     private transient DatasetService datasetService;
@@ -241,6 +214,25 @@ public class ResourceViewAction extends AbstractPersistableViewableAction<Resour
                 getContactProxies().add(proxy);
             }
         }
+    }
+
+    
+    @HttpOnlyIfUnauthenticated
+    @Override
+    @Action(value = VIEW,
+            results = {
+                    @Result(name = SUCCESS, location = "../resource/view-template.ftl"),
+                    @Result(name = INPUT, type = HTTPHEADER, params = { "error", "404" }),
+                    @Result(name = DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+            })
+    /**
+     * FIXME: appears to only override the SUCCESS result type compared to AbstractPersistableController's declaration,
+     * see if it's possible to do this with less duplicatiousness
+     * 
+     * @see org.tdar.struts.action.AbstractPersistableController#save()
+     */
+    public String view() throws TdarActionException {
+        return super.view();
     }
 
     protected void loadCustomMetadata() throws TdarActionException {
@@ -894,27 +886,6 @@ public class ResourceViewAction extends AbstractPersistableViewableAction<Resour
         }
     }
 
-    public String getNamespaceUrl() {
-        return namespaceUrl;
-    }
-
-    public void setNamespaceUrl(String namespaceUrl) {
-        this.namespaceUrl = namespaceUrl;
-    }
-
-    @Override
-    public void prepare() {
-        super.prepare();
-        setNamespaceUrl(getPersistable().getResourceType().getUrlNamespace());
-        if (getResource().getResourceType().isProject()) {
-            try {
-                handleSearch();
-            } catch (Exception e) {
-                getLogger().error("error in exception", e);
-            }
-        }
-    }
-
     /*
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
@@ -938,196 +909,6 @@ public class ResourceViewAction extends AbstractPersistableViewableAction<Resour
         this.hasDeletedFiles = hasDeletedFiles;
     }
 
-    private void handleSearch() throws TdarActionException {
-        Project project = (Project) getResource();
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this);
-        setSortField(project.getSortBy());
-        setSecondarySortField(SortOption.TITLE);
-        if (project.getSecondarySortBy() != null) {
-            setSecondarySortField(project.getSecondarySortBy());
-        }
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-        Date dateUpdated = project.getDateUpdated();
-        if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
-            projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
-        }
-        try {
-            searchService.handleSearch(qb, this, this);
-            bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
-
-        } catch (SearchPaginationException e) {
-            throw new TdarActionException(StatusCode.BAD_REQUEST, e);
-        } catch (Exception e) {
-            addActionErrorWithException(getText("projectController.something_happened"), e);
-        }
-
-    }
-
-    @Override
-    public SortOption getSortField() {
-        return this.sortField;
-    }
-
-    @Override
-    public SortOption getSecondarySortField() {
-        return this.secondarySortField;
-    }
-
-    @Override
-    public void setTotalRecords(int resultSize) {
-        this.totalRecords = resultSize;
-    }
-
-    @Override
-    public int getStartRecord() {
-        return this.startRecord;
-    }
-
-    @Override
-    public int getRecordsPerPage() {
-        return this.recordsPerPage;
-    }
-
-    @Override
-    public boolean isDebug() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
-    public void setStartRecord(int startRecord) {
-        this.startRecord = startRecord;
-    }
-
-    @Override
-    public void setRecordsPerPage(int recordsPerPage) {
-        this.recordsPerPage = recordsPerPage;
-    }
-
-    @Override
-    public int getTotalRecords() {
-        return totalRecords;
-    }
-
-    @Override
-    public void setResults(List<Resource> results) {
-        getLogger().trace("setResults: {}", results);
-        this.results = results;
-    }
-
-    @Override
-    public List<Resource> getResults() {
-        return results;
-    }
-
-    public void setSecondarySortField(SortOption secondarySortField) {
-        this.secondarySortField = secondarySortField;
-    }
-
-    @Override
-    public void setSortField(SortOption sortField) {
-        this.sortField = sortField;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#setMode(java.lang.String)
-     */
-    @Override
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#getMode()
-     */
-    @Override
-    public String getMode() {
-        return mode;
-    }
-
-    @Override
-    public int getNextPageStartRecord() {
-        return startRecord + recordsPerPage;
-    }
-
-    @Override
-    public int getPrevPageStartRecord() {
-        return startRecord - recordsPerPage;
-    }
-
-    @Override
-    public String getSearchTitle() {
-        return getText("projectController.search_title", getPersistable().getTitle());
-    }
-
-    @Override
-    public String getSearchDescription() {
-        return getSearchTitle();
-    }
-
-    public List<SortOption> getSortOptions() {
-        List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
-        options.remove(SortOption.RESOURCE_TYPE);
-        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
-        options.add(0, SortOption.RESOURCE_TYPE);
-        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
-        return options;
-    }
-
-    public List<DisplayOrientation> getResultsOrientations() {
-        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
-        return options;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
-    public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null) {
-            paginationHelper = PaginationHelper.withSearchResults(this);
-        }
-        return paginationHelper;
-    }
-
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
-    }
-
-    public ArrayList<ResourceType> getSelectedResourceTypes() {
-        return selectedResourceTypes;
-    }
-
-    public void setSelectedResourceTypes(ArrayList<ResourceType> selectedResourceTypes) {
-        this.selectedResourceTypes = selectedResourceTypes;
-    }
-
-    @Override
-    public ProjectionModel getProjectionModel() {
-        return projectionModel;
-    }
-
-    public void setProjectionModel(ProjectionModel projectionModel) {
-        this.projectionModel = projectionModel;
-    }
-
     private Boolean editable = null;
 
     public boolean isEditable() {
@@ -1138,23 +919,6 @@ public class ResourceViewAction extends AbstractPersistableViewableAction<Resour
             editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
-    }
-
-    public boolean isOkToMapOntology() {
-        CodingSheet persistable = (CodingSheet)getPersistable();
-        if (persistable.getResourceType().isCodingSheet()) {
-            Ontology defaultOntology = persistable.getDefaultOntology();
-            if (Persistable.Base.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
-                getLogger().debug("cannot map, ontology issues, null or transient");
-                return false;
-            }
-            if (CollectionUtils.isEmpty(persistable.getCodingRules()) || CollectionUtils.isNotEmpty(persistable.getFilesWithProcessingErrors())) {
-                getLogger().debug("cannot map, coding sheet has errors or no rules");
-                return false;
-            }
-            return true;
-        }
-        return false;
     }
 
 }

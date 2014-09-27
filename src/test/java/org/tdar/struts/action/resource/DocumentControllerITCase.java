@@ -325,7 +325,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        ResourceViewAction rva = generateNewInitializedController(ResourceViewAction.class);
+        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
@@ -354,8 +354,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertTrue("a deletion note should have been added", seen);
     }
 
-    private ResourceViewAction deleteResource(Long newId, String deletionReason) throws TdarActionException {
-        ResourceViewAction rva = generateNewInitializedController(ResourceViewAction.class);
+    private DocumentViewAction deleteResource(Long newId, String deletionReason) throws TdarActionException {
+        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
@@ -369,7 +369,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS, delete);
         logger.debug("status: {}", delete);
         genericService.synchronize();
-        rva = generateNewInitializedController(ResourceViewAction.class, getAdminUser());
+        rva = generateNewInitializedController(DocumentViewAction.class, getAdminUser());
         rva.setId(newId);
         rva.prepare();
         rva.view();
@@ -417,7 +417,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
         String deletionReason = "because";
-        ResourceViewAction rva = deleteResource(d.getId(), deletionReason );
+        DocumentViewAction rva = deleteResource(d.getId(), deletionReason );
     }
 
     // return a populated "new" resource creator person (i.e. all person fields
@@ -474,7 +474,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         // FIXME: issues with hydrating resources with Institutions
 
-        ResourceViewAction rva = generateNewInitializedController(ResourceViewAction.class);
+        DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
@@ -490,7 +490,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         controller.save();
 
         // loading the view page
-        rva = generateNewInitializedController(ResourceViewAction.class);
+        rva = generateNewInitializedController(DocumentViewAction.class);
         rva.setId(newId);
         rva.prepare();
         rva.view();
