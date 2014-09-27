@@ -101,13 +101,13 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         @Action(value = "{keywordPath}/{id}",
             results = {
                     @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                    @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath"})
+                    @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
             }),
             @Action(value = "{keywordPath}/{id}/{slug}",
                     // params = {"keywordType", "CULTURE_KEYWORD"},
                     results = {
                             @Result(name = SUCCESS, type = FREEMARKER, location = "keywords.ftl"),
-                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath"})
+                            @Result(name = BAD_SLUG, type = REDIRECT, location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${suffix}", params={"ignoreParams","id,keywordPath,slug"})
                     }
             )
     })

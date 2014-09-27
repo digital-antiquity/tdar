@@ -6,16 +6,8 @@
     <rule>
         <name>XML Namespace Document</name>
         <note>
-            The XML namespace URI for tDAR is
-            "http://www.tdar.org/namespace". This namespace URI should
-            never
-            change. The following rule redirects from the namespace
-            URI to a page
-            where the namespace is currently documented. If
-            the location of the
-            documentation changes, the &lt;to&gt;
-            element below should be updated
-            to follow it.
+            The XML namespace URI for tDAR is "http://www.tdar.org/namespace". This namespace URI should never change. The following rule redirects from the namespace
+            URI to a page where the namespace is currently documented. If location of the documentation changes, the &lt;to&gt; element below should be updated to follow it.
         </note>
         <from>/namespace</from>
         <to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace
@@ -171,20 +163,20 @@
 
     <rule>
         <from>^/browse/creators/(\d+)/?$</from>
-        <to>/browse/creators?id=$2</to>
+        <to>/browse/creators?id=$1</to>
     </rule>
     <outbound-rule>
         <from>^/browse/creators\?id=(\d+)$</from>
-        <to>/browse/creators/$2</to>
+        <to>/browse/creators/$1</to>
     </outbound-rule>
 
     <rule>
-        <from>^/browse/(.+)/(\d+)/rdf</from>
-        <to>/browse/creatorRdf?id=$2</to>
+        <from>^/browse/creators/(\d+)/rdf</from>
+        <to>/browse/creatorRdf?id=$1</to>
     </rule>
     <outbound-rule>
         <from>^/browse/creatorRdf\?id=(\d+)$</from>
-        <to>/browse/creators/$2/rdf</to>
+        <to>/browse/creators/$1/rdf</to>
     </outbound-rule>
 
     <rule>

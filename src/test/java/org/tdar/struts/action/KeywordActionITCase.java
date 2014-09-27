@@ -4,12 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.search.BrowseKeywordController;
 
-public class KewordActionITCase extends AbstractDataIntegrationTestCase {
+public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     public void testBasicKeywordAction() {
@@ -21,6 +22,7 @@ public class KewordActionITCase extends AbstractDataIntegrationTestCase {
         BrowseKeywordController bkc = generateNewController(BrowseKeywordController.class);
         init(bkc, null);
         bkc.setId(l);
+        bkc.setKeywordPath(cultureKeyword.getUrlSuffix());
         bkc.setKeywordType(cultureKeyword);
         bkc.setSlug(slug);
         Exception e = null;
