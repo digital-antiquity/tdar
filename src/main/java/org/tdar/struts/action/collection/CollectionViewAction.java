@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -32,6 +33,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -60,7 +62,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Autowired
     private transient AuthorizationService authorizationService;
 
-
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
     private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
@@ -77,7 +78,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
-
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -90,15 +90,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     @Override
-    public boolean isViewable() {
+    public boolean isViewable() throws TdarActionException {
+        if (getResourceCollection() == null) {
+            throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
+        }
         return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
-
     public ResourceCollection getResourceCollection() {
-        if (getPersistable() == null) {
-            setPersistable(new ResourceCollection());
-        }
         return getPersistable();
     }
 
@@ -184,7 +183,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
         getLogger().trace("lucene: end");
     }
-
 
     @Override
     public SortOption getSortField() {

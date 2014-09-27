@@ -10,7 +10,7 @@ import org.tdar.core.bean.resource.Audio;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@Namespace("/image")
+@Namespace("/audio")
 public class AudioViewAction extends AbstractResourceViewAction<Audio> {
 
     /**

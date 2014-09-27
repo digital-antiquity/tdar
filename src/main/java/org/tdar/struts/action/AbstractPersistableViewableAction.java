@@ -90,6 +90,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
             })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
+        isViewable();
         // genericService.setCacheModeForCurrentSession(CacheMode.NORMAL);
 
         resultName = loadViewMetadata();
