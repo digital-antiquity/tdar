@@ -161,7 +161,6 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         if (isPersistableIdSet()) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         } else {
-
             p = loadFromId(getId());
             setPersistable(p);
         }
