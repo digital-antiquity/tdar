@@ -47,7 +47,7 @@ public class AbstractDatasetViewAction<D> extends AbstractResourceViewAction<Dat
     
     @Override
     protected void loadCustomViewMetadata() throws TdarActionException {
-        super.loadCustomMetadata();
+        super.loadCustomViewMetadata();
         List<Map<String, Object>> result = new ArrayList<>();
         if (Persistable.Base.isNotNullOrTransient(getDataTable())) {
             for (DataTableColumn dtc : getDataTable().getDataTableColumns()) {
