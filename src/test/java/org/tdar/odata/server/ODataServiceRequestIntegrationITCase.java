@@ -4,8 +4,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.ArrayList;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -37,15 +37,15 @@ public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testServiceUrl() throws Exception {
-        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
+        HttpMethodBase  exchange = setupExchange(Constant.SERVICE_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
-        String inXMLString = exchange.getResponseContent();
+        HttpMethodBase  exchange = setupExchange(Constant.SERVICE_URL);
+        String inXMLString = exchange.getResponseBodyAsString();
 
         // See: odata_service_response.xml
 

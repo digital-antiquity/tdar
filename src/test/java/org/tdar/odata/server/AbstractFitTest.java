@@ -5,11 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.log4j.Logger;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -17,8 +17,6 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.eclipse.jetty.client.ContentExchange;
-import org.eclipse.jetty.client.HttpExchange;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.After;
 import org.junit.Assert;
@@ -79,19 +77,16 @@ public abstract class AbstractFitTest {
         createTestScenario();
         testingServer.startServer();
         testingClient.createClient();
-        testingClient.startClient();
     }
 
     @After
     public void teardown() throws Exception {
-        testingClient.stopClient();
         testingServer.stopServer();
     }
 
-    protected void verifyResponseIsReturned(ContentExchange exchange) throws InterruptedException, UnsupportedEncodingException {
-        Assert.assertEquals(HttpExchange.STATUS_COMPLETED, exchange.getStatus());
-        Assert.assertEquals(HttpStatus.OK_200, exchange.getResponseStatus());
-        Assert.assertTrue(exchange.getResponseContent().length() > 0);
+    protected void verifyResponseIsReturned(HttpMethodBase exchange) throws InterruptedException, IOException {
+        Assert.assertEquals(HttpStatus.OK_200, exchange.getStatusCode());
+        Assert.assertTrue(exchange.getResponseBodyAsString().length() > 0);
     }
 
     protected void assertXmlElementByXPath(String xpathExpression, String inXMLString) throws SAXException, IOException, XpathException {
@@ -172,9 +167,8 @@ public abstract class AbstractFitTest {
         return dataset;
     }
 
-    public ContentExchange setupExchange(String url) throws IOException, InterruptedException {
-        ContentExchange exchange = getTestingClient().sendRequest(url);
-        exchange.waitForDone();
+    public HttpMethodBase setupExchange(String url) throws IOException, InterruptedException {
+        HttpMethodBase exchange = getTestingClient().sendRequest(url);
         return exchange;
     }
 

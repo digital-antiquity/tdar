@@ -1,38 +1,18 @@
 package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.resource.ProjectController;
 
 public class KeywordAnnotationLookupControllerITCase extends AbstractIntegrationTestCase {
 

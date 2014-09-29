@@ -2,8 +2,8 @@ package org.tdar.odata.server;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.bean.resource.Dataset;
+
+import com.hp.hpl.jena.sparql.procedure.library.debug;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "Placeholder-context.xml" })
@@ -24,16 +26,15 @@ public class TDataTableFeedRequestIntegrationITCase extends AbstractLightFitTest
     @Test
     @DirtiesContext
     public void testFeedUrl() throws Exception {
-        ContentExchange exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
+        HttpMethodBase  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
-        String inXMLString = exchange.getResponseContent();
-
+        HttpMethodBase  exchange = setupExchange(Constant.TDATATABLES_FEED_URL);
+        String inXMLString = exchange.getResponseBodyAsString();
         // See: tdataset_feed_response.xml
 
         String xpathExpression = "//_atom:feed/_atom:title[@type='text']";
