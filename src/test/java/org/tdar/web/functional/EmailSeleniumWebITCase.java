@@ -6,7 +6,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

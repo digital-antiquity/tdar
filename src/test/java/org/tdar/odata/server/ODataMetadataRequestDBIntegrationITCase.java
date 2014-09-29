@@ -4,8 +4,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.util.Set;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.log4j.Logger;
-import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +44,14 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
 
     @Test
     public void testMetaDataUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
+        HttpMethodBase exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
-        String inXMLString = exchange.getResponseContent();
+        HttpMethodBase exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
+        String inXMLString = exchange.getResponseBodyAsString();
 
         // See: odata_metadata_response.xml
 
@@ -65,7 +63,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
     protected void createTestScenario() {
 
         // Set a user to define entity ownership.
-        TdarUser knownPerson = (TdarUser)entityService.findByEmail("kintigh@asu.edu");
+        TdarUser knownPerson = (TdarUser) entityService.findByEmail("kintigh@asu.edu");
         getTestingServer().setPerson(knownPerson);
         // Database setup
 

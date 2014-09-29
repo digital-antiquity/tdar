@@ -1154,13 +1154,6 @@
         </dependency>
 
         <!-- OData Integration Testing Support -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-client</artifactId>
-            <version>${jetty.version}</version>
-            <scope>test</scope>
-            <!-- LICENSE: APACHE 2.0 / ECLIPSE 1.0 -->
-        </dependency>
         <!-- OData (odata4j) Stuff: End -->
         <!-- Selenium tests -->
         <dependency>
