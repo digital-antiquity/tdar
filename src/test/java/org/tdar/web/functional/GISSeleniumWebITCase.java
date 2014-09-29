@@ -70,7 +70,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         docValMap.put("geospatial.mapSource", "mercator");
         docValMap.put("geospatial.scale", "1:100000");
         docValMap.put("geospatial.currentnessUpdateNotes", "very current; updated daily");
-        docValMap.put("geospatial.doi", "doi:10.1016/j.iheduc.2003.11.004");
+        docValMap.put("geospatial.doi", "10.1016/j.iheduc.2003.11.004");
         alternateTextLookup.add(Language.SPANISH.getLabel());
         docValMap.put("resourceLanguage", Language.SPANISH.name());
         docValMap.put("geospatial.url", "http://www.tdar.org");

@@ -186,7 +186,7 @@
 
             <#if !resource.resourceType.project>
             <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
-                <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield doi"  maxlength=255 />
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='${itemPrefix}.doi' cssClass="shortfield doi"  maxlength=255 />
             </div>
             </#if>        
 
