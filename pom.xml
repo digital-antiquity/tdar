@@ -378,12 +378,6 @@
             <artifactId>httpcore</artifactId>
             <groupId>org.apache.httpcomponents</groupId>
         </exclusion>
-
-        <exclusion>
-            <artifactId>foresite</artifactId>
-            <groupId>com.googlecode.foresite-toolkit</groupId>
-        </exclusion>
-
         <exclusion>
             <artifactId>servlet-api</artifactId>
             <groupId>javax.servlet</groupId>
