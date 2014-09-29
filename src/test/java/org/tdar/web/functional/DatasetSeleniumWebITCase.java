@@ -61,7 +61,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         alternateTextLookup.add(ResourceCreatorRole.CREATOR.getLabel());
         docValMap.put("dataset.description", "A resource description");
         docValMap.put("dataset.date", "1923");
-        docValMap.put("dataset.doi", "doi:10.1016/j.iheduc.2003.11.004");
+        docValMap.put("dataset.doi", "10.1016/j.iheduc.2003.11.004");
         alternateTextLookup.add(Language.SPANISH.getLabel());
         docValMap.put("resourceLanguage", Language.SPANISH.name());
         docValMap.put("dataset.url", "http://www.tdar.org");
