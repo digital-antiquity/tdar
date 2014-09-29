@@ -374,25 +374,17 @@
         <!-- <dependency> <groupId>javax.measure</groupId> <artifactId>jsr-275</artifactId> 
             <version>1.0.0</version> </dependency> -->
         <dependency>
-            <groupId>rome</groupId>
+            <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>1.0</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>rome</groupId>
-            <artifactId>opensearch</artifactId>
-            <version>0.1</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geonames</groupId>
-            <artifactId>georss-rome</artifactId>
-            <version>0.9.8</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
-            <version>1.4.3</version> </dependency> -->
+            <version>1.5.0</version>
+             <!-- LICENSE: APACHE 2.0 -->
+         </dependency>
+         <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome-modules</artifactId>
+            <version>1.5.0</version>
+             <!-- LICENSE: APACHE 2.0 -->
+         </dependency>
         <!-- Spring LDAP -->
         <dependency>
             <groupId>org.springframework.ldap</groupId>
@@ -542,6 +534,10 @@
                 <exclusion>
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -918,6 +914,10 @@
                     <artifactId>poi-scratchpad</artifactId>
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>rome</artifactId>
+                    <groupId>rome</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -1059,6 +1059,10 @@
                 <exclusion>
                     <artifactId>eclipselink</artifactId>
                     <groupId>org.eclipse.persistence</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>joda-time</artifactId>
+                    <groupId>joda-time</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
