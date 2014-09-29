@@ -243,8 +243,27 @@
     		   	    <artifactId>foresite</artifactId>
     		   	    <groupId>com.googlecode.foresite-toolkit</groupId>
     		   	</exclusion>
+    		   	<exclusion>
+    		   	    <artifactId>jcs</artifactId>
+    		   	    <groupId>jcs</groupId>
+    		   	</exclusion>
  		   </exclusions>
-			</dependency>
+	</dependency>
+    <dependency>
+        <artifactId>jcs</artifactId>
+        <groupId>jcs</groupId>
+        <version>1.3</version>
+        <exclusions>
+            <exclusion>
+                <artifactId>hsqldb</artifactId>
+                <groupId>hsqldb</groupId>
+            </exclusion>
+            <exclusion>
+                <artifactId>servlet-api</artifactId>
+                <groupId>javax.servlet</groupId>
+            </exclusion>
+        </exclusions>
+    </dependency>
     <dependency>
         <artifactId>foresite</artifactId>
         <groupId>com.googlecode.foresite-toolkit</groupId>
