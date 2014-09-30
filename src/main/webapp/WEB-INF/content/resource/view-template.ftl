@@ -39,6 +39,9 @@
         </#if>
     </@nav.toolbar>
 
+        <#if local_.notifications?? && local_.notifications?is_macro>
+            <@local_.notifications />
+        </#if>
 
 <div id="datatable-child" style="display:none">
     <p class="">
