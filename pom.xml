@@ -23,7 +23,8 @@
         <clover.version>3.2.2</clover.version>
         <exec-maven-version>1.3.1</exec-maven-version>
         <!-- /end managed versions -->
-        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+        <jvm.args>-Xms256m -Xmx3072m -XX:PermSize=128m
+            -XX:MaxPermSize=512m</jvm.args>
         <generated.schema.dir>target/generated/db</generated.schema.dir>
         <generated.schema.file>schema.sql</generated.schema.file>
         <wro4j.version>1.7.7</wro4j.version>
@@ -135,6 +136,18 @@
             </releases>
         </repository>
         <repository>
+            <id>dataone.org</id>
+            <url>http://dev-testing.dataone.org/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+
+        <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>http://download.osgeo.org/webdav/geotools/</url>
@@ -144,9 +157,6 @@
             <id>Laughing Panda</id>
             <url>http://maven.laughingpanda.org/maven2</url>
         </repository>
-        <!-- <repository> <id>dataone.org</id> <url>http://dev-testing.dataone.org/maven</url> 
-            <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
-            </snapshots> </repository> -->
     </repositories>
 
     <modelVersion>4.0.0</modelVersion>
@@ -213,6 +223,75 @@
             <artifactId>bcmail-jdk16</artifactId>
             <version>1.46</version>
             <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_libclient_java</artifactId>
+            <version>1.3.1</version>
+            <type>jar</type>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpcore</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>foresite</artifactId>
+                    <groupId>com.googlecode.foresite-toolkit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcs</artifactId>
+                    <groupId>jcs</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- declared dependency with excludes for DataOne and maven 
+                version management -->
+            <artifactId>jcs</artifactId>
+            <groupId>jcs</groupId>
+            <version>1.3</version>
+            <!-- APACHE 2.0 License -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>hsqldb</artifactId>
+                    <groupId>hsqldb</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- declared dependency with excludes for DataOne and maven 
+                version management -->
+            <artifactId>foresite</artifactId>
+            <groupId>com.googlecode.foresite-toolkit</groupId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jena</artifactId>
+                    <groupId>com.hp.hpl.jena</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>rome</artifactId>
+                    <groupId>rome</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>joda-time</artifactId>
+                    <groupId>joda-time</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
@@ -301,12 +380,6 @@
             <version>1.2.17</version>
         </dependency>
         <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.2</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
             <groupId>org.atteo</groupId>
             <artifactId>evo-inflector</artifactId>
             <version>1.2.1</version>
@@ -331,12 +404,31 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- <dependency> <groupId>org.dataone</groupId> <artifactId>d1_libclient_java</artifactId> 
-            <version>1.2.5</version> <type>jar</type> <!- LICENSE: APACHE 2.0 -> <exclusions> 
-            <exclusion> <artifactId>httpclient</artifactId> <groupId>org.apache.httpcomponents</groupId> 
-            </exclusion> <exclusion> <artifactId>httpmime</artifactId> <groupId>org.apache.httpcomponents</groupId> 
-            </exclusion> <exclusion> <artifactId>httpcore</artifactId> <groupId>org.apache.httpcomponents</groupId> 
-            </exclusion> </exclusions> </dependency> -->
+        <dependency>
+            <groupId>org.dataone</groupId>
+            <artifactId>d1_libclient_java</artifactId>
+            <version>1.3.1</version>
+            <type>jar</type>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpmime</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpcore</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
@@ -377,14 +469,14 @@
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
             <version>1.5.0</version>
-             <!-- LICENSE: APACHE 2.0 -->
-         </dependency>
-         <dependency>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome-modules</artifactId>
             <version>1.5.0</version>
-             <!-- LICENSE: APACHE 2.0 -->
-         </dependency>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
         <!-- Spring LDAP -->
         <dependency>
             <groupId>org.springframework.ldap</groupId>
@@ -604,9 +696,9 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>18.0</version>
-            <!--  LICENSE: Apache 2.0 -->
+            <!-- LICENSE: Apache 2.0 -->
         </dependency>
-    <!-- Apache POI / HSSF - included via tika -->
+        <!-- Apache POI / HSSF - included via tika -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -622,8 +714,8 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.10.1</version>
         </dependency>
-    
-    <!-- hibernate and JPA persistence -->
+
+        <!-- hibernate and JPA persistence -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -740,13 +832,9 @@
             <artifactId>spring-aop</artifactId>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!--  <dependency>
-            <!- needed by spring for @Transactional calls ->
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.1</version>
-            <!- LICENSE: APACHE 1.1 ->
-        </dependency> -->
+        <!-- <dependency> <!- needed by spring for @Transactional calls -> 
+            <groupId>cglib</groupId> <artifactId>cglib-nodep</artifactId> <version>3.1</version> 
+            <!- LICENSE: APACHE 1.1 -> </dependency> -->
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
@@ -971,11 +1059,11 @@
             <type>jar</type>
             <!-- LICENSE: BSD -->
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>org.ebaysf.web</groupId>
             <artifactId>cors-filter</artifactId>
             <version>1.0.1</version>
-          </dependency>
+        </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -1007,10 +1095,10 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-          <groupId>com.fasterxml.jackson.datatype</groupId>
-          <artifactId>jackson-datatype-hibernate4</artifactId>
-          <version>${jackson.version}</version>
-        </dependency>  
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate4</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -1164,30 +1252,14 @@
 
     <reporting>
         <plugins>
-<!--             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <includes>
-                        <include>${project.basedir}/src/main/java/**/*.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <enableRSS>false</enableRSS>
-                    <includes>**\/*.java</includes>
-                    <enableRulesSummary>true</enableRulesSummary>
-                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-                    <configLocation>src/main/resources/check_style.xml</configLocation>
-                </configuration>
-            </plugin>
--->
+            <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jxr-plugin</artifactId> 
+                <version>2.4</version> <configuration> <includes> <include>${project.basedir}/src/main/java/**/*.java</include> 
+                </includes> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+                <artifactId>maven-checkstyle-plugin</artifactId> <version>2.11</version> 
+                <configuration> <enableRSS>false</enableRSS> <includes>**\/*.java</includes> 
+                <enableRulesSummary>true</enableRulesSummary> <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory> 
+                <configLocation>src/main/resources/check_style.xml</configLocation> </configuration> 
+                </plugin> -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
@@ -1297,14 +1369,12 @@
     <build>
         <finalName>${warfile.name}</finalName>
         <resources>
-            <!-- We only want a small set of files to be filtered. 
-                 NOTE: These files are NOT read into maven properties for interpolation, they are just the set of files
-                 where any interpolated variables will be rewritten according to the currently loaded set of maven
-                 properties. To define interpolated variables, the file or variable has to be added to <filters></filters>
-                      
-                      
-                XXX: only files that need to be rewritten should be included here
-                 -->
+            <!-- We only want a small set of files to be filtered. NOTE: 
+                These files are NOT read into maven properties for interpolation, they are 
+                just the set of files where any interpolated variables will be rewritten 
+                according to the currently loaded set of maven properties. To define interpolated 
+                variables, the file or variable has to be added to <filters></filters> XXX: 
+                only files that need to be rewritten should be included here -->
             <resource>
                 <!-- switch filtering off for all but the desired set -->
                 <filtering>false</filtering>
@@ -1322,8 +1392,8 @@
             </resource>
             <resource>
                 <!-- And on for the set of files -->
-                <!-- Having to do it as mutually exclusive 
-                    but that's how Maven works -->
+                <!-- Having to do it as mutually exclusive but that's how 
+                    Maven works -->
                 <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
                 <filtering>true</filtering>
                 <directory>${basedir}/src/main/resources</directory>
@@ -1378,14 +1448,8 @@
                     <propertyFile>liquibase/liquibase.properties</propertyFile>
                 </configuration>
                 <executions>
-                    <!--
-                    <execution>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                    -->
+                    <!-- <execution> <phase>process-resources</phase> <goals> 
+                        <goal>update</goal> </goals> </execution> -->
                 </executions>
             </plugin>
             <plugin>
@@ -1722,26 +1786,12 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- FIXME: disabling this for the interim in favor of using <filters></filters> in the default profile
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>read-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <files>
-                                <file>src/main/resources/hibernate.properties</file>
-                            </files>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
+            <!-- FIXME: disabling this for the interim in favor of using 
+                <filters></filters> in the default profile <plugin> <groupId>org.codehaus.mojo</groupId> 
+                <artifactId>properties-maven-plugin</artifactId> <version>1.0-alpha-2</version> 
+                <executions> <execution> <phase>initialize</phase> <goals> <goal>read-project-properties</goal> 
+                </goals> <configuration> <files> <file>src/main/resources/hibernate.properties</file> 
+                </files> </configuration> </execution> </executions> </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -1768,7 +1818,8 @@
                     </systemProperties>
                     <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
                         </includes> -->
-                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
                     <junitArtifactName>junit:junit-dep</junitArtifactName>
                 </configuration>
             </plugin>
@@ -1804,7 +1855,8 @@
                     <systemPropertyVariables>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
-                    <argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
                     <excludes>
                         <exclude>**/experimental/*.java</exclude>
                     </excludes>
@@ -2063,8 +2115,8 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <build>
-                <!-- the properties defined in these files will be available for interpolation in all filtered
-                     resources -->
+                <!-- the properties defined in these files will be available 
+                    for interpolation in all filtered resources -->
                 <filters>
                     <filter>src/main/resources/hibernate.properties</filter>
                 </filters>
@@ -2485,7 +2537,8 @@
             </build>
         </profile>
 
-        <!--profile: skip-web-tests - when activated,  skip all integration tests with title ending in WebITCase.java -->
+        <!--profile: skip-web-tests - when activated, skip all integration 
+            tests with title ending in WebITCase.java -->
         <!--TODO: don't fire up webserver when this profile is active -->
         <profile>
             <id>skip-web-tests</id>
