@@ -316,7 +316,7 @@ public class SearchParameters {
         if (CollectionUtils.isNotEmpty(siteNames)) {
             QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
             for (String q : siteNames) {
-                if (SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
+                if (StringUtils.isNotBlank(q) && SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                     siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));
