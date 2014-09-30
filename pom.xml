@@ -535,10 +535,6 @@
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>xalan</artifactId>
-                    <groupId>xalan</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <!-- these are required for htmlunit 2.10 -->
