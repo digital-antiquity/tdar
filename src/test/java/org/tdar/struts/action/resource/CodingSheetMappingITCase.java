@@ -29,6 +29,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.formula.functions.Today;
 import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -308,14 +309,32 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     public void testXLSCodingSheetUpload() throws Exception {
         CodingSheet codingSheet = setupCodingSheet();
 
+        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
+        List<OntologyNode> nodes = ontology.getOntologyNodes();
         HashMap<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
+        int totalRules = codingSheet.getCodingRules().size();
+        int count = 0;
+        // valid because not mapped to ontology
+        assertFalse(codingSheet.isMappedImproperly());
+        codingSheet.setDefaultOntology(ontology);
+        //invalid because ontology is mapped
+        assertTrue(codingSheet.isMappedImproperly());
         for (CodingRule rule : codingSheet.getCodingRules()) {
             ruleMap.put(rule.getCode(), rule);
+            rule.setOntologyNode(nodes.get(count));
+            count++;
+            if (count < totalRules / 4) {
+                assertTrue(codingSheet.isMappedImproperly());
+            } else {
+                assertFalse(codingSheet.isMappedImproperly());
+            }
         }
+        logger.debug("total:{}", count);
         assertTrue(ruleMap.get("12") != null);
         assertTrue(ruleMap.get("6") != null);
         assertEquals("g", ruleMap.get("12").getTerm());
         assertEquals("m", ruleMap.get("6").getTerm());
+
     }
 
     @Test
@@ -419,18 +438,13 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
                 }
             }
         }
+
         tranlatedIRFile = datasetService.createTranslatedFile(dataset);
         return dataset;
     }
 
     @Test
     @Rollback
-    /*
-     * NOTE THIS TEST CAN BE BRITTLE ... MAINLY DUE TO MEMORY CONSTRAINTS
-     * The following config currently works: -Xmx4096m -XX:PermSize=64m -XX:MaxPermSize=2048m
-     * long megs = Runtime.getRuntime().maxMemory() / 1024 / 1024;
-     * Assert.assertTrue("Expected more memory to run this test. Current heapspace:" + megs + "M", megs / 1024 >= 2);
-     */
     public void testBigDatasetSpansSheets() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
         try {
             // setup coding sheet
@@ -590,7 +604,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertFalse(codingSheet.getCodingRules().isEmpty());
         return codingSheet;
     }
-
 
     @Override
     protected String getTestFilePath() {
