@@ -11,14 +11,6 @@
         </#if>
     </#macro>
 
-    <#macro notifications>
-    <#if codingSheet.mappedImproperly>
-        <div class="mapping alert">
-            <p><@s.text name="notifications.mappedImproperly" /></p>
-        </div>
-    </#if>
-    </#macro>
-
     <#macro afterBasicInfo>
         <@common.codingRules>
             <#if codingSheet.defaultOntology?has_content>
