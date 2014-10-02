@@ -5,3 +5,42 @@
  */
 
 console.log("tdar.filter-ng.js");
+
+
+function OntologyNode(data) {
+    var self = this;
+    ko.mapping.fromJS(data, {}, self);
+    self.label = ko.observable();
+    self.index = ko.observable();
+    self.id = ko.observable();
+    self.integrationColumns = ko.observableArray([]); // possibly just a bit array of whether the column has data for this ontology node
+    self.criteria = ko.observable(); // NOT_SELECTED, SELECT_IF_SOME, SELECT_IF_ALL
+    self.included = ko.observable(false);
+    return self;
+}
+function DisplayColumn(data) {
+    var self = this;
+
+}
+function OntologyViewModel(data) {
+    var self = this;
+    if (data) {
+        ko.mapping.fromJS(data, {}, self);
+    }
+    self.ontologyNodes = ko.observableArray([]);
+    self.name = ko.observable();
+    self.integrationColumns = ko.observableArray([]);
+}
+function OntologyFilterViewModel(data) {
+    // master view model for the entire page
+    var self = this;
+    if (data) {
+        ko.mapping.fromJS(data, {}, self);
+    }
+    // a list of OntologyViewModels
+    self.ontologies = ko.observableArray([]);
+    self.displayColumns = ko.observableArray([]);
+}
+var incomingData = JSON.parse(document.getElementById("jsonFilterData").innerHTML);
+var viewModel = new OntologyFilterViewModel(incomingData);
+ko.applyBindings(viewModel);
