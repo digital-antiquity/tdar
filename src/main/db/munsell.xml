@@ -4,6 +4,8 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <!--  http://www.liquibase.org/documentation/changes/index.html  -->
+
     <changeSet id="munsell-01" author="abrin">
         <update tableName="information_resource_file">
             <column name="restriction" value="EMBARGOED_FIVE_YEARS" />
