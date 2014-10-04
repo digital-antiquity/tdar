@@ -1,4 +1,3 @@
-<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
@@ -7,202 +6,43 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 </head>
 <body class="filter-ontology">
-<h1>Filter Ontology Values</h1>
 
-<div class="row">
-    <div class="span8">
-        <h3>Instructions</h3>
-
-        <p>The complete ontologies for each integration column are listed below, along with columns for each data table that you've chosen to integrated.
-            You can filter the data values for each data table listed below that will be used in the data integration. Only the values mapped to an ontology
-            will be reported below.
-            Select checkboxes next to the values that you would like to be included or aggregated to that level. </p>
-
-        <p>
-            Indented unchecked values are aggregated to the next higher level that is checked.
-            Unchecked values at the top (leftmost) level are ignored, along with any unchecked
-            subdivision categories.
-        </p>
-        <ul>
-            <li>Values that occur in a dataset are indicated with blue checks ( <img src="<@s.url value="/images/checked.gif" />"/> )</li>
-            <li>Values that do not occur in a dataset are indicated with red X's ( <img src="<@s.url value="/images/unchecked.gif" />"/>).</li>
-        </ul>
-    </div>
-    <div class="span4">
-    <#-- display links with taxonomy expanded -->
-        <h3>Copy / Restore Previous Selection</h3>
-
-        <p>If you are regularly performing data integrations, you can save time by reusing previous selections.</p>
-
-        <p><strong>To Copy:</strong> Make your selections, then click the button below and "copy" the codes for future use.</p>
-
-        <p><strong>To Restore:</strong> Click the button below, "paste" the codes into the text box, and finally click "Load my previous selections." </p>
-
-        <button id="btnDisplaySelections" type="button" class="btn btn-mini">Copy/Paste Codes</button>
-        </p>
+<h1>Integration Columns</h1>
+<ul class="nav nav-tabs"  id="ulOntologyTabs">
+    <!-- ko foreach:ontologies -->
+    <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">foo</a></li>
+    <!-- /ko -->
+    <li><a href="#add"><i class="icon icon-plus"> </i> <em>Add Another</em></a></li>
+</ul>
+<div class="tab-content" data-bind="foreach:ontologies">
+    <div class="tab-pane" data-bind="attr:{id: 'ont'+id}">
+        <h2 data-bind="text:title"></h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Policy</th>
+                    <th>Node Value</th>
+                    <th>Participation</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: nodes">
+                <tr>
+                    <td>&nbsp;</td>
+                    <td data-bind="text:display_name"></td>
+                    <td>tbd</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-    <#assign integrationcolumn_index =0>
 
-    <@s.form method='post' action='display-filtered-results' id="filterForm">
-
-        <@s.token name='struts.csrf.token' />
-        <#assign totalCheckboxCount=0>
-        <#list integrationColumns as integrationColumn>
-            <#if integrationColumn.displayColumn >
-
-            <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType}"/>
-                <#list integrationColumn.columns as col_ >
-                    <#if col_??>
-                    <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col__index}].id" value="${col_.id?c}"/>
-                    </#if>
-                </#list>
-            <#else>
-                <#if integrationColumn.sharedOntology??>
-
-                <div class="integration-column">
-
-                    <div class="btn-group pull-right">
-                        <span class=" btn " onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", true);'><i
-                                class=" icon-ok-circle"></i> Select All</span>
-                        <span class="autocheck btn  "><i class=" icon-ok"></i> Select Shared Values</span>
-                        <span class="button  btn " onclick='TDAR.integration.selectAllChildren("onCbId_${integrationColumn.sharedOntology.id?c}_", false);'><i
-                                class=" icon-remove-circle"></i> Clear All</span>
-                        <span class="button btn  hideElements"><i class=" icon-remove"></i> Hide/Show Unmapped</span>
-                    </div>
-                    <h3>${integrationColumn.sharedOntology.title} [${integrationColumn.name}]</h3>
-                    <table class='tableFormat table table-striped integrationTable'>
-                        <thead>
-                        <tr>
-                            <th>Ontology labels</th>
-                            <#list integrationColumn.columns as column>
-                                <th>${column.name}<br/>
-                                    <small>(${column.dataTable.dataset.title})</small>
-                                </th>
-                            </#list>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType"
-                               value="${integrationColumn.columnType!"integration"}"/>
-                            <#list integrationColumn.columns as col>
-                            <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}"/>
-                            </#list>
-
-                            <#-- FIXME: lift assignment of 'disabled' to java -->
-                            <#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
-                                <#assign numberOfParents=ontologyNode.numberOfParents>
-                                <#assign checkForUser=true />
-                                <#list ontologyNode.columnHasValueArray as hasValue>
-                                    <#if !hasValue>
-                                        <#assign checkForUser=false />
-                                    </#if>
-                                </#list>
-                                <#assign node_id="onCbId_${integrationColumn.sharedOntology.id?c}_${ontologyNode.index?replace('.', '_')}_${ontologyNode.id?c}" />
-                            <tr class="<#if ontologyNode.disabled>disabled</#if>">
-                                <td style="white-space: nowrap;">
-                                    <#if ontologyNode.parent  && !ontologyNode.disabled ><span class="pull-right">
-        &nbsp;(<span class="link" onclick='TDAR.integration.selectChildren("${node_id}", true);'>select all</span>
-        | <span class="link" onclick='TDAR.integration.selectChildren("${node_id}", false);'>clear</span>)</span>
-                                    </#if>
-                                    <label class="inline-label nodeLabel" for='${node_id}'>
-                                        <#list 1..numberOfParents as indentationLevel>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                        </#list>
-                                        <input type='checkbox' id='${node_id}'
-                                               name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes.id'
-                                               value='${ontologyNode.id?c}'
-                                               <#if checkForUser>canautocheck="true"</#if>     <#if ontologyNode.disabled>disabled="disabled"</#if> />
-                                        <#assign totalCheckboxCount=totalCheckboxCount+1>
-                                        <#if !ontologyNode.disabled><b></#if>
-                                        <span class="nodeName">${ontologyNode.displayName}</span> <!--(${ontologyNode.index})-->
-                                        <#if !ontologyNode.disabled></b></#if>
-                                    </label>
-
-                                </td>
-                                <#list ontologyNode.columnHasValueArray as hasValue>
-                                    <td>
-                                        <#if hasValue>
-                                            <img src="<@s.url value="/images/checked.gif" />"/>
-                                        <#else>
-                                            <img src="<@s.url value="/images/unchecked.gif" />"/>
-                                        </#if>
-                                    </td>
-                                </#list>
-                            </tr>
-                            </#list>
-                        </tbody>
-                    </table>
-                </div>
-
-                <#else>
-                These columns do not share a common ontology but ontology integration has not been
-                fully implemented yet.
-                </#if>
-            </#if>
-            <#assign integrationcolumn_index = integrationcolumn_index+1>
-
-        </#list>
-
-        <@edit.submit "Next: Apply filter" false/>
-
-        <#list selectedDataTables as table>
-        <!-- setting for error condition -->
-        <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
-        </#list>
-
-    </@s.form>
-
-
-<#noescape>
 <script>
-    $(function () {
-        <#-- //var data = ${integrationColumnData}; -->
-        var data = [];
-        TDAR.integration.initOntologyFilterPage(data);
-    })
+//    $(function(){
+//        $("#ulOntologyTabs a:first").tab('show');
+//    });
 </script>
 <script src='//cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js'></script>
 <script src='/includes/knockout.mapping.js'></script>
-<script src=''
-<script>
-function OntologyNode(data) {
-    var self = this;
-    ko.mapping.fromJS(data, {}, self);
-    self.label = ko.observable();
-    self.index = ko.observable();
-    self.id = ko.observable();
-    self.integrationColumns = ko.observableArray([]); // possibly just a bit array of whether the column has data for this ontology node
-    self.criteria = ko.observable(); // NOT_SELECTED, SELECT_IF_SOME, SELECT_IF_ALL
-    self.included = ko.observable(false);
-    return self;
-}
-function DisplayColumn(data) {
-    var self = this;
-    
-}
-function OntologyViewModel(data) {
-    var self = this;
-    if (data) {
-        ko.mapping.fromJS(data, {}, self);
-    }
-    self.ontologyNodes = ko.observableArray([]);
-    self.name = ko.observable();
-    self.integrationColumns = ko.observableArray([]);
-}
-function OntologyFilterViewModel(data) {
-    // master view model for the entire page
-    var self = this;
-    if (data) {
-        ko.mapping.fromJS(data, {}, self);
-    }
-    // a list of OntologyViewModels
-    self.ontologies = ko.observableArray([]);
-    self.displayColumns = ko.observableArray([]);
-}
-var viewModel = new OntologyFilterViewModel(incomingData);
-ko.applyBindings(viewModel);
-</script>
 <script id="jsonFilterData" type="text/plain">
 {"ontologies":[{"id":6029,"title":"Fauna Element Ontology","integrationColumns":[{"id":4742,"name":"element","display_name":"Element","default_ontology_id":6029,"dataset_id":420,
 "dataset_title":"Ojo Bonito Faunal Database","data_table_id":4735,"data_table_name":"e_321876_obap","data_table_display_name":"OBAP"},{"id":43046,"name":"element","display_name":"element",
@@ -555,7 +395,6 @@ ko.applyBindings(viewModel);
 "display_name":"Context","default_ontology_id":null,"dataset_id":392595,"dataset_title":"Guadalupe Ruin Fauna","data_table_id":7850,"data_table_name":"e_318592_prpfauna","data_table_display_name":"PRPFAUNA"}]}
 </script>
 <script src="/js/tdar.filter-ng.js"></script>
-</#noescape>
 <div id="divModalStore" class="modal modal-big hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -574,4 +413,3 @@ ko.applyBindings(viewModel);
 </div>
 
 </body>
-</#escape>

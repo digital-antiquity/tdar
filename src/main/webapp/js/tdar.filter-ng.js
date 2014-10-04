@@ -42,5 +42,7 @@ function OntologyFilterViewModel(data) {
     self.displayColumns = ko.observableArray([]);
 }
 var incomingData = JSON.parse(document.getElementById("jsonFilterData").innerHTML);
-var viewModel = new OntologyFilterViewModel(incomingData);
-ko.applyBindings(viewModel);
+
+ko.applyBindings(incomingData);
+
+console.log(incomingData);
