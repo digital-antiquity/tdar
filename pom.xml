@@ -667,7 +667,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.0.Final</version>
+            <version>4.3.0.FINAL</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
@@ -681,6 +681,11 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
             <!-- LICENSE: MIT -->
+        </dependency>
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
             but includes orm, jdbc, aop, tx, -->
@@ -1431,132 +1436,6 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-version}</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>javax.servlet-api</artifactId>
-                        <version>${servlet.api.version}</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>org.tdar.utils.db.SchemaGenerator</mainClass>
-                    <arguments>
-                        <argument>${generated.schema.dir}/${generated.schema.file}</argument>
-                    </arguments>
-                    <skip>${maven.createDB.skip}</skip>
-                    <includePluginDependencies>true</includePluginDependencies>
-                </configuration>
-            </plugin>
-            <!-- SQL plugin next to drop the database, load the hibernate-generated 
-                schema, and initialize the database -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sql-maven-plugin</artifactId>
-                <version>1.5</version>
-                <dependencies>
-                    <!-- specify the dependent jdbc driver here -->
-                    <dependency>
-                        <groupId>org.postgresql</groupId>
-                        <artifactId>postgresql</artifactId>
-                        <version>${postgresql.jdbc.version}</version>
-                    </dependency>
-                </dependencies>
-                <!-- common configuration shared by all executions -->
-                <configuration>
-                    <driver>${hibernate.connection.driver_class}</driver>
-                    <url>${hibernate.connection.url}</url>
-                    <username>${hibernate.connection.user}</username>
-                    <password>${hibernate.connection.password}</password>
-                    <!-- You can comment out username/password configurations 
-                        and have maven to look them up in your settings.xml using ${settingsKey} -->
-                    <!--all executions are ignored if -Dmaven.test.skip=true -->
-                    <skip>${maven.createDB.skip}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>drop-db-before-test-if-any</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <!-- need another database to drop the targeted 
-                                one -->
-                            <url>${postgres.templatedb.url}</url>
-                            <autocommit>true</autocommit>
-                            <enableBlockMode>true</enableBlockMode>
-                            <sqlCommand>drop database if exists
-                                ${test.db.name}; drop
-                                database
-                                if exists
-                                ${test.dataimport.db.name};</sqlCommand>
-                            <!-- ignore error when database is not avaiable -->
-                            <onError>continue</onError>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-db</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <enableBlockMode>true</enableBlockMode>
-                            <url>${postgres.templatedb.url}</url>
-                            <!-- no transaction -->
-                            <autocommit>true</autocommit>
-                            <sqlCommand>create database ${test.db.name};
-                                create database
-                                ${test.dataimport.db.name};</sqlCommand>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-schema-and-load-data</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <keepFormat>true</keepFormat>
-                            <enableBlockMode>true</enableBlockMode>
-                            <escapeProcessing>false</escapeProcessing>
-                            <srcFiles>
-                                <srcFile>${generated.schema.dir}/${generated.schema.file}</srcFile>
-                                <srcFile>src/test/db/init-test.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
-                    <outputDirectory>${webapp.deploy.dir}</outputDirectory>
-                    <webResources>
-                        <resource>
-                            <directory>target/generated/webapp</directory>
-                            <targetPath>/</targetPath>
-                            <filtering>false</filtering>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
@@ -1988,6 +1867,7 @@
                 <defaultGoal>surefire:test</defaultGoal>
                 <filters>
                     <filter>src/test/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase/liquibase.properties</filter>
                 </filters>
                 <plugins>
                     <plugin>
@@ -2029,6 +1909,28 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <changeLogFile>src/test/db/changelog.xml</changeLogFile>
+                            <verbose>false</verbose>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>dropAll</goal>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
             <properties>
@@ -2037,6 +1939,7 @@
                 <jetty.stop.port>12920</jetty.stop.port>
                 <use.test.classpath>true</use.test.classpath>
                 <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
+                <setupDb>true</setupDb>
             </properties>
         </profile>
         <profile>
@@ -2466,25 +2369,58 @@
                 </plugins>
             </build>
         </profile>
-
     <profile>
         <id>liquibase</id>
         <build>
+        <resources>
+            <resource>
+                <!-- switch filtering off for all but the desired set -->
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>tdar.properties</exclude>
+                    <exclude>crowd.properties</exclude>
+                    <exclude>hibernate.properties</exclude>
+                    <exclude>local-wro-config.properties</exclude>
+                    <exclude>log4j.properties</exclude>
+                    <exclude>struts-local-settings.xml</exclude>
+                    <exclude>common.json</exclude>
+                    <exclude>liquibase/liquibase.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <!-- And on for the set of files -->
+                <!-- Having to do it as mutually exclusive 
+                    but that's how Maven works -->
+                <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>liquibase/liquibase.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <filters>
+            <filter>src/main/resources/liquibase/liquibase.properties</filter>
+        </filters>
             <plugins>
                 <plugin>
                     <groupId>org.liquibase</groupId>
                     <artifactId>liquibase-maven-plugin</artifactId>
                     <version>${liquibase.version}</version>
                     <configuration>
-                        <propertyFile>liquibase/liquibase.properties</propertyFile>
-                        <changeLogFile>src/test/db/changelog.xml</changeLogFile>
+                        <username>${javax.persistence.jdbc.user}</username>
+                        <password>${javax.persistence.jdbc.password}</password>
+                        <url>${javax.persistence.jdbc.url}</url>
+                        <driver>${javax.persistence.jdbc.driver}</driver>
+                        <changeLogFile>src/main/db/changelog.xml</changeLogFile>
+                        <verbose>false</verbose>
                     </configuration>
                     <executions>
                         <execution>
                             <phase>process-resources</phase>
                             <goals>
-                                <goal>dropAll</goal>
-                                <goal>update</goal>
+                                <goal>diff</goal>
                             </goals>
                         </execution>
                     </executions>
@@ -2492,7 +2428,6 @@
             </plugins>
         </build>
     </profile>
-
         <!--profile: skip-web-tests - when activated,  skip all integration tests with title ending in WebITCase.java -->
         <!--TODO: don't fire up webserver when this profile is active -->
         <profile>
