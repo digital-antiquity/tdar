@@ -764,6 +764,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                             }
                             break;
                         case VARCHAR:
+                        case TEXT:
                             preparedStatement.setString(2, code);
                             okToExecute = true;
                             break;
