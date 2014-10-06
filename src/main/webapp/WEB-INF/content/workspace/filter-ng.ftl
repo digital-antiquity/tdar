@@ -20,16 +20,25 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Policy</th>
-                    <th>Node Value</th>
-                    <th>Participation</th>
+                    <th rowspan="2">Node Value</th>
+                    <th rowspan="2">Policy</th>
+                    <th rowspan="1" data-bind="attr:{colspan: integrationColumns.length}">Participation</th>
+                </tr>
+                <tr data-bind="foreach: integrationColumns">
+                    <th data-bind="text: data_table_display_name">foo</th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: nodes">
                 <tr>
-                    <td>&nbsp;</td>
                     <td data-bind="text:display_name"></td>
-                    <td>tbd</td>
+                    <td>
+                        <label class="radio inline"><input type="radio" value="NOT_SELECTED" data-bind="checked: selectionPolicy" />Never</label>
+                        <label class="radio inline"><input type="radio" value="SELECT_IF_SOME" data-bind="checked: selectionPolicy" />If Any</label>
+                        <label class="radio inline"><input type="radio" value="SELECT_IF_ALL" data-bind="checked: selectionPolicy" />If All</label>
+                    </td>
+                    <!-- ko foreach: participation -->
+                    <td data-bind="text:$data">0</td>
+                    <!-- /ko -->
                 </tr>
             </tbody>
         </table>

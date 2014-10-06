@@ -41,7 +41,23 @@ function OntologyFilterViewModel(data) {
     self.ontologies = ko.observableArray([]);
     self.displayColumns = ko.observableArray([]);
 }
+
+
+
 var incomingData = JSON.parse(document.getElementById("jsonFilterData").innerHTML);
+incomingData.ontologies.forEach(function(ontology){
+    console.log("processing ontology: %s", ontology.title);
+    ontology.nodes.forEach(function(node){
+        node.selectionPolicy = ko.observable("NOT_SELECTED");
+
+        //make up bogus participation data for now (let's pretend that integration column participates in 20% of node values)
+        node.participation = [];
+        ontology.integrationColumns.forEach(function(integrationColumn){
+            node.participation.push(Math.random() < 0.2)
+        });
+    });
+
+});
 
 ko.applyBindings(incomingData);
 
