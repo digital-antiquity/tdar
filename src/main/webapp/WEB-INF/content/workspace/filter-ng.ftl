@@ -4,6 +4,19 @@
 <head>
     <title>Filter Ontology Values</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <!--todo: knockout can do recursive templates & adhoc arrays, but I"m too lazy right now  -->
+    <style type="text/css">
+        .nodechild1 {margin-left:1em;}
+        .nodechild2 {margin-left:2em;}
+        .nodechild3 {margin-left:3em;}
+        .nodechild4 {margin-left:4em;}
+        .nodechild5 {margin-left:5em;}
+        .nodechild6 {margin-left:6em;}
+        .nodechild7 {margin-left:7em;}
+        .nodechild8 {margin-left:8em;}
+        .nodechild9 {margin-left:9em;}
+        .nodechild10 {margin-left:10em;}
+    </style>
 </head>
 <body class="filter-ontology">
 
@@ -16,7 +29,7 @@
 </div>
 
 <h1>Ontologies and Datasets</h1>
-<ul class="nav nav-tabs"  id="ulOntologyTabs" data-bind>
+<ul class="nav nav-tabs"  id="ulOntologyTabs">
     <button class="btn pull-right">Add Ontology</button>
     <!-- ko foreach:ontologies -->
     <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">foo</a></li>
@@ -25,7 +38,7 @@
 <div class="tab-content" data-bind="foreach:ontologies">
     <div class="tab-pane" data-bind="attr:{id: 'ont'+id}">
         <h2 data-bind="text:title"></h2>
-        <table class="table table-bordered">
+        <table class="table table-bordered table-condensed">
             <thead>
                 <tr>
                     <th rowspan="2" style="width:99%">Node Value</th>
@@ -36,12 +49,14 @@
                     </th>
                 </tr>
                 <tr data-bind="foreach: integrationColumns">
-                    <th data-bind="text: data_table_display_name">foo</th>
+                    <th data-bind="text: data_table_display_name"></th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: nodes">
                 <tr>
-                    <td style="white-space: nowrap;" data-bind="text:display_name"></td>
+                    <td style="white-space: nowrap;">
+                        <div data-bind="text:display_name, attr:{class:'nodechild'+index.split('.').length}"></div>
+                    </td>
                     <td style="white-space: nowrap;">
                         <label class="radio inline"><input type="radio" value="NOT_SELECTED" data-bind="checked: selectionPolicy" />Never</label>
                         <label class="radio inline"><input type="radio" value="SELECT_IF_SOME" data-bind="checked: selectionPolicy" />If Any</label>
