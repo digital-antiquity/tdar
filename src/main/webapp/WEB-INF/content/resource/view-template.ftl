@@ -88,6 +88,9 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 
+<hr/>
+<@view.resourceCitation resource />
+
     <#if authenticatedUser?has_content>
      <div id="email-form"  class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
      
@@ -272,7 +275,7 @@
                 </#if>
 
         </#if>
-    </#if>
+<hr/>    </#if>
 
     <#macro _printOntology column>
         <#local ont="" />
@@ -286,12 +289,11 @@
         ${ont.title!"no title"}</a>
         <#else>
         none
-        </#if>
+		</#if>
     </#macro>
 
 
-<@view.resourceCitation resource />
-<hr/>
+
 
     <#if resource.resourceType.supporting >
         <@view.categoryVariables />
