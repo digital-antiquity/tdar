@@ -1,11 +1,16 @@
-<div id="divIntegrationNav" class="">
-    <ul class="nav nav-pills">
-        <li class=""><a href="filter-ng">Ontologies & Datasets</a> </li>
-        <li class="active"><a href="select-columns-ng">Display Columns</a></li>
-        <li><a href="#">Integrate!</a></li>
-    </ul>
+<div class="inthead">
+    <div id="divIntegrationNav" class="">
+        <ol class="breadcrumb">
+            <li><a href="filter-ng">Choose Ontologies & Datasets</a> <span class="divider"> / </span> </li>
+            <li class="active"><a href="select-columns-ng">Choose Display Columns</a> <span class="divider"> / </span> </li>
+            <li><a href="select-columns-ng">Display Integration Results</a></li>
+        </ol>
+    </div>
+    <h1><b>Editing Integration</b>:
+        Jim's Cool Dataset integration
+    </h1>
+    <h2><b>Step 2 of 3</b>: Choose Display Columns</h2>
 </div>
-<h1>Dataset Integration: Choose Display Columns</h1>
 
 
 
@@ -106,6 +111,11 @@
     console.log(coldata);
 
     ko.applyBindings(coldata);
-
 })(document.getElementById("jsonColumnData").innerHTML);
+
+//pick the first tab
+$(function(){
+    $("#ulOntologyTabs a:first").tab('show');
+})
+
 </script>

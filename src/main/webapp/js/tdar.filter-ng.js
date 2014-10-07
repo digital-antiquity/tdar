@@ -49,6 +49,7 @@ incomingData.ontologies.forEach(function(ontology){
     console.log("processing ontology: %s", ontology.title);
     ontology.nodes.forEach(function(node){
         node.selectionPolicy = ko.observable("NOT_SELECTED");
+        node.selected = false;
 
         //make up bogus participation data for now (let's pretend that integration column participates in 20% of node values)
         node.participation = [];

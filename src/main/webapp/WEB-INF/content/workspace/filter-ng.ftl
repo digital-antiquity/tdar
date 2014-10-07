@@ -1,34 +1,31 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "filter-macros.ftl" as edit>
 
 <head>
     <title>Filter Ontology Values</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <!--todo: knockout can do recursive templates & adhoc arrays, but I"m too lazy right now  -->
     <style type="text/css">
-        .nodechild1 {margin-left:1em;}
-        .nodechild2 {margin-left:2em;}
-        .nodechild3 {margin-left:3em;}
-        .nodechild4 {margin-left:4em;}
-        .nodechild5 {margin-left:5em;}
-        .nodechild6 {margin-left:6em;}
-        .nodechild7 {margin-left:7em;}
-        .nodechild8 {margin-left:8em;}
-        .nodechild9 {margin-left:9em;}
-        .nodechild10 {margin-left:10em;}
     </style>
 </head>
 <body class="filter-ontology">
 
-<div id="divIntegrationNav" class="">
-    <ul class="nav nav-pills">
-        <li class="active"><a href="filter-ng">Ontologies & Datasets</a> </li>
-        <li><a href="select-columns-ng">Display Columns</a></li>
-        <li><a href="#">Integrate!</a></li>
-    </ul>
+
+<div class="inthead">
+    <div id="divIntegrationNav" class="">
+        <ol class="breadcrumb">
+            <li class="active"><a href="filter-ng">Choose Ontologies & Datasets</a> <span class="divider"> / </span> </li>
+            <li><a href="select-columns-ng">Choose Display Columns</a> <span class="divider"> / </span> </li>
+            <li><a href="select-columns-ng">Display Integration Results</a></li>
+        </ol>
+    </div>
+    <h1><b>Editing Integration</b>:
+    Jim's Cool Dataset integration
+    </h1>
+    <h2><b>Step 1 of 3</b>: Choose Ontologies and Datasets</h2>
 </div>
 
-<h1>Ontologies and Datasets</h1>
 <ul class="nav nav-tabs"  id="ulOntologyTabs">
     <button class="btn pull-right">Add Ontology</button>
     <!-- ko foreach:ontologies -->
@@ -41,8 +38,8 @@
         <table class="table table-bordered table-condensed">
             <thead>
                 <tr>
+                    <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
                     <th rowspan="2" style="width:99%">Node Value</th>
-                    <th rowspan="2" style="white-space: nowrap;">Policy</th>
                     <th rowspan="1" style="white-space: nowrap;" data-bind="attr:{colspan: integrationColumns.length}">
                         Datasets
                         <button class="btn btn-mini">Add Dataset</button>
@@ -54,13 +51,16 @@
             </thead>
             <tbody data-bind="foreach: nodes">
                 <tr>
-                    <td style="white-space: nowrap;">
-                        <div data-bind="text:display_name, attr:{class:'nodechild'+index.split('.').length}"></div>
-                    </td>
+                    <!--
                     <td style="white-space: nowrap;">
                         <label class="radio inline"><input type="radio" value="NOT_SELECTED" data-bind="checked: selectionPolicy" />Never</label>
                         <label class="radio inline"><input type="radio" value="SELECT_IF_SOME" data-bind="checked: selectionPolicy" />If Any</label>
                         <label class="radio inline"><input type="radio" value="SELECT_IF_ALL" data-bind="checked: selectionPolicy" />If All</label>
+                    </td>
+                    -->
+                    <td><input type="checkbox" name="tbd" data-bind="attr:{checked: selected, id: 'cbont_' + id}"></td>
+                    <td style="white-space: nowrap;">
+                        <div data-bind="text:display_name, attr:{class:'nodechild'+index.split('.').length}"></div>
                     </td>
                     <!-- ko foreach: participation -->
                     <td data-bind="text:$data">0</td>
@@ -430,21 +430,9 @@
 "display_name":"Context","default_ontology_id":null,"dataset_id":392595,"dataset_title":"Guadalupe Ruin Fauna","data_table_id":7850,"data_table_name":"e_318592_prpfauna","data_table_display_name":"PRPFAUNA"}]}
 </script>
 <script src="/js/tdar.filter-ng.js"></script>
-<div id="divModalStore" class="modal modal-big hide fade" tabindex="-1" role="dialog" aria-labelledby="divModalStoreLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="divModalStoreLabel">Ontology Filter Codes</h3>
-        <span>The codes in the textbox below represent your current ontology selections. </span>
-        <span>To restore ontology filter selections from a previous integration, paste those selection codes into the textbox. </span>
-    </div>
-    <div class="modal-body">
-        <textarea id="txtStr2cb" cols=300 rows=20 style="width:100%; font-family:monospace; font-size:smaller; line-height: normal"
-                  spellcheck="false"></textarea>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-        <button id="btnStr2cb" class="btn btn-primary">Load my previous selections</button>
-    </div>
-</div>
-
+<script>
+    $(function(){
+        $("#ulOntologyTabs a:first").tab('show');
+    })
+</script>
 </body>
