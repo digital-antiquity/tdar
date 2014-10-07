@@ -31,6 +31,7 @@
     <!-- ko foreach:ontologies -->
     <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">Loading...</a></li>
     <!-- /ko -->
+    <li><a >add new</a></li>
 </ul>
 <div class="tab-content" data-bind="foreach:ontologies">
     <div class="tab-pane" data-bind="attr:{id: 'ont'+id}">
@@ -58,7 +59,7 @@
                         <label class="radio inline"><input type="radio" value="SELECT_IF_ALL" data-bind="checked: selectionPolicy" />If All</label>
                     </td>
                     -->
-                    <td><input type="checkbox" name="tbd" data-bind="attr:{checked: selected, id: 'cbont_' + id}"></td>
+                    <td><input type="checkbox" name="tbd" data-bind="checked: selected, attr:{id: 'cbont_' + id}"></td>
                     <td style="white-space: nowrap;">
                         <div data-bind="text:display_name, attr:{class:'nodechild'+index.split('.').length}"></div>
                     </td>
