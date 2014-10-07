@@ -185,7 +185,11 @@ public class WorkspaceController extends AuthenticationAware.Base implements Pre
         return SUCCESS;
     }
 
-    @Action("filter-ng")
+    @Actions({
+        @Action("filter-ng"),
+        @Action("select-columns-ng")
+    })
+
     public String filterPartDeux() {
         return "success";
     }

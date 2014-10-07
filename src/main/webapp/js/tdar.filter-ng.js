@@ -53,7 +53,7 @@ incomingData.ontologies.forEach(function(ontology){
         //make up bogus participation data for now (let's pretend that integration column participates in 20% of node values)
         node.participation = [];
         ontology.integrationColumns.forEach(function(integrationColumn){
-            node.participation.push(Math.random() < 0.2)
+            node.participation.push(Math.random() < 0.2 ? "✓" : " ");
         });
     });
 

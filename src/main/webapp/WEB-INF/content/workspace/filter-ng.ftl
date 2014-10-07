@@ -7,12 +7,20 @@
 </head>
 <body class="filter-ontology">
 
-<h1>Integration Columns</h1>
-<ul class="nav nav-tabs"  id="ulOntologyTabs">
+<div id="divIntegrationNav" class="">
+    <ul class="nav nav-pills">
+        <li class="active"><a href="filter-ng">Ontologies & Datasets</a> </li>
+        <li><a href="select-columns-ng">Display Columns</a></li>
+        <li><a href="#">Integrate!</a></li>
+    </ul>
+</div>
+
+<h1>Ontologies and Datasets</h1>
+<ul class="nav nav-tabs"  id="ulOntologyTabs" data-bind>
+    <button class="btn pull-right">Add Ontology</button>
     <!-- ko foreach:ontologies -->
     <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">foo</a></li>
     <!-- /ko -->
-    <li><a href="#add"><i class="icon icon-plus"> </i> <em>Add Another</em></a></li>
 </ul>
 <div class="tab-content" data-bind="foreach:ontologies">
     <div class="tab-pane" data-bind="attr:{id: 'ont'+id}">
@@ -20,9 +28,12 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th rowspan="2">Node Value</th>
-                    <th rowspan="2">Policy</th>
-                    <th rowspan="1" data-bind="attr:{colspan: integrationColumns.length}">Participation</th>
+                    <th rowspan="2" style="width:99%">Node Value</th>
+                    <th rowspan="2" style="white-space: nowrap;">Policy</th>
+                    <th rowspan="1" style="white-space: nowrap;" data-bind="attr:{colspan: integrationColumns.length}">
+                        Datasets
+                        <button class="btn btn-mini">Add Dataset</button>
+                    </th>
                 </tr>
                 <tr data-bind="foreach: integrationColumns">
                     <th data-bind="text: data_table_display_name">foo</th>
@@ -30,8 +41,8 @@
             </thead>
             <tbody data-bind="foreach: nodes">
                 <tr>
-                    <td data-bind="text:display_name"></td>
-                    <td>
+                    <td style="white-space: nowrap;" data-bind="text:display_name"></td>
+                    <td style="white-space: nowrap;">
                         <label class="radio inline"><input type="radio" value="NOT_SELECTED" data-bind="checked: selectionPolicy" />Never</label>
                         <label class="radio inline"><input type="radio" value="SELECT_IF_SOME" data-bind="checked: selectionPolicy" />If Any</label>
                         <label class="radio inline"><input type="radio" value="SELECT_IF_ALL" data-bind="checked: selectionPolicy" />If All</label>
