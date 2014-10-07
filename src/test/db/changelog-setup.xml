@@ -52850,8 +52850,6 @@
             SELECT setval('data_table_column_relationship_id_seq', (SELECT MAX(id) FROM data_table_column_relationship)+1);
             SELECT setval('data_table_relationship_id_seq', (SELECT MAX(id) FROM data_table_relationship)+1);
             SELECT setval('resource_access_statistics_id_seq', (SELECT MAX(id) FROM resource_access_statistics)+1);
-            
-
 			<comment>incrementing sequence; does not seem to properly work with alterSequence calls</comment>
 		</sql>
 	</changeSet>
