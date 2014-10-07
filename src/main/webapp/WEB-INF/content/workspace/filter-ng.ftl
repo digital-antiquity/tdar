@@ -29,7 +29,7 @@
 <ul class="nav nav-tabs"  id="ulOntologyTabs">
     <button class="btn pull-right">Add Ontology</button>
     <!-- ko foreach:ontologies -->
-    <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">foo</a></li>
+    <li><a data-toggle="tab" data-bind="attr: {href:'#ont' + id}, text:title">Loading...</a></li>
     <!-- /ko -->
 </ul>
 <div class="tab-content" data-bind="foreach:ontologies">

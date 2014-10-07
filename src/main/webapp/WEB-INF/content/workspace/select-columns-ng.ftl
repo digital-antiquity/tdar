@@ -36,7 +36,7 @@
                     <td>
                         <input type="checkbox" data-bind="attr:{id: $parent.name + '_' + sequence_number}, checked: isselected">
                     </td>
-                    <td class="nowrap" style="width:20%" >
+                    <td>
                         <label data-bind="text: display_name, attr:{for: $parent.name + '_' + sequence_number}"></label>
                     </td>
                     <td class="nowrap" style="width:79%" data-bind="text: description"></td>
