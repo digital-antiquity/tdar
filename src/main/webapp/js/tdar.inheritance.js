@@ -544,7 +544,14 @@ TDAR.inheritance = (function () {
                 },
                 inheritSectionCallback: function () {
                     _inheritTemporalInformation("#temporalSection", TDAR.inheritance.json);
+                },
+                enableSectionCallback: function () {
+                    _enableSection('#temporalSection');
+                    $("#temporalSection").find(".coverageTypeSelect").each(function (i, elem) {
+                        TDAR.common.prepareDateFields(elem)
+                    });
                 }
+
             },
             {
                 sectionNameSelector: "#culturalInfoSectionLabel",

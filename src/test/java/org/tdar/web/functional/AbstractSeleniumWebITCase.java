@@ -8,6 +8,8 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1112,6 +1114,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
         clearFileInputStyles();
+        waitFor( elementToBeClickable( id("fileAsyncUpload")));
         find("#fileAsyncUpload").sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
         find("#proxy0_conf").val(restriction.name());
