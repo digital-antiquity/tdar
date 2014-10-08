@@ -71,7 +71,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
                                     throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                logger.error("exception in workflowITCase", e);
                                 throw new TdarRecoverableRuntimeException("something happened", e);
                             }
                             return null;
