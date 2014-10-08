@@ -1322,7 +1322,7 @@
                     <exclude>log4j.properties</exclude>
                     <exclude>struts-local-settings.xml</exclude>
                     <exclude>common.json</exclude>
-                    <exclude>liquibase/liquibase.properties</exclude>
+                    <exclude>liquibase.properties</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -1340,7 +1340,7 @@
                     <include>log4j.properties</include>
                     <include>struts-local-settings.xml</include>
                     <include>common.json</include>
-                    <include>liquibase/liquibase.properties</include>
+                    <include>liquibase.properties</include>
                 </includes>
             </resource>
         </resources>
@@ -1867,7 +1867,7 @@
                 <defaultGoal>surefire:test</defaultGoal>
                 <filters>
                     <filter>src/test/resources/hibernate.properties</filter>
-                    <filter>src/main/resources/liquibase/liquibase.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
                 </filters>
                 <plugins>
                     <plugin>
@@ -2335,7 +2335,7 @@
 							<exclude>log4j.properties</exclude>
 							<exclude>struts-local-settings.xml</exclude>
 							<exclude>common.json</exclude>
-							<exclude>liquibase/liquibase.properties</exclude>
+							<exclude>liquibase.properties</exclude>
 						</excludes>
 					</resource>
 					<resource>
@@ -2345,14 +2345,14 @@
 						<filtering>true</filtering>
 						<directory>${basedir}/src/main/resources</directory>
 						<includes>
-							<include>liquibase/liquibase.properties</include>
+							<include>liquibase.properties</include>
 							<include>hibernate.properties</include>
 						</includes>
 					</resource>
 				</resources>
 				<filters>
 					<filter>src/main/resources/hibernate.properties</filter>
-					<filter>src/main/resources/liquibase/liquibase.properties</filter>
+					<filter>src/main/resources/liquibase.properties</filter>
 				</filters>
 				<plugins>
 					<plugin>
@@ -2416,7 +2416,7 @@
 							<exclude>log4j.properties</exclude>
 							<exclude>struts-local-settings.xml</exclude>
 							<exclude>common.json</exclude>
-							<exclude>liquibase/liquibase.properties</exclude>
+							<exclude>liquibase.properties</exclude>
 						</excludes>
 					</resource>
 					<resource>
@@ -2426,14 +2426,14 @@
 						<filtering>true</filtering>
 						<directory>${basedir}/src/main/resources</directory>
 						<includes>
-							<include>liquibase/liquibase.properties</include>
+							<include>liquibase.properties</include>
 							<include>hibernate.properties</include>
 						</includes>
 					</resource>
 				</resources>
 				<filters>
 					<filter>src/main/resources/hibernate.properties</filter>
-					<filter>src/main/resources/liquibase/liquibase.properties</filter>
+					<filter>src/main/resources/liquibase.properties</filter>
 				</filters>
 				<plugins>
 					<plugin>
