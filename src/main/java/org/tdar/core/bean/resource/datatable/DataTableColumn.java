@@ -402,6 +402,20 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
+    public boolean isActuallyMapped() {
+        if (Persistable.Base.isNullOrTransient(getDefaultOntology())) {
+            return false;
+        }
+
+        for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
+            if (rule != null && rule.getOntologyNode() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transient
     public Ontology getMappedOntology() {
         if (getDefaultOntology() != null) {
             return getDefaultOntology();

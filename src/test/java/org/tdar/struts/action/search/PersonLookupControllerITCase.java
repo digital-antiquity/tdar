@@ -96,8 +96,13 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     
     @Test
+    @Rollback
     // we should properly escape input
     public void testPersonByUsername() {
+        TdarUser user = new TdarUser("billing","admin","billingadmin@tdar.net");
+        user.setUsername("billingAdmin");
+        user.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(user);
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setTerm("billingAdmin");
         controller.setRegistered("true");
@@ -105,7 +110,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = controller.getResults();
         assertNotEmpty(people);
-        assertTrue(people.contains(getBillingUser()));
+        assertTrue(people.contains(user));
     }
 
     @Test

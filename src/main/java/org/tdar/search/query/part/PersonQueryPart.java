@@ -68,7 +68,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
         fns.addAll(wildcards);
         lns.addAll(wildcards);
-        
+        insts.addAll(wildcards);
         
         if (CollectionUtils.isNotEmpty(fns)) {
             FieldQueryPart<String> fqp = new FieldQueryPart<String>("firstName", fns);

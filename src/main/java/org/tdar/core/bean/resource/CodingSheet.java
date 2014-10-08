@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -249,6 +250,31 @@ public class CodingSheet extends InformationResource implements SupportsResource
         }
         Map<OntologyNode, List<CodingRule>> nodeToDataValueMap = getNodeToDataValueMap();
         return nodeToDataValueMap.get(node);
+    }
+
+    @Transient
+    public boolean isMappedImproperly() {
+        if (Persistable.Base.isNullOrTransient(getDefaultOntology()) || CollectionUtils.isEmpty(codingRules)) {
+            return false;
+        }
+
+        int count = 0;
+        for (CodingRule rule : getCodingRules()) {
+            if (rule != null && rule.getOntologyNode() != null) {
+                count++;
+            }
+        }
+        
+        if (count == 0) {
+            return true;
+        }
+        int size = CollectionUtils.size(getCodingRules());
+        //if less than 25% then warn
+        if (count < size / 4) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
