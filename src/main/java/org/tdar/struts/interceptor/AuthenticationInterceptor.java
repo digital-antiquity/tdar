@@ -25,6 +25,7 @@ import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -116,7 +117,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
             methodName = "execute";
         }
         Method method = action.getClass().getMethod(methodName);
-        String token = invocation.getStack().findString(TdarConfiguration.getInstance().getRequestTokenName());
+        Object[] token = (Object[]) ActionContext.getContext().getParameters().get(TdarConfiguration.getInstance().getRequestTokenName());
         if (sessionData.isAuthenticated() || isValidToken(token)) {
             // FIXME: consider caching these in a local Map
             // check for group authorization
@@ -148,9 +149,13 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         return Action.LOGIN;
     }
 
-    private boolean isValidToken(String token) {
+    private boolean isValidToken(Object[] token_) {
+        String token = (String)token_[0];
         if (StringUtils.isNotBlank(token)) {
-            return authenticationService.checkToken(token,getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+            logger.debug("checking valid token: {}", token);
+            boolean result = authenticationService.checkToken((String)token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+            logger.debug("token authentication result: {}", result);
+            return result;
         }
         return false;
     }

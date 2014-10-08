@@ -2,6 +2,7 @@ package org.tdar.struts.result;
 
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.XmlService;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.jaxb.JaxbMapResultContainer;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.Result;
@@ -61,6 +63,9 @@ public class XMLDocumentResult implements Result {
         resp.setCharacterEncoding(UTF_8);
         resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
+        if (object_ instanceof Map) {
+            object_ = new JaxbMapResultContainer((Map)object_);
+        }
         xmlService.convertToXML(object_, new OutputStreamWriter(resp.getOutputStream()));
     }
 

@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.billing.AccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -97,7 +98,7 @@ public class APIController extends AuthenticationAware.Base {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            xmlResultObject.put("resource", resource);
+            getXmlResultObject().put("resource", resource);
             return SUCCESS;
         }
         return INPUT;
@@ -135,7 +136,7 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
-            xmlResultObject.put("recordId", incoming.getId());
+            getXmlResultObject().put("recordId", incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             // getGenericService().detachFromSession(incoming);
             // getGenericService().detachFromSession(getAuthenticatedUser());
@@ -151,7 +152,7 @@ public class APIController extends AuthenticationAware.Base {
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
-                xmlResultObject.put("message", "created:" + loadedRecord.getId());
+                getXmlResultObject().put("message", "created:" + loadedRecord.getId());
                 code = StatusCode.CREATED;
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
@@ -159,7 +160,7 @@ public class APIController extends AuthenticationAware.Base {
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
-            xmlResultObject.put("message", SUCCESS);
+            getXmlResultObject().put("message", SUCCESS);
             getLogger().debug(xmlService.convertToXML(loadedRecord));
             return SUCCESS;
         } catch (Exception e) {
@@ -172,8 +173,8 @@ public class APIController extends AuthenticationAware.Base {
                 }
 
                 errorResponse(StatusCode.BAD_REQUEST);
-                xmlResultObject.put("message", message);
-                xmlResultObject.put("errors", events);
+                getXmlResultObject().put("message", message);
+                getXmlResultObject().put("errors", events);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -184,8 +185,8 @@ public class APIController extends AuthenticationAware.Base {
                 message = message + ((exp == null) ? "" : "\r\n");
             } while (exp != null);
             if (e instanceof APIException) {
-                xmlResultObject.put("message", message);
-                xmlResultObject.put("errors", e.getMessage());
+                getXmlResultObject().put("message", message);
+                getXmlResultObject().put("errors", e.getMessage());
                 errorResponse(((APIException) e).getCode());
                 return ERROR;
             }
@@ -197,7 +198,7 @@ public class APIController extends AuthenticationAware.Base {
 
     private String errorResponse(StatusCode statusCode) {
         status = statusCode.getResultName();
-        xmlResultObject.put("status", status);
+        getXmlResultObject().put("status", status);
         return ERROR;
     }
 
@@ -345,6 +346,14 @@ public class APIController extends AuthenticationAware.Base {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateQuota(account, resource);
         }
+    }
+
+    public Map<String, Object> getXmlResultObject() {
+        return xmlResultObject;
+    }
+
+    public void setXmlResultObject(Map<String, Object> xmlResultObject) {
+        this.xmlResultObject = xmlResultObject;
     }
 
 }

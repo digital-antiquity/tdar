@@ -38,7 +38,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
     }
 
     @Override
@@ -154,6 +154,6 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public AuthenticationResult checkToken(String token) {
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         throw new TdarRuntimeException("error.not_implemented");
     }}

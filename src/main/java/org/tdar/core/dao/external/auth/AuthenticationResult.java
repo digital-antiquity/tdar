@@ -1,6 +1,7 @@
 package org.tdar.core.dao.external.auth;
 
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 
 public class AuthenticationResult {
     public enum AuthenticationResultType {
@@ -29,6 +30,7 @@ public class AuthenticationResult {
     private TdarUser person;
     private Throwable throwable;
     private AuthenticationResultType type;
+    private AuthenticationStatus status;
     private String token;
     private String tokenUsername;
 
@@ -94,6 +96,14 @@ public class AuthenticationResult {
 
     public void setTokenUsername(String tokenUsername) {
         this.tokenUsername = tokenUsername;
+    }
+
+    public AuthenticationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AuthenticationStatus status) {
+        this.status = status;
     }
 
 }

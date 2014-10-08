@@ -112,9 +112,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#logout(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
         try {
             httpAuthenticator.logout(request, response);
+            securityServerClient.invalidateSSOToken(token);
         } catch (ApplicationPermissionException e) {
             logger.error("application permission exception", e);
         } catch (InvalidAuthenticationException e) {
@@ -259,20 +260,22 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             logger.error("++++ CROWD: Unable to add user (invalid authentication): " + login + " " + e.getMessage());
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION, e);
         }
-        
+
         return new AuthenticationResult(AuthenticationResultType.VALID);
     }
 
-    public AuthenticationResult checkToken(String token) {
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         try {
             User user = securityServerClient.findUserFromSSOToken(token);
-            securityServerClient.validateSSOAuthentication(token, new ArrayList<ValidationFactor>());
+            ArrayList<ValidationFactor> arrayList = new ArrayList<ValidationFactor>();
+            arrayList.add(new ValidationFactor("remote_address", request.getRemoteAddr()));
+            securityServerClient.validateSSOAuthentication(token, arrayList);
             AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.VALID);
             result.setTokenUsername(user.getName());
             result.setToken(token);
             return result;
         } catch (OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException | InvalidTokenException e) {
-            logger.error("++++ CROWD: Unable to process token " + token);
+            logger.error("++++ CROWD: Unable to process token " + token, e);
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION, e);
         }
     }

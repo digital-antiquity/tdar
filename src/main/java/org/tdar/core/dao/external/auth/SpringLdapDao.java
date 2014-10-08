@@ -88,7 +88,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
         // do nothing
     }
 
@@ -443,7 +443,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     }
 
     @Override
-    public AuthenticationResult checkToken(String token) {
+    public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         throw new TdarRuntimeException("error.not_implemented");
     }
 
