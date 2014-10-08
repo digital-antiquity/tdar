@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <!--  http://www.liquibase.org/documentation/changes/index.html  -->
+
+    <changeSet id="munsell-01" author="abrin">
+        <update tableName="information_resource_file">
+            <column name="restriction" value="EMBARGOED_FIVE_YEARS" />
+            <where>restriction='EMBARGOED'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="munsell-02" author='jtdevos'>
+	    <dropColumn tableName="institution" columnName="email" />
+        <addColumn tableName="institution">
+            <column name="email" type="varchar(255)" />
+        </addColumn>
+        <addUniqueConstraint columnNames="email"
+            constraintName="uk_9grdn54hea5ns8ahq4yogpb7u" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="institution" />
+    </changeSet>
+</databaseChangeLog>
