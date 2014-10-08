@@ -5,6 +5,7 @@ import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -150,6 +151,9 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
     }
 
     private boolean isValidToken(Object[] token_) {
+        if (ArrayUtils.isEmpty(token_)) {
+            return false;
+        }
         String token = (String)token_[0];
         if (StringUtils.isNotBlank(token)) {
             logger.debug("checking valid token: {}", token);
