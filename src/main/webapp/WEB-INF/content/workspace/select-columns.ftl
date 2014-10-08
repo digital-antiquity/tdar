@@ -113,7 +113,7 @@
                                     <#if count % numCols == 0>
                                     <tr></#if>
                                     <td width="${(100 / numCols)?floor }%">
-                                        <div class="drg ui-corner-all" <#if column.defaultOntology??>data-ontology="${column.defaultOntology.id?c}"</#if>
+                                        <div class="drg ui-corner-all" <#if column.actuallyMapped>data-ontology="${column.defaultOntology.id?c}"</#if>
                                              <#if column.measurementUnit??>data-measurement="${column.measurementUnit}"</#if>
                                              title="${description?html}"
                                              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>data-count="true"</#if>
